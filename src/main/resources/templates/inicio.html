@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sistema administrativo escolar</title>
+    <style>
+        :root { color-scheme: light; font-family: system-ui, sans-serif; }
+        body { margin: 0; background: #f4f7fb; color: #183153; }
+        main { max-width: 760px; margin: 12vh auto; padding: 3rem; background: white;
+               border-radius: 18px; box-shadow: 0 18px 50px rgba(24, 49, 83, .12); }
+        h1 { margin-top: 0; font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.05; }
+        p { color: #53657d; font-size: 1.1rem; line-height: 1.7; }
+        a { color: #0a66c2; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Sistema administrativo escolar</h1>
+    <p>La base institucional y académica está lista para administrar múltiples
+        planteles, niveles, ciclos, periodos, grados y grupos.</p>
+    <p><a th:href="@{/admin}">Abrir administración</a> ·
+        <a th:href="@{/actuator/health}">Consultar estado del servicio</a></p>
+</main>
+</body>
+</html>

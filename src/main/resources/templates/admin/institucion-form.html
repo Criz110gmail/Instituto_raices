@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+<title th:text="${edicion ? 'Editar institución' : 'Nueva institución'} + ' · Nexo Escolar'">Institución</title>
+<link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><script src="/js/theme.js"></script></head><body class="form-page">
+<main class="form-shell">
+  <header class="form-top"><a href="/admin/catalogos/instituciones">← Volver al directorio</a><button class="theme-button" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button></header>
+  <section class="form-card">
+    <div class="form-intro"><span th:text="${edicion ? 'Actualización' : 'Nuevo registro'}">Nuevo registro</span><h1 th:text="${edicion ? 'Editar institución' : 'Crear institución'}">Crear institución</h1><p>Los campos marcados con * son obligatorios. La información fiscal y de contacto puede completarse después.</p></div>
+    <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/instituciones/' + id : '/admin/instituciones'}">
+      <input type="hidden" th:field="*{version}">
+      <div class="form-grid">
+        <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="INSTITUCION-01"><small th:errors="*{codigo}"></small></label>
+        <label class="wide"><span>Nombre oficial *</span><input th:field="*{nombre}" maxlength="200" placeholder="Nombre de la institución"><small th:errors="*{nombre}"></small></label>
+        <label><span>Nombre comercial</span><input th:field="*{nombreComercial}"></label>
+        <label><span>Razón social</span><input th:field="*{razonSocial}"></label>
+        <label><span>RFC</span><input th:field="*{rfc}" maxlength="13"></label>
+        <label><span>Correo</span><input type="email" th:field="*{email}"><small th:errors="*{email}"></small></label>
+        <label><span>Teléfono</span><input th:field="*{telefono}"></label>
+        <label><span>Sitio web</span><input th:field="*{sitioWeb}" placeholder="https://"></label>
+        <label><span>Ciudad</span><input th:field="*{ciudad}"></label>
+        <label><span>Estado</span><input th:field="*{estado}"></label>
+        <label><span>Código postal</span><input th:field="*{codigoPostal}"></label>
+        <label><span>País (ISO)</span><input th:field="*{pais}" maxlength="2" placeholder="MX"><small th:errors="*{pais}"></small></label>
+        <label><span>Zona horaria *</span><input th:field="*{zonaHoraria}"></label>
+        <label><span>Moneda *</span><input th:field="*{monedaPredeterminada}" maxlength="3"><small th:errors="*{monedaPredeterminada}"></small></label>
+        <label class="wide"><span>Domicilio fiscal</span><textarea th:field="*{domicilioFiscal}" rows="3"></textarea></label>
+        <label class="switch-row"><input type="checkbox" th:field="*{activo}"><span>Institución activa</span></label>
+      </div>
+      <footer class="form-actions"><a href="/admin/catalogos/instituciones">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear institución'}">Guardar</button></footer>
+    </form>
+    <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/instituciones/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar esta institución?');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar institución</strong><p>Conservará todo su historial, pero bloqueará nuevas altas.</p></div><button type="submit">Desactivar</button></form>
+  </section>
+</main></body></html>

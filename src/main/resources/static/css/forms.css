@@ -1,0 +1,24 @@
+.form-grid select {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #ccd8e5;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+    font: 500 .9rem inherit;
+    padding: 11px 13px;
+    outline: none;
+}
+
+.form-grid select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px #2979ff18;
+}
+
+.narrow-form { max-width: 760px; }
+
+[data-theme=dark] .form-grid select {
+    background: #0e1d31;
+    color: #eef5fd;
+    border-color: #344a63;
+}

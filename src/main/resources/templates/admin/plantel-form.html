@@ -1,0 +1,26 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+<title th:text="${edicion ? 'Editar plantel' : 'Nuevo plantel'} + ' · Nexo Escolar'">Plantel</title>
+<link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script></head><body class="form-page">
+<main class="form-shell">
+  <header class="form-top"><a href="/admin/catalogos/planteles">← Volver al directorio</a><button class="theme-button" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button></header>
+  <section class="form-card">
+    <div class="form-intro"><span th:text="${edicion ? 'Actualización' : 'Nuevo registro'}">Nuevo registro</span><h1 th:text="${edicion ? 'Editar plantel' : 'Crear plantel'}">Crear plantel</h1><p>Registra la sede, sus datos de contacto y ubicación. Los campos marcados con * son obligatorios.</p></div>
+    <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/planteles/' + id : '/admin/planteles'}">
+      <input type="hidden" th:field="*{version}"><div class="form-grid">
+        <label class="wide"><span>Institución *</span><select th:field="*{institucionId}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><small th:errors="*{institucionId}"></small></label>
+        <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="CAMPUS-CENTRO"><small th:errors="*{codigo}"></small></label>
+        <label><span>Nombre *</span><input th:field="*{nombre}" maxlength="200" placeholder="Plantel Centro"><small th:errors="*{nombre}"></small></label>
+        <label><span>Teléfono</span><input th:field="*{telefono}" maxlength="30" placeholder="55 0000 0000"></label>
+        <label><span>Correo</span><input type="email" th:field="*{email}" maxlength="254" placeholder="plantel@escuela.mx"><small th:errors="*{email}"></small></label>
+        <label class="wide"><span>Calle</span><input th:field="*{calle}" maxlength="200"></label>
+        <label><span>Número exterior</span><input th:field="*{numeroExterior}" maxlength="30"></label><label><span>Número interior</span><input th:field="*{numeroInterior}" maxlength="30"></label>
+        <label><span>Colonia</span><input th:field="*{colonia}" maxlength="150"></label><label><span>Ciudad</span><input th:field="*{ciudad}" maxlength="120"></label>
+        <label><span>Estado</span><input th:field="*{estado}" maxlength="120"></label><label><span>Código postal</span><input th:field="*{codigoPostal}" maxlength="12"></label>
+        <label><span>País (ISO)</span><input th:field="*{pais}" maxlength="2" placeholder="MX"><small th:errors="*{pais}"></small></label>
+        <label class="switch-row"><input type="checkbox" th:field="*{activo}"><span>Plantel activo</span></label>
+      </div><footer class="form-actions"><a href="/admin/catalogos/planteles">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear plantel'}">Guardar</button></footer>
+    </form>
+    <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/planteles/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este plantel?');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar plantel</strong><p>El registro y su historial se conservarán.</p></div><button type="submit">Desactivar</button></form>
+  </section>
+</main></body></html>

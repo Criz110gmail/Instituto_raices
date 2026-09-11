@@ -1,0 +1,739 @@
+SISTEMA ADMINISTRATIVO ESCOLAR
+Propuesta de entidades, atributos, relaciones y reglas de negocio
+Versión 1.0 | 11 de septiembre de 2026 | Documento para revisión
+
+1. PROPÓSITO Y ALCANCE
+=====================
+Consolidar el análisis de la conversación «Análisis sistema escolar» en un
+modelo revisable antes de programar con Spring Boot y Thymeleaf.
+
+Requisitos recuperados:
+- Institución con varios planteles y niveles educativos configurables.
+- Historial del alumno desde preescolar hasta los niveles futuros.
+- Padres/tutores con acceso a uno o varios hijos, incluso en distintos planteles.
+- Cuotas individuales, becas y descuentos; pagos parciales y anticipados.
+- Registro de transferencias con comprobante y validación administrativa.
+- Registro de efectivo en administración y reflejo en el portal del tutor.
+- Entradas, salidas, traspasos y saldos por cuenta financiera.
+- Eventos escolares y reportes por día, mes, año, plantel y cuenta.
+- Inclusión expresa de PeriodoAcademico.
+
+Este documento es una propuesta de diseño, no una implementación ni una
+transcripción literal. Completa campos no definidos y corrige ambigüedades del
+análisis anterior. Las entidades auxiliares se proponen para cerrar los flujos.
+Materias, calificaciones, asistencia, nómina, inventarios y facturación fiscal
+quedan fuera del alcance inicial; no son necesarios para administrar cobros.
+El registro de tesorería descrito no equivale a contabilidad de partida doble.
+
+2. CONVENCIONES COMUNES
+======================
+Formato: atributo : tipo [requerimiento] — descripción cuando sea necesaria.
+R = requerido; O = opcional; C = condicional; D = calculado, no editable.
+FK(Entidad) = referencia por identificador Long a la entidad indicada.
+String = texto; Text = texto largo; Boolean = verdadero/falso.
+LocalDate = fecha; Instant = fecha/hora de auditoría almacenada en UTC.
+Decimal = BigDecimal; dinero DECIMAL(19,2); porcentajes DECIMAL(7,4).
+Enum = conjunto cerrado de estados; los catálogos editables son entidades.
+Los campos monetarios usan la moneda correspondiente; no usar float/double.
+
+TODAS las entidades listadas incluyen estos atributos comunes, aunque no se
+repitan en cada ficha:
+  id : Long [R] — clave primaria generada.
+  creadoEn : Instant [R].
+  creadoPorId : FK(Usuario) [C] — nulo solo en inicialización automática.
+  actualizadoEn : Instant [R].
+  actualizadoPorId : FK(Usuario) [C] — nulo solo en procesos del sistema.
+  version : Long [R] — control de concurrencia para registros modificables.
+Las bitácoras y movimientos publicados son inmutables; sus campos de
+actualización conservan los valores iniciales. Los errores se corrigen por
+operaciones compensatorias, no sobrescribiendo el historial.
+
+Todas las relaciones deben respetar la institución propietaria. Cuando una
+entidad hereda institución de otra, no se repite el campo; esta coherencia se
+valida en el servicio y, cuando sea posible, con restricciones en base de datos.
+Las claves únicas se normalizan antes de comparar. No eliminar físicamente
+registros con historial; usar activo, estados o reversos según corresponda.
+Los datos de contacto no se usan como claves primarias.
+
+3. ORGANIZACIÓN Y ESTRUCTURA ACADÉMICA
+====================================
+
+01. Institucion
+Representa a la organización propietaria de los planteles.
+  codigo : String [R] — único en el sistema.
+  nombre : String [R].
+  nombreComercial, razonSocial, rfc : String [O].
+  email, telefono, sitioWeb : String [O].
+  domicilioFiscal : Text [O].
+  ciudad, estado, codigoPostal, pais : String [O].
+  logoArchivoId : FK(Archivo) [O].
+  zonaHoraria : String [R] — ejemplo: America/Mexico_City.
+  monedaPredeterminada : String [R] — código de moneda; propuesta inicial MXN.
+  activo : Boolean [R].
+Relaciones: 1:N con Plantel, CicloEscolar, NivelEducativo y Usuario.
+Regla: una institución inactiva conserva consultas históricas y bloquea altas.
+
+02. Plantel
+  institucionId : FK(Institucion) [R].
+  codigo, nombre : String [R].
+  telefono, email : String [O].
+  calle, numeroExterior, numeroInterior, colonia : String [O].
+  ciudad, estado, codigoPostal, pais : String [O].
+  activo : Boolean [R].
+Único: institucionId + codigo. La oferta educativa se define en PlantelNivel.
+
+03. NivelEducativo
+  institucionId : FK(Institucion) [R].
+  codigo, nombre : String [R].
+  descripcion : Text [O].
+  orden : Integer [R] — orden de presentación, no promoción automática.
+  activo : Boolean [R].
+Único: institucionId + codigo. Ejemplos: Preescolar, Primaria, Secundaria.
+«Kínder» puede ser nombre del nivel o de sus grados según la escuela.
+
+04. PlantelNivel
+  plantelId : FK(Plantel) [R].
+  nivelEducativoId : FK(NivelEducativo) [R].
+  claveCentroTrabajo : String [O] — si corresponde a esta oferta.
+  activo : Boolean [R].
+Único: plantelId + nivelEducativoId. Ambos pertenecen a la misma institución.
+
+05. Grado
+  nivelEducativoId : FK(NivelEducativo) [R].
+  codigo, nombre : String [R].
+  orden : Integer [R].
+  activo : Boolean [R].
+Único: nivelEducativoId + codigo. Ejemplos: Kínder 1, Primaria 1°.
+Cambiar de nivel implica una nueva inscripción, no modificar el pasado.
+
+06. CicloEscolar
+  institucionId : FK(Institucion) [R].
+  codigo, nombre : String [R] — ejemplo: 2026-2027.
+  fechaInicio, fechaFin : LocalDate [R].
+  estado : Enum [R] — PLANIFICADO, ABIERTO, CERRADO.
+  esPredeterminado : Boolean [R].
+Único: institucionId + codigo. Inicio <= fin.
+Como máximo un ciclo predeterminado por institución; pueden coexistir varios
+ciclos abiertos para permitir reinscripciones anticipadas. Cerrar el ciclo
+bloquea cambios académicos; no impide cobrar adeudos históricos.
+
+07. PeriodoAcademico
+Subdivisión académica de un ciclo; no representa el mes de una colegiatura.
+  cicloEscolarId : FK(CicloEscolar) [R].
+  nivelEducativoId : FK(NivelEducativo) [R].
+  codigo, nombre : String [R] — ejemplo: TRI1, Primer trimestre.
+  tipo : Enum [R] — BIMESTRE, TRIMESTRE, CUATRIMESTRE, SEMESTRE, OTRO.
+  orden : Integer [R].
+  fechaInicio, fechaFin : LocalDate [R].
+  estado : Enum [R] — PLANIFICADO, ABIERTO, CERRADO.
+  observaciones : Text [O].
+Únicos: cicloEscolarId + nivelEducativoId + codigo; también + orden.
+Reglas: fechas dentro del ciclo y sin solapamientos en el mismo ciclo/nivel.
+Propuesta: un calendario por nivel compartido entre planteles. Si cada plantel
+necesita fechas distintas, añadir una entidad CalendarioAcademico antes de
+implementar. No duplicar periodos por grupo. La captura de notas es futura.
+
+08. Grupo
+  plantelId : FK(Plantel) [R].
+  cicloEscolarId : FK(CicloEscolar) [R].
+  gradoId : FK(Grado) [R].
+  nombre : String [R] — ejemplo: A.
+  turno : Enum [R] — MATUTINO, VESPERTINO, MIXTO.
+  codigo, aula : String [O].
+  capacidad : Integer [O] — entero positivo.
+  activo : Boolean [R].
+Único: plantelId + cicloEscolarId + gradoId + turno + nombre.
+El plantel debe ofrecer el nivel del grado mediante PlantelNivel.
+
+4. ALUMNOS, TUTORES E HISTORIAL
+=============================
+
+09. Alumno
+  institucionId : FK(Institucion) [R].
+  matricula, nombres, primerApellido : String [R].
+  segundoApellido, curp : String [O].
+  fechaNacimiento : LocalDate [R].
+  sexo, lugarNacimiento, nacionalidad : String [O].
+  telefono, email : String [O].
+  calle, numeroExterior, numeroInterior, colonia : String [O].
+  ciudad, estado, codigoPostal, pais : String [O].
+  fechaIngreso : LocalDate [R].
+  fotografiaArchivoId : FK(Archivo) [O].
+  observaciones : Text [O] — solo información administrativa pertinente.
+  activo : Boolean [R].
+Únicos por institución: matricula y curp cuando exista.
+El requisito de apellidos puede flexibilizarse para nombres legales distintos.
+No guardar gradoActual, grupoActual ni plantelActual como fuente de verdad.
+La situación escolar se obtiene de Inscripcion y AsignacionGrupo.
+
+10. Tutor
+  institucionId : FK(Institucion) [R].
+  nombres, primerApellido, telefonoPrincipal : String [R].
+  segundoApellido, telefonoSecundario, email : String [O].
+  fechaNacimiento : LocalDate [O].
+  calle, numeroExterior, numeroInterior, colonia : String [O].
+  ciudad, estado, codigoPostal, pais : String [O].
+  ocupacion, lugarTrabajo, telefonoTrabajo : String [O].
+  usuarioId : FK(Usuario) [O] — único si existe.
+  activo : Boolean [R].
+Un tutor puede existir sin cuenta; el alta administrativa con acceso solicitado
+crea Usuario e InvitacionUsuario en la misma operación. El correo pasa a ser
+obligatorio para invitación por email; no enviar contraseñas en texto plano.
+
+11. AlumnoTutor
+  alumnoId : FK(Alumno) [R].
+  tutorId : FK(Tutor) [R].
+  parentesco : Enum [R] — MADRE, PADRE, TUTOR_LEGAL, OTRO.
+  parentescoOtro : String [C] — requerido para OTRO.
+  esContactoPrincipal, esResponsableFinanciero : Boolean [R].
+  puedeAutorizar, puedeRecoger, puedeVerFinanzas : Boolean [R].
+  puedeRecibirNotificaciones : Boolean [R].
+  fechaInicio : LocalDate [R].
+  fechaFin : LocalDate [O].
+  observaciones : Text [O].
+Reglas: no duplicar vínculos vigentes; como máximo un contacto principal vigente
+por alumno. Revocar un vínculo revoca el acceso al hijo, conservando historial.
+Ser padre no concede automáticamente acceso financiero: lo define el vínculo.
+
+12. Inscripcion
+  alumnoId : FK(Alumno) [R].
+  plantelId : FK(Plantel) [R].
+  cicloEscolarId : FK(CicloEscolar) [R].
+  gradoId : FK(Grado) [R].
+  numeroInscripcion : String [R] — único por institución.
+  fechaInscripcion, fechaInicio : LocalDate [R].
+  fechaFin : LocalDate [O].
+  estado : Enum [R] — PREINSCRITA, ACTIVA, BAJA, FINALIZADA, CANCELADA.
+  motivoBajaCancelacion : Text [C] — al dar baja o cancelar.
+  inscripcionAnteriorId : FK(Inscripcion) [O] — enlace de continuidad.
+  observaciones : Text [O].
+Reglas: evitar inscripciones activas con fechas superpuestas del mismo alumno
+en la escolaridad ordinaria. Un traslado cierra la inscripción anterior y crea
+otra con el nuevo plantel/grado; conserva cargos anteriores. Una promoción
+crea inscripción para el siguiente ciclo. Nivel se deriva de Grado.
+
+13. AsignacionGrupo [auxiliar propuesta]
+Conserva cambios de grupo sin sobrescribir la inscripción.
+  inscripcionId : FK(Inscripcion) [R].
+  grupoId : FK(Grupo) [R].
+  fechaInicio : LocalDate [R].
+  fechaFin : LocalDate [O].
+  motivo : Text [O].
+Reglas: grupo e inscripción coinciden en plantel, grado y ciclo. Una sola
+asignación vigente; intervalos sin solapamientos. Validar capacidad.
+
+5. ACCESO Y SEGURIDAD
+====================
+
+14. Usuario
+  institucionId : FK(Institucion) [R].
+  username, email : String [R].
+  passwordHash : String [C] — requerido al activar autenticación local.
+  estado : Enum [R] — INVITADO, ACTIVO, BLOQUEADO, INACTIVO.
+  ultimoAccesoEn, bloqueoHasta : Instant [O].
+  intentosFallidos : Integer [R].
+Únicos por institución: username y email normalizados.
+Un usuario puede ser tutor y administrador; Tutor es una relación opcional.
+La institución debe identificarse al iniciar sesión si los nombres se repiten.
+
+15. Rol
+  institucionId : FK(Institucion) [R].
+  codigo, nombre : String [R].
+  descripcion : Text [O].
+  activo : Boolean [R].
+Único: institucionId + codigo.
+Ejemplos: ADMIN_GENERAL, ADMIN_PLANTEL, CAJERO, CONSULTA, TUTOR.
+
+16. Permiso
+  codigo, descripcion : String [R].
+Único global: codigo. Catálogo técnico, no editable por el tutor.
+Ejemplos: ALUMNO_LEER, PAGO_REGISTRAR, PAGO_VALIDAR, PAGO_REVERTIR,
+MOVIMIENTO_REGISTRAR, REPORTE_CONSULTAR, USUARIO_ADMINISTRAR.
+
+17. RolPermiso
+  rolId : FK(Rol) [R].
+  permisoId : FK(Permiso) [R].
+Único: rolId + permisoId.
+
+18. UsuarioRol
+  usuarioId : FK(Usuario) [R].
+  rolId : FK(Rol) [R].
+  alcance : Enum [R] — INSTITUCION, PLANTEL, VINCULOS_TUTOR.
+  plantelId : FK(Plantel) [C] — solo y obligatorio para alcance PLANTEL.
+  activo : Boolean [R].
+Único: usuarioId + rolId + alcance + plantelId, tratando explícitamente nulos.
+Los permisos del tutor se limitan a sus AlumnoTutor vigentes. No darle acceso
+general a un plantel porque tenga un hijo inscrito allí.
+
+19. InvitacionUsuario [auxiliar propuesta]
+  usuarioId : FK(Usuario) [R].
+  tokenHash : String [R] — único; no almacenar el token sin hash.
+  expiraEn : Instant [R].
+  usadoEn, revocadoEn : Instant [O].
+Uso único y vencimiento obligatorio; permite que el padre defina su contraseña.
+
+6. CUOTAS, BECAS Y CUENTAS POR COBRAR
+===================================
+
+20. ConceptoCobro
+  institucionId : FK(Institucion) [R].
+  codigo, nombre : String [R].
+  descripcion : Text [O].
+  categoria : Enum [R] — COLEGIATURA, INSCRIPCION, SERVICIO, MATERIAL, OTRO.
+  permiteBeca, permiteDescuento, permiteRecargo, activo : Boolean [R].
+Único: institucionId + codigo. No contiene el precio particular del alumno.
+
+21. CuotaAlumno [auxiliar propuesta]
+Define el importe individual y las fechas de generación de cargos.
+  inscripcionId : FK(Inscripcion) [R].
+  conceptoCobroId : FK(ConceptoCobro) [R].
+  importeBase : Decimal [R] — >= 0.
+  moneda : String [R].
+  frecuencia : Enum [R] — UNICA, MENSUAL.
+  fechaInicio, fechaFin : LocalDate [R].
+  diaVencimiento : Integer [C] — 1..31 para mensual.
+  fechaVencimientoUnico : LocalDate [C] — para única.
+  motivoImportePersonalizado : Text [O].
+  estado : Enum [R] — ACTIVA, SUSPENDIDA, FINALIZADA.
+Reglas: no solapar cuotas activas del mismo concepto/inscripción. En meses sin
+el día configurado usar el último día. No generar cargos de meses excluidos de
+la vigencia. Un cambio afecta futuras emisiones, no cargos ya generados.
+La deuda es por alumno; el total del padre suma los hijos autorizados.
+
+22. TipoBeca
+  institucionId : FK(Institucion) [R].
+  codigo, nombre : String [R].
+  descripcion : Text [O].
+  activo : Boolean [R].
+Único: institucionId + codigo. Ejemplos: académica, económica, familiar.
+
+23. BecaAlumno
+  inscripcionId : FK(Inscripcion) [R].
+  tipoBecaId : FK(TipoBeca) [R].
+  conceptoCobroId : FK(ConceptoCobro) [R] — alcance explícito.
+  modalidad : Enum [R] — PORCENTAJE, MONTO_FIJO.
+  porcentaje : Decimal [C] — > 0 y <= 100 en PORCENTAJE.
+  montoFijo : Decimal [C] — > 0 en MONTO_FIJO.
+  moneda : String [C] — para monto fijo.
+  fechaInicio, fechaFin : LocalDate [R].
+  motivo : Text [R].
+  autorizadoPorId : FK(Usuario) [R].
+  estado : Enum [R] — ACTIVA, SUSPENDIDA, FINALIZADA, CANCELADA.
+Reglas: exactamente una modalidad de valor. Para varios conceptos se crean
+asignaciones explícitas. Propuesta inicial: una beca vigente por concepto e
+inscripción, sin acumulación automática; revisar política con la escuela.
+
+24. Cargo
+Es la obligación de pago de un alumno, independientemente del pago recibido.
+  inscripcionId : FK(Inscripcion) [R] — deriva alumno, plantel y ciclo.
+  conceptoCobroId : FK(ConceptoCobro) [R].
+  cuotaAlumnoId : FK(CuotaAlumno) [O] — nulo en cargo manual.
+  claveGeneracion : String [R] — única por institución, evita duplicados.
+  descripcion : String [R] — conserva descripción histórica.
+  periodoCobroInicio, periodoCobroFin : LocalDate [R].
+  periodoAcademicoId : FK(PeriodoAcademico) [O] — solo si aplica.
+  fechaEmision, fechaVencimiento : LocalDate [R].
+  importeOriginal : Decimal [R] — >= 0; inmutable una vez emitido.
+  moneda : String [R].
+  estadoRegistro : Enum [R] — EMITIDO, CANCELADO.
+  canceladoEn : Instant [O].
+  motivoCancelacion : Text [C].
+  descuentoTotal, recargoTotal, importeTotal : Decimal [D].
+  montoPagado, saldoPendiente : Decimal [D].
+  situacionCobro : Enum [D] — PENDIENTE, PARCIAL, PAGADO, CANCELADO.
+  estaVencido : Boolean [D] — saldo > 0 y fecha actual > vencimiento.
+Periodo de cobro y periodo académico son conceptos distintos: septiembre puede
+ser una mensualidad dentro del primer trimestre. Validar ciclo y nivel si se
+asigna PeriodoAcademico. Un cargo parcial también puede estar vencido.
+
+25. AjusteCargo [auxiliar propuesta]
+Desglosa becas, descuentos, recargos y correcciones con trazabilidad.
+  cargoId : FK(Cargo) [R].
+  tipo : Enum [R] — BECA, DESCUENTO, RECARGO, CORRECCION.
+  efecto : Enum [R] — AUMENTO, DISMINUCION.
+  monto : Decimal [R] — positivo, en moneda del cargo.
+  baseCalculo, porcentajeAplicado : Decimal [O] — valores históricos.
+  becaAlumnoId : FK(BecaAlumno) [C] — para BECA.
+  motivo : Text [R].
+  autorizadoPorId : FK(Usuario) [R].
+  fechaEfectiva : LocalDate [R].
+  reversaDeId : FK(AjusteCargo) [O] — único si existe.
+Reglas: beca/descuento disminuyen y recargo aumenta. Un reverso tiene efecto
+opuesto e igual monto. No cambiar importes anteriores al modificar la beca.
+Importe total = original + aumentos - disminuciones; nunca negativo.
+No reducir total por debajo de lo aplicado sin desaplicar primero el excedente.
+
+7. PAGOS, COMPROBANTES Y ANTICIPOS
+================================
+
+26. Pago
+  institucionId : FK(Institucion) [R].
+  plantelRegistroId : FK(Plantel) [R].
+  tutorId : FK(Tutor) [R] — titular del anticipo y responsable del registro.
+  nombrePagador : String [O] — si entrega dinero otra persona.
+  folio : String [R] — único por institución.
+  claveIdempotencia : String [R] — única por institución.
+  fechaPago : Instant [R].
+  monto : Decimal [R] — > 0.
+  moneda : String [R].
+  metodo : Enum [R] — EFECTIVO, TRANSFERENCIA; ampliable posteriormente.
+  estado : Enum [R] — PENDIENTE_VALIDACION, VALIDADO, RECHAZADO, CANCELADO.
+  cuentaDeclaradaId : FK(CuentaFinanciera) [O] — indicada al registrar.
+  cuentaDestinoId : FK(CuentaFinanciera) [C] — obligatoria al validar.
+  referencia : String [O] — referencia bancaria; no siempre es única.
+  validadoPorId : FK(Usuario) [C] — al validar.
+  validadoEn : Instant [C] — al validar.
+  motivoRechazoCancelacion : Text [C].
+  observaciones : Text [O].
+  montoAplicado, montoDevuelto, montoDisponible : Decimal [D].
+Reglas: el tutor reporta, el administrador valida y elige la cuenta real.
+El efectivo se valida por un usuario autorizado y entra a una cuenta CAJA.
+Efectivo es método, no estado. Portal: «Validado · Efectivo» y saldo del cargo.
+Un pago validado ingresa a una sola cuenta; un depósito dividido se registra en
+pagos separados. No crear un movimiento por cada aplicación a cargos.
+
+27. Archivo [auxiliar propuesta]
+  institucionId : FK(Institucion) [R].
+  claveAlmacenamiento, nombreOriginal, tipoMime : String [R].
+  tamanoBytes : Long [R].
+  checksumSha256 : String [R].
+  estado : Enum [R] — DISPONIBLE, BLOQUEADO, RETIRADO.
+Único: claveAlmacenamiento. Guardar el archivo en almacenamiento privado; en
+base de datos solo metadatos. Validar tipo, tamaño y autorización de descarga.
+
+28. ComprobantePago
+  pagoId : FK(Pago) [R].
+  archivoId : FK(Archivo) [R].
+  observaciones : Text [O].
+Único: pagoId + archivoId. Pago 1:N comprobantes.
+Propuesta: transferencia reportada por tutor requiere al menos uno; efectivo
+no lo requiere. Adjuntar imagen no confirma la recepción de dinero.
+
+29. SolicitudAplicacionPago [auxiliar propuesta]
+Expresa a qué cargos desea el tutor destinar un pago aún no validado.
+  pagoId : FK(Pago) [R].
+  cargoId : FK(Cargo) [R].
+  montoSolicitado : Decimal [R] — > 0.
+Único: pagoId + cargoId. No afecta saldo; al validar se revisan nuevamente los
+adeudos. Si cambiaron, se ajusta la distribución o se conserva saldo disponible.
+
+30. AplicacionPago
+Une pagos y cargos; permite abonos parciales y un pago para varios hijos.
+  pagoId : FK(Pago) [R].
+  cargoId : FK(Cargo) [R].
+  monto : Decimal [R] — > 0.
+  operacion : Enum [R] — APLICAR, REVERTIR.
+  fechaAplicacion : Instant [R].
+  reversaDeId : FK(AplicacionPago) [C] — único para REVERTIR.
+  motivo : Text [C] — obligatorio al revertir.
+Reglas: solo pagos validados; misma institución y moneda. El tutor debe tener
+vínculo financiero autorizado con el alumno al aplicar. No superar saldo del
+cargo ni disponible del pago. Reversar una aplicación completa; si se requiere
+cambio parcial, reversar y crear una aplicación nueva por el importe correcto.
+Desaplicar libera anticipo: no retira dinero de la cuenta financiera.
+
+31. DevolucionPago [auxiliar propuesta]
+Devuelve dinero real y conserva el pago original validado.
+  pagoId : FK(Pago) [R].
+  cuentaOrigenId : FK(CuentaFinanciera) [R].
+  monto : Decimal [R] — > 0, en moneda del pago.
+  fecha : Instant [R].
+  motivo, beneficiario : String [R].
+  referencia : String [O].
+  autorizadoPorId : FK(Usuario) [R].
+  claveIdempotencia : String [R] — única por institución.
+  estado : Enum [R] — SOLICITADA, EJECUTADA, CANCELADA.
+Reglas: antes de devolver importes aplicados, reversar esas aplicaciones.
+Ejecutar genera un egreso una sola vez; cancelar solo antes de ejecutar.
+La devolución no cambia el pago a RECHAZADO. Mostrar monto devuelto aparte.
+
+8. TESORERÍA Y MOVIMIENTOS
+=========================
+
+32. Banco
+  codigo, nombre : String [R].
+  activo : Boolean [R].
+Único global: codigo. Catálogo, no una cuenta de dinero.
+
+33. CuentaFinanciera
+  institucionId : FK(Institucion) [R].
+  plantelId : FK(Plantel) [O] — nulo indica cuenta institucional compartida.
+  codigo, nombre : String [R].
+  tipo : Enum [R] — CAJA, BANCO, INVERSION.
+  bancoId : FK(Banco) [C] — para banco/inversión cuando corresponda.
+  titular, numeroCuenta, clabe : String [O].
+  moneda : String [R].
+  saldoInicial : Decimal [R].
+  fechaSaldoInicial : LocalDate [R].
+  activa : Boolean [R].
+  saldoActual : Decimal [D].
+Único: institucionId + codigo. No permitir cambios de moneda o saldo inicial
+después del primer movimiento; corregir mediante movimiento autorizado.
+Saldo inicial representa el saldo antes de los movimientos de su fecha.
+No admitir movimientos anteriores a fechaSaldoInicial en el alcance inicial.
+
+34. MotivoFinanciero
+  institucionId : FK(Institucion) [R].
+  codigo, nombre : String [R].
+  naturaleza : Enum [R] — INGRESO, EGRESO, AMBOS.
+  categoria : String [R] — agrupación para reportes.
+  activo : Boolean [R].
+Único: institucionId + codigo.
+Ingresos sugeridos: cobros escolares, donativos, intereses, rendimientos,
+recuperación de préstamos, reembolsos de proveedores y otros ingresos.
+Egresos sugeridos: nómina, honorarios, prestaciones, renta, luz, agua, gas,
+internet, limpieza, seguridad, mantenimiento, papelería, material escolar,
+equipo, mobiliario, transporte, eventos, publicidad, software, servicios
+profesionales, comisiones bancarias, impuestos, devoluciones y otros egresos.
+Clasificar un gasto como nómina no implica implementar cálculo de nómina.
+
+35. MovimientoFinanciero
+Libro de movimientos de una cuenta; publicado e inmutable.
+  cuentaId : FK(CuentaFinanciera) [R].
+  plantelOperacionId : FK(Plantel) [O] — atribución, aun en cuenta compartida.
+  fechaOperacion : Instant [R].
+  secuenciaCuenta : Long [R] — orden único de publicación en la cuenta.
+  direccion : Enum [R] — INGRESO, EGRESO.
+  clase : Enum [R] — COBRO, OPERACION, TRASPASO, DEVOLUCION, AJUSTE, REVERSO.
+  monto : Decimal [R] — > 0, misma moneda de la cuenta.
+  motivoFinancieroId : FK(MotivoFinanciero) [R].
+  concepto : String [R].
+  referencia, terceroNombre : String [O].
+  comprobanteArchivoId : FK(Archivo) [O].
+  pagoId : FK(Pago) [C] — para COBRO.
+  transferenciaId : FK(TransferenciaCuenta) [C] — para TRASPASO.
+  devolucionPagoId : FK(DevolucionPago) [C] — para DEVOLUCION.
+  reversaDeId : FK(MovimientoFinanciero) [C] — para REVERSO, único.
+  claveIdempotencia : String [R] — única por institución.
+  saldoAnterior, saldoPosterior : Decimal [D] — según secuencia de publicación.
+Reglas: exactamente la referencia de origen que corresponde a la clase; las
+operaciones manuales no requieren alumno. Un solo COBRO original por pago y un
+solo egreso por devolución. Un reverso compensa en la misma cuenta y monto.
+No guardar saldos históricos editables: se calculan con movimientos. Si se
+cachean saldos, actualizar con bloqueo/transacción y poder reconstruirlos.
+Para reportes por fecha se recalcula el acumulado por fechaOperacion e id;
+no confundir este orden con la secuencia de publicación de registros tardíos.
+
+36. TransferenciaCuenta [auxiliar propuesta]
+  institucionId : FK(Institucion) [R].
+  cuentaOrigenId, cuentaDestinoId : FK(CuentaFinanciera) [R].
+  fecha : Instant [R].
+  monto : Decimal [R] — > 0.
+  referencia, observaciones : String [O].
+  autorizadoPorId : FK(Usuario) [R].
+  claveIdempotencia : String [R] — única por institución.
+  estado : Enum [R] — APLICADA, REVERTIDA.
+Reglas: cuentas diferentes, misma institución y moneda. Publicar atómicamente
+un egreso de origen y un ingreso de destino; únicos por transferencia y lado.
+Reversar ambos movimientos juntos. Las comisiones son egresos separados.
+Traspasos internos se excluyen de ingresos y gastos operativos consolidados.
+Ejemplo: depositar efectivo de CAJA a BBVA es traspaso, no nueva colegiatura.
+
+9. COMUNICACIÓN Y AUDITORÍA
+=========================
+
+37. EventoEscolar
+  institucionId : FK(Institucion) [R].
+  cicloEscolarId : FK(CicloEscolar) [R].
+  plantelId : FK(Plantel) [O] — nulo para evento institucional.
+  titulo, ubicacion : String [R].
+  descripcion : Text [O].
+  inicioEn, finEn : Instant [R].
+  tipo : Enum [R] — JUNTA, FESTIVAL, SUSPENSION, ACTIVIDAD, OTRO.
+  estado : Enum [R] — BORRADOR, PUBLICADO, CANCELADO.
+  alcance : Enum [R] — INSTITUCION, PLANTEL, SELECCION.
+Reglas: inicio <= fin. PLANTEL requiere plantel; SELECCION requiere destinatarios.
+Un evento cancelado conserva su historial y muestra la cancelación al tutor.
+
+38. DestinatarioEvento [auxiliar propuesta]
+  eventoId : FK(EventoEscolar) [R].
+  nivelEducativoId : FK(NivelEducativo) [C].
+  gradoId : FK(Grado) [C].
+  grupoId : FK(Grupo) [C].
+  alumnoId : FK(Alumno) [C].
+Exactamente uno de los cuatro destinos por fila. Varias filas forman la unión
+de destinatarios. No duplicar destinatarios ni salir del alcance institucional
+y del plantel del evento. Grupos coinciden con el ciclo del evento.
+
+39. Aviso [ampliación propuesta para una fase posterior]
+  institucionId : FK(Institucion) [R].
+  plantelId : FK(Plantel) [O] — nulo para aviso institucional.
+  titulo : String [R].
+  contenido : Text [R].
+  publicadoEn : Instant [C] — al publicar.
+  expiraEn : Instant [O].
+  estado : Enum [R] — BORRADOR, PUBLICADO, RETIRADO.
+Alcance inicial de esta extensión: institución o plantel. Si se requieren
+destinos por alumno/grupo, añadir una relación equivalente a DestinatarioEvento.
+
+40. NotificacionUsuario [ampliación propuesta para una fase posterior]
+  usuarioId : FK(Usuario) [R].
+  tipo : Enum [R] — PAGO_VALIDADO, PAGO_RECHAZADO, EVENTO, AVISO.
+  titulo, mensaje : String [R].
+  pagoId : FK(Pago) [C] — para tipos de pago.
+  eventoId : FK(EventoEscolar) [C] — para EVENTO.
+  avisoId : FK(Aviso) [C] — para AVISO.
+  leidaEn : Instant [O].
+  claveDeduplicacion : String [R] — única por usuario.
+Notificación interna; no presupone envío de email o WhatsApp. Revalidar acceso
+al recurso cuando se abre, incluso si la notificación se creó anteriormente.
+
+41. Auditoria
+  institucionId : FK(Institucion) [R].
+  usuarioActorId : FK(Usuario) [O] — nulo para proceso automático identificado.
+  actorSistema : String [C] — cuando no hay usuario.
+  accion, tipoEntidad, entidadId : String [R].
+  ocurridoEn : Instant [R].
+  motivo : Text [O].
+  cambios : JSON/Text [O] — campos relevantes antes/después, sin secretos.
+  correlacionId : String [R].
+Registro inmutable de altas, bajas, cambios de permisos, validaciones, rechazos,
+desaplicaciones y reversos. entidadId es referencia descriptiva, no FK genérica.
+No guardar contraseñas, tokens, archivos completos o datos bancarios completos
+en la bitácora. La auditoría no reemplaza movimientos ni aplicaciones.
+
+10. RELACIONES PRINCIPALES
+=========================
+Institucion 1 ---- N Plantel
+Institucion 1 ---- N NivelEducativo 1 ---- N Grado
+Plantel N ---- N NivelEducativo mediante PlantelNivel
+Institucion 1 ---- N CicloEscolar 1 ---- N PeriodoAcademico
+PeriodoAcademico N ---- 1 NivelEducativo
+Grupo N ---- 1 Plantel / CicloEscolar / Grado
+Alumno N ---- N Tutor mediante AlumnoTutor
+Tutor 0..1 ---- 0..1 Usuario
+Alumno 1 ---- N Inscripcion 1 ---- N AsignacionGrupo N ---- 1 Grupo
+Inscripcion 1 ---- N CuotaAlumno / BecaAlumno / Cargo
+Cargo 1 ---- N AjusteCargo
+Pago N ---- N Cargo mediante AplicacionPago
+Pago 1 ---- N ComprobantePago / DevolucionPago
+Pago validado 1 ---- 1 MovimientoFinanciero original de COBRO
+CuentaFinanciera 1 ---- N MovimientoFinanciero
+TransferenciaCuenta 1 ---- 2 movimientos originales; 2 reversos si se revierte
+Usuario N ---- N Rol mediante UsuarioRol, con alcance
+Rol N ---- N Permiso mediante RolPermiso
+
+11. FÓRMULAS Y REGLAS TRANSACCIONALES
+===================================
+A. ImporteCargo = importeOriginal + ajustes de aumento - ajustes de disminución.
+   AplicadoCargo = aplicaciones APLICAR - aplicaciones REVERTIR.
+   SaldoCargo = ImporteCargo - AplicadoCargo, siempre >= 0.
+   Cargo cancelado no admite aplicaciones; su saldo exigible se reporta en 0
+   y se conservan los importes históricos para auditoría.
+
+B. DisponiblePago = monto - aplicaciones netas - devoluciones ejecutadas.
+   Solo utilizable si Pago está VALIDADO. Nunca negativo.
+   No crear otra entidad SaldoAFavor: el remanente de pagos es su fuente.
+
+C. SaldoCuenta = saldoInicial + ingresos publicados - egresos publicados.
+   Los reversos participan con su dirección opuesta. No excluir el movimiento
+   original y a la vez sumar el reverso: eso descontaría dos veces.
+
+D. Validar transferencia en una sola transacción:
+   1) Comprobar permisos, estado, cuenta, moneda y posible duplicado.
+   2) Bloquear pago, cargos afectados y cuenta en un orden consistente.
+   3) Marcar VALIDADO y registrar usuario/fecha de validación.
+   4) Crear un ingreso por todo el monto del pago.
+   5) Crear aplicaciones según distribución confirmada y saldos vigentes.
+   6) Conservar sobrante como disponible; registrar auditoría.
+   Si falla un paso se revierte todo; reintentar no duplica el ingreso.
+
+E. Efectivo: registrar y validar con el mismo proceso, usando una cuenta CAJA.
+   No exigir comprobante de transferencia. Un recibo interno puede generarse
+   a partir del folio del pago; no es un comprobante fiscal.
+
+F. Rechazo: solo antes de validar; registrar motivo, sin ingreso ni aplicaciones.
+   Cancelar un pago validado registrado por error exige reversar aplicaciones
+   y su movimiento en una transacción; bloquear si tiene devoluciones hasta
+   resolverlas. Si realmente se devuelve dinero, usar DevolucionPago.
+
+G. Cancelar cargo: primero liberar todas sus aplicaciones, conservando ese
+   importe como disponible del pago; cancelar no implica devolución bancaria.
+
+H. Concurrencia: restricciones únicas e idempotencia para generación mensual,
+   validación, aplicación y traspasos. Los bloqueos evitan que dos operadores
+   apliquen simultáneamente el mismo saldo disponible.
+
+12. EJEMPLOS PARA VALIDAR EL MODELO
+=================================
+1) Colegiatura individual y beca:
+   CuotaAlumno $3,000; beca 25%; Cargo original $3,000; AjusteCargo -$750.
+   Total exigible $2,250. Si la beca cambia mañana, el cargo conserva $2,250.
+
+2) Transferencia parcial:
+   Tutor reporta $1,000: cargo sigue debiendo $2,250 hasta validar.
+   Administrador valida a BBVA: ingreso $1,000; aplicación $1,000.
+   Cargo queda PARCIAL con saldo $1,250.
+
+3) Pago de varios hijos y anticipo:
+   Pago validado $6,000; aplica $2,250 a hijo A y $3,000 a hijo B.
+   Disponible $750 para otro cargo autorizado. Ingreso bancario único $6,000.
+
+4) Depósito de caja a banco:
+   Traspaso $3,000: egreso CAJA e ingreso BBVA; total consolidado no cambia.
+
+5) Cambio de plantel:
+   Cerrar inscripción del plantel Centro y crear inscripción en Norte.
+   Los adeudos de Centro conservan su origen; el tutor sigue viendo al hijo.
+
+6) Devolución parcial:
+   Pago $1,000 aplicado totalmente; reversar aplicación y reaplicar $700.
+   Devolver $300 desde cuenta autorizada: egreso $300; disponible final $0.
+   El cargo recupera $300 de saldo salvo que se ajuste o cancele por separado.
+
+13. REPORTES DERIVADOS; NO SON NUEVAS ENTIDADES
+=============================================
+- Estado de cuenta por alumno y por tutor autorizado: cargos, ajustes, abonos,
+  saldo, vencimientos y anticipos disponibles.
+- Tesorería por cuenta: saldo de apertura, ingresos, egresos y saldo de cierre.
+- Totales diarios, mensuales y anuales según zona horaria de la institución.
+- Flujo consolidado excluyendo traspasos internos y mostrando devoluciones.
+- Cobranza por plantel, ciclo, grado, concepto y método de pago.
+- Pendientes de validación, pagos rechazados y adeudos vencidos.
+- Historial de inscripciones y grupos del alumno.
+
+Dos bases de reporte distintas:
+  Tesorería mide dinero efectivamente recibido por fecha del pago/movimiento.
+  Cobranza por concepto mide aplicaciones a cargos y muestra anticipos aparte.
+Aplicar un anticipo meses después no genera otro ingreso. La atribución por
+plantel del cargo puede diferir del plantel que recibió el dinero; no mezclar
+ambos criterios en un mismo total sin explicarlos.
+
+14. DECISIONES PENDIENTES PARA REVISIÓN
+=====================================
+Estas decisiones no impiden revisar las entidades; deben resolverse antes de
+implementar las reglas respectivas.
+1) Calendarios académicos: confirmar si varían por nivel o también por plantel.
+2) Becas: acumulación, prioridad, redondeo, renovación y descuentos por hermanos.
+   Propuesta inicial: una beca por concepto, redondeo monetario HALF_UP a 2
+   decimales y descuentos especiales autorizados mediante AjusteCargo.
+3) Recargos: porcentaje/monto, periodicidad, días de gracia y límite. Hasta
+   acordarlo, solo ajustes manuales autorizados; no recargos automáticos.
+4) Cuotas: meses cobrables, cargos de verano, fechas y reglas de actualización.
+5) Pagos: si un solo comprobante puede cubrir hijos de distintos planteles.
+   El modelo lo admite dentro de la institución con permisos adecuados.
+6) Cajas: necesidad de apertura/cierre por cajero y arqueo. Si se requiere,
+   añadir SesionCaja y ArqueoCaja; la cuenta CAJA por sí sola no los sustituye.
+7) Saldo negativo: permitir o bloquear egresos según política de cada cuenta.
+8) Documentación de alumnos: confirmar qué documentos y datos adicionales se
+   requieren antes de crear expediente documental o ficha médica.
+9) Proveedores, compras, nómina y facturación: definir si se necesitan módulos
+   completos; hoy solo se registra el movimiento financiero correspondiente.
+10) Datos de tutores: confirmar canal de activación y si se permite alta sin
+    correo. Evitar crear usuarios duplicados cuando ya existe el tutor.
+
+15. ORDEN SUGERIDO DE IMPLEMENTACIÓN
+==================================
+1) Institución, planteles, niveles, grados, ciclos y periodos académicos.
+2) Usuarios, roles, permisos, invitaciones, alumnos, tutores e inscripciones.
+3) Conceptos, cuotas individuales, becas y cargos con sus ajustes.
+4) Cuentas, pagos, archivos, validación, aplicaciones, devoluciones y traspasos.
+5) Eventos, portal del tutor y reportes; después avisos y notificaciones.
+
+Organización por módulo: controller, dto/request, dto/response, entity,
+repository, service, service/impl y mapper. Validaciones de entrada en DTO;
+reglas y transacciones en servicios; restricciones de integridad en base de
+datos. Excepciones centralizadas y DTO específicos para no exponer entidades
+ni campos privados directamente a Thymeleaf. Este documento no genera código.
+
+FIN DEL DOCUMENTO

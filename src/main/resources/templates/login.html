@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b1930"><title>Acceso · Nexo Escolar</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/login.css"><script src="/js/theme.js"></script>
+</head>
+<body>
+<button class="theme-toggle" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button>
+<main class="login-shell">
+    <section class="login-story">
+        <div class="story-brand"><span>N</span><strong>Nexo Escolar</strong></div>
+        <div class="orbit" aria-hidden="true"><i></i><i></i><i></i><strong>NE</strong></div>
+        <div><p class="eyebrow">Control conectado</p><h1>Todo tu ecosistema escolar, en un mismo lugar.</h1><p class="story-copy">Organiza planteles, ciclos y operación académica con información confiable y trazable.</p></div>
+        <div class="signal"><span></span>Conexión segura</div>
+    </section>
+    <section class="login-panel">
+        <div class="mobile-brand"><span>N</span><strong>Nexo Escolar</strong></div>
+        <div class="form-heading"><p>Bienvenido</p><h2>Inicia sesión</h2><span>Usa las credenciales asignadas por administración.</span></div>
+        <div class="alert error" th:if="${param.error}">El usuario o la contraseña no son correctos.</div>
+        <div class="alert success" th:if="${param.logout}">Tu sesión se cerró correctamente.</div>
+        <form method="post" th:action="@{/login}">
+            <label><span>Usuario</span><input name="username" autocomplete="username" required autofocus placeholder="tu.usuario"></label>
+            <label><span>Contraseña</span><input type="password" name="password" autocomplete="current-password" required placeholder="••••••••••••"></label>
+            <div class="form-meta"><span>Acceso protegido con Spring Security</span></div>
+            <button type="submit">Entrar al sistema <span>→</span></button>
+        </form>
+        <p class="support">¿Problemas para ingresar? Contacta al administrador de tu institución.</p>
+    </section>
+</main>
+</body>
+</html>
