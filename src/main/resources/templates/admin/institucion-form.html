@@ -8,6 +8,7 @@
     <div class="form-intro"><span th:text="${edicion ? 'Actualización' : 'Nuevo registro'}">Nuevo registro</span><h1 th:text="${edicion ? 'Editar institución' : 'Crear institución'}">Crear institución</h1><p>Los campos marcados con * son obligatorios. La información fiscal y de contacto puede completarse después.</p></div>
     <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/instituciones/' + id : '/admin/instituciones'}">
       <input type="hidden" th:field="*{version}">
+      <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div>
       <div class="form-grid">
         <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="INSTITUCION-01"><small th:errors="*{codigo}"></small></label>
         <label class="wide"><span>Nombre oficial *</span><input th:field="*{nombre}" maxlength="200" placeholder="Nombre de la institución"><small th:errors="*{nombre}"></small></label>

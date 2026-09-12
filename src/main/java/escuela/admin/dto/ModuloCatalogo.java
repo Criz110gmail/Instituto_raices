@@ -28,7 +28,8 @@ public enum ModuloCatalogo {
     public List<String> columnas() { return columnas; }
 
     public boolean mantenimientoDisponible() {
-        return this == INSTITUCIONES || this == PLANTELES || this == NIVELES || this == OFERTA;
+        return this == INSTITUCIONES || this == PLANTELES || this == NIVELES
+                || this == OFERTA || this == GRADOS;
     }
 
     public String rutaMantenimiento() {
@@ -37,12 +38,13 @@ public enum ModuloCatalogo {
             case PLANTELES -> "/admin/planteles";
             case NIVELES -> "/admin/niveles";
             case OFERTA -> "/admin/oferta";
+            case GRADOS -> "/admin/grados";
             default -> "";
         };
     }
 
     public String segmentoNuevo() {
-        return this == PLANTELES || this == NIVELES ? "/nuevo" : "/nueva";
+        return this == PLANTELES || this == NIVELES || this == GRADOS ? "/nuevo" : "/nueva";
     }
 
     public static ModuloCatalogo desde(String slug) {

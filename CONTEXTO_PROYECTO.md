@@ -131,3 +131,44 @@
 - PostgreSQL y la aplicación reiniciaron usando exclusivamente las variables de `.env`.
 - Salud `UP`; formularios de planteles, niveles y oferta respondieron HTTP 200.
 - La exportación filtrada de oferta educativa respondió HTTP 200 con un XLSX válido.
+
+## Decisiones — mantenimiento de grados
+
+- Se completó el mantenimiento de Grado con alta, edición y desactivación lógica.
+- El formulario selecciona primero la institución y filtra los niveles educativos que
+  le pertenecen, pero el dominio conserva únicamente la relación Grado-NivelEducativo.
+- En edición, la institución y el nivel propietario se muestran bloqueados para evitar
+  la reasignación de relaciones históricas.
+- El controlador comprueba en servidor que el nivel seleccionado pertenezca a la
+  institución indicada, además de delegar las reglas de unicidad y actividad al servicio.
+- El listado de grados habilitó las acciones **Nuevo registro** y **Editar** sin modificar
+  su paginación, filtros o exportación existentes.
+
+## Verificación del mantenimiento de grados
+
+- Compilación Docker correcta de 91 archivos Java de producción.
+- 11 pruebas ejecutadas sin fallos ni errores, incluidas 4 del controlador de grados.
+- PostgreSQL quedó saludable y `/actuator/health` respondió `UP`.
+- El formulario autenticado de grado respondió HTTP 200 y renderizó correctamente.
+- La exportación filtrada de grados respondió HTTP 200 con firma XLSX válida.
+
+## Decisiones — errores integrados en formularios
+
+- Los cinco mantenimientos disponibles capturan errores esperables al crear, actualizar
+  y desactivar: reglas de negocio, concurrencia optimista e integridad de base de datos.
+- El mismo formulario se vuelve a renderizar con los valores capturados y un mensaje
+  accesible, responsivo y compatible con los temas claro y oscuro.
+- Los mensajes específicos del dominio se conservan. Las restricciones SQL se traducen
+  según su categoría sin mostrar consultas, nombres internos ni detalles de PostgreSQL.
+- Los recursos inexistentes y errores inesperados continúan en el manejador global para
+  no ocultar fallos de programación o navegación inválida.
+- Este comportamiento es obligatorio para los mantenimientos futuros de ciclos,
+  periodos académicos y grupos.
+
+## Verificación del manejo de errores
+
+- Compilación Docker correcta de 92 archivos Java de producción.
+- 16 pruebas ejecutadas sin fallos ni errores.
+- Se verificó que un duplicado mantiene el mismo formulario y los datos introducidos.
+- Se probaron las traducciones seguras de unicidad SQL y concurrencia optimista.
+- PostgreSQL permaneció saludable y `/actuator/health` respondió `UP`.

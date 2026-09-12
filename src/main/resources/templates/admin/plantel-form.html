@@ -7,7 +7,7 @@
   <section class="form-card">
     <div class="form-intro"><span th:text="${edicion ? 'Actualización' : 'Nuevo registro'}">Nuevo registro</span><h1 th:text="${edicion ? 'Editar plantel' : 'Crear plantel'}">Crear plantel</h1><p>Registra la sede, sus datos de contacto y ubicación. Los campos marcados con * son obligatorios.</p></div>
     <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/planteles/' + id : '/admin/planteles'}">
-      <input type="hidden" th:field="*{version}"><div class="form-grid">
+      <input type="hidden" th:field="*{version}"><div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div><div class="form-grid">
         <label class="wide"><span>Institución *</span><select th:field="*{institucionId}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><small th:errors="*{institucionId}"></small></label>
         <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="CAMPUS-CENTRO"><small th:errors="*{codigo}"></small></label>
         <label><span>Nombre *</span><input th:field="*{nombre}" maxlength="200" placeholder="Plantel Centro"><small th:errors="*{nombre}"></small></label>

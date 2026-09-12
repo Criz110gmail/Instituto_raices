@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+<title th:text="${edicion ? 'Editar grado' : 'Nuevo grado'} + ' · Nexo Escolar'">Grado</title>
+<link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script></head><body class="form-page">
+<main class="form-shell narrow-form"><header class="form-top"><a href="/admin/catalogos/grados">← Volver al directorio</a><button class="theme-button" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button></header>
+  <section class="form-card"><div class="form-intro"><span th:text="${edicion ? 'Actualización' : 'Nuevo registro'}">Nuevo registro</span><h1 th:text="${edicion ? 'Editar grado' : 'Crear grado'}">Crear grado</h1><p>Ordena los grados dentro de cada nivel para construir el recorrido académico.</p></div>
+    <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/grados/' + id : '/admin/grados'}"><input type="hidden" th:field="*{version}"><div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div><div class="form-grid">
+      <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" id="institucion" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
+      <label class="wide"><span>Nivel educativo *</span><select th:field="*{nivelEducativoId}" id="nivel" th:disabled="${edicion}"><option value="">Selecciona un nivel</option><option th:each="item : ${niveles}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-institucion=${item.institucionId}">Nivel educativo</option></select><input th:if="${edicion}" type="hidden" th:field="*{nivelEducativoId}"><small th:errors="*{nivelEducativoId}"></small></label>
+      <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="1PRIM"><small th:errors="*{codigo}"></small></label><label><span>Orden *</span><input type="number" min="1" th:field="*{orden}"><small th:errors="*{orden}"></small></label>
+      <label class="wide"><span>Nombre *</span><input th:field="*{nombre}" maxlength="150" placeholder="Primer grado"><small th:errors="*{nombre}"></small></label><label class="switch-row"><input type="checkbox" th:field="*{activo}"><span>Grado activo</span></label>
+    </div><footer class="form-actions"><a href="/admin/catalogos/grados">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear grado'}">Guardar</button></footer></form>
+    <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/grados/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este grado?');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar grado</strong><p>El registro y su historial se conservarán.</p></div><button type="submit">Desactivar</button></form>
+  </section>
+</main>
+<script>
+(() => {
+  const institucion = document.querySelector('#institucion');
+  const nivel = document.querySelector('#nivel');
+  if (!institucion || !nivel || institucion.disabled) return;
+  const opciones = [...nivel.options].slice(1);
+  const filtrar = () => {
+    const seleccion = institucion.value;
+    opciones.forEach(opcion => { opcion.hidden = !seleccion || opcion.dataset.institucion !== seleccion; });
+    const elegida = nivel.selectedOptions[0];
+    if (elegida && elegida.value && elegida.hidden) nivel.value = '';
+  };
+  institucion.addEventListener('change', filtrar);
+  filtrar();
+})();
+</script>
+</body></html>

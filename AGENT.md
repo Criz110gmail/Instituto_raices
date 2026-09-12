@@ -89,9 +89,12 @@ Reglas importantes ya aplicadas:
 - Los ocho módulos exportan Excel con Apache POI. La exportación reutiliza el mismo
   `FiltroCatalogo` que la pantalla y recorre los datos filtrados por bloques.
 - Mantenimiento completo —alta, edición y desactivación lógica— para:
-  `Institucion`, `Plantel`, `NivelEducativo` y `PlantelNivel`.
+  `Institucion`, `Plantel`, `NivelEducativo`, `PlantelNivel` y `Grado`.
 - Los formularios incluyen Bean Validation, CSRF, mensajes de resultado y versión
   optimista, manteniendo los temas y el diseño responsivo.
+- Los errores esperables al crear, actualizar o desactivar se muestran en el mismo
+  formulario sin perder la captura: reglas de negocio, concurrencia y restricciones de
+  integridad. Nunca se presentan SQL ni detalles internos de PostgreSQL al usuario.
 
 Archivos clave de la interfaz:
 
@@ -111,6 +114,7 @@ Los controladores y formularios de mantenimiento ya terminados sirven como patr�
 - `PlantelAdminController` + `PlantelForm` + `plantel-form.html`
 - `NivelEducativoAdminController` + `NivelEducativoForm` + `nivel-form.html`
 - `PlantelNivelAdminController` + `PlantelNivelForm` + `oferta-form.html`
+- `GradoAdminController` + `GradoForm` + `grado-form.html`
 
 ## Requisitos no negociables para módulos nuevos
 
@@ -127,6 +131,7 @@ Todo módulo que se construya debe incluir desde su primera entrega:
 8. Bean Validation, CSRF, reglas de negocio, auditoría y control optimista de versión.
 9. Desactivación lógica cuando el dominio la permita; no borrado físico.
 10. Pruebas proporcionales al riesgo y verificación real en Docker antes de entregar.
+11. Errores de negocio, concurrencia e integridad mostrados dentro del mismo formulario.
 
 ## Seguridad y variables de entorno
 
@@ -164,26 +169,25 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 
 ## Verificación confirmada
 
-- Compilación correcta de 89 archivos Java de producción.
-- 7 pruebas Maven sin fallos ni errores.
+- Compilación correcta de 92 archivos Java de producción.
+- 16 pruebas Maven sin fallos ni errores.
 - Flyway V1 validado y aplicado correctamente.
 - Hibernate validó el esquema y detectó los ocho repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
-- Los formularios autenticados de instituciones, planteles, niveles y oferta educativa
-  respondieron HTTP 200.
+- Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
+  grados respondieron HTTP 200.
 - La exportación filtrada generó un libro XLSX válido con HTTP 200.
-- La última instancia local verificada quedó en `http://localhost:18080`.
+- La última instancia local verificada quedó en `http://localhost:8080`.
 
 ## Siguiente paso acordado
 
-Continuar los formularios de mantenimiento de los cuatro catálogos restantes, respetando
+Continuar los formularios de mantenimiento de los tres catálogos restantes, respetando
 dependencias y reutilizando el patrón existente, en este orden:
 
-1. `Grado`: alta, edición y desactivación; seleccionar institución/nivel según el modelo.
-2. `CicloEscolar`: alta, edición, estados y selección de ciclo predeterminado.
-3. `PeriodoAcademico`: alta y edición validando fechas, ciclo, nivel, tipo y solapamientos.
-4. `Grupo`: alta y edición validando oferta activa, grado, ciclo, turno y capacidad.
+1. `CicloEscolar`: alta, edición, estados y selección de ciclo predeterminado.
+2. `PeriodoAcademico`: alta y edición validando fechas, ciclo, nivel, tipo y solapamientos.
+3. `Grupo`: alta y edición validando oferta activa, grado, ciclo, turno y capacidad.
 
 Para cada catálogo:
 
@@ -198,11 +202,11 @@ Para cada catálogo:
 - Cargar selectores mediante servicios, no accediendo a repositorios desde el
   controlador.
 - Conservar relaciones propietarias en edición y presentar errores de negocio de forma
-  comprensible.
+  comprensible dentro del mismo formulario, conservando los valores capturados.
 - Compilar con `docker compose up --build -d`, confirmar las pruebas, salud, renderizado
   autenticado y exportación filtrada.
 
-Después de esos cuatro mantenimientos, detenerse para revisar con el usuario si la
+Después de esos tres mantenimientos, detenerse para revisar con el usuario si la
 primera etapa queda cerrada o si se inicia el módulo definitivo de usuarios, roles y
 permisos.
 

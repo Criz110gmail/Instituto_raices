@@ -1,11 +1,15 @@
 package escuela.admin.controller;
 
 import escuela.admin.dto.PlantelForm;
+import escuela.admin.support.MensajeErrorFormulario;
+import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.service.InstitucionService;
 import escuela.institucion.service.PlantelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +40,13 @@ public class PlantelAdminController {
             preparar(model, form, null);
             return "admin/plantel-form";
         }
-        service.crear(form.request());
+        try {
+            service.crear(form.request());
+        } catch (ReglaNegocioException | DataIntegrityViolationException |
+                 ObjectOptimisticLockingFailureException excepcion) {
+            prepararError(model, form, null, excepcion);
+            return "admin/plantel-form";
+        }
         flash.addFlashAttribute("mensaje", "Plantel creado correctamente");
         return "redirect:/admin/catalogos/planteles";
     }
@@ -54,15 +64,27 @@ public class PlantelAdminController {
             preparar(model, form, id);
             return "admin/plantel-form";
         }
-        service.actualizar(id, form.request());
+        try {
+            service.actualizar(id, form.request());
+        } catch (ReglaNegocioException | DataIntegrityViolationException |
+                 ObjectOptimisticLockingFailureException excepcion) {
+            prepararError(model, form, id, excepcion);
+            return "admin/plantel-form";
+        }
         flash.addFlashAttribute("mensaje", "Plantel actualizado correctamente");
         return "redirect:/admin/catalogos/planteles";
     }
 
     @PostMapping("/{id}/desactivar")
     String desactivar(@PathVariable Long id, @RequestParam Long version,
-                      RedirectAttributes flash) {
-        service.desactivar(id, version);
+                      Model model, RedirectAttributes flash) {
+        try {
+            service.desactivar(id, version);
+        } catch (ReglaNegocioException | DataIntegrityViolationException |
+                 ObjectOptimisticLockingFailureException excepcion) {
+            prepararError(model, PlantelForm.desde(service.obtener(id)), id, excepcion);
+            return "admin/plantel-form";
+        }
         flash.addFlashAttribute("mensaje", "Plantel desactivado correctamente");
         return "redirect:/admin/catalogos/planteles";
     }
@@ -72,5 +94,10 @@ public class PlantelAdminController {
         model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
         model.addAttribute("instituciones", institucionService.listar());
+    }
+
+    private void prepararError(Model model, PlantelForm form, Long id, RuntimeException excepcion) {
+        preparar(model, form, id);
+        model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
     }
 }

@@ -1,10 +1,14 @@
 package escuela.admin.controller;
 
 import escuela.admin.dto.InstitucionForm;
+import escuela.admin.support.MensajeErrorFormulario;
+import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.service.InstitucionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +30,13 @@ public class InstitucionAdminController {
     String crear(@Valid @ModelAttribute("form") InstitucionForm form, BindingResult errores,
                  Model model, RedirectAttributes flash) {
         if (errores.hasErrors()) { preparar(model, form, null); return "admin/institucion-form"; }
-        service.crear(form.request());
+        try {
+            service.crear(form.request());
+        } catch (ReglaNegocioException | DataIntegrityViolationException |
+                 ObjectOptimisticLockingFailureException excepcion) {
+            prepararError(model, form, null, excepcion);
+            return "admin/institucion-form";
+        }
         flash.addFlashAttribute("mensaje", "Institución creada correctamente");
         return "redirect:/admin/catalogos/instituciones";
     }
@@ -41,14 +51,27 @@ public class InstitucionAdminController {
     String actualizar(@PathVariable Long id, @Valid @ModelAttribute("form") InstitucionForm form,
                       BindingResult errores, Model model, RedirectAttributes flash) {
         if (errores.hasErrors()) { preparar(model, form, id); return "admin/institucion-form"; }
-        service.actualizar(id, form.request());
+        try {
+            service.actualizar(id, form.request());
+        } catch (ReglaNegocioException | DataIntegrityViolationException |
+                 ObjectOptimisticLockingFailureException excepcion) {
+            prepararError(model, form, id, excepcion);
+            return "admin/institucion-form";
+        }
         flash.addFlashAttribute("mensaje", "Cambios guardados correctamente");
         return "redirect:/admin/catalogos/instituciones";
     }
 
     @PostMapping("/{id}/desactivar")
-    String desactivar(@PathVariable Long id, @RequestParam Long version, RedirectAttributes flash) {
-        service.desactivar(id, version);
+    String desactivar(@PathVariable Long id, @RequestParam Long version,
+                      Model model, RedirectAttributes flash) {
+        try {
+            service.desactivar(id, version);
+        } catch (ReglaNegocioException | DataIntegrityViolationException |
+                 ObjectOptimisticLockingFailureException excepcion) {
+            prepararError(model, InstitucionForm.desde(service.obtener(id)), id, excepcion);
+            return "admin/institucion-form";
+        }
         flash.addFlashAttribute("mensaje", "Institución desactivada correctamente");
         return "redirect:/admin/catalogos/instituciones";
     }
@@ -56,5 +79,10 @@ public class InstitucionAdminController {
     private void preparar(Model model, InstitucionForm form, Long id) {
         model.addAttribute("form", form); model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
+    }
+
+    private void prepararError(Model model, InstitucionForm form, Long id, RuntimeException excepcion) {
+        preparar(model, form, id);
+        model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
     }
 }

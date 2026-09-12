@@ -52,5 +52,7 @@ Mientras se desarrolla el módulo definitivo de usuarios, configura
 `ADMIN_BOOTSTRAP_USERNAME` y `ADMIN_BOOTSTRAP_PASSWORD` en `.env` para acceder.
 
 La consola y el login incluyen temas claro y oscuro con preferencia persistente en el
-dispositivo. Instituciones, planteles, niveles y oferta educativa ya permiten crear,
-editar y desactivar registros.
+dispositivo. Instituciones, planteles, niveles, oferta educativa y grados ya permiten
+crear, editar y desactivar registros. Los errores de validación, reglas de negocio,
+concurrencia y restricciones de integridad se muestran dentro del mismo formulario sin
+perder los valores capturados ni exponer detalles técnicos de PostgreSQL.
