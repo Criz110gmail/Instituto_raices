@@ -20,6 +20,11 @@
         <div class="copy-row"><input id="invitation-link" readonly th:value="${invitacionEnlace}"><button type="button" data-copy-invitation>Copiar enlace</button></div>
         <small th:text="${'Vence: ' + #temporals.format(invitacionExpira, 'dd/MM/yyyy HH:mm')}">Vencimiento</small>
     </section>
+    <section class="invitation-result" th:if="${recuperacionEnlace}">
+        <div><span>Recuperación de contraseña</span><strong>Copia este enlace ahora</strong><p>Vence en 30 minutos, sólo funciona una vez y otro enlace revocará éste.</p></div>
+        <div class="copy-row"><input id="recovery-link" readonly th:value="${recuperacionEnlace}"><button type="button" data-copy-recovery>Copiar enlace</button></div>
+        <small th:text="${'Vence: ' + #temporals.format(recuperacionExpira, 'dd/MM/yyyy HH:mm')}">Vencimiento</small>
+    </section>
 
     <section class="form-card">
         <div class="form-intro">
@@ -48,6 +53,7 @@
             <div class="section-heading"><div><span>Estado y activación</span><h2>Control de cuenta</h2></div><p>Las invitaciones vencen en 48 horas y el enlace sólo se muestra al generarlo.</p></div>
             <div class="account-buttons">
                 <form th:if="${usuario.estado.name() == 'INVITADO'}" method="post" th:action="@{/admin/usuarios/{id}/invitacion(id=${id})}"><button class="primary-action" type="submit">Generar invitación</button></form>
+                <form th:if="${usuario.estado.name() == 'ACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/recuperacion-password(id=${id})}"><button class="primary-action" type="submit">Generar recuperación</button></form>
                 <form th:if="${usuario.estado.name() == 'ACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" value="BLOQUEADO"><button type="submit">Bloquear acceso</button></form>
                 <form th:if="${usuario.estado.name() == 'BLOQUEADO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" value="ACTIVO"><button class="primary-action" type="submit">Desbloquear</button></form>
                 <form th:if="${usuario.estado.name() == 'INACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" th:value="${usuario.credencialConfigurada ? 'ACTIVO' : 'INVITADO'}"><button class="primary-action" type="submit">Reactivar cuenta</button></form>
@@ -101,6 +107,12 @@
         const input = document.querySelector('#invitation-link');
         try { await navigator.clipboard.writeText(input.value); copy.textContent = 'Copiado'; }
         catch { input.select(); document.execCommand('copy'); copy.textContent = 'Copiado'; }
+    });
+    const recoveryCopy = document.querySelector('[data-copy-recovery]');
+    if (recoveryCopy) recoveryCopy.addEventListener('click', async () => {
+        const input = document.querySelector('#recovery-link');
+        try { await navigator.clipboard.writeText(input.value); recoveryCopy.textContent = 'Copiado'; }
+        catch { input.select(); document.execCommand('copy'); recoveryCopy.textContent = 'Copiado'; }
     });
 })();
 </script>

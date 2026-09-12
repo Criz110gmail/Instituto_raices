@@ -407,3 +407,33 @@
 - La aplicación inició correctamente con PostgreSQL saludable, Flyway V3 vigente y el
   proveedor `usuarioSistemaDetailsService` activo.
 - No se provocaron fallos deliberados sobre `criz110` ni se alteraron sus credenciales.
+
+## Decisiones — recuperación segura de contraseña
+
+- Flyway V4 agrega `RecuperacionPassword` como flujo independiente de
+  `InvitacionUsuario`; no cambia una cuenta activa al estado `INVITADO`.
+- Desde la edición de un usuario activo, la administración genera un enlace de 30
+  minutos que se muestra una sola vez. Emitir otro revoca cualquier enlace pendiente.
+- El token aleatorio tiene 256 bits y la base conserva exclusivamente su SHA-256. La
+  contraseña nueva se guarda con BCrypt y el token queda consumido en la misma
+  transacción.
+- Completar la recuperación limpia intentos fallidos y bloqueos automáticos temporales.
+  Un bloqueo administrativo permanente nunca puede retirarse mediante el enlace.
+- La pantalla pública `/restablecer-password` valida longitud y confirmación, conserva
+  los errores dentro del formulario y funciona con los temas claro y oscuro.
+- La entrega actual es administrada: el proyecto no tiene SMTP configurado y no se
+  presupone que los correos capturados sean reales. No se envían contraseñas en texto
+  plano.
+
+## Verificación de recuperación de contraseña
+
+- Compilación Docker correcta de 154 archivos Java de producción.
+- 74 pruebas ejecutadas sin fallos ni errores; las nuevas cubren hash del token,
+  revocación, consumo único, BCrypt, bloqueo temporal, bloqueo administrativo,
+  validación del formulario y construcción del enlace administrativo.
+- Flyway validó cuatro migraciones y aplicó V4 sobre el volumen existente sin eliminar
+  datos. Hibernate validó el esquema y detectó 15 repositorios.
+- La aplicación quedó `UP` en `http://localhost:8080` y la pantalla pública de
+  restablecimiento respondió HTTP 200.
+- No se generó un token real ni se modificaron credenciales de `criz110` durante las
+  pruebas del despliegue.

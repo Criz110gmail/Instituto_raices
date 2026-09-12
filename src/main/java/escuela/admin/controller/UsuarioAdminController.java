@@ -7,11 +7,13 @@ import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.service.InstitucionService;
 import escuela.institucion.service.PlantelService;
 import escuela.seguridad.dto.response.InvitacionEmitidaResponse;
+import escuela.seguridad.dto.response.RecuperacionPasswordEmitidaResponse;
 import escuela.seguridad.dto.response.UsuarioResponse;
 import escuela.seguridad.entity.AlcanceRol;
 import escuela.seguridad.entity.EstadoUsuario;
 import escuela.seguridad.service.AdministracionAccesoService;
 import escuela.seguridad.service.InvitacionUsuarioService;
+import escuela.seguridad.service.RecuperacionPasswordService;
 import escuela.seguridad.service.RolService;
 import escuela.seguridad.service.UsuarioService;
 import escuela.seguridad.service.AlcanceDatosService;
@@ -43,6 +45,7 @@ public class UsuarioAdminController {
     private final RolService rolService;
     private final AdministracionAccesoService accesoService;
     private final InvitacionUsuarioService invitacionService;
+    private final RecuperacionPasswordService recuperacionPasswordService;
     private final InstitucionService institucionService;
     private final PlantelService plantelService;
     private final AlcanceDatosService alcance;
@@ -178,6 +181,29 @@ public class UsuarioAdminController {
             flash.addFlashAttribute("invitacionEnlace", enlace);
             flash.addFlashAttribute("invitacionExpira", invitacion.expiraEn());
             flash.addFlashAttribute("mensaje", "Invitación generada. Copia el enlace antes de salir de la pantalla");
+            return "redirect:/admin/usuarios/" + id + "/editar";
+        } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
+            UsuarioResponse usuario = service.obtener(id);
+            prepararEdicion(model, UsuarioForm.desde(usuario), usuario, new AsignacionRolForm());
+            model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
+            return "admin/usuario-form";
+        }
+    }
+
+    @PostMapping("/{id}/recuperacion-password")
+    String emitirRecuperacionPassword(@PathVariable Long id, Model model,
+                                      RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.USUARIOS, id);
+        alcance.validarAdministracionInstitucional(service.obtener(id).institucionId());
+        try {
+            RecuperacionPasswordEmitidaResponse recuperacion =
+                    recuperacionPasswordService.emitir(id, Duration.ofMinutes(30));
+            String enlace = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/restablecer-password").queryParam("token", recuperacion.token())
+                    .build().toUriString();
+            flash.addFlashAttribute("recuperacionEnlace", enlace);
+            flash.addFlashAttribute("recuperacionExpira", recuperacion.expiraEn());
+            flash.addFlashAttribute("mensaje", "Enlace de recuperación generado. Cópialo antes de salir de la pantalla");
             return "redirect:/admin/usuarios/" + id + "/editar";
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
             UsuarioResponse usuario = service.obtener(id);

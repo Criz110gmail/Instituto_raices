@@ -26,10 +26,10 @@ Se requiere Java 21, Maven y PostgreSQL. Configura `DB_URL`, `DB_USERNAME` y
 mvn spring-boot:run
 ```
 
-La portada, el login, la activación de cuenta y el endpoint de salud son públicos. Las
-demás rutas autentican usuarios activos de PostgreSQL y comprueban los permisos de sus
-roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME` y `ADMIN_BOOTSTRAP_PASSWORD` de
-`.env` se conservan como acceso temporal de recuperación.
+La portada, el login, la activación, el restablecimiento de contraseña y el endpoint de
+salud son públicos. Las demás rutas autentican usuarios activos de PostgreSQL y
+comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME` y
+`ADMIN_BOOTSTRAP_PASSWORD` de `.env` se conservan como acceso temporal de recuperación.
 
 ## Estructura inicial
 
@@ -98,3 +98,10 @@ administrar estados y asignar roles con alcance institucional, por plantel o por
 vínculos de tutor. La invitación genera un enlace de 48 horas que se muestra una sola
 vez; la pantalla pública permite establecer una contraseña protegida sin exponer el
 token ni la contraseña en la base de datos.
+
+Para usuarios activos, la administración también puede generar un enlace independiente
+de recuperación que vence en 30 minutos. El token sólo se guarda como SHA-256, se
+consume una vez y la contraseña nueva se codifica con BCrypt. Este flujo limpia bloqueos
+temporales pero respeta los bloqueos administrativos permanentes. Mientras no se
+configure un servidor SMTP y correos reales, el enlace se entrega manualmente por un
+canal verificado.

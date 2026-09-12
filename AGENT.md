@@ -20,8 +20,8 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `677edc5` — `auditoría con
-  el usuario real`.
+- Último commit confirmado antes de estos cambios locales: `d3b9f2f` — `control de
+  accesos y bloqueos de seguridad`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
@@ -223,13 +223,20 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
   un acceso correcto reactiva la cuenta; un bloqueo administrativo sin fecha no vence.
 - Usuarios desconocidos, ambiguos, invitados, inactivos y el acceso de recuperación no
   acumulan intentos. La pantalla conserva un mensaje de error uniforme.
+- La migración V4 crea `RecuperacionPassword`, separada de las invitaciones. Un
+  administrador puede generar para un usuario activo un enlace de 30 minutos que se
+  muestra una sola vez; otro enlace revoca el anterior y la base sólo conserva SHA-256.
+- `/restablecer-password` permite fijar una nueva contraseña BCrypt, consume el token,
+  limpia intentos y bloqueos temporales, pero nunca retira un bloqueo administrativo.
+- Todavía no existe entrega por correo: no hay SMTP configurado y los correos actuales
+  pueden no ser reales. El administrador entrega el enlace por un canal verificado.
 
 ## Verificación confirmada
 
-- Compilación correcta de 146 archivos Java de producción.
-- 65 pruebas Maven sin fallos ni errores.
-- Flyway V1, V2 y V3 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 14 repositorios.
+- Compilación correcta de 154 archivos Java de producción.
+- 74 pruebas Maven sin fallos ni errores.
+- Flyway V1, V2, V3 y V4 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 15 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -239,10 +246,11 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 
 ## Siguiente paso acordado
 
-Implementar recuperación de contraseña para usuarios activos mediante tokens separados,
-de un solo uso y con vencimiento, sin reutilizar el estado `INVITADO` ni enviar una
-contraseña en texto plano. Mantener por ahora el usuario de recuperación. No ampliar
-todavía alumnos, tutores, cobros o tesorería.
+Iniciar el módulo `Alumno` como siguiente bloque del dominio: migración aditiva,
+entidad, repositorio, DTO, mapper y servicio con aislamiento por institución. Después
+completar su módulo administrativo con filtros PostgreSQL, paginación, Excel, alta,
+edición y desactivación lógica. Mantener el usuario temporal de recuperación y no
+iniciar todavía cobros ni tesorería.
 
 ## Disciplina de cambios y entrega
 
