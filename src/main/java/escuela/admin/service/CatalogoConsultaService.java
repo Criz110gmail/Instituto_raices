@@ -2,6 +2,8 @@ package escuela.admin.service;
 
 import escuela.academico.entity.*;
 import escuela.academico.repository.*;
+import escuela.alumno.entity.Alumno;
+import escuela.alumno.repository.AlumnoRepository;
 import escuela.admin.dto.*;
 import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
@@ -38,6 +40,7 @@ public class CatalogoConsultaService {
     private final CicloEscolarRepository cicloRepository;
     private final PeriodoAcademicoRepository periodoRepository;
     private final GrupoRepository grupoRepository;
+    private final AlumnoRepository alumnoRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcanceDatosService;
@@ -62,6 +65,11 @@ public class CatalogoConsultaService {
                     e -> filaEstado(e.getId(), e.getEstado().name(), e.getCodigo(), e.getNombre(), e.getNivelEducativo().getNombre(), e.getTipo().name(), FECHA.format(e.getFechaInicio()) + " — " + FECHA.format(e.getFechaFin())));
             case GRUPOS -> consultar(modulo, grupoRepository, texto(f, "nombre", "codigo", "aula"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getNombre(), valor(e.getCodigo()), e.getPlantel().getNombre(), e.getGrado().getNombre(), e.getTurno().name(), e.getCapacidad() == null ? "Sin límite" : e.getCapacidad().toString()));
+            case ALUMNOS -> consultar(modulo, alumnoRepository,
+                    texto(f, "matricula", "nombres", "primerApellido", "segundoApellido", "curp", "email"),
+                    activo(f), pagina, e -> fila(e.getId(), e.isActivo(), e.getMatricula(),
+                            nombreAlumno(e), valor(e.getCurp()), FECHA.format(e.getFechaNacimiento()),
+                            FECHA.format(e.getFechaIngreso())));
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
             case USUARIOS -> consultar(modulo, usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,
@@ -136,4 +144,11 @@ public class CatalogoConsultaService {
     }
 
     private String valor(String valor) { return valor == null || valor.isBlank() ? "—" : valor; }
+
+    private String nombreAlumno(Alumno alumno) {
+        return java.util.stream.Stream.of(alumno.getNombres(), alumno.getPrimerApellido(),
+                        alumno.getSegundoApellido())
+                .filter(valor -> valor != null && !valor.isBlank())
+                .collect(java.util.stream.Collectors.joining(" "));
+    }
 }

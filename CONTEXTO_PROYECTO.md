@@ -437,3 +437,41 @@
   restablecimiento respondió HTTP 200.
 - No se generó un token real ni se modificaron credenciales de `criz110` durante las
   pruebas del despliegue.
+
+## Decisiones — módulo de alumnos
+
+- Flyway V5 agrega `Alumno` y los permisos técnicos `ALUMNO_LEER` y
+  `ALUMNO_ADMINISTRAR` de forma aditiva, sin editar migraciones anteriores.
+- El expediente pertenece a una institución y conserva identidad, matrícula, CURP
+  opcional, nacimiento, ingreso, contacto, domicilio, observaciones y estado activo.
+- Matrícula y CURP normalizadas son únicas por institución. Las fechas no pueden ser
+  futuras y el ingreso no puede preceder al nacimiento.
+- No se duplican plantel, grado o grupo actual; esos datos se derivarán de
+  `Inscripcion` y `AsignacionGrupo` cuando se implementen.
+- El listado filtra matrícula, nombres, apellidos, CURP y correo en PostgreSQL, pagina
+  realmente y exporta los mismos resultados a XLSX por bloques.
+- Alta, edición y desactivación lógica aplican alcance institucional, DTO de formulario,
+  CSRF, auditoría, versión optimista y errores integrados en la misma pantalla.
+- La interfaz agrega la sección Personas y conserva diseño responsivo y temas claro y
+  oscuro. Los roles existentes no reciben permisos nuevos automáticamente.
+
+## Verificación del módulo de alumnos
+
+- Compilación Docker correcta de 163 archivos Java de producción.
+- 85 pruebas ejecutadas sin fallos ni errores; once nuevas cubren normalización,
+  duplicados, fechas, institución inmutable, desactivación, controlador y aislamiento.
+- Flyway validó cinco migraciones y aplicó V5 sobre el volumen existente. Hibernate
+  validó el esquema y detectó 16 repositorios.
+- Listado, formulario y exportación respondieron HTTP 200; el archivo comenzó con firma
+  XLSX válida y la aplicación quedó `UP` en `http://localhost:8080`.
+- No se crearon alumnos de prueba. `criz110` aún debe recibir explícitamente
+  `ALUMNO_LEER` y `ALUMNO_ADMINISTRAR` desde la edición de su rol.
+
+## Decisiones — cierre de sesión visible
+
+- Los listados y todos los formularios administrativos reutilizan un control de sesión
+  común con selector de tema y botón `Cerrar sesión`.
+- El cierre usa exclusivamente `POST /logout` con el token CSRF agregado por Thymeleaf;
+  no depende de navegar manualmente a una ruta GET.
+- Spring invalida la sesión y redirige al inicio. Se comprobó que la cookie anterior ya
+  no puede abrir `/admin` y termina nuevamente en el login.

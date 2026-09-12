@@ -30,6 +30,11 @@
     line-height: 1.5;
 }
 
+.student-shell { max-width: 1040px; }
+.form-section { margin: 0 0 24px; padding: 20px; border: 1px solid var(--line); border-radius: 15px; }
+.form-section legend { padding: 0 8px; color: #148f82; font-size: .76rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+[data-theme=dark] .form-section { border-color: #344a63; }
+
 .role-shell { max-width: 980px; }
 
 .permission-fieldset {

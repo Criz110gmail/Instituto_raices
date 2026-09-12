@@ -3,7 +3,7 @@
 <title th:text="${edicion ? 'Editar plantel' : 'Nuevo plantel'} + ' · Nexo Escolar'">Plantel</title>
 <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script></head><body class="form-page">
 <main class="form-shell">
-  <header class="form-top"><a href="/admin/catalogos/planteles">← Volver al directorio</a><button class="theme-button" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button></header>
+  <header class="form-top"><a href="/admin/catalogos/planteles">← Volver al directorio</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
   <section class="form-card">
     <div class="form-intro"><span th:text="${edicion ? 'Actualización' : 'Nuevo registro'}">Nuevo registro</span><h1 th:text="${edicion ? 'Editar plantel' : 'Crear plantel'}">Crear plantel</h1><p>Registra la sede, sus datos de contacto y ubicación. Los campos marcados con * son obligatorios.</p></div>
     <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/planteles/' + id : '/admin/planteles'}">

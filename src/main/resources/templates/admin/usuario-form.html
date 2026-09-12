@@ -12,7 +12,7 @@
 </head>
 <body class="form-page">
 <main class="form-shell user-shell">
-    <header class="form-top"><a href="/admin/catalogos/usuarios">← Volver a usuarios</a><button class="theme-button" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button></header>
+    <header class="form-top"><a href="/admin/catalogos/usuarios">← Volver a usuarios</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
 
     <div class="flash" th:if="${mensaje}" th:text="${mensaje}">Operación completada</div>
     <section class="invitation-result" th:if="${invitacionEnlace}">

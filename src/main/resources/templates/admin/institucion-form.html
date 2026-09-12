@@ -3,7 +3,7 @@
 <title th:text="${edicion ? 'Editar institución' : 'Nueva institución'} + ' · Nexo Escolar'">Institución</title>
 <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><script src="/js/theme.js"></script></head><body class="form-page">
 <main class="form-shell">
-  <header class="form-top"><a href="/admin/catalogos/instituciones">← Volver al directorio</a><button class="theme-button" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button></header>
+  <header class="form-top"><a href="/admin/catalogos/instituciones">← Volver al directorio</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
   <section class="form-card">
     <div class="form-intro"><span th:text="${edicion ? 'Actualización' : 'Nuevo registro'}">Nuevo registro</span><h1 th:text="${edicion ? 'Editar institución' : 'Crear institución'}">Crear institución</h1><p>Los campos marcados con * son obligatorios. La información fiscal y de contacto puede completarse después.</p></div>
     <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/instituciones/' + id : '/admin/instituciones'}">

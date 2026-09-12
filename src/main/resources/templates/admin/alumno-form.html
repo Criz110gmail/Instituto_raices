@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+    <title th:text="${edicion ? 'Editar alumno' : 'Nuevo alumno'} + ' · Nexo Escolar'">Alumno</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
+</head>
+<body class="form-page">
+<main class="form-shell student-shell">
+    <header class="form-top"><a href="/admin/catalogos/alumnos">← Volver a alumnos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <section class="form-card">
+        <div class="form-intro"><span th:text="${edicion ? 'Expediente personal' : 'Nuevo expediente'}">Nuevo expediente</span><h1 th:text="${edicion ? 'Editar alumno' : 'Registrar alumno'}">Registrar alumno</h1><p>La trayectoria académica se administrará mediante inscripciones; aquí se conserva únicamente la identidad institucional.</p></div>
+        <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/alumnos/' + id : '/admin/alumnos'}">
+            <input type="hidden" th:field="*{version}">
+            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div>
+            <fieldset class="form-section"><legend>Identidad escolar</legend><div class="form-grid">
+                <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
+                <label><span>Matrícula *</span><input th:field="*{matricula}" maxlength="50" autocomplete="off" placeholder="ALU-2026-001"><small th:errors="*{matricula}"></small></label>
+                <label><span>Fecha de ingreso *</span><input type="date" th:field="*{fechaIngreso}"><small th:errors="*{fechaIngreso}"></small></label>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Datos personales</legend><div class="form-grid">
+                <label class="wide"><span>Nombre(s) *</span><input th:field="*{nombres}" maxlength="150" autocomplete="given-name" placeholder="Nombre o nombres"><small th:errors="*{nombres}"></small></label>
+                <label><span>Primer apellido *</span><input th:field="*{primerApellido}" maxlength="100" autocomplete="family-name"><small th:errors="*{primerApellido}"></small></label>
+                <label><span>Segundo apellido</span><input th:field="*{segundoApellido}" maxlength="100"><small th:errors="*{segundoApellido}"></small></label>
+                <label><span>CURP</span><input th:field="*{curp}" minlength="18" maxlength="18" autocapitalize="characters" placeholder="18 caracteres"><small th:errors="*{curp}"></small></label>
+                <label><span>Fecha de nacimiento *</span><input type="date" th:field="*{fechaNacimiento}"><small th:errors="*{fechaNacimiento}"></small></label>
+                <label><span>Sexo</span><input th:field="*{sexo}" maxlength="30" placeholder="Dato administrativo opcional"><small th:errors="*{sexo}"></small></label>
+                <label><span>Nacionalidad</span><input th:field="*{nacionalidad}" maxlength="80" placeholder="Mexicana"><small th:errors="*{nacionalidad}"></small></label>
+                <label class="wide"><span>Lugar de nacimiento</span><input th:field="*{lugarNacimiento}" maxlength="150"><small th:errors="*{lugarNacimiento}"></small></label>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Contacto y domicilio</legend><div class="form-grid">
+                <label><span>Teléfono</span><input type="tel" th:field="*{telefono}" maxlength="30" autocomplete="tel"><small th:errors="*{telefono}"></small></label>
+                <label><span>Correo</span><input type="email" th:field="*{email}" maxlength="254" autocomplete="email"><small th:errors="*{email}"></small></label>
+                <label class="wide"><span>Calle</span><input th:field="*{calle}" maxlength="150" autocomplete="address-line1"><small th:errors="*{calle}"></small></label>
+                <label><span>Número exterior</span><input th:field="*{numeroExterior}" maxlength="30"><small th:errors="*{numeroExterior}"></small></label>
+                <label><span>Número interior</span><input th:field="*{numeroInterior}" maxlength="30"><small th:errors="*{numeroInterior}"></small></label>
+                <label><span>Colonia</span><input th:field="*{colonia}" maxlength="120"><small th:errors="*{colonia}"></small></label>
+                <label><span>Ciudad</span><input th:field="*{ciudad}" maxlength="100" autocomplete="address-level2"><small th:errors="*{ciudad}"></small></label>
+                <label><span>Estado</span><input th:field="*{estado}" maxlength="100" autocomplete="address-level1"><small th:errors="*{estado}"></small></label>
+                <label><span>Código postal</span><input th:field="*{codigoPostal}" maxlength="15" autocomplete="postal-code"><small th:errors="*{codigoPostal}"></small></label>
+                <label><span>País</span><input th:field="*{pais}" maxlength="2" autocapitalize="characters" placeholder="MX"><small th:errors="*{pais}"></small></label>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Notas administrativas</legend><div class="form-grid">
+                <label class="wide"><span>Observaciones</span><textarea th:field="*{observaciones}" maxlength="4000" rows="4" placeholder="Información administrativa pertinente"></textarea><small th:errors="*{observaciones}"></small></label>
+                <label class="switch-row"><input type="checkbox" th:field="*{activo}"><span>Alumno activo</span></label>
+            </div></fieldset>
+            <footer class="form-actions"><a href="/admin/catalogos/alumnos">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Registrar alumno'}">Guardar</button></footer>
+        </form>
+        <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/alumnos/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este alumno? Su expediente e historial se conservarán.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar alumno</strong><p>El expediente se conserva y no se elimina físicamente.</p></div><button type="submit">Desactivar</button></form>
+    </section>
+</main>
+</body>
+</html>

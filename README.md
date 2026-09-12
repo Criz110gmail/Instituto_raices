@@ -36,6 +36,7 @@ comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME
 - `escuela.institucion`: institución, planteles y oferta educativa.
 - `escuela.academico`: niveles, grados, ciclos, periodos y grupos.
 - `escuela.seguridad`: usuarios, roles, permisos, alcances e invitaciones de acceso.
+- `escuela.alumno`: expediente institucional de alumnos.
 - `escuela.config`: seguridad y auditoría JPA.
 - `escuela.common`: excepciones, respuesta de auditoría y utilidades compartidas.
 - Cada módulo contiene DTO, mappers, repositorios y servicios transaccionales.
@@ -46,8 +47,8 @@ reciben entidades JPA directamente.
 
 ## Consola administrativa
 
-La ruta `/admin` contiene los ocho catálogos académicos y los módulos de Roles y
-permisos y Usuarios.
+La ruta `/admin` contiene los ocho catálogos académicos, Alumnos y los módulos de Roles
+y permisos y Usuarios.
 Todos los listados consultan la
 base de datos con filtros y paginación; el botón **Exportar Excel** aplica exactamente
 los mismos filtros y genera el archivo con Apache POI en modo streaming.
@@ -88,6 +89,10 @@ selectores que respetan la oferta educativa. Los errores de validación, reglas 
 concurrencia y restricciones de integridad se muestran dentro del mismo formulario sin
 perder los valores capturados ni exponer detalles técnicos de PostgreSQL.
 
+Todos los listados y formularios administrativos incluyen un botón **Cerrar sesión**.
+El control envía un `POST /logout` protegido con CSRF e invalida la sesión antes de
+regresar al inicio.
+
 Roles y permisos permite crear, editar y desactivar perfiles por institución, además de
 seleccionar sus permisos técnicos. Los cambios de permisos se conservan mediante
 activación o desactivación lógica de la relación y el listado mantiene filtros,
@@ -105,3 +110,9 @@ consume una vez y la contraseña nueva se codifica con BCrypt. Este flujo limpia
 temporales pero respeta los bloqueos administrativos permanentes. Mientras no se
 configure un servidor SMTP y correos reales, el enlace se entrega manualmente por un
 canal verificado.
+
+Alumnos permite registrar y mantener el expediente personal e institucional con
+matrícula y CURP únicas por institución, filtros en base de datos, paginación, Excel y
+desactivación lógica. Requiere conceder `ALUMNO_LEER` y/o `ALUMNO_ADMINISTRAR` a los
+roles correspondientes. El plantel, grado y grupo vigentes no se almacenan en este
+expediente: se derivarán de las inscripciones para conservar el historial correctamente.

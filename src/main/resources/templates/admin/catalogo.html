@@ -17,6 +17,7 @@
     <nav aria-label="Módulos del núcleo">
         <p class="nav-label">Estructura</p>
         <th:block th:each="item : ${modulos}">
+            <p class="nav-label security-label" th:if="${item.name() == 'ALUMNOS'}">Personas</p>
             <p class="nav-label security-label" th:if="${item.name() == 'ROLES'}">Seguridad</p>
             <a th:href="@{/admin/catalogos/{slug}(slug=${item.slug})}"
                th:classappend="${item == resultado.modulo} ? ' active' : ''">
@@ -31,7 +32,7 @@
     <header class="topbar">
         <label class="menu-button" for="nav-toggle" aria-label="Abrir navegación"><span></span><span></span><span></span></label>
         <div><p>Administración académica</p><h1 th:text="${resultado.modulo.titulo}">Instituciones</h1></div>
-        <div class="top-actions"><button class="theme-button" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button><div class="user-chip"><span>AD</span><div><strong>Administración</strong><small>Sesión segura</small></div></div></div>
+        <div class="top-actions"><div class="user-chip"><span>AD</span><div><strong>Administración</strong><small>Sesión segura</small></div></div><div th:replace="~{admin/fragments/session-actions :: controls}"></div></div>
     </header>
 
     <section class="summary" aria-label="Resumen">

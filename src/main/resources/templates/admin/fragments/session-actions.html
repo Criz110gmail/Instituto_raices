@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="form-session-actions" th:fragment="controls">
+    <button class="theme-button" type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button>
+    <form class="logout-form" method="post" th:action="@{/logout}">
+        <button class="logout-button" type="submit"><span aria-hidden="true">↪</span> Cerrar sesión</button>
+    </form>
+</div>
+</body>
+</html>

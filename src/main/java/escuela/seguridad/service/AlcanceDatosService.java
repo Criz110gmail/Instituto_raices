@@ -5,6 +5,7 @@ import escuela.academico.repository.GradoRepository;
 import escuela.academico.repository.GrupoRepository;
 import escuela.academico.repository.NivelEducativoRepository;
 import escuela.academico.repository.PeriodoAcademicoRepository;
+import escuela.alumno.repository.AlumnoRepository;
 import escuela.admin.dto.ModuloCatalogo;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.dto.response.PlantelResponse;
@@ -41,6 +42,7 @@ public class AlcanceDatosService {
     private final CicloEscolarRepository cicloRepository;
     private final PeriodoAcademicoRepository periodoRepository;
     private final GrupoRepository grupoRepository;
+    private final AlumnoRepository alumnoRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
 
@@ -50,7 +52,7 @@ public class AlcanceDatosService {
         return (root, query, cb) -> {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
-                case PLANTELES, NIVELES, CICLOS, ROLES, USUARIOS -> root.get("institucion").get("id");
+                case PLANTELES, NIVELES, CICLOS, ALUMNOS, ROLES, USUARIOS -> root.get("institucion").get("id");
                 case OFERTA -> root.get("plantel").get("institucion").get("id");
                 case GRADOS -> root.get("nivelEducativo").get("institucion").get("id");
                 case PERIODOS -> root.get("cicloEscolar").get("institucion").get("id");
@@ -88,6 +90,8 @@ public class AlcanceDatosService {
                     .orElseThrow(this::denegado).getCicloEscolar().getInstitucion().getId());
             case GRUPOS -> validarPlantel(grupoRepository.findById(id)
                     .orElseThrow(this::denegado).getPlantel().getId());
+            case ALUMNOS -> validarInstitucion(alumnoRepository.findById(id)
+                    .orElseThrow(this::denegado).getInstitucion().getId());
             case ROLES -> validarInstitucion(rolRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());
             case USUARIOS -> validarInstitucion(usuarioRepository.findById(id)

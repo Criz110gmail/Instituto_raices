@@ -5,6 +5,8 @@ import escuela.academico.repository.GradoRepository;
 import escuela.academico.repository.GrupoRepository;
 import escuela.academico.repository.NivelEducativoRepository;
 import escuela.academico.repository.PeriodoAcademicoRepository;
+import escuela.alumno.repository.AlumnoRepository;
+import escuela.alumno.entity.Alumno;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.dto.response.PlantelResponse;
 import escuela.institucion.entity.Institucion;
@@ -32,11 +34,13 @@ import static org.mockito.Mockito.when;
 class AlcanceDatosServiceTest {
 
     private final PlantelRepository plantelRepository = mock(PlantelRepository.class);
+    private final AlumnoRepository alumnoRepository = mock(AlumnoRepository.class);
     private final AlcanceDatosService service = new AlcanceDatosService(
             mock(InstitucionRepository.class), plantelRepository,
             mock(NivelEducativoRepository.class), mock(PlantelNivelRepository.class),
             mock(GradoRepository.class), mock(CicloEscolarRepository.class),
             mock(PeriodoAcademicoRepository.class), mock(GrupoRepository.class),
+            alumnoRepository,
             mock(RolRepository.class), mock(UsuarioRepository.class));
 
     @AfterEach
@@ -79,6 +83,22 @@ class AlcanceDatosServiceTest {
         when(plantelRepository.findById(11L)).thenReturn(Optional.of(noAsignado));
 
         assertThatThrownBy(() -> service.validarPlantel(11L))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void bloqueaAccesoDirectoAAlumnoDeOtraInstitucion() {
+        autenticar(new UsuarioPrincipal(7L, 1L, Set.of(), true, false,
+                "admin", "hash", List.of()));
+        Institucion ajena = new Institucion();
+        ajena.setId(2L);
+        Alumno alumno = new Alumno();
+        alumno.setId(30L);
+        alumno.setInstitucion(ajena);
+        when(alumnoRepository.findById(30L)).thenReturn(Optional.of(alumno));
+
+        assertThatThrownBy(() -> service.validarRecurso(
+                escuela.admin.dto.ModuloCatalogo.ALUMNOS, 30L))
                 .isInstanceOf(AccessDeniedException.class);
     }
 

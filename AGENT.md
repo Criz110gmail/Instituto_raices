@@ -20,8 +20,8 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `d3b9f2f` — `control de
-  accesos y bloqueos de seguridad`.
+- Último commit confirmado antes de estos cambios locales: `84ea37a` — `recuperación
+  segura de contraseña`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
@@ -230,27 +230,36 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
   limpia intentos y bloqueos temporales, pero nunca retira un bloqueo administrativo.
 - Todavía no existe entrega por correo: no hay SMTP configurado y los correos actuales
   pueden no ser reales. El administrador entrega el enlace por un canal verificado.
+- La migración V5 crea `Alumno` y agrega los permisos `ALUMNO_LEER` y
+  `ALUMNO_ADMINISTRAR`. No concede permisos nuevos automáticamente a roles existentes.
+- `Alumnos` ya tiene aislamiento institucional, listado filtrado y paginado en
+  PostgreSQL, Excel por bloques, alta, edición y desactivación lógica.
+- Matrícula y CURP —cuando existe— son únicas por institución. No se guarda plantel,
+  grado o grupo actual: esa trayectoria se derivará de las inscripciones futuras.
+- Los listados y los once formularios administrativos muestran `Cerrar sesión`. El
+  botón envía `POST /logout` con CSRF, invalida la sesión y regresa al inicio.
 
 ## Verificación confirmada
 
-- Compilación correcta de 154 archivos Java de producción.
-- 74 pruebas Maven sin fallos ni errores.
-- Flyway V1, V2, V3 y V4 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 15 repositorios.
+- Compilación correcta de 163 archivos Java de producción.
+- 85 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V5 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 16 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
   grados respondieron HTTP 200.
 - La exportación filtrada generó un libro XLSX válido con HTTP 200.
+- El cierre de sesión respondió HTTP 302 y la misma cookie fue redirigida al login al
+  intentar regresar a `/admin`.
 - La última instancia local verificada quedó en `http://localhost:8080`.
 
 ## Siguiente paso acordado
 
-Iniciar el módulo `Alumno` como siguiente bloque del dominio: migración aditiva,
-entidad, repositorio, DTO, mapper y servicio con aislamiento por institución. Después
-completar su módulo administrativo con filtros PostgreSQL, paginación, Excel, alta,
-edición y desactivación lógica. Mantener el usuario temporal de recuperación y no
-iniciar todavía cobros ni tesorería.
+Después de que el propietario asigne `ALUMNO_LEER` y `ALUMNO_ADMINISTRAR` a su rol y
+valide el módulo en el navegador, implementar `Tutor`: migración aditiva, dominio,
+aislamiento institucional y mantenimiento completo con filtros, paginación y Excel.
+Todavía no crear `AlumnoTutor`, inscripciones, cobros ni tesorería.
 
 ## Disciplina de cambios y entrega
 
