@@ -9,6 +9,7 @@ public record UsuarioResponse(
         String username,
         String email,
         EstadoUsuario estado,
+        boolean credencialConfigurada,
         AuditoriaResponse auditoria
 ) {
 }

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b1930"><title>Activar cuenta · Nexo Escolar</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/login.css"><link rel="stylesheet" href="/css/activation.css"><script src="/js/theme.js"></script>
+</head>
+<body>
+<button class="theme-toggle" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button>
+<main class="activation-shell">
+    <section class="activation-brand"><span>N</span><div><strong>Nexo Escolar</strong><small>Activación protegida</small></div></section>
+    <section class="activation-card" th:unless="${activada == true}">
+        <div class="form-heading"><p>Invitación de acceso</p><h2>Establece tu contraseña</h2><span>El enlace es de un solo uso y dejará de funcionar al completar este formulario.</span></div>
+        <div class="alert error" th:if="${errorOperacion}" th:text="${errorOperacion}">La invitación no es válida.</div>
+        <form method="post" th:action="@{/activar-cuenta}" th:object="${form}">
+            <input type="hidden" th:field="*{token}">
+            <label><span>Contraseña</span><input type="password" th:field="*{password}" minlength="12" maxlength="72" autocomplete="new-password" required placeholder="Mínimo 12 caracteres"><small th:errors="*{password}"></small></label>
+            <label><span>Confirmar contraseña</span><input type="password" th:field="*{confirmarPassword}" minlength="12" maxlength="72" autocomplete="new-password" required placeholder="Repite la contraseña"><small th:errors="*{confirmarPassword}"></small></label>
+            <button type="submit">Activar mi cuenta <span>→</span></button>
+        </form>
+        <p class="support">Si el enlace venció, solicita una nueva invitación a la administración.</p>
+    </section>
+    <section class="activation-card activation-success" th:if="${activada}">
+        <span class="success-mark">✓</span><div class="form-heading"><p>Activación completada</p><h2>Tu contraseña quedó protegida</h2><span>La administración terminará de habilitar el acceso con tus roles asignados.</span></div><a href="/login">Ir al inicio de sesión</a>
+    </section>
+</main>
+</body>
+</html>

@@ -196,11 +196,17 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
   permisos técnicos con errores dentro del mismo formulario.
 - La migración V3 agrega `activo` a `RolPermiso` para conservar el historial al retirar
   o volver a conceder permisos; V2 y V3 ya fueron aplicadas y no deben editarse.
+- `Usuarios` ya es visible en Seguridad con filtros PostgreSQL, paginación, Excel, alta
+  de invitados, edición, estados, asignaciones de rol y alcances. Las asignaciones se
+  desactivan y reactivan lógicamente.
+- `/activar-cuenta` es público y permite consumir una invitación de 48 horas para fijar
+  una contraseña BCrypt. El enlace se muestra una sola vez al administrador y la base
+  conserva únicamente SHA-256 del token.
 
 ## Verificación confirmada
 
-- Compilación correcta de 133 archivos Java de producción.
-- 39 pruebas Maven sin fallos ni errores.
+- Compilación correcta de 139 archivos Java de producción.
+- 47 pruebas Maven sin fallos ni errores.
 - Flyway V1, V2 y V3 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 14 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
@@ -212,11 +218,11 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 
 ## Siguiente paso acordado
 
-Construir el módulo visible de Usuarios y asignaciones sobre la base de seguridad ya
-verificada. Debe incluir filtros en PostgreSQL, paginación, Excel, alta de invitados,
-edición, estados, roles con alcance, emisión de invitaciones y errores integrados.
-Después se creará y probará el primer administrador real y sólo entonces se sustituirá
-el login temporal. No ampliar todavía alumnos, tutores, cobros o tesorería.
+Crear desde la interfaz un rol administrador con los permisos necesarios y el primer
+usuario real, asignarle alcance institucional, generar y consumir su invitación. Una
+vez verificado ese registro, implementar autenticación multiinstitución desde
+PostgreSQL y conservar temporalmente una vía de recuperación controlada durante la
+transición. No ampliar todavía alumnos, tutores, cobros o tesorería.
 
 ## Disciplina de cambios y entrega
 

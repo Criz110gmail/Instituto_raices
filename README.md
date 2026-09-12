@@ -45,7 +45,8 @@ reciben entidades JPA directamente.
 
 ## Consola administrativa
 
-La ruta `/admin` contiene los ocho catálogos académicos y el módulo de Roles y permisos.
+La ruta `/admin` contiene los ocho catálogos académicos y los módulos de Roles y
+permisos y Usuarios.
 Todos los listados consultan la
 base de datos con filtros y paginación; el botón **Exportar Excel** aplica exactamente
 los mismos filtros y genera el archivo con Apache POI en modo streaming.
@@ -72,3 +73,9 @@ Roles y permisos permite crear, editar y desactivar perfiles por institución, a
 seleccionar sus permisos técnicos. Los cambios de permisos se conservan mediante
 activación o desactivación lógica de la relación y el listado mantiene filtros,
 paginación y exportación Excel.
+
+Usuarios permite crear identidades invitadas por institución, editar sus datos,
+administrar estados y asignar roles con alcance institucional, por plantel o por
+vínculos de tutor. La invitación genera un enlace de 48 horas que se muestra una sola
+vez; la pantalla pública permite establecer una contraseña protegida sin exponer el
+token ni la contraseña en la base de datos.

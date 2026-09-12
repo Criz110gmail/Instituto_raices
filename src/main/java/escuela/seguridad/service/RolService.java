@@ -12,6 +12,7 @@ public interface RolService {
     RolResponse actualizar(Long id, RolRequest request, Set<Long> permisoIds);
     RolResponse obtener(Long id);
     List<PermisoResponse> listarPermisos();
+    List<RolResponse> listarRoles();
     Set<Long> permisosAsignados(Long rolId);
     void desactivar(Long id, Long version);
 }

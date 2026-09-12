@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.List;
 
 public interface RolRepository extends JpaRepository<Rol, Long>, JpaSpecificationExecutor<Rol> {
+    List<Rol> findAllByOrderByNombreAsc();
     List<Rol> findAllByInstitucionIdOrderByNombreAsc(Long institucionId);
     boolean existsByInstitucionIdAndCodigoIgnoreCaseAndIdNot(Long institucionId, String codigo, Long id);
 }

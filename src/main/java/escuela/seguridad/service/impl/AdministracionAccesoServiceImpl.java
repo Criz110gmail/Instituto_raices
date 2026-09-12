@@ -6,6 +6,7 @@ import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.entity.Plantel;
 import escuela.institucion.repository.PlantelRepository;
 import escuela.seguridad.dto.request.AsignacionRolRequest;
+import escuela.seguridad.dto.response.AsignacionRolResponse;
 import escuela.seguridad.entity.AlcanceRol;
 import escuela.seguridad.entity.EstadoUsuario;
 import escuela.seguridad.entity.Permiso;
@@ -22,6 +23,9 @@ import escuela.seguridad.service.AdministracionAccesoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 import static escuela.common.service.ValidacionVersion.verificar;
 
@@ -75,13 +79,17 @@ public class AdministracionAccesoServiceImpl implements AdministracionAccesoServ
         }
 
         Plantel plantel = validarPlantel(request, usuario);
-        boolean duplicado = plantel == null
-                ? usuarioRolRepository.existsByUsuarioIdAndRolIdAndAlcanceAndPlantelIsNull(
+        Optional<UsuarioRol> existente = plantel == null
+                ? usuarioRolRepository.findByUsuarioIdAndRolIdAndAlcanceAndPlantelIsNull(
                         usuario.getId(), rol.getId(), request.alcance())
-                : usuarioRolRepository.existsByUsuarioIdAndRolIdAndAlcanceAndPlantelId(
+                : usuarioRolRepository.findByUsuarioIdAndRolIdAndAlcanceAndPlantelId(
                         usuario.getId(), rol.getId(), request.alcance(), plantel.getId());
-        if (duplicado) {
-            throw new RecursoDuplicadoException("El usuario ya tiene esa asignación de rol");
+        if (existente.isPresent()) {
+            if (existente.get().isActivo()) {
+                throw new RecursoDuplicadoException("El usuario ya tiene esa asignación de rol");
+            }
+            existente.get().setActivo(true);
+            return usuarioRolRepository.saveAndFlush(existente.get()).getId();
         }
 
         UsuarioRol asignacion = new UsuarioRol();
@@ -94,9 +102,27 @@ public class AdministracionAccesoServiceImpl implements AdministracionAccesoServ
     }
 
     @Override
-    public void desactivarAsignacion(Long usuarioRolId, Long version) {
+    @Transactional(readOnly = true)
+    public List<AsignacionRolResponse> listarAsignaciones(Long usuarioId) {
+        if (!usuarioRepository.existsById(usuarioId)) {
+            throw new RecursoNoEncontradoException("el usuario", usuarioId);
+        }
+        return usuarioRolRepository.findAllByUsuarioIdOrderByRolNombreAsc(usuarioId).stream()
+                .map(a -> new AsignacionRolResponse(
+                        a.getId(), a.getRol().getId(), a.getRol().getCodigo(), a.getRol().getNombre(),
+                        a.getAlcance(), a.getPlantel() == null ? null : a.getPlantel().getId(),
+                        a.getPlantel() == null ? null : a.getPlantel().getNombre(),
+                        a.isActivo(), a.getVersion()))
+                .toList();
+    }
+
+    @Override
+    public void desactivarAsignacion(Long usuarioId, Long usuarioRolId, Long version) {
         UsuarioRol asignacion = usuarioRolRepository.findById(usuarioRolId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("la asignación de rol", usuarioRolId));
+        if (!asignacion.getUsuario().getId().equals(usuarioId)) {
+            throw new ReglaNegocioException("La asignación no pertenece al usuario indicado");
+        }
         verificar(asignacion, version, "Asignación de rol");
         asignacion.setActivo(false);
     }

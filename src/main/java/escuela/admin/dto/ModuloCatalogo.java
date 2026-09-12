@@ -12,7 +12,8 @@ public enum ModuloCatalogo {
     CICLOS("ciclos", "Ciclos escolares", List.of("Código", "Ciclo", "Inicio", "Fin", "Predeterminado")),
     PERIODOS("periodos", "Periodos académicos", List.of("Código", "Periodo", "Nivel", "Tipo", "Fechas")),
     GRUPOS("grupos", "Grupos", List.of("Grupo", "Código", "Plantel", "Grado", "Turno", "Capacidad")),
-    ROLES("roles", "Roles y permisos", List.of("Código", "Rol", "Institución", "Descripción"));
+    ROLES("roles", "Roles y permisos", List.of("Código", "Rol", "Institución", "Descripción")),
+    USUARIOS("usuarios", "Usuarios", List.of("Usuario", "Correo", "Institución", "Credencial"));
 
     private final String slug;
     private final String titulo;
@@ -31,7 +32,7 @@ public enum ModuloCatalogo {
     public boolean mantenimientoDisponible() {
         return this == INSTITUCIONES || this == PLANTELES || this == NIVELES
                 || this == OFERTA || this == GRADOS || this == CICLOS || this == PERIODOS
-                || this == GRUPOS || this == ROLES;
+                || this == GRUPOS || this == ROLES || this == USUARIOS;
     }
 
     public String rutaMantenimiento() {
@@ -45,13 +46,14 @@ public enum ModuloCatalogo {
             case PERIODOS -> "/admin/periodos";
             case GRUPOS -> "/admin/grupos";
             case ROLES -> "/admin/roles";
+            case USUARIOS -> "/admin/usuarios";
             default -> "";
         };
     }
 
     public String segmentoNuevo() {
         return this == PLANTELES || this == NIVELES || this == GRADOS || this == CICLOS
-                || this == PERIODOS || this == GRUPOS || this == ROLES
+                || this == PERIODOS || this == GRUPOS || this == ROLES || this == USUARIOS
                 ? "/nuevo" : "/nueva";
     }
 

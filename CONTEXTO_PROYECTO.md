@@ -286,3 +286,31 @@
   técnicos disponibles.
 - La exportación filtrada respondió correctamente con firma XLSX válida y la aplicación
   permaneció `UP` en `http://localhost:8080`.
+
+## Decisiones — módulo visible de usuarios y asignaciones
+
+- `Usuarios` se agregó a la sección Seguridad con búsqueda por usuario, correo o
+  institución, filtro de estado, paginación real y exportación Excel por bloques.
+- El alta siempre crea usuarios `INVITADO`; institución, username y correo se validan y
+  no se permite reasignar la institución al editar.
+- La pantalla de edición administra estados y roles con alcance `INSTITUCION`,
+  `PLANTEL` o `VINCULOS_TUTOR`. Usuario, rol y plantel se validan contra la misma
+  institución y las asignaciones se desactivan o reactivan sin borrado físico.
+- La administración puede generar una invitación de 48 horas. Una nueva invitación
+  revoca la anterior, el enlace se muestra una sola vez y sólo se persiste su hash.
+- `/activar-cuenta` es una pantalla pública protegida por CSRF que valida confirmación y
+  longitud, consume el token una vez y guarda la contraseña con BCrypt.
+- El administrador temporal de `.env` continúa siendo el único usuario autenticable
+  hasta crear, activar y verificar el primer administrador persistido.
+
+## Verificación del módulo de usuarios
+
+- Compilación Docker correcta de 139 archivos Java de producción.
+- 47 pruebas ejecutadas sin fallos ni errores, incluidas duplicidad, estados,
+  aislamiento de asignaciones, controlador administrativo y activación.
+- Listado y formulario de alta respondieron autenticados; la pantalla de activación
+  respondió sin sesión y la exportación produjo una firma XLSX válida.
+- Se corrigió y volvió a probar una condición nula de Thymeleaf detectada durante la
+  verificación real.
+- PostgreSQL permaneció en Flyway V3, la aplicación respondió `UP` y la tabla `usuario`
+  siguió vacía: no se dejaron registros de prueba.

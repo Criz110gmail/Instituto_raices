@@ -6,6 +6,8 @@ import escuela.admin.dto.*;
 import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
 import escuela.seguridad.repository.RolRepository;
+import escuela.seguridad.entity.Usuario;
+import escuela.seguridad.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +38,7 @@ public class CatalogoConsultaService {
     private final PeriodoAcademicoRepository periodoRepository;
     private final GrupoRepository grupoRepository;
     private final RolRepository rolRepository;
+    private final UsuarioRepository usuarioRepository;
 
     public ResultadoCatalogo consultar(ModuloCatalogo modulo, FiltroCatalogo filtroOriginal) {
         FiltroCatalogo f = filtroOriginal.normalizado();
@@ -59,6 +62,9 @@ public class CatalogoConsultaService {
                     e -> fila(e.getId(), e.isActivo(), e.getNombre(), valor(e.getCodigo()), e.getPlantel().getNombre(), e.getGrado().getNombre(), e.getTurno().name(), e.getCapacidad() == null ? "Sin límite" : e.getCapacidad().toString()));
             case ROLES -> consultar(rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
+            case USUARIOS -> consultar(usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,
+                    e -> filaEstadoUsuario(e, e.getUsername(), e.getEmail(), e.getInstitucion().getNombre(),
+                            e.getPasswordHash() == null ? "Pendiente" : "Configurada"));
         };
         return new ResultadoCatalogo(modulo, modulo.columnas(), resultado);
     }
@@ -88,6 +94,16 @@ public class CatalogoConsultaService {
         };
     }
 
+    private Specification<Usuario> textoUsuario(FiltroCatalogo f) {
+        return (root, query, cb) -> {
+            if (f.q().isBlank()) return cb.conjunction();
+            String patron = "%" + f.q().toLowerCase(Locale.ROOT) + "%";
+            return cb.or(cb.like(cb.lower(root.get("username")), patron),
+                    cb.like(cb.lower(root.get("email")), patron),
+                    cb.like(cb.lower(root.get("institucion").get("nombre")), patron));
+        };
+    }
+
     private <T> Specification<T> activo(FiltroCatalogo f) {
         return (root, query, cb) -> switch (f.estado()) {
             case "ACTIVO" -> cb.isTrue(root.get("activo"));
@@ -107,6 +123,13 @@ public class CatalogoConsultaService {
 
     private FilaCatalogo filaEstado(Long id, String estado, String... celdas) {
         return new FilaCatalogo(id, List.of(celdas), estado, estado.equals("ABIERTO") ? "positivo" : estado.equals("CERRADO") ? "neutro" : "aviso");
+    }
+
+    private FilaCatalogo filaEstadoUsuario(Usuario usuario, String... celdas) {
+        String estado = usuario.getEstado().name();
+        String tono = estado.equals("ACTIVO") ? "positivo"
+                : estado.equals("INVITADO") ? "aviso" : "neutro";
+        return new FilaCatalogo(usuario.getId(), List.of(celdas), estado, tono);
     }
 
     private String valor(String valor) { return valor == null || valor.isBlank() ? "—" : valor; }

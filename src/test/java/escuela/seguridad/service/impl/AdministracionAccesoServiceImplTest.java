@@ -8,6 +8,7 @@ import escuela.seguridad.dto.request.AsignacionRolRequest;
 import escuela.seguridad.entity.AlcanceRol;
 import escuela.seguridad.entity.Rol;
 import escuela.seguridad.entity.Usuario;
+import escuela.seguridad.entity.UsuarioRol;
 import escuela.seguridad.repository.PermisoRepository;
 import escuela.seguridad.repository.RolPermisoRepository;
 import escuela.seguridad.repository.RolRepository;
@@ -84,6 +85,21 @@ class AdministracionAccesoServiceImplTest {
         assertThatThrownBy(() -> service.asignarRol(request))
                 .isInstanceOf(ReglaNegocioException.class)
                 .hasMessageContaining("solo se permite");
+    }
+
+    @Test
+    void rechazaDesactivarAsignacionDeOtroUsuario() {
+        Usuario otroUsuario = new Usuario();
+        otroUsuario.setId(99L);
+        UsuarioRol asignacion = new UsuarioRol();
+        asignacion.setId(40L);
+        asignacion.setVersion(1L);
+        asignacion.setUsuario(otroUsuario);
+        when(usuarioRolRepository.findById(40L)).thenReturn(Optional.of(asignacion));
+
+        assertThatThrownBy(() -> service.desactivarAsignacion(10L, 40L, 1L))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessageContaining("no pertenece");
     }
 
     private Institucion institucion(Long id) {

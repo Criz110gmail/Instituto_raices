@@ -89,3 +89,57 @@
     .permission-grid { grid-template-columns: 1fr; }
     .permission-fieldset { padding: 16px 12px; }
 }
+
+.user-shell { max-width: 1040px; }
+.user-shell > .flash { margin: 0 0 16px; }
+.identity-status { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
+.identity-status small { color: var(--muted); }
+.access-actions,.role-assignment { padding: 28px 34px; border-top: 1px solid var(--line); }
+.section-heading { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; margin-bottom: 20px; }
+.section-heading span { color: #148f82; font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.section-heading h2 { margin: 5px 0 0; font: 800 1.2rem Manrope; }
+.section-heading p { max-width: 460px; margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.5; }
+.account-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+.account-buttons button,.assignment-list button,.assignment-form button,.copy-row button { border: 1px solid #b9c9d9; border-radius: 10px; background: #fff; color: var(--ink); padding: 10px 14px; font: 700 .8rem inherit; cursor: pointer; }
+.account-buttons .primary-action,.assignment-form > button,.copy-row button { border-color: var(--blue); background: var(--blue); color: #fff; }
+.account-buttons .danger-action { border-color: #e0aab0; color: #a42634; }
+.assignment-list { display: grid; gap: 10px; margin-bottom: 18px; }
+.assignment-list article { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid #dce6ef; border-radius: 13px; }
+.assignment-list article.inactive { opacity: .65; }
+.assignment-list article > div { display: grid; gap: 3px; }
+.assignment-code { color: #148f82; font-size: .66rem; font-weight: 800; letter-spacing: .08em; }
+.assignment-list strong { font-size: .88rem; }
+.assignment-list small { color: var(--muted); font-size: .75rem; }
+.assignment-list button { padding: 8px 11px; }
+.empty-assignment { margin-bottom: 18px; padding: 18px; border: 1px dashed #c9d6e3; border-radius: 12px; color: var(--muted); font-size: .82rem; text-align: center; }
+.assignment-form { display: grid; grid-template-columns: 1.4fr 1fr 1.4fr auto; gap: 12px; align-items: end; padding: 18px; border-radius: 14px; background: #f5f8fb; }
+.assignment-form label > span { display: block; margin-bottom: 6px; font-size: .73rem; font-weight: 700; }
+.assignment-form select { width: 100%; min-height: 42px; border: 1px solid #ccd8e5; border-radius: 9px; background: #fff; color: var(--ink); padding: 8px 10px; }
+.assignment-form small { display: block; color: #b22b3a; margin-top: 4px; font-size: .7rem; }
+.assignment-form > button { min-height: 42px; }
+.invitation-result { margin-bottom: 16px; padding: 20px 22px; border: 1px solid #8dd9c9; border-radius: 16px; background: #edfbf7; box-shadow: var(--shadow); }
+.invitation-result > div:first-child span,.invitation-result > div:first-child strong { display: block; }
+.invitation-result > div:first-child span { color: #08785f; font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.invitation-result > div:first-child strong { margin-top: 4px; }
+.invitation-result p { margin: 4px 0 14px; color: #52756e; font-size: .78rem; }
+.invitation-result > small { display: block; margin-top: 8px; color: #52756e; }
+.copy-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.copy-row input { min-width: 0; border: 1px solid #a9d8ce; border-radius: 10px; background: #fff; color: #19443b; padding: 10px 12px; }
+[data-theme=dark] .assignment-form { background: #0a1728; }
+[data-theme=dark] .assignment-form select,[data-theme=dark] .account-buttons button,[data-theme=dark] .assignment-list button { background: #0e1d31; color: #eef5fd; border-color: #344a63; }
+[data-theme=dark] .invitation-result { background: #0d2928; border-color: #216b61; }
+[data-theme=dark] .copy-row input { background: #091d1d; color: #d8fff8; border-color: #216b61; }
+
+@media (max-width: 850px) {
+    .assignment-form { grid-template-columns: 1fr 1fr; }
+    .assignment-form > button { grid-column: 1/-1; }
+}
+
+@media (max-width: 680px) {
+    .access-actions,.role-assignment { padding: 24px 20px; }
+    .section-heading { display: block; }
+    .section-heading p { margin-top: 10px; }
+    .assignment-list article { grid-template-columns: 1fr auto; }
+    .assignment-list article form { grid-column: 1/-1; }
+    .assignment-form,.copy-row { grid-template-columns: 1fr; }
+}

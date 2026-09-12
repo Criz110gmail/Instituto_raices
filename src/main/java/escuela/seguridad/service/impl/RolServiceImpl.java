@@ -77,6 +77,12 @@ public class RolServiceImpl implements RolService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<RolResponse> listarRoles() {
+        return repository.findAllByOrderByNombreAsc().stream().map(mapper::respuesta).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Set<Long> permisosAsignados(Long rolId) {
         buscar(rolId);
         return rolPermisoRepository.findAllByRolIdAndActivoTrueOrderByPermisoCodigoAsc(rolId)

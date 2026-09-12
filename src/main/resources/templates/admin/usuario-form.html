@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b1930">
+    <title th:text="${edicion ? 'Administrar usuario' : 'Nuevo usuario'} + ' · Nexo Escolar'">Usuario</title>
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/forms.css">
+    <script src="/js/theme.js"></script>
+</head>
+<body class="form-page">
+<main class="form-shell user-shell">
+    <header class="form-top"><a href="/admin/catalogos/usuarios">← Volver a usuarios</a><button class="theme-button" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button></header>
+
+    <div class="flash" th:if="${mensaje}" th:text="${mensaje}">Operación completada</div>
+    <section class="invitation-result" th:if="${invitacionEnlace}">
+        <div><span>Enlace de un solo uso</span><strong>Copia esta invitación ahora</strong><p>Al generar otra invitación, ésta quedará revocada.</p></div>
+        <div class="copy-row"><input id="invitation-link" readonly th:value="${invitacionEnlace}"><button type="button" data-copy-invitation>Copiar enlace</button></div>
+        <small th:text="${'Vence: ' + #temporals.format(invitacionExpira, 'dd/MM/yyyy HH:mm')}">Vencimiento</small>
+    </section>
+
+    <section class="form-card">
+        <div class="form-intro">
+            <span th:text="${edicion ? 'Identidad y acceso' : 'Nuevo acceso'}">Nuevo acceso</span>
+            <h1 th:text="${edicion ? 'Administrar usuario' : 'Crear usuario invitado'}">Crear usuario</h1>
+            <p th:if="${!edicion}">Crea primero la identidad. Después podrás asignarle roles y generar su invitación.</p>
+            <p th:if="${edicion}">Actualiza su identidad, estado, roles y alcances sin mezclar instituciones.</p>
+            <div class="identity-status" th:if="${edicion}">
+                <span class="status" th:classappend="${usuario.estado.name() == 'ACTIVO' ? 'positivo' : (usuario.estado.name() == 'INVITADO' ? 'aviso' : 'neutro')}" th:text="${usuario.estado}">INVITADO</span>
+                <small th:text="${usuario.credencialConfigurada ? 'Contraseña configurada' : 'Pendiente de establecer contraseña'}">Credencial</small>
+            </div>
+        </div>
+
+        <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/usuarios/' + id : '/admin/usuarios'}">
+            <input type="hidden" th:field="*{version}">
+            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo completar la operación</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
+            <div class="form-grid">
+                <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
+                <label><span>Usuario *</span><input th:field="*{username}" maxlength="80" autocomplete="off" placeholder="nombre.apellido"><small th:errors="*{username}"></small></label>
+                <label><span>Correo *</span><input type="email" th:field="*{email}" maxlength="254" autocomplete="off" placeholder="persona@institucion.mx"><small th:errors="*{email}"></small></label>
+            </div>
+            <footer class="form-actions"><a href="/admin/catalogos/usuarios">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar identidad' : 'Crear usuario'}">Guardar</button></footer>
+        </form>
+
+        <section class="access-actions" th:if="${edicion}">
+            <div class="section-heading"><div><span>Estado y activación</span><h2>Control de cuenta</h2></div><p>Las invitaciones vencen en 48 horas y el enlace sólo se muestra al generarlo.</p></div>
+            <div class="account-buttons">
+                <form th:if="${usuario.estado.name() == 'INVITADO'}" method="post" th:action="@{/admin/usuarios/{id}/invitacion(id=${id})}"><button class="primary-action" type="submit">Generar invitación</button></form>
+                <form th:if="${usuario.estado.name() == 'ACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" value="BLOQUEADO"><button type="submit">Bloquear acceso</button></form>
+                <form th:if="${usuario.estado.name() == 'BLOQUEADO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" value="ACTIVO"><button class="primary-action" type="submit">Desbloquear</button></form>
+                <form th:if="${usuario.estado.name() == 'INACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" th:value="${usuario.credencialConfigurada ? 'ACTIVO' : 'INVITADO'}"><button class="primary-action" type="submit">Reactivar cuenta</button></form>
+                <form th:if="${usuario.estado.name() != 'INACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}" onsubmit="return confirm('¿Inactivar este usuario? Sus asignaciones se conservarán sin conceder acceso.');"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" value="INACTIVO"><button class="danger-action" type="submit">Inactivar usuario</button></form>
+            </div>
+        </section>
+
+        <section class="role-assignment" th:if="${edicion}">
+            <div class="section-heading"><div><span>Autorización</span><h2>Roles y alcances</h2></div><p>Un rol institucional aplica a toda la institución; un rol de plantel exige elegir uno.</p></div>
+            <div class="form-error" role="alert" th:if="${errorAsignacion}"><strong>No se pudo asignar el rol</strong><p th:text="${errorAsignacion}">Revisa los datos.</p></div>
+
+            <div class="assignment-list" th:if="${!asignaciones.empty}">
+                <article th:each="asignacion : ${asignaciones}" th:classappend="${!asignacion.activo} ? ' inactive'">
+                    <div><span class="assignment-code" th:text="${asignacion.rolCodigo}">ROL</span><strong th:text="${asignacion.rolNombre}">Nombre del rol</strong><small th:text="${asignacion.alcance.name() == 'PLANTEL' ? 'Plantel · ' + asignacion.plantelNombre : (asignacion.alcance.name() == 'INSTITUCION' ? 'Toda la institución' : 'Sólo vínculos de tutor')}">Alcance</small></div>
+                    <span class="status" th:classappend="${asignacion.activo ? 'positivo' : 'neutro'}" th:text="${asignacion.activo ? 'Activo' : 'Inactivo'}">Activo</span>
+                    <form th:if="${asignacion.activo}" method="post" th:action="@{/admin/usuarios/{usuarioId}/roles/{asignacionId}/desactivar(usuarioId=${id},asignacionId=${asignacion.id})}"><input type="hidden" name="version" th:value="${asignacion.version}"><button type="submit">Desactivar</button></form>
+                </article>
+            </div>
+            <div class="empty-assignment" th:if="${asignaciones.empty}">Este usuario todavía no tiene roles asignados.</div>
+
+            <form class="assignment-form" th:if="${usuario.estado.name() != 'INACTIVO'}" th:object="${asignacionForm}" method="post" th:action="@{/admin/usuarios/{id}/roles(id=${id})}">
+                <label><span>Rol *</span><select th:field="*{rolId}" id="assignment-role"><option value="">Selecciona un rol</option><option th:each="rol : ${roles}" th:if="${rol.activo}" th:value="${rol.id}" th:text="${rol.codigo + ' · ' + rol.nombre}" th:attr="data-institucion=${rol.institucionId}">Rol</option></select><small th:errors="*{rolId}"></small></label>
+                <label><span>Alcance *</span><select th:field="*{alcance}" id="assignment-scope"><option th:each="alcance : ${alcances}" th:value="${alcance}" th:text="${alcance.name() == 'INSTITUCION' ? 'Toda la institución' : (alcance.name() == 'PLANTEL' ? 'Un plantel' : 'Vínculos de tutor')}">Alcance</option></select><small th:errors="*{alcance}"></small></label>
+                <label id="plantel-field"><span>Plantel *</span><select th:field="*{plantelId}" id="assignment-campus"><option value="">Selecciona un plantel</option><option th:each="plantel : ${planteles}" th:if="${plantel.activo}" th:value="${plantel.id}" th:text="${plantel.codigo + ' · ' + plantel.nombre}" th:attr="data-institucion=${plantel.institucionId}">Plantel</option></select><small th:errors="*{plantelId}"></small></label>
+                <button type="submit">Asignar rol</button>
+            </form>
+        </section>
+    </section>
+</main>
+<script th:inline="javascript">
+(() => {
+    const institucionId = /*[[${form.institucionId}]]*/ null;
+    const role = document.querySelector('#assignment-role');
+    const scope = document.querySelector('#assignment-scope');
+    const campus = document.querySelector('#assignment-campus');
+    const campusField = document.querySelector('#plantel-field');
+    if (role) [...role.options].slice(1).forEach(o => { o.hidden = String(o.dataset.institucion) !== String(institucionId); });
+    if (campus) [...campus.options].slice(1).forEach(o => { o.hidden = String(o.dataset.institucion) !== String(institucionId); });
+    const toggleCampus = () => {
+        if (!scope || !campus || !campusField) return;
+        const required = scope.value === 'PLANTEL';
+        campusField.hidden = !required;
+        campus.disabled = !required;
+        campus.required = required;
+        if (!required) campus.value = '';
+    };
+    if (scope) scope.addEventListener('change', toggleCampus);
+    toggleCampus();
+    const copy = document.querySelector('[data-copy-invitation]');
+    if (copy) copy.addEventListener('click', async () => {
+        const input = document.querySelector('#invitation-link');
+        try { await navigator.clipboard.writeText(input.value); copy.textContent = 'Copiado'; }
+        catch { input.select(); document.execCommand('copy'); copy.textContent = 'Copiado'; }
+    });
+})();
+</script>
+</body>
+</html>
