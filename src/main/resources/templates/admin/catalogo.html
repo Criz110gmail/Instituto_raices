@@ -16,10 +16,13 @@
     <div class="brand"><span class="brand-mark">N</span><span><strong>Nexo</strong><small>Control escolar</small></span></div>
     <nav aria-label="Módulos del núcleo">
         <p class="nav-label">Estructura</p>
-        <a th:each="item : ${modulos}" th:href="@{/admin/catalogos/{slug}(slug=${item.slug})}"
-           th:classappend="${item == resultado.modulo} ? ' active' : ''">
-            <span class="nav-dot"></span><span th:text="${item.titulo}">Módulo</span>
-        </a>
+        <th:block th:each="item : ${modulos}">
+            <p class="nav-label security-label" th:if="${item.name() == 'ROLES'}">Seguridad</p>
+            <a th:href="@{/admin/catalogos/{slug}(slug=${item.slug})}"
+               th:classappend="${item == resultado.modulo} ? ' active' : ''">
+                <span class="nav-dot"></span><span th:text="${item.titulo}">Módulo</span>
+            </a>
+        </th:block>
     </nav>
     <div class="sidebar-foot"><span class="pulse"></span><span>Servicios operativos</span></div>
 </aside>

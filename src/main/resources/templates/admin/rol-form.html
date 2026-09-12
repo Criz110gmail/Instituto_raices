@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b1930">
+    <title th:text="${edicion ? 'Editar rol' : 'Nuevo rol'} + ' · Nexo Escolar'">Rol</title>
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/forms.css">
+    <script src="/js/theme.js"></script>
+</head>
+<body class="form-page">
+<main class="form-shell role-shell">
+    <header class="form-top">
+        <a href="/admin/catalogos/roles">← Volver a roles</a>
+        <button class="theme-button" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button>
+    </header>
+    <section class="form-card">
+        <div class="form-intro">
+            <span th:text="${edicion ? 'Control de acceso' : 'Nuevo perfil de acceso'}">Nuevo perfil</span>
+            <h1 th:text="${edicion ? 'Editar rol y permisos' : 'Crear rol y permisos'}">Crear rol</h1>
+            <p>Define un perfil reutilizable para una institución. El alcance concreto se asignará a cada usuario.</p>
+        </div>
+        <form class="entity-form" th:object="${form}" method="post"
+              th:action="${edicion ? '/admin/roles/' + id : '/admin/roles'}">
+            <input type="hidden" th:field="*{version}">
+            <div class="form-error" role="alert" th:if="${errorOperacion}">
+                <strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos.</p>
+            </div>
+            <div class="form-grid">
+                <label class="wide"><span>Institución *</span>
+                    <select th:field="*{institucionId}" th:disabled="${edicion}">
+                        <option value="">Selecciona una institución</option>
+                        <option th:each="item : ${instituciones}" th:value="${item.id}"
+                                th:text="${item.codigo + ' · ' + item.nombre}">Institución</option>
+                    </select>
+                    <input th:if="${edicion}" type="hidden" th:field="*{institucionId}">
+                    <small th:errors="*{institucionId}"></small>
+                </label>
+                <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="ADMIN_PLANTEL"><small th:errors="*{codigo}"></small></label>
+                <label><span>Nombre *</span><input th:field="*{nombre}" maxlength="150" placeholder="Administrador de plantel"><small th:errors="*{nombre}"></small></label>
+                <label class="wide"><span>Descripción</span><textarea th:field="*{descripcion}" maxlength="2000" rows="3" placeholder="Responsabilidades y límites del perfil"></textarea><small th:errors="*{descripcion}"></small></label>
+                <label class="switch-row"><input type="checkbox" th:field="*{activo}"><span>Rol activo</span></label>
+            </div>
+
+            <fieldset class="permission-fieldset">
+                <legend>Permisos técnicos</legend>
+                <p>Selecciona únicamente las operaciones necesarias para este perfil.</p>
+                <div class="permission-grid">
+                    <label class="permission-card" th:each="permiso : ${permisos}">
+                        <input type="checkbox" th:field="*{permisoIds}" th:value="${permiso.id}">
+                        <span><strong th:text="${permiso.codigo}">PERMISO</strong><small th:text="${permiso.descripcion}">Descripción</small></span>
+                    </label>
+                </div>
+            </fieldset>
+
+            <footer class="form-actions"><a href="/admin/catalogos/roles">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear rol'}">Guardar</button></footer>
+        </form>
+        <form th:if="${edicion and form.activo}" class="danger-zone" method="post"
+              th:action="@{/admin/roles/{id}/desactivar(id=${id})}"
+              onsubmit="return confirm('¿Desactivar este rol? Los usuarios conservarán el historial, pero no deberá conceder acceso.');">
+            <input type="hidden" name="version" th:value="${form.version}">
+            <div><strong>Desactivar rol</strong><p>El perfil, sus permisos y sus asignaciones se conservarán.</p></div>
+            <button type="submit">Desactivar</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>

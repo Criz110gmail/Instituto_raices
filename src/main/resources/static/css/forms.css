@@ -29,3 +29,63 @@
     font-size: .78rem;
     line-height: 1.5;
 }
+
+.role-shell { max-width: 980px; }
+
+.permission-fieldset {
+    margin: 28px 0 0;
+    padding: 22px;
+    border: 1px solid #d9e3ed;
+    border-radius: 16px;
+}
+
+.permission-fieldset legend {
+    padding: 0 8px;
+    color: var(--ink);
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.permission-fieldset > p {
+    margin: 0 0 16px;
+    color: var(--muted);
+    font-size: .86rem;
+}
+
+.permission-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.permission-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 13px;
+    border: 1px solid #dce6ef;
+    border-radius: 12px;
+    background: #f8fbfe;
+    cursor: pointer;
+}
+
+.permission-card:has(input:checked) {
+    border-color: var(--blue);
+    background: #2979ff0c;
+    box-shadow: inset 3px 0 var(--blue);
+}
+
+.permission-card input { margin-top: 3px; accent-color: var(--blue); }
+.permission-card span { display: grid; gap: 4px; }
+.permission-card strong { color: var(--ink); font-size: .78rem; letter-spacing: .02em; overflow-wrap: anywhere; }
+.permission-card small { color: var(--muted); font-size: .76rem; line-height: 1.35; }
+
+[data-theme=dark] .permission-fieldset,
+[data-theme=dark] .permission-card { border-color: #344a63; }
+[data-theme=dark] .permission-card { background: #0e1d31; }
+[data-theme=dark] .permission-card:has(input:checked) { background: #2979ff18; }
+
+@media (max-width: 680px) {
+    .permission-grid { grid-template-columns: 1fr; }
+    .permission-fieldset { padding: 16px 12px; }
+}

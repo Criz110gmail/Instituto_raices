@@ -34,6 +34,7 @@ rutas requieren las credenciales `ADMIN_BOOTSTRAP_USERNAME` y
 
 - `escuela.institucion`: institución, planteles y oferta educativa.
 - `escuela.academico`: niveles, grados, ciclos, periodos y grupos.
+- `escuela.seguridad`: usuarios, roles, permisos, alcances e invitaciones de acceso.
 - `escuela.config`: seguridad y auditoría JPA.
 - `escuela.common`: excepciones, respuesta de auditoría y utilidades compartidas.
 - Cada módulo contiene DTO, mappers, repositorios y servicios transaccionales.
@@ -44,12 +45,19 @@ reciben entidades JPA directamente.
 
 ## Consola administrativa
 
-La ruta `/admin` contiene los ocho catálogos actuales. Todos los listados consultan la
+La ruta `/admin` contiene los ocho catálogos académicos y el módulo de Roles y permisos.
+Todos los listados consultan la
 base de datos con filtros y paginación; el botón **Exportar Excel** aplica exactamente
 los mismos filtros y genera el archivo con Apache POI en modo streaming.
 
 Mientras se desarrolla el módulo definitivo de usuarios, configura
 `ADMIN_BOOTSTRAP_USERNAME` y `ADMIN_BOOTSTRAP_PASSWORD` en `.env` para acceder.
+
+La base del módulo definitivo de seguridad ya existe en Flyway V2 y en la capa de
+dominio. Incluye aislamiento por institución, roles con permisos técnicos, alcances
+institucionales o por plantel e invitaciones de un solo uso cuyo token sólo se guarda
+como hash. El inicio de sesión aún utiliza deliberadamente el administrador temporal;
+se cambiará después de crear y verificar el primer administrador real.
 
 La consola y el login incluyen temas claro y oscuro con preferencia persistente en el
 dispositivo. Instituciones, planteles, niveles, oferta educativa y grados ya permiten
@@ -59,3 +67,8 @@ su calendario por ciclo y nivel. Los grupos permiten alta, edición y desactivac
 selectores que respetan la oferta educativa. Los errores de validación, reglas de negocio,
 concurrencia y restricciones de integridad se muestran dentro del mismo formulario sin
 perder los valores capturados ni exponer detalles técnicos de PostgreSQL.
+
+Roles y permisos permite crear, editar y desactivar perfiles por institución, además de
+seleccionar sus permisos técnicos. Los cambios de permisos se conservan mediante
+activación o desactivación lógica de la relación y el listado mantiene filtros,
+paginación y exportación Excel.

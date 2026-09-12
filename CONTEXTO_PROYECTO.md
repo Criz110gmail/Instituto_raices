@@ -231,3 +231,58 @@
 - El formulario autenticado de grupo respondió HTTP 200 y renderizó sus selectores.
 - La exportación filtrada respondió HTTP 200 con firma XLSX válida.
 - PostgreSQL permaneció saludable y `/actuator/health` respondió `UP`.
+
+## Decisiones — base definitiva de usuarios, roles y permisos
+
+- Flyway V2 agrega `Usuario`, `Rol`, `Permiso`, `RolPermiso`, `UsuarioRol` e
+  `InvitacionUsuario` sin modificar la migración V1 ni los datos existentes.
+- Los usuarios y roles pertenecen a una institución; sus nombres, correos y códigos se
+  comparan normalizados dentro de ese límite institucional.
+- Los permisos son un catálogo técnico global. V2 siembra 18 permisos para el núcleo
+  actual y para administrar usuarios y roles.
+- Las asignaciones de rol tienen alcance `INSTITUCION`, `PLANTEL` o
+  `VINCULOS_TUTOR`. El plantel es obligatorio exclusivamente para el alcance de plantel
+  y debe pertenecer a la institución del usuario y del rol.
+- Las invitaciones son revocables, vencen como máximo en siete días y son de un solo
+  uso. Sólo se persiste SHA-256 del token; la contraseña se persiste codificada con
+  BCrypt y nunca se envía ni almacena en texto plano.
+- Se mantienen auditoría, concurrencia optimista y desactivación lógica. El login sigue
+  usando temporalmente las credenciales de `.env` para evitar un bloqueo administrativo
+  antes de crear y comprobar el primer usuario real.
+
+## Verificación de la base de seguridad
+
+- Compilación Docker correcta de 130 archivos Java de producción.
+- 35 pruebas ejecutadas sin fallos ni errores; seis cubren alcances multiinstitución,
+  token protegido, contraseña codificada y consumo único de invitación, y una protege
+  el acceso del administrador temporal al coexistir con BCrypt.
+- Flyway validó dos migraciones y aplicó V2 sobre el volumen existente.
+- PostgreSQL 17 contiene las seis tablas nuevas y los 18 permisos sembrados.
+- Hibernate validó el esquema, detectó 14 repositorios y la aplicación respondió `UP`
+  en `http://localhost:8080`.
+- Se verificó una autenticación HTTP real con las credenciales cargadas internamente en
+  el contenedor, sin imprimirlas; el acceso respondió correctamente.
+
+## Decisiones — módulo visible de roles y permisos
+
+- `Roles y permisos` se agregó como noveno módulo de la consola administrativa y como
+  primera sección visible de Seguridad.
+- El listado filtra código, nombre y descripción directamente en PostgreSQL, pagina sin
+  cargar el catálogo completo y exporta un XLSX con los mismos filtros.
+- El formulario crea y edita roles por institución, permite seleccionar los 18 permisos
+  técnicos y muestra validaciones, duplicados, concurrencia e integridad sin salir de la
+  pantalla.
+- Los roles se desactivan lógicamente. Flyway V3 agregó el indicador `activo` a
+  `RolPermiso`, de modo que retirar o volver a conceder permisos conserva la relación y
+  su auditoría en lugar de eliminarla.
+
+## Verificación del módulo de roles y permisos
+
+- Compilación Docker correcta de 133 archivos Java de producción.
+- 39 pruebas ejecutadas sin fallos ni errores, incluidas las reglas de sincronización
+  histórica y el controlador del formulario de roles.
+- Flyway validó y aplicó V3 sobre el volumen existente; Hibernate validó el esquema.
+- Listado y formulario respondieron autenticados y el formulario presentó los permisos
+  técnicos disponibles.
+- La exportación filtrada respondió correctamente con firma XLSX válida y la aplicación
+  permaneció `UP` en `http://localhost:8080`.

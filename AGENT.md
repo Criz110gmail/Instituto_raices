@@ -176,12 +176,33 @@ curl http://localhost:18080/actuator/health
 La imagen Docker compila el proyecto y ejecuta las pruebas Maven, por lo que Maven no
 es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 
+## Base de seguridad implementada
+
+- La migración `V2__crear_seguridad_roles_permisos.sql` crea `Usuario`, `Rol`,
+  `Permiso`, `RolPermiso`, `UsuarioRol` e `InvitacionUsuario` de forma aditiva.
+- Existen entidades, repositorios, DTO, mappers y servicios transaccionales para crear y
+  modificar usuarios invitados y roles, asignar permisos, asignar roles con alcance y
+  activar usuarios mediante invitaciones.
+- Se preserva la separación entre instituciones en usuarios, roles y planteles.
+- V2 siembra 18 permisos técnicos. Las invitaciones sólo guardan SHA-256 del token, son
+  de un solo uso y la contraseña se codifica con BCrypt.
+- El login sigue conectado al administrador temporal de `.env`. No cambiarlo hasta que
+  la interfaz permita crear, invitar y verificar un administrador real.
+- Al existir BCrypt, `SeguridadConfig` crea explícitamente ese usuario temporal y
+  codifica al arrancar la contraseña recibida de `.env`; no retirar este puente antes
+  de migrar el login a usuarios persistidos.
+- `Roles y permisos` ya es un módulo visible en la consola. Incluye filtros en base de
+  datos, paginación, Excel, alta, edición, desactivación lógica y selección de los 18
+  permisos técnicos con errores dentro del mismo formulario.
+- La migración V3 agrega `activo` a `RolPermiso` para conservar el historial al retirar
+  o volver a conceder permisos; V2 y V3 ya fueron aplicadas y no deben editarse.
+
 ## Verificación confirmada
 
-- Compilación correcta de 99 archivos Java de producción.
-- 28 pruebas Maven sin fallos ni errores.
-- Flyway V1 validado y aplicado correctamente.
-- Hibernate validó el esquema y detectó los ocho repositorios.
+- Compilación correcta de 133 archivos Java de producción.
+- 39 pruebas Maven sin fallos ni errores.
+- Flyway V1, V2 y V3 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 14 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -191,10 +212,11 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 
 ## Siguiente paso acordado
 
-La primera etapa del núcleo institucional y académico está completa. Detenerse para
-revisar con el usuario el resultado de los ocho catálogos antes de iniciar el módulo
-definitivo de usuarios, roles y permisos. No ampliar todavía alumnos, tutores, cobros o
-tesorería sin acordar primero el alcance de seguridad y multiinstitución.
+Construir el módulo visible de Usuarios y asignaciones sobre la base de seguridad ya
+verificada. Debe incluir filtros en PostgreSQL, paginación, Excel, alta de invitados,
+edición, estados, roles con alcance, emisión de invitaciones y errores integrados.
+Después se creará y probará el primer administrador real y sólo entonces se sustituirá
+el login temporal. No ampliar todavía alumnos, tutores, cobros o tesorería.
 
 ## Disciplina de cambios y entrega
 

@@ -5,6 +5,7 @@ import escuela.academico.repository.*;
 import escuela.admin.dto.*;
 import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
+import escuela.seguridad.repository.RolRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,7 @@ public class CatalogoConsultaService {
     private final CicloEscolarRepository cicloRepository;
     private final PeriodoAcademicoRepository periodoRepository;
     private final GrupoRepository grupoRepository;
+    private final RolRepository rolRepository;
 
     public ResultadoCatalogo consultar(ModuloCatalogo modulo, FiltroCatalogo filtroOriginal) {
         FiltroCatalogo f = filtroOriginal.normalizado();
@@ -55,6 +57,8 @@ public class CatalogoConsultaService {
                     e -> filaEstado(e.getId(), e.getEstado().name(), e.getCodigo(), e.getNombre(), e.getNivelEducativo().getNombre(), e.getTipo().name(), FECHA.format(e.getFechaInicio()) + " — " + FECHA.format(e.getFechaFin())));
             case GRUPOS -> consultar(grupoRepository, texto(f, "nombre", "codigo", "aula"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getNombre(), valor(e.getCodigo()), e.getPlantel().getNombre(), e.getGrado().getNombre(), e.getTurno().name(), e.getCapacidad() == null ? "Sin límite" : e.getCapacidad().toString()));
+            case ROLES -> consultar(rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
+                    e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
         };
         return new ResultadoCatalogo(modulo, modulo.columnas(), resultado);
     }
