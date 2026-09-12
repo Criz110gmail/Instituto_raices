@@ -26,9 +26,10 @@ Se requiere Java 21, Maven y PostgreSQL. Configura `DB_URL`, `DB_USERNAME` y
 mvn spring-boot:run
 ```
 
-La seguridad inicial permite la portada, el login y el endpoint de salud. Las demás
-rutas requieren las credenciales `ADMIN_BOOTSTRAP_USERNAME` y
-`ADMIN_BOOTSTRAP_PASSWORD` configuradas en `.env`.
+La portada, el login, la activación de cuenta y el endpoint de salud son públicos. Las
+demás rutas autentican usuarios activos de PostgreSQL y comprueban los permisos de sus
+roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME` y `ADMIN_BOOTSTRAP_PASSWORD` de
+`.env` se conservan como acceso temporal de recuperación.
 
 ## Estructura inicial
 
@@ -51,14 +52,15 @@ Todos los listados consultan la
 base de datos con filtros y paginación; el botón **Exportar Excel** aplica exactamente
 los mismos filtros y genera el archivo con Apache POI en modo streaming.
 
-Mientras se desarrolla el módulo definitivo de usuarios, configura
-`ADMIN_BOOTSTRAP_USERNAME` y `ADMIN_BOOTSTRAP_PASSWORD` en `.env` para acceder.
+Para recuperación administrativa, configura `ADMIN_BOOTSTRAP_USERNAME` y
+`ADMIN_BOOTSTRAP_PASSWORD` en `.env`.
 
 La base del módulo definitivo de seguridad ya existe en Flyway V2 y en la capa de
 dominio. Incluye aislamiento por institución, roles con permisos técnicos, alcances
 institucionales o por plantel e invitaciones de un solo uso cuyo token sólo se guarda
-como hash. El inicio de sesión aún utiliza deliberadamente el administrador temporal;
-se cambiará después de crear y verificar el primer administrador real.
+como hash. El inicio de sesión acepta usuarios activos persistidos y carga como
+autoridades sus permisos vigentes. Si un username se repite en varias instituciones,
+se ingresa como `CODIGO_INSTITUCION\usuario`; si es único, basta el username.
 
 La consola y el login incluyen temas claro y oscuro con preferencia persistente en el
 dispositivo. Instituciones, planteles, niveles, oferta educativa y grados ya permiten

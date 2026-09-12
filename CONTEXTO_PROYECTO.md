@@ -314,3 +314,28 @@
   verificación real.
 - PostgreSQL permaneció en Flyway V3, la aplicación respondió `UP` y la tabla `usuario`
   siguió vacía: no se dejaron registros de prueba.
+
+## Decisiones — autenticación de usuarios persistidos
+
+- `UsuarioSistemaDetailsService` reemplazó el proveedor exclusivamente temporal y
+  autentica usuarios `ACTIVO` mediante el hash BCrypt guardado al consumir la
+  invitación.
+- Un username único se resuelve directamente. Cuando existe en más de una institución,
+  el acceso exige `CODIGO_INSTITUCION\usuario` para eliminar ambigüedad.
+- Las autoridades se derivan únicamente de asignaciones activas, roles activos y
+  permisos activos. Las rutas administrativas exigen su permiso técnico correspondiente.
+- El administrador de `.env` permanece como acceso de recuperación y recibe todos los
+  permisos técnicos, sin guardar ni publicar su contraseña.
+- La cuenta real `criz110` quedó activa, con credencial BCrypt y rol administrador de
+  alcance institucional; la contraseña en texto plano no se leyó ni se conservó.
+
+## Verificación de la autenticación persistida
+
+- Compilación Docker correcta de 140 archivos Java de producción.
+- 50 pruebas ejecutadas sin fallos ni errores; tres cubren usuario persistido, permisos,
+  usernames multiinstitución y acceso temporal de recuperación.
+- Spring registró `usuarioSistemaDetailsService` como proveedor global de autenticación.
+- Flyway validó V1, V2 y V3, la aplicación inició correctamente y salud respondió HTTP
+  200. El acceso de recuperación respondió HTTP 200 sin imprimir sus credenciales.
+- Falta únicamente que el propietario confirme en el navegador su contraseña elegida
+  para `criz110`; el sistema sólo conserva el hash y no puede reconstruirla.

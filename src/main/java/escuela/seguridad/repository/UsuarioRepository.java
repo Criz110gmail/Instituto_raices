@@ -14,6 +14,7 @@ import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long>, JpaSpecificationExecutor<Usuario> {
     List<Usuario> findAllByInstitucionIdOrderByUsernameAsc(Long institucionId);
+    List<Usuario> findAllByUsernameIgnoreCase(String username);
     Optional<Usuario> findByInstitucionCodigoIgnoreCaseAndUsernameIgnoreCase(String institucionCodigo, String username);
     boolean existsByInstitucionIdAndUsernameIgnoreCaseAndIdNot(Long institucionId, String username, Long id);
     boolean existsByInstitucionIdAndEmailIgnoreCaseAndIdNot(Long institucionId, String email, Long id);

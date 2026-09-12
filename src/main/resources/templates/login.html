@@ -23,7 +23,7 @@
         <form method="post" th:action="@{/login}">
             <label><span>Usuario</span><input name="username" autocomplete="username" required autofocus placeholder="tu.usuario"></label>
             <label><span>Contraseña</span><input type="password" name="password" autocomplete="current-password" required placeholder="••••••••••••"></label>
-            <div class="form-meta"><span>Acceso protegido con Spring Security</span></div>
+            <div class="form-meta"><span>Si el usuario se repite, usa CÓDIGO_INSTITUCIÓN\usuario</span></div>
             <button type="submit">Entrar al sistema <span>→</span></button>
         </form>
         <p class="support">¿Problemas para ingresar? Contacta al administrador de tu institución.</p>

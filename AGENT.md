@@ -20,8 +20,7 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado al redactar este archivo: `e82c2bf` — `Primera etapa del
-  sistema administrativo escolar`.
+- Último commit confirmado antes de estos cambios locales: `c86e9f6` — `usuarios`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
@@ -153,8 +152,8 @@ Todo módulo que se construya debe incluir desde su primera entrega:
   `APP_PORT`, `ADMIN_BOOTSTRAP_USERNAME` y `ADMIN_BOOTSTRAP_PASSWORD`.
 - Nunca copies al repositorio las credenciales del equipo anterior. En una computadora
   nueva crea `.env` a partir de `.env.example` y genera contraseñas nuevas.
-- El administrador actual es temporal. Será reemplazado por el módulo definitivo de
-  usuarios, roles y permisos en una etapa posterior.
+- Los usuarios activos de PostgreSQL ya pueden iniciar sesión. El administrador de
+  `.env` se conserva temporalmente como acceso de recuperación controlado.
 
 ## Arranque en una computadora nueva
 
@@ -186,11 +185,13 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 - Se preserva la separación entre instituciones en usuarios, roles y planteles.
 - V2 siembra 18 permisos técnicos. Las invitaciones sólo guardan SHA-256 del token, son
   de un solo uso y la contraseña se codifica con BCrypt.
-- El login sigue conectado al administrador temporal de `.env`. No cambiarlo hasta que
-  la interfaz permita crear, invitar y verificar un administrador real.
-- Al existir BCrypt, `SeguridadConfig` crea explícitamente ese usuario temporal y
-  codifica al arrancar la contraseña recibida de `.env`; no retirar este puente antes
-  de migrar el login a usuarios persistidos.
+- `UsuarioSistemaDetailsService` autentica usuarios activos de PostgreSQL con su hash
+  BCrypt y obtiene autoridades de asignaciones, roles y permisos activos.
+- Un username único puede usarse directamente. Si se repite entre instituciones, el
+  identificador es `CODIGO_INSTITUCION\usuario`.
+- El usuario temporal de `.env` sigue disponible como recuperación y recibe todos los
+  permisos técnicos existentes. No retirar este puente hasta comprobar la operación y
+  recuperación con usuarios persistidos.
 - `Roles y permisos` ya es un módulo visible en la consola. Incluye filtros en base de
   datos, paginación, Excel, alta, edición, desactivación lógica y selección de los 18
   permisos técnicos con errores dentro del mismo formulario.
@@ -205,8 +206,8 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 
 ## Verificación confirmada
 
-- Compilación correcta de 139 archivos Java de producción.
-- 47 pruebas Maven sin fallos ni errores.
+- Compilación correcta de 140 archivos Java de producción.
+- 50 pruebas Maven sin fallos ni errores.
 - Flyway V1, V2 y V3 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 14 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
@@ -218,11 +219,10 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 
 ## Siguiente paso acordado
 
-Crear desde la interfaz un rol administrador con los permisos necesarios y el primer
-usuario real, asignarle alcance institucional, generar y consumir su invitación. Una
-vez verificado ese registro, implementar autenticación multiinstitución desde
-PostgreSQL y conservar temporalmente una vía de recuperación controlada durante la
-transición. No ampliar todavía alumnos, tutores, cobros o tesorería.
+Confirmar desde el navegador el ingreso del primer administrador persistido y después
+aplicar el alcance institucional o por plantel también al filtrado de datos, no sólo a
+la autorización de rutas. Mantener por ahora el usuario temporal de recuperación. No
+ampliar todavía alumnos, tutores, cobros o tesorería.
 
 ## Disciplina de cambios y entrega
 

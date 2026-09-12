@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface UsuarioRolRepository extends JpaRepository<UsuarioRol, Long> {
     List<UsuarioRol> findAllByUsuarioIdOrderByRolNombreAsc(Long usuarioId);
+    List<UsuarioRol> findAllByUsuarioIdAndActivoTrueOrderByRolNombreAsc(Long usuarioId);
     boolean existsByUsuarioIdAndRolIdAndAlcanceAndPlantelId(
             Long usuarioId, Long rolId, AlcanceRol alcance, Long plantelId);
     boolean existsByUsuarioIdAndRolIdAndAlcanceAndPlantelIsNull(
