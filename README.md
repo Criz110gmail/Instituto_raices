@@ -62,6 +62,12 @@ como hash. El inicio de sesión acepta usuarios activos persistidos y carga como
 autoridades sus permisos vigentes. Si un username se repite en varias instituciones,
 se ingresa como `CODIGO_INSTITUCION\usuario`; si es único, basta el username.
 
+El alcance del rol también se aplica a los datos: un usuario institucional sólo ve su
+institución y uno de plantel sólo ve los planteles, ofertas y grupos asignados. Los
+selectores, accesos directos por ID y exportaciones Excel respetan la misma regla. Los
+roles y usuarios sólo pueden administrarse con alcance institucional; un intento fuera
+del alcance responde con una pantalla 403 integrada al diseño.
+
 La consola y el login incluyen temas claro y oscuro con preferencia persistente en el
 dispositivo. Instituciones, planteles, niveles, oferta educativa y grados ya permiten
 crear, editar y desactivar registros; los ciclos escolares permiten crear y editar su

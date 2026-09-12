@@ -6,6 +6,8 @@ import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.service.InstitucionService;
 import escuela.seguridad.dto.response.RolResponse;
 import escuela.seguridad.service.RolService;
+import escuela.seguridad.service.AlcanceDatosService;
+import escuela.admin.dto.ModuloCatalogo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,6 +30,7 @@ public class RolAdminController {
 
     private final RolService service;
     private final InstitucionService institucionService;
+    private final AlcanceDatosService alcance;
 
     @GetMapping("/nuevo")
     String nuevo(Model model) {
@@ -38,6 +41,7 @@ public class RolAdminController {
     @PostMapping
     String crear(@Valid @ModelAttribute("form") RolForm form, BindingResult errores,
                  Model model, RedirectAttributes flash) {
+        if (form.getInstitucionId() != null) alcance.validarAdministracionInstitucional(form.getInstitucionId());
         if (errores.hasErrors()) {
             preparar(model, form, null);
             return "admin/rol-form";
@@ -55,7 +59,9 @@ public class RolAdminController {
 
     @GetMapping("/{id}/editar")
     String editar(@PathVariable Long id, Model model) {
+        alcance.validarRecurso(ModuloCatalogo.ROLES, id);
         RolResponse rol = service.obtener(id);
+        alcance.validarAdministracionInstitucional(rol.institucionId());
         preparar(model, RolForm.desde(rol, service.permisosAsignados(id)), id);
         return "admin/rol-form";
     }
@@ -64,6 +70,8 @@ public class RolAdminController {
     String actualizar(@PathVariable Long id,
                       @Valid @ModelAttribute("form") RolForm form,
                       BindingResult errores, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.ROLES, id);
+        if (form.getInstitucionId() != null) alcance.validarAdministracionInstitucional(form.getInstitucionId());
         if (errores.hasErrors()) {
             preparar(model, form, id);
             return "admin/rol-form";
@@ -82,6 +90,8 @@ public class RolAdminController {
     @PostMapping("/{id}/desactivar")
     String desactivar(@PathVariable Long id, @RequestParam Long version,
                       Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.ROLES, id);
+        alcance.validarAdministracionInstitucional(service.obtener(id).institucionId());
         try {
             service.desactivar(id, version);
         } catch (ReglaNegocioException | DataIntegrityViolationException |
@@ -98,7 +108,7 @@ public class RolAdminController {
         model.addAttribute("form", form);
         model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
-        model.addAttribute("instituciones", institucionService.listar());
+        model.addAttribute("instituciones", alcance.filtrarInstituciones(institucionService.listar()));
         model.addAttribute("permisos", service.listarPermisos());
     }
 

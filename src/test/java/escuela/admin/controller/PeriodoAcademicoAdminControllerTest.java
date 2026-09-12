@@ -13,6 +13,8 @@ import escuela.admin.dto.PeriodoAcademicoForm;
 import escuela.common.dto.response.AuditoriaResponse;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.service.InstitucionService;
+import escuela.seguridad.service.AlcanceDatosService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -40,7 +42,16 @@ class PeriodoAcademicoAdminControllerTest {
     @Mock private CicloEscolarService cicloService;
     @Mock private NivelEducativoService nivelService;
     @Mock private InstitucionService institucionService;
+    @Mock private AlcanceDatosService alcance;
     @InjectMocks private PeriodoAcademicoAdminController controller;
+
+    @BeforeEach
+    void prepararAlcance() {
+        org.mockito.Mockito.lenient().when(alcance.filtrarInstituciones(org.mockito.ArgumentMatchers.anyList()))
+                .thenAnswer(i -> i.getArgument(0));
+        org.mockito.Mockito.lenient().when(alcance.filtrarNiveles(org.mockito.ArgumentMatchers.anyList()))
+                .thenAnswer(i -> i.getArgument(0));
+    }
 
     @Test
     void creaElPeriodoConTodosLosDatos() {

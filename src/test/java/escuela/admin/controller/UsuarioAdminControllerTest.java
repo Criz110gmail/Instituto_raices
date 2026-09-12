@@ -14,6 +14,8 @@ import escuela.seguridad.service.AdministracionAccesoService;
 import escuela.seguridad.service.InvitacionUsuarioService;
 import escuela.seguridad.service.RolService;
 import escuela.seguridad.service.UsuarioService;
+import escuela.seguridad.service.AlcanceDatosService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -41,7 +43,14 @@ class UsuarioAdminControllerTest {
     @Mock private InvitacionUsuarioService invitacionService;
     @Mock private InstitucionService institucionService;
     @Mock private PlantelService plantelService;
+    @Mock private AlcanceDatosService alcance;
     @InjectMocks private UsuarioAdminController controller;
+
+    @BeforeEach
+    void prepararAlcance() {
+        org.mockito.Mockito.lenient().when(alcance.filtrarInstituciones(org.mockito.ArgumentMatchers.anyList()))
+                .thenAnswer(i -> i.getArgument(0));
+    }
 
     @Test
     void creaInvitadoYAbreSuAdministracion() {

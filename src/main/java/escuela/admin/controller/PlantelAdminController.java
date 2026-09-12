@@ -5,6 +5,8 @@ import escuela.admin.support.MensajeErrorFormulario;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.service.InstitucionService;
 import escuela.institucion.service.PlantelService;
+import escuela.seguridad.service.AlcanceDatosService;
+import escuela.admin.dto.ModuloCatalogo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class PlantelAdminController {
     private final PlantelService service;
     private final InstitucionService institucionService;
+    private final AlcanceDatosService alcance;
 
     @GetMapping("/nuevo")
     String nuevo(Model model) {
@@ -36,6 +39,7 @@ public class PlantelAdminController {
     @PostMapping
     String crear(@Valid @ModelAttribute("form") PlantelForm form, BindingResult errores,
                  Model model, RedirectAttributes flash) {
+        if (form.getInstitucionId() != null) alcance.validarNuevoPlantel(form.getInstitucionId());
         if (errores.hasErrors()) {
             preparar(model, form, null);
             return "admin/plantel-form";
@@ -53,6 +57,7 @@ public class PlantelAdminController {
 
     @GetMapping("/{id}/editar")
     String editar(@PathVariable Long id, Model model) {
+        alcance.validarRecurso(ModuloCatalogo.PLANTELES, id);
         preparar(model, PlantelForm.desde(service.obtener(id)), id);
         return "admin/plantel-form";
     }
@@ -60,6 +65,8 @@ public class PlantelAdminController {
     @PostMapping("/{id}")
     String actualizar(@PathVariable Long id, @Valid @ModelAttribute("form") PlantelForm form,
                       BindingResult errores, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.PLANTELES, id);
+        if (form.getInstitucionId() != null) alcance.validarInstitucion(form.getInstitucionId());
         if (errores.hasErrors()) {
             preparar(model, form, id);
             return "admin/plantel-form";
@@ -78,6 +85,7 @@ public class PlantelAdminController {
     @PostMapping("/{id}/desactivar")
     String desactivar(@PathVariable Long id, @RequestParam Long version,
                       Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.PLANTELES, id);
         try {
             service.desactivar(id, version);
         } catch (ReglaNegocioException | DataIntegrityViolationException |
@@ -93,7 +101,7 @@ public class PlantelAdminController {
         model.addAttribute("form", form);
         model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
-        model.addAttribute("instituciones", institucionService.listar());
+        model.addAttribute("instituciones", alcance.filtrarInstituciones(institucionService.listar()));
     }
 
     private void prepararError(Model model, PlantelForm form, Long id, RuntimeException excepcion) {

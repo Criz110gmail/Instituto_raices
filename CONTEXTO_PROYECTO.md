@@ -339,3 +339,29 @@
   200. El acceso de recuperación respondió HTTP 200 sin imprimir sus credenciales.
 - Falta únicamente que el propietario confirme en el navegador su contraseña elegida
   para `criz110`; el sistema sólo conserva el hash y no puede reconstruirla.
+
+## Decisiones — aislamiento multiinstitución y multiplantel
+
+- El principal de Spring Security conserva el identificador del usuario, su institución,
+  la presencia de alcance institucional y los planteles de sus asignaciones activas.
+- Los diez listados y sus exportaciones Excel agregan en PostgreSQL la especificación de
+  alcance, además de los filtros de búsqueda y estado existentes.
+- Formularios, selectores, altas, ediciones, cambios de estado y desactivaciones validan
+  el alcance en servidor. Alterar manualmente un ID o una relación no permite cruzar de
+  institución o usar un plantel no asignado.
+- Un alcance `PLANTEL` puede consultar catálogos académicos compartidos de su institución,
+  pero planteles, oferta y grupos quedan limitados a sus planteles. `VINCULOS_TUTOR` no
+  habilita módulos administrativos.
+- Administrar usuarios y roles requiere alcance institucional. Crear otra institución
+  queda reservado al acceso de recuperación para evitar escalamiento entre inquilinos.
+- Se agregó una pantalla 403 propia, accesible, responsiva y compatible con tema claro
+  y oscuro para permisos o alcances insuficientes.
+
+## Verificación del aislamiento de datos
+
+- Compilación Docker correcta de 142 archivos Java de producción.
+- 55 pruebas ejecutadas sin fallos ni errores; cinco cubren aislamiento institucional,
+  planteles permitidos, acceso directo denegado, tutores y recuperación global.
+- La aplicación inició con PostgreSQL saludable, Flyway V3 vigente y el proveedor de
+  usuarios persistidos activo. Salud, recuperación y la pantalla 403 respondieron.
+- La base de datos no fue recreada ni se modificaron los datos existentes.

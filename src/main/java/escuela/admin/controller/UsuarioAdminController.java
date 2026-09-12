@@ -14,6 +14,8 @@ import escuela.seguridad.service.AdministracionAccesoService;
 import escuela.seguridad.service.InvitacionUsuarioService;
 import escuela.seguridad.service.RolService;
 import escuela.seguridad.service.UsuarioService;
+import escuela.seguridad.service.AlcanceDatosService;
+import escuela.admin.dto.ModuloCatalogo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -43,6 +45,7 @@ public class UsuarioAdminController {
     private final InvitacionUsuarioService invitacionService;
     private final InstitucionService institucionService;
     private final PlantelService plantelService;
+    private final AlcanceDatosService alcance;
 
     @GetMapping("/nuevo")
     String nuevo(Model model) {
@@ -53,6 +56,7 @@ public class UsuarioAdminController {
     @PostMapping
     String crear(@Valid @ModelAttribute("form") UsuarioForm form, BindingResult errores,
                  Model model, RedirectAttributes flash) {
+        if (form.getInstitucionId() != null) alcance.validarAdministracionInstitucional(form.getInstitucionId());
         if (errores.hasErrors()) {
             prepararNuevo(model, form);
             return "admin/usuario-form";
@@ -71,7 +75,9 @@ public class UsuarioAdminController {
 
     @GetMapping("/{id}/editar")
     String editar(@PathVariable Long id, Model model) {
+        alcance.validarRecurso(ModuloCatalogo.USUARIOS, id);
         UsuarioResponse usuario = service.obtener(id);
+        alcance.validarAdministracionInstitucional(usuario.institucionId());
         prepararEdicion(model, UsuarioForm.desde(usuario), usuario, new AsignacionRolForm());
         return "admin/usuario-form";
     }
@@ -80,7 +86,9 @@ public class UsuarioAdminController {
     String actualizar(@PathVariable Long id,
                       @Valid @ModelAttribute("form") UsuarioForm form,
                       BindingResult errores, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.USUARIOS, id);
         UsuarioResponse usuario = service.obtener(id);
+        alcance.validarAdministracionInstitucional(usuario.institucionId());
         if (errores.hasErrors()) {
             prepararEdicion(model, form, usuario, new AsignacionRolForm());
             return "admin/usuario-form";
@@ -101,6 +109,8 @@ public class UsuarioAdminController {
     String cambiarEstado(@PathVariable Long id, @RequestParam Long version,
                          @RequestParam EstadoUsuario estado, Model model,
                          RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.USUARIOS, id);
+        alcance.validarAdministracionInstitucional(service.obtener(id).institucionId());
         try {
             service.cambiarEstado(id, version, estado);
         } catch (ReglaNegocioException | DataIntegrityViolationException |
@@ -118,7 +128,10 @@ public class UsuarioAdminController {
     String asignarRol(@PathVariable Long id,
                       @Valid @ModelAttribute("asignacionForm") AsignacionRolForm asignacionForm,
                       BindingResult errores, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.USUARIOS, id);
         UsuarioResponse usuario = service.obtener(id);
+        alcance.validarAdministracionInstitucional(usuario.institucionId());
+        if (asignacionForm.getPlantelId() != null) alcance.validarPlantel(asignacionForm.getPlantelId());
         if (errores.hasErrors()) {
             prepararEdicion(model, UsuarioForm.desde(usuario), usuario, asignacionForm);
             return "admin/usuario-form";
@@ -138,6 +151,8 @@ public class UsuarioAdminController {
     @PostMapping("/{usuarioId}/roles/{asignacionId}/desactivar")
     String desactivarRol(@PathVariable Long usuarioId, @PathVariable Long asignacionId,
                          @RequestParam Long version, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.USUARIOS, usuarioId);
+        alcance.validarAdministracionInstitucional(service.obtener(usuarioId).institucionId());
         try {
             accesoService.desactivarAsignacion(usuarioId, asignacionId, version);
         } catch (ReglaNegocioException | DataIntegrityViolationException |
@@ -153,6 +168,8 @@ public class UsuarioAdminController {
 
     @PostMapping("/{id}/invitacion")
     String emitirInvitacion(@PathVariable Long id, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.USUARIOS, id);
+        alcance.validarAdministracionInstitucional(service.obtener(id).institucionId());
         try {
             InvitacionEmitidaResponse invitacion = invitacionService.emitir(id, Duration.ofHours(48));
             String enlace = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -173,7 +190,7 @@ public class UsuarioAdminController {
     private void prepararNuevo(Model model, UsuarioForm form) {
         model.addAttribute("form", form);
         model.addAttribute("edicion", false);
-        model.addAttribute("instituciones", institucionService.listar());
+        model.addAttribute("instituciones", alcance.filtrarInstituciones(institucionService.listar()));
     }
 
     private void prepararEdicion(Model model, UsuarioForm form, UsuarioResponse usuario,
@@ -182,9 +199,9 @@ public class UsuarioAdminController {
         model.addAttribute("id", usuario.id());
         model.addAttribute("edicion", true);
         model.addAttribute("usuario", usuario);
-        model.addAttribute("instituciones", institucionService.listar());
-        model.addAttribute("roles", rolService.listarRoles());
-        model.addAttribute("planteles", plantelService.listar());
+        model.addAttribute("instituciones", alcance.filtrarInstituciones(institucionService.listar()));
+        model.addAttribute("roles", alcance.filtrarRoles(rolService.listarRoles()));
+        model.addAttribute("planteles", alcance.filtrarPlanteles(plantelService.listar()));
         model.addAttribute("alcances", AlcanceRol.values());
         model.addAttribute("asignacionForm", asignacionForm);
         model.addAttribute("asignaciones", accesoService.listarAsignaciones(usuario.id()));

@@ -20,7 +20,8 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `c86e9f6` — `usuarios`.
+- Último commit confirmado antes de estos cambios locales: `278e259` — `se asignaron
+  usuarios y permisos`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
@@ -203,11 +204,20 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 - `/activar-cuenta` es público y permite consumir una invitación de 48 horas para fijar
   una contraseña BCrypt. El enlace se muestra una sola vez al administrador y la base
   conserva únicamente SHA-256 del token.
+- El principal autenticado conserva usuario, institución y planteles asignados. Los
+  listados, Excel, selectores y operaciones por ID aplican ese alcance en servidor.
+- El alcance institucional ve sólo su institución; el de plantel restringe planteles,
+  oferta y grupos a los asignados. Los catálogos académicos compartidos permanecen
+  limitados a la institución. `VINCULOS_TUTOR` no concede acceso administrativo.
+- La creación de instituciones queda reservada al acceso de recuperación, y administrar
+  roles o usuarios exige alcance institucional para impedir escalamiento de privilegios.
+- Los permisos o alcances insuficientes muestran una pantalla 403 propia, responsiva y
+  compatible con los temas claro y oscuro.
 
 ## Verificación confirmada
 
-- Compilación correcta de 140 archivos Java de producción.
-- 50 pruebas Maven sin fallos ni errores.
+- Compilación correcta de 142 archivos Java de producción.
+- 55 pruebas Maven sin fallos ni errores.
 - Flyway V1, V2 y V3 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 14 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
@@ -219,10 +229,10 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 
 ## Siguiente paso acordado
 
-Confirmar desde el navegador el ingreso del primer administrador persistido y después
-aplicar el alcance institucional o por plantel también al filtrado de datos, no sólo a
-la autorización de rutas. Mantener por ahora el usuario temporal de recuperación. No
-ampliar todavía alumnos, tutores, cobros o tesorería.
+Conectar Spring Data Auditing al usuario persistido para completar `creado_por_id` y
+`actualizado_por_id`; después registrar último acceso, intentos fallidos y bloqueo
+temporal. Mantener por ahora el usuario de recuperación. No ampliar todavía alumnos,
+tutores, cobros o tesorería.
 
 ## Disciplina de cambios y entrega
 

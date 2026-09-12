@@ -20,6 +20,8 @@ import escuela.institucion.dto.response.PlantelResponse;
 import escuela.institucion.service.InstitucionService;
 import escuela.institucion.service.PlantelNivelService;
 import escuela.institucion.service.PlantelService;
+import escuela.seguridad.service.AlcanceDatosService;
+import escuela.admin.dto.ModuloCatalogo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -48,6 +50,7 @@ public class GrupoAdminController {
     private final CicloEscolarService cicloService;
     private final NivelEducativoService nivelService;
     private final GradoService gradoService;
+    private final AlcanceDatosService alcance;
 
     @GetMapping("/nuevo")
     String nuevo(Model model) {
@@ -58,6 +61,7 @@ public class GrupoAdminController {
     @PostMapping
     String crear(@Valid @ModelAttribute("form") GrupoForm form, BindingResult errores,
                  Model model, RedirectAttributes flash) {
+        validarAlcance(form);
         validarRelaciones(form, errores);
         if (errores.hasErrors()) {
             preparar(model, form, null);
@@ -76,6 +80,7 @@ public class GrupoAdminController {
 
     @GetMapping("/{id}/editar")
     String editar(@PathVariable Long id, Model model) {
+        alcance.validarRecurso(ModuloCatalogo.GRUPOS, id);
         GrupoResponse grupo = service.obtener(id);
         PlantelResponse plantel = plantelService.obtener(grupo.plantelId());
         preparar(model, GrupoForm.desde(grupo, plantel.institucionId()), id);
@@ -85,6 +90,8 @@ public class GrupoAdminController {
     @PostMapping("/{id}")
     String actualizar(@PathVariable Long id, @Valid @ModelAttribute("form") GrupoForm form,
                       BindingResult errores, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.GRUPOS, id);
+        validarAlcance(form);
         validarRelaciones(form, errores);
         if (errores.hasErrors()) {
             preparar(model, form, id);
@@ -104,6 +111,7 @@ public class GrupoAdminController {
     @PostMapping("/{id}/desactivar")
     String desactivar(@PathVariable Long id, @RequestParam Long version,
                       Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.GRUPOS, id);
         try {
             service.desactivar(id, version);
         } catch (ReglaNegocioException | DataIntegrityViolationException |
@@ -118,9 +126,9 @@ public class GrupoAdminController {
     }
 
     private void preparar(Model model, GrupoForm form, Long id) {
-        List<InstitucionResponse> instituciones = institucionService.listar();
-        List<PlantelResponse> planteles = plantelService.listar();
-        List<NivelEducativoResponse> niveles = nivelService.listar();
+        List<InstitucionResponse> instituciones = alcance.filtrarInstituciones(institucionService.listar());
+        List<PlantelResponse> planteles = alcance.filtrarPlanteles(plantelService.listar());
+        List<NivelEducativoResponse> niveles = alcance.filtrarNiveles(nivelService.listar());
         List<CicloEscolarResponse> ciclos = instituciones.stream()
                 .flatMap(institucion -> cicloService.listarPorInstitucion(institucion.id()).stream())
                 .toList();
@@ -174,6 +182,13 @@ public class GrupoAdminController {
             errores.rejectValue("gradoId", "grupo.grado.oferta",
                     "El plantel no ofrece activamente el nivel de este grado");
         }
+    }
+
+    private void validarAlcance(GrupoForm form) {
+        if (form.getInstitucionId() != null) alcance.validarInstitucion(form.getInstitucionId());
+        if (form.getPlantelId() != null) alcance.validarPlantel(form.getPlantelId());
+        if (form.getCicloEscolarId() != null) alcance.validarRecurso(ModuloCatalogo.CICLOS, form.getCicloEscolarId());
+        if (form.getGradoId() != null) alcance.validarRecurso(ModuloCatalogo.GRADOS, form.getGradoId());
     }
 
     private void prepararError(Model model, GrupoForm form, Long id, RuntimeException excepcion) {

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b1930">
+    <title>Acceso restringido · Nexo Escolar</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/access-denied.css">
+    <script src="/js/theme.js"></script>
+</head>
+<body>
+<button class="theme-toggle" type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button>
+<main class="denied-card">
+    <div class="brand"><span>N</span><strong>Nexo Escolar</strong></div>
+    <div class="status" aria-hidden="true"><span>403</span><i>!</i></div>
+    <p class="eyebrow">Alcance protegido</p>
+    <h1>No tienes acceso a esta información</h1>
+    <p class="copy">Tu sesión es válida, pero el permiso o el alcance de tu rol no incluye la institución, el plantel o el registro solicitado.</p>
+    <div class="actions">
+        <a class="primary" th:href="@{/admin}">Volver a la consola</a>
+        <a class="secondary" th:href="@{/}">Ir al inicio</a>
+    </div>
+    <p class="help">Si necesitas este acceso, solicita al administrador que revise tu rol y su alcance.</p>
+</main>
+</body>
+</html>

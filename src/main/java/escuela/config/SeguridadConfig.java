@@ -20,7 +20,7 @@ public class SeguridadConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/login", "/activar-cuenta", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
+                        .requestMatchers("/", "/login", "/activar-cuenta", "/acceso-denegado", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
                         .requestMatchers("/admin/instituciones/**").hasAuthority("INSTITUCION_ADMINISTRAR")
                         .requestMatchers("/admin/planteles/**").hasAuthority("PLANTEL_ADMINISTRAR")
                         .requestMatchers("/admin/niveles/**").hasAuthority("NIVEL_ADMINISTRAR")
@@ -42,6 +42,7 @@ public class SeguridadConfig {
                         .anyRequest().authenticated())
                 .formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/admin", true).permitAll())
                 .httpBasic(Customizer.withDefaults())
+                .exceptionHandling(excepciones -> excepciones.accessDeniedPage("/acceso-denegado"))
                 .logout(logout -> logout.logoutSuccessUrl("/"))
                 .build();
     }

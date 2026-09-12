@@ -8,6 +8,8 @@ import escuela.admin.dto.GradoForm;
 import escuela.admin.support.MensajeErrorFormulario;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.service.InstitucionService;
+import escuela.seguridad.service.AlcanceDatosService;
+import escuela.admin.dto.ModuloCatalogo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -30,6 +32,7 @@ public class GradoAdminController {
     private final GradoService service;
     private final NivelEducativoService nivelService;
     private final InstitucionService institucionService;
+    private final AlcanceDatosService alcance;
 
     @GetMapping("/nuevo")
     String nuevo(Model model) {
@@ -40,6 +43,8 @@ public class GradoAdminController {
     @PostMapping
     String crear(@Valid @ModelAttribute("form") GradoForm form, BindingResult errores,
                  Model model, RedirectAttributes flash) {
+        if (form.getInstitucionId() != null) alcance.validarInstitucion(form.getInstitucionId());
+        if (form.getNivelEducativoId() != null) alcance.validarRecurso(ModuloCatalogo.NIVELES, form.getNivelEducativoId());
         validarRelacion(form, errores);
         if (errores.hasErrors()) {
             preparar(model, form, null);
@@ -58,6 +63,7 @@ public class GradoAdminController {
 
     @GetMapping("/{id}/editar")
     String editar(@PathVariable Long id, Model model) {
+        alcance.validarRecurso(ModuloCatalogo.GRADOS, id);
         GradoResponse grado = service.obtener(id);
         NivelEducativoResponse nivel = nivelService.obtener(grado.nivelEducativoId());
         preparar(model, GradoForm.desde(grado, nivel.institucionId()), id);
@@ -68,6 +74,9 @@ public class GradoAdminController {
     String actualizar(@PathVariable Long id,
                       @Valid @ModelAttribute("form") GradoForm form,
                       BindingResult errores, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.GRADOS, id);
+        if (form.getInstitucionId() != null) alcance.validarInstitucion(form.getInstitucionId());
+        if (form.getNivelEducativoId() != null) alcance.validarRecurso(ModuloCatalogo.NIVELES, form.getNivelEducativoId());
         validarRelacion(form, errores);
         if (errores.hasErrors()) {
             preparar(model, form, id);
@@ -87,6 +96,7 @@ public class GradoAdminController {
     @PostMapping("/{id}/desactivar")
     String desactivar(@PathVariable Long id, @RequestParam Long version,
                       Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.GRADOS, id);
         try {
             service.desactivar(id, version);
         } catch (ReglaNegocioException | DataIntegrityViolationException |
@@ -104,8 +114,8 @@ public class GradoAdminController {
         model.addAttribute("form", form);
         model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
-        model.addAttribute("instituciones", institucionService.listar());
-        model.addAttribute("niveles", nivelService.listar());
+        model.addAttribute("instituciones", alcance.filtrarInstituciones(institucionService.listar()));
+        model.addAttribute("niveles", alcance.filtrarNiveles(nivelService.listar()));
     }
 
     private void validarRelacion(GradoForm form, BindingResult errores) {

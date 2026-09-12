@@ -6,6 +6,8 @@ import escuela.admin.support.MensajeErrorFormulario;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.service.PlantelNivelService;
 import escuela.institucion.service.PlantelService;
+import escuela.seguridad.service.AlcanceDatosService;
+import escuela.admin.dto.ModuloCatalogo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -28,6 +30,7 @@ public class PlantelNivelAdminController {
     private final PlantelNivelService service;
     private final PlantelService plantelService;
     private final NivelEducativoService nivelService;
+    private final AlcanceDatosService alcance;
 
     @GetMapping("/nueva")
     String nueva(Model model) {
@@ -38,6 +41,8 @@ public class PlantelNivelAdminController {
     @PostMapping
     String crear(@Valid @ModelAttribute("form") PlantelNivelForm form, BindingResult errores,
                  Model model, RedirectAttributes flash) {
+        if (form.getPlantelId() != null) alcance.validarPlantel(form.getPlantelId());
+        if (form.getNivelEducativoId() != null) alcance.validarRecurso(ModuloCatalogo.NIVELES, form.getNivelEducativoId());
         if (errores.hasErrors()) {
             preparar(model, form, null);
             return "admin/oferta-form";
@@ -55,6 +60,7 @@ public class PlantelNivelAdminController {
 
     @GetMapping("/{id}/editar")
     String editar(@PathVariable Long id, Model model) {
+        alcance.validarRecurso(ModuloCatalogo.OFERTA, id);
         preparar(model, PlantelNivelForm.desde(service.obtener(id)), id);
         return "admin/oferta-form";
     }
@@ -62,6 +68,9 @@ public class PlantelNivelAdminController {
     @PostMapping("/{id}")
     String actualizar(@PathVariable Long id, @Valid @ModelAttribute("form") PlantelNivelForm form,
                       BindingResult errores, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.OFERTA, id);
+        if (form.getPlantelId() != null) alcance.validarPlantel(form.getPlantelId());
+        if (form.getNivelEducativoId() != null) alcance.validarRecurso(ModuloCatalogo.NIVELES, form.getNivelEducativoId());
         if (errores.hasErrors()) {
             preparar(model, form, id);
             return "admin/oferta-form";
@@ -80,6 +89,7 @@ public class PlantelNivelAdminController {
     @PostMapping("/{id}/desactivar")
     String desactivar(@PathVariable Long id, @RequestParam Long version,
                       Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.OFERTA, id);
         try {
             service.desactivar(id, version);
         } catch (ReglaNegocioException | DataIntegrityViolationException |
@@ -95,8 +105,8 @@ public class PlantelNivelAdminController {
         model.addAttribute("form", form);
         model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
-        model.addAttribute("planteles", plantelService.listar());
-        model.addAttribute("niveles", nivelService.listar());
+        model.addAttribute("planteles", alcance.filtrarPlanteles(plantelService.listar()));
+        model.addAttribute("niveles", alcance.filtrarNiveles(nivelService.listar()));
     }
 
     private void prepararError(Model model, PlantelNivelForm form, Long id,

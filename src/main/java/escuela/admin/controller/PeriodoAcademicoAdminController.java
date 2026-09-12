@@ -13,6 +13,8 @@ import escuela.admin.support.MensajeErrorFormulario;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.service.InstitucionService;
+import escuela.seguridad.service.AlcanceDatosService;
+import escuela.admin.dto.ModuloCatalogo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -37,6 +39,7 @@ public class PeriodoAcademicoAdminController {
     private final CicloEscolarService cicloService;
     private final NivelEducativoService nivelService;
     private final InstitucionService institucionService;
+    private final AlcanceDatosService alcance;
 
     @GetMapping("/nuevo")
     String nuevo(Model model) {
@@ -47,6 +50,7 @@ public class PeriodoAcademicoAdminController {
     @PostMapping
     String crear(@Valid @ModelAttribute("form") PeriodoAcademicoForm form,
                  BindingResult errores, Model model, RedirectAttributes flash) {
+        validarAlcance(form);
         validarRelaciones(form, errores);
         if (errores.hasErrors()) {
             preparar(model, form, null);
@@ -65,6 +69,7 @@ public class PeriodoAcademicoAdminController {
 
     @GetMapping("/{id}/editar")
     String editar(@PathVariable Long id, Model model) {
+        alcance.validarRecurso(ModuloCatalogo.PERIODOS, id);
         PeriodoAcademicoResponse periodo = service.obtener(id);
         CicloEscolarResponse ciclo = cicloService.obtener(periodo.cicloEscolarId());
         preparar(model, PeriodoAcademicoForm.desde(periodo, ciclo.institucionId()), id);
@@ -75,6 +80,8 @@ public class PeriodoAcademicoAdminController {
     String actualizar(@PathVariable Long id,
                       @Valid @ModelAttribute("form") PeriodoAcademicoForm form,
                       BindingResult errores, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.PERIODOS, id);
+        validarAlcance(form);
         validarRelaciones(form, errores);
         if (errores.hasErrors()) {
             preparar(model, form, id);
@@ -92,7 +99,7 @@ public class PeriodoAcademicoAdminController {
     }
 
     private void preparar(Model model, PeriodoAcademicoForm form, Long id) {
-        List<InstitucionResponse> instituciones = institucionService.listar();
+        List<InstitucionResponse> instituciones = alcance.filtrarInstituciones(institucionService.listar());
         List<CicloEscolarResponse> ciclos = instituciones.stream()
                 .flatMap(institucion -> cicloService.listarPorInstitucion(institucion.id()).stream())
                 .toList();
@@ -101,7 +108,7 @@ public class PeriodoAcademicoAdminController {
         model.addAttribute("edicion", id != null);
         model.addAttribute("instituciones", instituciones);
         model.addAttribute("ciclos", ciclos);
-        model.addAttribute("niveles", nivelService.listar());
+        model.addAttribute("niveles", alcance.filtrarNiveles(nivelService.listar()));
         model.addAttribute("tipos", TipoPeriodoAcademico.values());
         model.addAttribute("estados", EstadoAcademico.values());
     }
@@ -121,6 +128,12 @@ public class PeriodoAcademicoAdminController {
             errores.rejectValue("nivelEducativoId", "periodo.nivel.institucion",
                     "El nivel seleccionado no pertenece a la institución indicada");
         }
+    }
+
+    private void validarAlcance(PeriodoAcademicoForm form) {
+        if (form.getInstitucionId() != null) alcance.validarInstitucion(form.getInstitucionId());
+        if (form.getCicloEscolarId() != null) alcance.validarRecurso(ModuloCatalogo.CICLOS, form.getCicloEscolarId());
+        if (form.getNivelEducativoId() != null) alcance.validarRecurso(ModuloCatalogo.NIVELES, form.getNivelEducativoId());
     }
 
     private void prepararError(Model model, PeriodoAcademicoForm form, Long id,

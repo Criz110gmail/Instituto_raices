@@ -11,6 +11,8 @@ import escuela.seguridad.repository.PermisoRepository;
 import escuela.seguridad.repository.RolPermisoRepository;
 import escuela.seguridad.repository.UsuarioRepository;
 import escuela.seguridad.repository.UsuarioRolRepository;
+import escuela.seguridad.service.UsuarioPrincipal;
+import escuela.seguridad.entity.AlcanceRol;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.security.autoconfigure.SecurityProperties;
@@ -63,6 +65,7 @@ class UsuarioSistemaDetailsServiceTest {
         rol.setActivo(true);
         UsuarioRol asignacion = new UsuarioRol();
         asignacion.setRol(rol);
+        asignacion.setAlcance(AlcanceRol.INSTITUCION);
 
         Permiso permiso = new Permiso();
         permiso.setCodigo("USUARIO_ADMINISTRAR");
@@ -81,6 +84,9 @@ class UsuarioSistemaDetailsServiceTest {
         assertThat(passwordEncoder.matches("password-elegida", detalles.getPassword())).isTrue();
         assertThat(detalles.getAuthorities()).extracting("authority")
                 .containsExactly("USUARIO_ADMINISTRAR");
+        assertThat(detalles).isInstanceOf(UsuarioPrincipal.class);
+        assertThat(((UsuarioPrincipal) detalles).institucionId()).isEqualTo(1L);
+        assertThat(((UsuarioPrincipal) detalles).alcanceInstitucional()).isTrue();
     }
 
     @Test

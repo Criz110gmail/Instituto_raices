@@ -8,6 +8,7 @@ import escuela.institucion.repository.*;
 import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.repository.UsuarioRepository;
+import escuela.seguridad.service.AlcanceDatosService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,40 +40,42 @@ public class CatalogoConsultaService {
     private final GrupoRepository grupoRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
+    private final AlcanceDatosService alcanceDatosService;
 
     public ResultadoCatalogo consultar(ModuloCatalogo modulo, FiltroCatalogo filtroOriginal) {
         FiltroCatalogo f = filtroOriginal.normalizado();
         Pageable pagina = PageRequest.of(f.pagina(), f.tamanio(), Sort.by("id").descending());
         Page<FilaCatalogo> resultado = switch (modulo) {
-            case INSTITUCIONES -> consultar(institucionRepository, texto(f, "codigo", "nombre"), activo(f), pagina,
+            case INSTITUCIONES -> consultar(modulo, institucionRepository, texto(f, "codigo", "nombre"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getZonaHoraria(), e.getMonedaPredeterminada()));
-            case PLANTELES -> consultar(plantelRepository, texto(f, "codigo", "nombre", "ciudad"), activo(f), pagina,
+            case PLANTELES -> consultar(modulo, plantelRepository, texto(f, "codigo", "nombre", "ciudad"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getCiudad())));
-            case NIVELES -> consultar(nivelRepository, texto(f, "codigo", "nombre"), activo(f), pagina,
+            case NIVELES -> consultar(modulo, nivelRepository, texto(f, "codigo", "nombre"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), String.valueOf(e.getOrden())));
-            case OFERTA -> consultar(ofertaRepository, textoRelacionesOferta(f), activo(f), pagina,
+            case OFERTA -> consultar(modulo, ofertaRepository, textoRelacionesOferta(f), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getPlantel().getNombre(), e.getNivelEducativo().getNombre(), valor(e.getClaveCentroTrabajo())));
-            case GRADOS -> consultar(gradoRepository, texto(f, "codigo", "nombre"), activo(f), pagina,
+            case GRADOS -> consultar(modulo, gradoRepository, texto(f, "codigo", "nombre"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getNivelEducativo().getNombre(), String.valueOf(e.getOrden())));
-            case CICLOS -> consultar(cicloRepository, texto(f, "codigo", "nombre"), estado(f, "estado"), pagina,
+            case CICLOS -> consultar(modulo, cicloRepository, texto(f, "codigo", "nombre"), estado(f, "estado"), pagina,
                     e -> filaEstado(e.getId(), e.getEstado().name(), e.getCodigo(), e.getNombre(), FECHA.format(e.getFechaInicio()), FECHA.format(e.getFechaFin()), e.isPredeterminado() ? "Sí" : "No"));
-            case PERIODOS -> consultar(periodoRepository, texto(f, "codigo", "nombre"), estado(f, "estado"), pagina,
+            case PERIODOS -> consultar(modulo, periodoRepository, texto(f, "codigo", "nombre"), estado(f, "estado"), pagina,
                     e -> filaEstado(e.getId(), e.getEstado().name(), e.getCodigo(), e.getNombre(), e.getNivelEducativo().getNombre(), e.getTipo().name(), FECHA.format(e.getFechaInicio()) + " — " + FECHA.format(e.getFechaFin())));
-            case GRUPOS -> consultar(grupoRepository, texto(f, "nombre", "codigo", "aula"), activo(f), pagina,
+            case GRUPOS -> consultar(modulo, grupoRepository, texto(f, "nombre", "codigo", "aula"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getNombre(), valor(e.getCodigo()), e.getPlantel().getNombre(), e.getGrado().getNombre(), e.getTurno().name(), e.getCapacidad() == null ? "Sin límite" : e.getCapacidad().toString()));
-            case ROLES -> consultar(rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
+            case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
-            case USUARIOS -> consultar(usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,
+            case USUARIOS -> consultar(modulo, usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,
                     e -> filaEstadoUsuario(e, e.getUsername(), e.getEmail(), e.getInstitucion().getNombre(),
                             e.getPasswordHash() == null ? "Pendiente" : "Configurada"));
         };
         return new ResultadoCatalogo(modulo, modulo.columnas(), resultado);
     }
 
-    private <T> Page<FilaCatalogo> consultar(JpaSpecificationExecutor<T> repo, Specification<T> texto,
+    private <T> Page<FilaCatalogo> consultar(ModuloCatalogo modulo, JpaSpecificationExecutor<T> repo, Specification<T> texto,
                                               Specification<T> estado, Pageable pagina,
                                               Function<T, FilaCatalogo> mapper) {
-        return repo.findAll(Specification.where(texto).and(estado), pagina).map(mapper);
+        return repo.findAll(Specification.where(texto).and(estado)
+                .and(alcanceDatosService.especificacion(modulo)), pagina).map(mapper);
     }
 
     private <T> Specification<T> texto(FiltroCatalogo f, String... campos) {

@@ -6,6 +6,8 @@ import escuela.admin.dto.CicloEscolarForm;
 import escuela.admin.support.MensajeErrorFormulario;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.service.InstitucionService;
+import escuela.seguridad.service.AlcanceDatosService;
+import escuela.admin.dto.ModuloCatalogo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class CicloEscolarAdminController {
     private final CicloEscolarService service;
     private final InstitucionService institucionService;
+    private final AlcanceDatosService alcance;
 
     @GetMapping("/nuevo")
     String nuevo(Model model) {
@@ -36,6 +39,7 @@ public class CicloEscolarAdminController {
     @PostMapping
     String crear(@Valid @ModelAttribute("form") CicloEscolarForm form,
                  BindingResult errores, Model model, RedirectAttributes flash) {
+        if (form.getInstitucionId() != null) alcance.validarInstitucion(form.getInstitucionId());
         if (errores.hasErrors()) {
             preparar(model, form, null);
             return "admin/ciclo-form";
@@ -53,6 +57,7 @@ public class CicloEscolarAdminController {
 
     @GetMapping("/{id}/editar")
     String editar(@PathVariable Long id, Model model) {
+        alcance.validarRecurso(ModuloCatalogo.CICLOS, id);
         preparar(model, CicloEscolarForm.desde(service.obtener(id)), id);
         return "admin/ciclo-form";
     }
@@ -61,6 +66,8 @@ public class CicloEscolarAdminController {
     String actualizar(@PathVariable Long id,
                       @Valid @ModelAttribute("form") CicloEscolarForm form,
                       BindingResult errores, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.CICLOS, id);
+        if (form.getInstitucionId() != null) alcance.validarInstitucion(form.getInstitucionId());
         if (errores.hasErrors()) {
             preparar(model, form, id);
             return "admin/ciclo-form";
@@ -80,7 +87,7 @@ public class CicloEscolarAdminController {
         model.addAttribute("form", form);
         model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
-        model.addAttribute("instituciones", institucionService.listar());
+        model.addAttribute("instituciones", alcance.filtrarInstituciones(institucionService.listar()));
         model.addAttribute("estados", EstadoAcademico.values());
     }
 

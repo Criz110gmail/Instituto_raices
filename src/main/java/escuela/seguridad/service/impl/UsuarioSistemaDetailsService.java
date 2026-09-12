@@ -6,6 +6,7 @@ import escuela.seguridad.repository.PermisoRepository;
 import escuela.seguridad.repository.RolPermisoRepository;
 import escuela.seguridad.repository.UsuarioRepository;
 import escuela.seguridad.repository.UsuarioRolRepository;
+import escuela.seguridad.service.UsuarioPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.security.autoconfigure.SecurityProperties;
 import org.springframework.security.authentication.DisabledException;
@@ -42,11 +43,16 @@ public class UsuarioSistemaDetailsService implements UserDetailsService {
         }
         Usuario usuario = localizar(identificador);
         validarEstado(usuario);
-        Set<String> permisos = permisos(usuario);
-        return User.withUsername(usuario.getUsername())
-                .password(usuario.getPasswordHash())
-                .authorities(permisos.stream().map(SimpleGrantedAuthority::new).toList())
-                .build();
+        List<escuela.seguridad.entity.UsuarioRol> asignaciones = asignacionesActivas(usuario);
+        Set<String> permisos = permisos(asignaciones);
+        Set<Long> planteles = asignaciones.stream()
+                .filter(a -> a.getAlcance() == escuela.seguridad.entity.AlcanceRol.PLANTEL)
+                .map(a -> a.getPlantel().getId()).collect(java.util.stream.Collectors.toSet());
+        boolean institucional = asignaciones.stream()
+                .anyMatch(a -> a.getAlcance() == escuela.seguridad.entity.AlcanceRol.INSTITUCION);
+        return new UsuarioPrincipal(usuario.getId(), usuario.getInstitucion().getId(), planteles,
+                institucional, false, usuario.getUsername(), usuario.getPasswordHash(),
+                permisos.stream().map(SimpleGrantedAuthority::new).toList());
     }
 
     private Usuario localizar(String identificador) {
@@ -76,11 +82,15 @@ public class UsuarioSistemaDetailsService implements UserDetailsService {
         }
     }
 
-    private Set<String> permisos(Usuario usuario) {
-        Set<String> codigos = new LinkedHashSet<>();
-        usuarioRolRepository.findAllByUsuarioIdAndActivoTrueOrderByRolNombreAsc(usuario.getId()).stream()
+    private List<escuela.seguridad.entity.UsuarioRol> asignacionesActivas(Usuario usuario) {
+        return usuarioRolRepository.findAllByUsuarioIdAndActivoTrueOrderByRolNombreAsc(usuario.getId()).stream()
                 .filter(asignacion -> asignacion.getRol().isActivo())
-                .forEach(asignacion -> rolPermisoRepository
+                .toList();
+    }
+
+    private Set<String> permisos(List<escuela.seguridad.entity.UsuarioRol> asignaciones) {
+        Set<String> codigos = new LinkedHashSet<>();
+        asignaciones.forEach(asignacion -> rolPermisoRepository
                         .findAllByRolIdAndActivoTrueOrderByPermisoCodigoAsc(asignacion.getRol().getId())
                         .forEach(relacion -> codigos.add(relacion.getPermiso().getCodigo())));
         return codigos;
@@ -91,10 +101,8 @@ public class UsuarioSistemaDetailsService implements UserDetailsService {
         var autoridades = permisoRepository.findAllByOrderByCodigoAsc().stream()
                 .map(permiso -> new SimpleGrantedAuthority(permiso.getCodigo()))
                 .toList();
-        return User.withUsername(configuracion.getName())
-                .password(passwordEncoder.encode(configuracion.getPassword()))
-                .authorities(autoridades)
-                .build();
+        return new UsuarioPrincipal(null, null, Set.of(), true, true, configuracion.getName(),
+                passwordEncoder.encode(configuracion.getPassword()), autoridades);
     }
 
     private UsernameNotFoundException noEncontrado() {

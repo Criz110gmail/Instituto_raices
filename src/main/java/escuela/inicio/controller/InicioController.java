@@ -11,6 +11,11 @@ public class InicioController {
         return "inicio";
     }
 
+    @GetMapping("/acceso-denegado")
+    String accesoDenegado() {
+        return "error/acceso-denegado";
+    }
+
     @GetMapping("/salud")
     String salud() {
         return "redirect:/actuator/health";

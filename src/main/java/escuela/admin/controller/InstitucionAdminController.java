@@ -4,6 +4,7 @@ import escuela.admin.dto.InstitucionForm;
 import escuela.admin.support.MensajeErrorFormulario;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.service.InstitucionService;
+import escuela.seguridad.service.AlcanceDatosService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,9 +20,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin/instituciones")
 public class InstitucionAdminController {
     private final InstitucionService service;
+    private final AlcanceDatosService alcance;
 
     @GetMapping("/nueva")
     String nueva(Model model) {
+        alcance.validarNuevaInstitucion();
         preparar(model, new InstitucionForm(), null);
         return "admin/institucion-form";
     }
@@ -29,6 +32,7 @@ public class InstitucionAdminController {
     @PostMapping
     String crear(@Valid @ModelAttribute("form") InstitucionForm form, BindingResult errores,
                  Model model, RedirectAttributes flash) {
+        alcance.validarNuevaInstitucion();
         if (errores.hasErrors()) { preparar(model, form, null); return "admin/institucion-form"; }
         try {
             service.crear(form.request());
@@ -43,6 +47,7 @@ public class InstitucionAdminController {
 
     @GetMapping("/{id}/editar")
     String editar(@PathVariable Long id, Model model) {
+        alcance.validarRecurso(escuela.admin.dto.ModuloCatalogo.INSTITUCIONES, id);
         preparar(model, InstitucionForm.desde(service.obtener(id)), id);
         return "admin/institucion-form";
     }
@@ -50,6 +55,7 @@ public class InstitucionAdminController {
     @PostMapping("/{id}")
     String actualizar(@PathVariable Long id, @Valid @ModelAttribute("form") InstitucionForm form,
                       BindingResult errores, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(escuela.admin.dto.ModuloCatalogo.INSTITUCIONES, id);
         if (errores.hasErrors()) { preparar(model, form, id); return "admin/institucion-form"; }
         try {
             service.actualizar(id, form.request());
@@ -65,6 +71,7 @@ public class InstitucionAdminController {
     @PostMapping("/{id}/desactivar")
     String desactivar(@PathVariable Long id, @RequestParam Long version,
                       Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(escuela.admin.dto.ModuloCatalogo.INSTITUCIONES, id);
         try {
             service.desactivar(id, version);
         } catch (ReglaNegocioException | DataIntegrityViolationException |

@@ -19,6 +19,8 @@ import escuela.institucion.dto.response.PlantelResponse;
 import escuela.institucion.service.InstitucionService;
 import escuela.institucion.service.PlantelNivelService;
 import escuela.institucion.service.PlantelService;
+import escuela.seguridad.service.AlcanceDatosService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -49,7 +51,18 @@ class GrupoAdminControllerTest {
     @Mock private CicloEscolarService cicloService;
     @Mock private NivelEducativoService nivelService;
     @Mock private GradoService gradoService;
+    @Mock private AlcanceDatosService alcance;
     @InjectMocks private GrupoAdminController controller;
+
+    @BeforeEach
+    void prepararAlcance() {
+        org.mockito.Mockito.lenient().when(alcance.filtrarInstituciones(org.mockito.ArgumentMatchers.anyList()))
+                .thenAnswer(i -> i.getArgument(0));
+        org.mockito.Mockito.lenient().when(alcance.filtrarPlanteles(org.mockito.ArgumentMatchers.anyList()))
+                .thenAnswer(i -> i.getArgument(0));
+        org.mockito.Mockito.lenient().when(alcance.filtrarNiveles(org.mockito.ArgumentMatchers.anyList()))
+                .thenAnswer(i -> i.getArgument(0));
+    }
 
     @Test
     void creaElGrupoConTodosLosDatos() {

@@ -5,6 +5,7 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.security.access.AccessDeniedException;
 
 @ControllerAdvice
 public class ManejadorGlobalExcepciones {
@@ -20,6 +21,13 @@ public class ManejadorGlobalExcepciones {
                 ? "La información fue modificada por otro proceso; recarga e intenta nuevamente"
                 : excepcion.getMessage();
         return vista(HttpStatus.CONFLICT, mensaje);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    ModelAndView accesoDenegado() {
+        ModelAndView resultado = new ModelAndView("error/acceso-denegado");
+        resultado.setStatus(HttpStatus.FORBIDDEN);
+        return resultado;
     }
 
     private ModelAndView vista(HttpStatus estado, String mensaje) {

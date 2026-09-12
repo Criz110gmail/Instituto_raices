@@ -5,6 +5,8 @@ import escuela.admin.dto.NivelEducativoForm;
 import escuela.admin.support.MensajeErrorFormulario;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.service.InstitucionService;
+import escuela.seguridad.service.AlcanceDatosService;
+import escuela.admin.dto.ModuloCatalogo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class NivelEducativoAdminController {
     private final NivelEducativoService service;
     private final InstitucionService institucionService;
+    private final AlcanceDatosService alcance;
 
     @GetMapping("/nuevo")
     String nuevo(Model model) {
@@ -36,6 +39,7 @@ public class NivelEducativoAdminController {
     @PostMapping
     String crear(@Valid @ModelAttribute("form") NivelEducativoForm form, BindingResult errores,
                  Model model, RedirectAttributes flash) {
+        if (form.getInstitucionId() != null) alcance.validarInstitucion(form.getInstitucionId());
         if (errores.hasErrors()) {
             preparar(model, form, null);
             return "admin/nivel-form";
@@ -53,6 +57,7 @@ public class NivelEducativoAdminController {
 
     @GetMapping("/{id}/editar")
     String editar(@PathVariable Long id, Model model) {
+        alcance.validarRecurso(ModuloCatalogo.NIVELES, id);
         preparar(model, NivelEducativoForm.desde(service.obtener(id)), id);
         return "admin/nivel-form";
     }
@@ -61,6 +66,8 @@ public class NivelEducativoAdminController {
     String actualizar(@PathVariable Long id,
                       @Valid @ModelAttribute("form") NivelEducativoForm form,
                       BindingResult errores, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.NIVELES, id);
+        if (form.getInstitucionId() != null) alcance.validarInstitucion(form.getInstitucionId());
         if (errores.hasErrors()) {
             preparar(model, form, id);
             return "admin/nivel-form";
@@ -79,6 +86,7 @@ public class NivelEducativoAdminController {
     @PostMapping("/{id}/desactivar")
     String desactivar(@PathVariable Long id, @RequestParam Long version,
                       Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.NIVELES, id);
         try {
             service.desactivar(id, version);
         } catch (ReglaNegocioException | DataIntegrityViolationException |
@@ -94,7 +102,7 @@ public class NivelEducativoAdminController {
         model.addAttribute("form", form);
         model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
-        model.addAttribute("instituciones", institucionService.listar());
+        model.addAttribute("instituciones", alcance.filtrarInstituciones(institucionService.listar()));
     }
 
     private void prepararError(Model model, NivelEducativoForm form, Long id,
