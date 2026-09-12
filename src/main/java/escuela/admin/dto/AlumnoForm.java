@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -22,7 +23,8 @@ public class AlumnoForm {
     @NotBlank @Size(max = 100) private String primerApellido;
     @Size(max = 100) private String segundoApellido;
     @Pattern(regexp = "^$|^[A-Za-z0-9]{18}$", message = "La CURP debe contener 18 caracteres alfanuméricos") private String curp;
-    @NotNull @PastOrPresent private LocalDate fechaNacimiento;
+    @NotNull @PastOrPresent @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate fechaNacimiento;
     @Size(max = 30) private String sexo;
     @Size(max = 150) private String lugarNacimiento;
     @Size(max = 80) private String nacionalidad;
@@ -36,7 +38,8 @@ public class AlumnoForm {
     @Size(max = 100) private String estado;
     @Size(max = 15) private String codigoPostal;
     @Size(max = 2) private String pais = "MX";
-    @NotNull @PastOrPresent private LocalDate fechaIngreso = LocalDate.now();
+    @NotNull @PastOrPresent @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate fechaIngreso = LocalDate.now();
     @Size(max = 4000) private String observaciones;
     private boolean activo = true;
     private Long version;

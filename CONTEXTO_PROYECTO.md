@@ -458,7 +458,7 @@
 ## Verificación del módulo de alumnos
 
 - Compilación Docker correcta de 163 archivos Java de producción.
-- 85 pruebas ejecutadas sin fallos ni errores; once nuevas cubren normalización,
+- 86 pruebas ejecutadas sin fallos ni errores; once nuevas cubren normalización,
   duplicados, fechas, institución inmutable, desactivación, controlador y aislamiento.
 - Flyway validó cinco migraciones y aplicó V5 sobre el volumen existente. Hibernate
   validó el esquema y detectó 16 repositorios.
@@ -466,6 +466,10 @@
   XLSX válida y la aplicación quedó `UP` en `http://localhost:8080`.
 - No se crearon alumnos de prueba. `criz110` aún debe recibir explícitamente
   `ALUMNO_LEER` y `ALUMNO_ADMINISTRAR` desde la edición de su rol.
+- Se corrigió la edición de fechas: Spring renderizaba `LocalDate` con formato regional
+  y el navegador descartaba ese valor en controles `type=date`. Alumnos, ciclos y
+  periodos ahora declaran ISO `yyyy-MM-dd`; se verificaron ambas fechas de un alumno
+  existente sin modificarlo.
 
 ## Decisiones — cierre de sesión visible
 

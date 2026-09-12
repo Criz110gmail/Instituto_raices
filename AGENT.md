@@ -236,13 +236,15 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
   PostgreSQL, Excel por bloques, alta, edición y desactivación lógica.
 - Matrícula y CURP —cuando existe— son únicas por institución. No se guarda plantel,
   grado o grupo actual: esa trayectoria se derivará de las inscripciones futuras.
+- Los campos `LocalDate` de alumnos, ciclos y periodos declaran formato ISO explícito
+  para que los controles HTML de fecha carguen correctamente al editar.
 - Los listados y los once formularios administrativos muestran `Cerrar sesión`. El
   botón envía `POST /logout` con CSRF, invalida la sesión y regresa al inicio.
 
 ## Verificación confirmada
 
 - Compilación correcta de 163 archivos Java de producción.
-- 85 pruebas Maven sin fallos ni errores.
+- 86 pruebas Maven sin fallos ni errores.
 - Flyway V1 a V5 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 16 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.

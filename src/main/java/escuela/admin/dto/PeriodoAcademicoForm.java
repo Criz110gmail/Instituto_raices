@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -23,8 +24,8 @@ public class PeriodoAcademicoForm {
     @NotBlank @Size(max = 150) private String nombre;
     @NotNull private TipoPeriodoAcademico tipo = TipoPeriodoAcademico.TRIMESTRE;
     @Positive private int orden = 1;
-    @NotNull private LocalDate fechaInicio;
-    @NotNull private LocalDate fechaFin;
+    @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate fechaInicio;
+    @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate fechaFin;
     @NotNull private EstadoAcademico estado = EstadoAcademico.PLANIFICADO;
     private String observaciones;
     private Long version;

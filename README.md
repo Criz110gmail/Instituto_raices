@@ -116,3 +116,5 @@ matrícula y CURP únicas por institución, filtros en base de datos, paginació
 desactivación lógica. Requiere conceder `ALUMNO_LEER` y/o `ALUMNO_ADMINISTRAR` a los
 roles correspondientes. El plantel, grado y grupo vigentes no se almacenan en este
 expediente: se derivarán de las inscripciones para conservar el historial correctamente.
+Los formularios de alumnos, ciclos y periodos usan fechas ISO compatibles con los
+controles nativos del navegador tanto al crear como al editar.
