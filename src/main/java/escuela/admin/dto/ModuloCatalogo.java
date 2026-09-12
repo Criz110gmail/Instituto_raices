@@ -29,7 +29,8 @@ public enum ModuloCatalogo {
 
     public boolean mantenimientoDisponible() {
         return this == INSTITUCIONES || this == PLANTELES || this == NIVELES
-                || this == OFERTA || this == GRADOS;
+                || this == OFERTA || this == GRADOS || this == CICLOS || this == PERIODOS
+                || this == GRUPOS;
     }
 
     public String rutaMantenimiento() {
@@ -39,12 +40,17 @@ public enum ModuloCatalogo {
             case NIVELES -> "/admin/niveles";
             case OFERTA -> "/admin/oferta";
             case GRADOS -> "/admin/grados";
+            case CICLOS -> "/admin/ciclos";
+            case PERIODOS -> "/admin/periodos";
+            case GRUPOS -> "/admin/grupos";
             default -> "";
         };
     }
 
     public String segmentoNuevo() {
-        return this == PLANTELES || this == NIVELES || this == GRADOS ? "/nuevo" : "/nueva";
+        return this == PLANTELES || this == NIVELES || this == GRADOS || this == CICLOS
+                || this == PERIODOS || this == GRUPOS
+                ? "/nuevo" : "/nueva";
     }
 
     public static ModuloCatalogo desde(String slug) {

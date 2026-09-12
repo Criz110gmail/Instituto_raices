@@ -172,3 +172,62 @@
 - Se verificó que un duplicado mantiene el mismo formulario y los datos introducidos.
 - Se probaron las traducciones seguras de unicidad SQL y concurrencia optimista.
 - PostgreSQL permaneció saludable y `/actuator/health` respondió `UP`.
+
+## Decisiones — mantenimiento de ciclos escolares
+
+- Se completó el mantenimiento de CicloEscolar con alta y edición de institución,
+  código, nombre, fechas, estado y selección predeterminada.
+- La institución propietaria queda bloqueada durante la edición y se conserva la versión
+  para concurrencia optimista.
+- El ciclo usa sus estados `PLANIFICADO`, `ABIERTO` y `CERRADO`; no tiene desactivación
+  lógica porque su ciclo de vida se representa mediante esos estados.
+- Al marcar un ciclo como predeterminado, el servicio bloquea la institución y desmarca
+  el anterior dentro de la misma transacción.
+- Los errores de código duplicado, fechas inválidas, periodos fuera del nuevo rango,
+  concurrencia o integridad permanecen en el mismo formulario.
+
+## Verificación del mantenimiento de ciclos escolares
+
+- Compilación Docker correcta de 94 archivos Java de producción.
+- 20 pruebas ejecutadas sin fallos ni errores.
+- El formulario autenticado de ciclo escolar respondió HTTP 200 y renderizó sus estados.
+- La exportación filtrada de ciclos respondió HTTP 200 con firma XLSX válida.
+- PostgreSQL permaneció saludable y `/actuator/health` respondió `UP`.
+
+## Decisiones — mantenimiento de periodos académicos
+
+- Se completó el mantenimiento de PeriodoAcademico con alta y edición de ciclo, nivel,
+  código, nombre, tipo, orden, fechas, estado y observaciones.
+- La institución auxiliar filtra ciclos y niveles, pero no se duplica como relación del
+  dominio. En edición se bloquean institución, ciclo y nivel.
+- La pantalla limita las fechas al rango del ciclo como ayuda; el servicio conserva la
+  validación definitiva de rango, solapamientos, duplicados y ciclo cerrado.
+- Todos los errores esperables se muestran dentro del formulario conservando la captura.
+
+## Verificación del mantenimiento de periodos académicos
+
+- Compilación Docker correcta de 96 archivos Java de producción.
+- 24 pruebas ejecutadas sin fallos ni errores.
+- El formulario autenticado respondió HTTP 200 y renderizó tipos, estados y rango.
+- La exportación filtrada respondió HTTP 200 con firma XLSX válida.
+- PostgreSQL permaneció saludable y `/actuator/health` respondió `UP`.
+
+## Decisiones — mantenimiento de grupos y cierre de catálogos
+
+- Se completó el mantenimiento de Grupo con alta, edición y desactivación lógica.
+- La institución filtra planteles y ciclos; el plantel limita los grados a niveles de su
+  oferta activa. Los ciclos cerrados y relaciones inactivas no se ofrecen en altas.
+- En edición se bloquean plantel, ciclo y grado para conservar relaciones propietarias.
+- Nombre, turno, código, aula, capacidad y estado activo permanecen editables.
+- El servidor revalida institución, oferta activa, ciclo, grado, turno, capacidad y
+  unicidad; los errores esperables permanecen en el mismo formulario.
+- Con este módulo, los ocho catálogos del núcleo institucional y académico cuentan con
+  mantenimiento conforme a su ciclo de vida, además de filtros, paginación y Excel.
+
+## Verificación del mantenimiento de grupos
+
+- Compilación Docker correcta de 99 archivos Java de producción.
+- 28 pruebas ejecutadas sin fallos ni errores.
+- El formulario autenticado de grupo respondió HTTP 200 y renderizó sus selectores.
+- La exportación filtrada respondió HTTP 200 con firma XLSX válida.
+- PostgreSQL permaneció saludable y `/actuator/health` respondió `UP`.

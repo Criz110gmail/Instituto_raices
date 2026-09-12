@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+<title th:text="${edicion ? 'Editar periodo académico' : 'Nuevo periodo académico'} + ' · Nexo Escolar'">Periodo académico</title>
+<link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script></head><body class="form-page">
+<main class="form-shell"><header class="form-top"><a href="/admin/catalogos/periodos">← Volver al directorio</a><button class="theme-button" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button></header>
+  <section class="form-card"><div class="form-intro"><span th:text="${edicion ? 'Actualización' : 'Nueva subdivisión'}">Nueva subdivisión</span><h1 th:text="${edicion ? 'Editar periodo académico' : 'Crear periodo académico'}">Crear periodo académico</h1><p>Subdivide un ciclo por nivel educativo y evita periodos fuera de rango o solapados.</p></div>
+    <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/periodos/' + id : '/admin/periodos'}"><input type="hidden" th:field="*{version}"><div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div><div class="form-grid">
+      <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" id="institucion" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
+      <label><span>Ciclo escolar *</span><select th:field="*{cicloEscolarId}" id="ciclo" th:disabled="${edicion}"><option value="">Selecciona un ciclo</option><option th:each="item : ${ciclos}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre + ' · ' + item.estado}" th:attr="data-institucion=${item.institucionId},data-inicio=${item.fechaInicio},data-fin=${item.fechaFin}">Ciclo</option></select><input th:if="${edicion}" type="hidden" th:field="*{cicloEscolarId}"><small th:errors="*{cicloEscolarId}"></small></label>
+      <label><span>Nivel educativo *</span><select th:field="*{nivelEducativoId}" id="nivel" th:disabled="${edicion}"><option value="">Selecciona un nivel</option><option th:each="item : ${niveles}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-institucion=${item.institucionId}">Nivel</option></select><input th:if="${edicion}" type="hidden" th:field="*{nivelEducativoId}"><small th:errors="*{nivelEducativoId}"></small></label>
+      <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="TRI1"><small th:errors="*{codigo}"></small></label><label><span>Orden *</span><input type="number" min="1" th:field="*{orden}"><small th:errors="*{orden}"></small></label>
+      <label class="wide"><span>Nombre *</span><input th:field="*{nombre}" maxlength="150" placeholder="Primer trimestre"><small th:errors="*{nombre}"></small></label>
+      <label><span>Tipo *</span><select th:field="*{tipo}"><option th:each="item : ${tipos}" th:value="${item}" th:text="${#strings.capitalize(#strings.toLowerCase(item.name()))}">Tipo</option></select><small th:errors="*{tipo}"></small></label><label><span>Estado *</span><select th:field="*{estado}"><option th:each="item : ${estados}" th:value="${item}" th:text="${#strings.capitalize(#strings.toLowerCase(item.name()))}">Estado</option></select><small th:errors="*{estado}"></small></label>
+      <label><span>Fecha de inicio *</span><input id="fechaInicio" type="date" th:field="*{fechaInicio}"><small th:errors="*{fechaInicio}"></small></label><label><span>Fecha de término *</span><input id="fechaFin" type="date" th:field="*{fechaFin}"><small th:errors="*{fechaFin}"></small></label>
+      <p class="field-help wide" id="rangoCiclo">Las fechas deben permanecer dentro del ciclo seleccionado.</p><label class="wide"><span>Observaciones</span><textarea th:field="*{observaciones}" rows="4" placeholder="Notas administrativas del periodo"></textarea></label>
+    </div><footer class="form-actions"><a href="/admin/catalogos/periodos">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear periodo'}">Guardar</button></footer></form>
+  </section>
+</main>
+<script>
+(() => {
+  const institucion = document.querySelector('#institucion');
+  const ciclo = document.querySelector('#ciclo');
+  const nivel = document.querySelector('#nivel');
+  const inicio = document.querySelector('#fechaInicio');
+  const fin = document.querySelector('#fechaFin');
+  const ayuda = document.querySelector('#rangoCiclo');
+  const opcionesCiclo = [...ciclo.options].slice(1);
+  const opcionesNivel = [...nivel.options].slice(1);
+  const limitarFechas = () => {
+    const opcion = ciclo.selectedOptions[0];
+    const desde = opcion?.dataset.inicio || '';
+    const hasta = opcion?.dataset.fin || '';
+    inicio.min = fin.min = desde;
+    inicio.max = fin.max = hasta;
+    ayuda.textContent = desde && hasta ? `Rango permitido: ${desde} a ${hasta}.` : 'Las fechas deben permanecer dentro del ciclo seleccionado.';
+  };
+  if (!institucion.disabled) {
+    const filtrar = () => {
+      const seleccion = institucion.value;
+      opcionesCiclo.forEach(opcion => { opcion.hidden = !seleccion || opcion.dataset.institucion !== seleccion; });
+      opcionesNivel.forEach(opcion => { opcion.hidden = !seleccion || opcion.dataset.institucion !== seleccion; });
+      if (ciclo.selectedOptions[0]?.hidden) ciclo.value = '';
+      if (nivel.selectedOptions[0]?.hidden) nivel.value = '';
+      limitarFechas();
+    };
+    institucion.addEventListener('change', filtrar);
+    filtrar();
+  }
+  ciclo.addEventListener('change', limitarFechas);
+  limitarFechas();
+})();
+</script>
+</body></html>

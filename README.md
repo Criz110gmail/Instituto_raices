@@ -53,6 +53,9 @@ Mientras se desarrolla el módulo definitivo de usuarios, configura
 
 La consola y el login incluyen temas claro y oscuro con preferencia persistente en el
 dispositivo. Instituciones, planteles, niveles, oferta educativa y grados ya permiten
-crear, editar y desactivar registros. Los errores de validación, reglas de negocio,
+crear, editar y desactivar registros; los ciclos escolares permiten crear y editar su
+vigencia, estado y selección predeterminada, y los periodos académicos permiten administrar
+su calendario por ciclo y nivel. Los grupos permiten alta, edición y desactivación con
+selectores que respetan la oferta educativa. Los errores de validación, reglas de negocio,
 concurrencia y restricciones de integridad se muestran dentro del mismo formulario sin
 perder los valores capturados ni exponer detalles técnicos de PostgreSQL.

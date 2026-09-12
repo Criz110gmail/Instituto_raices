@@ -1,0 +1,51 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+<title th:text="${edicion ? 'Editar grupo' : 'Nuevo grupo'} + ' · Nexo Escolar'">Grupo</title>
+<link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script></head><body class="form-page">
+<main class="form-shell"><header class="form-top"><a href="/admin/catalogos/grupos">← Volver al directorio</a><button class="theme-button" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button></header>
+  <section class="form-card"><div class="form-intro"><span th:text="${edicion ? 'Actualización' : 'Nueva organización'}">Nueva organización</span><h1 th:text="${edicion ? 'Editar grupo' : 'Crear grupo'}">Crear grupo</h1><p>Organiza alumnos por plantel, ciclo, grado y turno dentro de una oferta educativa activa.</p></div>
+    <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/grupos/' + id : '/admin/grupos'}"><input type="hidden" th:field="*{version}"><div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div><div class="form-grid">
+      <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" id="institucion" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-activo=${item.activo}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
+      <label><span>Plantel *</span><select th:field="*{plantelId}" id="plantel" th:disabled="${edicion}"><option value="">Selecciona un plantel</option><option th:each="item : ${planteles}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-institucion=${item.institucionId},data-activo=${item.activo}">Plantel</option></select><input th:if="${edicion}" type="hidden" th:field="*{plantelId}"><small th:errors="*{plantelId}"></small></label>
+      <label><span>Ciclo escolar *</span><select th:field="*{cicloEscolarId}" id="ciclo" th:disabled="${edicion}"><option value="">Selecciona un ciclo</option><option th:each="item : ${ciclos}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre + ' · ' + item.estado}" th:attr="data-institucion=${item.institucionId},data-cerrado=${item.estado.name() == 'CERRADO'}">Ciclo</option></select><input th:if="${edicion}" type="hidden" th:field="*{cicloEscolarId}"><small th:errors="*{cicloEscolarId}"></small></label>
+      <label class="wide"><span>Grado *</span><select th:field="*{gradoId}" id="grado" th:disabled="${edicion}"><option value="">Selecciona plantel y grado</option><option th:each="item : ${grados}" th:value="${item.id}" th:text="${item.etiqueta}" th:attr="data-institucion=${item.institucionId},data-nivel=${item.nivelEducativoId},data-activo=${item.activo}">Grado</option></select><input th:if="${edicion}" type="hidden" th:field="*{gradoId}"><small th:errors="*{gradoId}"></small></label>
+      <span th:each="item : ${ofertas}" class="oferta-dato" hidden th:attr="data-plantel=${item.plantelId},data-nivel=${item.nivelEducativoId},data-activo=${item.activo}"></span>
+      <label><span>Nombre del grupo *</span><input th:field="*{nombre}" maxlength="100" placeholder="A"><small th:errors="*{nombre}"></small></label><label><span>Turno *</span><select th:field="*{turno}"><option th:each="item : ${turnos}" th:value="${item}" th:text="${#strings.capitalize(#strings.toLowerCase(item.name()))}">Turno</option></select><small th:errors="*{turno}"></small></label>
+      <label><span>Código</span><input th:field="*{codigo}" maxlength="50" placeholder="1A-MAT"><small th:errors="*{codigo}"></small></label><label><span>Aula</span><input th:field="*{aula}" maxlength="100" placeholder="Aula 3"><small th:errors="*{aula}"></small></label>
+      <label><span>Capacidad</span><input type="number" min="1" th:field="*{capacidad}" placeholder="Sin límite"><small th:errors="*{capacidad}"></small></label><label class="switch-row"><input type="checkbox" th:field="*{activo}"><span>Grupo activo</span></label>
+      <p class="field-help wide">Solo aparecen grados cuyo nivel forma parte de la oferta activa del plantel seleccionado.</p>
+    </div><footer class="form-actions"><a href="/admin/catalogos/grupos">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear grupo'}">Guardar</button></footer></form>
+    <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/grupos/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este grupo?');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar grupo</strong><p>Se conservará su historial y dejará de estar disponible para nuevas operaciones.</p></div><button type="submit">Desactivar</button></form>
+  </section>
+</main>
+<script>
+(() => {
+  const institucion = document.querySelector('#institucion');
+  const plantel = document.querySelector('#plantel');
+  const ciclo = document.querySelector('#ciclo');
+  const grado = document.querySelector('#grado');
+  if (institucion.disabled) return;
+  const planteles = [...plantel.options].slice(1);
+  const ciclos = [...ciclo.options].slice(1);
+  const grados = [...grado.options].slice(1);
+  const ofertas = [...document.querySelectorAll('.oferta-dato')];
+  const filtrarGrados = () => {
+    const plantelId = plantel.value;
+    const niveles = new Set(ofertas.filter(item => item.dataset.plantel === plantelId && item.dataset.activo === 'true').map(item => item.dataset.nivel));
+    grados.forEach(opcion => { opcion.hidden = !plantelId || opcion.dataset.activo !== 'true' || !niveles.has(opcion.dataset.nivel); });
+    if (grado.selectedOptions[0]?.hidden) grado.value = '';
+  };
+  const filtrarInstitucion = () => {
+    const seleccion = institucion.value;
+    planteles.forEach(opcion => { opcion.hidden = !seleccion || opcion.dataset.institucion !== seleccion || opcion.dataset.activo !== 'true'; });
+    ciclos.forEach(opcion => { opcion.hidden = !seleccion || opcion.dataset.institucion !== seleccion || opcion.dataset.cerrado === 'true'; });
+    if (plantel.selectedOptions[0]?.hidden) plantel.value = '';
+    if (ciclo.selectedOptions[0]?.hidden) ciclo.value = '';
+    filtrarGrados();
+  };
+  institucion.addEventListener('change', filtrarInstitucion);
+  plantel.addEventListener('change', filtrarGrados);
+  filtrarInstitucion();
+})();
+</script>
+</body></html>

@@ -22,3 +22,10 @@
     color: #eef5fd;
     border-color: #344a63;
 }
+
+.field-help {
+    margin: -8px 0 0;
+    color: var(--muted);
+    font-size: .78rem;
+    line-height: 1.5;
+}

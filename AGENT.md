@@ -90,6 +90,12 @@ Reglas importantes ya aplicadas:
   `FiltroCatalogo` que la pantalla y recorre los datos filtrados por bloques.
 - Mantenimiento completo —alta, edición y desactivación lógica— para:
   `Institucion`, `Plantel`, `NivelEducativo`, `PlantelNivel` y `Grado`.
+- `CicloEscolar` cuenta con alta, edición, estados y selección transaccional del ciclo
+  predeterminado; no usa desactivación porque su ciclo de vida se expresa por estado.
+- `PeriodoAcademico` cuenta con alta y edición de ciclo, nivel, tipo, fechas, estado y
+  observaciones, validando rangos, duplicados, solapamientos y ciclos cerrados.
+- `Grupo` cuenta con alta, edición y desactivación lógica, con selectores dependientes y
+  validación de oferta educativa activa.
 - Los formularios incluyen Bean Validation, CSRF, mensajes de resultado y versión
   optimista, manteniendo los temas y el diseño responsivo.
 - Los errores esperables al crear, actualizar o desactivar se muestran en el mismo
@@ -115,6 +121,9 @@ Los controladores y formularios de mantenimiento ya terminados sirven como patr�
 - `NivelEducativoAdminController` + `NivelEducativoForm` + `nivel-form.html`
 - `PlantelNivelAdminController` + `PlantelNivelForm` + `oferta-form.html`
 - `GradoAdminController` + `GradoForm` + `grado-form.html`
+- `CicloEscolarAdminController` + `CicloEscolarForm` + `ciclo-form.html`
+- `PeriodoAcademicoAdminController` + `PeriodoAcademicoForm` + `periodo-form.html`
+- `GrupoAdminController` + `GrupoForm` + `grupo-form.html`
 
 ## Requisitos no negociables para módulos nuevos
 
@@ -169,8 +178,8 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 
 ## Verificación confirmada
 
-- Compilación correcta de 92 archivos Java de producción.
-- 16 pruebas Maven sin fallos ni errores.
+- Compilación correcta de 99 archivos Java de producción.
+- 28 pruebas Maven sin fallos ni errores.
 - Flyway V1 validado y aplicado correctamente.
 - Hibernate validó el esquema y detectó los ocho repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
@@ -182,33 +191,10 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 
 ## Siguiente paso acordado
 
-Continuar los formularios de mantenimiento de los tres catálogos restantes, respetando
-dependencias y reutilizando el patrón existente, en este orden:
-
-1. `CicloEscolar`: alta, edición, estados y selección de ciclo predeterminado.
-2. `PeriodoAcademico`: alta y edición validando fechas, ciclo, nivel, tipo y solapamientos.
-3. `Grupo`: alta y edición validando oferta activa, grado, ciclo, turno y capacidad.
-
-Para cada catálogo:
-
-- Crear un DTO mutable de formulario en `escuela.admin.dto`.
-- Crear el controlador MVC en `escuela.admin.controller`.
-- Crear una plantilla bajo `templates/admin` reutilizando `admin.css`, `forms.css` y
-  `theme.js`.
-- Habilitar los botones **Nuevo registro** y **Editar** desde `ModuloCatalogo` y
-  `catalogo.html`.
-- No alterar la paginación o exportación existentes salvo que el nuevo formulario
-  requiera una corrección compatible.
-- Cargar selectores mediante servicios, no accediendo a repositorios desde el
-  controlador.
-- Conservar relaciones propietarias en edición y presentar errores de negocio de forma
-  comprensible dentro del mismo formulario, conservando los valores capturados.
-- Compilar con `docker compose up --build -d`, confirmar las pruebas, salud, renderizado
-  autenticado y exportación filtrada.
-
-Después de esos tres mantenimientos, detenerse para revisar con el usuario si la
-primera etapa queda cerrada o si se inicia el módulo definitivo de usuarios, roles y
-permisos.
+La primera etapa del núcleo institucional y académico está completa. Detenerse para
+revisar con el usuario el resultado de los ocho catálogos antes de iniciar el módulo
+definitivo de usuarios, roles y permisos. No ampliar todavía alumnos, tutores, cobros o
+tesorería sin acordar primero el alcance de seguridad y multiinstitución.
 
 ## Disciplina de cambios y entrega
 
