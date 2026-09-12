@@ -10,7 +10,9 @@ import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
@@ -18,7 +20,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
+@EntityListeners({AuditingEntityListener.class, ActorAuditoriaEntityListener.class})
 public abstract class EntidadAuditable {
 
     @Id
@@ -29,6 +31,7 @@ public abstract class EntidadAuditable {
     @Column(name = "creado_en", nullable = false, updatable = false)
     private Instant creadoEn;
 
+    @CreatedBy
     @Column(name = "creado_por_id", updatable = false)
     private Long creadoPorId;
 
@@ -36,6 +39,7 @@ public abstract class EntidadAuditable {
     @Column(name = "actualizado_en", nullable = false)
     private Instant actualizadoEn;
 
+    @LastModifiedBy
     @Column(name = "actualizado_por_id")
     private Long actualizadoPorId;
 

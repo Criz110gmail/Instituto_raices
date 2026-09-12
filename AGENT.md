@@ -20,8 +20,8 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `278e259` — `se asignaron
-  usuarios y permisos`.
+- Último commit confirmado antes de estos cambios locales: `a58f60b` — `se asignaron
+  usuarios y permisos con validaciones`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
@@ -213,11 +213,15 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
   roles o usuarios exige alcance institucional para impedir escalamiento de privilegios.
 - Los permisos o alcances insuficientes muestran una pantalla 403 propia, responsiva y
   compatible con los temas claro y oscuro.
+- Spring Data Auditing obtiene el actor desde `UsuarioPrincipal`: las altas guardan
+  `creado_por_id` y los cambios guardan `actualizado_por_id`. El acceso de recuperación
+  y los procesos sin usuario persistido conservan actor nulo mediante un listener que
+  evita conservar por error el actor anterior.
 
 ## Verificación confirmada
 
-- Compilación correcta de 142 archivos Java de producción.
-- 55 pruebas Maven sin fallos ni errores.
+- Compilación correcta de 143 archivos Java de producción.
+- 59 pruebas Maven sin fallos ni errores.
 - Flyway V1, V2 y V3 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 14 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
@@ -229,9 +233,9 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 
 ## Siguiente paso acordado
 
-Conectar Spring Data Auditing al usuario persistido para completar `creado_por_id` y
-`actualizado_por_id`; después registrar último acceso, intentos fallidos y bloqueo
-temporal. Mantener por ahora el usuario de recuperación. No ampliar todavía alumnos,
+Registrar último acceso, intentos fallidos y bloqueo temporal mediante eventos de
+autenticación, manteniendo un mensaje de error uniforme que no revele si una cuenta
+existe. Mantener por ahora el usuario de recuperación. No ampliar todavía alumnos,
 tutores, cobros o tesorería.
 
 ## Disciplina de cambios y entrega

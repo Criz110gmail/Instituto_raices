@@ -68,6 +68,11 @@ selectores, accesos directos por ID y exportaciones Excel respetan la misma regl
 roles y usuarios sólo pueden administrarse con alcance institucional; un intento fuera
 del alcance responde con una pantalla 403 integrada al diseño.
 
+Las entidades auditables toman automáticamente el identificador del usuario persistido
+de la sesión para completar `creado_por_id` y `actualizado_por_id`. Las operaciones del
+usuario de recuperación o de procesos sin cuenta persistida mantienen esos actores en
+`null` y nunca registran credenciales.
+
 La consola y el login incluyen temas claro y oscuro con preferencia persistente en el
 dispositivo. Instituciones, planteles, niveles, oferta educativa y grados ya permiten
 crear, editar y desactivar registros; los ciclos escolares permiten crear y editar su

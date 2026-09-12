@@ -365,3 +365,23 @@
 - La aplicación inició con PostgreSQL saludable, Flyway V3 vigente y el proveedor de
   usuarios persistidos activo. Salud, recuperación y la pantalla 403 respondieron.
 - La base de datos no fue recreada ni se modificaron los datos existentes.
+
+## Decisiones — actor de auditoría autenticado
+
+- `EntidadAuditable` usa `@CreatedBy` y `@LastModifiedBy` además de las fechas que ya
+  administraba Spring Data Auditing.
+- `AuditorAware<Long>` obtiene el identificador directamente de `UsuarioPrincipal`, sin
+  consultar de nuevo la base ni utilizar username como clave de auditoría.
+- El acceso temporal de recuperación y una operación sin usuario persistido devuelven
+  actor vacío. `ActorAuditoriaEntityListener` también limpia explícitamente el actor al
+  persistir o actualizar para no conservar por error una atribución anterior.
+- No fue necesaria una migración porque `creado_por_id` y `actualizado_por_id` ya
+  existían como columnas anulables en todas las tablas auditables.
+
+## Verificación del actor de auditoría
+
+- Compilación Docker correcta de 143 archivos Java de producción.
+- 59 pruebas ejecutadas sin fallos ni errores; cuatro cubren usuario persistido,
+  recuperación, sesión anónima y limpieza de un actor anterior.
+- La aplicación inició correctamente, validó Flyway V3 y salud respondió HTTP 200.
+- No se generaron registros artificiales ni se modificaron datos para la verificación.
