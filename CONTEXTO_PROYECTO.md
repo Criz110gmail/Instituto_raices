@@ -464,8 +464,8 @@
   validó el esquema y detectó 16 repositorios.
 - Listado, formulario y exportación respondieron HTTP 200; el archivo comenzó con firma
   XLSX válida y la aplicación quedó `UP` en `http://localhost:8080`.
-- No se crearon alumnos de prueba. `criz110` aún debe recibir explícitamente
-  `ALUMNO_LEER` y `ALUMNO_ADMINISTRAR` desde la edición de su rol.
+- No se crearon alumnos de prueba. Posteriormente el propietario asignó los permisos
+  correspondientes y confirmó que `criz110` ya puede ver el módulo Alumnos.
 - Se corrigió la edición de fechas: Spring renderizaba `LocalDate` con formato regional
   y el navegador descartaba ese valor en controles `type=date`. Alumnos, ciclos y
   periodos ahora declaran ISO `yyyy-MM-dd`; se verificaron ambas fechas de un alumno
@@ -479,3 +479,34 @@
   no depende de navegar manualmente a una ruta GET.
 - Spring invalida la sesión y redirige al inicio. Se comprobó que la cookie anterior ya
   no puede abrir `/admin` y termina nuevamente en el login.
+
+## Decisiones — módulo de tutores
+
+- Flyway V6 agrega `Tutor` y los permisos técnicos `TUTOR_LEER` y
+  `TUTOR_ADMINISTRAR` de forma aditiva; los roles existentes no reciben privilegios
+  nuevos automáticamente.
+- El expediente de tutor pertenece a una institución y conserva identidad, teléfonos,
+  correo, nacimiento opcional, domicilio, ocupación, contacto laboral y estado activo.
+- Un tutor puede vincularse opcionalmente a un `Usuario` activo o invitado de su misma
+  institución. Cada cuenta sólo puede representar a un tutor.
+- El listado busca por nombre, apellidos, teléfono y correo directamente en PostgreSQL,
+  pagina realmente y exporta los mismos filtros a XLSX por bloques.
+- Alta, edición y desactivación lógica aplican alcance institucional, DTO de formulario,
+  CSRF, auditoría, versión optimista y errores integrados en la misma pantalla.
+- La creación automática de una cuenta invitada se pospuso hasta `AlumnoTutor`, donde
+  podrá decidirse si el tutor tendrá acceso a alumnos concretos mediante
+  `VINCULOS_TUTOR`.
+
+## Verificación del módulo de tutores
+
+- Compilación Docker correcta de 172 archivos Java de producción.
+- 99 pruebas ejecutadas sin fallos ni errores; trece nuevas cubren dominio, cuenta
+  opcional, aislamiento, controlador, fechas y desactivación lógica.
+- Flyway validó seis migraciones y aplicó V6 sobre el volumen existente. Hibernate
+  validó el esquema y detectó 17 repositorios.
+- El listado y el formulario respondieron autenticados; la exportación comenzó con la
+  firma XLSX `504b0304` y la aplicación quedó disponible en `http://localhost:8080`.
+- La tabla `tutor` permaneció vacía. Los dos permisos existen, pero `criz110` todavía
+  no los tiene asignados y debe agregarlos a su rol antes de validar la interfaz.
+- El siguiente módulo acordado es `AlumnoTutor`; después se agregarán archivos y
+  fotografía al historial del alumno, y posteriormente las inscripciones.

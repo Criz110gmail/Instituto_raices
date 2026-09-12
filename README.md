@@ -37,6 +37,7 @@ comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME
 - `escuela.academico`: niveles, grados, ciclos, periodos y grupos.
 - `escuela.seguridad`: usuarios, roles, permisos, alcances e invitaciones de acceso.
 - `escuela.alumno`: expediente institucional de alumnos.
+- `escuela.tutor`: expediente institucional de tutores y cuenta de acceso opcional.
 - `escuela.config`: seguridad y auditoría JPA.
 - `escuela.common`: excepciones, respuesta de auditoría y utilidades compartidas.
 - Cada módulo contiene DTO, mappers, repositorios y servicios transaccionales.
@@ -47,8 +48,8 @@ reciben entidades JPA directamente.
 
 ## Consola administrativa
 
-La ruta `/admin` contiene los ocho catálogos académicos, Alumnos y los módulos de Roles
-y permisos y Usuarios.
+La ruta `/admin` contiene los ocho catálogos académicos, Alumnos, Tutores y los módulos
+de Roles y permisos y Usuarios.
 Todos los listados consultan la
 base de datos con filtros y paginación; el botón **Exportar Excel** aplica exactamente
 los mismos filtros y genera el archivo con Apache POI en modo streaming.
@@ -118,3 +119,9 @@ roles correspondientes. El plantel, grado y grupo vigentes no se almacenan en es
 expediente: se derivarán de las inscripciones para conservar el historial correctamente.
 Los formularios de alumnos, ciclos y periodos usan fechas ISO compatibles con los
 controles nativos del navegador tanto al crear como al editar.
+
+Tutores permite registrar datos personales, contacto, domicilio y ocupación, además de
+vincular opcionalmente una cuenta de usuario de la misma institución. Incluye filtros en
+base de datos, paginación, Excel y desactivación lógica. Requiere conceder
+`TUTOR_LEER` y/o `TUTOR_ADMINISTRAR` a los roles correspondientes. La relación concreta
+con alumnos, parentesco, autorizaciones y vigencias se administrará en `AlumnoTutor`.

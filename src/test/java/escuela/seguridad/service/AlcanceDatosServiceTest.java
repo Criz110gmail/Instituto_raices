@@ -16,6 +16,8 @@ import escuela.institucion.repository.PlantelNivelRepository;
 import escuela.institucion.repository.PlantelRepository;
 import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.repository.UsuarioRepository;
+import escuela.tutor.repository.TutorRepository;
+import escuela.tutor.entity.Tutor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.access.AccessDeniedException;
@@ -35,12 +37,14 @@ class AlcanceDatosServiceTest {
 
     private final PlantelRepository plantelRepository = mock(PlantelRepository.class);
     private final AlumnoRepository alumnoRepository = mock(AlumnoRepository.class);
+    private final TutorRepository tutorRepository = mock(TutorRepository.class);
     private final AlcanceDatosService service = new AlcanceDatosService(
             mock(InstitucionRepository.class), plantelRepository,
             mock(NivelEducativoRepository.class), mock(PlantelNivelRepository.class),
             mock(GradoRepository.class), mock(CicloEscolarRepository.class),
             mock(PeriodoAcademicoRepository.class), mock(GrupoRepository.class),
             alumnoRepository,
+            tutorRepository,
             mock(RolRepository.class), mock(UsuarioRepository.class));
 
     @AfterEach
@@ -99,6 +103,22 @@ class AlcanceDatosServiceTest {
 
         assertThatThrownBy(() -> service.validarRecurso(
                 escuela.admin.dto.ModuloCatalogo.ALUMNOS, 30L))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void bloqueaAccesoDirectoATutorDeOtraInstitucion() {
+        autenticar(new UsuarioPrincipal(7L, 1L, Set.of(), true, false,
+                "admin", "hash", List.of()));
+        Institucion ajena = new Institucion();
+        ajena.setId(2L);
+        Tutor tutor = new Tutor();
+        tutor.setId(40L);
+        tutor.setInstitucion(ajena);
+        when(tutorRepository.findById(40L)).thenReturn(Optional.of(tutor));
+
+        assertThatThrownBy(() -> service.validarRecurso(
+                escuela.admin.dto.ModuloCatalogo.TUTORES, 40L))
                 .isInstanceOf(AccessDeniedException.class);
     }
 

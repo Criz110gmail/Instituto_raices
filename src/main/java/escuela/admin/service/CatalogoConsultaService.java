@@ -11,6 +11,8 @@ import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.repository.UsuarioRepository;
 import escuela.seguridad.service.AlcanceDatosService;
+import escuela.tutor.entity.Tutor;
+import escuela.tutor.repository.TutorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,6 +43,7 @@ public class CatalogoConsultaService {
     private final PeriodoAcademicoRepository periodoRepository;
     private final GrupoRepository grupoRepository;
     private final AlumnoRepository alumnoRepository;
+    private final TutorRepository tutorRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcanceDatosService;
@@ -70,6 +73,12 @@ public class CatalogoConsultaService {
                     activo(f), pagina, e -> fila(e.getId(), e.isActivo(), e.getMatricula(),
                             nombreAlumno(e), valor(e.getCurp()), FECHA.format(e.getFechaNacimiento()),
                             FECHA.format(e.getFechaIngreso())));
+            case TUTORES -> consultar(modulo, tutorRepository,
+                    texto(f, "nombres", "primerApellido", "segundoApellido", "telefonoPrincipal", "email"),
+                    activo(f), pagina, e -> fila(e.getId(), e.isActivo(), nombreTutor(e),
+                            e.getTelefonoPrincipal(), valor(e.getEmail()),
+                            e.getUsuario() == null ? "Sin cuenta" : e.getUsuario().getUsername(),
+                            e.getInstitucion().getNombre()));
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
             case USUARIOS -> consultar(modulo, usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,
@@ -148,6 +157,13 @@ public class CatalogoConsultaService {
     private String nombreAlumno(Alumno alumno) {
         return java.util.stream.Stream.of(alumno.getNombres(), alumno.getPrimerApellido(),
                         alumno.getSegundoApellido())
+                .filter(valor -> valor != null && !valor.isBlank())
+                .collect(java.util.stream.Collectors.joining(" "));
+    }
+
+    private String nombreTutor(Tutor tutor) {
+        return java.util.stream.Stream.of(tutor.getNombres(), tutor.getPrimerApellido(),
+                        tutor.getSegundoApellido())
                 .filter(valor -> valor != null && !valor.isBlank())
                 .collect(java.util.stream.Collectors.joining(" "));
     }

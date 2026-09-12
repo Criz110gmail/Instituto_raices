@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static escuela.common.mapper.NormalizacionTexto.email;
 import static escuela.common.mapper.NormalizacionTexto.limpiar;
 import static escuela.common.service.ValidacionVersion.verificar;
@@ -73,6 +75,14 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuario.setIntentosFallidos(0);
         }
         return mapper.respuesta(repository.saveAndFlush(usuario));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UsuarioResponse> listarPorInstitucion(Long institucionId) {
+        return repository.findAllByInstitucionIdOrderByUsernameAsc(institucionId).stream()
+                .map(mapper::respuesta)
+                .toList();
     }
 
     private void validar(UsuarioRequest request, Institucion institucion, Long idExcluido) {

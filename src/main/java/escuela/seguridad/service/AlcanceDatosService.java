@@ -18,6 +18,7 @@ import escuela.institucion.repository.PlantelRepository;
 import escuela.seguridad.dto.response.RolResponse;
 import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.repository.UsuarioRepository;
+import escuela.tutor.repository.TutorRepository;
 import jakarta.persistence.criteria.Path;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -43,6 +44,7 @@ public class AlcanceDatosService {
     private final PeriodoAcademicoRepository periodoRepository;
     private final GrupoRepository grupoRepository;
     private final AlumnoRepository alumnoRepository;
+    private final TutorRepository tutorRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
 
@@ -52,7 +54,7 @@ public class AlcanceDatosService {
         return (root, query, cb) -> {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
-                case PLANTELES, NIVELES, CICLOS, ALUMNOS, ROLES, USUARIOS -> root.get("institucion").get("id");
+                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, ROLES, USUARIOS -> root.get("institucion").get("id");
                 case OFERTA -> root.get("plantel").get("institucion").get("id");
                 case GRADOS -> root.get("nivelEducativo").get("institucion").get("id");
                 case PERIODOS -> root.get("cicloEscolar").get("institucion").get("id");
@@ -91,6 +93,8 @@ public class AlcanceDatosService {
             case GRUPOS -> validarPlantel(grupoRepository.findById(id)
                     .orElseThrow(this::denegado).getPlantel().getId());
             case ALUMNOS -> validarInstitucion(alumnoRepository.findById(id)
+                    .orElseThrow(this::denegado).getInstitucion().getId());
+            case TUTORES -> validarInstitucion(tutorRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());
             case ROLES -> validarInstitucion(rolRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());

@@ -20,8 +20,8 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `84ea37a` — `recuperación
-  segura de contraseña`.
+- Último commit confirmado antes de estos cambios locales: `5b3eadf` — `modulo
+  alumnos correcciones de fecha`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
@@ -37,8 +37,9 @@ no vuelvas a implementar componentes que ya existan.
 - Apache POI 5.4.1 con `SXSSFWorkbook` para exportaciones Excel de bajo consumo de
   memoria.
 - Paquete base: `escuela`.
-- Módulos principales: `escuela.institucion`, `escuela.academico`, `escuela.admin`,
-  `escuela.config` y `escuela.common`.
+- Módulos principales: `escuela.institucion`, `escuela.academico`, `escuela.seguridad`,
+  `escuela.alumno`, `escuela.tutor`, `escuela.admin`, `escuela.config` y
+  `escuela.common`.
 - Cada entidad usa identificador `Long`, auditoría y versión para concurrencia optimista.
 - Los controladores y formularios usan DTO; nunca deben enlazarse directamente con
   entidades JPA.
@@ -96,6 +97,9 @@ Reglas importantes ya aplicadas:
   observaciones, validando rangos, duplicados, solapamientos y ciclos cerrados.
 - `Grupo` cuenta con alta, edición y desactivación lógica, con selectores dependientes y
   validación de oferta educativa activa.
+- `Alumno` y `Tutor` cuentan con expediente institucional, alta, edición,
+  desactivación lógica, filtros, paginación y Excel. El tutor puede vincularse de
+  manera opcional con una cuenta de usuario de su misma institución.
 - Los formularios incluyen Bean Validation, CSRF, mensajes de resultado y versión
   optimista, manteniendo los temas y el diseño responsivo.
 - Los errores esperables al crear, actualizar o desactivar se muestran en el mismo
@@ -234,34 +238,46 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
   `ALUMNO_ADMINISTRAR`. No concede permisos nuevos automáticamente a roles existentes.
 - `Alumnos` ya tiene aislamiento institucional, listado filtrado y paginado en
   PostgreSQL, Excel por bloques, alta, edición y desactivación lógica.
+- El propietario confirmó en el navegador que `criz110` ya puede ver y operar el
+  módulo Alumnos con los permisos asignados a su rol.
 - Matrícula y CURP —cuando existe— son únicas por institución. No se guarda plantel,
   grado o grupo actual: esa trayectoria se derivará de las inscripciones futuras.
 - Los campos `LocalDate` de alumnos, ciclos y periodos declaran formato ISO explícito
   para que los controles HTML de fecha carguen correctamente al editar.
-- Los listados y los once formularios administrativos muestran `Cerrar sesión`. El
+- La migración V6 crea `Tutor` y agrega `TUTOR_LEER` y `TUTOR_ADMINISTRAR` sin
+  concederlos automáticamente a roles existentes. Una cuenta de usuario sólo puede
+  vincularse con un tutor y debe pertenecer a la misma institución.
+- `Tutores` incluye aislamiento institucional, filtros y paginación en PostgreSQL,
+  Excel por bloques, alta, edición y desactivación lógica. Los errores permanecen en
+  el formulario y la fecha de nacimiento usa formato ISO.
+- Los listados y los doce formularios administrativos muestran `Cerrar sesión`. El
   botón envía `POST /logout` con CSRF, invalida la sesión y regresa al inicio.
 
 ## Verificación confirmada
 
-- Compilación correcta de 163 archivos Java de producción.
-- 86 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V5 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 16 repositorios.
+- Compilación correcta de 172 archivos Java de producción.
+- 99 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V6 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 17 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
   grados respondieron HTTP 200.
-- La exportación filtrada generó un libro XLSX válido con HTTP 200.
+- El listado, el formulario y la exportación de Tutores respondieron autenticados; el
+  libro comenzó con firma XLSX válida.
+- No se crearon tutores de prueba. `criz110` aún tiene que recibir explícitamente
+  `TUTOR_LEER` y `TUTOR_ADMINISTRAR` desde la edición de su rol.
 - El cierre de sesión respondió HTTP 302 y la misma cookie fue redirigida al login al
   intentar regresar a `/admin`.
 - La última instancia local verificada quedó en `http://localhost:8080`.
 
 ## Siguiente paso acordado
 
-Después de que el propietario asigne `ALUMNO_LEER` y `ALUMNO_ADMINISTRAR` a su rol y
-valide el módulo en el navegador, implementar `Tutor`: migración aditiva, dominio,
-aislamiento institucional y mantenimiento completo con filtros, paginación y Excel.
-Todavía no crear `AlumnoTutor`, inscripciones, cobros ni tesorería.
+Después de que el propietario asigne `TUTOR_LEER` y `TUTOR_ADMINISTRAR` a su rol y
+valide el módulo en el navegador, implementar `AlumnoTutor`: relación histórica entre
+alumno y tutor, parentesco, responsable principal, autorizaciones, vigencias y alcance
+`VINCULOS_TUTOR`. Después se implementarán archivos/fotografía del expediente y luego
+inscripciones. Todavía no crear cobros ni tesorería.
 
 ## Disciplina de cambios y entrega
 

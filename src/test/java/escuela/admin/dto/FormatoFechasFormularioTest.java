@@ -14,6 +14,7 @@ class FormatoFechasFormularioTest {
         assertIso(AlumnoForm.class, "fechaNacimiento", "fechaIngreso");
         assertIso(CicloEscolarForm.class, "fechaInicio", "fechaFin");
         assertIso(PeriodoAcademicoForm.class, "fechaInicio", "fechaFin");
+        assertIso(TutorForm.class, "fechaNacimiento");
     }
 
     private void assertIso(Class<?> tipo, String... campos) throws NoSuchFieldException {
