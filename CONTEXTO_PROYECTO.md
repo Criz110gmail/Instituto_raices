@@ -385,3 +385,25 @@
   recuperación, sesión anónima y limpieza de un actor anterior.
 - La aplicación inició correctamente, validó Flyway V3 y salud respondió HTTP 200.
 - No se generaron registros artificiales ni se modificaron datos para la verificación.
+
+## Decisiones — intentos fallidos y bloqueo temporal
+
+- Eventos de éxito y credenciales incorrectas de Spring Security delegan el registro a
+  un servicio transaccional; no se modificó el formulario ni su mensaje uniforme.
+- Un acceso correcto de usuario persistido actualiza `ultimo_acceso_en`, limpia
+  `intentos_fallidos` y retira un bloqueo temporal vencido.
+- Cada contraseña incorrecta incrementa el contador bajo bloqueo pesimista. El quinto
+  fallo cambia el estado a `BLOQUEADO` y fija `bloqueo_hasta` a 15 minutos.
+- Un bloqueo con `bloqueo_hasta = null` es administrativo y no vence automáticamente.
+  Tras vencer un bloqueo temporal, un fallo nuevo comienza otra vez desde uno.
+- No se modifican cuentas desconocidas, usernames ambiguos, invitados, inactivos ni el
+  usuario de recuperación. Esto evita filtrar la existencia o estado de una cuenta.
+
+## Verificación de protección de acceso
+
+- Compilación Docker correcta de 146 archivos Java de producción.
+- 65 pruebas ejecutadas sin fallos ni errores; seis nuevas cubren éxito, quinto fallo,
+  expiración, bloqueo administrativo, usuario desconocido y autenticación tras vencer.
+- La aplicación inició correctamente con PostgreSQL saludable, Flyway V3 vigente y el
+  proveedor `usuarioSistemaDetailsService` activo.
+- No se provocaron fallos deliberados sobre `criz110` ni se alteraron sus credenciales.

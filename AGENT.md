@@ -20,8 +20,8 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `a58f60b` — `se asignaron
-  usuarios y permisos con validaciones`.
+- Último commit confirmado antes de estos cambios locales: `677edc5` — `auditoría con
+  el usuario real`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
@@ -217,11 +217,17 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
   `creado_por_id` y los cambios guardan `actualizado_por_id`. El acceso de recuperación
   y los procesos sin usuario persistido conservan actor nulo mediante un listener que
   evita conservar por error el actor anterior.
+- Los eventos de autenticación registran `ultimo_acceso_en`, reinician el contador al
+  entrar correctamente e incrementan sólo contraseñas erróneas de cuentas identificables.
+- Cinco fallos consecutivos producen un bloqueo automático de 15 minutos. Al vencer,
+  un acceso correcto reactiva la cuenta; un bloqueo administrativo sin fecha no vence.
+- Usuarios desconocidos, ambiguos, invitados, inactivos y el acceso de recuperación no
+  acumulan intentos. La pantalla conserva un mensaje de error uniforme.
 
 ## Verificación confirmada
 
-- Compilación correcta de 143 archivos Java de producción.
-- 59 pruebas Maven sin fallos ni errores.
+- Compilación correcta de 146 archivos Java de producción.
+- 65 pruebas Maven sin fallos ni errores.
 - Flyway V1, V2 y V3 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 14 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
@@ -233,10 +239,10 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 
 ## Siguiente paso acordado
 
-Registrar último acceso, intentos fallidos y bloqueo temporal mediante eventos de
-autenticación, manteniendo un mensaje de error uniforme que no revele si una cuenta
-existe. Mantener por ahora el usuario de recuperación. No ampliar todavía alumnos,
-tutores, cobros o tesorería.
+Implementar recuperación de contraseña para usuarios activos mediante tokens separados,
+de un solo uso y con vencimiento, sin reutilizar el estado `INVITADO` ni enviar una
+contraseña en texto plano. Mantener por ahora el usuario de recuperación. No ampliar
+todavía alumnos, tutores, cobros o tesorería.
 
 ## Disciplina de cambios y entrega
 

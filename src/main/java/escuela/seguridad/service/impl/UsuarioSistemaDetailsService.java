@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +76,10 @@ public class UsuarioSistemaDetailsService implements UserDetailsService {
 
     private void validarEstado(Usuario usuario) {
         if (usuario.getEstado() == EstadoUsuario.BLOQUEADO) {
-            throw new LockedException("La cuenta está bloqueada");
+            if (usuario.getBloqueoHasta() == null || usuario.getBloqueoHasta().isAfter(Instant.now())) {
+                throw new LockedException("La cuenta está bloqueada");
+            }
+            return;
         }
         if (usuario.getEstado() != EstadoUsuario.ACTIVO || usuario.getPasswordHash() == null) {
             throw new DisabledException("La cuenta no está activa");

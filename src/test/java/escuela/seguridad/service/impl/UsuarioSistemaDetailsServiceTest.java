@@ -116,4 +116,15 @@ class UsuarioSistemaDetailsServiceTest {
         assertThat(detalles.getAuthorities()).extracting("authority")
                 .containsExactly("USUARIO_ADMINISTRAR");
     }
+
+    @Test
+    void permiteAutenticarCuandoElBloqueoTemporalYaVencio() {
+        usuario.setEstado(EstadoUsuario.BLOQUEADO);
+        usuario.setBloqueoHasta(java.time.Instant.now().minusSeconds(1));
+        when(usuarioRepository.findAllByUsernameIgnoreCase("criz110")).thenReturn(List.of(usuario));
+        when(usuarioRolRepository.findAllByUsuarioIdAndActivoTrueOrderByRolNombreAsc(2L))
+                .thenReturn(List.of());
+
+        assertThat(service.loadUserByUsername("criz110").getUsername()).isEqualTo("criz110");
+    }
 }

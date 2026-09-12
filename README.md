@@ -73,6 +73,12 @@ de la sesión para completar `creado_por_id` y `actualizado_por_id`. Las operaci
 usuario de recuperación o de procesos sin cuenta persistida mantienen esos actores en
 `null` y nunca registran credenciales.
 
+El sistema registra el último acceso correcto y protege las cuentas persistidas contra
+intentos repetidos: cinco contraseñas incorrectas consecutivas bloquean durante 15
+minutos. Un acceso correcto reinicia el contador. Los bloqueos administrativos sin fecha
+son permanentes hasta que un administrador cambie el estado, y el login nunca revela si
+el usuario existe, está inactivo o está bloqueado.
+
 La consola y el login incluyen temas claro y oscuro con preferencia persistente en el
 dispositivo. Instituciones, planteles, niveles, oferta educativa y grados ya permiten
 crear, editar y desactivar registros; los ciclos escolares permiten crear y editar su
