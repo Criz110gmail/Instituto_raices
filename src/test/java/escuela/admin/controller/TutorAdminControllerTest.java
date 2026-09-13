@@ -49,14 +49,14 @@ class TutorAdminControllerTest {
     @Test
     void preparaFormularioYSeleccionaLaUnicaInstitucion() {
         when(institucionService.listar()).thenReturn(List.of(institucion()));
-        when(usuarioService.listarPorInstitucion(1L)).thenReturn(List.of());
         ExtendedModelMap model = new ExtendedModelMap();
 
         String vista = controller.nuevo(model);
 
         assertThat(vista).isEqualTo("admin/tutor-form");
         assertThat(((TutorForm) model.get("form")).getInstitucionId()).isEqualTo(1L);
-        assertThat(model).containsKeys("instituciones", "usuarios");
+        assertThat(model).containsKeys("instituciones", "usuarioSeleccionado");
+        assertThat(model.get("usuarioSeleccionado")).isEqualTo("");
     }
 
     @Test

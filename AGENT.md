@@ -20,8 +20,8 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `d7a5332` — `modulo
-  tutores`.
+- Último commit confirmado antes de estos cambios locales: `e39ef1a` — `Vínculos
+  alumno–tutor`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
@@ -105,6 +105,9 @@ Reglas importantes ya aplicadas:
 - Los errores esperables al crear, actualizar o desactivar se muestran en el mismo
   formulario sin perder la captura: reglas de negocio, concurrencia y restricciones de
   integridad. Nunca se presentan SQL ni detalles internos de PostgreSQL al usuario.
+- Las relaciones con catálogos de alto volumen usan autocompletado remoto, nunca un
+  `<select>` con todos los registros. La búsqueda inicia con tres caracteres, respeta
+  permisos y alcance institucional y devuelve como máximo 20 coincidencias.
 
 Archivos clave de la interfaz:
 
@@ -145,6 +148,9 @@ Todo módulo que se construya debe incluir desde su primera entrega:
 9. Desactivación lógica cuando el dominio la permita; no borrado físico.
 10. Pruebas proporcionales al riesgo y verificación real en Docker antes de entregar.
 11. Errores de negocio, concurrencia e integridad mostrados dentro del mismo formulario.
+12. Toda relación con un catálogo de alto volumen debe usar autocompletado remoto con
+    consulta indexada, alcance de seguridad, mínimo de tres caracteres y resultado
+    acotado; nunca cargar la colección completa al abrir el formulario.
 
 ## Seguridad y variables de entorno
 
@@ -256,14 +262,17 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
   `VINCULO_TUTOR_ADMINISTRAR` sin concederlos automáticamente. Administra parentesco,
   contacto principal, responsabilidad financiera, autorizaciones y vigencias sin
   borrar el historial.
+- El propietario confirmó que `criz110` ya tiene los permisos y validó el módulo de
+  vínculos. Flyway V8 agrega búsquedas indexadas con `pg_trgm` para alumnos, tutores y
+  usuarios.
 - Los listados y los trece formularios administrativos muestran `Cerrar sesión`. El
   botón envía `POST /logout` con CSRF, invalida la sesión y regresa al inicio.
 
 ## Verificación confirmada
 
-- Compilación correcta de 182 archivos Java de producción.
-- 116 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V7 validados y aplicados correctamente sobre el volumen existente.
+- Compilación correcta de 186 archivos Java de producción.
+- 120 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V8 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 18 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
@@ -271,17 +280,18 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
   grados respondieron HTTP 200.
 - El listado filtrado, el formulario y la exportación de Alumno–Tutor respondieron
   autenticados; el libro comenzó con firma XLSX válida.
-- No se crearon vínculos de prueba. `criz110` debe recibir explícitamente
-  `VINCULO_TUTOR_LEER` y `VINCULO_TUTOR_ADMINISTRAR` desde la edición de su rol.
+- No se crearon vínculos de prueba. El propietario confirmó los permisos y el
+  funcionamiento del módulo con `criz110`.
+- PostgreSQL confirmó `pg_trgm` y los tres índices GIN. Los formularios autenticados
+  mostraron los tres autocompletados y sus endpoints respondieron JSON HTTP 200.
 - El cierre de sesión respondió HTTP 302 y la misma cookie fue redirigida al login al
   intentar regresar a `/admin`.
 - La última instancia local verificada quedó en `http://localhost:8080`.
 
 ## Siguiente paso acordado
 
-Después de que el propietario asigne `VINCULO_TUTOR_LEER` y
-`VINCULO_TUTOR_ADMINISTRAR` a su rol y valide el módulo, implementar la base segura de
-`Archivo` y la fotografía del alumno: metadatos en PostgreSQL, contenido en
+Implementar la base segura de `Archivo` y la fotografía del alumno: metadatos en
+PostgreSQL, contenido en
 almacenamiento privado, validación de tipo y tamaño, autorización de descarga y vínculo
 `fotografiaArchivoId` sin guardar binarios en la base. Después implementar
 inscripciones. Todavía no crear cobros ni tesorería.

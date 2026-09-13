@@ -7,7 +7,6 @@ import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.service.InstitucionService;
 import escuela.seguridad.dto.response.UsuarioResponse;
-import escuela.seguridad.entity.EstadoUsuario;
 import escuela.seguridad.service.AlcanceDatosService;
 import escuela.seguridad.service.UsuarioService;
 import escuela.tutor.dto.response.TutorResponse;
@@ -126,19 +125,21 @@ public class TutorAdminController {
         if (form.getInstitucionId() == null && instituciones.size() == 1) {
             form.setInstitucionId(instituciones.getFirst().id());
         }
-        List<UsuarioResponse> usuarios = instituciones.stream()
-                .flatMap(institucion -> usuarioService.listarPorInstitucion(institucion.id()).stream())
-                .filter(usuario -> usuario.estado() != EstadoUsuario.INACTIVO)
-                .toList();
         model.addAttribute("form", form);
         model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
         model.addAttribute("instituciones", instituciones);
-        model.addAttribute("usuarios", usuarios);
+        model.addAttribute("usuarioSeleccionado", etiquetaUsuario(form.getUsuarioId()));
     }
 
     private void prepararError(Model model, TutorForm form, Long id, RuntimeException excepcion) {
         preparar(model, form, id);
         model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
+    }
+
+    private String etiquetaUsuario(Long usuarioId) {
+        if (usuarioId == null) return "";
+        UsuarioResponse usuario = usuarioService.obtener(usuarioId);
+        return usuario.username();
     }
 }

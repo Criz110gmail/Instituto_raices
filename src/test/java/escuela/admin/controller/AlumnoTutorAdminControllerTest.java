@@ -2,6 +2,7 @@ package escuela.admin.controller;
 
 import escuela.admin.dto.AlumnoTutorForm;
 import escuela.alumno.dto.request.AlumnoTutorRequest;
+import escuela.alumno.dto.response.AlumnoResponse;
 import escuela.alumno.dto.response.AlumnoTutorResponse;
 import escuela.alumno.entity.ParentescoTutor;
 import escuela.alumno.service.AlumnoService;
@@ -12,6 +13,7 @@ import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.service.InstitucionService;
 import escuela.seguridad.service.AlcanceDatosService;
 import escuela.tutor.service.TutorService;
+import escuela.tutor.dto.response.TutorResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class AlumnoTutorAdminControllerTest {
@@ -50,7 +53,7 @@ class AlumnoTutorAdminControllerTest {
     }
 
     @Test
-    void preparaFormularioConInstitucionYCatalogos() {
+    void preparaFormularioSinCargarCatalogosCompletos() {
         when(institucionService.listar()).thenReturn(List.of(institucion()));
         ExtendedModelMap model = new ExtendedModelMap();
 
@@ -58,9 +61,9 @@ class AlumnoTutorAdminControllerTest {
 
         assertThat(vista).isEqualTo("admin/alumno-tutor-form");
         assertThat(((AlumnoTutorForm) model.get("form")).getInstitucionId()).isEqualTo(1L);
-        assertThat(model).containsKeys("instituciones", "alumnos", "tutores", "parentescos");
-        verify(alumnoService).listarActivosPorInstitucion(1L);
-        verify(tutorService).listarActivosPorInstitucion(1L);
+        assertThat(model).containsKeys("instituciones", "alumnoSeleccionado", "tutorSeleccionado");
+        assertThat(model.get("alumnoSeleccionado")).isEqualTo("");
+        assertThat(model.get("tutorSeleccionado")).isEqualTo("");
     }
 
     @Test
@@ -84,6 +87,15 @@ class AlumnoTutorAdminControllerTest {
         when(service.crear(any())).thenThrow(
                 new RecursoDuplicadoException("El alumno ya tiene un contacto principal"));
         when(institucionService.listar()).thenReturn(List.of());
+        AlumnoResponse alumno = mock(AlumnoResponse.class);
+        when(alumno.matricula()).thenReturn("A-001");
+        when(alumno.nombres()).thenReturn("Ana");
+        when(alumno.primerApellido()).thenReturn("López");
+        when(alumnoService.obtener(10L)).thenReturn(alumno);
+        TutorResponse tutor = mock(TutorResponse.class);
+        when(tutor.nombres()).thenReturn("María");
+        when(tutor.primerApellido()).thenReturn("López");
+        when(tutorService.obtener(20L)).thenReturn(tutor);
         BeanPropertyBindingResult errores = new BeanPropertyBindingResult(form, "form");
         ExtendedModelMap model = new ExtendedModelMap();
 

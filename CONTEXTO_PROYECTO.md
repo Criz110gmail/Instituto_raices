@@ -529,8 +529,9 @@
   recibe acceso administrativo ni conserva acceso después de la revocación o vigencia.
 - El listado busca por matrícula y nombres de alumno o tutor en PostgreSQL, pagina los
   resultados y exporta los mismos filtros a XLSX por bloques.
-- El formulario filtra alumnos y tutores por institución, bloquea ambas personas en
-  edición y mantiene reglas, integridad y concurrencia dentro de la misma pantalla.
+- El formulario busca alumnos y tutores mediante autocompletado remoto por institución,
+  bloquea ambas personas en edición y mantiene reglas, integridad y concurrencia dentro
+  de la misma pantalla.
 
 ## Verificación de vínculos entre alumnos y tutores
 
@@ -546,3 +547,23 @@
   se alteraron alumnos, tutores, usuarios ni roles existentes.
 - El siguiente paso acordado es la base privada de archivos y la fotografía del alumno;
   después se implementarán inscripciones.
+
+## Decisión posterior: autocompletado para catálogos de alto volumen
+
+- Se corrigió el formulario de vínculos para que alumno y tutor se seleccionen mediante
+  búsqueda remota, y el formulario de tutor usa el mismo componente para la cuenta de
+  usuario opcional. Ninguno carga ya las tablas completas al abrirse.
+- La búsqueda comienza con tres caracteres, espera 280 ms mientras se escribe, cancela
+  solicitudes anteriores y devuelve como máximo 20 elementos sin ejecutar un conteo
+  total. Incluye teclado, estados ARIA, botón para limpiar y texto insertado de forma
+  segura.
+- Los endpoints aplican los permisos y el alcance institucional del servidor. Al buscar
+  una cuenta para tutor también se excluyen cuentas asignadas a otro tutor.
+- Flyway V8 habilita `pg_trgm`, incorpora columnas generadas normalizadas y crea índices
+  GIN para alumnos, tutores y usuarios. La regla del proyecto es utilizar este patrón en
+  toda relación futura con un catálogo potencialmente masivo.
+- Docker compiló 186 fuentes de producción y ejecutó 120 pruebas sin fallos. Flyway
+  avanzó a V8, se confirmaron los tres índices y los tres endpoints devolvieron JSON
+  HTTP 200. La aplicación quedó disponible en `http://localhost:8080`.
+- La continuidad funcional no cambia: sigue la base privada de archivos y fotografía
+  del alumno; posteriormente se implementarán inscripciones.

@@ -46,6 +46,11 @@ comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME
 Los controladores enlazan formularios validados con DTO propios y nunca exponen ni
 reciben entidades JPA directamente.
 
+Las relaciones con catálogos de alto volumen se resuelven mediante autocompletado
+remoto: la búsqueda inicia con tres caracteres, respeta el alcance institucional y
+devuelve un máximo de 20 coincidencias. Alumnos, tutores y usuarios cuentan con índices
+GIN `pg_trgm` desde Flyway V8; no se cargan tablas completas dentro de formularios.
+
 ## Consola administrativa
 
 La ruta `/admin` contiene los ocho catálogos académicos, Alumnos, Tutores, Vínculos

@@ -4,7 +4,6 @@ import escuela.admin.dto.AlumnoTutorForm;
 import escuela.admin.dto.ModuloCatalogo;
 import escuela.admin.support.MensajeErrorFormulario;
 import escuela.alumno.dto.response.AlumnoTutorResponse;
-import escuela.alumno.entity.ParentescoTutor;
 import escuela.alumno.service.AlumnoService;
 import escuela.alumno.service.AlumnoTutorService;
 import escuela.common.exception.ReglaNegocioException;
@@ -28,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Controller
 @RequiredArgsConstructor
@@ -130,16 +130,32 @@ public class AlumnoTutorAdminController {
         model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
         model.addAttribute("instituciones", instituciones);
-        model.addAttribute("alumnos", instituciones.stream()
-                .flatMap(item -> alumnoService.listarActivosPorInstitucion(item.id()).stream()).toList());
-        model.addAttribute("tutores", instituciones.stream()
-                .flatMap(item -> tutorService.listarActivosPorInstitucion(item.id()).stream()).toList());
-        model.addAttribute("parentescos", ParentescoTutor.values());
+        model.addAttribute("alumnoSeleccionado", etiquetaAlumno(form.getAlumnoId()));
+        model.addAttribute("tutorSeleccionado", etiquetaTutor(form.getTutorId()));
     }
 
     private void prepararError(Model model, AlumnoTutorForm form, Long id,
                                RuntimeException excepcion) {
         preparar(model, form, id);
         model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
+    }
+
+    private String etiquetaAlumno(Long alumnoId) {
+        if (alumnoId == null) return "";
+        var alumno = alumnoService.obtener(alumnoId);
+        return alumno.matricula() + " · " + nombre(alumno.nombres(), alumno.primerApellido(),
+                alumno.segundoApellido());
+    }
+
+    private String etiquetaTutor(Long tutorId) {
+        if (tutorId == null) return "";
+        var tutor = tutorService.obtener(tutorId);
+        return nombre(tutor.nombres(), tutor.primerApellido(), tutor.segundoApellido());
+    }
+
+    private String nombre(String... partes) {
+        return Stream.of(partes)
+                .filter(parte -> parte != null && !parte.isBlank())
+                .collect(java.util.stream.Collectors.joining(" "));
     }
 }

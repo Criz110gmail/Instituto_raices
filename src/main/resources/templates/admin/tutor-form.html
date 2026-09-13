@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title th:text="${edicion ? 'Editar tutor' : 'Nuevo tutor'} + ' · Nexo Escolar'">Tutor</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script><script src="/js/autocomplete.js" defer></script>
 </head>
 <body class="form-page">
 <main class="form-shell student-shell">
@@ -15,7 +15,7 @@
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div>
             <fieldset class="form-section"><legend>Identidad y acceso</legend><div class="form-grid">
                 <label class="wide"><span>Institución *</span><select id="institucion" th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
-                <label class="wide"><span>Cuenta de usuario vinculada</span><select id="usuario" th:field="*{usuarioId}"><option value="">Sin cuenta de acceso</option><option th:each="item : ${usuarios}" th:value="${item.id}" th:text="${item.username + ' · ' + item.email}" th:attr="data-institucion=${item.institucionId}">Usuario</option></select><small th:errors="*{usuarioId}"></small><span class="field-help">La cuenta debe existir previamente en Seguridad → Usuarios y sólo puede pertenecer a un tutor.</span></label>
+                <div class="wide autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/usuarios" data-institution-input="institucion" th:attr="data-exclude-id=${id}"><label class="autocomplete-label" for="usuario-busqueda">Cuenta de usuario vinculada</label><div class="autocomplete-control"><input id="usuario-busqueda" class="autocomplete-input" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="usuario-resultados" placeholder="Escribe username o correo" th:value="${usuarioSeleccionado}"><button class="autocomplete-clear" type="button" aria-label="Quitar cuenta vinculada" hidden>×</button></div><input class="autocomplete-value" type="hidden" th:field="*{usuarioId}"><div id="usuario-resultados" class="autocomplete-results" role="listbox" hidden></div><span class="autocomplete-status" aria-live="polite">Escribe al menos 3 caracteres para buscar.</span><small th:errors="*{usuarioId}"></small><span class="field-help">La cuenta debe existir previamente en Seguridad → Usuarios, no estar inactiva y sólo puede pertenecer a un tutor.</span></div>
             </div></fieldset>
             <fieldset class="form-section"><legend>Datos personales</legend><div class="form-grid">
                 <label class="wide"><span>Nombre(s) *</span><input th:field="*{nombres}" maxlength="150" autocomplete="given-name"><small th:errors="*{nombres}"></small></label>
@@ -47,21 +47,5 @@
         <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/tutores/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este tutor? Sus vínculos históricos se conservarán.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar tutor</strong><p>El registro y sus relaciones se conservarán.</p></div><button type="submit">Desactivar</button></form>
     </section>
 </main>
-<script>
-(() => {
-    const institucion = document.querySelector('#institucion');
-    const usuario = document.querySelector('#usuario');
-    if (!institucion || !usuario) return;
-    const opciones = [...usuario.options].slice(1);
-    const filtrar = () => {
-        const seleccion = institucion.value;
-        opciones.forEach(opcion => { opcion.hidden = !seleccion || opcion.dataset.institucion !== seleccion; });
-        const elegida = usuario.selectedOptions[0];
-        if (elegida && elegida.value && elegida.hidden) usuario.value = '';
-    };
-    if (!institucion.disabled) institucion.addEventListener('change', filtrar);
-    filtrar();
-})();
-</script>
 </body>
 </html>

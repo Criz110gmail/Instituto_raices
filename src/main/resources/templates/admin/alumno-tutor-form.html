@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title th:text="${edicion ? 'Editar vínculo' : 'Nuevo vínculo'} + ' · Nexo Escolar'">Vínculo alumno-tutor</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script><script src="/js/autocomplete.js" defer></script>
 </head>
 <body class="form-page">
 <main class="form-shell student-shell">
@@ -15,8 +15,8 @@
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div>
             <fieldset class="form-section"><legend>Personas vinculadas</legend><div class="form-grid">
                 <label class="wide"><span>Institución *</span><select id="institucion" th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
-                <label class="wide"><span>Alumno *</span><select id="alumno" th:field="*{alumnoId}" th:disabled="${edicion}"><option value="">Selecciona un alumno</option><option th:each="item : ${alumnos}" th:value="${item.id}" th:text="${item.matricula + ' · ' + item.nombres + ' ' + item.primerApellido}" th:attr="data-institucion=${item.institucionId}">Alumno</option></select><input th:if="${edicion}" type="hidden" th:field="*{alumnoId}"><small th:errors="*{alumnoId}"></small></label>
-                <label class="wide"><span>Tutor *</span><select id="tutor" th:field="*{tutorId}" th:disabled="${edicion}"><option value="">Selecciona un tutor</option><option th:each="item : ${tutores}" th:value="${item.id}" th:text="${item.nombres + ' ' + item.primerApellido + ' · ' + item.telefonoPrincipal}" th:attr="data-institucion=${item.institucionId}">Tutor</option></select><input th:if="${edicion}" type="hidden" th:field="*{tutorId}"><small th:errors="*{tutorId}"></small></label>
+                <div class="wide autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/alumnos" data-institution-input="institucion"><label class="autocomplete-label" for="alumno-busqueda">Alumno *</label><div class="autocomplete-control"><input id="alumno-busqueda" class="autocomplete-input" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="alumno-resultados" placeholder="Escribe matrícula, CURP o nombre" th:value="${alumnoSeleccionado}" th:disabled="${edicion}"><button class="autocomplete-clear" type="button" aria-label="Limpiar alumno" hidden>×</button></div><input class="autocomplete-value" type="hidden" th:field="*{alumnoId}"><div id="alumno-resultados" class="autocomplete-results" role="listbox" hidden></div><span class="autocomplete-status" aria-live="polite" th:text="${edicion ? 'El alumno no puede cambiarse en un vínculo histórico.' : 'Escribe al menos 3 caracteres para buscar.'}">Escribe al menos 3 caracteres para buscar.</span><small th:errors="*{alumnoId}"></small></div>
+                <div class="wide autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/tutores" data-institution-input="institucion"><label class="autocomplete-label" for="tutor-busqueda">Tutor *</label><div class="autocomplete-control"><input id="tutor-busqueda" class="autocomplete-input" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="tutor-resultados" placeholder="Escribe nombre, teléfono o correo" th:value="${tutorSeleccionado}" th:disabled="${edicion}"><button class="autocomplete-clear" type="button" aria-label="Limpiar tutor" hidden>×</button></div><input class="autocomplete-value" type="hidden" th:field="*{tutorId}"><div id="tutor-resultados" class="autocomplete-results" role="listbox" hidden></div><span class="autocomplete-status" aria-live="polite" th:text="${edicion ? 'El tutor no puede cambiarse en un vínculo histórico.' : 'Escribe al menos 3 caracteres para buscar.'}">Escribe al menos 3 caracteres para buscar.</span><small th:errors="*{tutorId}"></small></div>
             </div></fieldset>
             <fieldset class="form-section"><legend>Parentesco y vigencia</legend><div class="form-grid">
                 <label><span>Parentesco *</span><select id="parentesco" th:field="*{parentesco}"><option value="">Selecciona una opción</option><option value="MADRE">Madre</option><option value="PADRE">Padre</option><option value="TUTOR_LEGAL">Tutor legal</option><option value="OTRO">Otro</option></select><small th:errors="*{parentesco}"></small></label>
@@ -42,17 +42,6 @@
 </main>
 <script>
 (() => {
-    const institucion = document.querySelector('#institucion');
-    const dependientes = [document.querySelector('#alumno'), document.querySelector('#tutor')].filter(Boolean);
-    const filtrar = () => {
-        dependientes.forEach(select => {
-            [...select.options].slice(1).forEach(opcion => { opcion.hidden = !institucion.value || opcion.dataset.institucion !== institucion.value; });
-            const elegida = select.selectedOptions[0];
-            if (elegida && elegida.value && elegida.hidden) select.value = '';
-        });
-    };
-    if (institucion && !institucion.disabled) institucion.addEventListener('change', filtrar);
-    if (institucion) filtrar();
     const parentesco = document.querySelector('#parentesco');
     const detalle = document.querySelector('#parentesco-otro');
     const alternarDetalle = () => { if (detalle) detalle.hidden = parentesco?.value !== 'OTRO'; };
