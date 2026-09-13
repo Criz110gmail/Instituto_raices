@@ -46,6 +46,35 @@
             </div></fieldset>
             <footer class="form-actions"><a href="/admin/catalogos/alumnos">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Registrar alumno'}">Guardar</button></footer>
         </form>
+        <section th:if="${edicion}" class="photo-management" aria-labelledby="fotografia-titulo">
+            <div class="section-heading"><div><span>Expediente visual</span><h2 id="fotografia-titulo">Fotografía del alumno</h2></div><p>JPEG o PNG, máximo 5 MB. El archivo permanece privado y cada reemplazo conserva su historial.</p></div>
+            <div class="form-error" role="alert" th:if="${errorFotografia}"><strong>No se pudo actualizar la fotografía</strong><p th:text="${errorFotografia}">Revisa el archivo e intenta nuevamente.</p></div>
+            <div class="photo-layout">
+                <div class="student-photo-frame" th:classappend="${fotografiaActual == null ? ' empty' : ''}">
+                    <img th:if="${fotografiaActual != null}" th:src="@{/admin/alumnos/{alumnoId}/fotografias/{fotoId}(alumnoId=${id},fotoId=${fotografiaActual.id})}" th:alt="${'Fotografía actual de ' + form.nombres + ' ' + form.primerApellido}">
+                    <div th:unless="${fotografiaActual != null}" aria-hidden="true"><strong th:text="${#strings.substring(form.nombres, 0, 1) + #strings.substring(form.primerApellido, 0, 1)}">AA</strong><span>Sin fotografía</span></div>
+                </div>
+                <div class="photo-actions">
+                    <div th:if="${fotografiaActual != null}" class="photo-current-meta"><strong th:text="${fotografiaActual.nombreOriginal}">fotografia.jpg</strong><span th:text="${#numbers.formatDecimal(fotografiaActual.tamanoBytes / 1024.0, 1, 0) + ' KB'}">0 KB</span></div>
+                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/alumnos/{id}/fotografia(id=${id})}" class="photo-upload-form">
+                        <label for="archivo-fotografia"><span th:text="${fotografiaActual == null ? 'Seleccionar fotografía' : 'Reemplazar fotografía'}">Seleccionar fotografía</span><input id="archivo-fotografia" type="file" name="archivo" accept="image/jpeg,image/png" required></label>
+                        <button type="submit">Guardar fotografía</button>
+                    </form>
+                    <form th:if="${fotografiaActual != null}" method="post" th:action="@{/admin/alumnos/{id}/fotografia/retirar(id=${id})}" onsubmit="return confirm('¿Retirar la fotografía actual? El archivo y su historial se conservarán de forma privada.');">
+                        <button type="submit" class="photo-remove">Retirar fotografía actual</button>
+                    </form>
+                </div>
+            </div>
+            <details class="photo-history" th:if="${historialFotografias != null and !historialFotografias.isEmpty()}">
+                <summary th:text="${'Historial de fotografías (' + historialFotografias.size() + ')'}">Historial de fotografías</summary>
+                <div class="photo-history-grid">
+                    <a th:each="foto : ${historialFotografias}" th:href="@{/admin/alumnos/{alumnoId}/fotografias/{fotoId}(alumnoId=${id},fotoId=${foto.id})}" target="_blank" rel="noopener">
+                        <img th:src="@{/admin/alumnos/{alumnoId}/fotografias/{fotoId}(alumnoId=${id},fotoId=${foto.id})}" alt="Fotografía anterior del alumno" loading="lazy">
+                        <span th:text="${foto.nombreOriginal}">fotografia-anterior.jpg</span>
+                    </a>
+                </div>
+            </details>
+        </section>
         <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/alumnos/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este alumno? Su expediente e historial se conservarán.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar alumno</strong><p>El expediente se conserva y no se elimina físicamente.</p></div><button type="submit">Desactivar</button></form>
     </section>
 </main>

@@ -7,7 +7,8 @@ RUN mvn -B -ntp clean package
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-RUN addgroup -S escuela && adduser -S escuela -G escuela
+RUN addgroup -S escuela && adduser -S escuela -G escuela \
+    && mkdir -p /data/nexo-escolar && chown -R escuela:escuela /data/nexo-escolar
 COPY --from=build /workspace/target/sistema-administrativo-escolar-*.jar app.jar
 USER escuela
 EXPOSE 8080

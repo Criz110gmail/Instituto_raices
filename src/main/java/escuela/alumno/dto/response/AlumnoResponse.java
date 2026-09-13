@@ -29,6 +29,7 @@ public record AlumnoResponse(
         LocalDate fechaIngreso,
         String observaciones,
         boolean activo,
+        Long fotografiaArchivoId,
         AuditoriaResponse auditoria
 ) {
 }

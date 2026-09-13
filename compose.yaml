@@ -25,6 +25,9 @@ services:
       SERVER_PORT: 8080
       SPRING_SECURITY_USER_NAME: ${ADMIN_BOOTSTRAP_USERNAME:?Define ADMIN_BOOTSTRAP_USERNAME en .env}
       SPRING_SECURITY_USER_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:?Define ADMIN_BOOTSTRAP_PASSWORD en .env}
+      FILE_STORAGE_ROOT: /data/nexo-escolar
+    volumes:
+      - private_files:/data/nexo-escolar
     ports:
       - "${APP_PORT:?Define APP_PORT en .env}:8080"
     depends_on:
@@ -34,3 +37,4 @@ services:
 
 volumes:
   postgres_data:
+  private_files:

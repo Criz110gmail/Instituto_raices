@@ -31,6 +31,34 @@
 }
 
 .student-shell { max-width: 1040px; }
+.photo-management { padding: 28px 34px; border-top: 1px solid var(--line); }
+.photo-layout { display: grid; grid-template-columns: 190px minmax(0,1fr); gap: 24px; align-items: center; }
+.student-photo-frame { aspect-ratio: 4/5; overflow: hidden; border: 1px solid #cad8e6; border-radius: 18px; background: #edf4fa; box-shadow: inset 0 0 0 5px #fff; }
+.student-photo-frame img { width: 100%; height: 100%; display: block; object-fit: cover; }
+.student-photo-frame.empty { display: grid; place-items: center; }
+.student-photo-frame.empty > div { display: grid; justify-items: center; gap: 7px; color: var(--muted); }
+.student-photo-frame.empty strong { display: grid; place-items: center; width: 74px; height: 74px; border-radius: 50%; background: #d9e8f4; color: #35627f; font: 800 1.4rem Manrope; }
+.student-photo-frame.empty span { font-size: .75rem; font-weight: 700; }
+.photo-actions { display: grid; justify-items: start; gap: 13px; }
+.photo-current-meta { display: grid; gap: 3px; }
+.photo-current-meta strong { font-size: .86rem; overflow-wrap: anywhere; }
+.photo-current-meta span { color: var(--muted); font-size: .75rem; }
+.photo-upload-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.photo-upload-form label { display: grid; gap: 7px; font-size: .75rem; font-weight: 700; }
+.photo-upload-form input { max-width: 100%; border: 1px solid #ccd8e5; border-radius: 10px; padding: 9px; background: #fff; color: var(--ink); }
+.photo-upload-form input::file-selector-button { margin-right: 10px; border: 0; border-radius: 7px; background: #e8f1fb; color: #174d79; padding: 7px 10px; font-weight: 700; cursor: pointer; }
+.photo-upload-form button,.photo-remove { min-height: 42px; border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+.photo-upload-form button { background: var(--blue); color: #fff; }
+.photo-remove { border: 1px solid #e0aab0; background: transparent; color: #a42634; }
+.photo-history { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 17px; }
+.photo-history summary { color: var(--muted); font-size: .8rem; font-weight: 700; cursor: pointer; }
+.photo-history-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(110px,1fr)); gap: 12px; margin-top: 14px; }
+.photo-history-grid a { display: grid; gap: 7px; color: var(--muted); text-decoration: none; font-size: .7rem; overflow-wrap: anywhere; }
+.photo-history-grid img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border: 1px solid var(--line); border-radius: 10px; }
+[data-theme=dark] .student-photo-frame { border-color: #344a63; background: #0a1728; box-shadow: inset 0 0 0 5px #0e1d31; }
+[data-theme=dark] .student-photo-frame.empty strong { background: #19324d; color: #9fc8e8; }
+[data-theme=dark] .photo-upload-form input { background: #0e1d31; color: #eef5fd; border-color: #344a63; }
+[data-theme=dark] .photo-upload-form input::file-selector-button { background: #19324d; color: #cde6fa; }
 .autocomplete { position: relative; }
 .autocomplete-label { display: block; margin-bottom: 7px; font-size: .78rem; font-weight: 700; }
 .autocomplete-control { position: relative; }
@@ -106,6 +134,12 @@
 [data-theme=dark] .permission-card:has(input:checked) { background: #2979ff18; }
 
 @media (max-width: 680px) {
+    .photo-management { padding: 24px 20px; }
+    .photo-layout { grid-template-columns: 1fr; }
+    .student-photo-frame { width: min(190px,70vw); justify-self: center; }
+    .photo-actions,.photo-upload-form { width: 100%; }
+    .photo-upload-form { display: grid; }
+    .photo-upload-form label,.photo-upload-form input,.photo-upload-form button,.photo-remove { width: 100%; }
     .permission-grid { grid-template-columns: 1fr; }
     .permission-fieldset { padding: 16px 12px; }
 }

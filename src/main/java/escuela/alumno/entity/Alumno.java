@@ -1,5 +1,6 @@
 package escuela.alumno.entity;
 
+import escuela.archivo.entity.Archivo;
 import escuela.config.audit.EntidadAuditable;
 import escuela.institucion.entity.Institucion;
 import jakarta.persistence.Column;
@@ -82,6 +83,10 @@ public class Alumno extends EntidadAuditable {
 
     @Column(name = "fecha_ingreso", nullable = false)
     private LocalDate fechaIngreso;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fotografia_archivo_id")
+    private Archivo fotografiaArchivo;
 
     @Column(columnDefinition = "text")
     private String observaciones;

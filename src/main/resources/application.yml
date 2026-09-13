@@ -18,6 +18,14 @@ spring:
           time_zone: UTC
   thymeleaf:
     cache: false
+  servlet:
+    multipart:
+      max-file-size: 6MB
+      max-request-size: 6MB
+
+app:
+  archivos:
+    directorio: ${FILE_STORAGE_ROOT:./data/private}
 
 server:
   port: ${SERVER_PORT:8080}

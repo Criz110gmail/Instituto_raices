@@ -20,8 +20,8 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `e39ef1a` — `Vínculos
-  alumno–tutor`.
+- Último commit confirmado antes de estos cambios locales: `6e3052d` — `Vínculos
+  alumno–tutor correcciones`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
@@ -33,6 +33,10 @@ no vuelvas a implementar componentes que ya existan.
 - Spring MVC con Thymeleaf; no es una SPA.
 - PostgreSQL 17 mediante Docker Compose y volumen persistente `postgres_data`.
 - Flyway administra exclusivamente el esquema; Hibernate usa `ddl-auto=validate`.
+- Los archivos privados se guardan en el volumen Docker `private_files`; PostgreSQL
+  conserva únicamente metadatos, checksum y relaciones.
+- Para respaldar o mover una instalación se necesitan juntos `postgres_data` y
+  `private_files`; nunca versionar las fotografías en Git.
 - Spring Data JPA, Bean Validation, Spring Security, Lombok, Actuator y Spring Mail.
 - Apache POI 5.4.1 con `SXSSFWorkbook` para exportaciones Excel de bajo consumo de
   memoria.
@@ -265,15 +269,18 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 - El propietario confirmó que `criz110` ya tiene los permisos y validó el módulo de
   vínculos. Flyway V8 agrega búsquedas indexadas con `pg_trgm` para alumnos, tutores y
   usuarios.
+- Flyway V9 crea `Archivo`, `AlumnoFotografia` y `fotografia_archivo_id`. El expediente
+  permite cargar JPEG/PNG de hasta 5 MB, reemplazar o retirar la foto y consultar el
+  historial sin exponer el almacenamiento privado.
 - Los listados y los trece formularios administrativos muestran `Cerrar sesión`. El
   botón envía `POST /logout` con CSRF, invalida la sesión y regresa al inicio.
 
 ## Verificación confirmada
 
-- Compilación correcta de 186 archivos Java de producción.
-- 120 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V8 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 18 repositorios.
+- Compilación correcta de 197 archivos Java de producción.
+- 130 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V9 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 20 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -284,17 +291,19 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
   funcionamiento del módulo con `criz110`.
 - PostgreSQL confirmó `pg_trgm` y los tres índices GIN. Los formularios autenticados
   mostraron los tres autocompletados y sus endpoints respondieron JSON HTTP 200.
+- El volumen `private_files` quedó escribible sólo desde la aplicación, el panel de
+  fotografía respondió autenticado y la salud permaneció `UP`. La verificación no
+  cargó fotografías ni modificó alumnos existentes.
 - El cierre de sesión respondió HTTP 302 y la misma cookie fue redirigida al login al
   intentar regresar a `/admin`.
 - La última instancia local verificada quedó en `http://localhost:8080`.
 
 ## Siguiente paso acordado
 
-Implementar la base segura de `Archivo` y la fotografía del alumno: metadatos en
-PostgreSQL, contenido en
-almacenamiento privado, validación de tipo y tamaño, autorización de descarga y vínculo
-`fotografiaArchivoId` sin guardar binarios en la base. Después implementar
-inscripciones. Todavía no crear cobros ni tesorería.
+Implementar `Inscripcion` y `AsignacionGrupo`: trayectoria por alumno, plantel, ciclo,
+grado y grupo, estados y vigencias, traslados sin sobrescribir el pasado, validación de
+oferta/capacidad y autocompletado remoto del alumno. Todavía no crear cobros ni
+tesorería.
 
 ## Disciplina de cambios y entrega
 

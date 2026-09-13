@@ -16,6 +16,10 @@ alternativas dentro de `compose.yaml`. `.env.example` sólo documenta las variab
 
 Flyway crea el esquema al iniciar y Hibernate solamente lo valida mediante
 `ddl-auto=validate`. El volumen `postgres_data` conserva la base de datos.
+El volumen `private_files` conserva archivos privados fuera de PostgreSQL y fuera de
+las rutas públicas de la aplicación. En respaldos o traslados entre computadoras deben
+copiarse tanto `postgres_data` como `private_files`; las fotografías nunca deben subirse
+al repositorio Git.
 
 ## Desarrollo local
 
@@ -124,6 +128,11 @@ roles correspondientes. El plantel, grado y grupo vigentes no se almacenan en es
 expediente: se derivarán de las inscripciones para conservar el historial correctamente.
 Los formularios de alumnos, ciclos y periodos usan fechas ISO compatibles con los
 controles nativos del navegador tanto al crear como al editar.
+
+En la edición del alumno puede cargarse una fotografía JPEG o PNG de hasta 5 MB. El
+sistema valida el contenido real y sus dimensiones, calcula SHA-256, conserva cada
+reemplazo en el historial y sirve las imágenes mediante una ruta autenticada con control
+institucional y caché deshabilitada. PostgreSQL sólo contiene metadatos y relaciones.
 
 Tutores permite registrar datos personales, contacto, domicilio y ocupación, además de
 vincular opcionalmente una cuenta de usuario de la misma institución. Incluye filtros en

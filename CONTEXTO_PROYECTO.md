@@ -567,3 +567,37 @@
   HTTP 200. La aplicación quedó disponible en `http://localhost:8080`.
 - La continuidad funcional no cambia: sigue la base privada de archivos y fotografía
   del alumno; posteriormente se implementarán inscripciones.
+
+## Decisiones — archivos privados y fotografía del alumno
+
+- Flyway V9 crea `Archivo`, agrega `fotografia_archivo_id` a `Alumno` y registra cada
+  asignación en `AlumnoFotografia`. Una fotografía reemplazada o retirada deja de ser
+  la actual, pero su relación histórica y su contenido no se eliminan.
+- PostgreSQL guarda institución, clave aleatoria, nombre original saneado, MIME,
+  tamaño, SHA-256, estado y auditoría; nunca guarda los bytes del archivo.
+- El contenido vive fuera de los recursos web en el volumen Docker privado
+  `private_files`. Las claves son generadas por el servidor y el almacenamiento bloquea
+  cualquier ruta que intente salir de su raíz.
+- La etapa inicial admite únicamente JPEG y PNG de hasta 5 MB y 25 millones de píxeles.
+  Se validan firma binaria, lector real, dimensiones y checksum, sin confiar en la
+  extensión ni en el MIME enviado por el navegador.
+- Cargar, reemplazar y retirar exige `ALUMNO_ADMINISTRAR` y alcance institucional. La
+  visualización exige `ALUMNO_LEER` o `ALUMNO_ADMINISTRAR`, vuelve a comprobar el
+  alcance por alumno, usa `no-store` y nunca revela una ruta física.
+- La edición del alumno incluye vista previa, estado vacío, carga accesible, retiro e
+  historial privado. Los errores de archivo, tipo, tamaño o persistencia permanecen en
+  el mismo formulario.
+
+## Verificación de archivos y fotografía
+
+- Docker compiló 197 fuentes Java de producción y ejecutó 130 pruebas sin fallos ni
+  errores. Diez pruebas nuevas cubren imagen válida, contenido falso, tamaño, historial,
+  retiro, bloqueo, rutas privadas y errores integrados en el controlador.
+- Flyway aplicó V9 sobre el volumen existente, Hibernate validó el esquema y detectó 20
+  repositorios. Las tablas `archivo` y `alumno_fotografia` quedaron disponibles.
+- El volumen `private_files` se creó con permisos para el usuario no privilegiado de la
+  aplicación. El formulario autenticado mostró el panel multipart y Actuator respondió
+  `UP` en `http://localhost:8080`.
+- No se cargaron archivos reales ni se modificaron alumnos durante la verificación.
+- El siguiente paso acordado es `Inscripcion` y `AsignacionGrupo`; todavía no se deben
+  implementar cobros ni tesorería.

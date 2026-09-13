@@ -2,6 +2,7 @@ package escuela.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.Customizer;
@@ -29,6 +30,8 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/ciclos/**").hasAuthority("CICLO_ADMINISTRAR")
                         .requestMatchers("/admin/periodos/**").hasAuthority("PERIODO_ADMINISTRAR")
                         .requestMatchers("/admin/grupos/**").hasAuthority("GRUPO_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.GET, "/admin/alumnos/*/fotografias/*")
+                        .hasAnyAuthority("ALUMNO_LEER", "ALUMNO_ADMINISTRAR")
                         .requestMatchers("/admin/alumnos/**").hasAuthority("ALUMNO_ADMINISTRAR")
                         .requestMatchers("/admin/tutores/**").hasAuthority("TUTOR_ADMINISTRAR")
                         .requestMatchers("/admin/vinculos-tutor/**").hasAuthority("VINCULO_TUTOR_ADMINISTRAR")

@@ -53,6 +53,7 @@ public class AlumnoMapper {
                 e.getTelefono(), e.getEmail(), e.getCalle(), e.getNumeroExterior(),
                 e.getNumeroInterior(), e.getColonia(), e.getCiudad(), e.getEstado(),
                 e.getCodigoPostal(), e.getPais(), e.getFechaIngreso(), e.getObservaciones(),
-                e.isActivo(), desde(e));
+                e.isActivo(), e.getFotografiaArchivo() == null ? null : e.getFotografiaArchivo().getId(),
+                desde(e));
     }
 }
