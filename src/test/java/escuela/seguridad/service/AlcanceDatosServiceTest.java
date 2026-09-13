@@ -6,6 +6,8 @@ import escuela.academico.repository.GrupoRepository;
 import escuela.academico.repository.NivelEducativoRepository;
 import escuela.academico.repository.PeriodoAcademicoRepository;
 import escuela.alumno.repository.AlumnoRepository;
+import escuela.alumno.repository.AlumnoTutorRepository;
+import escuela.alumno.entity.AlumnoTutor;
 import escuela.alumno.entity.Alumno;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.dto.response.PlantelResponse;
@@ -18,6 +20,7 @@ import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.repository.UsuarioRepository;
 import escuela.tutor.repository.TutorRepository;
 import escuela.tutor.entity.Tutor;
+import escuela.seguridad.entity.Usuario;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.access.AccessDeniedException;
@@ -27,6 +30,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,6 +42,7 @@ class AlcanceDatosServiceTest {
     private final PlantelRepository plantelRepository = mock(PlantelRepository.class);
     private final AlumnoRepository alumnoRepository = mock(AlumnoRepository.class);
     private final TutorRepository tutorRepository = mock(TutorRepository.class);
+    private final AlumnoTutorRepository alumnoTutorRepository = mock(AlumnoTutorRepository.class);
     private final AlcanceDatosService service = new AlcanceDatosService(
             mock(InstitucionRepository.class), plantelRepository,
             mock(NivelEducativoRepository.class), mock(PlantelNivelRepository.class),
@@ -45,6 +50,7 @@ class AlcanceDatosServiceTest {
             mock(PeriodoAcademicoRepository.class), mock(GrupoRepository.class),
             alumnoRepository,
             tutorRepository,
+            alumnoTutorRepository,
             mock(RolRepository.class), mock(UsuarioRepository.class));
 
     @AfterEach
@@ -142,6 +148,40 @@ class AlcanceDatosServiceTest {
                 .isInstanceOf(AccessDeniedException.class);
     }
 
+    @Test
+    void tutorSoloPuedeAbrirUnVinculoPropio() {
+        autenticar(new UsuarioPrincipal(7L, 1L, Set.of(), false, false,
+                "tutor", "hash", List.of()));
+        AlumnoTutor propio = vinculo(1L, 7L);
+        when(alumnoTutorRepository.findById(50L)).thenReturn(Optional.of(propio));
+
+        service.validarRecurso(escuela.admin.dto.ModuloCatalogo.VINCULOS_TUTOR, 50L);
+    }
+
+    @Test
+    void tutorNoPuedeAbrirElVinculoDeOtraCuenta() {
+        autenticar(new UsuarioPrincipal(7L, 1L, Set.of(), false, false,
+                "tutor", "hash", List.of()));
+        when(alumnoTutorRepository.findById(50L)).thenReturn(Optional.of(vinculo(1L, 8L)));
+
+        assertThatThrownBy(() -> service.validarRecurso(
+                escuela.admin.dto.ModuloCatalogo.VINCULOS_TUTOR, 50L))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void vinculoRevocadoYaNoConcedeAccesoAlTutor() {
+        autenticar(new UsuarioPrincipal(7L, 1L, Set.of(), false, false,
+                "tutor", "hash", List.of()));
+        AlumnoTutor revocado = vinculo(1L, 7L);
+        revocado.setActivo(false);
+        when(alumnoTutorRepository.findById(50L)).thenReturn(Optional.of(revocado));
+
+        assertThatThrownBy(() -> service.validarRecurso(
+                escuela.admin.dto.ModuloCatalogo.VINCULOS_TUTOR, 50L))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
     private void autenticar(UsuarioPrincipal principal) {
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities()));
@@ -156,5 +196,23 @@ class AlcanceDatosServiceTest {
     private PlantelResponse plantel(Long id, Long institucionId) {
         return new PlantelResponse(id, institucionId, "P" + id, "Plantel " + id,
                 null, null, null, null, null, null, null, null, null, "MX", true, null);
+    }
+
+    private AlumnoTutor vinculo(Long institucionId, Long usuarioId) {
+        Institucion institucion = new Institucion();
+        institucion.setId(institucionId);
+        Alumno alumno = new Alumno();
+        alumno.setInstitucion(institucion);
+        Usuario usuario = new Usuario();
+        usuario.setId(usuarioId);
+        Tutor tutor = new Tutor();
+        tutor.setInstitucion(institucion);
+        tutor.setUsuario(usuario);
+        AlumnoTutor vinculo = new AlumnoTutor();
+        vinculo.setAlumno(alumno);
+        vinculo.setTutor(tutor);
+        vinculo.setActivo(true);
+        vinculo.setFechaInicio(LocalDate.now());
+        return vinculo;
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static escuela.common.service.ValidacionVersion.verificar;
 
@@ -57,6 +58,15 @@ public class TutorServiceImpl implements TutorService {
     @Transactional(readOnly = true)
     public TutorResponse obtener(Long id) {
         return mapper.respuesta(buscar(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TutorResponse> listarActivosPorInstitucion(Long institucionId) {
+        return repository
+                .findAllByInstitucionIdAndActivoTrueOrderByPrimerApellidoAscSegundoApellidoAscNombresAsc(
+                        institucionId)
+                .stream().map(mapper::respuesta).toList();
     }
 
     @Override

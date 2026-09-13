@@ -20,8 +20,8 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `5b3eadf` — `modulo
-  alumnos correcciones de fecha`.
+- Último commit confirmado antes de estos cambios locales: `d7a5332` — `modulo
+  tutores`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
@@ -212,7 +212,8 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
   listados, Excel, selectores y operaciones por ID aplican ese alcance en servidor.
 - El alcance institucional ve sólo su institución; el de plantel restringe planteles,
   oferta y grupos a los asignados. Los catálogos académicos compartidos permanecen
-  limitados a la institución. `VINCULOS_TUTOR` no concede acceso administrativo.
+  limitados a la institución. `VINCULOS_TUTOR` no concede acceso administrativo; con
+  permiso de lectura sólo permite consultar relaciones propias, activas y vigentes.
 - La creación de instituciones queda reservada al acceso de recuperación, y administrar
   roles o usuarios exige alcance institucional para impedir escalamiento de privilegios.
 - Los permisos o alcances insuficientes muestran una pantalla 403 propia, responsiva y
@@ -250,33 +251,39 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 - `Tutores` incluye aislamiento institucional, filtros y paginación en PostgreSQL,
   Excel por bloques, alta, edición y desactivación lógica. Los errores permanecen en
   el formulario y la fecha de nacimiento usa formato ISO.
-- Los listados y los doce formularios administrativos muestran `Cerrar sesión`. El
+- El propietario confirmó que `criz110` ya tiene los permisos y puede ver Tutores.
+- La migración V7 crea `AlumnoTutor` y agrega `VINCULO_TUTOR_LEER` y
+  `VINCULO_TUTOR_ADMINISTRAR` sin concederlos automáticamente. Administra parentesco,
+  contacto principal, responsabilidad financiera, autorizaciones y vigencias sin
+  borrar el historial.
+- Los listados y los trece formularios administrativos muestran `Cerrar sesión`. El
   botón envía `POST /logout` con CSRF, invalida la sesión y regresa al inicio.
 
 ## Verificación confirmada
 
-- Compilación correcta de 172 archivos Java de producción.
-- 99 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V6 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 17 repositorios.
+- Compilación correcta de 182 archivos Java de producción.
+- 116 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V7 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 18 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
   grados respondieron HTTP 200.
-- El listado, el formulario y la exportación de Tutores respondieron autenticados; el
-  libro comenzó con firma XLSX válida.
-- No se crearon tutores de prueba. `criz110` aún tiene que recibir explícitamente
-  `TUTOR_LEER` y `TUTOR_ADMINISTRAR` desde la edición de su rol.
+- El listado filtrado, el formulario y la exportación de Alumno–Tutor respondieron
+  autenticados; el libro comenzó con firma XLSX válida.
+- No se crearon vínculos de prueba. `criz110` debe recibir explícitamente
+  `VINCULO_TUTOR_LEER` y `VINCULO_TUTOR_ADMINISTRAR` desde la edición de su rol.
 - El cierre de sesión respondió HTTP 302 y la misma cookie fue redirigida al login al
   intentar regresar a `/admin`.
 - La última instancia local verificada quedó en `http://localhost:8080`.
 
 ## Siguiente paso acordado
 
-Después de que el propietario asigne `TUTOR_LEER` y `TUTOR_ADMINISTRAR` a su rol y
-valide el módulo en el navegador, implementar `AlumnoTutor`: relación histórica entre
-alumno y tutor, parentesco, responsable principal, autorizaciones, vigencias y alcance
-`VINCULOS_TUTOR`. Después se implementarán archivos/fotografía del expediente y luego
+Después de que el propietario asigne `VINCULO_TUTOR_LEER` y
+`VINCULO_TUTOR_ADMINISTRAR` a su rol y valide el módulo, implementar la base segura de
+`Archivo` y la fotografía del alumno: metadatos en PostgreSQL, contenido en
+almacenamiento privado, validación de tipo y tamaño, autorización de descarga y vínculo
+`fotografiaArchivoId` sin guardar binarios en la base. Después implementar
 inscripciones. Todavía no crear cobros ni tesorería.
 
 ## Disciplina de cambios y entrega

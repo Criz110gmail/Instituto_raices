@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+    <title th:text="${edicion ? 'Editar vínculo' : 'Nuevo vínculo'} + ' · Nexo Escolar'">Vínculo alumno-tutor</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
+</head>
+<body class="form-page">
+<main class="form-shell student-shell">
+    <header class="form-top"><a href="/admin/catalogos/vinculos-tutor">← Volver a vínculos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <section class="form-card">
+        <div class="form-intro"><span>Red de apoyo</span><h1 th:text="${edicion ? 'Editar vínculo alumno–tutor' : 'Vincular alumno y tutor'}">Vincular alumno y tutor</h1><p>Define parentesco, responsabilidades, autorizaciones y vigencia. Cada cambio conserva el historial del alumno.</p></div>
+        <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/vinculos-tutor/' + id : '/admin/vinculos-tutor'}">
+            <input type="hidden" th:field="*{version}">
+            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div>
+            <fieldset class="form-section"><legend>Personas vinculadas</legend><div class="form-grid">
+                <label class="wide"><span>Institución *</span><select id="institucion" th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
+                <label class="wide"><span>Alumno *</span><select id="alumno" th:field="*{alumnoId}" th:disabled="${edicion}"><option value="">Selecciona un alumno</option><option th:each="item : ${alumnos}" th:value="${item.id}" th:text="${item.matricula + ' · ' + item.nombres + ' ' + item.primerApellido}" th:attr="data-institucion=${item.institucionId}">Alumno</option></select><input th:if="${edicion}" type="hidden" th:field="*{alumnoId}"><small th:errors="*{alumnoId}"></small></label>
+                <label class="wide"><span>Tutor *</span><select id="tutor" th:field="*{tutorId}" th:disabled="${edicion}"><option value="">Selecciona un tutor</option><option th:each="item : ${tutores}" th:value="${item.id}" th:text="${item.nombres + ' ' + item.primerApellido + ' · ' + item.telefonoPrincipal}" th:attr="data-institucion=${item.institucionId}">Tutor</option></select><input th:if="${edicion}" type="hidden" th:field="*{tutorId}"><small th:errors="*{tutorId}"></small></label>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Parentesco y vigencia</legend><div class="form-grid">
+                <label><span>Parentesco *</span><select id="parentesco" th:field="*{parentesco}"><option value="">Selecciona una opción</option><option value="MADRE">Madre</option><option value="PADRE">Padre</option><option value="TUTOR_LEGAL">Tutor legal</option><option value="OTRO">Otro</option></select><small th:errors="*{parentesco}"></small></label>
+                <label id="parentesco-otro"><span>Especifica el parentesco</span><input th:field="*{parentescoOtro}" maxlength="100" placeholder="Ej. Abuela, hermano"><small th:errors="*{parentescoOtro}"></small></label>
+                <label><span>Inicio de vigencia *</span><input type="date" th:field="*{fechaInicio}"><small th:errors="*{fechaInicio}"></small></label>
+                <label><span>Fin de vigencia</span><input type="date" th:field="*{fechaFin}"><small th:errors="*{fechaFin}"></small><span class="field-help">Déjala vacía mientras el vínculo continúe vigente.</span></label>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Responsabilidades</legend><div class="form-grid">
+                <label class="switch-row"><input type="checkbox" th:field="*{contactoPrincipal}"><span>Contacto principal del alumno</span></label>
+                <label class="switch-row"><input type="checkbox" th:field="*{responsableFinanciero}"><span>Responsable financiero</span></label>
+                <label class="switch-row"><input type="checkbox" th:field="*{puedeAutorizar}"><span>Puede autorizar trámites</span></label>
+                <label class="switch-row"><input type="checkbox" th:field="*{puedeRecoger}"><span>Puede recoger al alumno</span></label>
+                <label class="switch-row"><input type="checkbox" th:field="*{puedeVerFinanzas}"><span>Puede consultar finanzas</span></label>
+                <label class="switch-row"><input type="checkbox" th:field="*{puedeRecibirNotificaciones}"><span>Puede recibir notificaciones</span></label>
+                <label class="switch-row" th:if="${edicion}"><input type="checkbox" th:field="*{activo}"><span>Vínculo activo</span></label>
+                <input th:unless="${edicion}" type="hidden" th:field="*{activo}">
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Observaciones</legend><div class="form-grid"><label class="full"><span>Información administrativa pertinente</span><textarea th:field="*{observaciones}" maxlength="4000" rows="4" placeholder="Acuerdos, restricciones o referencias importantes"></textarea><small th:errors="*{observaciones}"></small></label></div></fieldset>
+            <footer class="form-actions"><a href="/admin/catalogos/vinculos-tutor">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear vínculo'}">Guardar</button></footer>
+        </form>
+        <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/vinculos-tutor/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Revocar este vínculo? El historial se conservará y el tutor perderá el acceso asociado.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Revocar vínculo</strong><p>Se conserva el registro, pero deja de conceder autorizaciones y acceso.</p></div><button type="submit">Revocar</button></form>
+    </section>
+</main>
+<script>
+(() => {
+    const institucion = document.querySelector('#institucion');
+    const dependientes = [document.querySelector('#alumno'), document.querySelector('#tutor')].filter(Boolean);
+    const filtrar = () => {
+        dependientes.forEach(select => {
+            [...select.options].slice(1).forEach(opcion => { opcion.hidden = !institucion.value || opcion.dataset.institucion !== institucion.value; });
+            const elegida = select.selectedOptions[0];
+            if (elegida && elegida.value && elegida.hidden) select.value = '';
+        });
+    };
+    if (institucion && !institucion.disabled) institucion.addEventListener('change', filtrar);
+    if (institucion) filtrar();
+    const parentesco = document.querySelector('#parentesco');
+    const detalle = document.querySelector('#parentesco-otro');
+    const alternarDetalle = () => { if (detalle) detalle.hidden = parentesco?.value !== 'OTRO'; };
+    parentesco?.addEventListener('change', alternarDetalle);
+    alternarDetalle();
+})();
+</script>
+</body>
+</html>

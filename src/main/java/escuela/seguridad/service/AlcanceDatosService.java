@@ -6,6 +6,7 @@ import escuela.academico.repository.GrupoRepository;
 import escuela.academico.repository.NivelEducativoRepository;
 import escuela.academico.repository.PeriodoAcademicoRepository;
 import escuela.alumno.repository.AlumnoRepository;
+import escuela.alumno.repository.AlumnoTutorRepository;
 import escuela.admin.dto.ModuloCatalogo;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.dto.response.PlantelResponse;
@@ -45,6 +46,7 @@ public class AlcanceDatosService {
     private final GrupoRepository grupoRepository;
     private final AlumnoRepository alumnoRepository;
     private final TutorRepository tutorRepository;
+    private final AlumnoTutorRepository alumnoTutorRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
 
@@ -55,6 +57,7 @@ public class AlcanceDatosService {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
                 case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, ROLES, USUARIOS -> root.get("institucion").get("id");
+                case VINCULOS_TUTOR -> root.get("alumno").get("institucion").get("id");
                 case OFERTA -> root.get("plantel").get("institucion").get("id");
                 case GRADOS -> root.get("nivelEducativo").get("institucion").get("id");
                 case PERIODOS -> root.get("cicloEscolar").get("institucion").get("id");
@@ -62,6 +65,14 @@ public class AlcanceDatosService {
             };
             var mismaInstitucion = cb.equal(institucion, principal.institucionId());
             if (principal.alcanceInstitucional()) return mismaInstitucion;
+            if (modulo == ModuloCatalogo.VINCULOS_TUTOR && principal.plantelIds().isEmpty()) {
+                var vigente = cb.and(cb.isTrue(root.get("activo")),
+                        cb.lessThanOrEqualTo(root.<java.time.LocalDate>get("fechaInicio"), java.time.LocalDate.now()),
+                        cb.or(cb.isNull(root.get("fechaFin")),
+                                cb.greaterThanOrEqualTo(root.<java.time.LocalDate>get("fechaFin"), java.time.LocalDate.now())));
+                return cb.and(mismaInstitucion, vigente,
+                        cb.equal(root.get("tutor").get("usuario").get("id"), principal.usuarioId()));
+            }
             if (principal.plantelIds().isEmpty()) return cb.disjunction();
             if (modulo == ModuloCatalogo.USUARIOS) {
                 return cb.and(mismaInstitucion, cb.equal(root.get("id"), principal.usuarioId()));
@@ -96,6 +107,7 @@ public class AlcanceDatosService {
                     .orElseThrow(this::denegado).getInstitucion().getId());
             case TUTORES -> validarInstitucion(tutorRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());
+            case VINCULOS_TUTOR -> validarVinculoTutor(id);
             case ROLES -> validarInstitucion(rolRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());
             case USUARIOS -> validarInstitucion(usuarioRepository.findById(id)
@@ -177,6 +189,25 @@ public class AlcanceDatosService {
         if (principal.accesoRecuperacion()) return roles;
         if (!principal.alcanceInstitucional() && principal.plantelIds().isEmpty()) return List.of();
         return roles.stream().filter(r -> r.institucionId().equals(principal.institucionId())).toList();
+    }
+
+    private void validarVinculoTutor(Long id) {
+        var vinculo = alumnoTutorRepository.findById(id).orElseThrow(this::denegado);
+        UsuarioPrincipal principal = principal();
+        if (principal.accesoRecuperacion()) return;
+        if (!vinculo.getAlumno().getInstitucion().getId().equals(principal.institucionId())) {
+            throw denegado();
+        }
+        if (principal.alcanceInstitucional() || !principal.plantelIds().isEmpty()) return;
+        java.time.LocalDate hoy = java.time.LocalDate.now();
+        if (!vinculo.isActivo() || vinculo.getFechaInicio().isAfter(hoy)
+                || (vinculo.getFechaFin() != null && vinculo.getFechaFin().isBefore(hoy))) {
+            throw denegado();
+        }
+        if (vinculo.getTutor().getUsuario() == null
+                || !vinculo.getTutor().getUsuario().getId().equals(principal.usuarioId())) {
+            throw denegado();
+        }
     }
 
     private UsuarioPrincipal principal() {

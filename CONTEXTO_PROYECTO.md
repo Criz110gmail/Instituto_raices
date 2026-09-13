@@ -506,7 +506,43 @@
   validó el esquema y detectó 17 repositorios.
 - El listado y el formulario respondieron autenticados; la exportación comenzó con la
   firma XLSX `504b0304` y la aplicación quedó disponible en `http://localhost:8080`.
-- La tabla `tutor` permaneció vacía. Los dos permisos existen, pero `criz110` todavía
-  no los tiene asignados y debe agregarlos a su rol antes de validar la interfaz.
+- La tabla `tutor` permaneció vacía durante esta verificación. Posteriormente el
+  propietario asignó ambos permisos y confirmó que `criz110` ya ve Tutores.
 - El siguiente módulo acordado es `AlumnoTutor`; después se agregarán archivos y
   fotografía al historial del alumno, y posteriormente las inscripciones.
+
+## Decisiones — vínculos entre alumnos y tutores
+
+- Flyway V7 agrega `AlumnoTutor` y los permisos `VINCULO_TUTOR_LEER` y
+  `VINCULO_TUTOR_ADMINISTRAR` sin modificar migraciones anteriores ni ampliar roles de
+  forma automática.
+- La relación conserva parentesco, contacto principal, responsabilidad financiera,
+  autorización de trámites y recogida, consulta financiera, notificaciones,
+  observaciones, vigencia y estado activo.
+- Alumno y tutor deben pertenecer a la misma institución y estar activos para mantener
+  un vínculo activo. No pueden reasignarse al editar un registro histórico.
+- No se permiten periodos superpuestos para la misma pareja ni dos contactos
+  principales con vigencias superpuestas. La validación bloquea pesimistamente al
+  alumno para evitar altas concurrentes incompatibles.
+- Revocar desactiva la relación sin eliminarla. Una cuenta con alcance
+  `VINCULOS_TUTOR` sólo puede consultar sus propios vínculos activos y vigentes; no
+  recibe acceso administrativo ni conserva acceso después de la revocación o vigencia.
+- El listado busca por matrícula y nombres de alumno o tutor en PostgreSQL, pagina los
+  resultados y exporta los mismos filtros a XLSX por bloques.
+- El formulario filtra alumnos y tutores por institución, bloquea ambas personas en
+  edición y mantiene reglas, integridad y concurrencia dentro de la misma pantalla.
+
+## Verificación de vínculos entre alumnos y tutores
+
+- Compilación Docker correcta de 182 archivos Java de producción.
+- 116 pruebas ejecutadas sin fallos ni errores; diecisiete nuevas cubren dominio,
+  solapamientos, contacto principal, revocación, controlador, fechas y alcance del
+  tutor.
+- Flyway validó siete migraciones y aplicó V7 sobre el volumen existente. Hibernate
+  validó el esquema y detectó 18 repositorios.
+- El listado con filtro relacional y el formulario respondieron autenticados; la
+  exportación comenzó con firma XLSX `504b0304`.
+- La tabla `alumno_tutor` permaneció vacía y se confirmaron los dos permisos nuevos; no
+  se alteraron alumnos, tutores, usuarios ni roles existentes.
+- El siguiente paso acordado es la base privada de archivos y la fotografía del alumno;
+  después se implementarán inscripciones.

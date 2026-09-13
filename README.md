@@ -36,7 +36,7 @@ comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME
 - `escuela.institucion`: institución, planteles y oferta educativa.
 - `escuela.academico`: niveles, grados, ciclos, periodos y grupos.
 - `escuela.seguridad`: usuarios, roles, permisos, alcances e invitaciones de acceso.
-- `escuela.alumno`: expediente institucional de alumnos.
+- `escuela.alumno`: expediente de alumnos y vínculos históricos con tutores.
 - `escuela.tutor`: expediente institucional de tutores y cuenta de acceso opcional.
 - `escuela.config`: seguridad y auditoría JPA.
 - `escuela.common`: excepciones, respuesta de auditoría y utilidades compartidas.
@@ -48,8 +48,8 @@ reciben entidades JPA directamente.
 
 ## Consola administrativa
 
-La ruta `/admin` contiene los ocho catálogos académicos, Alumnos, Tutores y los módulos
-de Roles y permisos y Usuarios.
+La ruta `/admin` contiene los ocho catálogos académicos, Alumnos, Tutores, Vínculos
+alumno–tutor y los módulos de Roles y permisos y Usuarios.
 Todos los listados consultan la
 base de datos con filtros y paginación; el botón **Exportar Excel** aplica exactamente
 los mismos filtros y genera el archivo con Apache POI en modo streaming.
@@ -125,3 +125,9 @@ vincular opcionalmente una cuenta de usuario de la misma institución. Incluye f
 base de datos, paginación, Excel y desactivación lógica. Requiere conceder
 `TUTOR_LEER` y/o `TUTOR_ADMINISTRAR` a los roles correspondientes. La relación concreta
 con alumnos, parentesco, autorizaciones y vigencias se administrará en `AlumnoTutor`.
+
+Vínculos alumno–tutor conserva el parentesco, contacto principal, responsabilidad
+financiera, autorizaciones y vigencias. Impide relaciones superpuestas y más de un
+contacto principal vigente; revocar conserva el historial y retira el acceso. Requiere
+`VINCULO_TUTOR_LEER` y/o `VINCULO_TUTOR_ADMINISTRAR`. Las cuentas con alcance
+`VINCULOS_TUTOR` sólo pueden consultar relaciones propias, activas y vigentes.

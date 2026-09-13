@@ -3,7 +3,9 @@ package escuela.admin.service;
 import escuela.academico.entity.*;
 import escuela.academico.repository.*;
 import escuela.alumno.entity.Alumno;
+import escuela.alumno.entity.AlumnoTutor;
 import escuela.alumno.repository.AlumnoRepository;
+import escuela.alumno.repository.AlumnoTutorRepository;
 import escuela.admin.dto.*;
 import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
@@ -44,6 +47,7 @@ public class CatalogoConsultaService {
     private final GrupoRepository grupoRepository;
     private final AlumnoRepository alumnoRepository;
     private final TutorRepository tutorRepository;
+    private final AlumnoTutorRepository alumnoTutorRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcanceDatosService;
@@ -79,6 +83,10 @@ public class CatalogoConsultaService {
                             e.getTelefonoPrincipal(), valor(e.getEmail()),
                             e.getUsuario() == null ? "Sin cuenta" : e.getUsuario().getUsername(),
                             e.getInstitucion().getNombre()));
+            case VINCULOS_TUTOR -> consultar(modulo, alumnoTutorRepository,
+                    textoVinculo(f), activo(f), pagina,
+                    e -> filaVinculo(e, e.getAlumno().getMatricula() + " · " + nombreAlumno(e.getAlumno()),
+                            nombreTutor(e.getTutor()), parentesco(e), permisos(e), vigencia(e)));
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
             case USUARIOS -> consultar(modulo, usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,
@@ -124,6 +132,23 @@ public class CatalogoConsultaService {
         };
     }
 
+    private Specification<AlumnoTutor> textoVinculo(FiltroCatalogo f) {
+        return (root, query, cb) -> {
+            if (f.q().isBlank()) return cb.conjunction();
+            String patron = "%" + f.q().toLowerCase(Locale.ROOT) + "%";
+            var alumno = root.get("alumno");
+            var tutor = root.get("tutor");
+            return cb.or(cb.like(cb.lower(alumno.get("matricula")), patron),
+                    cb.like(cb.lower(alumno.get("nombres")), patron),
+                    cb.like(cb.lower(alumno.get("primerApellido")), patron),
+                    cb.like(cb.lower(alumno.get("segundoApellido")), patron),
+                    cb.like(cb.lower(tutor.get("nombres")), patron),
+                    cb.like(cb.lower(tutor.get("primerApellido")), patron),
+                    cb.like(cb.lower(tutor.get("segundoApellido")), patron),
+                    cb.like(cb.lower(root.get("parentescoOtro")), patron));
+        };
+    }
+
     private <T> Specification<T> activo(FiltroCatalogo f) {
         return (root, query, cb) -> switch (f.estado()) {
             case "ACTIVO" -> cb.isTrue(root.get("activo"));
@@ -152,6 +177,26 @@ public class CatalogoConsultaService {
         return new FilaCatalogo(usuario.getId(), List.of(celdas), estado, tono);
     }
 
+    private FilaCatalogo filaVinculo(AlumnoTutor vinculo, String... celdas) {
+        String estado;
+        String tono;
+        LocalDate hoy = LocalDate.now();
+        if (!vinculo.isActivo()) {
+            estado = "Revocado";
+            tono = "neutro";
+        } else if (vinculo.getFechaInicio().isAfter(hoy)) {
+            estado = "Programado";
+            tono = "aviso";
+        } else if (vinculo.getFechaFin() != null && vinculo.getFechaFin().isBefore(hoy)) {
+            estado = "Finalizado";
+            tono = "neutro";
+        } else {
+            estado = "Vigente";
+            tono = "positivo";
+        }
+        return new FilaCatalogo(vinculo.getId(), List.of(celdas), estado, tono);
+    }
+
     private String valor(String valor) { return valor == null || valor.isBlank() ? "—" : valor; }
 
     private String nombreAlumno(Alumno alumno) {
@@ -166,5 +211,33 @@ public class CatalogoConsultaService {
                         tutor.getSegundoApellido())
                 .filter(valor -> valor != null && !valor.isBlank())
                 .collect(java.util.stream.Collectors.joining(" "));
+    }
+
+    private String parentesco(AlumnoTutor vinculo) {
+        if (vinculo.getParentesco() == escuela.alumno.entity.ParentescoTutor.OTRO) {
+            return valor(vinculo.getParentescoOtro());
+        }
+        return switch (vinculo.getParentesco()) {
+            case MADRE -> "Madre";
+            case PADRE -> "Padre";
+            case TUTOR_LEGAL -> "Tutor legal";
+            case OTRO -> "Otro";
+        };
+    }
+
+    private String permisos(AlumnoTutor vinculo) {
+        java.util.ArrayList<String> valores = new java.util.ArrayList<>();
+        if (vinculo.isContactoPrincipal()) valores.add("Principal");
+        if (vinculo.isResponsableFinanciero()) valores.add("Responsable financiero");
+        if (vinculo.isPuedeAutorizar()) valores.add("Autoriza");
+        if (vinculo.isPuedeRecoger()) valores.add("Recoge");
+        if (vinculo.isPuedeVerFinanzas()) valores.add("Ve finanzas");
+        if (vinculo.isPuedeRecibirNotificaciones()) valores.add("Notificaciones");
+        return valores.isEmpty() ? "Sin autorizaciones" : String.join(", ", valores);
+    }
+
+    private String vigencia(AlumnoTutor vinculo) {
+        return FECHA.format(vinculo.getFechaInicio()) + " — "
+                + (vinculo.getFechaFin() == null ? "Sin fecha de fin" : FECHA.format(vinculo.getFechaFin()));
     }
 }
