@@ -18,7 +18,9 @@ public class SeguridadConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                            SesionExpiradaAccessDeniedHandler accesoDenegadoHandler)
+            throws Exception {
         return http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/login", "/activar-cuenta", "/restablecer-password", "/acceso-denegado", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
@@ -38,6 +40,7 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/inscripciones/**").hasAuthority("INSCRIPCION_ADMINISTRAR")
                         .requestMatchers("/admin/conceptos-cobro/**").hasAuthority("CONCEPTO_COBRO_ADMINISTRAR")
                         .requestMatchers("/admin/cuotas-alumno/**").hasAuthority("CUOTA_ALUMNO_ADMINISTRAR")
+                        .requestMatchers("/admin/cargos/**").hasAuthority("CARGO_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/alumnos")
                         .hasAnyAuthority("VINCULO_TUTOR_ADMINISTRAR", "ALUMNO_ADMINISTRAR", "INSCRIPCION_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/tutores")
@@ -45,7 +48,9 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/autocompletado/usuarios")
                         .hasAnyAuthority("TUTOR_ADMINISTRAR", "USUARIO_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/inscripciones", "/admin/autocompletado/conceptos-cobro")
-                        .hasAuthority("CUOTA_ALUMNO_ADMINISTRAR")
+                        .hasAnyAuthority("CUOTA_ALUMNO_ADMINISTRAR", "CARGO_ADMINISTRAR")
+                        .requestMatchers("/admin/autocompletado/periodos-cargo")
+                        .hasAuthority("CARGO_ADMINISTRAR")
                         .requestMatchers("/admin/roles/**", "/admin/catalogos/roles/**").hasAuthority("ROL_ADMINISTRAR")
                         .requestMatchers("/admin/usuarios/**", "/admin/catalogos/usuarios/**").hasAuthority("USUARIO_ADMINISTRAR")
                         .requestMatchers("/admin/catalogos/instituciones/**").hasAnyAuthority("INSTITUCION_LEER", "INSTITUCION_ADMINISTRAR")
@@ -62,11 +67,13 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/catalogos/inscripciones/**").hasAnyAuthority("INSCRIPCION_LEER", "INSCRIPCION_ADMINISTRAR")
                         .requestMatchers("/admin/catalogos/conceptos-cobro/**").hasAnyAuthority("CONCEPTO_COBRO_LEER", "CONCEPTO_COBRO_ADMINISTRAR")
                         .requestMatchers("/admin/catalogos/cuotas-alumno/**").hasAnyAuthority("CUOTA_ALUMNO_LEER", "CUOTA_ALUMNO_ADMINISTRAR")
+                        .requestMatchers("/admin/catalogos/cargos/**").hasAnyAuthority("CARGO_LEER", "CARGO_ADMINISTRAR")
                         .anyRequest().authenticated())
                 .formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/admin", true).permitAll())
                 .httpBasic(Customizer.withDefaults())
-                .exceptionHandling(excepciones -> excepciones.accessDeniedPage("/acceso-denegado"))
-                .logout(logout -> logout.logoutSuccessUrl("/"))
+                .sessionManagement(sesion -> sesion.invalidSessionUrl("/login?sesionExpirada"))
+                .exceptionHandling(excepciones -> excepciones.accessDeniedHandler(accesoDenegadoHandler))
+                .logout(logout -> logout.logoutSuccessUrl("/").deleteCookies("JSESSIONID"))
                 .build();
     }
 }

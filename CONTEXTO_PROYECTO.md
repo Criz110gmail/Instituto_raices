@@ -81,6 +81,14 @@
   búsqueda textual, estado, tamaño de página, navegación y estados vacíos.
 - Dirección visual: centro de control académico en azul tinta y cian, alta legibilidad,
   tabla de escritorio, tarjetas móviles y navegación lateral adaptable.
+- La lista de módulos de la navegación lateral tiene desplazamiento vertical propio en
+  escritorio y móvil; la marca y el estado de servicios quedan fijos y el módulo activo
+  se lleva automáticamente a una posición visible.
+- El menú filtra módulos con las autoridades de la sesión: basta lectura o
+  administración para catálogos operativos, mientras Roles y Usuarios exigen
+  administración. El ingreso `/admin` abre el primer módulo autorizado; las consultas
+  y exportaciones revalidan el permiso en el controlador además de Spring Security.
+  Las autoridades se actualizan para el usuario en su siguiente inicio de sesión.
 - La interfaz contempla escritorio, tablet, móvil y ampliación de texto, sin depender
   de JavaScript para la navegación responsiva.
 - Las credenciales administrativas temporales se reciben mediante variables de entorno
@@ -223,6 +231,10 @@
   unicidad; los errores esperables permanecen en el mismo formulario.
 - Con este módulo, los ocho catálogos del núcleo institucional y académico cuentan con
   mantenimiento conforme a su ciclo de vida, además de filtros, paginación y Excel.
+- El selector de grado del alta de grupos dejó de depender de la fotografía inicial de
+  la página: consulta sin caché únicamente los grados activos ofrecidos por el plantel
+  seleccionado. Un panel accesible y compatible con ambos temas distingue los estados
+  de espera, carga, disponibilidad, ausencia de oferta y error.
 
 ## Verificación del mantenimiento de grupos
 
@@ -479,6 +491,13 @@
   no depende de navegar manualmente a una ruta GET.
 - Spring invalida la sesión y redirige al inicio. Se comprobó que la cookie anterior ya
   no puede abrir `/admin` y termina nuevamente en el login.
+- Las sesiones caducadas ahora redirigen al login con un aviso específico, incluso
+  cuando el primer síntoma es un token CSRF vencido al guardar un formulario. Las
+  consultas asíncronas de autocompletado y grados también detectan la redirección.
+- Los errores de permisos continúan en la pantalla 403 y el cierre normal elimina
+  `JSESSIONID` para evitar falsos positivos. Se verificaron solicitudes `GET` y `POST`
+  con una sesión inválida: ambas respondieron 302 hacia `/login?sesionExpirada`; la
+  suite completa ejecutó 155 pruebas sin fallos y la aplicación quedó `UP`.
 
 ## Decisiones — módulo de tutores
 
@@ -705,6 +724,77 @@
 - Listados, formularios y exportación filtrada respondieron autenticados; el XLSX empezó
   con `504b0304`. Las tablas `concepto_cobro` y `cuota_alumno` quedaron vacías y el
   catálogo alcanzó 30 permisos técnicos; no se asignaron permisos a roles.
-- El siguiente paso es Flyway V12 con `Cargo`, alta manual y generación automática
+- El siguiente paso era Flyway V12 con `Cargo`, pero una mejora solicitada de identidad
+  de sesión ocupó esa versión de forma aditiva. `Cargo` continúa ahora en Flyway V13,
+  con alta manual y generación automática
   idempotente desde cuotas. Pagos, aplicaciones, caja y tesorería siguen fuera de esta
   etapa.
+
+## Decisiones — identidad visible y fotografía de usuario
+
+- Flyway V12 agrega una referencia opcional desde `Usuario` hacia `Archivo`; no altera
+  roles, permisos ni credenciales.
+- La administración de usuarios permite cargar o reemplazar JPEG/PNG de hasta 5 MB y
+  volver al avatar genérico. Se valida firma, formato, dimensiones y SHA-256 antes de
+  relacionar el archivo; la fotografía sustituida se marca como retirada sin eliminar
+  físicamente el archivo privado.
+- El encabezado compartido muestra el nombre de usuario autenticado y obtiene su foto
+  actual mediante una ruta autenticada sin caché. La cuenta temporal de recuperación y
+  los usuarios sin fotografía reciben siempre el avatar genérico.
+- El diseño funciona en temas claro/oscuro y, en móvil, distribuye las acciones en un
+  segundo renglón para mantener visible el nombre de usuario.
+
+## Verificación de identidad de sesión
+
+- Docker compiló 239 fuentes Java y ejecutó 167 pruebas sin fallos ni errores. Ocho
+  pruebas nuevas cubren validación real de imagen, reemplazo, retiro, almacenamiento,
+  integración del controlador, entrega del avatar genérico y publicación segura del
+  nombre de sesión, incluso cuando no existe autenticación.
+- Flyway validó doce migraciones y aplicó V12 sobre el volumen existente; Hibernate
+  validó el esquema y la aplicación inició correctamente en `http://localhost:18080`.
+- La revisión pública confirmó el arranque y el flujo de sesión caducada. No se usaron
+  credenciales del `.env`, no se cargaron fotografías y no se modificaron usuarios.
+- Una revisión posterior al login detectó que el dialecto Thymeleaf no proporcionaba
+  `#authentication`; se sustituyó por `IdentidadSesionAdvice`, evitando el error de
+  renderizado sin agregar otra dependencia.
+
+## Decisiones — cargos individuales y generación idempotente
+
+- Flyway V13 crea `Cargo` y agrega `CARGO_LEER` y `CARGO_ADMINISTRAR` sin modificar
+  roles existentes. Cada obligación pertenece a una inscripción y, por consecuencia,
+  conserva el alumno y plantel al que corresponde.
+- El alta manual permite registrar cobros extraordinarios con concepto, descripción
+  histórica, periodo, emisión, vencimiento, importe y periodo académico opcional.
+- El generador consulta por bloques de 100 únicamente cuotas activas, automáticas, con
+  concepto activo e inscripción vigente. Las cuotas mensuales se convierten en un cargo
+  por mes y el día 29, 30 o 31 se recorta al último día del mes cuando corresponde.
+- La clave `AUTO:<institución>:<cuota>:<periodo>` tiene restricción única y se inserta
+  mediante `ON CONFLICT DO NOTHING`; repetir o ejecutar concurrentemente el proceso no
+  duplica cargos. Una cuota única se emite una sola vez.
+- Los cargos emitidos son inmutables. Sólo pueden cancelarse con bloqueo, versión
+  optimista y motivo obligatorio; la fila y sus importes históricos permanecen.
+- El catálogo filtra y pagina en PostgreSQL, aplica alcance institucional o por plantel
+  y exporta con Apache POI exactamente el mismo filtro en bloques. Las pantallas de alta,
+  generación y detalle/cancelación son responsivas y compatibles con tema claro/oscuro.
+- El autocompletado opcional de periodo académico se acota por la inscripción y usa un
+  índice GIN `pg_trgm`; no carga todos los periodos en el formulario.
+
+## Verificación de cargos
+
+- Docker compiló 253 fuentes Java y ejecutó 175 pruebas sin fallos ni errores. Las
+  pruebas nuevas cubren meses cortos, separación por inscripción, idempotencia,
+  aislamiento institucional y cancelación histórica.
+- Flyway validó trece migraciones y aplicó V13 sobre PostgreSQL 17. Hibernate validó el
+  esquema, detectó 25 repositorios y la aplicación inició correctamente.
+- Actuator respondió `UP` en `http://localhost:18080`. No se generaron cargos reales ni
+  se modificaron cuotas existentes durante la verificación.
+- Se corrigió el enlace del formulario de cuota única: el DTO descarta siempre el día
+  mensual cuando la frecuencia es `UNICA`, y descarta la fecha exacta cuando es
+  `MENSUAL`. Esto evita que un valor visual predeterminado produzca una validación falsa.
+- La validación de vigencia de cuota informa ahora cuál fecha quedó fuera y muestra el
+  rango exacto permitido por la intersección entre inscripción y ciclo escolar.
+- El expediente de inscripción incorpora una ficha visual del alumno con fotografía
+  actual o iniciales de respaldo, matrícula, nacimiento, CURP, plantel, ciclo y grado.
+  La descarga de la foto valida primero el acceso a la inscripción y usa `no-store`.
+- El siguiente paso es `TipoBeca`, `BecaAlumno` y `AjusteCargo` en Flyway V14. Pagos,
+  aplicaciones, caja y tesorería continúan fuera de esta etapa.

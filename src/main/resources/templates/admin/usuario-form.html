@@ -38,6 +38,25 @@
             </div>
         </div>
 
+        <section class="user-photo-section" th:if="${edicion}">
+            <div class="user-photo-preview">
+                <img th:src="${'/admin/usuarios/' + id + '/fotografia'}"
+                     th:alt="${'Fotografía de ' + usuario.username}">
+                <div><span>Imagen de perfil</span><strong th:text="${usuario.username}">usuario</strong><small th:text="${usuario.fotografiaConfigurada ? 'Fotografía personalizada' : 'Avatar genérico activo'}">Avatar genérico activo</small></div>
+            </div>
+            <div class="user-photo-tools">
+                <div class="form-error" role="alert" th:if="${errorFotografia}"><strong>No se pudo actualizar la fotografía</strong><p th:text="${errorFotografia}">Revisa el archivo.</p></div>
+                <div class="user-photo-actions">
+                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/usuarios/{id}/fotografia(id=${id})}" class="photo-upload-form">
+                        <label for="foto-usuario"><span th:text="${usuario.fotografiaConfigurada ? 'Reemplazar fotografía' : 'Seleccionar fotografía'}">Seleccionar fotografía</span><input id="foto-usuario" type="file" name="archivo" accept="image/jpeg,image/png" required></label>
+                        <button type="submit">Guardar fotografía</button>
+                    </form>
+                    <form th:if="${usuario.fotografiaConfigurada}" method="post" th:action="@{/admin/usuarios/{id}/fotografia/retirar(id=${id})}" onsubmit="return confirm('¿Restaurar el avatar genérico para este usuario?');"><button type="submit" class="photo-remove">Usar avatar genérico</button></form>
+                </div>
+                <p>JPEG o PNG, máximo 5 MB. La imagen se guarda de forma privada y aparecerá al iniciar sesión.</p>
+            </div>
+        </section>
+
         <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/usuarios/' + id : '/admin/usuarios'}">
             <input type="hidden" th:field="*{version}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo completar la operación</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>

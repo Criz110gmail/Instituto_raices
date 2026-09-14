@@ -1,0 +1,24 @@
+.alert strong,
+.alert span {
+    display: block;
+}
+
+.alert strong {
+    margin-bottom: 3px;
+}
+
+.alert span {
+    line-height: 1.45;
+}
+
+.alert.warning {
+    border: 1px solid #edc774;
+    background: #fff8e5;
+    color: #795200;
+}
+
+[data-theme=dark] .alert.warning {
+    border-color: #745b27;
+    background: #29220f;
+    color: #f1ce7d;
+}

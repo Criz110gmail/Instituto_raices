@@ -125,6 +125,8 @@ class GrupoAdminControllerTest {
                 40L, 2L, 10L, 30L, "A", Turno.MATUTINO, "1A-MAT", "Aula 3",
                 25, true, auditoria()));
         when(plantelService.obtener(2L)).thenReturn(plantel());
+        when(gradoService.obtener(30L)).thenReturn(grado());
+        when(nivelService.obtener(20L)).thenReturn(nivel());
         catalogosVacios();
         ExtendedModelMap model = new ExtendedModelMap();
 
@@ -138,6 +140,41 @@ class GrupoAdminControllerTest {
         assertThat(form.getVersion()).isEqualTo(6L);
     }
 
+    @Test
+    void consultaSoloGradosActivosDeLaOfertaActivaDelPlantel() {
+        when(plantelService.obtener(2L)).thenReturn(plantel());
+        when(ofertaService.listarPorPlantel(2L)).thenReturn(List.of(
+                oferta(),
+                new PlantelNivelResponse(51L, 2L, 21L, null, false, auditoria())));
+        when(nivelService.obtener(20L)).thenReturn(nivel());
+        when(gradoService.listarPorNivel(20L)).thenReturn(List.of(
+                grado(),
+                new GradoResponse(31L, 20L, "2", "Segundo grado", 2, false, auditoria())));
+
+        var respuesta = controller.opcionesGrado(2L);
+
+        assertThat(respuesta.getBody()).containsExactly(
+                new escuela.admin.dto.OpcionGrado(30L, 20L, 1L,
+                        "Primaria · 1 · Primer grado", true));
+        assertThat(respuesta.getHeaders().getCacheControl()).isEqualTo("no-store");
+        verify(alcance).validarPlantel(2L);
+        verify(nivelService, never()).obtener(21L);
+    }
+
+    @Test
+    void informaListaVaciaCuandoElPlantelNoTieneOfertaActiva() {
+        when(plantelService.obtener(2L)).thenReturn(plantel());
+        when(ofertaService.listarPorPlantel(2L)).thenReturn(List.of(
+                new PlantelNivelResponse(51L, 2L, 21L, null, false, auditoria())));
+
+        var respuesta = controller.opcionesGrado(2L);
+
+        assertThat(respuesta.getBody()).isEmpty();
+        verify(alcance).validarPlantel(2L);
+        verify(nivelService, never()).obtener(any());
+        verify(gradoService, never()).listarPorNivel(any());
+    }
+
     private void relacionesValidas() {
         when(plantelService.obtener(2L)).thenReturn(plantel());
         when(cicloService.obtener(10L)).thenReturn(ciclo());
@@ -149,7 +186,6 @@ class GrupoAdminControllerTest {
     private void catalogosVacios() {
         when(institucionService.listar()).thenReturn(List.of());
         when(plantelService.listar()).thenReturn(List.of());
-        when(nivelService.listar()).thenReturn(List.of());
     }
 
     private GrupoForm formulario() {

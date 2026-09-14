@@ -91,6 +91,14 @@ Reglas importantes ya aplicadas:
 
 - Consola administrativa disponible bajo `/admin`.
 - Navegación lateral para los ocho catálogos.
+- La navegación lateral desplaza únicamente la lista de módulos cuando supera la
+  altura disponible; marca, encabezado y estado de servicios permanecen visibles. El
+  módulo activo se centra automáticamente dentro del área desplazable.
+- La navegación sólo incluye módulos para los que la sesión tenga permiso `*_LEER` o
+  `*_ADMINISTRAR`; Roles y Usuarios requieren su permiso administrativo. `/admin`
+  redirige al primer módulo autorizado y el controlador vuelve a validar el permiso
+  antes de consultar o exportar. Los cambios de rol se reflejan al iniciar una sesión
+  nueva, porque las autoridades se cargan durante el login.
 - Diseño profesional en azul tinta y cian, totalmente responsivo para escritorio,
   tableta y móvil.
 - Tema claro/oscuro seleccionable y persistido en el dispositivo.
@@ -109,6 +117,10 @@ Reglas importantes ya aplicadas:
   observaciones, validando rangos, duplicados, solapamientos y ciclos cerrados.
 - `Grupo` cuenta con alta, edición y desactivación lógica, con selectores dependientes y
   validación de oferta educativa activa.
+- Al crear grupos, los grados se consultan bajo demanda para el plantel seleccionado,
+  sin caché ni carga completa inicial. La pantalla informa claramente si está
+  consultando, si encontró grados, si falta oferta educativa activa o si ocurrió un
+  error de conexión.
 - `Alumno` y `Tutor` cuentan con expediente institucional, alta, edición,
   desactivación lógica, filtros, paginación y Excel. El tutor puede vincularse de
   manera opcional con una cuenta de usuario de su misma institución.
@@ -177,6 +189,10 @@ Todo módulo que se construya debe incluir desde su primera entrega:
   nueva crea `.env` a partir de `.env.example` y genera contraseñas nuevas.
 - Los usuarios activos de PostgreSQL ya pueden iniciar sesión. El administrador de
   `.env` se conserva temporalmente como acceso de recuperación controlado.
+- Una sesión caducada redirige a `/login?sesionExpirada` y muestra un aviso explícito.
+  Esto cubre navegación, envíos `POST` cuyo token CSRF venció y consultas asíncronas;
+  los errores de permisos reales conservan la pantalla 403. El cierre normal elimina
+  la cookie `JSESSIONID` para no producir falsos avisos de caducidad.
 
 ## Arranque en una computadora nueva
 
@@ -329,6 +345,12 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   formulario completo del expediente.
 - Los listados y los trece formularios administrativos muestran `Cerrar sesión`. El
   botón envía `POST /logout` con CSRF, invalida la sesión y regresa al inicio.
+- Flyway V12 agrega `fotografia_archivo_id` a `Usuario`. La edición de usuario permite
+  cargar o reemplazar JPEG/PNG de hasta 5 MB y restaurar el avatar genérico; los bytes
+  permanecen en `private_files` y sólo se sirven mediante rutas autenticadas.
+- El encabezado compartido muestra siempre la fotografía —personalizada o genérica— y
+  el nombre del usuario autenticado. En móvil conserva ambos datos mediante un segundo
+  renglón responsivo y funciona en los temas claro y oscuro.
 - Flyway V10 crea `Inscripcion` y `AsignacionGrupo`, y agrega los permisos
   `INSCRIPCION_LEER` e `INSCRIPCION_ADMINISTRAR` sin concederlos automáticamente.
 - `Inscripciones` ya administra la trayectoria por alumno, plantel, ciclo y grado.
@@ -337,21 +359,31 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - El módulo valida institución, oferta activa, ciclo, vigencias, solapamientos y
   capacidad bajo bloqueo transaccional. Su listado pagina y filtra en PostgreSQL y la
   exportación XLSX reutiliza exactamente esos filtros y recorre los datos por bloques.
+- El detalle de inscripción muestra una ficha técnica compacta del alumno con su
+  fotografía privada actual, matrícula, nacimiento, CURP, plantel, ciclo y grado. La
+  fotografía se entrega mediante la inscripción después de validar su alcance.
 - Flyway V11 crea `ConceptoCobro` y `CuotaAlumno`, con cuatro permisos técnicos sin
   autoasignación. Los conceptos definen categorías y ajustes permitidos; no contienen
   un precio global.
 - Cada cuota pertenece a una inscripción y, por tanto, a un solo alumno. Configura
   importe, moneda, frecuencia única o mensual, vigencia, vencimiento, estado y si la
   generación futura de cargos será automática o manual.
+- Flyway V13 crea `Cargo` y los permisos `CARGO_LEER` y `CARGO_ADMINISTRAR`, sin
+  concederlos automáticamente a roles existentes. Un cargo emitido pertenece siempre
+  a una inscripción/alumno y conserva importe, descripción, periodo y vencimiento.
+- Los cargos extraordinarios se emiten manualmente. El generador automático recorre
+  cuotas por bloques, respeta institución/plantel y usa una clave única por cuota y
+  periodo con `ON CONFLICT DO NOTHING`; reintentos y ejecuciones concurrentes no
+  duplican obligaciones. Los cargos no se editan: sólo se cancelan con versión y motivo.
 - Un pago futuro podrá cubrir varios hijos, pero deberá conservar aplicaciones separadas
   por cada cargo/alumno. Nunca se administrará un saldo familiar indistinto.
 
 ## Verificación confirmada
 
-- Compilación correcta de 234 archivos Java de producción.
-- 151 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V11 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 24 repositorios.
+- Compilación correcta de 253 archivos Java de producción.
+- 175 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V13 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 25 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -376,14 +408,19 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   filtrada de cuotas comenzó con firma XLSX `504b0304`. Las tablas de conceptos y cuotas
   permanecieron vacías y PostgreSQL confirmó 30 permisos técnicos totales.
 - La última instancia local verificada quedó en `http://localhost:18080`.
+- El nombre visible de sesión se publica al modelo Thymeleaf mediante
+  `IdentidadSesionAdvice`; no usar `#authentication`, porque el dialecto de seguridad
+  no forma parte de las dependencias actuales. Una prueba de regresión cubre presencia
+  y ausencia de autenticación.
 
 ## Siguiente paso acordado
 
-Implementar `Cargo` y el generador idempotente en Flyway V12. Debe crear obligaciones
-individuales por inscripción/alumno desde cuotas con generación automática, respetar
-la frecuencia y vencimiento decididos por el administrador y permitir cargos manuales
-extra. Una ejecución repetida nunca debe duplicar el mismo cargo. Todavía no implementar
-pagos, caja ni tesorería.
+Implementar la política de becas y ajustes sobre cargos mediante `TipoBeca`,
+`BecaAlumno` y `AjusteCargo` a partir de Flyway V14. Las becas deben seguir ligadas a
+una inscripción/alumno y sus descuentos deben quedar congelados como ajustes del cargo
+emitido; no se reescribirán importes históricos al cambiar una beca. Antes de automatizar
+recargos se debe confirmar su porcentaje o monto, días de gracia, periodicidad y límite.
+Todavía no implementar pagos, caja ni tesorería.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
@@ -398,19 +435,14 @@ pero no bloquea el siguiente módulo funcional.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V10 y V11 ya pertenecen a trayectoria y configuración de cobranza; nunca
-   editar V1–V11. La siguiente migración disponible es V12.
-5. Implementar `Cargo` conforme a la entidad 24 del modelo y un generador por cuota.
-   La clave de generación debe ser única e idempotente por institución y periodo.
-6. La generación automática sólo procesa cuotas `ACTIVA` con el indicador habilitado;
-   la manual permite al administrador registrar cobros extraordinarios. Todo cargo se
-   conserva ligado a una única inscripción y alumno.
-7. Los cambios de cuota afectan cargos futuros; nunca reescriben un cargo ya emitido.
-   La suspensión o finalización detiene nuevas emisiones sin borrar las anteriores.
-8. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
+4. Flyway V10–V13 ya pertenecen a trayectoria, configuración de cobranza, foto de
+   usuario y cargos; nunca editar V1–V13. La siguiente migración disponible es V14.
+5. Implementar `TipoBeca`, `BecaAlumno` y `AjusteCargo`. Una beca configurada genera
+   descuentos trazables por alumno; cambiarla sólo afecta cargos futuros.
+6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.
-9. No implementar pagos, aplicaciones, anticipos, caja ni tesorería hasta terminar y
+7. No implementar pagos, aplicaciones, anticipos, caja ni tesorería hasta terminar y
    validar por etapas la base de cuentas por cobrar. No generar registros reales de
    prueba salvo autorización expresa.
 

@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
 
 import static escuela.common.service.ValidacionVersion.verificar;
@@ -30,6 +32,7 @@ import static escuela.common.service.ValidacionVersion.verificar;
 @Transactional
 public class CuotaAlumnoServiceImpl implements CuotaAlumnoService {
 
+    private static final DateTimeFormatter FECHA_MENSAJE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final EnumSet<EstadoInscripcion> INSCRIPCIONES_CONFIGURABLES =
             EnumSet.of(EstadoInscripcion.PREINSCRITA, EstadoInscripcion.ACTIVA);
 
@@ -84,11 +87,7 @@ public class CuotaAlumnoServiceImpl implements CuotaAlumnoService {
         if (request.fechaFin().isBefore(request.fechaInicio())) {
             throw new ReglaNegocioException("La fecha final no puede ser anterior al inicio");
         }
-        if (request.fechaInicio().isBefore(inscripcion.getFechaInicio())
-                || (inscripcion.getFechaFin() != null && request.fechaFin().isAfter(inscripcion.getFechaFin()))
-                || request.fechaFin().isAfter(inscripcion.getCicloEscolar().getFechaFin())) {
-            throw new ReglaNegocioException("La vigencia de la cuota debe quedar dentro de la inscripción");
-        }
+        validarVigencia(request, inscripcion);
         if (request.importeBase().signum() < 0 || request.importeBase().scale() > 2) {
             throw new ReglaNegocioException("El importe debe ser positivo o cero y tener máximo dos decimales");
         }
@@ -102,6 +101,34 @@ public class CuotaAlumnoServiceImpl implements CuotaAlumnoService {
         if (request.estado() != EstadoCuota.ACTIVA && request.generacionAutomatica()) {
             throw new ReglaNegocioException("Sólo una cuota activa puede generar cargos automáticamente");
         }
+    }
+
+    private void validarVigencia(CuotaAlumnoRequest request, Inscripcion inscripcion) {
+        LocalDate inicioPermitido = fechaMayor(inscripcion.getFechaInicio(),
+                inscripcion.getCicloEscolar().getFechaInicio());
+        LocalDate finPermitido = inscripcion.getFechaFin() == null
+                ? inscripcion.getCicloEscolar().getFechaFin()
+                : fechaMenor(inscripcion.getFechaFin(), inscripcion.getCicloEscolar().getFechaFin());
+        String rango = "Para esta inscripción y su ciclo escolar, la vigencia permitida es del "
+                + FECHA_MENSAJE.format(inicioPermitido) + " al " + FECHA_MENSAJE.format(finPermitido) + ".";
+        if (request.fechaInicio().isBefore(inicioPermitido)) {
+            throw new ReglaNegocioException("El inicio de la cuota ("
+                    + FECHA_MENSAJE.format(request.fechaInicio())
+                    + ") está antes del rango permitido. " + rango);
+        }
+        if (request.fechaFin().isAfter(finPermitido)) {
+            throw new ReglaNegocioException("El fin de la cuota ("
+                    + FECHA_MENSAJE.format(request.fechaFin())
+                    + ") está después del rango permitido. " + rango);
+        }
+    }
+
+    private LocalDate fechaMayor(LocalDate primera, LocalDate segunda) {
+        return primera.isAfter(segunda) ? primera : segunda;
+    }
+
+    private LocalDate fechaMenor(LocalDate primera, LocalDate segunda) {
+        return primera.isBefore(segunda) ? primera : segunda;
     }
 
     private void validarVencimiento(CuotaAlumnoRequest request) {

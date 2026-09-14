@@ -7,7 +7,9 @@
     <title th:text="${resultado.modulo.titulo} + ' · Nexo Escolar'">Nexo Escolar</title>
     <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
     <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/navigation.css}">
     <script th:src="@{/js/theme.js}"></script>
+    <script th:src="@{/js/navigation.js}" defer></script>
 </head>
 <body>
 <input class="nav-toggle" type="checkbox" id="nav-toggle">
@@ -15,12 +17,10 @@
 <aside class="sidebar">
     <div class="brand"><span class="brand-mark">N</span><span><strong>Nexo</strong><small>Control escolar</small></span></div>
     <nav aria-label="Módulos del núcleo">
-        <p class="nav-label">Estructura</p>
-        <th:block th:each="item : ${modulos}">
-            <p class="nav-label security-label" th:if="${item.name() == 'ALUMNOS'}">Personas</p>
-            <p class="nav-label security-label" th:if="${item.name() == 'INSCRIPCIONES'}">Trayectoria</p>
-            <p class="nav-label security-label" th:if="${item.name() == 'CONCEPTOS_COBRO'}">Cobranza</p>
-            <p class="nav-label security-label" th:if="${item.name() == 'ROLES'}">Seguridad</p>
+        <th:block th:each="item, iter : ${modulos}">
+            <p class="nav-label security-label"
+               th:if="${iter.first or item.seccion() != modulos[iter.index - 1].seccion()}"
+               th:text="${item.seccion()}">Sección</p>
             <a th:href="@{/admin/catalogos/{slug}(slug=${item.slug})}"
                th:classappend="${item == resultado.modulo} ? ' active' : ''">
                 <span class="nav-dot"></span><span th:text="${item.titulo}">Módulo</span>
@@ -34,7 +34,7 @@
     <header class="topbar">
         <label class="menu-button" for="nav-toggle" aria-label="Abrir navegación"><span></span><span></span><span></span></label>
         <div><p>Administración académica</p><h1 th:text="${resultado.modulo.titulo}">Instituciones</h1></div>
-        <div class="top-actions"><div class="user-chip"><span>AD</span><div><strong>Administración</strong><small>Sesión segura</small></div></div><div th:replace="~{admin/fragments/session-actions :: controls}"></div></div>
+        <div class="top-actions"><div th:replace="~{admin/fragments/session-actions :: controls}"></div></div>
     </header>
 
     <section class="summary" aria-label="Resumen">
@@ -47,7 +47,7 @@
         <div class="flash" th:if="${mensaje}" th:text="${mensaje}">Operación completada</div>
         <div class="panel-heading">
             <div><h2>Directorio</h2><p>Refina la consulta sin cargar el catálogo completo.</p></div>
-            <div class="panel-actions"><a class="new-button" th:if="${resultado.modulo.mantenimientoDisponible()}" th:href="${resultado.modulo.rutaMantenimiento() + resultado.modulo.segmentoNuevo()}">+ Nuevo registro</a><a class="export-button" th:href="@{/admin/catalogos/{slug}/excel(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado})}">
+            <div class="panel-actions"><a class="export-button" th:if="${resultado.modulo.name() == 'CARGOS'}" href="/admin/cargos/generar">Generar automáticos</a><a class="new-button" th:if="${resultado.modulo.mantenimientoDisponible()}" th:href="${resultado.modulo.rutaMantenimiento() + resultado.modulo.segmentoNuevo()}">+ Nuevo registro</a><a class="export-button" th:href="@{/admin/catalogos/{slug}/excel(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado})}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
                 Exportar Excel
             </a></div>
@@ -70,6 +70,8 @@
                 <option value="FINALIZADA" th:selected="${filtro.estado == 'FINALIZADA'}">Finalizada</option>
                 <option value="CANCELADA" th:selected="${filtro.estado == 'CANCELADA'}">Cancelada</option>
                 <option value="SUSPENDIDA" th:selected="${filtro.estado == 'SUSPENDIDA'}">Suspendida</option>
+                <option value="EMITIDO" th:selected="${filtro.estado == 'EMITIDO'}">Emitido</option>
+                <option value="CANCELADO" th:selected="${filtro.estado == 'CANCELADO'}">Cancelado</option>
             </select></label>
             <label><span>Por página</span><select name="tamanio">
                 <option th:each="n : ${ {10, 25, 50, 100} }" th:value="${n}" th:text="${n}" th:selected="${filtro.tamanio == n}">25</option>
@@ -84,7 +86,7 @@
                 <tbody><tr th:each="fila : ${resultado.pagina.content}">
                     <td th:each="celda, iter : ${fila.celdas}" th:text="${celda}" th:attr="data-label=${resultado.columnas[iter.index]}">Dato</td>
                     <td data-label="Estado"><span class="status" th:classappend="${fila.tono}" th:text="${fila.estado}">Activo</span></td>
-                    <td data-label="Acciones" th:if="${resultado.modulo.mantenimientoDisponible()}"><a class="edit-link" th:href="${resultado.modulo.rutaMantenimiento() + '/' + fila.id + '/editar'}">Editar</a></td>
+                    <td data-label="Acciones" th:if="${resultado.modulo.mantenimientoDisponible()}"><a class="edit-link" th:href="${resultado.modulo.rutaMantenimiento() + '/' + fila.id + '/editar'}" th:text="${resultado.modulo.name() == 'CARGOS' ? 'Ver' : 'Editar'}">Editar</a></td>
                 </tr></tbody>
             </table>
         </div>

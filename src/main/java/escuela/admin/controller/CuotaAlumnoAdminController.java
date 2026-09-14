@@ -44,7 +44,9 @@ public class CuotaAlumnoAdminController {
 
     @GetMapping("/nuevo")
     String nuevo(Model model) {
-        preparar(model, new CuotaAlumnoForm(), null);
+        CuotaAlumnoForm form = new CuotaAlumnoForm();
+        form.setDiaVencimiento(10);
+        preparar(model, form, null);
         return "admin/cuota-alumno-form";
     }
 

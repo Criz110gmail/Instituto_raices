@@ -13,6 +13,8 @@ import escuela.admin.dto.ModuloCatalogo;
 import escuela.admin.dto.OpcionGrado;
 import escuela.admin.support.MensajeErrorFormulario;
 import escuela.alumno.service.AlumnoService;
+import escuela.alumno.service.FotografiaAlumnoService;
+import escuela.archivo.dto.ArchivoDescarga;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.inscripcion.dto.response.InscripcionResponse;
 import escuela.inscripcion.entity.EstadoInscripcion;
@@ -30,6 +32,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Controller;
+import org.springframework.core.io.Resource;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +49,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Controller
@@ -50,6 +59,7 @@ public class InscripcionAdminController {
 
     private final InscripcionService service;
     private final AlumnoService alumnoService;
+    private final FotografiaAlumnoService fotografiaService;
     private final InstitucionService institucionService;
     private final PlantelService plantelService;
     private final PlantelNivelService ofertaService;
@@ -99,6 +109,23 @@ public class InscripcionAdminController {
         alcance.validarRecurso(ModuloCatalogo.INSCRIPCIONES, id);
         preparar(model, InscripcionForm.desde(service.obtener(id)), id);
         return "admin/inscripcion-form";
+    }
+
+    @GetMapping("/{id}/fotografia")
+    ResponseEntity<Resource> fotografiaAlumno(@PathVariable Long id) {
+        alcance.validarRecurso(ModuloCatalogo.INSCRIPCIONES, id);
+        InscripcionResponse inscripcion = service.obtener(id);
+        var fotografia = fotografiaService.actual(inscripcion.alumnoId());
+        if (fotografia == null) return ResponseEntity.notFound().build();
+        ArchivoDescarga descarga = fotografiaService.descargar(
+                inscripcion.alumnoId(), fotografia.id());
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                .contentType(MediaType.parseMediaType(descarga.tipoMime()))
+                .contentLength(descarga.tamanoBytes())
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline()
+                        .filename(descarga.nombreOriginal(), StandardCharsets.UTF_8).build().toString())
+                .body(descarga.recurso());
     }
 
     @PostMapping("/{id}")
@@ -196,7 +223,10 @@ public class InscripcionAdminController {
 
         if (id != null) {
             InscripcionResponse inscripcion = service.obtener(id);
+            var alumno = alumnoService.obtener(inscripcion.alumnoId());
             model.addAttribute("inscripcion", inscripcion);
+            model.addAttribute("alumnoFicha", alumno);
+            model.addAttribute("fotografiaAlumno", fotografiaService.actual(inscripcion.alumnoId()));
             model.addAttribute("permiteContinuidad", inscripcion.estado() == EstadoInscripcion.ACTIVA
                     || inscripcion.estado() == EstadoInscripcion.PREINSCRITA);
             model.addAttribute("asignaciones", service.listarAsignaciones(id));

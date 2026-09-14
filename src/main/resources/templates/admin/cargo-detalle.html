@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+    <title>Detalle del cargo · Nexo Escolar</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
+</head>
+<body class="form-page">
+<main class="form-shell finance-shell">
+    <header class="form-top"><a href="/admin/catalogos/cargos">← Volver a cargos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <div class="finance-principle"><span th:text="${cargo.situacionCobro}">Pendiente</span><strong th:text="${cargo.descripcion}">Cargo</strong><p>Los datos emitidos son históricos e inmutables. Si el cargo no corresponde, cancélalo indicando el motivo.</p></div>
+    <section class="form-card">
+        <div class="form-intro finance-intro"><span th:text="${cargo.claveGeneracion}">Clave</span><h1 th:text="${cargo.alumnoMatricula + ' · ' + cargo.alumnoNombre}">Alumno</h1><p th:text="${cargo.numeroInscripcion + ' · ' + cargo.plantelNombre}">Inscripción</p></div>
+        <div class="entity-form">
+            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo cancelar</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
+            <fieldset class="form-section"><legend>Resumen del cargo</legend><div class="form-grid detail-grid">
+                <label><span>Concepto</span><strong th:text="${cargo.conceptoCodigo + ' · ' + cargo.conceptoNombre}">Concepto</strong></label>
+                <label><span>Origen</span><strong th:text="${cargo.cuotaAlumnoId == null ? 'Emisión manual' : 'Cuota automática #' + cargo.cuotaAlumnoId}">Origen</strong></label>
+                <label><span>Periodo de cobro</span><strong th:text="${cargo.periodoCobroInicio + ' — ' + cargo.periodoCobroFin}">Periodo</strong></label>
+                <label><span>Periodo académico</span><strong th:text="${cargo.periodoAcademicoNombre == null ? 'Sin asociación' : cargo.periodoAcademicoNombre}">Periodo</strong></label>
+                <label><span>Emisión</span><strong th:text="${cargo.fechaEmision}">Fecha</strong></label>
+                <label><span>Vencimiento</span><strong th:text="${cargo.fechaVencimiento}">Fecha</strong></label>
+                <label><span>Importe original</span><strong th:text="${#numbers.formatDecimal(cargo.importeOriginal, 1, 2) + ' ' + cargo.moneda}">0.00 MXN</strong></label>
+                <label><span>Saldo exigible</span><strong th:text="${#numbers.formatDecimal(cargo.saldoPendiente, 1, 2) + ' ' + cargo.moneda}">0.00 MXN</strong></label>
+            </div></fieldset>
+            <fieldset class="form-section" th:if="${cargo.estadoRegistro.name() == 'CANCELADO'}"><legend>Cancelación</legend><div class="form-grid"><label><span>Cancelado en</span><strong th:text="${cargo.canceladoEn}">Fecha</strong></label><label class="wide"><span>Motivo</span><strong th:text="${cargo.motivoCancelacion}">Motivo</strong></label></div></fieldset>
+            <form class="form-section cancel-panel" th:if="${cargo.estadoRegistro.name() == 'EMITIDO'}" method="post" th:action="@{/admin/cargos/{id}/cancelar(id=${cargo.id})}"><input type="hidden" name="version" th:value="${cargo.auditoria.version}"><label><span>Motivo de cancelación *</span><textarea name="motivo" maxlength="2000" rows="3" required th:text="${motivoCapturado}" placeholder="Explica por qué el cargo deja de ser exigible"></textarea></label><button type="submit" class="danger-button">Cancelar cargo</button></form>
+            <footer class="form-actions"><a href="/admin/catalogos/cargos">Cerrar detalle</a></footer>
+        </div>
+    </section>
+</main>
+</body>
+</html>

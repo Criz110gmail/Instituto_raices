@@ -6,6 +6,9 @@ import escuela.alumno.entity.Alumno;
 import escuela.alumno.repository.AlumnoRepository;
 import escuela.cobranza.entity.ConceptoCobro;
 import escuela.cobranza.repository.ConceptoCobroRepository;
+import escuela.academico.entity.PeriodoAcademico;
+import escuela.academico.repository.PeriodoAcademicoRepository;
+import escuela.admin.dto.ModuloCatalogo;
 import escuela.inscripcion.entity.Inscripcion;
 import escuela.inscripcion.repository.InscripcionRepository;
 import escuela.seguridad.entity.Usuario;
@@ -34,6 +37,7 @@ public class BusquedaAutocompletadoService {
     private final UsuarioRepository usuarioRepository;
     private final InscripcionRepository inscripcionRepository;
     private final ConceptoCobroRepository conceptoCobroRepository;
+    private final PeriodoAcademicoRepository periodoAcademicoRepository;
     private final AlcanceDatosService alcance;
 
     public ResultadoAutocompletado alumnos(Long institucionId, String consulta) {
@@ -112,6 +116,19 @@ public class BusquedaAutocompletadoService {
                 .map(concepto -> new OpcionAutocompletado(concepto.getId(),
                         concepto.getCodigo() + " · " + concepto.getNombre(),
                         concepto.getCategoria().name()))
+                .toList(), resultado.hasNext());
+    }
+
+    public ResultadoAutocompletado periodosCargo(Long inscripcionId, String consulta) {
+        alcance.validarRecurso(ModuloCatalogo.INSCRIPCIONES, inscripcionId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        Slice<PeriodoAcademico> resultado = periodoAcademicoRepository.buscarParaCargo(
+                inscripcionId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+        return new ResultadoAutocompletado(resultado.getContent().stream()
+                .map(periodo -> new OpcionAutocompletado(periodo.getId(),
+                        periodo.getCodigo() + " · " + periodo.getNombre(),
+                        periodo.getFechaInicio() + " — " + periodo.getFechaFin()))
                 .toList(), resultado.hasNext());
     }
 

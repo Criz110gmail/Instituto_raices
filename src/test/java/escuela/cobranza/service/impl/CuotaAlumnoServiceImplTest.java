@@ -72,6 +72,23 @@ class CuotaAlumnoServiceImplTest {
     }
 
     @Test
+    void informaLasFechasExactasCuandoLaCuotaIniciaAntesDelCicloYLaInscripcion() {
+        Inscripcion inscripcion = inscripcion(1L);
+        inscripcion.setFechaInicio(LocalDate.of(2026, 9, 14));
+        inscripcion.setFechaFin(null);
+        inscripcion.getCicloEscolar().setFechaInicio(LocalDate.of(2026, 9, 14));
+        inscripcion.getCicloEscolar().setFechaFin(LocalDate.of(2026, 12, 15));
+        when(inscripcionRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(inscripcion));
+        when(conceptoRepository.findById(20L)).thenReturn(Optional.of(concepto(1L)));
+
+        assertThatThrownBy(() -> service.crear(mensual(EstadoCuota.ACTIVA, false)))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessageContaining("El inicio de la cuota (01/09/2026)")
+                .hasMessageContaining("inscripción y su ciclo escolar")
+                .hasMessageContaining("14/09/2026 al 15/12/2026");
+    }
+
+    @Test
     void rechazaCuotaActivaSuperpuestaDelMismoConcepto() {
         prepararRelaciones(1L, 1L);
         when(repository.buscarSuperpuestas(any(), any(), any(), any(), any(), any()))

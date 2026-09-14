@@ -3,6 +3,7 @@ package escuela.admin.controller;
 import escuela.admin.dto.AsignacionRolForm;
 import escuela.admin.dto.UsuarioForm;
 import escuela.admin.support.MensajeErrorFormulario;
+import escuela.archivo.dto.ArchivoDescarga;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.service.InstitucionService;
 import escuela.institucion.service.PlantelService;
@@ -13,35 +14,54 @@ import escuela.seguridad.entity.AlcanceRol;
 import escuela.seguridad.entity.EstadoUsuario;
 import escuela.seguridad.service.AdministracionAccesoService;
 import escuela.seguridad.service.InvitacionUsuarioService;
+import escuela.seguridad.service.FotografiaUsuarioService;
 import escuela.seguridad.service.RecuperacionPasswordService;
 import escuela.seguridad.service.RolService;
 import escuela.seguridad.service.UsuarioService;
 import escuela.seguridad.service.AlcanceDatosService;
 import escuela.admin.dto.ModuloCatalogo;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.time.Duration;
+import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin/usuarios")
 public class UsuarioAdminController {
 
+    private static final Pattern RUTA_FOTOGRAFIA =
+            Pattern.compile("/admin/usuarios/(\\d+)/fotografia(?:/.*)?$");
+
     private final UsuarioService service;
+    private final FotografiaUsuarioService fotografiaService;
     private final RolService rolService;
     private final AdministracionAccesoService accesoService;
     private final InvitacionUsuarioService invitacionService;
@@ -125,6 +145,41 @@ public class UsuarioAdminController {
         }
         flash.addFlashAttribute("mensaje", "Estado del usuario actualizado correctamente");
         return "redirect:/admin/usuarios/" + id + "/editar";
+    }
+
+    @PostMapping("/{id}/fotografia")
+    String asignarFotografia(@PathVariable Long id, @RequestParam("archivo") MultipartFile archivo,
+                             Model model, RedirectAttributes flash) {
+        UsuarioResponse usuario = usuarioAdministrable(id);
+        try {
+            fotografiaService.asignar(id, archivo);
+        } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
+            prepararErrorFotografia(model, usuario, excepcion);
+            return "admin/usuario-form";
+        }
+        flash.addFlashAttribute("mensaje", "Fotografía del usuario actualizada correctamente");
+        return "redirect:/admin/usuarios/" + id + "/editar";
+    }
+
+    @PostMapping("/{id}/fotografia/retirar")
+    String retirarFotografia(@PathVariable Long id, Model model, RedirectAttributes flash) {
+        UsuarioResponse usuario = usuarioAdministrable(id);
+        try {
+            fotografiaService.retirar(id);
+        } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
+            prepararErrorFotografia(model, usuario, excepcion);
+            return "admin/usuario-form";
+        }
+        flash.addFlashAttribute("mensaje", "Se restauró el avatar genérico del usuario");
+        return "redirect:/admin/usuarios/" + id + "/editar";
+    }
+
+    @GetMapping("/{id}/fotografia")
+    ResponseEntity<Resource> descargarFotografia(@PathVariable Long id) {
+        usuarioAdministrable(id);
+        return fotografiaService.descargarActual(id)
+                .map(this::respuestaFotografia)
+                .orElseGet(this::avatarGenerico);
     }
 
     @PostMapping("/{id}/roles")
@@ -213,6 +268,18 @@ public class UsuarioAdminController {
         }
     }
 
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    String fotografiaDemasiadoGrande(HttpServletRequest request, Model model) {
+        Matcher coincidencia = RUTA_FOTOGRAFIA.matcher(request.getRequestURI());
+        if (!coincidencia.matches()) {
+            throw new ReglaNegocioException("El archivo supera el tamaño permitido");
+        }
+        UsuarioResponse usuario = usuarioAdministrable(Long.valueOf(coincidencia.group(1)));
+        prepararErrorFotografia(model, usuario,
+                new ReglaNegocioException("La fotografía no puede superar 5 MB"));
+        return "admin/usuario-form";
+    }
+
     private void prepararNuevo(Model model, UsuarioForm form) {
         model.addAttribute("form", form);
         model.addAttribute("edicion", false);
@@ -231,5 +298,35 @@ public class UsuarioAdminController {
         model.addAttribute("alcances", AlcanceRol.values());
         model.addAttribute("asignacionForm", asignacionForm);
         model.addAttribute("asignaciones", accesoService.listarAsignaciones(usuario.id()));
+    }
+
+    private UsuarioResponse usuarioAdministrable(Long id) {
+        alcance.validarRecurso(ModuloCatalogo.USUARIOS, id);
+        UsuarioResponse usuario = service.obtener(id);
+        alcance.validarAdministracionInstitucional(usuario.institucionId());
+        return usuario;
+    }
+
+    private void prepararErrorFotografia(Model model, UsuarioResponse usuario,
+                                         RuntimeException excepcion) {
+        prepararEdicion(model, UsuarioForm.desde(usuario), usuario, new AsignacionRolForm());
+        model.addAttribute("errorFotografia", MensajeErrorFormulario.desde(excepcion));
+    }
+
+    private ResponseEntity<Resource> respuestaFotografia(ArchivoDescarga descarga) {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                .contentType(MediaType.parseMediaType(descarga.tipoMime()))
+                .contentLength(descarga.tamanoBytes())
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline()
+                        .filename(descarga.nombreOriginal(), StandardCharsets.UTF_8).build().toString())
+                .body(descarga.recurso());
+    }
+
+    private ResponseEntity<Resource> avatarGenerico() {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                .contentType(MediaType.valueOf("image/svg+xml"))
+                .body(new ClassPathResource("static/images/avatar-generico.svg"));
     }
 }

@@ -1,5 +1,6 @@
 package escuela.seguridad.entity;
 
+import escuela.archivo.entity.Archivo;
 import escuela.config.audit.EntidadAuditable;
 import escuela.institucion.entity.Institucion;
 import jakarta.persistence.Column;
@@ -9,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,4 +47,8 @@ public class Usuario extends EntidadAuditable {
 
     @Column(name = "intentos_fallidos", nullable = false)
     private int intentosFallidos;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fotografia_archivo_id")
+    private Archivo fotografiaArchivo;
 }

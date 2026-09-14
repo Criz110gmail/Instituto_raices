@@ -54,4 +54,10 @@ public class AutocompletadoAdminController {
                                            @RequestParam(defaultValue = "") String q) {
         return service.conceptosCobro(institucionId, q);
     }
+
+    @GetMapping("/periodos-cargo")
+    ResultadoAutocompletado periodosCargo(@RequestParam Long inscripcionId,
+                                          @RequestParam(defaultValue = "") String q) {
+        return service.periodosCargo(inscripcionId, q);
+    }
 }

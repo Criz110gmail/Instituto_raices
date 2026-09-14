@@ -25,6 +25,8 @@ import escuela.admin.dto.ModuloCatalogo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -56,6 +59,28 @@ public class GrupoAdminController {
     String nuevo(Model model) {
         preparar(model, new GrupoForm(), null);
         return "admin/grupo-form";
+    }
+
+    @GetMapping("/opciones-grado")
+    @ResponseBody
+    ResponseEntity<List<OpcionGrado>> opcionesGrado(@RequestParam Long plantelId) {
+        alcance.validarPlantel(plantelId);
+        PlantelResponse plantel = plantelService.obtener(plantelId);
+        if (!plantel.activo()) {
+            return sinCache(List.of());
+        }
+
+        List<OpcionGrado> opciones = ofertaService.listarPorPlantel(plantelId).stream()
+                .filter(PlantelNivelResponse::activo)
+                .map(oferta -> nivelService.obtener(oferta.nivelEducativoId()))
+                .filter(NivelEducativoResponse::activo)
+                .filter(nivel -> nivel.institucionId().equals(plantel.institucionId()))
+                .sorted(java.util.Comparator.comparingInt(NivelEducativoResponse::orden))
+                .flatMap(nivel -> gradoService.listarPorNivel(nivel.id()).stream()
+                        .filter(GradoResponse::activo)
+                        .map(grado -> opcion(grado, nivel)))
+                .toList();
+        return sinCache(opciones);
     }
 
     @PostMapping
@@ -128,17 +153,10 @@ public class GrupoAdminController {
     private void preparar(Model model, GrupoForm form, Long id) {
         List<InstitucionResponse> instituciones = alcance.filtrarInstituciones(institucionService.listar());
         List<PlantelResponse> planteles = alcance.filtrarPlanteles(plantelService.listar());
-        List<NivelEducativoResponse> niveles = alcance.filtrarNiveles(nivelService.listar());
         List<CicloEscolarResponse> ciclos = instituciones.stream()
                 .flatMap(institucion -> cicloService.listarPorInstitucion(institucion.id()).stream())
                 .toList();
-        List<OpcionGrado> grados = niveles.stream()
-                .flatMap(nivel -> gradoService.listarPorNivel(nivel.id()).stream()
-                        .map(grado -> opcion(grado, nivel)))
-                .toList();
-        List<PlantelNivelResponse> ofertas = planteles.stream()
-                .flatMap(plantel -> ofertaService.listarPorPlantel(plantel.id()).stream())
-                .toList();
+        List<OpcionGrado> grados = opcionSeleccionada(form.getGradoId());
         model.addAttribute("form", form);
         model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
@@ -146,14 +164,26 @@ public class GrupoAdminController {
         model.addAttribute("planteles", planteles);
         model.addAttribute("ciclos", ciclos);
         model.addAttribute("grados", grados);
-        model.addAttribute("ofertas", ofertas);
         model.addAttribute("turnos", Turno.values());
+    }
+
+    private List<OpcionGrado> opcionSeleccionada(Long gradoId) {
+        if (gradoId == null) return List.of();
+        GradoResponse grado = gradoService.obtener(gradoId);
+        NivelEducativoResponse nivel = nivelService.obtener(grado.nivelEducativoId());
+        return List.of(opcion(grado, nivel));
     }
 
     private OpcionGrado opcion(GradoResponse grado, NivelEducativoResponse nivel) {
         String etiqueta = nivel.nombre() + " · " + grado.codigo() + " · " + grado.nombre();
         return new OpcionGrado(grado.id(), nivel.id(), nivel.institucionId(), etiqueta,
                 grado.activo() && nivel.activo());
+    }
+
+    private ResponseEntity<List<OpcionGrado>> sinCache(List<OpcionGrado> opciones) {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                .body(opciones);
     }
 
     private void validarRelaciones(GrupoForm form, BindingResult errores) {

@@ -68,7 +68,7 @@ comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME
 - `escuela.alumno`: expediente de alumnos y vínculos históricos con tutores.
 - `escuela.tutor`: expediente institucional de tutores y cuenta de acceso opcional.
 - `escuela.inscripcion`: trayectoria académica e historial de asignaciones de grupo.
-- `escuela.cobranza`: conceptos de cobro y cuotas configurables por inscripción/alumno.
+- `escuela.cobranza`: conceptos, cuotas configurables y cargos por inscripción/alumno.
 - `escuela.config`: seguridad y auditoría JPA.
 - `escuela.common`: excepciones, respuesta de auditoría y utilidades compartidas.
 - Cada módulo contiene DTO, mappers, repositorios y servicios transaccionales.
@@ -85,7 +85,7 @@ GIN `pg_trgm` desde Flyway V8; no se cargan tablas completas dentro de formulari
 ## Consola administrativa
 
 La ruta `/admin` contiene los ocho catálogos académicos, Alumnos, Tutores, Vínculos
-alumno–tutor, Inscripciones, Conceptos de cobro, Cuotas por alumno y los módulos de
+alumno–tutor, Inscripciones, Conceptos de cobro, Cuotas por alumno, Cargos y los módulos de
 Roles y permisos y Usuarios.
 Todos los listados consultan la
 base de datos con filtros y paginación; el botón **Exportar Excel** aplica exactamente
@@ -142,6 +142,11 @@ vínculos de tutor. La invitación genera un enlace de 48 horas que se muestra u
 vez; la pantalla pública permite establecer una contraseña protegida sin exponer el
 token ni la contraseña en la base de datos.
 
+La edición de usuario permite cargar una fotografía JPEG o PNG de hasta 5 MB. La imagen
+se valida y se conserva en el almacenamiento privado; si no existe, la interfaz utiliza
+un avatar genérico. Todas las pantallas administrativas muestran la foto y el nombre de
+usuario de la sesión activa, incluidos los diseños para móvil y los temas claro/oscuro.
+
 Para usuarios activos, la administración también puede generar un enlace independiente
 de recuperación que vence en 30 minutos. El token sólo se guarda como SHA-256, se
 consume una vez y la contraseña nueva se codifica con BCrypt. Este flujo limpia bloqueos
@@ -189,7 +194,14 @@ paginan en PostgreSQL y exportan exactamente esos filtros con Apache POI. Requie
 permisos `CONCEPTO_COBRO_LEER`/`CONCEPTO_COBRO_ADMINISTRAR` y
 `CUOTA_ALUMNO_LEER`/`CUOTA_ALUMNO_ADMINISTRAR`.
 
-La cuota todavía es configuración, no una deuda emitida. La siguiente etapa creará
-`Cargo` y el generador idempotente que hará efectiva la opción automática. Un pago
-futuro podrá cubrir varios hijos, pero cada aplicación y saldo seguirá separado por
-cargo, inscripción y alumno.
+La cuota es configuración y `Cargo` representa la deuda emitida. El administrador puede
+emitir un cargo extraordinario o ejecutar el generador hasta una fecha de corte; éste
+procesa cuotas por bloques y usa claves idempotentes para no duplicar mensualidades en
+reintentos o ejecuciones concurrentes. Los cargos emitidos no se editan y sólo pueden
+cancelarse conservando motivo e historial. El listado pagina y filtra en PostgreSQL y
+su Excel reutiliza exactamente esos filtros. Requiere `CARGO_LEER` y/o
+`CARGO_ADMINISTRAR`; los permisos nuevos no se asignan automáticamente a roles.
+
+Un pago futuro podrá cubrir varios hijos, pero cada aplicación y saldo seguirá separado
+por cargo, inscripción y alumno. Antes de pagos se implementarán becas y ajustes para
+congelar descuentos e incrementos autorizados sobre cada cargo.

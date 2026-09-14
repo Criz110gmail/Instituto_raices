@@ -11,6 +11,24 @@
     <div class="continuity-banner" th:if="${form.inscripcionAnteriorId != null}"><span>Continuidad académica</span><strong th:text="${continuidadAnterior}">Inscripción anterior</strong><p>Al guardar, la trayectoria anterior y su asignación vigente se cerrarán el día previo al nuevo inicio.</p></div>
     <section class="form-card">
         <div class="form-intro"><span>Trayectoria escolar</span><h1 th:text="${edicion ? 'Expediente de inscripción' : (form.inscripcionAnteriorId != null ? 'Registrar traslado o promoción' : 'Crear inscripción')}">Crear inscripción</h1><p>La inscripción es la fuente de verdad del plantel, ciclo y grado del alumno. El historial nunca se sobrescribe.</p></div>
+        <section th:if="${edicion}" class="enrollment-student-profile" aria-labelledby="ficha-inscripcion-alumno">
+            <div class="enrollment-photo student-photo-frame" th:classappend="${fotografiaAlumno == null ? ' empty' : ''}">
+                <img th:if="${fotografiaAlumno != null}" th:src="@{/admin/inscripciones/{id}/fotografia(id=${id})}" th:alt="${'Fotografía de ' + alumnoFicha.nombres + ' ' + alumnoFicha.primerApellido}">
+                <div th:unless="${fotografiaAlumno != null}" aria-hidden="true"><strong th:text="${#strings.substring(alumnoFicha.nombres, 0, 1) + #strings.substring(alumnoFicha.primerApellido, 0, 1)}">AA</strong><span>Sin fotografía</span></div>
+            </div>
+            <div class="enrollment-profile-summary">
+                <div class="profile-heading">
+                    <div><span class="profile-eyebrow">Alumno de esta inscripción</span><h2 id="ficha-inscripcion-alumno" th:text="${alumnoFicha.nombres + ' ' + alumnoFicha.primerApellido + (alumnoFicha.segundoApellido == null or alumnoFicha.segundoApellido.isBlank() ? '' : ' ' + alumnoFicha.segundoApellido)}">Nombre del alumno</h2><p><strong th:text="${alumnoFicha.matricula}">ALU-001</strong><span aria-hidden="true">·</span><span th:text="${inscripcion.numeroInscripcion}">INS-001</span></p></div>
+                    <span class="profile-status" th:classappend="${alumnoFicha.activo ? ' active' : ' inactive'}" th:text="${alumnoFicha.activo ? 'Alumno activo' : 'Alumno inactivo'}">Activo</span>
+                </div>
+                <dl class="profile-facts enrollment-profile-facts">
+                    <div><dt>Fecha de nacimiento</dt><dd th:text="${#temporals.format(alumnoFicha.fechaNacimiento, 'dd/MM/yyyy')}">01/01/2018</dd></div>
+                    <div><dt>CURP</dt><dd th:text="${alumnoFicha.curp == null or alumnoFicha.curp.isBlank() ? 'No registrada' : alumnoFicha.curp}">No registrada</dd></div>
+                    <div><dt>Plantel</dt><dd th:text="${inscripcion.plantelNombre}">Plantel</dd></div>
+                    <div><dt>Ciclo y grado</dt><dd th:text="${inscripcion.cicloNombre + ' · ' + inscripcion.gradoNombre}">Ciclo · Grado</dd></div>
+                </dl>
+            </div>
+        </section>
         <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/inscripciones/' + id : '/admin/inscripciones'}">
             <input type="hidden" th:field="*{version}"><input type="hidden" th:field="*{inscripcionAnteriorId}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>

@@ -25,6 +25,7 @@
         entrada.addEventListener('input', () => {
             if (entrada.value !== etiquetaSeleccionada) {
                 valor.value = '';
+                valor.dispatchEvent(new Event('change', {bubbles: true}));
                 etiquetaSeleccionada = '';
                 actualizarLimpiar();
             }
@@ -63,6 +64,7 @@
         limpiar?.addEventListener('click', () => {
             entrada.value = '';
             valor.value = '';
+            valor.dispatchEvent(new Event('change', {bubbles: true}));
             etiquetaSeleccionada = '';
             cerrarLista();
             mostrarEstado(`Escribe al menos ${MINIMO} caracteres para buscar.`);
@@ -73,6 +75,7 @@
         alcance.addEventListener('change', () => {
             entrada.value = '';
             valor.value = '';
+            valor.dispatchEvent(new Event('change', {bubbles: true}));
             etiquetaSeleccionada = '';
             cerrarLista();
             mostrarEstado(alcance.value
@@ -95,6 +98,10 @@
                     headers: {'Accept': 'application/json'},
                     signal: solicitud.signal
                 });
+                if (respuesta.redirected && new URL(respuesta.url).pathname === '/login') {
+                    window.location.assign('/login?sesionExpirada');
+                    return;
+                }
                 if (!respuesta.ok) throw new Error('No fue posible consultar el catálogo');
                 const datos = await respuesta.json();
                 renderizar(datos.resultados || [], Boolean(datos.hayMas));
@@ -137,6 +144,7 @@
         function seleccionar(opcion) {
             entrada.value = opcion.titulo;
             valor.value = opcion.id;
+            valor.dispatchEvent(new Event('change', {bubbles: true}));
             etiquetaSeleccionada = opcion.titulo;
             cerrarLista();
             mostrarEstado(`Seleccionado: ${opcion.titulo}`);

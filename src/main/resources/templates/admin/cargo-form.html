@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+    <title>Nuevo cargo individual · Nexo Escolar</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script><script src="/js/autocomplete.js" defer></script>
+</head>
+<body class="form-page">
+<main class="form-shell finance-shell">
+    <header class="form-top"><a href="/admin/catalogos/cargos">← Volver a cargos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <div class="finance-principle"><span>Emisión controlada</span><strong>El cargo queda separado por alumno</strong><p>Aunque después un tutor cubra varios hijos con un solo pago, este importe conservará su inscripción, plantel, concepto y saldo individual.</p></div>
+    <section class="form-card">
+        <div class="form-intro finance-intro"><span>Cobranza individual</span><h1>Emitir cargo manual</h1><p>Úsalo para inscripciones, material, eventos u otro cobro extraordinario que no provenga de una cuota automática.</p></div>
+        <form class="entity-form" th:object="${form}" method="post" action="/admin/cargos">
+            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo emitir el cargo</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
+            <fieldset class="form-section"><legend>Alumno e inscripción</legend><div class="form-grid">
+                <label><span>Institución *</span><select id="institucion" th:field="*{institucionId}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-moneda=${item.monedaPredeterminada}">Institución</option></select><small th:errors="*{institucionId}"></small></label>
+                <label><span>Plantel *</span><select id="plantel" th:field="*{plantelId}"><option value="">Selecciona un plantel</option><option th:each="item : ${planteles}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-institucion=${item.institucionId},data-activo=${item.activo}">Plantel</option></select><small th:errors="*{plantelId}"></small></label>
+                <div class="wide autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/inscripciones" data-scope-input="plantel" data-scope-param="plantelId" data-scope-label="un plantel"><label class="autocomplete-label" for="inscripcion-busqueda">Inscripción vigente *</label><div class="autocomplete-control"><input id="inscripcion-busqueda" class="autocomplete-input" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="inscripcion-resultados" placeholder="Matrícula, alumno o número de inscripción" th:value="${inscripcionSeleccionada}"><button class="autocomplete-clear" type="button" aria-label="Limpiar inscripción" hidden>×</button></div><input id="inscripcionId" class="autocomplete-value" type="hidden" th:field="*{inscripcionId}"><div id="inscripcion-resultados" class="autocomplete-results" role="listbox" hidden></div><span class="autocomplete-status" aria-live="polite">Escribe al menos 3 caracteres para buscar.</span><small th:errors="*{inscripcionId}"></small></div>
+                <div class="wide autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/conceptos-cobro" data-scope-input="institucion" data-scope-param="institucionId" data-scope-label="una institución"><label class="autocomplete-label" for="concepto-busqueda">Concepto de cobro *</label><div class="autocomplete-control"><input id="concepto-busqueda" class="autocomplete-input" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="concepto-resultados" placeholder="Código o nombre del concepto" th:value="${conceptoSeleccionado}"><button class="autocomplete-clear" type="button" aria-label="Limpiar concepto" hidden>×</button></div><input class="autocomplete-value" type="hidden" th:field="*{conceptoCobroId}"><div id="concepto-resultados" class="autocomplete-results" role="listbox" hidden></div><span class="autocomplete-status" aria-live="polite">Escribe al menos 3 caracteres para buscar.</span><small th:errors="*{conceptoCobroId}"></small></div>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Concepto y periodo</legend><div class="form-grid">
+                <label class="wide"><span>Descripción histórica *</span><input th:field="*{descripcion}" maxlength="250" placeholder="Ej. Taller de robótica · septiembre 2026"><small th:errors="*{descripcion}"></small><span class="field-help">Este texto queda congelado aunque después cambie el nombre del concepto.</span></label>
+                <label><span>Inicio del periodo *</span><input type="date" th:field="*{periodoCobroInicio}"><small th:errors="*{periodoCobroInicio}"></small></label>
+                <label><span>Fin del periodo *</span><input type="date" th:field="*{periodoCobroFin}"><small th:errors="*{periodoCobroFin}"></small></label>
+                <div class="wide autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/periodos-cargo" data-scope-input="inscripcionId" data-scope-param="inscripcionId" data-scope-label="una inscripción"><label class="autocomplete-label" for="periodo-busqueda">Periodo académico <small>(opcional)</small></label><div class="autocomplete-control"><input id="periodo-busqueda" class="autocomplete-input" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="periodo-resultados" placeholder="Código o nombre del periodo" th:value="${periodoSeleccionado}"><button class="autocomplete-clear" type="button" aria-label="Limpiar periodo" hidden>×</button></div><input class="autocomplete-value" type="hidden" th:field="*{periodoAcademicoId}"><div id="periodo-resultados" class="autocomplete-results" role="listbox" hidden></div><span class="autocomplete-status" aria-live="polite">Selecciona primero una inscripción; después escribe 3 caracteres.</span><small th:errors="*{periodoAcademicoId}"></small></div>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Importe y vencimiento</legend><div class="form-grid">
+                <label><span>Fecha de emisión *</span><input type="date" th:field="*{fechaEmision}"><small th:errors="*{fechaEmision}"></small></label>
+                <label><span>Fecha de vencimiento *</span><input type="date" th:field="*{fechaVencimiento}"><small th:errors="*{fechaVencimiento}"></small></label>
+                <label><span>Importe individual *</span><input type="number" min="0" step="0.01" th:field="*{importeOriginal}" placeholder="1500.00"><small th:errors="*{importeOriginal}"></small></label>
+                <label><span>Moneda *</span><input id="moneda" th:field="*{moneda}" maxlength="3" placeholder="MXN"><small th:errors="*{moneda}"></small></label>
+            </div></fieldset>
+            <footer class="form-actions"><a href="/admin/catalogos/cargos">Cancelar</a><button type="submit">Emitir cargo</button></footer>
+        </form>
+    </section>
+</main>
+<script>
+(() => {
+    const institucion = document.querySelector('#institucion');
+    const plantel = document.querySelector('#plantel');
+    const moneda = document.querySelector('#moneda');
+    const planteles = [...plantel.options].slice(1);
+    const actualizar = () => {
+        planteles.forEach(o => { o.hidden = !institucion.value || o.dataset.institucion !== institucion.value || o.dataset.activo !== 'true'; });
+        if (plantel.selectedOptions[0]?.hidden) { plantel.value = ''; plantel.dispatchEvent(new Event('change')); }
+        const seleccion = institucion.selectedOptions[0];
+        if (seleccion?.dataset.moneda) moneda.value = seleccion.dataset.moneda;
+    };
+    institucion.addEventListener('change', actualizar); actualizar();
+})();
+</script>
+</body>
+</html>

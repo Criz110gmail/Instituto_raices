@@ -29,7 +29,7 @@ public class CuotaAlumnoForm {
     @NotNull private FrecuenciaCuota frecuencia = FrecuenciaCuota.MENSUAL;
     @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate fechaInicio;
     @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate fechaFin;
-    private Integer diaVencimiento = 10;
+    private Integer diaVencimiento;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate fechaVencimientoUnico;
     private boolean generacionAutomatica;
     @Size(max = 2000) private String motivoImportePersonalizado;
@@ -37,8 +37,10 @@ public class CuotaAlumnoForm {
     private Long version;
 
     public CuotaAlumnoRequest request() {
+        Integer diaMensual = frecuencia == FrecuenciaCuota.MENSUAL ? diaVencimiento : null;
+        LocalDate fechaUnica = frecuencia == FrecuenciaCuota.UNICA ? fechaVencimientoUnico : null;
         return new CuotaAlumnoRequest(inscripcionId, conceptoCobroId, importeBase, moneda,
-                frecuencia, fechaInicio, fechaFin, diaVencimiento, fechaVencimientoUnico,
+                frecuencia, fechaInicio, fechaFin, diaMensual, fechaUnica,
                 generacionAutomatica, motivoImportePersonalizado, estado, version);
     }
 

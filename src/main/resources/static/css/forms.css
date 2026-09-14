@@ -30,6 +30,54 @@
     line-height: 1.5;
 }
 
+.degree-availability {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: -4px;
+    padding: 14px 16px;
+    border: 1px solid #c9d8e7;
+    border-radius: 13px;
+    background: #f6f9fc;
+}
+
+.degree-availability-icon {
+    display: grid;
+    flex: 0 0 27px;
+    width: 27px;
+    height: 27px;
+    place-items: center;
+    border-radius: 50%;
+    background: #dce9f5;
+    color: #275a82;
+    font-size: .78rem;
+    font-weight: 900;
+}
+
+.degree-availability div { display: grid; gap: 3px; }
+.degree-availability strong { color: var(--ink); font-size: .8rem; }
+.degree-availability p { margin: 0; color: var(--muted); font-size: .75rem; line-height: 1.45; }
+.degree-availability.loading { border-color: #9fc8e8; background: #f2f8fd; }
+.degree-availability.loading .degree-availability-icon { animation: degree-pulse 1.1s ease-in-out infinite; }
+.degree-availability.success { border-color: #8dd9c9; background: #edfbf7; }
+.degree-availability.success .degree-availability-icon { background: #ccefe7; color: #08785f; }
+.degree-availability.warning { border-color: #edc774; background: #fff9e9; }
+.degree-availability.warning .degree-availability-icon { background: #f8e6b9; color: #8a5a00; }
+.degree-availability.error { border-color: #e0aab0; background: #fff4f5; }
+.degree-availability.error .degree-availability-icon { background: #f3d7db; color: #a42634; }
+
+@keyframes degree-pulse { 50% { opacity: .45; transform: scale(.88); } }
+
+[data-theme=dark] .degree-availability { border-color: #344a63; background: #0a1728; }
+[data-theme=dark] .degree-availability-icon { background: #19324d; color: #9fc8e8; }
+[data-theme=dark] .degree-availability.loading { border-color: #35698e; background: #0d2033; }
+[data-theme=dark] .degree-availability.success { border-color: #216b61; background: #0d2928; }
+[data-theme=dark] .degree-availability.success .degree-availability-icon { background: #17483f; color: #9de6d5; }
+[data-theme=dark] .degree-availability.warning { border-color: #745b27; background: #29220f; }
+[data-theme=dark] .degree-availability.warning .degree-availability-icon { background: #4a3916; color: #f1ce7d; }
+[data-theme=dark] .degree-availability.error { border-color: #70404a; background: #2b171c; }
+[data-theme=dark] .degree-availability.error .degree-availability-icon { background: #4b252d; color: #f0adb6; }
+
 .student-shell { max-width: 1040px; }
 .student-profile { display: grid; grid-template-columns: 220px minmax(0,1fr); gap: 30px; padding: 34px; border-bottom: 1px solid var(--line); background: radial-gradient(circle at 8% 12%,#32cbbb1c,transparent 32%),linear-gradient(135deg,#f7fbff,#fff 62%); }
 .profile-photo-column { display: grid; align-content: start; justify-items: center; gap: 10px; }
@@ -76,7 +124,14 @@
 .photo-history-grid img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border: 1px solid var(--line); border-radius: 10px; }
 .profile-edit-link { justify-self: start; color: #0b63ce; font-size: .75rem; font-weight: 700; text-decoration: none; }
 .profile-edit-link:hover { text-decoration: underline; }
+.enrollment-student-profile { display: grid; grid-template-columns: 148px minmax(0,1fr); gap: 24px; align-items: center; padding: 24px 34px; border-bottom: 1px solid var(--line); background: radial-gradient(circle at 6% 10%,#32cbbb18,transparent 34%),linear-gradient(135deg,#f7fbff,#fff 68%); }
+.enrollment-photo { width: 148px; box-shadow: inset 0 0 0 5px #fff,0 14px 34px #1636531f; }
+.enrollment-profile-summary { min-width: 0; display: grid; gap: 15px; }
+.enrollment-profile-summary .profile-heading h2 { margin: 0; color: var(--ink); font: 800 clamp(1.25rem,2.4vw,1.75rem) Manrope; line-height: 1.15; overflow-wrap: anywhere; }
+.enrollment-profile-facts { grid-template-columns: repeat(4,minmax(0,1fr)); }
 [data-theme=dark] .student-profile { background: radial-gradient(circle at 8% 12%,#32cbbb12,transparent 32%),linear-gradient(135deg,#0a1728,#0e1d31 62%); }
+[data-theme=dark] .enrollment-student-profile { background: radial-gradient(circle at 6% 10%,#32cbbb10,transparent 34%),linear-gradient(135deg,#0a1728,#0e1d31 68%); }
+[data-theme=dark] .enrollment-photo { box-shadow: inset 0 0 0 5px #0e1d31,0 14px 34px #0006; }
 [data-theme=dark] .student-photo-frame { border-color: #344a63; background: #0a1728; box-shadow: inset 0 0 0 5px #0e1d31; }
 [data-theme=dark] .profile-photo { box-shadow: inset 0 0 0 5px #0e1d31,0 18px 42px #0006; }
 [data-theme=dark] .student-photo-frame.empty strong { background: #19324d; color: #9fc8e8; }
@@ -167,6 +222,10 @@
     .profile-heading { display: grid; }
     .profile-status { justify-self: start; grid-row: 1; }
     .profile-facts { grid-template-columns: 1fr; }
+    .enrollment-student-profile { grid-template-columns: 1fr; justify-items: center; padding: 24px 20px; }
+    .enrollment-photo { width: min(180px,62vw); }
+    .enrollment-profile-summary { width: 100%; }
+    .enrollment-profile-facts { grid-template-columns: 1fr; }
     .profile-tool-actions,.photo-upload-form { width: 100%; }
     .photo-upload-form { display: grid; }
     .photo-upload-form label,.photo-upload-form input,.photo-upload-form button,.photo-remove { width: 100%; }
@@ -257,12 +316,43 @@
 .policy-card strong { color: var(--ink); font-size: .8rem; }
 .policy-card small { color: var(--muted) !important; font-size: .74rem !important; line-height: 1.45; }
 .automatic-policy { margin-top: 4px; }
+.detail-grid label { padding: 14px 16px; border: 1px solid #dce6ef; border-radius: 12px; background: #f8fbfe; }
+.detail-grid label > span { margin-bottom: 5px; }
+.detail-grid label > strong { color: var(--ink); font-size: .86rem; line-height: 1.4; }
+.cancel-panel { display: grid; gap: 14px; margin: 0; }
+.cancel-panel label { display: grid; gap: 7px; }
+.cancel-panel label > span { font-size: .73rem; font-weight: 700; }
+.cancel-panel textarea { width: 100%; resize: vertical; border: 1px solid #ccd8e5; border-radius: 10px; background: #fff; color: var(--ink); padding: 11px 12px; font: inherit; }
+.danger-button { justify-self: end; border: 1px solid #b73342; border-radius: 10px; background: #b73342; color: #fff; padding: 11px 16px; font-weight: 800; cursor: pointer; }
 [data-theme=dark] .finance-principle { border-color: #216b61; background: linear-gradient(135deg,#0d2928,#0b1b2c); }
 [data-theme=dark] .finance-principle p { color: #9ac9c0; }
 [data-theme=dark] .policy-card { border-color: #344a63; background: #0e1d31; }
 [data-theme=dark] .policy-card:has(input:checked) { border-color: #277f74; background: #12322f; }
+[data-theme=dark] .detail-grid label { border-color: #344a63; background: #0e1d31; }
+[data-theme=dark] .cancel-panel textarea { border-color: #344a63; background: #0e1d31; color: #eef5fd; }
 
 @media (max-width: 680px) {
     .finance-principle { padding: 18px 20px; }
     .policy-grid { grid-template-columns: 1fr; }
+    .danger-button { width: 100%; justify-self: stretch; }
+}
+
+.user-photo-section { display: grid; grid-template-columns: minmax(230px,.72fr) minmax(320px,1.28fr); gap: 24px; padding: 24px 34px; border-bottom: 1px solid var(--line); background: linear-gradient(135deg,#f5faff,#fff); }
+.user-photo-preview { display: flex; align-items: center; gap: 15px; min-width: 0; }
+.user-photo-preview > img { width: 82px; height: 82px; flex: 0 0 82px; border: 4px solid #fff; border-radius: 24px; object-fit: cover; background: #102b48; box-shadow: 0 10px 28px #16365324; }
+.user-photo-preview > div { display: grid; min-width: 0; gap: 3px; }
+.user-photo-preview span { color: #148f82; font-size: .65rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.user-photo-preview strong { overflow: hidden; font-size: .95rem; text-overflow: ellipsis; white-space: nowrap; }
+.user-photo-preview small,.user-photo-tools > p { color: var(--muted); font-size: .72rem; }
+.user-photo-tools { display: grid; align-content: center; gap: 10px; min-width: 0; }
+.user-photo-tools .form-error { margin: 0; }
+.user-photo-actions { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; }
+.user-photo-tools > p { margin: 0; line-height: 1.45; }
+[data-theme=dark] .user-photo-section { background: linear-gradient(135deg,#0a1728,#0e1d31); }
+[data-theme=dark] .user-photo-preview > img { border-color: #203751; box-shadow: 0 10px 28px #0006; }
+
+@media (max-width: 760px) {
+    .user-photo-section { grid-template-columns: 1fr; padding: 22px 20px; }
+    .user-photo-actions,.user-photo-actions .photo-upload-form { display: grid; width: 100%; }
+    .user-photo-actions .photo-upload-form label,.user-photo-actions .photo-upload-form input,.user-photo-actions .photo-upload-form button,.user-photo-actions > form,.user-photo-actions .photo-remove { width: 100%; }
 }

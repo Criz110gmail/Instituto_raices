@@ -27,6 +27,7 @@ public class UsuarioMapper {
 
     public UsuarioResponse respuesta(Usuario entidad) {
         return new UsuarioResponse(entidad.getId(), entidad.getInstitucion().getId(), entidad.getUsername(),
-                entidad.getEmail(), entidad.getEstado(), entidad.getPasswordHash() != null, desde(entidad));
+                entidad.getEmail(), entidad.getEstado(), entidad.getPasswordHash() != null,
+                entidad.getFotografiaArchivo() != null, desde(entidad));
     }
 }

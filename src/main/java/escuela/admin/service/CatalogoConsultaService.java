@@ -9,6 +9,9 @@ import escuela.alumno.repository.AlumnoTutorRepository;
 import escuela.admin.dto.*;
 import escuela.cobranza.entity.ConceptoCobro;
 import escuela.cobranza.entity.CuotaAlumno;
+import escuela.cobranza.entity.Cargo;
+import escuela.cobranza.entity.EstadoRegistroCargo;
+import escuela.cobranza.repository.CargoRepository;
 import escuela.cobranza.repository.ConceptoCobroRepository;
 import escuela.cobranza.repository.CuotaAlumnoRepository;
 import escuela.institucion.entity.*;
@@ -57,6 +60,7 @@ public class CatalogoConsultaService {
     private final InscripcionRepository inscripcionRepository;
     private final ConceptoCobroRepository conceptoCobroRepository;
     private final CuotaAlumnoRepository cuotaAlumnoRepository;
+    private final CargoRepository cargoRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcanceDatosService;
@@ -116,6 +120,8 @@ public class CatalogoConsultaService {
                             e.getImporteBase().toPlainString() + " " + e.getMoneda(),
                             etiqueta(e.getFrecuencia().name()), vencimiento(e),
                             e.isGeneracionAutomatica() ? "Automática" : "Manual"));
+            case CARGOS -> consultar(modulo, cargoRepository, textoCargo(f),
+                    estado(f, "estadoRegistro"), pagina, this::filaCargo);
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
             case USUARIOS -> consultar(modulo, usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,
@@ -219,6 +225,24 @@ public class CatalogoConsultaService {
         };
     }
 
+    private Specification<Cargo> textoCargo(FiltroCatalogo f) {
+        return (root, query, cb) -> {
+            if (f.q().isBlank()) return cb.conjunction();
+            String patron = "%" + f.q().toLowerCase(Locale.ROOT) + "%";
+            var inscripcion = root.get("inscripcion");
+            var alumno = inscripcion.get("alumno");
+            var concepto = root.get("conceptoCobro");
+            return cb.or(cb.like(cb.lower(root.get("descripcion")), patron),
+                    cb.like(cb.lower(inscripcion.get("numeroInscripcion")), patron),
+                    cb.like(cb.lower(alumno.get("matricula")), patron),
+                    cb.like(cb.lower(alumno.get("nombres")), patron),
+                    cb.like(cb.lower(alumno.get("primerApellido")), patron),
+                    cb.like(cb.lower(alumno.get("segundoApellido")), patron),
+                    cb.like(cb.lower(concepto.get("codigo")), patron),
+                    cb.like(cb.lower(concepto.get("nombre")), patron));
+        };
+    }
+
     private <T> Specification<T> activo(FiltroCatalogo f) {
         return (root, query, cb) -> switch (f.estado()) {
             case "ACTIVO" -> cb.isTrue(root.get("activo"));
@@ -259,6 +283,35 @@ public class CatalogoConsultaService {
         String tono = estado.equals("ACTIVA") ? "positivo"
                 : estado.equals("SUSPENDIDA") ? "aviso" : "neutro";
         return new FilaCatalogo(cuota.getId(), List.of(celdas), estado, tono);
+    }
+
+    private FilaCatalogo filaCargo(Cargo cargo) {
+        String estado;
+        String tono;
+        if (cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO) {
+            estado = "Cancelado";
+            tono = "neutro";
+        } else if (cargo.getImporteOriginal().signum() == 0) {
+            estado = "Pagado";
+            tono = "positivo";
+        } else if (cargo.getFechaVencimiento().isBefore(LocalDate.now())) {
+            estado = "Vencido";
+            tono = "aviso";
+        } else {
+            estado = "Pendiente";
+            tono = "positivo";
+        }
+        String periodo = FECHA.format(cargo.getPeriodoCobroInicio()) + " — "
+                + FECHA.format(cargo.getPeriodoCobroFin());
+        String importe = cargo.getImporteOriginal().toPlainString() + " " + cargo.getMoneda();
+        String saldo = cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO
+                ? "0.00 " + cargo.getMoneda() : importe;
+        return new FilaCatalogo(cargo.getId(), List.of(
+                cargo.getInscripcion().getAlumno().getMatricula() + " · "
+                        + nombreAlumno(cargo.getInscripcion().getAlumno()),
+                cargo.getConceptoCobro().getCodigo() + " · " + cargo.getConceptoCobro().getNombre(),
+                cargo.getDescripcion(), periodo, FECHA.format(cargo.getFechaVencimiento()),
+                importe, saldo), estado, tono);
     }
 
     private FilaCatalogo filaVinculo(AlumnoTutor vinculo, String... celdas) {

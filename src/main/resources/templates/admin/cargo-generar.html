@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+    <title>Generar cargos · Nexo Escolar</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
+</head>
+<body class="form-page">
+<main class="form-shell finance-shell">
+    <header class="form-top"><a href="/admin/catalogos/cargos">← Volver a cargos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <div class="finance-principle"><span>Proceso idempotente</span><strong>Puedes ejecutarlo nuevamente con seguridad</strong><p>El sistema revisa las cuotas automáticas por bloques y crea sólo los periodos faltantes. Una ejecución repetida o simultánea no duplica cargos.</p></div>
+    <section class="form-card">
+        <div class="form-intro finance-intro"><span>Automatización de cobranza</span><h1>Generar cargos programados</h1><p>Selecciona el alcance y la fecha de corte. Cada resultado quedará asignado a la inscripción de un alumno.</p></div>
+        <form class="entity-form" th:object="${form}" method="post" action="/admin/cargos/generar">
+            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo completar la generación</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
+            <fieldset class="form-section"><legend>Alcance de generación</legend><div class="form-grid">
+                <label><span>Institución *</span><select id="institucion" th:field="*{institucionId}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><small th:errors="*{institucionId}"></small></label>
+                <label><span>Plantel <small>(opcional)</small></span><select id="plantel" th:field="*{plantelId}"><option value="">Todos los planteles autorizados</option><option th:each="item : ${planteles}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-institucion=${item.institucionId},data-activo=${item.activo}">Plantel</option></select><small th:errors="*{plantelId}"></small></label>
+                <label><span>Generar hasta *</span><input type="date" th:field="*{fechaCorte}"><small th:errors="*{fechaCorte}"></small><span class="field-help">Incluye meses cuya cuota esté vigente hasta esta fecha.</span></label>
+                <div class="policy-card wide"><span><strong>Qué se procesará</strong><small>Sólo cuotas activas con “Generar cargos automáticamente”, concepto activo e inscripción vigente. Las cuotas manuales no se alteran.</small></span></div>
+            </div></fieldset>
+            <footer class="form-actions"><a href="/admin/catalogos/cargos">Cancelar</a><button type="submit">Generar cargos faltantes</button></footer>
+        </form>
+    </section>
+</main>
+<script>
+(() => {
+    const institucion = document.querySelector('#institucion');
+    const plantel = document.querySelector('#plantel');
+    const opciones = [...plantel.options].slice(1);
+    const actualizar = () => {
+        opciones.forEach(o => { o.hidden = !institucion.value || o.dataset.institucion !== institucion.value || o.dataset.activo !== 'true'; });
+        if (plantel.selectedOptions[0]?.hidden) plantel.value = '';
+    };
+    institucion.addEventListener('change', actualizar); actualizar();
+})();
+</script>
+</body>
+</html>

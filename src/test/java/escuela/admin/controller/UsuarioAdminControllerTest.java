@@ -13,6 +13,7 @@ import escuela.seguridad.entity.AlcanceRol;
 import escuela.seguridad.entity.EstadoUsuario;
 import escuela.seguridad.service.AdministracionAccesoService;
 import escuela.seguridad.service.InvitacionUsuarioService;
+import escuela.seguridad.service.FotografiaUsuarioService;
 import escuela.seguridad.service.RecuperacionPasswordService;
 import escuela.seguridad.service.RolService;
 import escuela.seguridad.service.UsuarioService;
@@ -28,6 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
@@ -35,6 +37,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 import java.time.Instant;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,6 +48,7 @@ import static org.mockito.Mockito.when;
 class UsuarioAdminControllerTest {
 
     @Mock private UsuarioService service;
+    @Mock private FotografiaUsuarioService fotografiaService;
     @Mock private RolService rolService;
     @Mock private AdministracionAccesoService accesoService;
     @Mock private InvitacionUsuarioService invitacionService;
@@ -135,6 +139,31 @@ class UsuarioAdminControllerTest {
         assertThat(vista).isEqualTo("redirect:/admin/usuarios/7/editar");
     }
 
+    @Test
+    void asignaFotografiaYRegresaALaEdicion() {
+        when(service.obtener(7L)).thenReturn(usuario());
+        MockMultipartFile archivo = new MockMultipartFile("archivo", "perfil.png",
+                "image/png", new byte[]{1, 2, 3});
+
+        String vista = controller.asignarFotografia(7L, archivo,
+                new ExtendedModelMap(), new RedirectAttributesModelMap());
+
+        verify(fotografiaService).asignar(7L, archivo);
+        assertThat(vista).isEqualTo("redirect:/admin/usuarios/7/editar");
+    }
+
+    @Test
+    void entregaAvatarGenericoCuandoElUsuarioNoTieneFoto() {
+        when(service.obtener(7L)).thenReturn(usuario());
+        when(fotografiaService.descargarActual(7L)).thenReturn(Optional.empty());
+
+        var respuesta = controller.descargarFotografia(7L);
+
+        assertThat(respuesta.getStatusCode().is2xxSuccessful()).isTrue();
+        assertThat(respuesta.getHeaders().getContentType().toString()).isEqualTo("image/svg+xml");
+        assertThat(respuesta.getBody()).isNotNull();
+    }
+
     private UsuarioForm formulario() {
         UsuarioForm form = new UsuarioForm();
         form.setInstitucionId(1L);
@@ -146,7 +175,7 @@ class UsuarioAdminControllerTest {
     private UsuarioResponse usuario() {
         Instant ahora = Instant.parse("2026-09-11T12:00:00Z");
         return new UsuarioResponse(7L, 1L, "admin.raices", "admin@raices.mx",
-                EstadoUsuario.INVITADO, false,
+                EstadoUsuario.INVITADO, false, false,
                 new AuditoriaResponse(ahora, null, ahora, null, 1L));
     }
 }
