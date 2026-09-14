@@ -16,6 +16,8 @@ import escuela.institucion.entity.Plantel;
 import escuela.institucion.repository.InstitucionRepository;
 import escuela.institucion.repository.PlantelNivelRepository;
 import escuela.institucion.repository.PlantelRepository;
+import escuela.inscripcion.repository.InscripcionRepository;
+import escuela.inscripcion.entity.Inscripcion;
 import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.repository.UsuarioRepository;
 import escuela.tutor.repository.TutorRepository;
@@ -43,6 +45,7 @@ class AlcanceDatosServiceTest {
     private final AlumnoRepository alumnoRepository = mock(AlumnoRepository.class);
     private final TutorRepository tutorRepository = mock(TutorRepository.class);
     private final AlumnoTutorRepository alumnoTutorRepository = mock(AlumnoTutorRepository.class);
+    private final InscripcionRepository inscripcionRepository = mock(InscripcionRepository.class);
     private final AlcanceDatosService service = new AlcanceDatosService(
             mock(InstitucionRepository.class), plantelRepository,
             mock(NivelEducativoRepository.class), mock(PlantelNivelRepository.class),
@@ -51,6 +54,7 @@ class AlcanceDatosServiceTest {
             alumnoRepository,
             tutorRepository,
             alumnoTutorRepository,
+            inscripcionRepository,
             mock(RolRepository.class), mock(UsuarioRepository.class));
 
     @AfterEach
@@ -93,6 +97,21 @@ class AlcanceDatosServiceTest {
         when(plantelRepository.findById(11L)).thenReturn(Optional.of(noAsignado));
 
         assertThatThrownBy(() -> service.validarPlantel(11L))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void bloqueaInscripcionDePlantelNoAsignado() {
+        autenticar(new UsuarioPrincipal(7L, 1L, Set.of(10L), false, false,
+                "plantel", "hash", List.of()));
+        Plantel noAsignado = new Plantel();
+        noAsignado.setId(11L);
+        Inscripcion inscripcion = new Inscripcion();
+        inscripcion.setPlantel(noAsignado);
+        when(inscripcionRepository.findById(60L)).thenReturn(Optional.of(inscripcion));
+
+        assertThatThrownBy(() -> service.validarRecurso(
+                escuela.admin.dto.ModuloCatalogo.INSCRIPCIONES, 60L))
                 .isInstanceOf(AccessDeniedException.class);
     }
 

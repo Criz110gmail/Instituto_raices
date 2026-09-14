@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +22,10 @@ public class AutocompletadoAdminController {
     @GetMapping("/alumnos")
     ResultadoAutocompletado alumnos(@RequestParam Long institucionId,
                                     @RequestParam(defaultValue = "") String q) {
+        boolean administraInscripciones = SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("INSCRIPCION_ADMINISTRAR"));
+        if (administraInscripciones) return service.alumnosParaInscripcion(institucionId, q);
         return service.alumnos(institucionId, q);
     }
 

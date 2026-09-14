@@ -67,6 +67,7 @@ comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME
 - `escuela.seguridad`: usuarios, roles, permisos, alcances e invitaciones de acceso.
 - `escuela.alumno`: expediente de alumnos y vínculos históricos con tutores.
 - `escuela.tutor`: expediente institucional de tutores y cuenta de acceso opcional.
+- `escuela.inscripcion`: trayectoria académica e historial de asignaciones de grupo.
 - `escuela.config`: seguridad y auditoría JPA.
 - `escuela.common`: excepciones, respuesta de auditoría y utilidades compartidas.
 - Cada módulo contiene DTO, mappers, repositorios y servicios transaccionales.
@@ -83,7 +84,7 @@ GIN `pg_trgm` desde Flyway V8; no se cargan tablas completas dentro de formulari
 ## Consola administrativa
 
 La ruta `/admin` contiene los ocho catálogos académicos, Alumnos, Tutores, Vínculos
-alumno–tutor y los módulos de Roles y permisos y Usuarios.
+alumno–tutor, Inscripciones y los módulos de Roles y permisos y Usuarios.
 Todos los listados consultan la
 base de datos con filtros y paginación; el botón **Exportar Excel** aplica exactamente
 los mismos filtros y genera el archivo con Apache POI en modo streaming.
@@ -170,3 +171,10 @@ financiera, autorizaciones y vigencias. Impide relaciones superpuestas y más de
 contacto principal vigente; revocar conserva el historial y retira el acceso. Requiere
 `VINCULO_TUTOR_LEER` y/o `VINCULO_TUTOR_ADMINISTRAR`. Las cuentas con alcance
 `VINCULOS_TUTOR` sólo pueden consultar relaciones propias, activas y vigentes.
+
+Inscripciones conserva la trayectoria histórica del alumno por plantel, ciclo y grado,
+además de sus asignaciones de grupo. Los traslados, promociones y cambios de grupo
+cierran la vigencia anterior y crean una nueva; no sobrescriben el pasado. El módulo
+valida oferta educativa, fechas, solapamientos y capacidad, pagina y filtra en
+PostgreSQL y exporta esos mismos filtros con Apache POI. Requiere conceder
+`INSCRIPCION_LEER` y/o `INSCRIPCION_ADMINISTRAR` a los roles correspondientes.

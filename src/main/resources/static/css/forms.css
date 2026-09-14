@@ -201,6 +201,18 @@
 .assignment-form select { width: 100%; min-height: 42px; border: 1px solid #ccd8e5; border-radius: 9px; background: #fff; color: var(--ink); padding: 8px 10px; }
 .assignment-form small { display: block; color: #b22b3a; margin-top: 4px; font-size: .7rem; }
 .assignment-form > button { min-height: 42px; }
+.assignment-form input { width: 100%; min-height: 42px; border: 1px solid #ccd8e5; border-radius: 9px; background: #fff; color: var(--ink); padding: 8px 10px; }
+.continuity-banner { margin-bottom: 16px; padding: 18px 22px; border: 1px solid #8dd9c9; border-radius: 16px; background: #edfbf7; box-shadow: var(--shadow); }
+.continuity-banner span,.continuity-banner strong { display: block; }
+.continuity-banner span { color: #08785f; font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.continuity-banner strong { margin-top: 5px; font-size: .9rem; }
+.continuity-banner p { margin: 5px 0 0; color: #52756e; font-size: .78rem; }
+.enrollment-assignment { grid-template-columns: 1.2fr 1fr 1.5fr auto; }
+.enrollment-actions { margin-top: 16px; justify-content: flex-end; }
+.enrollment-actions a { border-radius: 10px; padding: 10px 14px; color: #fff; font-size: .8rem; font-weight: 700; text-decoration: none; }
+.assignment-list article form { display: flex; align-items: end; gap: 8px; }
+.assignment-list article form label { display: grid; gap: 5px; color: var(--muted); font-size: .7rem; }
+.assignment-list article form input { min-height: 36px; border: 1px solid #ccd8e5; border-radius: 8px; background: #fff; color: var(--ink); padding: 6px 8px; }
 .invitation-result { margin-bottom: 16px; padding: 20px 22px; border: 1px solid #8dd9c9; border-radius: 16px; background: #edfbf7; box-shadow: var(--shadow); }
 .invitation-result > div:first-child span,.invitation-result > div:first-child strong { display: block; }
 .invitation-result > div:first-child span { color: #08785f; font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
@@ -210,6 +222,8 @@
 .copy-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
 .copy-row input { min-width: 0; border: 1px solid #a9d8ce; border-radius: 10px; background: #fff; color: #19443b; padding: 10px 12px; }
 [data-theme=dark] .assignment-form { background: #0a1728; }
+[data-theme=dark] .assignment-form input,[data-theme=dark] .assignment-list article form input { background: #0e1d31; color: #eef5fd; border-color: #344a63; }
+[data-theme=dark] .continuity-banner { background: #0d2928; border-color: #216b61; }
 [data-theme=dark] .assignment-form select,[data-theme=dark] .account-buttons button,[data-theme=dark] .assignment-list button { background: #0e1d31; color: #eef5fd; border-color: #344a63; }
 [data-theme=dark] .invitation-result { background: #0d2928; border-color: #216b61; }
 [data-theme=dark] .copy-row input { background: #091d1d; color: #d8fff8; border-color: #216b61; }

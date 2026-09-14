@@ -16,6 +16,7 @@ import escuela.academico.dto.response.NivelEducativoResponse;
 import escuela.institucion.repository.InstitucionRepository;
 import escuela.institucion.repository.PlantelNivelRepository;
 import escuela.institucion.repository.PlantelRepository;
+import escuela.inscripcion.repository.InscripcionRepository;
 import escuela.seguridad.dto.response.RolResponse;
 import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.repository.UsuarioRepository;
@@ -47,6 +48,7 @@ public class AlcanceDatosService {
     private final AlumnoRepository alumnoRepository;
     private final TutorRepository tutorRepository;
     private final AlumnoTutorRepository alumnoTutorRepository;
+    private final InscripcionRepository inscripcionRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
 
@@ -57,7 +59,7 @@ public class AlcanceDatosService {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
                 case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, ROLES, USUARIOS -> root.get("institucion").get("id");
-                case VINCULOS_TUTOR -> root.get("alumno").get("institucion").get("id");
+                case VINCULOS_TUTOR, INSCRIPCIONES -> root.get("alumno").get("institucion").get("id");
                 case OFERTA -> root.get("plantel").get("institucion").get("id");
                 case GRADOS -> root.get("nivelEducativo").get("institucion").get("id");
                 case PERIODOS -> root.get("cicloEscolar").get("institucion").get("id");
@@ -79,7 +81,7 @@ public class AlcanceDatosService {
             }
             Path<Long> plantel = switch (modulo) {
                 case PLANTELES -> root.get("id");
-                case OFERTA, GRUPOS -> root.get("plantel").get("id");
+                case OFERTA, GRUPOS, INSCRIPCIONES -> root.get("plantel").get("id");
                 default -> null;
             };
             if (plantel == null) return mismaInstitucion;
@@ -108,6 +110,8 @@ public class AlcanceDatosService {
             case TUTORES -> validarInstitucion(tutorRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());
             case VINCULOS_TUTOR -> validarVinculoTutor(id);
+            case INSCRIPCIONES -> validarPlantel(inscripcionRepository.findById(id)
+                    .orElseThrow(this::denegado).getPlantel().getId());
             case ROLES -> validarInstitucion(rolRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());
             case USUARIOS -> validarInstitucion(usuarioRepository.findById(id)

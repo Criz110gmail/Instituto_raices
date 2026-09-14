@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+    <title th:text="${edicion ? 'Expediente de inscripción' : 'Nueva inscripción'} + ' · Nexo Escolar'">Inscripción</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script><script src="/js/autocomplete.js" defer></script>
+</head>
+<body class="form-page">
+<main class="form-shell student-shell">
+    <header class="form-top"><a href="/admin/catalogos/inscripciones">← Volver a inscripciones</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <div class="continuity-banner" th:if="${form.inscripcionAnteriorId != null}"><span>Continuidad académica</span><strong th:text="${continuidadAnterior}">Inscripción anterior</strong><p>Al guardar, la trayectoria anterior y su asignación vigente se cerrarán el día previo al nuevo inicio.</p></div>
+    <section class="form-card">
+        <div class="form-intro"><span>Trayectoria escolar</span><h1 th:text="${edicion ? 'Expediente de inscripción' : (form.inscripcionAnteriorId != null ? 'Registrar traslado o promoción' : 'Crear inscripción')}">Crear inscripción</h1><p>La inscripción es la fuente de verdad del plantel, ciclo y grado del alumno. El historial nunca se sobrescribe.</p></div>
+        <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/inscripciones/' + id : '/admin/inscripciones'}">
+            <input type="hidden" th:field="*{version}"><input type="hidden" th:field="*{inscripcionAnteriorId}">
+            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
+            <fieldset class="form-section"><legend>Alumno e institución</legend><div class="form-grid">
+                <label class="wide"><span>Institución *</span><select id="institucion" th:field="*{institucionId}" th:disabled="${edicion or form.inscripcionAnteriorId != null}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion or form.inscripcionAnteriorId != null}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
+                <div class="wide autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/alumnos" data-institution-input="institucion"><label class="autocomplete-label" for="alumno-busqueda">Alumno *</label><div class="autocomplete-control"><input id="alumno-busqueda" class="autocomplete-input" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="alumno-resultados" placeholder="Escribe matrícula, CURP o nombre" th:value="${alumnoSeleccionado}" th:disabled="${edicion or form.inscripcionAnteriorId != null}"><button class="autocomplete-clear" type="button" aria-label="Limpiar alumno" hidden>×</button></div><input class="autocomplete-value" type="hidden" th:field="*{alumnoId}"><div id="alumno-resultados" class="autocomplete-results" role="listbox" hidden></div><span class="autocomplete-status" aria-live="polite" th:text="${edicion or form.inscripcionAnteriorId != null ? 'El alumno está protegido para conservar la trayectoria.' : 'Escribe al menos 3 caracteres para buscar.'}">Busca un alumno.</span><small th:errors="*{alumnoId}"></small></div>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Ubicación académica</legend><div class="form-grid">
+                <label><span>Plantel *</span><select id="plantel" th:field="*{plantelId}" th:disabled="${edicion}"><option value="">Selecciona un plantel</option><option th:each="item : ${planteles}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-institucion=${item.institucionId},data-activo=${item.activo}">Plantel</option></select><input th:if="${edicion}" type="hidden" th:field="*{plantelId}"><small th:errors="*{plantelId}"></small></label>
+                <label><span>Ciclo escolar *</span><select id="ciclo" th:field="*{cicloEscolarId}" th:disabled="${edicion}"><option value="">Selecciona un ciclo</option><option th:each="item : ${ciclos}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-institucion=${item.institucionId},data-inicio=${item.fechaInicio},data-fin=${item.fechaFin},data-cerrado=${item.estado.name() == 'CERRADO'}">Ciclo</option></select><input th:if="${edicion}" type="hidden" th:field="*{cicloEscolarId}"><small th:errors="*{cicloEscolarId}"></small></label>
+                <label class="wide"><span>Grado *</span><select id="grado" th:field="*{gradoId}" th:disabled="${edicion}"><option value="">Selecciona plantel y grado</option><option th:each="item : ${grados}" th:value="${item.id}" th:text="${item.etiqueta}" th:attr="data-institucion=${item.institucionId},data-nivel=${item.nivelEducativoId},data-activo=${item.activo}">Grado</option></select><input th:if="${edicion}" type="hidden" th:field="*{gradoId}"><small th:errors="*{gradoId}"></small></label>
+                <span th:each="item : ${ofertas}" class="oferta-dato" hidden th:attr="data-plantel=${item.plantelId},data-nivel=${item.nivelEducativoId},data-activo=${item.activo}"></span>
+                <p class="field-help wide">Sólo se habilitan grados pertenecientes a la oferta activa del plantel.</p>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Control y vigencia</legend><div class="form-grid">
+                <label><span>Número de inscripción *</span><input th:field="*{numeroInscripcion}" maxlength="60" placeholder="INS-2026-0001"><small th:errors="*{numeroInscripcion}"></small></label>
+                <label><span>Estado *</span><select id="estado-inscripcion" th:field="*{estado}"><option th:each="item : ${estados}" th:value="${item}" th:text="${#strings.capitalize(#strings.toLowerCase(item.name()))}">Estado</option></select><small th:errors="*{estado}"></small></label>
+                <label><span>Fecha de inscripción *</span><input type="date" th:field="*{fechaInscripcion}"><small th:errors="*{fechaInscripcion}"></small></label>
+                <label><span>Inicio escolar *</span><input id="fecha-inicio" type="date" th:field="*{fechaInicio}"><small th:errors="*{fechaInicio}"></small></label>
+                <label><span>Fin</span><input id="fecha-fin" type="date" th:field="*{fechaFin}"><small th:errors="*{fechaFin}"></small><span class="field-help">Obligatoria al finalizar, dar de baja o cancelar.</span></label>
+                <label class="wide" id="motivo-cierre"><span>Motivo de baja o cancelación</span><textarea th:field="*{motivoBajaCancelacion}" maxlength="2000" rows="3" placeholder="Describe el motivo administrativo"></textarea><small th:errors="*{motivoBajaCancelacion}"></small></label>
+                <label class="wide"><span>Observaciones</span><textarea th:field="*{observaciones}" maxlength="4000" rows="4" placeholder="Información académica pertinente"></textarea><small th:errors="*{observaciones}"></small></label>
+            </div></fieldset>
+            <footer class="form-actions"><a href="/admin/catalogos/inscripciones">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear inscripción'}">Guardar</button></footer>
+        </form>
+
+        <section class="role-assignment" th:if="${edicion}">
+            <div class="section-heading"><div><span>Historial protegido</span><h2>Asignaciones de grupo</h2></div><p>Al cambiar de grupo, la asignación anterior se cierra automáticamente y se conserva para consulta.</p></div>
+            <div class="form-error" role="alert" th:if="${errorAsignacion}"><strong>No se pudo actualizar el grupo</strong><p th:text="${errorAsignacion}">Revisa los datos.</p></div>
+            <div class="assignment-list" th:if="${!asignaciones.empty}"><article th:each="item : ${asignaciones}" th:classappend="${item.fechaFin != null} ? ' inactive'">
+                <div><span class="assignment-code" th:text="${item.fechaFin == null ? 'ASIGNACIÓN VIGENTE' : 'HISTORIAL'}">Historial</span><strong th:text="${item.grupoNombre + ' · ' + item.turno}">Grupo A</strong><small th:text="${item.fechaInicio + ' — ' + (item.fechaFin == null ? 'Vigente' : item.fechaFin)}">Vigencia</small><small th:if="${item.motivo}" th:text="${item.motivo}">Motivo</small></div>
+                <form th:if="${item.fechaFin == null}" method="post" th:action="@{/admin/inscripciones/{id}/asignaciones/{asignacionId}/finalizar(id=${id},asignacionId=${item.id})}" onsubmit="return confirm('¿Finalizar esta asignación de grupo?');"><input type="hidden" name="version" th:value="${item.auditoria.version}"><label><span>Fecha final</span><input type="date" name="fechaFin" th:min="${item.fechaInicio}" required></label><button type="submit">Finalizar</button></form>
+            </article></div>
+            <div class="empty-assignment" th:if="${asignaciones.empty}">El alumno todavía no tiene grupo asignado en esta inscripción.</div>
+            <form class="assignment-form enrollment-assignment" th:if="${permiteContinuidad}" th:object="${asignacionForm}" method="post" th:action="@{/admin/inscripciones/{id}/asignaciones(id=${id})}">
+                <label><span>Grupo *</span><select th:field="*{grupoId}"><option value="">Selecciona un grupo</option><option th:each="item : ${grupos}" th:if="${item.activo}" th:value="${item.id}" th:text="${item.nombre + ' · ' + item.turno + (item.aula == null ? '' : ' · ' + item.aula)}">Grupo</option></select><small th:errors="*{grupoId}"></small></label>
+                <label><span>Inicio *</span><input type="date" th:field="*{fechaInicio}" th:min="${inscripcion.fechaInicio}" th:max="${inscripcion.fechaFin}"><small th:errors="*{fechaInicio}"></small></label>
+                <label><span>Motivo del cambio</span><input th:field="*{motivo}" maxlength="2000" placeholder="Opcional en primera asignación"><small th:errors="*{motivo}"></small></label>
+                <button type="submit">Asignar grupo</button>
+            </form>
+            <div class="account-buttons enrollment-actions" th:if="${permiteContinuidad}"><a class="primary-action" th:href="@{/admin/inscripciones/{id}/continuar(id=${id})}">Crear traslado o promoción</a></div>
+        </section>
+    </section>
+</main>
+<script>
+(() => {
+    const institucion = document.querySelector('#institucion');
+    const plantel = document.querySelector('#plantel');
+    const ciclo = document.querySelector('#ciclo');
+    const grado = document.querySelector('#grado');
+    const inicio = document.querySelector('#fecha-inicio');
+    const fin = document.querySelector('#fecha-fin');
+    const estado = document.querySelector('#estado-inscripcion');
+    const motivo = document.querySelector('#motivo-cierre');
+    const planteles = [...plantel.options].slice(1);
+    const ciclos = [...ciclo.options].slice(1);
+    const grados = [...grado.options].slice(1);
+    const ofertas = [...document.querySelectorAll('.oferta-dato')];
+    const filtrarGrados = () => {
+        if (grado.disabled) return;
+        const niveles = new Set(ofertas.filter(o => o.dataset.plantel === plantel.value && o.dataset.activo === 'true').map(o => o.dataset.nivel));
+        grados.forEach(o => { o.hidden = !plantel.value || o.dataset.activo !== 'true' || !niveles.has(o.dataset.nivel); });
+        if (grado.selectedOptions[0]?.hidden) grado.value = '';
+    };
+    const filtrar = () => {
+        if (!institucion.disabled) {
+            planteles.forEach(o => { o.hidden = !institucion.value || o.dataset.institucion !== institucion.value || o.dataset.activo !== 'true'; });
+            ciclos.forEach(o => { o.hidden = !institucion.value || o.dataset.institucion !== institucion.value || o.dataset.cerrado === 'true'; });
+            if (plantel.selectedOptions[0]?.hidden) plantel.value = '';
+            if (ciclo.selectedOptions[0]?.hidden) ciclo.value = '';
+        }
+        filtrarGrados();
+    };
+    const rango = () => {
+        const opcion = ciclo.selectedOptions[0];
+        if (!opcion?.dataset.inicio) return;
+        inicio.min = opcion.dataset.inicio; inicio.max = opcion.dataset.fin;
+        fin.min = opcion.dataset.inicio; fin.max = opcion.dataset.fin;
+    };
+    const alternarMotivo = () => { motivo.hidden = !['BAJA','CANCELADA'].includes(estado.value); };
+    institucion.addEventListener('change', filtrar); plantel.addEventListener('change', filtrarGrados); ciclo.addEventListener('change', rango); estado.addEventListener('change', alternarMotivo);
+    filtrar(); rango(); alternarMotivo();
+})();
+</script>
+</body></html>

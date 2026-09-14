@@ -32,6 +32,15 @@ public class BusquedaAutocompletadoService {
 
     public ResultadoAutocompletado alumnos(Long institucionId, String consulta) {
         alcance.validarAdministracionInstitucional(institucionId);
+        return buscarAlumnos(institucionId, consulta);
+    }
+
+    public ResultadoAutocompletado alumnosParaInscripcion(Long institucionId, String consulta) {
+        alcance.validarInstitucion(institucionId);
+        return buscarAlumnos(institucionId, consulta);
+    }
+
+    private ResultadoAutocompletado buscarAlumnos(Long institucionId, String consulta) {
         String texto = normalizar(consulta);
         if (texto == null) return ResultadoAutocompletado.vacio();
         Slice<Alumno> resultado = alumnoRepository.buscarParaAutocompletado(

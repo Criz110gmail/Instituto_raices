@@ -15,6 +15,7 @@ public enum ModuloCatalogo {
     ALUMNOS("alumnos", "Alumnos", List.of("Matrícula", "Alumno", "CURP", "Nacimiento", "Ingreso")),
     TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),
     VINCULOS_TUTOR("vinculos-tutor", "Vínculos alumno–tutor", List.of("Alumno", "Tutor", "Parentesco", "Permisos", "Vigencia")),
+    INSCRIPCIONES("inscripciones", "Inscripciones", List.of("Inscripción", "Alumno", "Plantel", "Ciclo", "Grado", "Vigencia")),
     ROLES("roles", "Roles y permisos", List.of("Código", "Rol", "Institución", "Descripción")),
     USUARIOS("usuarios", "Usuarios", List.of("Usuario", "Correo", "Institución", "Credencial"));
 
@@ -36,7 +37,8 @@ public enum ModuloCatalogo {
         return this == INSTITUCIONES || this == PLANTELES || this == NIVELES
                 || this == OFERTA || this == GRADOS || this == CICLOS || this == PERIODOS
                 || this == GRUPOS || this == ALUMNOS || this == TUTORES
-                || this == VINCULOS_TUTOR || this == ROLES || this == USUARIOS;
+                || this == VINCULOS_TUTOR || this == INSCRIPCIONES
+                || this == ROLES || this == USUARIOS;
     }
 
     public String rutaMantenimiento() {
@@ -52,6 +54,7 @@ public enum ModuloCatalogo {
             case ALUMNOS -> "/admin/alumnos";
             case TUTORES -> "/admin/tutores";
             case VINCULOS_TUTOR -> "/admin/vinculos-tutor";
+            case INSCRIPCIONES -> "/admin/inscripciones";
             case ROLES -> "/admin/roles";
             case USUARIOS -> "/admin/usuarios";
             default -> "";
@@ -61,7 +64,8 @@ public enum ModuloCatalogo {
     public String segmentoNuevo() {
         return this == PLANTELES || this == NIVELES || this == GRADOS || this == CICLOS
                 || this == PERIODOS || this == GRUPOS || this == ALUMNOS || this == TUTORES
-                || this == VINCULOS_TUTOR || this == ROLES || this == USUARIOS
+                || this == VINCULOS_TUTOR || this == INSCRIPCIONES
+                || this == ROLES || this == USUARIOS
                 ? "/nuevo" : "/nueva";
     }
 

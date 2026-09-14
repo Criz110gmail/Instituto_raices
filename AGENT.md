@@ -20,18 +20,13 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `04c4518` — `fotos alumnos`.
+- Último commit confirmado antes de estos cambios locales: `647df06` — `Mejora ficha técnica del alumno y actualiza continuidad`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
 - Al 14 de septiembre de 2026 hay cambios locales pendientes de commit sobre
-  `04c4518`: ficha técnica visual del alumno, resumen de institución en el controlador,
-  estilos responsivos y una prueba nueva, además de esta documentación. Antes de
-  continuar en otra computadora, el propietario debe revisar, hacer commit y push;
-  el agente nuevo siempre debe confirmar `git status` y `git log` porque el nombre del
-  commit final puede ser distinto.
-- Archivos locales pendientes al documentar este corte: `AGENT.md`,
-  `CONTEXTO_PROYECTO.md`, `README.md`, `AlumnoAdminController.java`, `forms.css`,
-  `alumno-form.html` y `AlumnoAdminControllerTest.java`. No hay migraciones ni cambios
-  de esquema pendientes en este corte.
+  `647df06`: el módulo completo de inscripciones y asignaciones de grupo, Flyway V10,
+  integración administrativa, estilos, pruebas y documentación. El propietario debe
+  revisar, hacer commit y push antes de continuar en otra computadora; el agente nuevo
+  siempre debe confirmar `git status` y `git log`.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -54,7 +49,7 @@ no vuelvas a implementar componentes que ya existan.
   memoria.
 - Paquete base: `escuela`.
 - Módulos principales: `escuela.institucion`, `escuela.academico`, `escuela.seguridad`,
-  `escuela.alumno`, `escuela.tutor`, `escuela.admin`, `escuela.config` y
+  `escuela.alumno`, `escuela.tutor`, `escuela.inscripcion`, `escuela.admin`, `escuela.config` y
   `escuela.common`.
 - Cada entidad usa identificador `Long`, auditoría y versión para concurrencia optimista.
 - Los controladores y formularios usan DTO; nunca deben enlazarse directamente con
@@ -88,8 +83,8 @@ Reglas importantes ya aplicadas:
   ciclo está cerrado.
 - Un grupo sólo opera con institución, plantel, nivel y grado activos, ciclo abierto y
   una oferta educativa activa para ese plantel y nivel.
-- La situación académica vigente de un alumno se derivará de su inscripción futura;
-  no debe duplicarse como otra fuente de verdad.
+- La situación académica vigente de un alumno se deriva de `Inscripcion` y
+  `AsignacionGrupo`; no debe duplicarse como otra fuente de verdad.
 
 ## Interfaz terminada
 
@@ -333,13 +328,21 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   formulario completo del expediente.
 - Los listados y los trece formularios administrativos muestran `Cerrar sesión`. El
   botón envía `POST /logout` con CSRF, invalida la sesión y regresa al inicio.
+- Flyway V10 crea `Inscripcion` y `AsignacionGrupo`, y agrega los permisos
+  `INSCRIPCION_LEER` e `INSCRIPCION_ADMINISTRAR` sin concederlos automáticamente.
+- `Inscripciones` ya administra la trayectoria por alumno, plantel, ciclo y grado.
+  Los traslados o promociones cierran el registro anterior y crean uno nuevo; los
+  cambios de grupo cierran la asignación vigente sin sobrescribir el historial.
+- El módulo valida institución, oferta activa, ciclo, vigencias, solapamientos y
+  capacidad bajo bloqueo transaccional. Su listado pagina y filtra en PostgreSQL y la
+  exportación XLSX reutiliza exactamente esos filtros y recorre los datos por bloques.
 
 ## Verificación confirmada
 
-- Compilación correcta de 197 archivos Java de producción.
-- 131 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V9 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 20 repositorios.
+- Compilación correcta de 213 archivos Java de producción.
+- 138 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V10 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 22 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -357,48 +360,45 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   una prueba del controlador fija la etiqueta de institución mostrada en la cabecera.
 - El cierre de sesión respondió HTTP 302 y la misma cookie fue redirigida al login al
   intentar regresar a `/admin`.
-- La última instancia local verificada quedó en `http://localhost:8080`.
+- El listado y el formulario de inscripciones respondieron autenticados, y la
+  exportación filtrada comenzó con firma XLSX `504b0304`. No se crearon inscripciones
+  ni asignaciones durante la verificación.
+- La última instancia local verificada quedó en `http://localhost:18080`.
 
 ## Siguiente paso acordado
 
-Implementar `Inscripcion` y `AsignacionGrupo`: trayectoria por alumno, plantel, ciclo,
-grado y grupo, estados y vigencias, traslados sin sobrescribir el pasado, validación de
-oferta/capacidad y autocompletado remoto del alumno. Todavía no crear cobros ni
-tesorería.
+Antes de abrir Flyway V11, confirmar con el propietario la política de cuotas: meses
+cobrables, cargos de verano, día de vencimiento, frecuencia y cómo afectan los cambios
+a emisiones futuras. Después implementar la primera base de cuentas por cobrar con
+`ConceptoCobro` y `CuotaAlumno`, manteniendo alcance, paginación, filtros y Excel. No
+implementar todavía pagos, caja ni tesorería.
 
-No convertir la decisión pendiente de almacenamiento en un bloqueo para esta etapa ni
-mover los archivos por iniciativa propia. La siguiente implementación funcional sigue
-siendo `Inscripcion` y `AsignacionGrupo`; la estrategia definitiva de archivos se cierra
-antes del despliegue productivo o antes de operar con múltiples servidores.
+La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
+pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. Confirmar que el commit de la ficha técnica ya está en `origin/main` y que contiene
-   los siete archivos enumerados en **Repositorio y estado confirmado**. Si no está,
-   no reconstruirlo: pedir al propietario que haga push desde la computadora de origen.
+1. Confirmar si los cambios locales de Inscripciones ya fueron revisados, confirmados y
+   subidos. Si no están en `origin/main`, no reconstruirlos: pedir al propietario el push
+   desde la computadora donde se implementaron.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. La siguiente migración disponible es V10. Debe ser aditiva y crear el soporte de
-   `Inscripcion` y `AsignacionGrupo` conforme a las entidades 12 y 13 de
-   `modelo_entidades_sistema_escolar_v1.txt`; nunca editar V1–V9.
-5. La inscripción es la fuente de verdad de plantel, ciclo y grado del alumno. Un
-   traslado o promoción cierra el registro anterior y crea otro; una asignación de grupo
-   nueva cierra la anterior. Nunca sobrescribir la trayectoria pasada.
-6. Validar misma institución, oferta activa, ciclo no cerrado, grado, grupo, vigencias
-   sin solapamiento, una sola asignación vigente y capacidad del grupo con protección
-   transaccional ante concurrencia.
-7. Entregar el módulo completo con DTO, servicios, alcance institucional/plantel,
-   permisos técnicos, listado paginado, filtros PostgreSQL, Excel por bloques, alta,
-   transiciones de estado, errores en la misma pantalla, tema claro/oscuro, diseño
-   responsivo y autocompletado remoto del alumno. No cargar tablas masivas en selects.
-8. Las migraciones no deben conceder los permisos nuevos a roles existentes. Después
-   de verificar Docker, el propietario asignará los permisos correspondientes a su rol
-   para que `criz110` pueda ver y probar el módulo.
-9. No implementar todavía conceptos, cuotas, becas, cargos, pagos ni tesorería. No
-   generar registros reales de prueba salvo autorización expresa.
+4. Flyway V10 ya pertenece a `Inscripcion` y `AsignacionGrupo`; nunca editar V1–V10.
+   La siguiente migración disponible es V11.
+5. Antes de programar V11, resolver con el propietario la política de cuotas indicada
+   en **Siguiente paso acordado**. No inventar meses de cobro ni reglas de verano.
+6. Implementar primero `ConceptoCobro` y `CuotaAlumno` conforme a las entidades 20 y 21
+   de `modelo_entidades_sistema_escolar_v1.txt`; una cuota define configuración futura,
+   no deuda ya emitida.
+7. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
+   paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
+   formularios responsivos, temas y validación transaccional.
+8. No implementar pagos, aplicaciones, anticipos, caja ni tesorería hasta terminar y
+   validar por etapas la base de cuentas por cobrar. No generar registros reales de
+   prueba salvo autorización expresa.
 
 ## Disciplina de cambios y entrega
 

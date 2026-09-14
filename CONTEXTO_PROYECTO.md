@@ -629,3 +629,35 @@
   destino externo. Para una instancia se admite volumen respaldado; un bind mount debe
   apuntar a una ruta dedicada fuera del repositorio. Para varias instancias se evaluará
   almacenamiento de objetos S3/MinIO.
+
+## Decisiones — inscripciones y asignaciones de grupo
+
+- Flyway V10 crea `Inscripcion` y `AsignacionGrupo`, junto con los permisos
+  `INSCRIPCION_LEER` e `INSCRIPCION_ADMINISTRAR`; no modifica roles existentes.
+- La inscripción es la fuente de verdad de plantel, ciclo y grado. Un traslado o una
+  promoción cierra la trayectoria anterior y crea otra enlazada; una nueva asignación
+  de grupo cierra la anterior y conserva ambas.
+- El servicio valida misma institución, relaciones activas, oferta del plantel, ciclo
+  abierto, fechas dentro del ciclo, ausencia de solapamientos y transiciones de estado.
+- La asignación de grupo exige coincidencia exacta de plantel, ciclo y grado, y protege
+  la capacidad con bloqueo pesimista para evitar sobrecupo concurrente.
+- La consola ofrece alta, edición, cambio/finalización de grupo y continuidad académica,
+  con autocompletado remoto de alumnos, alcance institucional o por plantel, temas y
+  diseño responsivo.
+- El listado filtra y pagina en PostgreSQL. La exportación Apache POI aplica el mismo
+  filtro y procesa los resultados por bloques, sin cargar toda la tabla en memoria.
+
+## Verificación de inscripciones y asignaciones
+
+- Docker compiló 213 fuentes Java de producción y ejecutó 138 pruebas sin fallos ni
+  errores. Las pruebas del servicio cubren creación, aislamiento, continuidad,
+  capacidad, cambio de grupo y estados terminales; el alcance por plantel también se
+  verifica de forma aislada.
+- Flyway aplicó V10 sobre el volumen existente, Hibernate validó el esquema y detectó
+  22 repositorios. Actuator respondió `UP` en `http://localhost:18080`.
+- El listado, el formulario y una exportación filtrada respondieron autenticados; el
+  archivo comenzó con firma XLSX `504b0304`. No se crearon inscripciones ni
+  asignaciones reales durante la verificación.
+- El siguiente paso es acordar meses cobrables, verano, vencimientos y actualización
+  de cuotas; después iniciar Flyway V11 con `ConceptoCobro` y `CuotaAlumno`. Pagos, caja
+  y tesorería permanecen fuera de esta etapa.
