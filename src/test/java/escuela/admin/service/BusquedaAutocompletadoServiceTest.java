@@ -4,6 +4,12 @@ import escuela.admin.dto.ResultadoAutocompletado;
 import escuela.alumno.entity.Alumno;
 import escuela.alumno.repository.AlumnoRepository;
 import escuela.institucion.entity.Institucion;
+import escuela.inscripcion.repository.InscripcionRepository;
+import escuela.cobranza.repository.ConceptoCobroRepository;
+import escuela.cobranza.entity.CategoriaConceptoCobro;
+import escuela.cobranza.entity.ConceptoCobro;
+import escuela.inscripcion.entity.Inscripcion;
+import escuela.academico.entity.Grado;
 import escuela.seguridad.entity.EstadoUsuario;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.repository.UsuarioRepository;
@@ -27,9 +33,12 @@ class BusquedaAutocompletadoServiceTest {
     private final AlumnoRepository alumnoRepository = mock(AlumnoRepository.class);
     private final TutorRepository tutorRepository = mock(TutorRepository.class);
     private final UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
+    private final InscripcionRepository inscripcionRepository = mock(InscripcionRepository.class);
+    private final ConceptoCobroRepository conceptoCobroRepository = mock(ConceptoCobroRepository.class);
     private final AlcanceDatosService alcance = mock(AlcanceDatosService.class);
     private final BusquedaAutocompletadoService service = new BusquedaAutocompletadoService(
-            alumnoRepository, tutorRepository, usuarioRepository, alcance);
+            alumnoRepository, tutorRepository, usuarioRepository, inscripcionRepository,
+            conceptoCobroRepository, alcance);
 
     @Test
     void noConsultaLaBaseConMenosDeTresCaracteres() {
@@ -91,6 +100,41 @@ class BusquedaAutocompletadoServiceTest {
                 org.mockito.ArgumentMatchers.eq(1L),
                 org.mockito.ArgumentMatchers.eq("maria"),
                 org.mockito.ArgumentMatchers.eq(20L), any());
+    }
+
+    @Test
+    void buscaInscripcionesVigentesPorPlantelSinCargarElCatalogo() {
+        Alumno alumno = alumno();
+        Grado grado = new Grado();
+        grado.setNombre("Primero");
+        Inscripcion inscripcion = new Inscripcion();
+        inscripcion.setId(40L);
+        inscripcion.setNumeroInscripcion("INS-001");
+        inscripcion.setAlumno(alumno);
+        inscripcion.setGrado(grado);
+        when(inscripcionRepository.buscarParaAutocompletado(any(), any(), any()))
+                .thenReturn(new SliceImpl<>(List.of(inscripcion)));
+
+        ResultadoAutocompletado resultado = service.inscripciones(8L, "ana");
+
+        assertThat(resultado.resultados().getFirst().titulo()).isEqualTo("INS-001 · Ana López");
+        verify(alcance).validarPlantel(8L);
+    }
+
+    @Test
+    void buscaConceptosActivosPorInstitucion() {
+        ConceptoCobro concepto = new ConceptoCobro();
+        concepto.setId(50L);
+        concepto.setCodigo("MAT");
+        concepto.setNombre("Material escolar");
+        concepto.setCategoria(CategoriaConceptoCobro.MATERIAL);
+        when(conceptoCobroRepository.buscarParaAutocompletado(any(), any(), any()))
+                .thenReturn(new SliceImpl<>(List.of(concepto)));
+
+        ResultadoAutocompletado resultado = service.conceptosCobro(1L, "material");
+
+        assertThat(resultado.resultados().getFirst().titulo()).isEqualTo("MAT · Material escolar");
+        verify(alcance).validarInstitucion(1L);
     }
 
     private Alumno alumno() {

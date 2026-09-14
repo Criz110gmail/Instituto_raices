@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+    <title th:text="${edicion ? 'Editar concepto de cobro' : 'Nuevo concepto de cobro'} + ' · Nexo Escolar'">Concepto de cobro</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
+</head>
+<body class="form-page">
+<main class="form-shell finance-shell">
+    <header class="form-top"><a href="/admin/catalogos/conceptos-cobro">← Volver a conceptos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <section class="form-card">
+        <div class="form-intro finance-intro"><span>Catálogo financiero</span><h1 th:text="${edicion ? 'Editar concepto de cobro' : 'Crear concepto de cobro'}">Crear concepto</h1><p>Define qué se cobra y qué ajustes podrá admitir. El importe particular se configura después para cada alumno.</p></div>
+        <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/conceptos-cobro/' + id : '/admin/conceptos-cobro'}">
+            <input type="hidden" th:field="*{version}">
+            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
+            <fieldset class="form-section"><legend>Identidad del concepto</legend><div class="form-grid">
+                <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
+                <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="COLEG-MENSUAL"><small th:errors="*{codigo}"></small></label>
+                <label><span>Categoría *</span><select th:field="*{categoria}"><option th:each="item : ${categorias}" th:value="${item}" th:text="${#strings.capitalize(#strings.toLowerCase(item.name()))}">Categoría</option></select><small th:errors="*{categoria}"></small></label>
+                <label class="wide"><span>Nombre *</span><input th:field="*{nombre}" maxlength="150" placeholder="Colegiatura mensual"><small th:errors="*{nombre}"></small></label>
+                <label class="wide"><span>Descripción</span><textarea th:field="*{descripcion}" maxlength="2000" rows="4" placeholder="Explica el alcance administrativo del concepto"></textarea><small th:errors="*{descripcion}"></small></label>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Ajustes autorizables</legend><p class="field-help">Estas opciones no aplican descuentos automáticamente; habilitan que un administrador los registre con trazabilidad en la etapa correspondiente.</p><div class="policy-grid">
+                <label class="policy-card"><input type="checkbox" th:field="*{permiteBeca}"><span><strong>Permite beca</strong><small>Podrá recibir una beca autorizada.</small></span></label>
+                <label class="policy-card"><input type="checkbox" th:field="*{permiteDescuento}"><span><strong>Permite descuento</strong><small>Admite ajustes de disminución.</small></span></label>
+                <label class="policy-card"><input type="checkbox" th:field="*{permiteRecargo}"><span><strong>Permite recargo</strong><small>Admite ajustes de aumento.</small></span></label>
+                <label class="policy-card"><input type="checkbox" th:field="*{activo}"><span><strong>Concepto activo</strong><small>Disponible para nuevas cuotas.</small></span></label>
+            </div></fieldset>
+            <footer class="form-actions"><a href="/admin/catalogos/conceptos-cobro">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear concepto'}">Guardar</button></footer>
+        </form>
+        <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/conceptos-cobro/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este concepto? Las cuotas activas deben cerrarse primero.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar concepto</strong><p>Se conserva el historial y deja de estar disponible para nuevas cuotas.</p></div><button type="submit">Desactivar</button></form>
+    </section>
+</main>
+</body>
+</html>

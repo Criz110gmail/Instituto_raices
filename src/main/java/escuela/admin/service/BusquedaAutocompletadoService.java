@@ -4,6 +4,10 @@ import escuela.admin.dto.OpcionAutocompletado;
 import escuela.admin.dto.ResultadoAutocompletado;
 import escuela.alumno.entity.Alumno;
 import escuela.alumno.repository.AlumnoRepository;
+import escuela.cobranza.entity.ConceptoCobro;
+import escuela.cobranza.repository.ConceptoCobroRepository;
+import escuela.inscripcion.entity.Inscripcion;
+import escuela.inscripcion.repository.InscripcionRepository;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.repository.UsuarioRepository;
 import escuela.seguridad.service.AlcanceDatosService;
@@ -28,6 +32,8 @@ public class BusquedaAutocompletadoService {
     private final AlumnoRepository alumnoRepository;
     private final TutorRepository tutorRepository;
     private final UsuarioRepository usuarioRepository;
+    private final InscripcionRepository inscripcionRepository;
+    private final ConceptoCobroRepository conceptoCobroRepository;
     private final AlcanceDatosService alcance;
 
     public ResultadoAutocompletado alumnos(Long institucionId, String consulta) {
@@ -76,6 +82,36 @@ public class BusquedaAutocompletadoService {
         return new ResultadoAutocompletado(resultado.getContent().stream()
                 .map(usuario -> new OpcionAutocompletado(usuario.getId(),
                         usuario.getUsername(), usuario.getEmail()))
+                .toList(), resultado.hasNext());
+    }
+
+    public ResultadoAutocompletado inscripciones(Long plantelId, String consulta) {
+        alcance.validarPlantel(plantelId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        Slice<Inscripcion> resultado = inscripcionRepository.buscarParaAutocompletado(
+                plantelId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+        return new ResultadoAutocompletado(resultado.getContent().stream()
+                .map(inscripcion -> new OpcionAutocompletado(inscripcion.getId(),
+                        inscripcion.getNumeroInscripcion() + " · "
+                                + nombre(inscripcion.getAlumno().getNombres(),
+                                inscripcion.getAlumno().getPrimerApellido(),
+                                inscripcion.getAlumno().getSegundoApellido()),
+                        inscripcion.getAlumno().getMatricula() + " · "
+                                + inscripcion.getGrado().getNombre()))
+                .toList(), resultado.hasNext());
+    }
+
+    public ResultadoAutocompletado conceptosCobro(Long institucionId, String consulta) {
+        alcance.validarInstitucion(institucionId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        Slice<ConceptoCobro> resultado = conceptoCobroRepository.buscarParaAutocompletado(
+                institucionId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+        return new ResultadoAutocompletado(resultado.getContent().stream()
+                .map(concepto -> new OpcionAutocompletado(concepto.getId(),
+                        concepto.getCodigo() + " · " + concepto.getNombre(),
+                        concepto.getCategoria().name()))
                 .toList(), resultado.hasNext());
     }
 

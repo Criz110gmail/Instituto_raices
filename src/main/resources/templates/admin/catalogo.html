@@ -19,6 +19,7 @@
         <th:block th:each="item : ${modulos}">
             <p class="nav-label security-label" th:if="${item.name() == 'ALUMNOS'}">Personas</p>
             <p class="nav-label security-label" th:if="${item.name() == 'INSCRIPCIONES'}">Trayectoria</p>
+            <p class="nav-label security-label" th:if="${item.name() == 'CONCEPTOS_COBRO'}">Cobranza</p>
             <p class="nav-label security-label" th:if="${item.name() == 'ROLES'}">Seguridad</p>
             <a th:href="@{/admin/catalogos/{slug}(slug=${item.slug})}"
                th:classappend="${item == resultado.modulo} ? ' active' : ''">
@@ -64,9 +65,11 @@
                 <option value="ABIERTO" th:selected="${filtro.estado == 'ABIERTO'}">Abierto</option>
                 <option value="CERRADO" th:selected="${filtro.estado == 'CERRADO'}">Cerrado</option>
                 <option value="PREINSCRITA" th:selected="${filtro.estado == 'PREINSCRITA'}">Preinscrita</option>
+                <option value="ACTIVA" th:selected="${filtro.estado == 'ACTIVA'}">Activa</option>
                 <option value="BAJA" th:selected="${filtro.estado == 'BAJA'}">Baja</option>
                 <option value="FINALIZADA" th:selected="${filtro.estado == 'FINALIZADA'}">Finalizada</option>
                 <option value="CANCELADA" th:selected="${filtro.estado == 'CANCELADA'}">Cancelada</option>
+                <option value="SUSPENDIDA" th:selected="${filtro.estado == 'SUSPENDIDA'}">Suspendida</option>
             </select></label>
             <label><span>Por página</span><select name="tamanio">
                 <option th:each="n : ${ {10, 25, 50, 100} }" th:value="${n}" th:text="${n}" th:selected="${filtro.tamanio == n}">25</option>

@@ -16,6 +16,8 @@ public enum ModuloCatalogo {
     TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),
     VINCULOS_TUTOR("vinculos-tutor", "Vínculos alumno–tutor", List.of("Alumno", "Tutor", "Parentesco", "Permisos", "Vigencia")),
     INSCRIPCIONES("inscripciones", "Inscripciones", List.of("Inscripción", "Alumno", "Plantel", "Ciclo", "Grado", "Vigencia")),
+    CONCEPTOS_COBRO("conceptos-cobro", "Conceptos de cobro", List.of("Código", "Concepto", "Institución", "Categoría", "Reglas")),
+    CUOTAS_ALUMNO("cuotas-alumno", "Cuotas por alumno", List.of("Alumno", "Concepto", "Importe", "Frecuencia", "Vencimiento", "Generación")),
     ROLES("roles", "Roles y permisos", List.of("Código", "Rol", "Institución", "Descripción")),
     USUARIOS("usuarios", "Usuarios", List.of("Usuario", "Correo", "Institución", "Credencial"));
 
@@ -38,6 +40,7 @@ public enum ModuloCatalogo {
                 || this == OFERTA || this == GRADOS || this == CICLOS || this == PERIODOS
                 || this == GRUPOS || this == ALUMNOS || this == TUTORES
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
+                || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == ROLES || this == USUARIOS;
     }
 
@@ -55,6 +58,8 @@ public enum ModuloCatalogo {
             case TUTORES -> "/admin/tutores";
             case VINCULOS_TUTOR -> "/admin/vinculos-tutor";
             case INSCRIPCIONES -> "/admin/inscripciones";
+            case CONCEPTOS_COBRO -> "/admin/conceptos-cobro";
+            case CUOTAS_ALUMNO -> "/admin/cuotas-alumno";
             case ROLES -> "/admin/roles";
             case USUARIOS -> "/admin/usuarios";
             default -> "";
@@ -65,6 +70,7 @@ public enum ModuloCatalogo {
         return this == PLANTELES || this == NIVELES || this == GRADOS || this == CICLOS
                 || this == PERIODOS || this == GRUPOS || this == ALUMNOS || this == TUTORES
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
+                || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == ROLES || this == USUARIOS
                 ? "/nuevo" : "/nueva";
     }

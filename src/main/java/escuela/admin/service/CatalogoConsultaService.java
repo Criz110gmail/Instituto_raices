@@ -7,6 +7,10 @@ import escuela.alumno.entity.AlumnoTutor;
 import escuela.alumno.repository.AlumnoRepository;
 import escuela.alumno.repository.AlumnoTutorRepository;
 import escuela.admin.dto.*;
+import escuela.cobranza.entity.ConceptoCobro;
+import escuela.cobranza.entity.CuotaAlumno;
+import escuela.cobranza.repository.ConceptoCobroRepository;
+import escuela.cobranza.repository.CuotaAlumnoRepository;
 import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
 import escuela.inscripcion.entity.Inscripcion;
@@ -51,6 +55,8 @@ public class CatalogoConsultaService {
     private final TutorRepository tutorRepository;
     private final AlumnoTutorRepository alumnoTutorRepository;
     private final InscripcionRepository inscripcionRepository;
+    private final ConceptoCobroRepository conceptoCobroRepository;
+    private final CuotaAlumnoRepository cuotaAlumnoRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcanceDatosService;
@@ -96,6 +102,20 @@ public class CatalogoConsultaService {
                             e.getAlumno().getMatricula() + " · " + nombreAlumno(e.getAlumno()),
                             e.getPlantel().getNombre(), e.getCicloEscolar().getNombre(),
                             e.getGrado().getNombre(), vigencia(e)));
+            case CONCEPTOS_COBRO -> consultar(modulo, conceptoCobroRepository,
+                    textoConcepto(f), activo(f), pagina,
+                    e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(),
+                            e.getInstitucion().getNombre(), etiqueta(e.getCategoria().name()),
+                            reglas(e)));
+            case CUOTAS_ALUMNO -> consultar(modulo, cuotaAlumnoRepository,
+                    textoCuota(f), estado(f, "estado"), pagina,
+                    e -> filaEstadoCuota(e,
+                            e.getInscripcion().getAlumno().getMatricula() + " · "
+                                    + nombreAlumno(e.getInscripcion().getAlumno()),
+                            e.getConceptoCobro().getCodigo() + " · " + e.getConceptoCobro().getNombre(),
+                            e.getImporteBase().toPlainString() + " " + e.getMoneda(),
+                            etiqueta(e.getFrecuencia().name()), vencimiento(e),
+                            e.isGeneracionAutomatica() ? "Automática" : "Manual"));
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
             case USUARIOS -> consultar(modulo, usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,
@@ -172,6 +192,33 @@ public class CatalogoConsultaService {
         };
     }
 
+    private Specification<ConceptoCobro> textoConcepto(FiltroCatalogo f) {
+        return (root, query, cb) -> {
+            if (f.q().isBlank()) return cb.conjunction();
+            String patron = "%" + f.q().toLowerCase(Locale.ROOT) + "%";
+            return cb.or(cb.like(cb.lower(root.get("codigo")), patron),
+                    cb.like(cb.lower(root.get("nombre")), patron),
+                    cb.like(cb.lower(root.get("descripcion")), patron));
+        };
+    }
+
+    private Specification<CuotaAlumno> textoCuota(FiltroCatalogo f) {
+        return (root, query, cb) -> {
+            if (f.q().isBlank()) return cb.conjunction();
+            String patron = "%" + f.q().toLowerCase(Locale.ROOT) + "%";
+            var inscripcion = root.get("inscripcion");
+            var alumno = inscripcion.get("alumno");
+            var concepto = root.get("conceptoCobro");
+            return cb.or(cb.like(cb.lower(inscripcion.get("numeroInscripcion")), patron),
+                    cb.like(cb.lower(alumno.get("matricula")), patron),
+                    cb.like(cb.lower(alumno.get("nombres")), patron),
+                    cb.like(cb.lower(alumno.get("primerApellido")), patron),
+                    cb.like(cb.lower(alumno.get("segundoApellido")), patron),
+                    cb.like(cb.lower(concepto.get("codigo")), patron),
+                    cb.like(cb.lower(concepto.get("nombre")), patron));
+        };
+    }
+
     private <T> Specification<T> activo(FiltroCatalogo f) {
         return (root, query, cb) -> switch (f.estado()) {
             case "ACTIVO" -> cb.isTrue(root.get("activo"));
@@ -205,6 +252,13 @@ public class CatalogoConsultaService {
         String tono = estado.equals("ACTIVA") ? "positivo"
                 : estado.equals("PREINSCRITA") ? "aviso" : "neutro";
         return new FilaCatalogo(inscripcion.getId(), List.of(celdas), estado, tono);
+    }
+
+    private FilaCatalogo filaEstadoCuota(CuotaAlumno cuota, String... celdas) {
+        String estado = cuota.getEstado().name();
+        String tono = estado.equals("ACTIVA") ? "positivo"
+                : estado.equals("SUSPENDIDA") ? "aviso" : "neutro";
+        return new FilaCatalogo(cuota.getId(), List.of(celdas), estado, tono);
     }
 
     private FilaCatalogo filaVinculo(AlumnoTutor vinculo, String... celdas) {
@@ -274,5 +328,26 @@ public class CatalogoConsultaService {
     private String vigencia(Inscripcion inscripcion) {
         return FECHA.format(inscripcion.getFechaInicio()) + " — "
                 + (inscripcion.getFechaFin() == null ? "Vigente" : FECHA.format(inscripcion.getFechaFin()));
+    }
+
+    private String reglas(ConceptoCobro concepto) {
+        java.util.ArrayList<String> reglas = new java.util.ArrayList<>();
+        if (concepto.isPermiteBeca()) reglas.add("Beca");
+        if (concepto.isPermiteDescuento()) reglas.add("Descuento");
+        if (concepto.isPermiteRecargo()) reglas.add("Recargo");
+        return reglas.isEmpty() ? "Sin ajustes" : String.join(", ", reglas);
+    }
+
+    private String vencimiento(CuotaAlumno cuota) {
+        if (cuota.getFrecuencia() == escuela.cobranza.entity.FrecuenciaCuota.UNICA) {
+            return FECHA.format(cuota.getFechaVencimientoUnico());
+        }
+        return "Día " + cuota.getDiaVencimiento() + " de cada mes";
+    }
+
+    private String etiqueta(String valor) {
+        return java.util.Arrays.stream(valor.toLowerCase(Locale.ROOT).split("_"))
+                .map(parte -> Character.toUpperCase(parte.charAt(0)) + parte.substring(1))
+                .collect(java.util.stream.Collectors.joining(" "));
     }
 }

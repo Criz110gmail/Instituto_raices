@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+    <title th:text="${edicion ? 'Editar cuota del alumno' : 'Nueva cuota del alumno'} + ' · Nexo Escolar'">Cuota del alumno</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script><script src="/js/autocomplete.js" defer></script>
+</head>
+<body class="form-page">
+<main class="form-shell finance-shell">
+    <header class="form-top"><a href="/admin/catalogos/cuotas-alumno">← Volver a cuotas</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <div class="finance-principle"><span>Control individual</span><strong>Un pago familiar, saldos separados por alumno</strong><p>Cada cuota y cada cargo pertenecen a una inscripción. Cuando un pago cubra varios hijos, se distribuirá en aplicaciones independientes para conservar el control de cada alumno.</p></div>
+    <section class="form-card">
+        <div class="form-intro finance-intro"><span>Configuración de cobranza</span><h1 th:text="${edicion ? 'Editar cuota individual' : 'Configurar cuota individual'}">Configurar cuota</h1><p>Define importe, periodo, vencimiento y si los cargos deberán generarse automáticamente.</p></div>
+        <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/cuotas-alumno/' + id : '/admin/cuotas-alumno'}">
+            <input type="hidden" th:field="*{version}">
+            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
+            <fieldset class="form-section"><legend>Alumno e inscripción</legend><div class="form-grid">
+                <label><span>Institución *</span><select id="institucion" th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-moneda=${item.monedaPredeterminada}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
+                <label><span>Plantel *</span><select id="plantel" th:field="*{plantelId}" th:disabled="${edicion}"><option value="">Selecciona un plantel</option><option th:each="item : ${planteles}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-institucion=${item.institucionId},data-activo=${item.activo}">Plantel</option></select><input th:if="${edicion}" type="hidden" th:field="*{plantelId}"><small th:errors="*{plantelId}"></small></label>
+                <div class="wide autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/inscripciones" data-scope-input="plantel" data-scope-param="plantelId" data-scope-label="un plantel"><label class="autocomplete-label" for="inscripcion-busqueda">Inscripción vigente *</label><div class="autocomplete-control"><input id="inscripcion-busqueda" class="autocomplete-input" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="inscripcion-resultados" placeholder="Matrícula, alumno o número de inscripción" th:value="${inscripcionSeleccionada}" th:disabled="${edicion}"><button class="autocomplete-clear" type="button" aria-label="Limpiar inscripción" hidden>×</button></div><input class="autocomplete-value" type="hidden" th:field="*{inscripcionId}"><div id="inscripcion-resultados" class="autocomplete-results" role="listbox" hidden></div><span class="autocomplete-status" aria-live="polite" th:text="${edicion ? 'La inscripción está protegida para conservar el origen de la cuota.' : 'Escribe al menos 3 caracteres para buscar.'}">Busca una inscripción.</span><small th:errors="*{inscripcionId}"></small></div>
+                <div class="wide autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/conceptos-cobro" data-scope-input="institucion" data-scope-param="institucionId" data-scope-label="una institución"><label class="autocomplete-label" for="concepto-busqueda">Concepto de cobro *</label><div class="autocomplete-control"><input id="concepto-busqueda" class="autocomplete-input" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="concepto-resultados" placeholder="Código o nombre del concepto" th:value="${conceptoSeleccionado}" th:disabled="${edicion}"><button class="autocomplete-clear" type="button" aria-label="Limpiar concepto" hidden>×</button></div><input class="autocomplete-value" type="hidden" th:field="*{conceptoCobroId}"><div id="concepto-resultados" class="autocomplete-results" role="listbox" hidden></div><span class="autocomplete-status" aria-live="polite" th:text="${edicion ? 'El concepto está protegido para conservar el historial.' : 'Escribe al menos 3 caracteres para buscar.'}">Busca un concepto.</span><small th:errors="*{conceptoCobroId}"></small></div>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Importe y vigencia</legend><div class="form-grid">
+                <label><span>Importe individual *</span><input type="number" min="0" step="0.01" th:field="*{importeBase}" placeholder="3000.00"><small th:errors="*{importeBase}"></small></label>
+                <label><span>Moneda *</span><input id="moneda" th:field="*{moneda}" maxlength="3" placeholder="MXN"><small th:errors="*{moneda}"></small></label>
+                <label><span>Inicio de cobro *</span><input type="date" th:field="*{fechaInicio}"><small th:errors="*{fechaInicio}"></small></label>
+                <label><span>Fin de cobro *</span><input type="date" th:field="*{fechaFin}"><small th:errors="*{fechaFin}"></small></label>
+                <label class="wide"><span>Motivo del importe personalizado</span><textarea th:field="*{motivoImportePersonalizado}" maxlength="2000" rows="3" placeholder="Ej. tarifa acordada para este alumno"></textarea><small th:errors="*{motivoImportePersonalizado}"></small></label>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Calendario y automatización</legend><div class="form-grid">
+                <label><span>Frecuencia *</span><select id="frecuencia" th:field="*{frecuencia}"><option th:each="item : ${frecuencias}" th:value="${item}" th:text="${item.name() == 'UNICA' ? 'Cobro único' : 'Mensual'}">Frecuencia</option></select><small th:errors="*{frecuencia}"></small></label>
+                <label id="vencimiento-mensual"><span>Día de vencimiento *</span><input id="dia-vencimiento" type="number" min="1" max="31" th:field="*{diaVencimiento}"><small th:errors="*{diaVencimiento}"></small><span class="field-help">Si el mes es más corto, se usará su último día.</span></label>
+                <label id="vencimiento-unico"><span>Vencimiento exacto *</span><input id="fecha-vencimiento-unico" type="date" th:field="*{fechaVencimientoUnico}"><small th:errors="*{fechaVencimientoUnico}"></small></label>
+                <label><span>Estado *</span><select id="estado-cuota" th:field="*{estado}"><option th:each="item : ${estados}" th:value="${item}" th:text="${#strings.capitalize(#strings.toLowerCase(item.name()))}">Estado</option></select><small th:errors="*{estado}"></small></label>
+                <label class="policy-card automatic-policy wide"><input id="generacion-automatica" type="checkbox" th:field="*{generacionAutomatica}"><span><strong>Generar cargos automáticamente</strong><small>Al habilitarlo, el generador de cargos emitirá sólo los periodos futuros de esta cuota. Desactivado permite control manual.</small></span></label>
+            </div></fieldset>
+            <footer class="form-actions"><a href="/admin/catalogos/cuotas-alumno">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar configuración' : 'Crear cuota'}">Guardar</button></footer>
+        </form>
+    </section>
+</main>
+<script>
+(() => {
+    const institucion = document.querySelector('#institucion');
+    const plantel = document.querySelector('#plantel');
+    const moneda = document.querySelector('#moneda');
+    const frecuencia = document.querySelector('#frecuencia');
+    const mensual = document.querySelector('#vencimiento-mensual');
+    const unica = document.querySelector('#vencimiento-unico');
+    const dia = document.querySelector('#dia-vencimiento');
+    const fechaUnica = document.querySelector('#fecha-vencimiento-unico');
+    const estado = document.querySelector('#estado-cuota');
+    const automatica = document.querySelector('#generacion-automatica');
+    const planteles = [...plantel.options].slice(1);
+    const filtrarPlanteles = () => {
+        if (institucion.disabled) return;
+        planteles.forEach(o => { o.hidden = !institucion.value || o.dataset.institucion !== institucion.value || o.dataset.activo !== 'true'; });
+        if (plantel.selectedOptions[0]?.hidden) { plantel.value = ''; plantel.dispatchEvent(new Event('change')); }
+        const seleccion = institucion.selectedOptions[0];
+        if (seleccion?.dataset.moneda && !moneda.value) moneda.value = seleccion.dataset.moneda;
+    };
+    const alternarFrecuencia = () => {
+        const esMensual = frecuencia.value === 'MENSUAL';
+        mensual.hidden = !esMensual; unica.hidden = esMensual;
+        dia.disabled = !esMensual; fechaUnica.disabled = esMensual;
+        if (esMensual) fechaUnica.value = ''; else dia.value = '';
+    };
+    const alternarAutomatica = () => {
+        const activa = estado.value === 'ACTIVA';
+        automatica.disabled = !activa;
+        if (!activa) automatica.checked = false;
+    };
+    institucion.addEventListener('change', filtrarPlanteles);
+    frecuencia.addEventListener('change', alternarFrecuencia);
+    estado.addEventListener('change', alternarAutomatica);
+    filtrarPlanteles(); alternarFrecuencia(); alternarAutomatica();
+})();
+</script>
+</body>
+</html>

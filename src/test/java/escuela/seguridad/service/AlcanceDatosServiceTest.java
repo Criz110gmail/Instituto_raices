@@ -18,6 +18,9 @@ import escuela.institucion.repository.PlantelNivelRepository;
 import escuela.institucion.repository.PlantelRepository;
 import escuela.inscripcion.repository.InscripcionRepository;
 import escuela.inscripcion.entity.Inscripcion;
+import escuela.cobranza.repository.ConceptoCobroRepository;
+import escuela.cobranza.repository.CuotaAlumnoRepository;
+import escuela.cobranza.entity.CuotaAlumno;
 import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.repository.UsuarioRepository;
 import escuela.tutor.repository.TutorRepository;
@@ -46,6 +49,8 @@ class AlcanceDatosServiceTest {
     private final TutorRepository tutorRepository = mock(TutorRepository.class);
     private final AlumnoTutorRepository alumnoTutorRepository = mock(AlumnoTutorRepository.class);
     private final InscripcionRepository inscripcionRepository = mock(InscripcionRepository.class);
+    private final ConceptoCobroRepository conceptoCobroRepository = mock(ConceptoCobroRepository.class);
+    private final CuotaAlumnoRepository cuotaAlumnoRepository = mock(CuotaAlumnoRepository.class);
     private final AlcanceDatosService service = new AlcanceDatosService(
             mock(InstitucionRepository.class), plantelRepository,
             mock(NivelEducativoRepository.class), mock(PlantelNivelRepository.class),
@@ -55,6 +60,7 @@ class AlcanceDatosServiceTest {
             tutorRepository,
             alumnoTutorRepository,
             inscripcionRepository,
+            conceptoCobroRepository, cuotaAlumnoRepository,
             mock(RolRepository.class), mock(UsuarioRepository.class));
 
     @AfterEach
@@ -112,6 +118,23 @@ class AlcanceDatosServiceTest {
 
         assertThatThrownBy(() -> service.validarRecurso(
                 escuela.admin.dto.ModuloCatalogo.INSCRIPCIONES, 60L))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void bloqueaCuotaDeAlumnoEnPlantelNoAsignado() {
+        autenticar(new UsuarioPrincipal(7L, 1L, Set.of(10L), false, false,
+                "plantel", "hash", List.of()));
+        Plantel noAsignado = new Plantel();
+        noAsignado.setId(11L);
+        Inscripcion inscripcion = new Inscripcion();
+        inscripcion.setPlantel(noAsignado);
+        CuotaAlumno cuota = new CuotaAlumno();
+        cuota.setInscripcion(inscripcion);
+        when(cuotaAlumnoRepository.findById(70L)).thenReturn(Optional.of(cuota));
+
+        assertThatThrownBy(() -> service.validarRecurso(
+                escuela.admin.dto.ModuloCatalogo.CUOTAS_ALUMNO, 70L))
                 .isInstanceOf(AccessDeniedException.class);
     }
 

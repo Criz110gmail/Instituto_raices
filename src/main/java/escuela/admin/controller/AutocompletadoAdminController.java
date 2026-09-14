@@ -42,4 +42,16 @@ public class AutocompletadoAdminController {
         if (tutorId != null) alcance.validarRecurso(ModuloCatalogo.TUTORES, tutorId);
         return service.usuarios(institucionId, q, tutorId);
     }
+
+    @GetMapping("/inscripciones")
+    ResultadoAutocompletado inscripciones(@RequestParam Long plantelId,
+                                          @RequestParam(defaultValue = "") String q) {
+        return service.inscripciones(plantelId, q);
+    }
+
+    @GetMapping("/conceptos-cobro")
+    ResultadoAutocompletado conceptosCobro(@RequestParam Long institucionId,
+                                           @RequestParam(defaultValue = "") String q) {
+        return service.conceptosCobro(institucionId, q);
+    }
 }

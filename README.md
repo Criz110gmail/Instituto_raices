@@ -68,6 +68,7 @@ comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME
 - `escuela.alumno`: expediente de alumnos y vínculos históricos con tutores.
 - `escuela.tutor`: expediente institucional de tutores y cuenta de acceso opcional.
 - `escuela.inscripcion`: trayectoria académica e historial de asignaciones de grupo.
+- `escuela.cobranza`: conceptos de cobro y cuotas configurables por inscripción/alumno.
 - `escuela.config`: seguridad y auditoría JPA.
 - `escuela.common`: excepciones, respuesta de auditoría y utilidades compartidas.
 - Cada módulo contiene DTO, mappers, repositorios y servicios transaccionales.
@@ -84,7 +85,8 @@ GIN `pg_trgm` desde Flyway V8; no se cargan tablas completas dentro de formulari
 ## Consola administrativa
 
 La ruta `/admin` contiene los ocho catálogos académicos, Alumnos, Tutores, Vínculos
-alumno–tutor, Inscripciones y los módulos de Roles y permisos y Usuarios.
+alumno–tutor, Inscripciones, Conceptos de cobro, Cuotas por alumno y los módulos de
+Roles y permisos y Usuarios.
 Todos los listados consultan la
 base de datos con filtros y paginación; el botón **Exportar Excel** aplica exactamente
 los mismos filtros y genera el archivo con Apache POI en modo streaming.
@@ -178,3 +180,16 @@ cierran la vigencia anterior y crean una nueva; no sobrescriben el pasado. El m�
 valida oferta educativa, fechas, solapamientos y capacidad, pagina y filtra en
 PostgreSQL y exporta esos mismos filtros con Apache POI. Requiere conceder
 `INSCRIPCION_LEER` y/o `INSCRIPCION_ADMINISTRAR` a los roles correspondientes.
+
+Conceptos de cobro define categorías institucionales —colegiatura, inscripción,
+servicio, material u otro— y si admitirán becas, descuentos o recargos. Cuotas por
+alumno configura el importe individual, moneda, vigencia, frecuencia única o mensual,
+vencimiento y modalidad de generación manual o automática. Ambos listados filtran y
+paginan en PostgreSQL y exportan exactamente esos filtros con Apache POI. Requieren los
+permisos `CONCEPTO_COBRO_LEER`/`CONCEPTO_COBRO_ADMINISTRAR` y
+`CUOTA_ALUMNO_LEER`/`CUOTA_ALUMNO_ADMINISTRAR`.
+
+La cuota todavía es configuración, no una deuda emitida. La siguiente etapa creará
+`Cargo` y el generador idempotente que hará efectiva la opción automática. Un pago
+futuro podrá cubrir varios hijos, pero cada aplicación y saldo seguirá separado por
+cargo, inscripción y alumno.

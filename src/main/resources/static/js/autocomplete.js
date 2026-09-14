@@ -10,8 +10,10 @@
         const lista = contenedor.querySelector('.autocomplete-results');
         const estado = contenedor.querySelector('.autocomplete-status');
         const limpiar = contenedor.querySelector('.autocomplete-clear');
-        const institucion = document.getElementById(contenedor.dataset.institutionInput);
-        if (!entrada || !valor || !lista || !estado || !institucion || entrada.disabled) return;
+        const alcance = document.getElementById(contenedor.dataset.scopeInput || contenedor.dataset.institutionInput);
+        const parametroAlcance = contenedor.dataset.scopeParam || 'institucionId';
+        const etiquetaAlcance = contenedor.dataset.scopeLabel || 'una institución';
+        if (!entrada || !valor || !lista || !estado || !alcance || entrada.disabled) return;
 
         let temporizador;
         let solicitud;
@@ -30,8 +32,8 @@
             solicitud?.abort();
             cerrarLista();
             const consulta = entrada.value.trim();
-            if (!institucion.value) {
-                mostrarEstado('Selecciona primero una institución.');
+            if (!alcance.value) {
+                mostrarEstado(`Selecciona primero ${etiquetaAlcance}.`);
                 return;
             }
             if (consulta.length < MINIMO) {
@@ -68,14 +70,14 @@
             entrada.focus();
         });
 
-        institucion.addEventListener('change', () => {
+        alcance.addEventListener('change', () => {
             entrada.value = '';
             valor.value = '';
             etiquetaSeleccionada = '';
             cerrarLista();
-            mostrarEstado(institucion.value
+            mostrarEstado(alcance.value
                 ? `Escribe al menos ${MINIMO} caracteres para buscar.`
-                : 'Selecciona primero una institución.');
+                : `Selecciona primero ${etiquetaAlcance}.`);
             actualizarLimpiar();
         });
 
@@ -85,7 +87,8 @@
 
         async function buscar(consulta) {
             solicitud = new AbortController();
-            const parametros = new URLSearchParams({institucionId: institucion.value, q: consulta});
+            const parametros = new URLSearchParams({q: consulta});
+            parametros.set(parametroAlcance, alcance.value);
             if (contenedor.dataset.excludeId) parametros.set('tutorId', contenedor.dataset.excludeId);
             try {
                 const respuesta = await fetch(`${contenedor.dataset.endpoint}?${parametros}`, {

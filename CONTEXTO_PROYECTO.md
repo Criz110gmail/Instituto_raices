@@ -661,3 +661,50 @@
 - El siguiente paso es acordar meses cobrables, verano, vencimientos y actualización
   de cuotas; después iniciar Flyway V11 con `ConceptoCobro` y `CuotaAlumno`. Pagos, caja
   y tesorería permanecen fuera de esta etapa.
+
+## Política confirmada — control individual y pagos familiares
+
+- Toda cuota y todo cargo pertenecen a una inscripción y, por consecuencia, a un solo
+  alumno. No existe un saldo familiar que oculte cuánto corresponde a cada hijo.
+- Un tutor podrá realizar en una etapa futura un único pago para varios hijos. Ese pago
+  conservará un solo ingreso, pero el administrador distribuirá el importe mediante
+  aplicaciones independientes a los cargos de cada alumno.
+- El administrador determina importe, periodo y vencimiento. Una cuota mensual usa un
+  día de vencimiento de 1 a 31 y en meses más cortos se ajustará al último día; una cuota
+  única usa una fecha exacta.
+- Las cuotas pueden configurarse con generación manual o automática. Los conceptos de
+  servicio, material u otro permiten modelar cobros extraordinarios sin mezclarlos con
+  la colegiatura.
+- Cambiar una cuota sólo afectará emisiones futuras. Los cargos ya emitidos conservarán
+  su descripción, importe y vencimiento históricos.
+
+## Decisiones — conceptos de cobro y cuotas por alumno
+
+- Flyway V11 crea `ConceptoCobro` y `CuotaAlumno` de forma aditiva y agrega cuatro
+  permisos técnicos sin concederlos a roles existentes.
+- Un concepto pertenece a la institución, tiene código único, categoría y reglas para
+  permitir beca, descuento o recargo; no guarda un precio común para todos los alumnos.
+- La cuota guarda el importe individual, moneda, frecuencia `UNICA` o `MENSUAL`, rango,
+  vencimiento, estado y `generacionAutomatica`. No pueden existir cuotas activas
+  superpuestas para el mismo concepto e inscripción.
+- Sólo conceptos e inscripciones vigentes admiten cuotas activas. Una cuota suspendida
+  o finalizada no puede generar automáticamente y una finalizada queda inmutable.
+- Conceptos se administran con alcance institucional. Cuotas respetan el plantel de la
+  inscripción. Las búsquedas de inscripción y concepto usan autocompletado remoto,
+  resultados acotados e índices GIN `pg_trgm`.
+- Ambos módulos incluyen formularios responsivos con temas claro/oscuro, filtros y
+  paginación en PostgreSQL y Excel por bloques reutilizando los mismos filtros.
+
+## Verificación de conceptos y cuotas
+
+- Docker compiló 234 fuentes Java de producción y ejecutó 151 pruebas sin fallos ni
+  errores. Trece verificaciones adicionales cubren conceptos, cuotas individuales,
+  vencimientos, solapamientos, estados, automatización, alcance y autocompletados.
+- Flyway aplicó V11 sobre el volumen existente, Hibernate validó el esquema y detectó
+  24 repositorios. Actuator respondió `UP`.
+- Listados, formularios y exportación filtrada respondieron autenticados; el XLSX empezó
+  con `504b0304`. Las tablas `concepto_cobro` y `cuota_alumno` quedaron vacías y el
+  catálogo alcanzó 30 permisos técnicos; no se asignaron permisos a roles.
+- El siguiente paso es Flyway V12 con `Cargo`, alta manual y generación automática
+  idempotente desde cuotas. Pagos, aplicaciones, caja y tesorería siguen fuera de esta
+  etapa.

@@ -20,11 +20,11 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `647df06` — `Mejora ficha técnica del alumno y actualiza continuidad`.
+- Último commit confirmado antes de estos cambios locales: `b537db0` — `módulo de Inscripciones y Asignaciones de grupo`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
 - Al 14 de septiembre de 2026 hay cambios locales pendientes de commit sobre
-  `647df06`: el módulo completo de inscripciones y asignaciones de grupo, Flyway V10,
-  integración administrativa, estilos, pruebas y documentación. El propietario debe
+  `b537db0`: el módulo de conceptos/cuotas, Flyway V11, integración administrativa,
+  estilos, pruebas y documentación. El propietario debe
   revisar, hacer commit y push antes de continuar en otra computadora; el agente nuevo
   siempre debe confirmar `git status` y `git log`.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
@@ -49,7 +49,8 @@ no vuelvas a implementar componentes que ya existan.
   memoria.
 - Paquete base: `escuela`.
 - Módulos principales: `escuela.institucion`, `escuela.academico`, `escuela.seguridad`,
-  `escuela.alumno`, `escuela.tutor`, `escuela.inscripcion`, `escuela.admin`, `escuela.config` y
+  `escuela.alumno`, `escuela.tutor`, `escuela.inscripcion`, `escuela.cobranza`,
+  `escuela.admin`, `escuela.config` y
   `escuela.common`.
 - Cada entidad usa identificador `Long`, auditoría y versión para concurrencia optimista.
 - Los controladores y formularios usan DTO; nunca deben enlazarse directamente con
@@ -336,13 +337,21 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - El módulo valida institución, oferta activa, ciclo, vigencias, solapamientos y
   capacidad bajo bloqueo transaccional. Su listado pagina y filtra en PostgreSQL y la
   exportación XLSX reutiliza exactamente esos filtros y recorre los datos por bloques.
+- Flyway V11 crea `ConceptoCobro` y `CuotaAlumno`, con cuatro permisos técnicos sin
+  autoasignación. Los conceptos definen categorías y ajustes permitidos; no contienen
+  un precio global.
+- Cada cuota pertenece a una inscripción y, por tanto, a un solo alumno. Configura
+  importe, moneda, frecuencia única o mensual, vigencia, vencimiento, estado y si la
+  generación futura de cargos será automática o manual.
+- Un pago futuro podrá cubrir varios hijos, pero deberá conservar aplicaciones separadas
+  por cada cargo/alumno. Nunca se administrará un saldo familiar indistinto.
 
 ## Verificación confirmada
 
-- Compilación correcta de 213 archivos Java de producción.
-- 138 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V10 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 22 repositorios.
+- Compilación correcta de 234 archivos Java de producción.
+- 151 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V11 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 24 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -363,22 +372,25 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - El listado y el formulario de inscripciones respondieron autenticados, y la
   exportación filtrada comenzó con firma XLSX `504b0304`. No se crearon inscripciones
   ni asignaciones durante la verificación.
+- Los dos listados y formularios de cobranza respondieron autenticados; la exportación
+  filtrada de cuotas comenzó con firma XLSX `504b0304`. Las tablas de conceptos y cuotas
+  permanecieron vacías y PostgreSQL confirmó 30 permisos técnicos totales.
 - La última instancia local verificada quedó en `http://localhost:18080`.
 
 ## Siguiente paso acordado
 
-Antes de abrir Flyway V11, confirmar con el propietario la política de cuotas: meses
-cobrables, cargos de verano, día de vencimiento, frecuencia y cómo afectan los cambios
-a emisiones futuras. Después implementar la primera base de cuentas por cobrar con
-`ConceptoCobro` y `CuotaAlumno`, manteniendo alcance, paginación, filtros y Excel. No
-implementar todavía pagos, caja ni tesorería.
+Implementar `Cargo` y el generador idempotente en Flyway V12. Debe crear obligaciones
+individuales por inscripción/alumno desde cuotas con generación automática, respetar
+la frecuencia y vencimiento decididos por el administrador y permitir cargos manuales
+extra. Una ejecución repetida nunca debe duplicar el mismo cargo. Todavía no implementar
+pagos, caja ni tesorería.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. Confirmar si los cambios locales de Inscripciones ya fueron revisados, confirmados y
+1. Confirmar si los cambios locales de V10 y V11 ya fueron revisados, confirmados y
    subidos. Si no están en `origin/main`, no reconstruirlos: pedir al propietario el push
    desde la computadora donde se implementaron.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
@@ -386,17 +398,19 @@ pero no bloquea el siguiente módulo funcional.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V10 ya pertenece a `Inscripcion` y `AsignacionGrupo`; nunca editar V1–V10.
-   La siguiente migración disponible es V11.
-5. Antes de programar V11, resolver con el propietario la política de cuotas indicada
-   en **Siguiente paso acordado**. No inventar meses de cobro ni reglas de verano.
-6. Implementar primero `ConceptoCobro` y `CuotaAlumno` conforme a las entidades 20 y 21
-   de `modelo_entidades_sistema_escolar_v1.txt`; una cuota define configuración futura,
-   no deuda ya emitida.
-7. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
+4. Flyway V10 y V11 ya pertenecen a trayectoria y configuración de cobranza; nunca
+   editar V1–V11. La siguiente migración disponible es V12.
+5. Implementar `Cargo` conforme a la entidad 24 del modelo y un generador por cuota.
+   La clave de generación debe ser única e idempotente por institución y periodo.
+6. La generación automática sólo procesa cuotas `ACTIVA` con el indicador habilitado;
+   la manual permite al administrador registrar cobros extraordinarios. Todo cargo se
+   conserva ligado a una única inscripción y alumno.
+7. Los cambios de cuota afectan cargos futuros; nunca reescriben un cargo ya emitido.
+   La suspensión o finalización detiene nuevas emisiones sin borrar las anteriores.
+8. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.
-8. No implementar pagos, aplicaciones, anticipos, caja ni tesorería hasta terminar y
+9. No implementar pagos, aplicaciones, anticipos, caja ni tesorería hasta terminar y
    validar por etapas la base de cuentas por cobrar. No generar registros reales de
    prueba salvo autorización expresa.
 

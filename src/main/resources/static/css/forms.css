@@ -241,3 +241,28 @@
     .assignment-list article form { grid-column: 1/-1; }
     .assignment-form,.copy-row { grid-template-columns: 1fr; }
 }
+
+.finance-shell { max-width: 1040px; }
+.finance-intro { background: radial-gradient(circle at 92% 12%,#26c6b91c,transparent 32%); }
+.finance-principle { margin-bottom: 16px; padding: 20px 24px; border: 1px solid #84d8ca; border-radius: 17px; background: linear-gradient(135deg,#edfbf8,#f7fcff); box-shadow: var(--shadow); }
+.finance-principle span,.finance-principle strong { display: block; }
+.finance-principle span { color: #087864; font-size: .68rem; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+.finance-principle strong { margin-top: 5px; color: var(--ink); font-size: 1rem; }
+.finance-principle p { max-width: 800px; margin: 7px 0 0; color: #52756e; font-size: .8rem; line-height: 1.55; }
+.policy-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin-top: 16px; }
+.policy-card { display: flex !important; flex-direction: row !important; align-items: flex-start; gap: 11px; padding: 15px; border: 1px solid #d7e3ed; border-radius: 13px; background: #f8fbfe; cursor: pointer; }
+.policy-card:has(input:checked) { border-color: #35b6a6; background: #27b7a80d; box-shadow: inset 3px 0 #25aa9b; }
+.policy-card input { width: auto !important; margin-top: 3px; accent-color: #159c8d; }
+.policy-card > span { display: grid; gap: 4px; }
+.policy-card strong { color: var(--ink); font-size: .8rem; }
+.policy-card small { color: var(--muted) !important; font-size: .74rem !important; line-height: 1.45; }
+.automatic-policy { margin-top: 4px; }
+[data-theme=dark] .finance-principle { border-color: #216b61; background: linear-gradient(135deg,#0d2928,#0b1b2c); }
+[data-theme=dark] .finance-principle p { color: #9ac9c0; }
+[data-theme=dark] .policy-card { border-color: #344a63; background: #0e1d31; }
+[data-theme=dark] .policy-card:has(input:checked) { border-color: #277f74; background: #12322f; }
+
+@media (max-width: 680px) {
+    .finance-principle { padding: 18px 20px; }
+    .policy-grid { grid-template-columns: 1fr; }
+}
