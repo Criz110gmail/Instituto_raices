@@ -9,8 +9,47 @@
 <main class="form-shell student-shell">
     <header class="form-top"><a href="/admin/catalogos/alumnos">← Volver a alumnos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <section class="form-card">
-        <div class="form-intro"><span th:text="${edicion ? 'Expediente personal' : 'Nuevo expediente'}">Nuevo expediente</span><h1 th:text="${edicion ? 'Editar alumno' : 'Registrar alumno'}">Registrar alumno</h1><p>La trayectoria académica se administrará mediante inscripciones; aquí se conserva únicamente la identidad institucional.</p></div>
-        <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/alumnos/' + id : '/admin/alumnos'}">
+        <div th:unless="${edicion}" class="form-intro"><span>Nuevo expediente</span><h1>Registrar alumno</h1><p>La trayectoria académica se administrará mediante inscripciones; aquí se conserva únicamente la identidad institucional.</p></div>
+        <section th:if="${edicion}" class="student-profile" aria-labelledby="perfil-alumno-titulo">
+            <div class="profile-photo-column">
+                <div class="student-photo-frame profile-photo" th:classappend="${fotografiaActual == null ? ' empty' : ''}">
+                    <img th:if="${fotografiaActual != null}" th:src="@{/admin/alumnos/{alumnoId}/fotografias/{fotoId}(alumnoId=${id},fotoId=${fotografiaActual.id})}" th:alt="${'Fotografía de ' + form.nombres + ' ' + form.primerApellido}">
+                    <div th:unless="${fotografiaActual != null}" aria-hidden="true"><strong th:text="${#strings.substring(form.nombres, 0, 1) + #strings.substring(form.primerApellido, 0, 1)}">AA</strong><span>Sin fotografía</span></div>
+                </div>
+                <div th:if="${fotografiaActual != null}" class="photo-current-meta"><strong th:text="${fotografiaActual.nombreOriginal}">fotografia.jpg</strong><span th:text="${#numbers.formatDecimal(fotografiaActual.tamanoBytes / 1024.0, 1, 0) + ' KB'}">0 KB</span></div>
+            </div>
+            <div class="profile-summary">
+                <div class="profile-heading">
+                    <div><span class="profile-eyebrow">Ficha del alumno</span><h1 id="perfil-alumno-titulo" th:text="${form.nombres + ' ' + form.primerApellido + (form.segundoApellido == null or form.segundoApellido.isBlank() ? '' : ' ' + form.segundoApellido)}">Nombre del alumno</h1><p><strong th:text="${form.matricula}">ALU-001</strong><span aria-hidden="true">·</span><span th:text="${institucionSeleccionada}">Institución</span></p></div>
+                    <span class="profile-status" th:classappend="${form.activo ? ' active' : ' inactive'}" th:text="${form.activo ? 'Activo' : 'Inactivo'}">Activo</span>
+                </div>
+                <dl class="profile-facts">
+                    <div><dt>Fecha de nacimiento</dt><dd th:text="${#temporals.format(form.fechaNacimiento, 'dd/MM/yyyy')}">01/01/2018</dd></div>
+                    <div><dt>Ingreso</dt><dd th:text="${#temporals.format(form.fechaIngreso, 'dd/MM/yyyy')}">20/08/2024</dd></div>
+                    <div><dt>CURP</dt><dd th:text="${form.curp == null or form.curp.isBlank() ? 'No registrada' : form.curp}">No registrada</dd></div>
+                    <div><dt>Contacto</dt><dd th:text="${form.telefono == null or form.telefono.isBlank() ? (form.email == null or form.email.isBlank() ? 'Sin contacto' : form.email) : form.telefono}">Sin contacto</dd></div>
+                </dl>
+                <div class="profile-photo-tools" aria-labelledby="fotografia-titulo">
+                    <div><strong id="fotografia-titulo" th:text="${fotografiaActual == null ? 'Agregar fotografía' : 'Actualizar fotografía'}">Agregar fotografía</strong><span>JPEG o PNG, máximo 5 MB. Cada reemplazo se conserva en el historial privado.</span></div>
+                    <div class="form-error" role="alert" th:if="${errorFotografia}"><strong>No se pudo actualizar la fotografía</strong><p th:text="${errorFotografia}">Revisa el archivo e intenta nuevamente.</p></div>
+                    <div class="profile-tool-actions">
+                        <form method="post" enctype="multipart/form-data" th:action="@{/admin/alumnos/{id}/fotografia(id=${id})}" class="photo-upload-form">
+                            <label for="archivo-fotografia"><span th:text="${fotografiaActual == null ? 'Seleccionar fotografía' : 'Reemplazar fotografía'}">Seleccionar fotografía</span><input id="archivo-fotografia" type="file" name="archivo" accept="image/jpeg,image/png" required></label>
+                            <button type="submit">Guardar fotografía</button>
+                        </form>
+                        <form th:if="${fotografiaActual != null}" method="post" th:action="@{/admin/alumnos/{id}/fotografia/retirar(id=${id})}" onsubmit="return confirm('¿Retirar la fotografía actual? El archivo y su historial se conservarán de forma privada.');"><button type="submit" class="photo-remove">Retirar actual</button></form>
+                    </div>
+                    <details class="photo-history" th:if="${historialFotografias != null and !historialFotografias.isEmpty()}">
+                        <summary th:text="${'Ver historial de fotografías (' + historialFotografias.size() + ')'}">Ver historial de fotografías</summary>
+                        <div class="photo-history-grid">
+                            <a th:each="foto : ${historialFotografias}" th:href="@{/admin/alumnos/{alumnoId}/fotografias/{fotoId}(alumnoId=${id},fotoId=${foto.id})}" target="_blank" rel="noopener"><img th:src="@{/admin/alumnos/{alumnoId}/fotografias/{fotoId}(alumnoId=${id},fotoId=${foto.id})}" alt="Fotografía anterior del alumno" loading="lazy"><span th:text="${foto.nombreOriginal}">fotografia-anterior.jpg</span></a>
+                        </div>
+                    </details>
+                </div>
+                <a class="profile-edit-link" href="#datos-expediente">Editar información completa ↓</a>
+            </div>
+        </section>
+        <form id="datos-expediente" class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/alumnos/' + id : '/admin/alumnos'}">
             <input type="hidden" th:field="*{version}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div>
             <fieldset class="form-section"><legend>Identidad escolar</legend><div class="form-grid">
@@ -46,35 +85,6 @@
             </div></fieldset>
             <footer class="form-actions"><a href="/admin/catalogos/alumnos">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Registrar alumno'}">Guardar</button></footer>
         </form>
-        <section th:if="${edicion}" class="photo-management" aria-labelledby="fotografia-titulo">
-            <div class="section-heading"><div><span>Expediente visual</span><h2 id="fotografia-titulo">Fotografía del alumno</h2></div><p>JPEG o PNG, máximo 5 MB. El archivo permanece privado y cada reemplazo conserva su historial.</p></div>
-            <div class="form-error" role="alert" th:if="${errorFotografia}"><strong>No se pudo actualizar la fotografía</strong><p th:text="${errorFotografia}">Revisa el archivo e intenta nuevamente.</p></div>
-            <div class="photo-layout">
-                <div class="student-photo-frame" th:classappend="${fotografiaActual == null ? ' empty' : ''}">
-                    <img th:if="${fotografiaActual != null}" th:src="@{/admin/alumnos/{alumnoId}/fotografias/{fotoId}(alumnoId=${id},fotoId=${fotografiaActual.id})}" th:alt="${'Fotografía actual de ' + form.nombres + ' ' + form.primerApellido}">
-                    <div th:unless="${fotografiaActual != null}" aria-hidden="true"><strong th:text="${#strings.substring(form.nombres, 0, 1) + #strings.substring(form.primerApellido, 0, 1)}">AA</strong><span>Sin fotografía</span></div>
-                </div>
-                <div class="photo-actions">
-                    <div th:if="${fotografiaActual != null}" class="photo-current-meta"><strong th:text="${fotografiaActual.nombreOriginal}">fotografia.jpg</strong><span th:text="${#numbers.formatDecimal(fotografiaActual.tamanoBytes / 1024.0, 1, 0) + ' KB'}">0 KB</span></div>
-                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/alumnos/{id}/fotografia(id=${id})}" class="photo-upload-form">
-                        <label for="archivo-fotografia"><span th:text="${fotografiaActual == null ? 'Seleccionar fotografía' : 'Reemplazar fotografía'}">Seleccionar fotografía</span><input id="archivo-fotografia" type="file" name="archivo" accept="image/jpeg,image/png" required></label>
-                        <button type="submit">Guardar fotografía</button>
-                    </form>
-                    <form th:if="${fotografiaActual != null}" method="post" th:action="@{/admin/alumnos/{id}/fotografia/retirar(id=${id})}" onsubmit="return confirm('¿Retirar la fotografía actual? El archivo y su historial se conservarán de forma privada.');">
-                        <button type="submit" class="photo-remove">Retirar fotografía actual</button>
-                    </form>
-                </div>
-            </div>
-            <details class="photo-history" th:if="${historialFotografias != null and !historialFotografias.isEmpty()}">
-                <summary th:text="${'Historial de fotografías (' + historialFotografias.size() + ')'}">Historial de fotografías</summary>
-                <div class="photo-history-grid">
-                    <a th:each="foto : ${historialFotografias}" th:href="@{/admin/alumnos/{alumnoId}/fotografias/{fotoId}(alumnoId=${id},fotoId=${foto.id})}" target="_blank" rel="noopener">
-                        <img th:src="@{/admin/alumnos/{alumnoId}/fotografias/{fotoId}(alumnoId=${id},fotoId=${foto.id})}" alt="Fotografía anterior del alumno" loading="lazy">
-                        <span th:text="${foto.nombreOriginal}">fotografia-anterior.jpg</span>
-                    </a>
-                </div>
-            </details>
-        </section>
         <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/alumnos/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este alumno? Su expediente e historial se conservarán.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar alumno</strong><p>El expediente se conserva y no se elimina físicamente.</p></div><button type="submit">Desactivar</button></form>
     </section>
 </main>

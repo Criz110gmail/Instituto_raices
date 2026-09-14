@@ -20,9 +20,18 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `6e3052d` — `Vínculos
-  alumno–tutor correcciones`.
+- Último commit confirmado antes de estos cambios locales: `04c4518` — `fotos alumnos`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
+- Al 14 de septiembre de 2026 hay cambios locales pendientes de commit sobre
+  `04c4518`: ficha técnica visual del alumno, resumen de institución en el controlador,
+  estilos responsivos y una prueba nueva, además de esta documentación. Antes de
+  continuar en otra computadora, el propietario debe revisar, hacer commit y push;
+  el agente nuevo siempre debe confirmar `git status` y `git log` porque el nombre del
+  commit final puede ser distinto.
+- Archivos locales pendientes al documentar este corte: `AGENT.md`,
+  `CONTEXTO_PROYECTO.md`, `README.md`, `AlumnoAdminController.java`, `forms.css`,
+  `alumno-form.html` y `AlumnoAdminControllerTest.java`. No hay migraciones ni cambios
+  de esquema pendientes en este corte.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -37,6 +46,9 @@ no vuelvas a implementar componentes que ya existan.
   conserva únicamente metadatos, checksum y relaciones.
 - Para respaldar o mover una instalación se necesitan juntos `postgres_data` y
   `private_files`; nunca versionar las fotografías en Git.
+- Git transporta código y migraciones, pero no transporta PostgreSQL ni los archivos
+  de los volúmenes. Clonar el repositorio en otra computadora crea una instalación sin
+  los datos operativos anteriores, salvo que se restauren ambos respaldos.
 - Spring Data JPA, Bean Validation, Spring Security, Lombok, Actuator y Spring Mail.
 - Apache POI 5.4.1 con `SXSSFWorkbook` para exportaciones Excel de bajo consumo de
   memoria.
@@ -190,6 +202,49 @@ curl http://localhost:18080/actuator/health
 La imagen Docker compila el proyecto y ejecuta las pruebas Maven, por lo que Maven no
 es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 
+## Archivos privados, respaldo y decisión pendiente de producción
+
+- La configuración actual debe conservarse durante desarrollo: el volumen nombrado
+  `private_files` se monta como `/data/nexo-escolar` y la aplicación recibe esa ruta en
+  `FILE_STORAGE_ROOT`. El volumen sobrevive a reinicios, recreaciones de contenedores y
+  a `docker compose down` sin opciones destructivas.
+- Nunca ejecutar `docker compose down -v` ni eliminar volúmenes sin autorización y un
+  respaldo comprobado. Esa opción elimina `postgres_data` y `private_files`.
+- Un respaldo recuperable debe capturar en el mismo corte PostgreSQL y los archivos;
+  la base guarda la relación entre alumno y clave física. Los dos artefactos deben
+  copiarse fuera de Docker y fuera de la computadora, cifrados y con acceso limitado.
+- Comandos manuales de referencia, ejecutados desde la raíz en una ventana de
+  mantenimiento. Se detiene sólo la aplicación para impedir cargas durante el corte;
+  PostgreSQL y los volúmenes no se eliminan:
+
+```bash
+mkdir -p ../respaldos_instituto_raices
+docker compose stop app
+docker compose exec -T postgres sh -c \
+  'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' \
+  > ../respaldos_instituto_raices/base_datos.sql
+docker compose run --rm --no-deps app \
+  tar -C /data/nexo-escolar -czf - . \
+  > ../respaldos_instituto_raices/imagenes_privadas.tar.gz
+docker compose start app
+tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
+```
+
+- La carpeta `../respaldos_instituto_raices` queda fuera del repositorio, pero todavía
+  está en la misma computadora: luego debe copiarse a un destino privado externo. Los
+  `.sql`, los archivos comprimidos y cualquier fotografía real deben
+  permanecer fuera de Git. Antes de confiar en el mecanismo se debe documentar y probar
+  también la restauración en una instalación aislada.
+- Decisión pendiente antes de producción: para una sola instancia puede mantenerse el
+  volumen con respaldo automatizado externo. Un bind mount sólo se usará si la operación
+  necesita una ruta del host para su agente de respaldo; será una ruta dedicada como
+  `/srv/nexo-escolar/private-files`, nunca una carpeta dentro del repositorio. Si se
+  despliegan varias instancias, se evaluará almacenamiento de objetos privado compatible
+  con S3/MinIO. Cambiar de backend no debe alterar la abstracción de almacenamiento ni
+  guardar rutas físicas en PostgreSQL.
+- Pendiente operativo: automatizar respaldos, definir retención/cifrado/destino externo,
+  comprobar restauraciones y acordar RPO/RTO antes de usar datos reales en producción.
+
 ## Base de seguridad implementada
 
 - La migración `V2__crear_seguridad_roles_permisos.sql` crea `Usuario`, `Rol`,
@@ -272,13 +327,17 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 - Flyway V9 crea `Archivo`, `AlumnoFotografia` y `fotografia_archivo_id`. El expediente
   permite cargar JPEG/PNG de hasta 5 MB, reemplazar o retirar la foto y consultar el
   historial sin exponer el almacenamiento privado.
+- Al editar un alumno, la pantalla inicia con una ficha técnica visual: fotografía
+  destacada, nombre, matrícula, institución, estado y datos rápidos. La carga, retiro e
+  historial de fotografías forman parte de esa cabecera; debajo permanece el
+  formulario completo del expediente.
 - Los listados y los trece formularios administrativos muestran `Cerrar sesión`. El
   botón envía `POST /logout` con CSRF, invalida la sesión y regresa al inicio.
 
 ## Verificación confirmada
 
 - Compilación correcta de 197 archivos Java de producción.
-- 130 pruebas Maven sin fallos ni errores.
+- 131 pruebas Maven sin fallos ni errores.
 - Flyway V1 a V9 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 20 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
@@ -294,6 +353,8 @@ es obligatorio en el host. Docker sí debe estar instalado y en ejecución.
 - El volumen `private_files` quedó escribible sólo desde la aplicación, el panel de
   fotografía respondió autenticado y la salud permaneció `UP`. La verificación no
   cargó fotografías ni modificó alumnos existentes.
+- La edición autenticada del alumno renderizó la ficha técnica antes del formulario;
+  una prueba del controlador fija la etiqueta de institución mostrada en la cabecera.
 - El cierre de sesión respondió HTTP 302 y la misma cookie fue redirigida al login al
   intentar regresar a `/admin`.
 - La última instancia local verificada quedó en `http://localhost:8080`.
@@ -304,6 +365,40 @@ Implementar `Inscripcion` y `AsignacionGrupo`: trayectoria por alumno, plantel, 
 grado y grupo, estados y vigencias, traslados sin sobrescribir el pasado, validación de
 oferta/capacidad y autocompletado remoto del alumno. Todavía no crear cobros ni
 tesorería.
+
+No convertir la decisión pendiente de almacenamiento en un bloqueo para esta etapa ni
+mover los archivos por iniciativa propia. La siguiente implementación funcional sigue
+siendo `Inscripcion` y `AsignacionGrupo`; la estrategia definitiva de archivos se cierra
+antes del despliegue productivo o antes de operar con múltiples servidores.
+
+### Punto exacto de reanudación en otra computadora
+
+1. Confirmar que el commit de la ficha técnica ya está en `origin/main` y que contiene
+   los siete archivos enumerados en **Repositorio y estado confirmado**. Si no está,
+   no reconstruirlo: pedir al propietario que haga push desde la computadora de origen.
+2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
+   real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
+3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
+   restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
+   probado. No improvisar una restauración sobre datos existentes.
+4. La siguiente migración disponible es V10. Debe ser aditiva y crear el soporte de
+   `Inscripcion` y `AsignacionGrupo` conforme a las entidades 12 y 13 de
+   `modelo_entidades_sistema_escolar_v1.txt`; nunca editar V1–V9.
+5. La inscripción es la fuente de verdad de plantel, ciclo y grado del alumno. Un
+   traslado o promoción cierra el registro anterior y crea otro; una asignación de grupo
+   nueva cierra la anterior. Nunca sobrescribir la trayectoria pasada.
+6. Validar misma institución, oferta activa, ciclo no cerrado, grado, grupo, vigencias
+   sin solapamiento, una sola asignación vigente y capacidad del grupo con protección
+   transaccional ante concurrencia.
+7. Entregar el módulo completo con DTO, servicios, alcance institucional/plantel,
+   permisos técnicos, listado paginado, filtros PostgreSQL, Excel por bloques, alta,
+   transiciones de estado, errores en la misma pantalla, tema claro/oscuro, diseño
+   responsivo y autocompletado remoto del alumno. No cargar tablas masivas en selects.
+8. Las migraciones no deben conceder los permisos nuevos a roles existentes. Después
+   de verificar Docker, el propietario asignará los permisos correspondientes a su rol
+   para que `criz110` pueda ver y probar el módulo.
+9. No implementar todavía conceptos, cuotas, becas, cargos, pagos ni tesorería. No
+   generar registros reales de prueba salvo autorización expresa.
 
 ## Disciplina de cambios y entrega
 

@@ -21,6 +21,31 @@ las rutas públicas de la aplicación. En respaldos o traslados entre computador
 copiarse tanto `postgres_data` como `private_files`; las fotografías nunca deben subirse
 al repositorio Git.
 
+### Respaldo manual de datos y fotografías
+
+Git no incluye el contenido de los volúmenes. En una ventana sin usuarios, detén la
+aplicación y genera los dos respaldos del mismo corte. El contenedor temporal sólo lee
+`private_files`; no elimina el volumen:
+
+```bash
+mkdir -p ../respaldos_instituto_raices
+docker compose stop app
+docker compose exec -T postgres sh -c \
+  'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' \
+  > ../respaldos_instituto_raices/base_datos.sql
+docker compose run --rm --no-deps app \
+  tar -C /data/nexo-escolar -czf - . \
+  > ../respaldos_instituto_raices/imagenes_privadas.tar.gz
+docker compose start app
+tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
+```
+
+No ejecutes `docker compose down -v`: `-v` elimina los volúmenes persistentes. Para
+producción todavía debe automatizarse el respaldo y probarse la restauración completa.
+La carpeta anterior está fuera del repositorio, pero debe copiarse después a un destino
+privado externo. Los respaldos, volcados SQL y fotografías reales no deben confirmarse
+en Git.
+
 ## Desarrollo local
 
 Se requiere Java 21, Maven y PostgreSQL. Configura `DB_URL`, `DB_USERNAME` y

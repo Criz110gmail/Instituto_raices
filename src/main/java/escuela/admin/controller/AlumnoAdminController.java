@@ -191,10 +191,15 @@ public class AlumnoAdminController {
     }
 
     private void preparar(Model model, AlumnoForm form, Long id) {
+        var instituciones = alcance.filtrarInstituciones(institucionService.listar());
         model.addAttribute("form", form);
         model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
-        model.addAttribute("instituciones", alcance.filtrarInstituciones(institucionService.listar()));
+        model.addAttribute("instituciones", instituciones);
+        model.addAttribute("institucionSeleccionada", instituciones.stream()
+                .filter(institucion -> institucion.id().equals(form.getInstitucionId()))
+                .map(institucion -> institucion.codigo() + " · " + institucion.nombre())
+                .findFirst().orElse("Institución no disponible"));
         if (id != null) {
             List<FotografiaAlumnoResponse> historial = fotografiaService.historial(id);
             model.addAttribute("fotografiaActual", historial.stream()

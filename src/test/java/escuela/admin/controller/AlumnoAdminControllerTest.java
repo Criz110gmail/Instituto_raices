@@ -7,6 +7,7 @@ import escuela.alumno.service.AlumnoService;
 import escuela.alumno.service.FotografiaAlumnoService;
 import escuela.common.dto.response.AuditoriaResponse;
 import escuela.common.exception.RecursoDuplicadoException;
+import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.service.InstitucionService;
 import escuela.seguridad.service.AlcanceDatosService;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,6 +75,21 @@ class AlumnoAdminControllerTest {
         assertThat(vista).isEqualTo("redirect:/admin/catalogos/alumnos");
         assertThat(flash.getFlashAttributes().get("mensaje"))
                 .isEqualTo("Alumno registrado correctamente");
+    }
+
+    @Test
+    void preparaLaFichaDelAlumnoAlEditar() {
+        when(service.obtener(10L)).thenReturn(alumno());
+        when(institucionService.listar()).thenReturn(List.of(institucion()));
+        when(fotografiaService.historial(10L)).thenReturn(List.of());
+        ExtendedModelMap model = new ExtendedModelMap();
+
+        String vista = controller.editar(10L, model);
+
+        assertThat(vista).isEqualTo("admin/alumno-form");
+        assertThat(model.get("edicion")).isEqualTo(true);
+        assertThat(model.get("institucionSeleccionada"))
+                .isEqualTo("RAICES · Instituto Raíces");
     }
 
     @Test
@@ -154,5 +170,11 @@ class AlumnoAdminControllerTest {
                 null, null, null, null, null, null, null, "MX",
                 LocalDate.of(2024, 8, 20), null, true, null,
                 new AuditoriaResponse(ahora, 1L, ahora, 1L, 4L));
+    }
+
+    private InstitucionResponse institucion() {
+        return new InstitucionResponse(1L, "RAICES", "Instituto Raíces", null, null,
+                null, null, null, null, null, null, null, null, "MX", null,
+                "America/Mexico_City", "MXN", true, null);
     }
 }

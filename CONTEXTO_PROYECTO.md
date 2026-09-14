@@ -601,3 +601,31 @@
 - No se cargaron archivos reales ni se modificaron alumnos durante la verificación.
 - El siguiente paso acordado es `Inscripcion` y `AsignacionGrupo`; todavía no se deben
   implementar cobros ni tesorería.
+
+## Mejora visual posterior — ficha técnica del alumno
+
+- La edición del alumno ahora abre con una ficha de perfil antes del formulario:
+  fotografía destacada, nombre completo, matrícula, institución, estado, nacimiento,
+  ingreso, CURP y contacto.
+- Cargar, reemplazar, retirar y consultar el historial fotográfico quedó integrado en
+  la cabecera. El diseño responde en móvil y conserva los temas claro y oscuro.
+- Docker compiló las 197 fuentes de producción y ejecutó 131 pruebas sin fallos ni
+  errores. La página autenticada confirmó que la ficha se renderiza antes del
+  formulario multipart.
+- Esta mejora no altera el dominio ni el siguiente paso: continúan `Inscripcion` y
+  `AsignacionGrupo`.
+
+## Decisión operativa pendiente — respaldo de archivos privados
+
+- En desarrollo se conserva el volumen Docker `private_files`; es persistente respecto
+  del contenedor, pero no sustituye un respaldo y no viaja mediante Git.
+- Para recuperar o trasladar una instalación deben respaldarse juntos PostgreSQL y
+  `/data/nexo-escolar`, porque la base conserva metadatos y relaciones mientras el
+  volumen contiene los bytes.
+- Nunca usar `docker compose down -v` sin autorización y respaldo verificado. Los
+  respaldos deben quedar fuera del repositorio y copiarse cifrados a otro equipo o
+  servicio privado.
+- Antes de producción se definirá automatización, retención, restauración probada y
+  destino externo. Para una instancia se admite volumen respaldado; un bind mount debe
+  apuntar a una ruta dedicada fuera del repositorio. Para varias instancias se evaluará
+  almacenamiento de objetos S3/MinIO.
