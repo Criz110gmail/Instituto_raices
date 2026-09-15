@@ -19,6 +19,8 @@ import escuela.cobranza.repository.TipoBecaRepository;
 import escuela.cobranza.repository.BecaAlumnoRepository;
 import escuela.cobranza.repository.AjusteCargoRepository;
 import escuela.cobranza.repository.PoliticaRecargoRepository;
+import escuela.finanzas.entity.CuentaFinanciera;
+import escuela.finanzas.repository.CuentaFinancieraRepository;
 import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
 import escuela.inscripcion.entity.Inscripcion;
@@ -70,6 +72,7 @@ public class CatalogoConsultaService {
     private final BecaAlumnoRepository becaAlumnoRepository;
     private final AjusteCargoRepository ajusteCargoRepository;
     private final PoliticaRecargoRepository politicaRecargoRepository;
+    private final CuentaFinancieraRepository cuentaFinancieraRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcanceDatosService;
@@ -141,6 +144,8 @@ public class CatalogoConsultaService {
                     estadoAjuste(f), pagina, this::filaAjuste);
             case POLITICAS_RECARGO -> consultar(modulo, politicaRecargoRepository,
                     textoPoliticaRecargo(f), activo(f), pagina, this::filaPoliticaRecargo);
+            case CUENTAS_FINANCIERAS -> consultar(modulo, cuentaFinancieraRepository,
+                    textoCuentaFinanciera(f), activo(f), pagina, this::filaCuentaFinanciera);
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
             case USUARIOS -> consultar(modulo, usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,
@@ -173,6 +178,18 @@ public class CatalogoConsultaService {
             return cb.or(cb.like(cb.lower(root.get("plantel").get("nombre")), patron),
                     cb.like(cb.lower(root.get("nivelEducativo").get("nombre")), patron),
                     cb.like(cb.lower(root.get("claveCentroTrabajo")), patron));
+        };
+    }
+
+    private Specification<CuentaFinanciera> textoCuentaFinanciera(FiltroCatalogo f) {
+        return (root, query, cb) -> {
+            if (f.q().isBlank()) return cb.conjunction();
+            String patron = "%" + f.q().toLowerCase(Locale.ROOT) + "%";
+            return cb.or(cb.like(cb.lower(root.get("codigo")), patron),
+                    cb.like(cb.lower(root.get("nombre")), patron),
+                    cb.like(cb.lower(root.get("bancoNombre")), patron),
+                    cb.like(cb.lower(root.get("titular")), patron),
+                    cb.like(cb.lower(root.get("plantel").get("nombre")), patron));
         };
     }
 
@@ -372,6 +389,28 @@ public class CatalogoConsultaService {
                 a.getMonto().toPlainString()+" "+a.getCargo().getMoneda(),FECHA.format(a.getFechaEfectiva()),a.getMotivo()),estado,a.getReversa()!=null?"neutro":"positivo");
     }
     private FilaCatalogo filaPoliticaRecargo(PoliticaRecargo p){String recargo=p.getModalidad()==ModalidadBeca.PORCENTAJE?p.getPorcentaje().stripTrailingZeros().toPlainString()+" %":p.getMontoFijo().toPlainString()+" "+p.getMoneda();String limite=switch(p.getTipoLimite()){case SIN_LIMITE->"Sin límite";case MONTO_FIJO->p.getValorLimite().setScale(2,java.math.RoundingMode.HALF_UP).toPlainString()+" "+p.getConceptoCobro().getInstitucion().getMonedaPredeterminada();case PORCENTAJE_ORIGINAL->p.getValorLimite().stripTrailingZeros().toPlainString()+" % del original";};return fila(p.getId(),p.isActivo(),p.getConceptoCobro().getCodigo()+" · "+p.getConceptoCobro().getNombre(),p.getConceptoCobro().getInstitucion().getNombre(),recargo,p.getDiasGracia()+" días",etiqueta(p.getPeriodicidad().name()),limite,p.isGeneracionAutomatica()?"Automática":"Manual");}
+
+    private FilaCatalogo filaCuentaFinanciera(CuentaFinanciera cuenta) {
+        String alcance = cuenta.getPlantel() == null ? "Institucional" : cuenta.getPlantel().getNombre();
+        String identificador = cuenta.getClabe() != null
+                ? enmascarar(cuenta.getClabe()) + " · CLABE"
+                : cuenta.getNumeroCuenta() != null ? enmascarar(cuenta.getNumeroCuenta()) : "—";
+        String institucionFinanciera = cuenta.getBancoNombre() == null ? "Caja" : cuenta.getBancoNombre();
+        String tipo = switch (cuenta.getTipo()) {
+            case CAJA -> "Caja";
+            case BANCO -> "Cuenta bancaria";
+            case INVERSION -> "Inversión";
+        };
+        return fila(cuenta.getId(), cuenta.isActivo(), cuenta.getCodigo(), cuenta.getNombre(), alcance,
+                tipo, institucionFinanciera, identificador,
+                cuenta.getSaldoInicial().toPlainString() + " " + cuenta.getMoneda(),
+                FECHA.format(cuenta.getFechaSaldoInicial()));
+    }
+
+    private String enmascarar(String valor) {
+        String limpio = valor == null ? "" : valor.replaceAll("\\s+", "");
+        return "•••• " + limpio.substring(Math.max(0, limpio.length() - 4));
+    }
 
     private java.math.BigDecimal totalCargo(Cargo c) { java.math.BigDecimal t=c.getImporteOriginal();
         for(AjusteCargo a:c.getAjustes()) t=a.getEfecto()==EfectoAjusteCargo.AUMENTO?t.add(a.getMonto()):t.subtract(a.getMonto()); return t; }

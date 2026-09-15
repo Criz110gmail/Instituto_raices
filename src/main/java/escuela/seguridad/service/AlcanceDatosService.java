@@ -14,6 +14,7 @@ import escuela.cobranza.repository.TipoBecaRepository;
 import escuela.cobranza.repository.BecaAlumnoRepository;
 import escuela.cobranza.repository.AjusteCargoRepository;
 import escuela.cobranza.repository.PoliticaRecargoRepository;
+import escuela.finanzas.repository.CuentaFinancieraRepository;
 import escuela.admin.dto.ModuloCatalogo;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.dto.response.PlantelResponse;
@@ -63,6 +64,7 @@ public class AlcanceDatosService {
     private final BecaAlumnoRepository becaAlumnoRepository;
     private final AjusteCargoRepository ajusteCargoRepository;
     private final PoliticaRecargoRepository politicaRecargoRepository;
+    private final CuentaFinancieraRepository cuentaFinancieraRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
 
@@ -72,7 +74,7 @@ public class AlcanceDatosService {
         return (root, query, cb) -> {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
-                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, ROLES, USUARIOS -> root.get("institucion").get("id");
+                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, CUENTAS_FINANCIERAS, ROLES, USUARIOS -> root.get("institucion").get("id");
                 case POLITICAS_RECARGO -> root.get("conceptoCobro").get("institucion").get("id");
                 case VINCULOS_TUTOR, INSCRIPCIONES -> root.get("alumno").get("institucion").get("id");
                 case CUOTAS_ALUMNO, CARGOS, BECAS_ALUMNO -> root.get("inscripcion").get("alumno").get("institucion").get("id");
@@ -93,6 +95,10 @@ public class AlcanceDatosService {
                         cb.equal(root.get("tutor").get("usuario").get("id"), principal.usuarioId()));
             }
             if (principal.plantelIds().isEmpty()) return cb.disjunction();
+            if (modulo == ModuloCatalogo.CUENTAS_FINANCIERAS) {
+                return cb.and(mismaInstitucion, cb.or(cb.isNull(root.get("plantel")),
+                        root.get("plantel").get("id").in(principal.plantelIds())));
+            }
             if (modulo == ModuloCatalogo.USUARIOS) {
                 return cb.and(mismaInstitucion, cb.equal(root.get("id"), principal.usuarioId()));
             }
@@ -145,6 +151,11 @@ public class AlcanceDatosService {
                     .orElseThrow(this::denegado).getCargo().getInscripcion().getPlantel().getId());
             case POLITICAS_RECARGO -> validarInstitucion(politicaRecargoRepository.findById(id)
                     .orElseThrow(this::denegado).getConceptoCobro().getInstitucion().getId());
+            case CUENTAS_FINANCIERAS -> {
+                var cuenta = cuentaFinancieraRepository.findById(id).orElseThrow(this::denegado);
+                if (cuenta.getPlantel() == null) validarAdministracionInstitucional(cuenta.getInstitucion().getId());
+                else validarPlantel(cuenta.getPlantel().getId());
+            }
             case ROLES -> validarInstitucion(rolRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());
             case USUARIOS -> validarInstitucion(usuarioRepository.findById(id)

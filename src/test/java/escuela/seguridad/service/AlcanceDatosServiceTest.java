@@ -25,6 +25,8 @@ import escuela.cobranza.repository.TipoBecaRepository;
 import escuela.cobranza.repository.BecaAlumnoRepository;
 import escuela.cobranza.repository.AjusteCargoRepository;
 import escuela.cobranza.repository.PoliticaRecargoRepository;
+import escuela.finanzas.repository.CuentaFinancieraRepository;
+import escuela.finanzas.entity.CuentaFinanciera;
 import escuela.cobranza.entity.CuotaAlumno;
 import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.repository.UsuarioRepository;
@@ -56,6 +58,7 @@ class AlcanceDatosServiceTest {
     private final InscripcionRepository inscripcionRepository = mock(InscripcionRepository.class);
     private final ConceptoCobroRepository conceptoCobroRepository = mock(ConceptoCobroRepository.class);
     private final CuotaAlumnoRepository cuotaAlumnoRepository = mock(CuotaAlumnoRepository.class);
+    private final CuentaFinancieraRepository cuentaFinancieraRepository = mock(CuentaFinancieraRepository.class);
     private final AlcanceDatosService service = new AlcanceDatosService(
             mock(InstitucionRepository.class), plantelRepository,
             mock(NivelEducativoRepository.class), mock(PlantelNivelRepository.class),
@@ -70,6 +73,7 @@ class AlcanceDatosServiceTest {
             mock(TipoBecaRepository.class), mock(BecaAlumnoRepository.class),
             mock(AjusteCargoRepository.class),
             mock(PoliticaRecargoRepository.class),
+            cuentaFinancieraRepository,
             mock(RolRepository.class), mock(UsuarioRepository.class));
 
     @AfterEach
@@ -113,6 +117,37 @@ class AlcanceDatosServiceTest {
 
         assertThatThrownBy(() -> service.validarPlantel(11L))
                 .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void cuentaInstitucionalCompartidaExigeAlcanceInstitucionalParaAdministrar() {
+        autenticar(new UsuarioPrincipal(7L, 1L, Set.of(10L), false, false,
+                "plantel", "hash", List.of()));
+        CuentaFinanciera cuenta = new CuentaFinanciera();
+        cuenta.setId(30L);
+        cuenta.setInstitucion(institucionEntidad(1L));
+        when(cuentaFinancieraRepository.findById(30L)).thenReturn(Optional.of(cuenta));
+
+        assertThatThrownBy(() -> service.validarRecurso(
+                escuela.admin.dto.ModuloCatalogo.CUENTAS_FINANCIERAS, 30L))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void permiteAdministrarCuentaDelPlantelAsignado() {
+        autenticar(new UsuarioPrincipal(7L, 1L, Set.of(10L), false, false,
+                "plantel", "hash", List.of()));
+        Plantel plantel = new Plantel();
+        plantel.setId(10L);
+        plantel.setInstitucion(institucionEntidad(1L));
+        CuentaFinanciera cuenta = new CuentaFinanciera();
+        cuenta.setId(30L);
+        cuenta.setInstitucion(institucionEntidad(1L));
+        cuenta.setPlantel(plantel);
+        when(cuentaFinancieraRepository.findById(30L)).thenReturn(Optional.of(cuenta));
+        when(plantelRepository.findById(10L)).thenReturn(Optional.of(plantel));
+
+        service.validarRecurso(escuela.admin.dto.ModuloCatalogo.CUENTAS_FINANCIERAS, 30L);
     }
 
     @Test
@@ -242,6 +277,12 @@ class AlcanceDatosServiceTest {
         return new InstitucionResponse(id, "I" + id, "Institución " + id, null, null,
                 null, null, null, null, null, null, null, null, "MX", null,
                 "America/Mexico_City", "MXN", true, null);
+    }
+
+    private Institucion institucionEntidad(Long id) {
+        Institucion institucion = new Institucion();
+        institucion.setId(id);
+        return institucion;
     }
 
     private PlantelResponse plantel(Long id, Long institucionId) {

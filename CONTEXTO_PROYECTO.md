@@ -860,3 +860,37 @@
 - El siguiente paso es acordar e implementar primero `CuentaFinanciera` y después la
   recepción, validación y aplicación de pagos. Un pago familiar podrá distribuirse entre
   varios hijos, pero cada aplicación quedará ligada al cargo y alumno correspondiente.
+
+## Decisiones — cuentas financieras para recepción de pagos
+
+- Flyway V16 crea `CuentaFinanciera` y agrega `CUENTA_FINANCIERA_LEER` y
+  `CUENTA_FINANCIERA_ADMINISTRAR` sin ampliar roles existentes.
+- Una cuenta pertenece a una institución y opcionalmente a un plantel; sin plantel es
+  compartida y sólo puede administrarse con alcance institucional. Los usuarios de
+  plantel administran únicamente cuentas de sus planteles autorizados.
+- Los tipos iniciales son caja, banco e inversión. Caja no conserva banco, número ni
+  CLABE; banco e inversión requieren nombre de la institución financiera y al menos un
+  identificador. La moneda coincide con la predeterminada de la institución.
+- El saldo inicial es no negativo y su fecha no puede ser futura. Podrá editarse mientras
+  todavía no haya movimientos; una etapa posterior deberá bloquear moneda y apertura
+  después del primer movimiento y realizar correcciones mediante movimientos trazables.
+- Número de cuenta y CLABE completos sólo se muestran en el formulario administrativo.
+  El listado y el Excel reutilizan los mismos filtros paginados y muestran únicamente
+  los cuatro últimos caracteres.
+- La pantalla es responsiva, compatible con tema claro/oscuro, filtra planteles por
+  institución y oculta los campos bancarios al seleccionar caja.
+
+## Verificación de cuentas financieras
+
+- Docker compiló 309 fuentes Java y ejecutó 199 pruebas sin fallos ni errores. Las
+  pruebas nuevas cubren normalización, duplicados, plantel ajeno, reglas de caja/banco,
+  moneda, fecha, desactivación, formulario y alcance institucional/plantel.
+- Flyway validó dieciséis migraciones y aplicó V16 sobre PostgreSQL 17. Hibernate validó
+  el esquema, detectó 30 repositorios y Actuator respondió `UP`.
+- PostgreSQL confirmó 42 permisos técnicos y cero cuentas financieras. No se crearon ni
+  modificaron datos operativos durante la verificación.
+- El navegador confirmó que la ruta administrativa exige sesión y conserva el aviso de
+  sesión caducada; no se utilizaron credenciales para crear registros de prueba.
+- El siguiente paso es V17 con registro de `Pago`, comprobantes privados y solicitudes
+  de distribución. Permanecerán pendientes la validación, las aplicaciones que afectan
+  saldos y la generación del movimiento financiero único por pago.

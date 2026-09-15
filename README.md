@@ -69,6 +69,7 @@ comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME
 - `escuela.tutor`: expediente institucional de tutores y cuenta de acceso opcional.
 - `escuela.inscripcion`: trayectoria académica e historial de asignaciones de grupo.
 - `escuela.cobranza`: conceptos, cuotas, cargos, becas y ajustes por inscripción/alumno.
+- `escuela.finanzas`: cuentas financieras y, en etapas posteriores, pagos y movimientos.
 - `escuela.config`: seguridad y auditoría JPA.
 - `escuela.common`: excepciones, respuesta de auditoría y utilidades compartidas.
 - Cada módulo contiene DTO, mappers, repositorios y servicios transaccionales.
@@ -219,7 +220,14 @@ pagina y filtra en PostgreSQL y su Excel usa exactamente esos filtros. Requiere
 `POLITICA_RECARGO_LEER` y/o `POLITICA_RECARGO_ADMINISTRAR`; V15 no concede estos
 permisos automáticamente a roles existentes.
 
+Cuentas financieras prepara los destinos para recepción de pagos mediante cuentas
+institucionales o de plantel de tipo caja, banco o inversión. Valida institución,
+plantel, moneda, saldo y fecha inicial; los identificadores bancarios se presentan
+enmascarados en el listado paginado y en su Excel filtrado. Requiere
+`CUENTA_FINANCIERA_LEER` y/o `CUENTA_FINANCIERA_ADMINISTRAR`; V16 no concede estos
+permisos automáticamente a roles existentes.
+
 Un pago futuro podrá cubrir varios hijos, pero cada aplicación y saldo seguirá separado
-por cargo, inscripción y alumno. La siguiente etapa acordará primero las cuentas
-financieras y luego la recepción, validación y distribución de pagos; caja y tesorería
-permanecen fuera de alcance por ahora.
+por cargo, inscripción y alumno. La siguiente etapa registrará pagos pendientes y la
+distribución solicitada; la validación, aplicación real, movimientos, caja y tesorería
+se mantendrán separadas por etapas.
