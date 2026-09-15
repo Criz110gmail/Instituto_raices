@@ -211,6 +211,15 @@ inmutables y se corrigen mediante una reversa de efecto opuesto. Sus listados ta
 son paginados y exportan exactamente los filtros visibles con Apache POI. Los seis
 permisos de V14 no se asignan automáticamente a roles existentes.
 
+Políticas de recargo configura por concepto un porcentaje o monto fijo, días completos
+de gracia, periodicidad única o mensual y un límite opcional. El generador trabaja por
+bloques y crea ajustes con claves idempotentes; repetir una fecha de corte no duplica
+periodos. Los recargos no se capitalizan y conservan su cálculo histórico. El listado
+pagina y filtra en PostgreSQL y su Excel usa exactamente esos filtros. Requiere
+`POLITICA_RECARGO_LEER` y/o `POLITICA_RECARGO_ADMINISTRAR`; V15 no concede estos
+permisos automáticamente a roles existentes.
+
 Un pago futuro podrá cubrir varios hijos, pero cada aplicación y saldo seguirá separado
-por cargo, inscripción y alumno. Antes de automatizar recargos deben definirse monto o
-porcentaje, días de gracia, periodicidad y límite.
+por cargo, inscripción y alumno. La siguiente etapa acordará primero las cuentas
+financieras y luego la recepción, validación y distribución de pagos; caja y tesorería
+permanecen fuera de alcance por ahora.

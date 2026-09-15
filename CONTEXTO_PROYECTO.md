@@ -826,3 +826,37 @@
 - No se crearon becas, cargos ni ajustes reales durante la verificación.
 - El siguiente paso requiere confirmar porcentaje o monto, días de gracia, periodicidad
   y límite de los recargos automáticos. Hasta entonces sólo se permiten manualmente.
+
+## Decisiones — políticas de recargo automático
+
+- Flyway V15 crea `PoliticaRecargo`, agrega su referencia y una clave idempotente a
+  `AjusteCargo`, y suma `POLITICA_RECARGO_LEER` y
+  `POLITICA_RECARGO_ADMINISTRAR` sin concederlos a roles existentes.
+- Cada concepto admite una política configurable: porcentaje o monto fijo, de 0 a 365
+  días completos de gracia, aplicación única o mensual y límite opcional por monto o
+  porcentaje del importe original.
+- El primer recargo se genera después de la fecha del cargo y de todos los días de
+  gracia. En recurrencia mensual se conserva el día equivalente y se ajusta al final
+  de los meses cortos.
+- El cálculo es simple y no capitaliza recargos. Usa el importe original ajustado por
+  becas, descuentos y correcciones ajenas a mora; si esa base queda en cero, no genera.
+- Cada periodo usa la clave `RECARGO:<política>:<cargo>:<periodo>` y se inserta con
+  `ON CONFLICT DO NOTHING`. Una reversa reduce el acumulado usado para el límite, pero
+  no habilita el cobro duplicado del mismo periodo.
+- La consola incluye alta, edición y desactivación de políticas, generación por fecha de
+  corte e institución/plantel, listado filtrado y paginado y Excel por bloques con los
+  mismos filtros. El concepto no puede desactivarse ni dejar de permitir recargos si
+  conserva una política activa.
+
+## Verificación de recargos automáticos
+
+- Docker compiló 299 fuentes Java y ejecutó 185 pruebas sin fallos ni errores. Las
+  pruebas nuevas cubren porcentaje, base descontada, días de gracia, meses cortos,
+  tope prorrateado, idempotencia y saldo base cero.
+- Flyway validó quince migraciones y aplicó V15 sobre PostgreSQL 17. Hibernate validó
+  el esquema y las consultas, detectó 29 repositorios y Actuator respondió `UP`.
+- PostgreSQL confirmó 40 permisos técnicos. `politica_recargo` y los ajustes vinculados
+  a políticas permanecieron vacíos; no se modificaron datos operativos.
+- El siguiente paso es acordar e implementar primero `CuentaFinanciera` y después la
+  recepción, validación y aplicación de pagos. Un pago familiar podrá distribuirse entre
+  varios hijos, pero cada aplicación quedará ligada al cargo y alumno correspondiente.

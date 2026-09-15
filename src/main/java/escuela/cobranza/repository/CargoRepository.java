@@ -12,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecificationExecutor<Cargo> {
 
@@ -20,6 +22,22 @@ public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecific
     Optional<Cargo> findByIdForUpdate(@Param("id") Long id);
 
     Optional<Cargo> findByClaveGeneracion(String claveGeneracion);
+
+    @Query("""
+            select c from Cargo c join c.conceptoCobro concepto join PoliticaRecargo p
+              on p.conceptoCobro.id = concepto.id
+            where c.id > :ultimoId and c.estadoRegistro = 'EMITIDO'
+              and p.activo = true and p.generacionAutomatica = true
+              and concepto.activo = true and concepto.permiteRecargo = true
+              and c.fechaVencimiento <= :fechaCorte
+              and c.inscripcion.alumno.institucion.id = :institucionId
+              and (:plantelId is null or c.inscripcion.plantel.id = :plantelId)
+            order by c.id
+            """)
+    Slice<Cargo> buscarParaRecargo(@Param("institucionId")Long institucionId,
+                                    @Param("plantelId")Long plantelId,
+                                    @Param("fechaCorte")LocalDate fechaCorte,
+                                    @Param("ultimoId")Long ultimoId,Pageable limite);
 
     @Modifying
     @Query(value = """

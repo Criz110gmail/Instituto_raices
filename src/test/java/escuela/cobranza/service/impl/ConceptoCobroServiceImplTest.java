@@ -8,6 +8,7 @@ import escuela.cobranza.mapper.ConceptoCobroMapper;
 import escuela.cobranza.repository.ConceptoCobroRepository;
 import escuela.cobranza.repository.CuotaAlumnoRepository;
 import escuela.cobranza.repository.BecaAlumnoRepository;
+import escuela.cobranza.repository.PoliticaRecargoRepository;
 import escuela.common.exception.RecursoDuplicadoException;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.entity.Institucion;
@@ -27,9 +28,11 @@ class ConceptoCobroServiceImplTest {
     private final ConceptoCobroRepository repository = mock(ConceptoCobroRepository.class);
     private final CuotaAlumnoRepository cuotaRepository = mock(CuotaAlumnoRepository.class);
     private final BecaAlumnoRepository becaRepository = mock(BecaAlumnoRepository.class);
+    private final PoliticaRecargoRepository politicaRepository = mock(PoliticaRecargoRepository.class);
     private final InstitucionRepository institucionRepository = mock(InstitucionRepository.class);
     private final ConceptoCobroServiceImpl service = new ConceptoCobroServiceImpl(
-            repository, cuotaRepository, becaRepository, institucionRepository, new ConceptoCobroMapper());
+            repository, cuotaRepository, becaRepository, politicaRepository,
+            institucionRepository, new ConceptoCobroMapper());
 
     @Test
     void creaConceptoNormalizadoSinPrecioGlobal() {

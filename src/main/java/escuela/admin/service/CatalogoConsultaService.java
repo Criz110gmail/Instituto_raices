@@ -18,6 +18,7 @@ import escuela.cobranza.repository.CuotaAlumnoRepository;
 import escuela.cobranza.repository.TipoBecaRepository;
 import escuela.cobranza.repository.BecaAlumnoRepository;
 import escuela.cobranza.repository.AjusteCargoRepository;
+import escuela.cobranza.repository.PoliticaRecargoRepository;
 import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
 import escuela.inscripcion.entity.Inscripcion;
@@ -68,6 +69,7 @@ public class CatalogoConsultaService {
     private final TipoBecaRepository tipoBecaRepository;
     private final BecaAlumnoRepository becaAlumnoRepository;
     private final AjusteCargoRepository ajusteCargoRepository;
+    private final PoliticaRecargoRepository politicaRecargoRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcanceDatosService;
@@ -137,6 +139,8 @@ public class CatalogoConsultaService {
                     estado(f, "estado"), pagina, this::filaBeca);
             case AJUSTES_CARGO -> consultar(modulo, ajusteCargoRepository, textoAjuste(f),
                     estadoAjuste(f), pagina, this::filaAjuste);
+            case POLITICAS_RECARGO -> consultar(modulo, politicaRecargoRepository,
+                    textoPoliticaRecargo(f), activo(f), pagina, this::filaPoliticaRecargo);
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
             case USUARIOS -> consultar(modulo, usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,
@@ -278,6 +282,7 @@ public class CatalogoConsultaService {
         return (root, query, cb) -> f.estado().equals("TODOS") ? cb.conjunction()
                 : cb.equal(root.get("tipo").as(String.class), f.estado());
     }
+    private Specification<PoliticaRecargo> textoPoliticaRecargo(FiltroCatalogo f){return(root,q,cb)->{if(f.q().isBlank())return cb.conjunction();String p="%"+f.q().toLowerCase(Locale.ROOT)+"%";var c=root.get("conceptoCobro");return cb.or(cb.like(cb.lower(c.get("codigo")),p),cb.like(cb.lower(c.get("nombre")),p),cb.like(cb.lower(c.get("institucion").get("nombre")),p));};}
 
     private <T> Specification<T> activo(FiltroCatalogo f) {
         return (root, query, cb) -> switch (f.estado()) {
@@ -366,6 +371,7 @@ public class CatalogoConsultaService {
                 a.getCargo().getConceptoCobro().getNombre(),etiqueta(a.getTipo().name()),etiqueta(a.getEfecto().name()),
                 a.getMonto().toPlainString()+" "+a.getCargo().getMoneda(),FECHA.format(a.getFechaEfectiva()),a.getMotivo()),estado,a.getReversa()!=null?"neutro":"positivo");
     }
+    private FilaCatalogo filaPoliticaRecargo(PoliticaRecargo p){String recargo=p.getModalidad()==ModalidadBeca.PORCENTAJE?p.getPorcentaje().stripTrailingZeros().toPlainString()+" %":p.getMontoFijo().toPlainString()+" "+p.getMoneda();String limite=switch(p.getTipoLimite()){case SIN_LIMITE->"Sin límite";case MONTO_FIJO->p.getValorLimite().setScale(2,java.math.RoundingMode.HALF_UP).toPlainString()+" "+p.getConceptoCobro().getInstitucion().getMonedaPredeterminada();case PORCENTAJE_ORIGINAL->p.getValorLimite().stripTrailingZeros().toPlainString()+" % del original";};return fila(p.getId(),p.isActivo(),p.getConceptoCobro().getCodigo()+" · "+p.getConceptoCobro().getNombre(),p.getConceptoCobro().getInstitucion().getNombre(),recargo,p.getDiasGracia()+" días",etiqueta(p.getPeriodicidad().name()),limite,p.isGeneracionAutomatica()?"Automática":"Manual");}
 
     private java.math.BigDecimal totalCargo(Cargo c) { java.math.BigDecimal t=c.getImporteOriginal();
         for(AjusteCargo a:c.getAjustes()) t=a.getEfecto()==EfectoAjusteCargo.AUMENTO?t.add(a.getMonto()):t.subtract(a.getMonto()); return t; }

@@ -13,6 +13,7 @@ import escuela.cobranza.repository.CargoRepository;
 import escuela.cobranza.repository.TipoBecaRepository;
 import escuela.cobranza.repository.BecaAlumnoRepository;
 import escuela.cobranza.repository.AjusteCargoRepository;
+import escuela.cobranza.repository.PoliticaRecargoRepository;
 import escuela.admin.dto.ModuloCatalogo;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.dto.response.PlantelResponse;
@@ -61,6 +62,7 @@ public class AlcanceDatosService {
     private final TipoBecaRepository tipoBecaRepository;
     private final BecaAlumnoRepository becaAlumnoRepository;
     private final AjusteCargoRepository ajusteCargoRepository;
+    private final PoliticaRecargoRepository politicaRecargoRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
 
@@ -71,6 +73,7 @@ public class AlcanceDatosService {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
                 case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, ROLES, USUARIOS -> root.get("institucion").get("id");
+                case POLITICAS_RECARGO -> root.get("conceptoCobro").get("institucion").get("id");
                 case VINCULOS_TUTOR, INSCRIPCIONES -> root.get("alumno").get("institucion").get("id");
                 case CUOTAS_ALUMNO, CARGOS, BECAS_ALUMNO -> root.get("inscripcion").get("alumno").get("institucion").get("id");
                 case AJUSTES_CARGO -> root.get("cargo").get("inscripcion").get("alumno").get("institucion").get("id");
@@ -140,6 +143,8 @@ public class AlcanceDatosService {
                     .orElseThrow(this::denegado).getInscripcion().getPlantel().getId());
             case AJUSTES_CARGO -> validarPlantel(ajusteCargoRepository.findById(id)
                     .orElseThrow(this::denegado).getCargo().getInscripcion().getPlantel().getId());
+            case POLITICAS_RECARGO -> validarInstitucion(politicaRecargoRepository.findById(id)
+                    .orElseThrow(this::denegado).getConceptoCobro().getInstitucion().getId());
             case ROLES -> validarInstitucion(rolRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());
             case USUARIOS -> validarInstitucion(usuarioRepository.findById(id)

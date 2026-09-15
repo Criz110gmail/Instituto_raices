@@ -47,7 +47,7 @@
         <div class="flash" th:if="${mensaje}" th:text="${mensaje}">Operación completada</div>
         <div class="panel-heading">
             <div><h2>Directorio</h2><p>Refina la consulta sin cargar el catálogo completo.</p></div>
-            <div class="panel-actions"><a class="export-button" th:if="${resultado.modulo.name() == 'CARGOS'}" href="/admin/cargos/generar">Generar automáticos</a><a class="new-button" th:if="${resultado.modulo.mantenimientoDisponible() and resultado.modulo.name() != 'AJUSTES_CARGO'}" th:href="${resultado.modulo.rutaMantenimiento() + resultado.modulo.segmentoNuevo()}">+ Nuevo registro</a><a class="export-button" th:href="@{/admin/catalogos/{slug}/excel(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado})}">
+            <div class="panel-actions"><a class="export-button" th:if="${resultado.modulo.name() == 'CARGOS'}" href="/admin/cargos/generar">Generar automáticos</a><a class="export-button" th:if="${resultado.modulo.name() == 'POLITICAS_RECARGO'}" href="/admin/politicas-recargo/generar">Generar recargos</a><a class="new-button" th:if="${resultado.modulo.mantenimientoDisponible() and resultado.modulo.name() != 'AJUSTES_CARGO'}" th:href="${resultado.modulo.rutaMantenimiento() + resultado.modulo.segmentoNuevo()}">+ Nuevo registro</a><a class="export-button" th:href="@{/admin/catalogos/{slug}/excel(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado})}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
                 Exportar Excel
             </a></div>

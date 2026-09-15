@@ -23,4 +23,6 @@ public class AjusteCargo extends EntidadAuditable {
     @Column(name = "fecha_efectiva", nullable = false) private LocalDate fechaEfectiva;
     @OneToOne(fetch = FetchType.LAZY) @JoinColumn(name = "reversa_de_id", unique = true) private AjusteCargo reversaDe;
     @OneToOne(mappedBy = "reversaDe", fetch = FetchType.LAZY) private AjusteCargo reversa;
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "politica_recargo_id") private PoliticaRecargo politicaRecargo;
+    @Column(name = "clave_generacion", length = 180) private String claveGeneracion;
 }

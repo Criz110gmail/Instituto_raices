@@ -23,6 +23,7 @@ public enum ModuloCatalogo {
     TIPOS_BECA("tipos-beca", "Tipos de beca", List.of("Código", "Tipo de beca", "Institución", "Descripción")),
     BECAS_ALUMNO("becas-alumno", "Becas por alumno", List.of("Alumno", "Tipo", "Concepto", "Beneficio", "Vigencia")),
     AJUSTES_CARGO("ajustes-cargo", "Ajustes de cargos", List.of("Alumno", "Concepto", "Tipo", "Efecto", "Monto", "Fecha", "Motivo")),
+    POLITICAS_RECARGO("politicas-recargo", "Políticas de recargo", List.of("Concepto", "Institución", "Recargo", "Gracia", "Periodicidad", "Límite", "Generación")),
     ROLES("roles", "Roles y permisos", List.of("Código", "Rol", "Institución", "Descripción")),
     USUARIOS("usuarios", "Usuarios", List.of("Usuario", "Correo", "Institución", "Credencial"));
 
@@ -45,7 +46,7 @@ public enum ModuloCatalogo {
             case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS, GRUPOS -> "Estructura";
             case ALUMNOS, TUTORES, VINCULOS_TUTOR -> "Personas";
             case INSCRIPCIONES -> "Trayectoria";
-            case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO -> "Cobranza";
+            case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
             case ROLES, USUARIOS -> "Seguridad";
         };
     }
@@ -70,6 +71,7 @@ public enum ModuloCatalogo {
             case TIPOS_BECA -> "TIPO_BECA";
             case BECAS_ALUMNO -> "BECA_ALUMNO";
             case AJUSTES_CARGO -> "AJUSTE_CARGO";
+            case POLITICAS_RECARGO -> "POLITICA_RECARGO";
             case ROLES -> "ROL";
             case USUARIOS -> "USUARIO";
         };
@@ -85,7 +87,7 @@ public enum ModuloCatalogo {
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
                 || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == CARGOS
-                || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO
+                || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO || this == POLITICAS_RECARGO
                 || this == ROLES || this == USUARIOS;
     }
 
@@ -109,6 +111,7 @@ public enum ModuloCatalogo {
             case TIPOS_BECA -> "/admin/tipos-beca";
             case BECAS_ALUMNO -> "/admin/becas-alumno";
             case AJUSTES_CARGO -> "/admin/ajustes-cargo";
+            case POLITICAS_RECARGO -> "/admin/politicas-recargo";
             case ROLES -> "/admin/roles";
             case USUARIOS -> "/admin/usuarios";
             default -> "";
@@ -121,7 +124,7 @@ public enum ModuloCatalogo {
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
                 || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == CARGOS
-                || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO
+                || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO || this == POLITICAS_RECARGO
                 || this == ROLES || this == USUARIOS
                 ? "/nuevo" : "/nueva";
     }

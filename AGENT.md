@@ -20,11 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `b537db0` — `módulo de Inscripciones y Asignaciones de grupo`.
-- La rama local estaba sincronizada con `origin/main` antes de crear este documento.
-- El propietario confirmó y subió los cambios hasta `e9d851c`. Después se implementó
-  localmente Flyway V14 con becas y ajustes; estos cambios todavía deben revisarse,
-  confirmarse y subirse antes de continuar en otra computadora. El agente nuevo siempre
+- Último commit confirmado antes de estos cambios locales: `4fb84f1` — `etapa de becas y ajustes`.
+- `main`, `origin/main` y `origin/HEAD` estaban sincronizados en ese commit antes de
+  implementar Flyway V15 con políticas de recargo automático. V15 permanece como cambio
+  local hasta que el propietario lo revise, confirme y suba. El agente nuevo siempre
   debe confirmar `git status` y `git log`.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
@@ -383,13 +382,26 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   se congela su base, porcentaje y monto como ajuste histórico. Cambiar la beca sólo
   afecta cargos futuros. Los ajustes manuales y sus reversas son movimientos separados;
   nunca se sobrescribe ni elimina el original.
+- Flyway V15 crea `PoliticaRecargo` y enlaza cada recargo automático con su política y
+  una clave de generación única. Existe una sola política editable por concepto.
+- El administrador elige porcentaje o monto fijo, días completos de gracia,
+  periodicidad única o mensual, límite sin tope, por monto o por porcentaje del cargo,
+  y puede pausar tanto la política como su generación automática.
+- El recargo es simple: se calcula sobre el importe original más o menos ajustes que no
+  sean recargos, por lo que nunca genera interés sobre recargos anteriores. Empieza el
+  día posterior al vencimiento y a los días de gracia completos configurados.
+- El generador procesa cargos por bloques de 100, admite corte institucional o por
+  plantel y usa `ON CONFLICT DO NOTHING`; repetirlo no duplica un periodo. Los ajustes
+  emitidos conservan importe, base, porcentaje, fecha y política históricos.
+- Una reversa resta del acumulado usado para el límite, pero la clave histórica impide
+  volver a cobrar automáticamente el mismo periodo.
 
 ## Verificación confirmada
 
-- Compilación correcta de 285 archivos Java de producción.
-- 181 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V14 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 28 repositorios.
+- Compilación correcta de 299 archivos Java de producción.
+- 185 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V15 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 29 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -421,36 +433,37 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-Confirmar con el propietario la política de recargos automáticos: porcentaje o monto
-fijo, días de gracia, periodicidad, límite máximo y si un recargo puede repetirse sobre
-el mismo cargo. Hasta entonces sólo existen recargos manuales autorizados y reversibles.
-Después se decidirá si la siguiente migración agrega esa política o si se inicia la base
-de pagos y aplicaciones. No implementar caja ni tesorería sin cerrar primero esa decisión.
+Revisar y confirmar los cambios locales de V15. Después iniciar la base de recepción de
+pagos sin mezclar todavía caja o tesorería: primero `CuentaFinanciera` como destino
+institucional validable y, en la etapa siguiente, `Pago`, `SolicitudAplicacionPago` y
+`AplicacionPago`. Un pago podrá cubrir varios hijos, pero cada aplicación y saldo debe
+permanecer separado por cargo, inscripción y alumno. Antes de crear V16 hay que acordar
+los datos mínimos de cuenta, medios de pago y flujo de validación/rechazo.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. Confirmar si los cambios locales de V10 y V11 ya fueron revisados, confirmados y
-   subidos. Si no están en `origin/main`, no reconstruirlos: pedir al propietario el push
-   desde la computadora donde se implementaron.
+1. Confirmar si los cambios locales de V15 ya fueron revisados, confirmados y subidos.
+   Si no están en `origin/main`, no reconstruirlos: pedir al propietario el push desde
+   la computadora donde se implementaron.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V10–V14 ya pertenecen a trayectoria, configuración de cobranza, foto de
-   usuario, cargos, becas y ajustes; nunca editar V1–V14. La siguiente migración
-   disponible es V15.
-5. Confirmar la política de recargos automáticos antes de crear V15. Los recargos
-   manuales ya existen como ajustes trazables y reversibles.
+4. Flyway V10–V15 ya pertenecen a trayectoria, configuración de cobranza, foto de
+   usuario, cargos, becas, ajustes y recargos automáticos; nunca editar V1–V15. La
+   siguiente migración disponible es V16.
+5. Antes de V16, confirmar cuenta financiera, medios de pago y estados del flujo de
+   validación. No crear todavía caja, cortes, retiros ni contabilidad.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.
-7. No implementar pagos, aplicaciones, anticipos, caja ni tesorería hasta terminar y
-   validar por etapas la base de cuentas por cobrar. No generar registros reales de
-   prueba salvo autorización expresa.
+7. La base de cuentas por cobrar quedó cerrada con V15. Implementar pagos y aplicaciones
+   por etapas, manteniendo caja y tesorería fuera de alcance hasta acordarlas. No generar
+   registros reales de prueba salvo autorización expresa.
 
 ## Disciplina de cambios y entrega
 

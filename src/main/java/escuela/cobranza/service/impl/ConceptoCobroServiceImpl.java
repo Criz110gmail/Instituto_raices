@@ -9,6 +9,7 @@ import escuela.cobranza.repository.ConceptoCobroRepository;
 import escuela.cobranza.repository.CuotaAlumnoRepository;
 import escuela.cobranza.repository.BecaAlumnoRepository;
 import escuela.cobranza.entity.EstadoBeca;
+import escuela.cobranza.repository.PoliticaRecargoRepository;
 import escuela.cobranza.service.ConceptoCobroService;
 import escuela.common.exception.RecursoDuplicadoException;
 import escuela.common.exception.RecursoNoEncontradoException;
@@ -30,6 +31,7 @@ public class ConceptoCobroServiceImpl implements ConceptoCobroService {
     private final ConceptoCobroRepository repository;
     private final CuotaAlumnoRepository cuotaRepository;
     private final BecaAlumnoRepository becaRepository;
+    private final PoliticaRecargoRepository politicaRecargoRepository;
     private final InstitucionRepository institucionRepository;
     private final ConceptoCobroMapper mapper;
 
@@ -61,6 +63,10 @@ public class ConceptoCobroServiceImpl implements ConceptoCobroService {
                 && becaRepository.existsByConceptoCobroIdAndEstado(id, EstadoBeca.ACTIVA)) {
             throw new ReglaNegocioException("Suspende o finaliza las becas activas antes de retirar esta autorización");
         }
+        if ((!request.activo() || !request.permiteRecargo())
+                && politicaRecargoRepository.existsByConceptoCobroIdAndActivoTrue(id)) {
+            throw new ReglaNegocioException("Desactiva la política de recargo antes de retirar esta autorización");
+        }
         validarCodigo(request, id);
         mapper.actualizar(entidad, request);
         return mapper.respuesta(repository.saveAndFlush(entidad));
@@ -81,6 +87,9 @@ public class ConceptoCobroServiceImpl implements ConceptoCobroService {
         }
         if (becaRepository.existsByConceptoCobroIdAndEstado(id, EstadoBeca.ACTIVA)) {
             throw new ReglaNegocioException("Suspende o finaliza las becas activas antes de desactivar el concepto");
+        }
+        if (politicaRecargoRepository.existsByConceptoCobroIdAndActivoTrue(id)) {
+            throw new ReglaNegocioException("Desactiva la política de recargo antes de desactivar el concepto");
         }
         entidad.setActivo(false);
     }
