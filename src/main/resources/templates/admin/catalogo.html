@@ -47,7 +47,7 @@
         <div class="flash" th:if="${mensaje}" th:text="${mensaje}">Operación completada</div>
         <div class="panel-heading">
             <div><h2>Directorio</h2><p>Refina la consulta sin cargar el catálogo completo.</p></div>
-            <div class="panel-actions"><a class="export-button" th:if="${resultado.modulo.name() == 'CARGOS'}" href="/admin/cargos/generar">Generar automáticos</a><a class="new-button" th:if="${resultado.modulo.mantenimientoDisponible()}" th:href="${resultado.modulo.rutaMantenimiento() + resultado.modulo.segmentoNuevo()}">+ Nuevo registro</a><a class="export-button" th:href="@{/admin/catalogos/{slug}/excel(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado})}">
+            <div class="panel-actions"><a class="export-button" th:if="${resultado.modulo.name() == 'CARGOS'}" href="/admin/cargos/generar">Generar automáticos</a><a class="new-button" th:if="${resultado.modulo.mantenimientoDisponible() and resultado.modulo.name() != 'AJUSTES_CARGO'}" th:href="${resultado.modulo.rutaMantenimiento() + resultado.modulo.segmentoNuevo()}">+ Nuevo registro</a><a class="export-button" th:href="@{/admin/catalogos/{slug}/excel(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado})}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
                 Exportar Excel
             </a></div>
@@ -72,6 +72,10 @@
                 <option value="SUSPENDIDA" th:selected="${filtro.estado == 'SUSPENDIDA'}">Suspendida</option>
                 <option value="EMITIDO" th:selected="${filtro.estado == 'EMITIDO'}">Emitido</option>
                 <option value="CANCELADO" th:selected="${filtro.estado == 'CANCELADO'}">Cancelado</option>
+                <option value="BECA" th:selected="${filtro.estado == 'BECA'}">Beca</option>
+                <option value="DESCUENTO" th:selected="${filtro.estado == 'DESCUENTO'}">Descuento</option>
+                <option value="RECARGO" th:selected="${filtro.estado == 'RECARGO'}">Recargo</option>
+                <option value="CORRECCION" th:selected="${filtro.estado == 'CORRECCION'}">Corrección</option>
             </select></label>
             <label><span>Por página</span><select name="tamanio">
                 <option th:each="n : ${ {10, 25, 50, 100} }" th:value="${n}" th:text="${n}" th:selected="${filtro.tamanio == n}">25</option>
@@ -86,7 +90,7 @@
                 <tbody><tr th:each="fila : ${resultado.pagina.content}">
                     <td th:each="celda, iter : ${fila.celdas}" th:text="${celda}" th:attr="data-label=${resultado.columnas[iter.index]}">Dato</td>
                     <td data-label="Estado"><span class="status" th:classappend="${fila.tono}" th:text="${fila.estado}">Activo</span></td>
-                    <td data-label="Acciones" th:if="${resultado.modulo.mantenimientoDisponible()}"><a class="edit-link" th:href="${resultado.modulo.rutaMantenimiento() + '/' + fila.id + '/editar'}" th:text="${resultado.modulo.name() == 'CARGOS' ? 'Ver' : 'Editar'}">Editar</a></td>
+                    <td data-label="Acciones" th:if="${resultado.modulo.mantenimientoDisponible()}"><a class="edit-link" th:href="${resultado.modulo.rutaMantenimiento() + '/' + fila.id + '/editar'}" th:text="${resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'AJUSTES_CARGO' ? 'Ver' : 'Editar'}">Editar</a></td>
                 </tr></tbody>
             </table>
         </div>

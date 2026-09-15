@@ -22,11 +22,10 @@ no vuelvas a implementar componentes que ya existan.
 - Rama principal: `main`.
 - Último commit confirmado antes de estos cambios locales: `b537db0` — `módulo de Inscripciones y Asignaciones de grupo`.
 - La rama local estaba sincronizada con `origin/main` antes de crear este documento.
-- Al 14 de septiembre de 2026 hay cambios locales pendientes de commit sobre
-  `b537db0`: el módulo de conceptos/cuotas, Flyway V11, integración administrativa,
-  estilos, pruebas y documentación. El propietario debe
-  revisar, hacer commit y push antes de continuar en otra computadora; el agente nuevo
-  siempre debe confirmar `git status` y `git log`.
+- El propietario confirmó y subió los cambios hasta `e9d851c`. Después se implementó
+  localmente Flyway V14 con becas y ajustes; estos cambios todavía deben revisarse,
+  confirmarse y subirse antes de continuar en otra computadora. El agente nuevo siempre
+  debe confirmar `git status` y `git log`.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -377,13 +376,20 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   duplican obligaciones. Los cargos no se editan: sólo se cancelan con versión y motivo.
 - Un pago futuro podrá cubrir varios hijos, pero deberá conservar aplicaciones separadas
   por cada cargo/alumno. Nunca se administrará un saldo familiar indistinto.
+- Flyway V14 crea `TipoBeca`, `BecaAlumno` y `AjusteCargo`, además de seis permisos sin
+  autoasignación. Cada beca pertenece a una inscripción y concepto, utiliza porcentaje
+  o monto fijo y no puede solaparse con otra beca activa equivalente.
+- Al emitir un cargo se aplica la beca vigente con redondeo `HALF_UP` a dos decimales y
+  se congela su base, porcentaje y monto como ajuste histórico. Cambiar la beca sólo
+  afecta cargos futuros. Los ajustes manuales y sus reversas son movimientos separados;
+  nunca se sobrescribe ni elimina el original.
 
 ## Verificación confirmada
 
-- Compilación correcta de 253 archivos Java de producción.
-- 175 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V13 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 25 repositorios.
+- Compilación correcta de 285 archivos Java de producción.
+- 181 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V14 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 28 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -415,12 +421,11 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-Implementar la política de becas y ajustes sobre cargos mediante `TipoBeca`,
-`BecaAlumno` y `AjusteCargo` a partir de Flyway V14. Las becas deben seguir ligadas a
-una inscripción/alumno y sus descuentos deben quedar congelados como ajustes del cargo
-emitido; no se reescribirán importes históricos al cambiar una beca. Antes de automatizar
-recargos se debe confirmar su porcentaje o monto, días de gracia, periodicidad y límite.
-Todavía no implementar pagos, caja ni tesorería.
+Confirmar con el propietario la política de recargos automáticos: porcentaje o monto
+fijo, días de gracia, periodicidad, límite máximo y si un recargo puede repetirse sobre
+el mismo cargo. Hasta entonces sólo existen recargos manuales autorizados y reversibles.
+Después se decidirá si la siguiente migración agrega esa política o si se inicia la base
+de pagos y aplicaciones. No implementar caja ni tesorería sin cerrar primero esa decisión.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
@@ -435,10 +440,11 @@ pero no bloquea el siguiente módulo funcional.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V10–V13 ya pertenecen a trayectoria, configuración de cobranza, foto de
-   usuario y cargos; nunca editar V1–V13. La siguiente migración disponible es V14.
-5. Implementar `TipoBeca`, `BecaAlumno` y `AjusteCargo`. Una beca configurada genera
-   descuentos trazables por alumno; cambiarla sólo afecta cargos futuros.
+4. Flyway V10–V14 ya pertenecen a trayectoria, configuración de cobranza, foto de
+   usuario, cargos, becas y ajustes; nunca editar V1–V14. La siguiente migración
+   disponible es V15.
+5. Confirmar la política de recargos automáticos antes de crear V15. Los recargos
+   manuales ya existen como ajustes trazables y reversibles.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.

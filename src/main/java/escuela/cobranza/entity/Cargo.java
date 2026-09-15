@@ -17,6 +17,8 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -73,4 +75,8 @@ public class Cargo extends EntidadAuditable {
 
     @Column(name = "motivo_cancelacion", length = 2000)
     private String motivoCancelacion;
+
+    @jakarta.persistence.OneToMany(mappedBy = "cargo", fetch = FetchType.LAZY)
+    @jakarta.persistence.OrderBy("id ASC")
+    private List<AjusteCargo> ajustes = new ArrayList<>();
 }

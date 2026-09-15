@@ -43,6 +43,7 @@ public class CargoAdminController {
     private final InstitucionService institucionService;
     private final PlantelService plantelService;
     private final AlcanceDatosService alcance;
+    private final AjusteCargoAdminController ajusteController;
 
     @GetMapping("/nuevo")
     String nuevo(Model model) {
@@ -74,7 +75,7 @@ public class CargoAdminController {
     @GetMapping("/{id}/editar")
     String detalle(@PathVariable Long id, Model model) {
         alcance.validarRecurso(ModuloCatalogo.CARGOS, id);
-        model.addAttribute("cargo", service.obtener(id));
+        ajusteController.prepararCargo(model, id, new escuela.admin.dto.AjusteCargoForm());
         return "admin/cargo-detalle";
     }
 
@@ -86,7 +87,7 @@ public class CargoAdminController {
             service.cancelar(id, version, motivo);
         } catch (ReglaNegocioException | DataIntegrityViolationException |
                  ObjectOptimisticLockingFailureException excepcion) {
-            model.addAttribute("cargo", service.obtener(id));
+            ajusteController.prepararCargo(model, id, new escuela.admin.dto.AjusteCargoForm());
             model.addAttribute("motivoCapturado", motivo);
             model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
             return "admin/cargo-detalle";

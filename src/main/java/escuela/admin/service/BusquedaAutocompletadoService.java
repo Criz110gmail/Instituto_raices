@@ -6,6 +6,8 @@ import escuela.alumno.entity.Alumno;
 import escuela.alumno.repository.AlumnoRepository;
 import escuela.cobranza.entity.ConceptoCobro;
 import escuela.cobranza.repository.ConceptoCobroRepository;
+import escuela.cobranza.repository.TipoBecaRepository;
+import escuela.cobranza.entity.TipoBeca;
 import escuela.academico.entity.PeriodoAcademico;
 import escuela.academico.repository.PeriodoAcademicoRepository;
 import escuela.admin.dto.ModuloCatalogo;
@@ -38,6 +40,7 @@ public class BusquedaAutocompletadoService {
     private final InscripcionRepository inscripcionRepository;
     private final ConceptoCobroRepository conceptoCobroRepository;
     private final PeriodoAcademicoRepository periodoAcademicoRepository;
+    private final TipoBecaRepository tipoBecaRepository;
     private final AlcanceDatosService alcance;
 
     public ResultadoAutocompletado alumnos(Long institucionId, String consulta) {
@@ -130,6 +133,18 @@ public class BusquedaAutocompletadoService {
                         periodo.getCodigo() + " · " + periodo.getNombre(),
                         periodo.getFechaInicio() + " — " + periodo.getFechaFin()))
                 .toList(), resultado.hasNext());
+    }
+
+    public ResultadoAutocompletado tiposBeca(Long institucionId, String consulta) {
+        alcance.validarInstitucion(institucionId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        Slice<TipoBeca> resultado = tipoBecaRepository.buscarParaAutocompletado(
+                institucionId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+        return new ResultadoAutocompletado(resultado.getContent().stream()
+                .map(tipo -> new OpcionAutocompletado(tipo.getId(),
+                        tipo.getCodigo() + " · " + tipo.getNombre(),
+                        detalle(tipo.getDescripcion(), null))).toList(), resultado.hasNext());
     }
 
     private String normalizar(String consulta) {

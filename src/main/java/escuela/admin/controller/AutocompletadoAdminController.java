@@ -60,4 +60,10 @@ public class AutocompletadoAdminController {
                                           @RequestParam(defaultValue = "") String q) {
         return service.periodosCargo(inscripcionId, q);
     }
+
+    @GetMapping("/tipos-beca")
+    ResultadoAutocompletado tiposBeca(@RequestParam Long institucionId,
+                                      @RequestParam(defaultValue = "") String q) {
+        return service.tiposBeca(institucionId, q);
+    }
 }

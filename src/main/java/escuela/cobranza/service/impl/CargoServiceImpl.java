@@ -56,6 +56,7 @@ public class CargoServiceImpl implements CargoService {
     private final ConceptoCobroRepository conceptoRepository;
     private final PeriodoAcademicoRepository periodoRepository;
     private final CargoMapper mapper;
+    private final AplicacionBecaCargoService aplicacionBecaService;
 
     @Override
     public CargoResponse crearManual(CargoManualRequest request) {
@@ -73,7 +74,9 @@ public class CargoServiceImpl implements CargoService {
                 + ":" + UUID.randomUUID();
         Cargo cargo = mapper.nuevoManual(request, inscripcion, concepto, periodo, clave);
         cargo.setImporteOriginal(request.importeOriginal().setScale(2, RoundingMode.UNNECESSARY));
-        return mapper.respuesta(repository.saveAndFlush(cargo));
+        cargo = repository.saveAndFlush(cargo);
+        aplicacionBecaService.aplicar(cargo);
+        return mapper.respuesta(cargo);
     }
 
     @Override
@@ -161,6 +164,9 @@ public class CargoServiceImpl implements CargoService {
                 inicio, fin, LocalDate.now(), vencimiento,
                 cuota.getImporteBase().setScale(2, RoundingMode.UNNECESSARY),
                 codigo(cuota.getMoneda()), actorActual());
+        if (insertados == 1) {
+            repository.findByClaveGeneracion(clave).ifPresent(aplicacionBecaService::aplicar);
+        }
         return insertados == 1 ? new ResultadoGeneracion(1, 0) : new ResultadoGeneracion(0, 1);
     }
 

@@ -7,6 +7,8 @@ import escuela.cobranza.entity.EstadoCuota;
 import escuela.cobranza.mapper.ConceptoCobroMapper;
 import escuela.cobranza.repository.ConceptoCobroRepository;
 import escuela.cobranza.repository.CuotaAlumnoRepository;
+import escuela.cobranza.repository.BecaAlumnoRepository;
+import escuela.cobranza.entity.EstadoBeca;
 import escuela.cobranza.service.ConceptoCobroService;
 import escuela.common.exception.RecursoDuplicadoException;
 import escuela.common.exception.RecursoNoEncontradoException;
@@ -27,6 +29,7 @@ public class ConceptoCobroServiceImpl implements ConceptoCobroService {
 
     private final ConceptoCobroRepository repository;
     private final CuotaAlumnoRepository cuotaRepository;
+    private final BecaAlumnoRepository becaRepository;
     private final InstitucionRepository institucionRepository;
     private final ConceptoCobroMapper mapper;
 
@@ -54,6 +57,10 @@ public class ConceptoCobroServiceImpl implements ConceptoCobroService {
         if (!request.activo() && cuotaRepository.existsByConceptoCobroIdAndEstado(id, EstadoCuota.ACTIVA)) {
             throw new ReglaNegocioException("Finaliza o suspende las cuotas activas antes de desactivar el concepto");
         }
+        if ((!request.activo() || !request.permiteBeca())
+                && becaRepository.existsByConceptoCobroIdAndEstado(id, EstadoBeca.ACTIVA)) {
+            throw new ReglaNegocioException("Suspende o finaliza las becas activas antes de retirar esta autorización");
+        }
         validarCodigo(request, id);
         mapper.actualizar(entidad, request);
         return mapper.respuesta(repository.saveAndFlush(entidad));
@@ -71,6 +78,9 @@ public class ConceptoCobroServiceImpl implements ConceptoCobroService {
         verificar(entidad, version, "Concepto de cobro");
         if (cuotaRepository.existsByConceptoCobroIdAndEstado(id, EstadoCuota.ACTIVA)) {
             throw new ReglaNegocioException("Finaliza o suspende las cuotas activas antes de desactivar el concepto");
+        }
+        if (becaRepository.existsByConceptoCobroIdAndEstado(id, EstadoBeca.ACTIVA)) {
+            throw new ReglaNegocioException("Suspende o finaliza las becas activas antes de desactivar el concepto");
         }
         entidad.setActivo(false);
     }

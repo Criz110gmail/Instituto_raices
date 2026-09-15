@@ -798,3 +798,31 @@
   La descarga de la foto valida primero el acceso a la inscripción y usa `no-store`.
 - El siguiente paso es `TipoBeca`, `BecaAlumno` y `AjusteCargo` en Flyway V14. Pagos,
   aplicaciones, caja y tesorería continúan fuera de esta etapa.
+
+## Decisiones — becas individuales y ajustes históricos
+
+- Flyway V14 crea `TipoBeca`, `BecaAlumno` y `AjusteCargo`, junto con seis permisos
+  técnicos que no se conceden automáticamente a roles existentes.
+- Una beca se asigna a una inscripción y a un solo concepto. Puede ser porcentaje o
+  monto fijo, tiene vigencia y estado, y no puede solaparse con otra beca activa para
+  el mismo alumno y concepto.
+- Al emitir un cargo manual o automático se localiza la beca vigente y se registra un
+  ajuste separado con base, porcentaje y monto congelados. El porcentaje se redondea
+  `HALF_UP` a dos decimales y el monto fijo nunca reduce el cargo por debajo de cero.
+- Modificar, suspender o finalizar una beca sólo afecta cargos futuros. Un concepto no
+  puede retirar la autorización de becas mientras conserve asignaciones activas.
+- Los ajustes manuales admiten descuento, recargo y corrección según la política del
+  concepto. Son inmutables y se corrigen creando una reversa igual y de efecto opuesto.
+- Los tres módulos filtran y paginan en PostgreSQL, exportan XLSX por bloques con los
+  mismos filtros, respetan alcance institucional/plantel y conservan temas claro/oscuro.
+
+## Verificación de becas y ajustes
+
+- Docker compiló 285 fuentes Java y ejecutó 181 pruebas sin fallos ni errores. Las seis
+  pruebas nuevas cubren redondeo, monto fijo, idempotencia, límites, política del
+  concepto y reversas históricas.
+- Flyway validó catorce migraciones y aplicó V14 sobre PostgreSQL 17. Hibernate validó
+  el esquema y detectó 28 repositorios; Actuator respondió `UP`.
+- No se crearon becas, cargos ni ajustes reales durante la verificación.
+- El siguiente paso requiere confirmar porcentaje o monto, días de gracia, periodicidad
+  y límite de los recargos automáticos. Hasta entonces sólo se permiten manualmente.

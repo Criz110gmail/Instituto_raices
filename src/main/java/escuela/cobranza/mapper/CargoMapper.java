@@ -7,6 +7,7 @@ import escuela.cobranza.entity.Cargo;
 import escuela.cobranza.entity.ConceptoCobro;
 import escuela.cobranza.entity.EstadoRegistroCargo;
 import escuela.cobranza.entity.SituacionCobro;
+import escuela.cobranza.entity.EfectoAjusteCargo;
 import escuela.inscripcion.entity.Inscripcion;
 import org.springframework.stereotype.Component;
 
@@ -46,7 +47,13 @@ public class CargoMapper {
         var alumno = inscripcion.getAlumno();
         boolean cancelado = cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO;
         BigDecimal cero = BigDecimal.ZERO.setScale(2);
-        BigDecimal total = cargo.getImporteOriginal();
+        BigDecimal aumentos = cargo.getAjustes().stream()
+                .filter(a -> a.getEfecto() == EfectoAjusteCargo.AUMENTO)
+                .map(a -> a.getMonto()).reduce(cero, BigDecimal::add);
+        BigDecimal disminuciones = cargo.getAjustes().stream()
+                .filter(a -> a.getEfecto() == EfectoAjusteCargo.DISMINUCION)
+                .map(a -> a.getMonto()).reduce(cero, BigDecimal::add);
+        BigDecimal total = cargo.getImporteOriginal().add(aumentos).subtract(disminuciones);
         BigDecimal saldo = cancelado ? cero : total;
         SituacionCobro situacion = cancelado ? SituacionCobro.CANCELADO
                 : total.signum() == 0 ? SituacionCobro.PAGADO : SituacionCobro.PENDIENTE;
@@ -65,7 +72,7 @@ public class CargoMapper {
                 cargo.getPeriodoAcademico() == null ? null : cargo.getPeriodoAcademico().getNombre(),
                 cargo.getFechaEmision(), cargo.getFechaVencimiento(), cargo.getImporteOriginal(),
                 cargo.getMoneda(), cargo.getEstadoRegistro(), cargo.getCanceladoEn(),
-                cargo.getMotivoCancelacion(), cero, cero, total, cero, saldo, situacion,
+                cargo.getMotivoCancelacion(), disminuciones, aumentos, total, cero, saldo, situacion,
                 vencido, desde(cargo));
     }
 

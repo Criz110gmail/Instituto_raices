@@ -48,8 +48,10 @@ class CargoServiceImplTest {
     private final InscripcionRepository inscripcionRepository = mock(InscripcionRepository.class);
     private final ConceptoCobroRepository conceptoRepository = mock(ConceptoCobroRepository.class);
     private final PeriodoAcademicoRepository periodoRepository = mock(PeriodoAcademicoRepository.class);
+    private final AplicacionBecaCargoService aplicacionBecaService = mock(AplicacionBecaCargoService.class);
     private final CargoServiceImpl service = new CargoServiceImpl(repository, cuotaRepository,
-            inscripcionRepository, conceptoRepository, periodoRepository, new CargoMapper());
+            inscripcionRepository, conceptoRepository, periodoRepository, new CargoMapper(),
+            aplicacionBecaService);
 
     @Test
     void generaMensualidadesPorAlumnoYRecortaElDiaEnFebrero() {

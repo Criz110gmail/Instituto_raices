@@ -68,7 +68,7 @@ comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME
 - `escuela.alumno`: expediente de alumnos y vínculos históricos con tutores.
 - `escuela.tutor`: expediente institucional de tutores y cuenta de acceso opcional.
 - `escuela.inscripcion`: trayectoria académica e historial de asignaciones de grupo.
-- `escuela.cobranza`: conceptos, cuotas configurables y cargos por inscripción/alumno.
+- `escuela.cobranza`: conceptos, cuotas, cargos, becas y ajustes por inscripción/alumno.
 - `escuela.config`: seguridad y auditoría JPA.
 - `escuela.common`: excepciones, respuesta de auditoría y utilidades compartidas.
 - Cada módulo contiene DTO, mappers, repositorios y servicios transaccionales.
@@ -85,7 +85,8 @@ GIN `pg_trgm` desde Flyway V8; no se cargan tablas completas dentro de formulari
 ## Consola administrativa
 
 La ruta `/admin` contiene los ocho catálogos académicos, Alumnos, Tutores, Vínculos
-alumno–tutor, Inscripciones, Conceptos de cobro, Cuotas por alumno, Cargos y los módulos de
+alumno–tutor, Inscripciones, Conceptos de cobro, Cuotas por alumno, Cargos, Tipos de
+beca, Becas por alumno, Ajustes de cargos y los módulos de
 Roles y permisos y Usuarios.
 Todos los listados consultan la
 base de datos con filtros y paginación; el botón **Exportar Excel** aplica exactamente
@@ -202,6 +203,14 @@ cancelarse conservando motivo e historial. El listado pagina y filtra en Postgre
 su Excel reutiliza exactamente esos filtros. Requiere `CARGO_LEER` y/o
 `CARGO_ADMINISTRAR`; los permisos nuevos no se asignan automáticamente a roles.
 
+Tipos de beca clasifica las políticas institucionales y Becas por alumno asigna un
+porcentaje o monto fijo a una inscripción y concepto durante una vigencia. Al emitir un
+cargo futuro, el beneficio se congela como un `AjusteCargo`; modificar la beca después
+no reescribe el historial. Los ajustes manuales de descuento, recargo o corrección son
+inmutables y se corrigen mediante una reversa de efecto opuesto. Sus listados también
+son paginados y exportan exactamente los filtros visibles con Apache POI. Los seis
+permisos de V14 no se asignan automáticamente a roles existentes.
+
 Un pago futuro podrá cubrir varios hijos, pero cada aplicación y saldo seguirá separado
-por cargo, inscripción y alumno. Antes de pagos se implementarán becas y ajustes para
-congelar descuentos e incrementos autorizados sobre cada cargo.
+por cargo, inscripción y alumno. Antes de automatizar recargos deben definirse monto o
+porcentaje, días de gracia, periodicidad y límite.

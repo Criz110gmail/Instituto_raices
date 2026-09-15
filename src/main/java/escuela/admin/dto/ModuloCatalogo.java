@@ -20,6 +20,9 @@ public enum ModuloCatalogo {
     CONCEPTOS_COBRO("conceptos-cobro", "Conceptos de cobro", List.of("Código", "Concepto", "Institución", "Categoría", "Reglas")),
     CUOTAS_ALUMNO("cuotas-alumno", "Cuotas por alumno", List.of("Alumno", "Concepto", "Importe", "Frecuencia", "Vencimiento", "Generación")),
     CARGOS("cargos", "Cargos", List.of("Alumno", "Concepto", "Descripción", "Periodo", "Vencimiento", "Importe", "Saldo")),
+    TIPOS_BECA("tipos-beca", "Tipos de beca", List.of("Código", "Tipo de beca", "Institución", "Descripción")),
+    BECAS_ALUMNO("becas-alumno", "Becas por alumno", List.of("Alumno", "Tipo", "Concepto", "Beneficio", "Vigencia")),
+    AJUSTES_CARGO("ajustes-cargo", "Ajustes de cargos", List.of("Alumno", "Concepto", "Tipo", "Efecto", "Monto", "Fecha", "Motivo")),
     ROLES("roles", "Roles y permisos", List.of("Código", "Rol", "Institución", "Descripción")),
     USUARIOS("usuarios", "Usuarios", List.of("Usuario", "Correo", "Institución", "Credencial"));
 
@@ -42,7 +45,7 @@ public enum ModuloCatalogo {
             case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS, GRUPOS -> "Estructura";
             case ALUMNOS, TUTORES, VINCULOS_TUTOR -> "Personas";
             case INSCRIPCIONES -> "Trayectoria";
-            case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS -> "Cobranza";
+            case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO -> "Cobranza";
             case ROLES, USUARIOS -> "Seguridad";
         };
     }
@@ -64,6 +67,9 @@ public enum ModuloCatalogo {
             case CONCEPTOS_COBRO -> "CONCEPTO_COBRO";
             case CUOTAS_ALUMNO -> "CUOTA_ALUMNO";
             case CARGOS -> "CARGO";
+            case TIPOS_BECA -> "TIPO_BECA";
+            case BECAS_ALUMNO -> "BECA_ALUMNO";
+            case AJUSTES_CARGO -> "AJUSTE_CARGO";
             case ROLES -> "ROL";
             case USUARIOS -> "USUARIO";
         };
@@ -79,6 +85,7 @@ public enum ModuloCatalogo {
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
                 || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == CARGOS
+                || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO
                 || this == ROLES || this == USUARIOS;
     }
 
@@ -99,6 +106,9 @@ public enum ModuloCatalogo {
             case CONCEPTOS_COBRO -> "/admin/conceptos-cobro";
             case CUOTAS_ALUMNO -> "/admin/cuotas-alumno";
             case CARGOS -> "/admin/cargos";
+            case TIPOS_BECA -> "/admin/tipos-beca";
+            case BECAS_ALUMNO -> "/admin/becas-alumno";
+            case AJUSTES_CARGO -> "/admin/ajustes-cargo";
             case ROLES -> "/admin/roles";
             case USUARIOS -> "/admin/usuarios";
             default -> "";
@@ -111,6 +121,7 @@ public enum ModuloCatalogo {
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
                 || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == CARGOS
+                || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO
                 || this == ROLES || this == USUARIOS
                 ? "/nuevo" : "/nueva";
     }

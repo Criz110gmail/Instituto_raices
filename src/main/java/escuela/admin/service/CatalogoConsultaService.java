@@ -11,9 +11,13 @@ import escuela.cobranza.entity.ConceptoCobro;
 import escuela.cobranza.entity.CuotaAlumno;
 import escuela.cobranza.entity.Cargo;
 import escuela.cobranza.entity.EstadoRegistroCargo;
+import escuela.cobranza.entity.*;
 import escuela.cobranza.repository.CargoRepository;
 import escuela.cobranza.repository.ConceptoCobroRepository;
 import escuela.cobranza.repository.CuotaAlumnoRepository;
+import escuela.cobranza.repository.TipoBecaRepository;
+import escuela.cobranza.repository.BecaAlumnoRepository;
+import escuela.cobranza.repository.AjusteCargoRepository;
 import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
 import escuela.inscripcion.entity.Inscripcion;
@@ -61,6 +65,9 @@ public class CatalogoConsultaService {
     private final ConceptoCobroRepository conceptoCobroRepository;
     private final CuotaAlumnoRepository cuotaAlumnoRepository;
     private final CargoRepository cargoRepository;
+    private final TipoBecaRepository tipoBecaRepository;
+    private final BecaAlumnoRepository becaAlumnoRepository;
+    private final AjusteCargoRepository ajusteCargoRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcanceDatosService;
@@ -122,6 +129,14 @@ public class CatalogoConsultaService {
                             e.isGeneracionAutomatica() ? "Automática" : "Manual"));
             case CARGOS -> consultar(modulo, cargoRepository, textoCargo(f),
                     estado(f, "estadoRegistro"), pagina, this::filaCargo);
+            case TIPOS_BECA -> consultar(modulo, tipoBecaRepository,
+                    texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
+                    e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(),
+                            e.getInstitucion().getNombre(), valor(e.getDescripcion())));
+            case BECAS_ALUMNO -> consultar(modulo, becaAlumnoRepository, textoBeca(f),
+                    estado(f, "estado"), pagina, this::filaBeca);
+            case AJUSTES_CARGO -> consultar(modulo, ajusteCargoRepository, textoAjuste(f),
+                    estadoAjuste(f), pagina, this::filaAjuste);
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
             case USUARIOS -> consultar(modulo, usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,
@@ -243,6 +258,27 @@ public class CatalogoConsultaService {
         };
     }
 
+    private Specification<BecaAlumno> textoBeca(FiltroCatalogo f) {
+        return (root, query, cb) -> { if (f.q().isBlank()) return cb.conjunction();
+            String p="%"+f.q().toLowerCase(Locale.ROOT)+"%"; var a=root.get("inscripcion").get("alumno");
+            return cb.or(cb.like(cb.lower(a.get("matricula")),p),cb.like(cb.lower(a.get("nombres")),p),
+                    cb.like(cb.lower(a.get("primerApellido")),p),cb.like(cb.lower(root.get("tipoBeca").get("nombre")),p),
+                    cb.like(cb.lower(root.get("conceptoCobro").get("nombre")),p),cb.like(cb.lower(root.get("motivo")),p)); };
+    }
+
+    private Specification<AjusteCargo> textoAjuste(FiltroCatalogo f) {
+        return (root, query, cb) -> { if (f.q().isBlank()) return cb.conjunction();
+            String p="%"+f.q().toLowerCase(Locale.ROOT)+"%"; var cargo=root.get("cargo");var a=cargo.get("inscripcion").get("alumno");
+            return cb.or(cb.like(cb.lower(a.get("matricula")),p),cb.like(cb.lower(a.get("nombres")),p),
+                    cb.like(cb.lower(a.get("primerApellido")),p),cb.like(cb.lower(cargo.get("conceptoCobro").get("nombre")),p),
+                    cb.like(cb.lower(root.get("motivo")),p)); };
+    }
+
+    private Specification<AjusteCargo> estadoAjuste(FiltroCatalogo f) {
+        return (root, query, cb) -> f.estado().equals("TODOS") ? cb.conjunction()
+                : cb.equal(root.get("tipo").as(String.class), f.estado());
+    }
+
     private <T> Specification<T> activo(FiltroCatalogo f) {
         return (root, query, cb) -> switch (f.estado()) {
             case "ACTIVO" -> cb.isTrue(root.get("activo"));
@@ -291,7 +327,7 @@ public class CatalogoConsultaService {
         if (cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO) {
             estado = "Cancelado";
             tono = "neutro";
-        } else if (cargo.getImporteOriginal().signum() == 0) {
+        } else if (totalCargo(cargo).signum() == 0) {
             estado = "Pagado";
             tono = "positivo";
         } else if (cargo.getFechaVencimiento().isBefore(LocalDate.now())) {
@@ -304,8 +340,9 @@ public class CatalogoConsultaService {
         String periodo = FECHA.format(cargo.getPeriodoCobroInicio()) + " — "
                 + FECHA.format(cargo.getPeriodoCobroFin());
         String importe = cargo.getImporteOriginal().toPlainString() + " " + cargo.getMoneda();
+        String total = totalCargo(cargo).toPlainString() + " " + cargo.getMoneda();
         String saldo = cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO
-                ? "0.00 " + cargo.getMoneda() : importe;
+                ? "0.00 " + cargo.getMoneda() : total;
         return new FilaCatalogo(cargo.getId(), List.of(
                 cargo.getInscripcion().getAlumno().getMatricula() + " · "
                         + nombreAlumno(cargo.getInscripcion().getAlumno()),
@@ -313,6 +350,25 @@ public class CatalogoConsultaService {
                 cargo.getDescripcion(), periodo, FECHA.format(cargo.getFechaVencimiento()),
                 importe, saldo), estado, tono);
     }
+
+    private FilaCatalogo filaBeca(BecaAlumno b) {
+        var a=b.getInscripcion().getAlumno(); String beneficio=b.getModalidad()==ModalidadBeca.PORCENTAJE
+                ? b.getPorcentaje().stripTrailingZeros().toPlainString()+" %"
+                : b.getMontoFijo().toPlainString()+" "+b.getMoneda();
+        return new FilaCatalogo(b.getId(),List.of(a.getMatricula()+" · "+nombreAlumno(a),b.getTipoBeca().getNombre(),
+                b.getConceptoCobro().getNombre(),beneficio,FECHA.format(b.getFechaInicio())+" — "+FECHA.format(b.getFechaFin())),
+                b.getEstado().name(),b.getEstado()==EstadoBeca.ACTIVA?"positivo":b.getEstado()==EstadoBeca.SUSPENDIDA?"aviso":"neutro");
+    }
+
+    private FilaCatalogo filaAjuste(AjusteCargo a) {
+        var alumno=a.getCargo().getInscripcion().getAlumno(); String estado=a.getReversa()!=null?"Reversado":a.getReversaDe()!=null?"Reversa":"Aplicado";
+        return new FilaCatalogo(a.getId(),List.of(alumno.getMatricula()+" · "+nombreAlumno(alumno),
+                a.getCargo().getConceptoCobro().getNombre(),etiqueta(a.getTipo().name()),etiqueta(a.getEfecto().name()),
+                a.getMonto().toPlainString()+" "+a.getCargo().getMoneda(),FECHA.format(a.getFechaEfectiva()),a.getMotivo()),estado,a.getReversa()!=null?"neutro":"positivo");
+    }
+
+    private java.math.BigDecimal totalCargo(Cargo c) { java.math.BigDecimal t=c.getImporteOriginal();
+        for(AjusteCargo a:c.getAjustes()) t=a.getEfecto()==EfectoAjusteCargo.AUMENTO?t.add(a.getMonto()):t.subtract(a.getMonto()); return t; }
 
     private FilaCatalogo filaVinculo(AlumnoTutor vinculo, String... celdas) {
         String estado;

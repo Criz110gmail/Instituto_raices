@@ -21,6 +21,9 @@ import escuela.inscripcion.entity.Inscripcion;
 import escuela.cobranza.repository.ConceptoCobroRepository;
 import escuela.cobranza.repository.CuotaAlumnoRepository;
 import escuela.cobranza.repository.CargoRepository;
+import escuela.cobranza.repository.TipoBecaRepository;
+import escuela.cobranza.repository.BecaAlumnoRepository;
+import escuela.cobranza.repository.AjusteCargoRepository;
 import escuela.cobranza.entity.CuotaAlumno;
 import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.repository.UsuarioRepository;
@@ -63,6 +66,8 @@ class AlcanceDatosServiceTest {
             inscripcionRepository,
             conceptoCobroRepository, cuotaAlumnoRepository,
             mock(CargoRepository.class),
+            mock(TipoBecaRepository.class), mock(BecaAlumnoRepository.class),
+            mock(AjusteCargoRepository.class),
             mock(RolRepository.class), mock(UsuarioRepository.class));
 
     @AfterEach
