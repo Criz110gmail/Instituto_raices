@@ -26,6 +26,7 @@ public enum ModuloCatalogo {
     POLITICAS_RECARGO("politicas-recargo", "Políticas de recargo", List.of("Concepto", "Institución", "Recargo", "Gracia", "Periodicidad", "Límite", "Generación")),
     CUENTAS_FINANCIERAS("cuentas-financieras", "Cuentas financieras", List.of("Código", "Cuenta", "Alcance", "Tipo", "Institución financiera", "Identificador", "Saldo inicial", "Fecha inicial")),
     PAGOS("pagos", "Pagos", List.of("Folio", "Tutor", "Plantel de registro", "Fecha", "Método", "Monto", "Distribución", "Comprobantes")),
+    MOVIMIENTOS_FINANCIEROS("movimientos-financieros", "Movimientos financieros", List.of()),
     ROLES("roles", "Roles y permisos", List.of("Código", "Rol", "Institución", "Descripción")),
     USUARIOS("usuarios", "Usuarios", List.of("Usuario", "Correo", "Institución", "Credencial"));
 
@@ -49,7 +50,7 @@ public enum ModuloCatalogo {
             case ALUMNOS, TUTORES, VINCULOS_TUTOR -> "Personas";
             case INSCRIPCIONES -> "Trayectoria";
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
-            case CUENTAS_FINANCIERAS, PAGOS -> "Finanzas";
+            case CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS -> "Finanzas";
             case ROLES, USUARIOS -> "Seguridad";
         };
     }
@@ -77,6 +78,7 @@ public enum ModuloCatalogo {
             case POLITICAS_RECARGO -> "POLITICA_RECARGO";
             case CUENTAS_FINANCIERAS -> "CUENTA_FINANCIERA";
             case PAGOS -> "PAGO";
+            case MOVIMIENTOS_FINANCIEROS -> "MOVIMIENTO_FINANCIERO";
             case ROLES -> "ROL";
             case USUARIOS -> "USUARIO";
         };
@@ -123,10 +125,17 @@ public enum ModuloCatalogo {
             case POLITICAS_RECARGO -> "/admin/politicas-recargo";
             case CUENTAS_FINANCIERAS -> "/admin/cuentas-financieras";
             case PAGOS -> "/admin/pagos";
+            case MOVIMIENTOS_FINANCIEROS -> "/admin/movimientos-financieros";
             case ROLES -> "/admin/roles";
             case USUARIOS -> "/admin/usuarios";
             default -> "";
         };
+    }
+
+    public String rutaListado() {
+        return this == MOVIMIENTOS_FINANCIEROS
+                ? "/admin/movimientos-financieros"
+                : "/admin/catalogos/" + slug;
     }
 
     public String segmentoNuevo() {

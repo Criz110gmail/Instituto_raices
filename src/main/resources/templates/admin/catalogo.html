@@ -21,7 +21,7 @@
             <p class="nav-label security-label"
                th:if="${iter.first or item.seccion() != modulos[iter.index - 1].seccion()}"
                th:text="${item.seccion()}">Sección</p>
-            <a th:href="@{/admin/catalogos/{slug}(slug=${item.slug})}"
+            <a th:href="${item.rutaListado()}"
                th:classappend="${item == resultado.modulo} ? ' active' : ''">
                 <span class="nav-dot"></span><span th:text="${item.titulo}">Módulo</span>
             </a>

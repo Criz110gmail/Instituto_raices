@@ -85,4 +85,10 @@ public class AutocompletadoAdminController {
                                        @RequestParam(defaultValue = "") String q) {
         return service.cargosParaPago(institucionId, tutorId, q);
     }
+
+    @GetMapping("/cuentas-movimiento")
+    ResultadoAutocompletado cuentasMovimiento(@RequestParam Long institucionId,
+                                              @RequestParam(defaultValue = "") String q) {
+        return service.cuentasParaMovimientos(institucionId, q);
+    }
 }

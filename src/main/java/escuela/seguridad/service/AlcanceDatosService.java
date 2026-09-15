@@ -76,7 +76,7 @@ public class AlcanceDatosService {
         return (root, query, cb) -> {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
-                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, CUENTAS_FINANCIERAS, PAGOS, ROLES, USUARIOS -> root.get("institucion").get("id");
+                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, ROLES, USUARIOS -> root.get("institucion").get("id");
                 case POLITICAS_RECARGO -> root.get("conceptoCobro").get("institucion").get("id");
                 case VINCULOS_TUTOR, INSCRIPCIONES -> root.get("alumno").get("institucion").get("id");
                 case CUOTAS_ALUMNO, CARGOS, BECAS_ALUMNO -> root.get("inscripcion").get("alumno").get("institucion").get("id");
@@ -101,6 +101,10 @@ public class AlcanceDatosService {
                 return cb.and(mismaInstitucion, cb.or(cb.isNull(root.get("plantel")),
                         root.get("plantel").get("id").in(principal.plantelIds())));
             }
+            if (modulo == ModuloCatalogo.MOVIMIENTOS_FINANCIEROS) {
+                return cb.and(mismaInstitucion,
+                        root.get("plantelOperacion").get("id").in(principal.plantelIds()));
+            }
             if (modulo == ModuloCatalogo.USUARIOS) {
                 return cb.and(mismaInstitucion, cb.equal(root.get("id"), principal.usuarioId()));
             }
@@ -108,6 +112,7 @@ public class AlcanceDatosService {
                 case PLANTELES -> root.get("id");
                 case OFERTA, GRUPOS, INSCRIPCIONES -> root.get("plantel").get("id");
                 case PAGOS -> root.get("plantelRegistro").get("id");
+                case MOVIMIENTOS_FINANCIEROS -> root.get("plantelOperacion").get("id");
                 case CUOTAS_ALUMNO, CARGOS, BECAS_ALUMNO -> root.get("inscripcion").get("plantel").get("id");
                 case AJUSTES_CARGO -> root.get("cargo").get("inscripcion").get("plantel").get("id");
                 default -> null;
@@ -161,6 +166,7 @@ public class AlcanceDatosService {
             }
             case PAGOS -> validarPlantel(pagoRepository.findById(id)
                     .orElseThrow(this::denegado).getPlantelRegistro().getId());
+            case MOVIMIENTOS_FINANCIEROS -> throw denegado();
             case ROLES -> validarInstitucion(rolRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());
             case USUARIOS -> validarInstitucion(usuarioRepository.findById(id)

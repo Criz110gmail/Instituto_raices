@@ -153,6 +153,8 @@ public class CatalogoConsultaService {
                     textoCuentaFinanciera(f), activo(f), pagina, this::filaCuentaFinanciera);
             case PAGOS -> consultar(modulo, pagoRepository, textoPago(f),
                     estado(f, "estado"), pagina, this::filaPago);
+            case MOVIMIENTOS_FINANCIEROS -> throw new IllegalArgumentException(
+                    "Los movimientos usan su consulta especializada");
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
             case USUARIOS -> consultar(modulo, usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,

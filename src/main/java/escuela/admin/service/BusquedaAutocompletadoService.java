@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -187,6 +188,28 @@ public class BusquedaAutocompletadoService {
                         cuenta.getCodigo() + " · " + cuenta.getNombre(),
                         cuenta.getTipo().name() + " · " + identificadorCuenta(cuenta)))
                 .toList(), resultado.hasNext());
+    }
+
+    public ResultadoAutocompletado cuentasParaMovimientos(Long institucionId, String consulta) {
+        alcance.validarInstitucion(institucionId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        String patron = "%" + texto + "%";
+        Specification<CuentaFinanciera> busqueda = (root, query, cb) -> cb.and(
+                cb.equal(root.get("institucion").get("id"), institucionId),
+                cb.or(cb.like(cb.lower(root.get("codigo")), patron),
+                        cb.like(cb.lower(root.get("nombre")), patron),
+                        cb.like(cb.lower(root.get("bancoNombre")), patron)));
+        var resultado = cuentaFinancieraRepository.findAll(Specification.where(busqueda)
+                        .and(alcance.especificacion(ModuloCatalogo.CUENTAS_FINANCIERAS)),
+                PageRequest.of(0, MAXIMO_RESULTADOS + 1));
+        boolean hayMas = resultado.getNumberOfElements() > MAXIMO_RESULTADOS;
+        return new ResultadoAutocompletado(resultado.getContent().stream().limit(MAXIMO_RESULTADOS)
+                .map(cuenta -> new OpcionAutocompletado(cuenta.getId(),
+                        cuenta.getCodigo() + " · " + cuenta.getNombre(),
+                        cuenta.getTipo().name() + " · " + identificadorCuenta(cuenta)
+                                + (cuenta.isActivo() ? "" : " · Inactiva")))
+                .toList(), hayMas);
     }
 
     public ResultadoAutocompletado cargosParaPago(Long institucionId, Long tutorId, String consulta) {

@@ -31,7 +31,7 @@ public class CatalogoAdminController {
     @GetMapping("/admin")
     String admin(Authentication authentication) {
         return modulosVisibles(authentication).stream().findFirst()
-                .map(modulo -> "redirect:/admin/catalogos/" + modulo.slug())
+                .map(modulo -> "redirect:" + modulo.rutaListado())
                 .orElse("redirect:/acceso-denegado");
     }
 
@@ -44,6 +44,9 @@ public class CatalogoAdminController {
                     Authentication authentication,
                     Model model) {
         ModuloCatalogo modulo = ModuloCatalogo.desde(slug);
+        if (modulo == ModuloCatalogo.MOVIMIENTOS_FINANCIEROS) {
+            return "redirect:" + modulo.rutaListado();
+        }
         List<ModuloCatalogo> modulos = modulosVisibles(authentication);
         validarPermiso(modulo, modulos);
         FiltroCatalogo filtro = new FiltroCatalogo(q, estado, pagina, tamanio).normalizado();
