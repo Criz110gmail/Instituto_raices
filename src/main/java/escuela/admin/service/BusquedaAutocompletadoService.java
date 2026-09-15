@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
 import java.util.stream.Stream;
+import static escuela.cobranza.support.CalculoCargo.saldo;
 
 @Service
 @RequiredArgsConstructor
@@ -208,18 +209,9 @@ public class BusquedaAutocompletadoService {
                         cargo.getInscripcion().getAlumno().getPrimerApellido(),
                         cargo.getInscripcion().getAlumno().getSegundoApellido()) + " · "
                         + cargo.getConceptoCobro().getNombre(),
-                cargo.getDescripcion() + " · Saldo actual " + totalCargo(cargo).toPlainString()
+                cargo.getDescripcion() + " · Saldo actual " + saldo(cargo).toPlainString()
                         + " " + cargo.getMoneda())).toList();
         return new ResultadoAutocompletado(permitidos, resultado.hasNext());
-    }
-
-    private BigDecimal totalCargo(Cargo cargo) {
-        BigDecimal total = cargo.getImporteOriginal();
-        for (AjusteCargo ajuste : cargo.getAjustes()) {
-            total = ajuste.getEfecto() == EfectoAjusteCargo.AUMENTO
-                    ? total.add(ajuste.getMonto()) : total.subtract(ajuste.getMonto());
-        }
-        return total.max(BigDecimal.ZERO);
     }
 
     private String identificadorCuenta(CuentaFinanciera cuenta) {

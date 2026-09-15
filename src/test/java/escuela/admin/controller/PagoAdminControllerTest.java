@@ -5,6 +5,7 @@ import escuela.finanzas.dto.request.PagoRequest;
 import escuela.finanzas.dto.response.PagoResponse;
 import escuela.finanzas.entity.MetodoPago;
 import escuela.finanzas.service.PagoService;
+import escuela.finanzas.service.ValidacionPagoService;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.service.*;
 import escuela.seguridad.service.AlcanceDatosService;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.springframework.ui.ExtendedModelMap;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
@@ -27,6 +29,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
 class PagoAdminControllerTest {
     @Mock private PagoService service;
+    @Mock private ValidacionPagoService validacionService;
     @Mock private InstitucionService institucionService;
     @Mock private PlantelService plantelService;
     @Mock private AlcanceDatosService alcance;
@@ -80,6 +83,34 @@ class PagoAdminControllerTest {
 
         assertThat(vista).isEqualTo("admin/pago-form");
         verify(service, never()).registrar(any(), anyList());
+    }
+
+    @Test
+    void validaPagoYRedirigeAlExpediente() {
+        PagoResponse respuesta = mock(PagoResponse.class);
+        when(respuesta.folio()).thenReturn("PAG-001");
+        when(validacionService.validar(eq(50L), any())).thenReturn(respuesta);
+
+        String vista = controller.validar(50L, 8L, 2L, mock(Authentication.class),
+                new ExtendedModelMap(), new RedirectAttributesModelMap());
+
+        verify(validacionService).validar(eq(50L), argThat(r -> r.cuentaDestinoId().equals(8L)
+                && r.version().equals(2L)));
+        assertThat(vista).isEqualTo("redirect:/admin/pagos/50/editar");
+    }
+
+    @Test
+    void rechazaPagoConMotivoYRedirige() {
+        PagoResponse respuesta = mock(PagoResponse.class);
+        when(respuesta.folio()).thenReturn("PAG-001");
+        when(validacionService.rechazar(eq(50L), any())).thenReturn(respuesta);
+
+        String vista = controller.rechazar(50L, "Duplicado", 3L, mock(Authentication.class),
+                new ExtendedModelMap(), new RedirectAttributesModelMap());
+
+        verify(validacionService).rechazar(eq(50L), argThat(r -> r.motivo().equals("Duplicado")
+                && r.version().equals(3L)));
+        assertThat(vista).isEqualTo("redirect:/admin/pagos/50/editar");
     }
 
     private PagoForm formulario() {

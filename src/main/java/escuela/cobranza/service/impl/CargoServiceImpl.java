@@ -40,6 +40,7 @@ import java.util.UUID;
 import static escuela.common.mapper.NormalizacionTexto.codigo;
 import static escuela.common.mapper.NormalizacionTexto.limpiar;
 import static escuela.common.service.ValidacionVersion.verificar;
+import static escuela.cobranza.support.CalculoCargo.aplicado;
 
 @Service
 @RequiredArgsConstructor
@@ -116,6 +117,9 @@ public class CargoServiceImpl implements CargoService {
         verificar(cargo, version, "Cargo");
         if (cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO) {
             throw new ReglaNegocioException("El cargo ya se encuentra cancelado");
+        }
+        if (aplicado(cargo).signum() > 0) {
+            throw new ReglaNegocioException("No se puede cancelar un cargo con pagos aplicados; primero deben reversarse sus aplicaciones");
         }
         String motivoLimpio = limpiar(motivo);
         if (motivoLimpio == null || motivoLimpio.length() > 2000) {

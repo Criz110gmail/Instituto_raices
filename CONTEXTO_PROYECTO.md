@@ -928,3 +928,37 @@
   verificación. La siguiente etapa es V18: validar o rechazar pagos, crear aplicaciones
   por cargo y publicar un solo movimiento de ingreso por pago validado, todo de manera
   atómica e idempotente.
+
+## Decisiones — validación, aplicaciones e ingreso de pagos
+
+- Flyway V18 crea `AplicacionPago`, `MotivoFinanciero` y `MovimientoFinanciero`, y suma
+  `PAGO_VALIDAR` sin asignarlo automáticamente a roles existentes.
+- Sólo una cuenta de usuario persistida puede decidir sobre dinero. El acceso de
+  recuperación puede consultar, pero no validar ni rechazar pagos.
+- Validar exige una cuenta activa, accesible para el plantel, con la moneda y tipo
+  compatibles. El pago y la cuenta se bloquean antes de procesar los cargos en orden
+  estable para proteger la secuencia y evitar aplicaciones concurrentes excesivas.
+- Cada solicitud se vuelve a comprobar contra el saldo y la responsabilidad financiera
+  vigentes. Si el saldo disminuyó, se aplica sólo el importe disponible; la diferencia y
+  cualquier parte no solicitada permanecen como monto disponible del pago.
+- Se publica exactamente un movimiento `COBRO/INGRESO` por el importe total del pago.
+  La clave `COBRO:PAGO:<id>`, la relación única con pago y las aplicaciones ligadas a su
+  solicitud protegen los reintentos. Toda la operación comparte una transacción.
+- Rechazar exige motivo y no crea movimientos ni aplicaciones. Los comprobantes se
+  conservan. Los cálculos y pantallas de Cargo ya muestran saldo y estado considerando
+  aplicaciones; no se puede cancelar un cargo pagado ni modificar la apertura de una
+  cuenta que ya tenga movimientos.
+- El expediente de pago ofrece una consola responsiva de decisión, búsqueda remota de
+  cuenta destino, distribución efectiva, remanente y resumen del movimiento, compatible
+  con temas claro y oscuro.
+
+## Verificación de validación de pagos
+
+- Docker compiló 345 fuentes Java y ejecutó 216 pruebas sin fallos ni errores.
+- Flyway validó dieciocho migraciones y aplicó V18 sobre PostgreSQL 17. Hibernate validó
+  el esquema y detectó 36 repositorios; Actuator respondió `UP`.
+- PostgreSQL confirmó 45 permisos técnicos. Las tablas de pagos, aplicaciones y
+  movimientos permanecieron vacías; no se crearon ni modificaron datos operativos.
+- El siguiente paso es V19 con libro paginado de movimientos y saldo actual por cuenta,
+  filtros y Excel equivalente. Operaciones manuales, traspasos, devoluciones y reversos
+  siguen fuera de esta entrega.

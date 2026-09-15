@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import static escuela.common.mapper.AuditoriaMapper.desde;
 import static escuela.common.mapper.NormalizacionTexto.codigo;
 import static escuela.common.mapper.NormalizacionTexto.limpiar;
+import static escuela.cobranza.support.CalculoCargo.aplicado;
 
 @Component
 public class CargoMapper {
@@ -54,9 +55,11 @@ public class CargoMapper {
                 .filter(a -> a.getEfecto() == EfectoAjusteCargo.DISMINUCION)
                 .map(a -> a.getMonto()).reduce(cero, BigDecimal::add);
         BigDecimal total = cargo.getImporteOriginal().add(aumentos).subtract(disminuciones);
-        BigDecimal saldo = cancelado ? cero : total;
+        BigDecimal pagado = aplicado(cargo);
+        BigDecimal saldo = cancelado ? cero : total.subtract(pagado).max(cero);
         SituacionCobro situacion = cancelado ? SituacionCobro.CANCELADO
-                : total.signum() == 0 ? SituacionCobro.PAGADO : SituacionCobro.PENDIENTE;
+                : saldo.signum() == 0 ? SituacionCobro.PAGADO
+                : pagado.signum() > 0 ? SituacionCobro.PARCIAL : SituacionCobro.PENDIENTE;
         boolean vencido = !cancelado && saldo.signum() > 0
                 && cargo.getFechaVencimiento().isBefore(LocalDate.now());
         return new CargoResponse(cargo.getId(), inscripcion.getId(),
@@ -72,7 +75,7 @@ public class CargoMapper {
                 cargo.getPeriodoAcademico() == null ? null : cargo.getPeriodoAcademico().getNombre(),
                 cargo.getFechaEmision(), cargo.getFechaVencimiento(), cargo.getImporteOriginal(),
                 cargo.getMoneda(), cargo.getEstadoRegistro(), cargo.getCanceladoEn(),
-                cargo.getMotivoCancelacion(), disminuciones, aumentos, total, cero, saldo, situacion,
+                cargo.getMotivoCancelacion(), disminuciones, aumentos, total, pagado, saldo, situacion,
                 vencido, desde(cargo));
     }
 

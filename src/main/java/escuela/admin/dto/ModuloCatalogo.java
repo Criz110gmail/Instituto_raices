@@ -80,7 +80,8 @@ public enum ModuloCatalogo {
             case ROLES -> "ROL";
             case USUARIOS -> "USUARIO";
         };
-        if (this == PAGOS) return permisos.contains("PAGO_LEER") || permisos.contains("PAGO_REGISTRAR");
+        if (this == PAGOS) return permisos.contains("PAGO_LEER") || permisos.contains("PAGO_REGISTRAR")
+                || permisos.contains("PAGO_VALIDAR");
         boolean administra = permisos.contains(base + "_ADMINISTRAR");
         if (this == ROLES || this == USUARIOS) return administra;
         return administra || permisos.contains(base + "_LEER");

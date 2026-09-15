@@ -48,6 +48,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
+import static escuela.cobranza.support.CalculoCargo.saldo;
+import static escuela.cobranza.support.CalculoCargo.total;
 
 @Service
 @RequiredArgsConstructor
@@ -369,7 +371,7 @@ public class CatalogoConsultaService {
         if (cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO) {
             estado = "Cancelado";
             tono = "neutro";
-        } else if (totalCargo(cargo).signum() == 0) {
+        } else if (saldo(cargo).signum() == 0) {
             estado = "Pagado";
             tono = "positivo";
         } else if (cargo.getFechaVencimiento().isBefore(LocalDate.now())) {
@@ -382,15 +384,15 @@ public class CatalogoConsultaService {
         String periodo = FECHA.format(cargo.getPeriodoCobroInicio()) + " — "
                 + FECHA.format(cargo.getPeriodoCobroFin());
         String importe = cargo.getImporteOriginal().toPlainString() + " " + cargo.getMoneda();
-        String total = totalCargo(cargo).toPlainString() + " " + cargo.getMoneda();
-        String saldo = cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO
-                ? "0.00 " + cargo.getMoneda() : total;
+        String total = total(cargo).toPlainString() + " " + cargo.getMoneda();
+        String saldoTexto = cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO
+                ? "0.00 " + cargo.getMoneda() : saldo(cargo).toPlainString() + " " + cargo.getMoneda();
         return new FilaCatalogo(cargo.getId(), List.of(
                 cargo.getInscripcion().getAlumno().getMatricula() + " · "
                         + nombreAlumno(cargo.getInscripcion().getAlumno()),
                 cargo.getConceptoCobro().getCodigo() + " · " + cargo.getConceptoCobro().getNombre(),
                 cargo.getDescripcion(), periodo, FECHA.format(cargo.getFechaVencimiento()),
-                importe, saldo), estado, tono);
+                importe, saldoTexto), estado, tono);
     }
 
     private FilaCatalogo filaBeca(BecaAlumno b) {
@@ -431,9 +433,16 @@ public class CatalogoConsultaService {
         java.math.BigDecimal solicitado = pago.getSolicitudes().stream()
                 .map(escuela.finanzas.entity.SolicitudAplicacionPago::getMontoSolicitado)
                 .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
-        String distribucion = solicitado.signum() == 0 ? "Sin asignar"
-                : solicitado.toPlainString() + " " + pago.getMoneda() + " · "
-                + pago.getSolicitudes().size() + " cargo(s)";
+        java.math.BigDecimal aplicado = pago.getAplicaciones().stream()
+                .map(a -> a.getOperacion() == escuela.finanzas.entity.OperacionAplicacionPago.APLICAR
+                        ? a.getMonto() : a.getMonto().negate())
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+        String distribucion = pago.getEstado() == escuela.finanzas.entity.EstadoPago.VALIDADO
+                ? aplicado.toPlainString() + " aplicado · "
+                    + pago.getMonto().subtract(aplicado).toPlainString() + " disponible"
+                : solicitado.signum() == 0 ? "Sin asignar"
+                    : solicitado.toPlainString() + " " + pago.getMoneda() + " · "
+                    + pago.getSolicitudes().size() + " cargo(s)";
         String estado = switch (pago.getEstado()) {
             case PENDIENTE_VALIDACION -> "Pendiente de validación";
             case VALIDADO -> "Validado";
@@ -454,9 +463,6 @@ public class CatalogoConsultaService {
         String limpio = valor == null ? "" : valor.replaceAll("\\s+", "");
         return "•••• " + limpio.substring(Math.max(0, limpio.length() - 4));
     }
-
-    private java.math.BigDecimal totalCargo(Cargo c) { java.math.BigDecimal t=c.getImporteOriginal();
-        for(AjusteCargo a:c.getAjustes()) t=a.getEfecto()==EfectoAjusteCargo.AUMENTO?t.add(a.getMonto()):t.subtract(a.getMonto()); return t; }
 
     private FilaCatalogo filaVinculo(AlumnoTutor vinculo, String... celdas) {
         String estado;

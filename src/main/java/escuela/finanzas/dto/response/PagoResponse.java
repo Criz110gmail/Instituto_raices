@@ -15,10 +15,15 @@ public record PagoResponse(
         String folio, Instant fechaPago, BigDecimal monto, String moneda,
         MetodoPago metodo, EstadoPago estado,
         Long cuentaDeclaradaId, String cuentaDeclaradaNombre,
-        String referencia, String observaciones,
+        Long cuentaDestinoId, String cuentaDestinoNombre,
+        String referencia, String observaciones, Instant validadoEn,
+        String validadoPor, String motivoRechazoCancelacion,
         List<ComprobantePagoResponse> comprobantes,
         List<SolicitudAplicacionPagoResponse> solicitudes,
+        List<AplicacionPagoResponse> aplicaciones,
         BigDecimal montoSolicitado, BigDecimal montoSinAsignar,
+        BigDecimal montoAplicado, BigDecimal montoDisponible,
+        MovimientoFinancieroResponse movimiento,
         AuditoriaResponse auditoria
 ) {
 }

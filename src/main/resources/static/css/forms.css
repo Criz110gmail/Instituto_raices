@@ -84,6 +84,50 @@
     .requested-list article,.detail-totals { display: grid; }
 }
 
+.payment-principle.resolved-success { border-color: #55c7a5; background: linear-gradient(135deg,#e9fbf4,#f5fffb); }
+.payment-principle.resolved-rejected { border-color: #e2a3aa; background: linear-gradient(135deg,#fff2f3,#fffafa); }
+.pending-badge.success { color: #08785f; background: #ddf7ee; }
+.pending-badge.rejected { color: #a42634; background: #fde7e9; }
+.operation-error { margin: 18px 34px 0; }
+.validation-console { padding: 30px 34px; border-top: 1px solid var(--line); background: linear-gradient(135deg,#f7fbff,#f2fbf8); }
+.validation-columns { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
+.decision-card { display: grid; align-content: start; gap: 12px; min-width: 0; margin: 0; padding: 22px; border: 1px solid #d2dfe9; border-radius: 17px; background: #fff; box-shadow: 0 12px 34px #183b5a0d; }
+.decision-card.approve-card { border-top: 4px solid #159c8d; }
+.decision-card.reject-card { border-top: 4px solid #b73342; }
+.decision-kicker { color: #148f82; font-size: .66rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.reject-card .decision-kicker { color: #a42634; }
+.decision-card h3 { margin: 0; font: 800 1.05rem Manrope; }
+.decision-card > p { min-height: 40px; margin: 0; color: var(--muted); font-size: .76rem; line-height: 1.5; }
+.decision-card label { display: grid; gap: 7px; font-size: .73rem; font-weight: 750; }
+.decision-card textarea,.validation-autocomplete input { width: 100%; border: 1px solid #c8d7e4; border-radius: 10px; background: #fff; color: var(--ink); padding: 11px 12px; font: inherit; }
+.decision-card textarea { resize: vertical; }
+.validation-autocomplete { position: relative; display: grid; gap: 7px; }
+.validation-autocomplete > label { font-size: .73rem; font-weight: 750; }
+.validation-autocomplete .autocomplete-results { top: 72px; }
+.approve-button,.reject-button { width: 100%; margin-top: auto; border: 0; border-radius: 11px; padding: 12px 15px; color: #fff; font-weight: 800; cursor: pointer; }
+.approve-button { background: linear-gradient(135deg,#087f71,#18a995); }
+.reject-button { background: linear-gradient(135deg,#9d2634,#c64251); }
+.movement-card { display: grid; grid-template-columns: 1.4fr repeat(3,1fr); gap: 12px; padding: 18px; border: 1px solid #9bdccc; border-radius: 15px; background: #effbf7; }
+.movement-card > div { display: grid; gap: 5px; min-width: 0; }
+.movement-card small { color: #4b746b; font-size: .67rem; text-transform: uppercase; letter-spacing: .05em; }
+.movement-card strong { overflow-wrap: anywhere; font-size: .84rem; }
+.applied-list article { border-left: 3px solid #159c8d; }
+.rejection-section { background: #fffafa; }
+[data-theme=dark] .payment-principle.resolved-success { background: linear-gradient(135deg,#0d3029,#0b1b2c); }
+[data-theme=dark] .payment-principle.resolved-rejected { border-color: #713944; background: linear-gradient(135deg,#2a171d,#0b1b2c); }
+[data-theme=dark] .validation-console { background: linear-gradient(135deg,#091827,#0c2223); }
+[data-theme=dark] .decision-card { border-color: #344a63; background: #0e1d31; box-shadow: 0 12px 34px #0003; }
+[data-theme=dark] .decision-card textarea,[data-theme=dark] .validation-autocomplete input { border-color: #344a63; background: #091726; color: #eef5fd; }
+[data-theme=dark] .movement-card { border-color: #216b61; background: #0d2928; }
+[data-theme=dark] .movement-card small { color: #9ac9c0; }
+[data-theme=dark] .rejection-section { background: #22151b; }
+
+@media (max-width: 760px) {
+    .validation-console { padding: 24px 20px; }
+    .validation-columns,.movement-card { grid-template-columns: 1fr; }
+    .operation-error { margin: 16px 20px 0; }
+}
+
 .adjustment-list { display: grid; gap: .7rem; }
 .adjustment-row { display: grid; grid-template-columns: 1fr auto; gap: .25rem 1rem; padding: .9rem 1rem; border: 1px solid var(--line); border-radius: 14px; color: inherit; text-decoration: none; background: color-mix(in srgb, var(--surface) 88%, var(--accent) 12%); }
 .adjustment-row small { grid-column: 1 / -1; color: var(--muted); }

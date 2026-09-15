@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.List;
 import static escuela.common.mapper.NormalizacionTexto.limpiar;
 import static escuela.common.service.ValidacionVersion.verificar;
+import static escuela.cobranza.support.CalculoCargo.aplicado;
 
 @Service @RequiredArgsConstructor @Transactional
 public class AjusteCargoServiceImpl implements AjusteCargoService {
@@ -38,7 +39,7 @@ public class AjusteCargoServiceImpl implements AjusteCargoService {
         if(r.tipo()==TipoAjusteCargo.DESCUENTO&&!c.getConceptoCobro().isPermiteDescuento()) throw new ReglaNegocioException("El concepto del cargo no permite descuentos");if(r.tipo()==TipoAjusteCargo.RECARGO&&!c.getConceptoCobro().isPermiteRecargo()) throw new ReglaNegocioException("El concepto del cargo no permite recargos");
         if(r.monto().scale()>2) throw new ReglaNegocioException("El monto debe tener máximo dos decimales");validarTotal(c,efecto(r),r.monto());}
     private EfectoAjusteCargo efecto(AjusteCargoRequest r){return r.tipo()==TipoAjusteCargo.DESCUENTO?EfectoAjusteCargo.DISMINUCION:r.tipo()==TipoAjusteCargo.RECARGO?EfectoAjusteCargo.AUMENTO:r.efecto();}
-    private void validarTotal(Cargo c,EfectoAjusteCargo e,BigDecimal monto){BigDecimal total=total(c);BigDecimal nuevo=e==EfectoAjusteCargo.AUMENTO?total.add(monto):total.subtract(monto);if(nuevo.signum()<0) throw new ReglaNegocioException("El ajuste no puede dejar el total del cargo por debajo de cero");}
+    private void validarTotal(Cargo c,EfectoAjusteCargo e,BigDecimal monto){BigDecimal total=total(c);BigDecimal nuevo=e==EfectoAjusteCargo.AUMENTO?total.add(monto):total.subtract(monto);if(nuevo.signum()<0) throw new ReglaNegocioException("El ajuste no puede dejar el total del cargo por debajo de cero");if(nuevo.compareTo(aplicado(c))<0)throw new ReglaNegocioException("El ajuste no puede dejar el total del cargo por debajo del monto ya pagado");}
     private BigDecimal total(Cargo c){BigDecimal t=c.getImporteOriginal();for(AjusteCargo a:c.getAjustes())t=a.getEfecto()==EfectoAjusteCargo.AUMENTO?t.add(a.getMonto()):t.subtract(a.getMonto());return t;}
     private Usuario actor(){var a=SecurityContextHolder.getContext().getAuthentication();if(a!=null&&a.getPrincipal() instanceof UsuarioPrincipal p&&!p.accesoRecuperacion())return usuarioRepository.findById(p.usuarioId()).orElse(null);return null;}
 }

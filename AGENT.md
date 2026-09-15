@@ -20,11 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado antes de estos cambios locales: `f51e434` — `módulo de Cuentas financieras`.
-- `main`, `origin/main` y `origin/HEAD` estaban sincronizados en ese commit antes de
-  implementar Flyway V17 con pagos pendientes. V17 permanece como cambio local hasta
-  que el propietario lo revise, confirme y suba. El agente nuevo siempre debe confirmar
-  `git status` y `git log`.
+- Último commit local confirmado: `298741c` — `módulo de Pagos`.
+- Flyway V18 con validación y aplicación de pagos permanece como cambio local hasta que
+  el propietario lo revise, confirme y suba. El agente nuevo siempre debe confirmar
+  `git status` y `git log`; no debe reconstruir V17.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -421,13 +420,28 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   transferencia. Folio e idempotencia son únicos por institución.
 - Pagos cuenta con filtros y paginación PostgreSQL, Excel por bloques con los mismos
   filtros, alta responsiva, resumen en tiempo real y detalle/descarga protegidos.
+- Flyway V18 crea `AplicacionPago`, `MotivoFinanciero` y `MovimientoFinanciero`, y agrega
+  `PAGO_VALIDAR` sin concederlo automáticamente a los roles existentes.
+- Sólo una cuenta administrativa persistida e identificable puede validar o rechazar;
+  el acceso temporal de recuperación no autoriza movimientos de dinero.
+- Validar bloquea primero pago y cuenta, y después los cargos en orden de identificador.
+  Recalcula el saldo de cada cargo, reduce automáticamente una solicitud si otro pago
+  consumió parte del adeudo y conserva el resto como monto disponible del pago.
+- La validación publica un único ingreso por el total del pago, con secuencia y saldos
+  de cuenta protegidos por bloqueo. Pago, aplicaciones y movimiento se confirman o se
+  revierten juntos; las restricciones por pago, solicitud e idempotencia impiden dobles
+  ingresos o aplicaciones al reintentar.
+- Rechazar exige motivo y conserva comprobantes sin afectar cargos ni cuentas. Los
+  saldos de Cargo, su situación pagada/parcial y los autocompletados ya descuentan las
+  aplicaciones efectivas. Un cargo con aplicaciones no puede cancelarse y una cuenta
+  con movimientos ya no permite cambiar moneda, fecha ni saldo inicial.
 
 ## Verificación confirmada
 
-- Compilación correcta de 328 archivos Java de producción.
-- 209 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V17 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 33 repositorios.
+- Compilación correcta de 345 archivos Java de producción.
+- 216 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V18 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 36 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -459,21 +473,19 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-Revisar y confirmar los cambios locales de V17. Después iniciar la siguiente migración
-disponible, V18, con validación o rechazo administrativo de pagos, `AplicacionPago` y el
-movimiento financiero único que representa el ingreso total. La validación debe bloquear
-el pago, las cuentas y los cargos en orden consistente, volver a comprobar los saldos,
-crear aplicaciones separadas por cargo/alumno y conservar cualquier remanente como monto
-disponible. Todo debe confirmarse o revertirse en una sola transacción e impedir dobles
-ingresos mediante idempotencia. Rechazar un pendiente conserva el comprobante y exige
-motivo, sin afectar cargos ni cuentas.
+Revisar y confirmar los cambios locales de V18. Después iniciar Flyway V19 con el libro
+consultable de movimientos financieros y el saldo actual de cada cuenta. Debe incluir
+filtros por cuenta, plantel, dirección, clase y rango de fechas, paginación PostgreSQL y
+Excel por bloques con los mismos filtros. Esta etapa será primero de consulta y permitirá
+comprobar el ingreso único de cada pago antes de agregar operaciones manuales, traspasos,
+devoluciones o reversos.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. Confirmar si los cambios locales de V17 ya fueron revisados, confirmados y subidos.
+1. Confirmar si los cambios locales de V18 ya fueron revisados, confirmados y subidos.
    Si no están en `origin/main`, no reconstruirlos: pedir al propietario el push desde
    la computadora donde se implementaron.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
@@ -481,10 +493,10 @@ pero no bloquea el siguiente módulo funcional.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V10–V17 ya pertenecen a trayectoria, cobranza, cuentas financieras y recepción
-   pendiente de pagos; nunca editar V1–V17. La siguiente migración disponible es V18.
-5. En V18 validar o rechazar pagos, crear aplicaciones efectivas y un movimiento de
-   ingreso único por pago validado. Devoluciones, cortes y retiros continúan pendientes.
+4. Flyway V10–V18 ya pertenecen a trayectoria, cobranza, cuentas, recepción y validación
+   de pagos; nunca editar V1–V18. La siguiente migración disponible es V19.
+5. En V19 exponer movimientos y saldos actuales con consulta paginada y Excel filtrado.
+   Devoluciones, traspasos, reversos, cortes y retiros continúan pendientes.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.

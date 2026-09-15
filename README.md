@@ -227,13 +227,14 @@ enmascarados en el listado paginado y en su Excel filtrado. Requiere
 `CUENTA_FINANCIERA_LEER` y/o `CUENTA_FINANCIERA_ADMINISTRAR`; V16 no concede estos
 permisos automáticamente a roles existentes.
 
-Pagos permite registrar efectivo o transferencia en estado pendiente de validación. Un
-solo pago puede proponer importes separados para cargos de varios hijos del tutor, sin
-alterar todavía sus saldos. Las transferencias requieren comprobante JPEG, PNG o PDF en
-almacenamiento privado; efectivo puede adjuntarlo opcionalmente. El listado pagina y
-filtra en PostgreSQL y su Excel reutiliza exactamente esos filtros. Requiere
-`PAGO_LEER` y/o `PAGO_REGISTRAR`; V17 no concede permisos automáticamente a roles.
+Pagos permite registrar efectivo o transferencia en estado pendiente. Un solo pago
+puede proponer importes separados para cargos de varios hijos del tutor. Las
+transferencias requieren comprobante privado y el listado conserva paginación, filtros
+y Excel equivalentes. `PAGO_LEER` consulta, `PAGO_REGISTRAR` recibe y `PAGO_VALIDAR`
+autoriza o rechaza; estos permisos no se asignan automáticamente a roles existentes.
 
-La siguiente etapa validará o rechazará el pago. Sólo entonces se crearán aplicaciones
-reales separadas por cargo y un movimiento financiero único por todo el ingreso; el
-remanente quedará disponible sin convertirse en un saldo familiar indistinto.
+Al validar se elige la cuenta destino compatible, se recalcula el saldo de cada cargo y
+se crean aplicaciones independientes por alumno. En la misma transacción se publica un
+solo movimiento de ingreso por todo el pago; el remanente queda disponible. El rechazo
+exige motivo y conserva el comprobante sin afectar saldos. Los bloqueos, secuencias y
+claves idempotentes impiden aplicar o ingresar dos veces el mismo pago.

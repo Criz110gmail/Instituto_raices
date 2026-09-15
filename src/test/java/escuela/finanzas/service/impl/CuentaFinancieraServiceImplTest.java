@@ -6,6 +6,7 @@ import escuela.finanzas.dto.request.CuentaFinancieraRequest;
 import escuela.finanzas.entity.*;
 import escuela.finanzas.mapper.CuentaFinancieraMapper;
 import escuela.finanzas.repository.CuentaFinancieraRepository;
+import escuela.finanzas.repository.MovimientoFinancieroRepository;
 import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
 import org.junit.jupiter.api.Test;
@@ -23,8 +24,9 @@ class CuentaFinancieraServiceImplTest {
     private final CuentaFinancieraRepository repository = mock(CuentaFinancieraRepository.class);
     private final InstitucionRepository instituciones = mock(InstitucionRepository.class);
     private final PlantelRepository planteles = mock(PlantelRepository.class);
+    private final MovimientoFinancieroRepository movimientos = mock(MovimientoFinancieroRepository.class);
     private final CuentaFinancieraServiceImpl service = new CuentaFinancieraServiceImpl(
-            repository, instituciones, planteles, new CuentaFinancieraMapper());
+            repository, instituciones, planteles, movimientos, new CuentaFinancieraMapper());
 
     @Test
     void creaCuentaBancariaNormalizadaYLigadaAlPlantel() {

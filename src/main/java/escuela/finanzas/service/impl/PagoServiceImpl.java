@@ -32,6 +32,7 @@ import java.util.*;
 
 import static escuela.common.mapper.NormalizacionTexto.codigo;
 import static escuela.common.mapper.NormalizacionTexto.limpiar;
+import static escuela.cobranza.support.CalculoCargo.saldo;
 
 @Service
 @RequiredArgsConstructor
@@ -222,7 +223,7 @@ public class PagoServiceImpl implements PagoService {
                 throw new ReglaNegocioException("El tutor no tiene responsabilidad financiera vigente sobre uno de los alumnos seleccionados");
             }
             BigDecimal monto = solicitud.montoSolicitado().setScale(2, RoundingMode.UNNECESSARY);
-            BigDecimal saldoActual = totalCargo(cargo);
+            BigDecimal saldoActual = saldo(cargo);
             if (monto.compareTo(saldoActual) > 0) {
                 throw new ReglaNegocioException("El monto solicitado para " + cargo.getDescripcion()
                         + " supera su saldo actual de " + saldoActual.toPlainString() + " " + cargo.getMoneda());
@@ -230,15 +231,6 @@ public class PagoServiceImpl implements PagoService {
             resultado.add(new CargoSolicitud(cargo, monto));
         }
         return resultado;
-    }
-
-    private BigDecimal totalCargo(Cargo cargo) {
-        BigDecimal total = cargo.getImporteOriginal();
-        for (AjusteCargo ajuste : cargo.getAjustes()) {
-            total = ajuste.getEfecto() == EfectoAjusteCargo.AUMENTO
-                    ? total.add(ajuste.getMonto()) : total.subtract(ajuste.getMonto());
-        }
-        return total.max(BigDecimal.ZERO).setScale(2, RoundingMode.HALF_UP);
     }
 
     private ComprobanteValidado validarComprobante(MultipartFile archivo) {

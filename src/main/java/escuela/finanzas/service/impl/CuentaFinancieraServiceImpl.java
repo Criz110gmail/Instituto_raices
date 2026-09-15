@@ -6,6 +6,7 @@ import escuela.finanzas.dto.response.CuentaFinancieraResponse;
 import escuela.finanzas.entity.*;
 import escuela.finanzas.mapper.CuentaFinancieraMapper;
 import escuela.finanzas.repository.CuentaFinancieraRepository;
+import escuela.finanzas.repository.MovimientoFinancieroRepository;
 import escuela.finanzas.service.CuentaFinancieraService;
 import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
@@ -27,6 +28,7 @@ public class CuentaFinancieraServiceImpl implements CuentaFinancieraService {
     private final CuentaFinancieraRepository repository;
     private final InstitucionRepository institucionRepository;
     private final PlantelRepository plantelRepository;
+    private final MovimientoFinancieroRepository movimientoRepository;
     private final CuentaFinancieraMapper mapper;
 
     @Override
@@ -48,6 +50,12 @@ public class CuentaFinancieraServiceImpl implements CuentaFinancieraService {
         verificar(cuenta, request.version(), "Cuenta financiera");
         if (!cuenta.getInstitucion().getId().equals(request.institucionId())) {
             throw new ReglaNegocioException("No se puede cambiar la institución de una cuenta financiera");
+        }
+        if (movimientoRepository.existsByCuentaId(id)
+                && (cuenta.getSaldoInicial().compareTo(request.saldoInicial()) != 0
+                || !cuenta.getFechaSaldoInicial().equals(request.fechaSaldoInicial())
+                || !cuenta.getMoneda().equalsIgnoreCase(request.moneda()))) {
+            throw new ReglaNegocioException("La moneda, fecha y saldo inicial ya no pueden cambiarse porque la cuenta tiene movimientos");
         }
         Plantel plantel = obtenerPlantel(request.plantelId(), cuenta.getInstitucion(), request.activo());
         validar(request, cuenta.getInstitucion(), id);

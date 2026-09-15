@@ -88,4 +88,11 @@ public class Pago extends EntidadAuditable {
     @OneToMany(mappedBy = "pago", fetch = FetchType.LAZY)
     @OrderBy("id ASC")
     private List<SolicitudAplicacionPago> solicitudes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "pago", fetch = FetchType.LAZY)
+    @OrderBy("id ASC")
+    private List<AplicacionPago> aplicaciones = new ArrayList<>();
+
+    @OneToOne(mappedBy = "pago", fetch = FetchType.LAZY)
+    private MovimientoFinanciero movimiento;
 }

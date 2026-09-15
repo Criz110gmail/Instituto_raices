@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import escuela.finanzas.entity.AplicacionPago;
 
 @Getter
 @Setter
@@ -79,4 +80,8 @@ public class Cargo extends EntidadAuditable {
     @jakarta.persistence.OneToMany(mappedBy = "cargo", fetch = FetchType.LAZY)
     @jakarta.persistence.OrderBy("id ASC")
     private List<AjusteCargo> ajustes = new ArrayList<>();
+
+    @jakarta.persistence.OneToMany(mappedBy = "cargo", fetch = FetchType.LAZY)
+    @jakarta.persistence.OrderBy("id ASC")
+    private List<AplicacionPago> aplicaciones = new ArrayList<>();
 }
