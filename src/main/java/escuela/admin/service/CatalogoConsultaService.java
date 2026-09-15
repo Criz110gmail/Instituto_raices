@@ -21,6 +21,8 @@ import escuela.cobranza.repository.AjusteCargoRepository;
 import escuela.cobranza.repository.PoliticaRecargoRepository;
 import escuela.finanzas.entity.CuentaFinanciera;
 import escuela.finanzas.repository.CuentaFinancieraRepository;
+import escuela.finanzas.entity.Pago;
+import escuela.finanzas.repository.PagoRepository;
 import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
 import escuela.inscripcion.entity.Inscripcion;
@@ -73,6 +75,7 @@ public class CatalogoConsultaService {
     private final AjusteCargoRepository ajusteCargoRepository;
     private final PoliticaRecargoRepository politicaRecargoRepository;
     private final CuentaFinancieraRepository cuentaFinancieraRepository;
+    private final PagoRepository pagoRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcanceDatosService;
@@ -146,6 +149,8 @@ public class CatalogoConsultaService {
                     textoPoliticaRecargo(f), activo(f), pagina, this::filaPoliticaRecargo);
             case CUENTAS_FINANCIERAS -> consultar(modulo, cuentaFinancieraRepository,
                     textoCuentaFinanciera(f), activo(f), pagina, this::filaCuentaFinanciera);
+            case PAGOS -> consultar(modulo, pagoRepository, textoPago(f),
+                    estado(f, "estado"), pagina, this::filaPago);
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
             case USUARIOS -> consultar(modulo, usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,
@@ -200,6 +205,21 @@ public class CatalogoConsultaService {
             return cb.or(cb.like(cb.lower(root.get("username")), patron),
                     cb.like(cb.lower(root.get("email")), patron),
                     cb.like(cb.lower(root.get("institucion").get("nombre")), patron));
+        };
+    }
+
+    private Specification<Pago> textoPago(FiltroCatalogo f) {
+        return (root, query, cb) -> {
+            if (f.q().isBlank()) return cb.conjunction();
+            String patron = "%" + f.q().toLowerCase(Locale.ROOT) + "%";
+            var tutor = root.get("tutor");
+            return cb.or(cb.like(cb.lower(root.get("folio")), patron),
+                    cb.like(cb.lower(root.get("nombrePagador")), patron),
+                    cb.like(cb.lower(root.get("referencia")), patron),
+                    cb.like(cb.lower(tutor.get("nombres")), patron),
+                    cb.like(cb.lower(tutor.get("primerApellido")), patron),
+                    cb.like(cb.lower(tutor.get("segundoApellido")), patron),
+                    cb.like(cb.lower(root.get("plantelRegistro").get("nombre")), patron));
         };
     }
 
@@ -405,6 +425,29 @@ public class CatalogoConsultaService {
                 tipo, institucionFinanciera, identificador,
                 cuenta.getSaldoInicial().toPlainString() + " " + cuenta.getMoneda(),
                 FECHA.format(cuenta.getFechaSaldoInicial()));
+    }
+
+    private FilaCatalogo filaPago(Pago pago) {
+        java.math.BigDecimal solicitado = pago.getSolicitudes().stream()
+                .map(escuela.finanzas.entity.SolicitudAplicacionPago::getMontoSolicitado)
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+        String distribucion = solicitado.signum() == 0 ? "Sin asignar"
+                : solicitado.toPlainString() + " " + pago.getMoneda() + " · "
+                + pago.getSolicitudes().size() + " cargo(s)";
+        String estado = switch (pago.getEstado()) {
+            case PENDIENTE_VALIDACION -> "Pendiente de validación";
+            case VALIDADO -> "Validado";
+            case RECHAZADO -> "Rechazado";
+            case CANCELADO -> "Cancelado";
+        };
+        String tono = pago.getEstado() == escuela.finanzas.entity.EstadoPago.PENDIENTE_VALIDACION
+                ? "aviso" : pago.getEstado() == escuela.finanzas.entity.EstadoPago.VALIDADO ? "positivo" : "neutro";
+        String fecha = java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm", new Locale("es", "MX"))
+                .withZone(java.time.ZoneId.of(pago.getInstitucion().getZonaHoraria())).format(pago.getFechaPago());
+        return new FilaCatalogo(pago.getId(), List.of(pago.getFolio(), nombreTutor(pago.getTutor()),
+                pago.getPlantelRegistro().getNombre(), fecha, etiqueta(pago.getMetodo().name()),
+                pago.getMonto().toPlainString() + " " + pago.getMoneda(), distribucion,
+                String.valueOf(pago.getComprobantes().size())), estado, tono);
     }
 
     private String enmascarar(String valor) {

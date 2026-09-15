@@ -23,6 +23,27 @@ public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecific
 
     Optional<Cargo> findByClaveGeneracion(String claveGeneracion);
 
+    @Query(value = """
+            SELECT DISTINCT c.* FROM cargo c
+            JOIN inscripcion i ON i.id = c.inscripcion_id
+            JOIN alumno a ON a.id = i.alumno_id
+            JOIN alumno_tutor v ON v.alumno_id = a.id
+            JOIN concepto_cobro cc ON cc.id = c.concepto_cobro_id
+            WHERE a.institucion_id = :institucionId
+              AND v.tutor_id = :tutorId
+              AND v.activo = true AND v.es_responsable_financiero = true
+              AND v.fecha_inicio <= CURRENT_DATE
+              AND (v.fecha_fin IS NULL OR v.fecha_fin >= CURRENT_DATE)
+              AND c.estado_registro = 'EMITIDO'
+              AND (a.busqueda_autocomplete LIKE ('%' || lower(:texto) || '%')
+                OR cc.busqueda_autocomplete LIKE ('%' || lower(:texto) || '%'))
+            ORDER BY c.fecha_vencimiento, c.id
+            """, nativeQuery = true)
+    Slice<Cargo> buscarParaSolicitudPago(@Param("institucionId") Long institucionId,
+                                         @Param("tutorId") Long tutorId,
+                                         @Param("texto") String texto,
+                                         Pageable limite);
+
     @Query("""
             select c from Cargo c join c.conceptoCobro concepto join PoliticaRecargo p
               on p.conceptoCobro.id = concepto.id

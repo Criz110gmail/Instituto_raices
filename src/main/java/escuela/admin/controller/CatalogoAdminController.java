@@ -50,6 +50,8 @@ public class CatalogoAdminController {
         model.addAttribute("resultado", consultaService.consultar(modulo, filtro));
         model.addAttribute("filtro", filtro);
         model.addAttribute("modulos", modulos);
+        model.addAttribute("puedeRegistrarPago", authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("PAGO_REGISTRAR")));
         return "admin/catalogo";
     }
 

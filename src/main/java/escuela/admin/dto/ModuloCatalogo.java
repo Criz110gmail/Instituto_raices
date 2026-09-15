@@ -25,6 +25,7 @@ public enum ModuloCatalogo {
     AJUSTES_CARGO("ajustes-cargo", "Ajustes de cargos", List.of("Alumno", "Concepto", "Tipo", "Efecto", "Monto", "Fecha", "Motivo")),
     POLITICAS_RECARGO("politicas-recargo", "Políticas de recargo", List.of("Concepto", "Institución", "Recargo", "Gracia", "Periodicidad", "Límite", "Generación")),
     CUENTAS_FINANCIERAS("cuentas-financieras", "Cuentas financieras", List.of("Código", "Cuenta", "Alcance", "Tipo", "Institución financiera", "Identificador", "Saldo inicial", "Fecha inicial")),
+    PAGOS("pagos", "Pagos", List.of("Folio", "Tutor", "Plantel de registro", "Fecha", "Método", "Monto", "Distribución", "Comprobantes")),
     ROLES("roles", "Roles y permisos", List.of("Código", "Rol", "Institución", "Descripción")),
     USUARIOS("usuarios", "Usuarios", List.of("Usuario", "Correo", "Institución", "Credencial"));
 
@@ -48,7 +49,7 @@ public enum ModuloCatalogo {
             case ALUMNOS, TUTORES, VINCULOS_TUTOR -> "Personas";
             case INSCRIPCIONES -> "Trayectoria";
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
-            case CUENTAS_FINANCIERAS -> "Finanzas";
+            case CUENTAS_FINANCIERAS, PAGOS -> "Finanzas";
             case ROLES, USUARIOS -> "Seguridad";
         };
     }
@@ -75,9 +76,11 @@ public enum ModuloCatalogo {
             case AJUSTES_CARGO -> "AJUSTE_CARGO";
             case POLITICAS_RECARGO -> "POLITICA_RECARGO";
             case CUENTAS_FINANCIERAS -> "CUENTA_FINANCIERA";
+            case PAGOS -> "PAGO";
             case ROLES -> "ROL";
             case USUARIOS -> "USUARIO";
         };
+        if (this == PAGOS) return permisos.contains("PAGO_LEER") || permisos.contains("PAGO_REGISTRAR");
         boolean administra = permisos.contains(base + "_ADMINISTRAR");
         if (this == ROLES || this == USUARIOS) return administra;
         return administra || permisos.contains(base + "_LEER");
@@ -92,6 +95,7 @@ public enum ModuloCatalogo {
                 || this == CARGOS
                 || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO || this == POLITICAS_RECARGO
                 || this == CUENTAS_FINANCIERAS
+                || this == PAGOS
                 || this == ROLES || this == USUARIOS;
     }
 
@@ -117,6 +121,7 @@ public enum ModuloCatalogo {
             case AJUSTES_CARGO -> "/admin/ajustes-cargo";
             case POLITICAS_RECARGO -> "/admin/politicas-recargo";
             case CUENTAS_FINANCIERAS -> "/admin/cuentas-financieras";
+            case PAGOS -> "/admin/pagos";
             case ROLES -> "/admin/roles";
             case USUARIOS -> "/admin/usuarios";
             default -> "";
@@ -131,6 +136,7 @@ public enum ModuloCatalogo {
                 || this == CARGOS
                 || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO || this == POLITICAS_RECARGO
                 || this == CUENTAS_FINANCIERAS
+                || this == PAGOS
                 || this == ROLES || this == USUARIOS
                 ? "/nuevo" : "/nueva";
     }

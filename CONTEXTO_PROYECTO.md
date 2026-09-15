@@ -894,3 +894,37 @@
 - El siguiente paso es V17 con registro de `Pago`, comprobantes privados y solicitudes
   de distribución. Permanecerán pendientes la validación, las aplicaciones que afectan
   saldos y la generación del movimiento financiero único por pago.
+
+## Decisiones — pagos pendientes, comprobantes y distribución solicitada
+
+- Flyway V17 crea `Pago`, `ComprobantePago` y `SolicitudAplicacionPago`, además de los
+  permisos `PAGO_LEER` y `PAGO_REGISTRAR` sin modificar los roles existentes.
+- El alta registra efectivo o transferencia exclusivamente como `PENDIENTE_VALIDACION`.
+  Folio e idempotencia son únicos por institución; fecha futura, moneda ajena, tutor,
+  plantel o cuenta incompatibles se rechazan antes de persistir.
+- Una transferencia requiere al menos un comprobante. Se aceptan como máximo cinco
+  archivos JPEG, PNG o PDF de 10 MB cada uno, comprobando su firma binaria, nombre,
+  tamaño y SHA-256. Los bytes viven en `private_files` y la descarga autorizada usa
+  `no-store` y disposición de archivo adjunto.
+- Efectivo puede declarar una cuenta CAJA y transferencia una cuenta BANCO o INVERSION;
+  la cuenta es opcional hasta que la validación elija el destino real.
+- Un pago puede proponer distribución para varios hijos del mismo tutor. Cada cargo se
+  valida contra responsabilidad financiera vigente, institución, moneda, estado y saldo;
+  la suma solicitada no supera el pago y el remanente permanece visible sin asignar.
+- Ni el pago pendiente ni sus solicitudes modifican saldos o cargos. Todavía no existen
+  `AplicacionPago`, movimientos, devoluciones, cortes ni retiros.
+- El listado filtra y pagina en PostgreSQL y exporta exactamente los mismos filtros con
+  Apache POI por bloques. El alta y detalle son responsivos, compatibles con ambos temas
+  y usan búsquedas remotas acotadas para tutores, cuentas y cargos.
+
+## Verificación de pagos pendientes
+
+- Docker compiló 328 fuentes Java de producción y ejecutó 209 pruebas sin fallos ni
+  errores. Diez pruebas nuevas cubren pago para varios hijos, remanente, comprobantes,
+  firma falsa, autorización financiera, tipo de cuenta, formulario y redirección.
+- Flyway validó diecisiete migraciones y aplicó V17 sobre PostgreSQL 17. Hibernate validó
+  el esquema, detectó 33 repositorios y Actuator respondió `UP`.
+- No se registraron pagos, comprobantes ni distribuciones operativas durante la
+  verificación. La siguiente etapa es V18: validar o rechazar pagos, crear aplicaciones
+  por cargo y publicar un solo movimiento de ingreso por pago validado, todo de manera
+  atómica e idempotente.

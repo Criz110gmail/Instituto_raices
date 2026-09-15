@@ -5,8 +5,12 @@ import escuela.admin.dto.ResultadoAutocompletado;
 import escuela.alumno.entity.Alumno;
 import escuela.alumno.repository.AlumnoRepository;
 import escuela.cobranza.entity.ConceptoCobro;
+import escuela.cobranza.entity.Cargo;
+import escuela.cobranza.entity.AjusteCargo;
+import escuela.cobranza.entity.EfectoAjusteCargo;
 import escuela.cobranza.repository.ConceptoCobroRepository;
 import escuela.cobranza.repository.TipoBecaRepository;
+import escuela.cobranza.repository.CargoRepository;
 import escuela.cobranza.entity.TipoBeca;
 import escuela.academico.entity.PeriodoAcademico;
 import escuela.academico.repository.PeriodoAcademicoRepository;
@@ -18,6 +22,12 @@ import escuela.seguridad.repository.UsuarioRepository;
 import escuela.seguridad.service.AlcanceDatosService;
 import escuela.tutor.entity.Tutor;
 import escuela.tutor.repository.TutorRepository;
+import escuela.finanzas.entity.CuentaFinanciera;
+import escuela.finanzas.entity.MetodoPago;
+import escuela.finanzas.repository.CuentaFinancieraRepository;
+import org.springframework.security.access.AccessDeniedException;
+
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -41,6 +51,8 @@ public class BusquedaAutocompletadoService {
     private final ConceptoCobroRepository conceptoCobroRepository;
     private final PeriodoAcademicoRepository periodoAcademicoRepository;
     private final TipoBecaRepository tipoBecaRepository;
+    private final CargoRepository cargoRepository;
+    private final CuentaFinancieraRepository cuentaFinancieraRepository;
     private final AlcanceDatosService alcance;
 
     public ResultadoAutocompletado alumnos(Long institucionId, String consulta) {
@@ -76,6 +88,19 @@ public class BusquedaAutocompletadoService {
                 .map(tutor -> new OpcionAutocompletado(tutor.getId(),
                         nombre(tutor.getNombres(), tutor.getPrimerApellido(),
                                 tutor.getSegundoApellido()),
+                        detalle(tutor.getTelefonoPrincipal(), tutor.getEmail())))
+                .toList(), resultado.hasNext());
+    }
+
+    public ResultadoAutocompletado tutoresParaPago(Long institucionId, String consulta) {
+        alcance.validarInstitucion(institucionId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        Slice<Tutor> resultado = tutorRepository.buscarParaAutocompletado(
+                institucionId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+        return new ResultadoAutocompletado(resultado.getContent().stream()
+                .map(tutor -> new OpcionAutocompletado(tutor.getId(),
+                        nombre(tutor.getNombres(), tutor.getPrimerApellido(), tutor.getSegundoApellido()),
                         detalle(tutor.getTelefonoPrincipal(), tutor.getEmail())))
                 .toList(), resultado.hasNext());
     }
@@ -145,6 +170,62 @@ public class BusquedaAutocompletadoService {
                 .map(tipo -> new OpcionAutocompletado(tipo.getId(),
                         tipo.getCodigo() + " · " + tipo.getNombre(),
                         detalle(tipo.getDescripcion(), null))).toList(), resultado.hasNext());
+    }
+
+    public ResultadoAutocompletado cuentasParaPago(Long institucionId, Long plantelId,
+                                                   MetodoPago metodo, String consulta) {
+        alcance.validarInstitucion(institucionId);
+        alcance.validarPlantel(plantelId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        Slice<CuentaFinanciera> resultado = cuentaFinancieraRepository.buscarParaPago(
+                institucionId, plantelId, metodo == MetodoPago.EFECTIVO, texto,
+                PageRequest.of(0, MAXIMO_RESULTADOS));
+        return new ResultadoAutocompletado(resultado.getContent().stream()
+                .map(cuenta -> new OpcionAutocompletado(cuenta.getId(),
+                        cuenta.getCodigo() + " · " + cuenta.getNombre(),
+                        cuenta.getTipo().name() + " · " + identificadorCuenta(cuenta)))
+                .toList(), resultado.hasNext());
+    }
+
+    public ResultadoAutocompletado cargosParaPago(Long institucionId, Long tutorId, String consulta) {
+        alcance.validarInstitucion(institucionId);
+        alcance.validarRecurso(ModuloCatalogo.TUTORES, tutorId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        Slice<Cargo> resultado = cargoRepository.buscarParaSolicitudPago(
+                institucionId, tutorId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+        var permitidos = resultado.getContent().stream().filter(cargo -> {
+            try {
+                alcance.validarRecurso(ModuloCatalogo.CARGOS, cargo.getId());
+                return true;
+            } catch (AccessDeniedException excepcion) {
+                return false;
+            }
+        }).map(cargo -> new OpcionAutocompletado(cargo.getId(),
+                cargo.getInscripcion().getAlumno().getMatricula() + " · "
+                        + nombre(cargo.getInscripcion().getAlumno().getNombres(),
+                        cargo.getInscripcion().getAlumno().getPrimerApellido(),
+                        cargo.getInscripcion().getAlumno().getSegundoApellido()) + " · "
+                        + cargo.getConceptoCobro().getNombre(),
+                cargo.getDescripcion() + " · Saldo actual " + totalCargo(cargo).toPlainString()
+                        + " " + cargo.getMoneda())).toList();
+        return new ResultadoAutocompletado(permitidos, resultado.hasNext());
+    }
+
+    private BigDecimal totalCargo(Cargo cargo) {
+        BigDecimal total = cargo.getImporteOriginal();
+        for (AjusteCargo ajuste : cargo.getAjustes()) {
+            total = ajuste.getEfecto() == EfectoAjusteCargo.AUMENTO
+                    ? total.add(ajuste.getMonto()) : total.subtract(ajuste.getMonto());
+        }
+        return total.max(BigDecimal.ZERO);
+    }
+
+    private String identificadorCuenta(CuentaFinanciera cuenta) {
+        String valor = cuenta.getClabe() != null ? cuenta.getClabe() : cuenta.getNumeroCuenta();
+        if (valor == null) return cuenta.getPlantel() == null ? "Institucional" : cuenta.getPlantel().getNombre();
+        return "•••• " + valor.substring(Math.max(0, valor.length() - 4));
     }
 
     private String normalizar(String consulta) {

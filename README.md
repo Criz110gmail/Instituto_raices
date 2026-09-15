@@ -69,7 +69,7 @@ comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME
 - `escuela.tutor`: expediente institucional de tutores y cuenta de acceso opcional.
 - `escuela.inscripcion`: trayectoria académica e historial de asignaciones de grupo.
 - `escuela.cobranza`: conceptos, cuotas, cargos, becas y ajustes por inscripción/alumno.
-- `escuela.finanzas`: cuentas financieras y, en etapas posteriores, pagos y movimientos.
+- `escuela.finanzas`: cuentas financieras, pagos pendientes, comprobantes privados y distribución solicitada.
 - `escuela.config`: seguridad y auditoría JPA.
 - `escuela.common`: excepciones, respuesta de auditoría y utilidades compartidas.
 - Cada módulo contiene DTO, mappers, repositorios y servicios transaccionales.
@@ -227,7 +227,13 @@ enmascarados en el listado paginado y en su Excel filtrado. Requiere
 `CUENTA_FINANCIERA_LEER` y/o `CUENTA_FINANCIERA_ADMINISTRAR`; V16 no concede estos
 permisos automáticamente a roles existentes.
 
-Un pago futuro podrá cubrir varios hijos, pero cada aplicación y saldo seguirá separado
-por cargo, inscripción y alumno. La siguiente etapa registrará pagos pendientes y la
-distribución solicitada; la validación, aplicación real, movimientos, caja y tesorería
-se mantendrán separadas por etapas.
+Pagos permite registrar efectivo o transferencia en estado pendiente de validación. Un
+solo pago puede proponer importes separados para cargos de varios hijos del tutor, sin
+alterar todavía sus saldos. Las transferencias requieren comprobante JPEG, PNG o PDF en
+almacenamiento privado; efectivo puede adjuntarlo opcionalmente. El listado pagina y
+filtra en PostgreSQL y su Excel reutiliza exactamente esos filtros. Requiere
+`PAGO_LEER` y/o `PAGO_REGISTRAR`; V17 no concede permisos automáticamente a roles.
+
+La siguiente etapa validará o rechazará el pago. Sólo entonces se crearán aplicaciones
+reales separadas por cargo y un movimiento financiero único por todo el ingreso; el
+remanente quedará disponible sin convertirse en un saldo familiar indistinto.

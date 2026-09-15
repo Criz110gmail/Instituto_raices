@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.context.SecurityContextHolder;
+import escuela.finanzas.entity.MetodoPago;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,6 +33,9 @@ public class AutocompletadoAdminController {
     @GetMapping("/tutores")
     ResultadoAutocompletado tutores(@RequestParam Long institucionId,
                                     @RequestParam(defaultValue = "") String q) {
+        boolean registraPagos = SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("PAGO_REGISTRAR"));
+        if (registraPagos) return service.tutoresParaPago(institucionId, q);
         return service.tutores(institucionId, q);
     }
 
@@ -65,5 +69,20 @@ public class AutocompletadoAdminController {
     ResultadoAutocompletado tiposBeca(@RequestParam Long institucionId,
                                       @RequestParam(defaultValue = "") String q) {
         return service.tiposBeca(institucionId, q);
+    }
+
+    @GetMapping("/cuentas-pago")
+    ResultadoAutocompletado cuentasPago(@RequestParam Long institucionId,
+                                        @RequestParam Long plantelId,
+                                        @RequestParam MetodoPago metodo,
+                                        @RequestParam(defaultValue = "") String q) {
+        return service.cuentasParaPago(institucionId, plantelId, metodo, q);
+    }
+
+    @GetMapping("/cargos-pago")
+    ResultadoAutocompletado cargosPago(@RequestParam Long institucionId,
+                                       @RequestParam Long tutorId,
+                                       @RequestParam(defaultValue = "") String q) {
+        return service.cargosParaPago(institucionId, tutorId, q);
     }
 }

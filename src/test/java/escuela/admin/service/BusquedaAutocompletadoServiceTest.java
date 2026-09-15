@@ -7,6 +7,8 @@ import escuela.institucion.entity.Institucion;
 import escuela.inscripcion.repository.InscripcionRepository;
 import escuela.cobranza.repository.ConceptoCobroRepository;
 import escuela.cobranza.repository.TipoBecaRepository;
+import escuela.cobranza.repository.CargoRepository;
+import escuela.finanzas.repository.CuentaFinancieraRepository;
 import escuela.cobranza.entity.CategoriaConceptoCobro;
 import escuela.cobranza.entity.ConceptoCobro;
 import escuela.inscripcion.entity.Inscripcion;
@@ -41,7 +43,8 @@ class BusquedaAutocompletadoServiceTest {
     private final BusquedaAutocompletadoService service = new BusquedaAutocompletadoService(
             alumnoRepository, tutorRepository, usuarioRepository, inscripcionRepository,
             conceptoCobroRepository, mock(PeriodoAcademicoRepository.class),
-            mock(TipoBecaRepository.class), alcance);
+            mock(TipoBecaRepository.class), mock(CargoRepository.class),
+            mock(CuentaFinancieraRepository.class), alcance);
 
     @Test
     void noConsultaLaBaseConMenosDeTresCaracteres() {

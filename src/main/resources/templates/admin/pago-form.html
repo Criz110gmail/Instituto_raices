@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+    <title>Registrar pago · Nexo Escolar</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css">
+    <script src="/js/theme.js"></script><script src="/js/pago-form.js" defer></script>
+</head>
+<body class="form-page">
+<main class="form-shell payment-shell">
+    <header class="form-top"><a href="/admin/catalogos/pagos">← Volver a pagos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <div class="finance-principle payment-principle"><span>Recepción protegida</span><strong>Un solo pago, distribución clara por cada alumno</strong><p>El registro queda pendiente de validación. Las cantidades sugeridas no reducen todavía el saldo de ningún cargo ni incrementan una cuenta.</p></div>
+    <section class="form-card payment-card">
+        <div class="form-intro finance-intro"><span>Control de ingresos</span><h1>Registrar pago pendiente</h1><p>Captura quién pagó, dónde se reportó y cómo desea distribuirse. La validación administrativa confirmará todo en la siguiente etapa.</p></div>
+        <form id="pago-form" class="entity-form" th:object="${form}" method="post" action="/admin/pagos" enctype="multipart/form-data">
+            <div class="form-error" role="alert" th:if="${errorOperacion or #fields.hasErrors('*')}">
+                <strong>No se pudo registrar el pago</strong><p th:if="${errorOperacion}" th:text="${errorOperacion}"></p>
+                <ul th:if="${#fields.hasErrors('*')}"><li th:each="e : ${#fields.errors('*')}" th:text="${e}"></li></ul>
+            </div>
+
+            <fieldset class="form-section"><legend>Origen y responsable</legend><div class="form-grid">
+                <label><span>Institución *</span><select id="institucion" th:field="*{institucionId}"><option value="">Selecciona una institución</option><option th:each="i : ${instituciones}" th:value="${i.id}" th:text="${i.codigo + ' · ' + i.nombre}" th:attr="data-moneda=${i.monedaPredeterminada}"></option></select></label>
+                <label><span>Plantel que registra *</span><select id="plantel" th:field="*{plantelRegistroId}"><option value="">Selecciona un plantel</option><option th:each="p : ${planteles}" th:value="${p.id}" th:text="${p.codigo + ' · ' + p.nombre}" th:attr="data-institucion=${p.institucionId},data-activo=${p.activo}"></option></select></label>
+                <div class="wide payment-autocomplete" data-payment-autocomplete="tutor"><label for="tutor-busqueda">Tutor titular del pago *</label><div class="autocomplete-control"><input id="tutor-busqueda" type="search" autocomplete="off" placeholder="Nombre, teléfono o correo" th:field="*{tutorEtiqueta}"><button type="button" class="autocomplete-clear" aria-label="Limpiar tutor">×</button></div><input id="tutorId" type="hidden" th:field="*{tutorId}"><div class="autocomplete-results" role="listbox" hidden></div><small class="autocomplete-status">Escribe al menos 3 caracteres.</small></div>
+                <label class="wide"><span>Nombre de quien entrega o transfiere</span><input th:field="*{nombrePagador}" maxlength="180" placeholder="Opcional, si es distinto del tutor"><small th:errors="*{nombrePagador}"></small></label>
+            </div></fieldset>
+
+            <fieldset class="form-section"><legend>Datos del pago</legend><div class="form-grid">
+                <label><span>Folio *</span><input th:field="*{folio}" maxlength="50" autocomplete="off"><small>Identificador único dentro de la institución.</small></label>
+                <label><span>Fecha y hora del pago *</span><input id="fechaPago" type="datetime-local" th:field="*{fechaPago}"></label>
+                <label><span>Método *</span><select id="metodo" th:field="*{metodo}"><option th:each="m : ${metodos}" th:value="${m}" th:text="${m.name() == 'EFECTIVO' ? 'Efectivo' : 'Transferencia'}"></option></select></label>
+                <label><span>Monto total *</span><div class="money-input"><input id="monto" type="number" min="0.01" step="0.01" th:field="*{monto}" placeholder="0.00"><input id="moneda" th:field="*{moneda}" maxlength="3" aria-label="Moneda"></div></label>
+                <label class="wide"><span>Referencia bancaria</span><input th:field="*{referencia}" maxlength="150" placeholder="Folio, rastreo o concepto del banco"><small th:errors="*{referencia}"></small></label>
+                <div class="wide payment-autocomplete" data-payment-autocomplete="cuenta"><label for="cuenta-busqueda">Cuenta declarada <small>(opcional)</small></label><div class="autocomplete-control"><input id="cuenta-busqueda" type="search" autocomplete="off" placeholder="Código, nombre o banco" th:field="*{cuentaDeclaradaEtiqueta}"><button type="button" class="autocomplete-clear" aria-label="Limpiar cuenta">×</button></div><input id="cuentaDeclaradaId" type="hidden" th:field="*{cuentaDeclaradaId}"><div class="autocomplete-results" role="listbox" hidden></div><small class="autocomplete-status">Selecciona institución y plantel; después busca la cuenta reportada.</small></div>
+                <label class="wide"><span>Observaciones</span><textarea th:field="*{observaciones}" maxlength="4000" rows="3" placeholder="Aclaraciones administrativas relevantes"></textarea><small th:errors="*{observaciones}"></small></label>
+            </div></fieldset>
+
+            <fieldset class="form-section receipt-section"><legend>Comprobantes privados</legend>
+                <div class="upload-zone"><div><strong id="receipt-title">Comprobante de transferencia *</strong><p>Hasta 5 archivos JPEG, PNG o PDF; máximo 10 MB cada uno. Se guardan fuera de las rutas públicas.</p></div><label class="file-picker"><span>Seleccionar archivos</span><input id="comprobantes" type="file" name="comprobantes" multiple accept="image/jpeg,image/png,application/pdf"></label></div>
+                <div id="file-summary" class="file-summary" aria-live="polite">No se han seleccionado archivos.</div>
+            </fieldset>
+
+            <fieldset class="form-section"><legend>Distribución solicitada</legend>
+                <div class="distribution-heading"><div><strong>Asignación por cargo y alumno</strong><p>Puede cubrir cargos de varios hijos del mismo tutor. También puedes dejar una parte sin asignar como anticipo pendiente.</p></div><button id="agregar-cargo" type="button">+ Agregar cargo</button></div>
+                <div id="solicitudes" class="distribution-list">
+                    <article class="distribution-row" th:each="s,iter : *{solicitudes}">
+                        <span class="row-number" th:text="${iter.index + 1}">1</span>
+                        <div class="payment-autocomplete" data-payment-autocomplete="cargo"><label th:for="|cargo-${iter.index}|">Cargo del alumno *</label><div class="autocomplete-control"><input th:id="|cargo-${iter.index}|" type="search" autocomplete="off" placeholder="Matrícula, alumno o concepto" th:name="|solicitudes[${iter.index}].cargoEtiqueta|" th:value="${s.cargoEtiqueta}"><button type="button" class="autocomplete-clear" aria-label="Limpiar cargo">×</button></div><input class="cargo-id" type="hidden" th:name="|solicitudes[${iter.index}].cargoId|" th:value="${s.cargoId}"><div class="autocomplete-results" role="listbox" hidden></div><small class="autocomplete-status">Selecciona primero un tutor.</small></div>
+                        <label><span>Monto solicitado *</span><input class="monto-solicitado" type="number" min="0.01" step="0.01" th:name="|solicitudes[${iter.index}].montoSolicitado|" th:value="${s.montoSolicitado}" placeholder="0.00"></label>
+                        <button class="remove-distribution" type="button" aria-label="Quitar cargo">×</button>
+                    </article>
+                </div>
+                <div id="distribution-empty" class="distribution-empty"><strong>Sin distribución todavía</strong><p>El pago completo quedará como importe pendiente de asignación hasta que sea validado.</p></div>
+                <div class="distribution-total"><span><small>Total del pago</small><strong id="total-pago">$0.00</strong></span><span><small>Solicitado</small><strong id="total-solicitado">$0.00</strong></span><span class="remaining"><small>Sin asignar</small><strong id="total-restante">$0.00</strong></span></div>
+            </fieldset>
+
+            <div class="form-notice"><strong>Importante</strong><p>“Pendiente de validación” significa que el comprobante aún no confirma la recepción. Este paso no crea aplicaciones, movimientos financieros ni cambios de saldo.</p></div>
+            <footer class="form-actions"><a href="/admin/catalogos/pagos">Cancelar</a><button type="submit">Registrar como pendiente</button></footer>
+        </form>
+    </section>
+</main>
+<template id="solicitud-template"><article class="distribution-row"><span class="row-number"></span><div class="payment-autocomplete" data-payment-autocomplete="cargo"><label>Cargo del alumno *</label><div class="autocomplete-control"><input type="search" autocomplete="off" placeholder="Matrícula, alumno o concepto"><button type="button" class="autocomplete-clear" aria-label="Limpiar cargo">×</button></div><input class="cargo-id" type="hidden"><div class="autocomplete-results" role="listbox" hidden></div><small class="autocomplete-status">Selecciona primero un tutor.</small></div><label><span>Monto solicitado *</span><input class="monto-solicitado" type="number" min="0.01" step="0.01" placeholder="0.00"></label><button class="remove-distribution" type="button" aria-label="Quitar cargo">×</button></article></template>
+</body>
+</html>
