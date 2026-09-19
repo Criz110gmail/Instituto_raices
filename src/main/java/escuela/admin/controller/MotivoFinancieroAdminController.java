@@ -90,7 +90,8 @@ public class MotivoFinancieroAdminController {
         model.addAttribute("edicion", id != null); model.addAttribute("instituciones", instituciones);
         model.addAttribute("naturalezas", NaturalezaMotivoFinanciero.values());
         model.addAttribute("reservado", "COBROS_ESCOLARES".equalsIgnoreCase(form.getCodigo())
-                || "TRASPASO_INTERNO".equalsIgnoreCase(form.getCodigo()));
+                || "TRASPASO_INTERNO".equalsIgnoreCase(form.getCodigo())
+                || "DEVOLUCION_PAGO".equalsIgnoreCase(form.getCodigo()));
     }
 
     private void validar(MotivoFinancieroForm form) {

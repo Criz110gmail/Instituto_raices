@@ -22,7 +22,7 @@ public record PagoResponse(
         List<SolicitudAplicacionPagoResponse> solicitudes,
         List<AplicacionPagoResponse> aplicaciones,
         BigDecimal montoSolicitado, BigDecimal montoSinAsignar,
-        BigDecimal montoAplicado, BigDecimal montoDisponible,
+        BigDecimal montoAplicado, BigDecimal montoDevuelto, BigDecimal montoDisponible,
         MovimientoFinancieroResponse movimiento,
         AuditoriaResponse auditoria
 ) {

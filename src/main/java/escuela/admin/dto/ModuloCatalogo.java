@@ -85,7 +85,7 @@ public enum ModuloCatalogo {
             case USUARIOS -> "USUARIO";
         };
         if (this == PAGOS) return permisos.contains("PAGO_LEER") || permisos.contains("PAGO_REGISTRAR")
-                || permisos.contains("PAGO_VALIDAR");
+                || permisos.contains("PAGO_VALIDAR") || permisos.contains("PAGO_DEVOLVER");
         if (this == MOVIMIENTOS_FINANCIEROS) return permisos.contains("MOVIMIENTO_FINANCIERO_LEER")
                 || permisos.contains("MOVIMIENTO_FINANCIERO_REGISTRAR")
                 || permisos.contains("TRANSFERENCIA_CUENTA_REGISTRAR");

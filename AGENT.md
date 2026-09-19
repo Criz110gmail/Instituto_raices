@@ -20,10 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main`: `10e9870` — `Motivos financieros`.
-- V20 ya está confirmado en Git. V21 (transferencias atómicas entre cuentas) es el
-  cambio local actual; el agente nuevo debe confirmar `git status` y `git log` antes de
-  continuar y no debe reconstruir V1–V21.
+- Último commit confirmado en `main` y `origin/main`: `cb439b2` — `transferencias entre cuentas`.
+- V21 ya está confirmado en Git. V22 (devoluciones de pagos) es el cambio local actual;
+  el agente nuevo debe confirmar `git status` y `git log` antes de continuar y no debe
+  reconstruir V1–V22.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -464,13 +464,27 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - La transferencia tiene idempotencia institucional y cada lado es único en la base de
   datos. El acceso de recuperación no puede mover fondos. V21 no implementa todavía la
   reversa; `REVERTIDA` queda reservado para una etapa posterior.
+- Flyway V22 crea `DevolucionPago`, enlaza sus ajustes de aplicaciones y su movimiento
+  único de egreso, y agrega `PAGO_DEVOLVER` sin asignarlo automáticamente a roles.
+- Una devolución sólo parte de un pago validado, no cambia ese estado y nunca se modela
+  como cancelación. Valida fecha, moneda, alcance, saldo de cuenta, límite total del pago,
+  versión e idempotencia institucional. El acceso de recuperación no puede ejecutarla.
+- El monto disponible se calcula como pago menos aplicaciones netas menos devoluciones
+  ejecutadas. Si no basta, el usuario selecciona aplicaciones vigentes: cada una se
+  revierte completa y, cuando sólo se necesita liberar una parte, se crea una nueva
+  aplicación por el remanente. El original nunca se edita ni elimina.
+- La devolución, los ajustes de cargos y un solo movimiento `DEVOLUCION/EGRESO` se
+  confirman en la misma transacción. `DEVOLUCION_PAGO` es un motivo técnico reservado.
+- El expediente muestra saldos, historial y formulario responsivo. La cuenta se busca
+  por autocompletado remoto; cualquier validación o restricción vuelve a la misma
+  pantalla conservando los datos capturados.
 
 ## Verificación confirmada
 
-- Compilación correcta de 373 archivos Java de producción.
-- 229 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V21 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 37 repositorios.
+- Compilación correcta de 382 archivos Java de producción.
+- 235 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V22 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 38 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -494,7 +508,7 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - Los dos listados y formularios de cobranza respondieron autenticados; la exportación
   filtrada de cuotas comenzó con firma XLSX `504b0304`. Las tablas de conceptos y cuotas
   permanecieron vacías y PostgreSQL confirmó 30 permisos técnicos totales.
-- La última instancia local verificada quedó en `http://localhost:18080`.
+- La última instancia local verificada quedó en `http://localhost:8080`.
 - El nombre visible de sesión se publica al modelo Thymeleaf mediante
   `IdentidadSesionAdvice`; no usar `#authentication`, porque el dialecto de seguridad
   no forma parte de las dependencias actuales. Una prueba de regresión cubre presencia
@@ -502,29 +516,30 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-El propietario debe conceder `TRANSFERENCIA_CUENTA_REGISTRAR` a su rol, volver a iniciar
-sesión y probar una transferencia con cuentas e importes controlados. Después de su
-confirmación, la siguiente etapa funcional recomendada es V22 con devoluciones de pagos:
-validar el disponible del pago, revertir aplicaciones necesarias y publicar el egreso
-de la cuenta de manera atómica. Las reversas generales, incluida la reversa conjunta de
-transferencias, siguen pendientes para una etapa separada.
+El propietario debe conceder `PAGO_DEVOLVER` a su rol, cerrar sesión, volver a entrar y
+probar una devolución desde el expediente de un pago validado usando una cuenta e importe
+controlados. Debe comprobar un caso cubierto por el monto disponible y otro que requiera
+seleccionar un abono; en ambos, revisar el historial, el saldo del cargo y el egreso en el
+libro. Después de su confirmación, la siguiente etapa funcional recomendada es V23 con
+reversas trazables de operaciones manuales y transferencias. La cancelación completa de
+pagos y los cortes/retiros siguen pendientes y deben diseñarse por separado.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. Confirmar si V21 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
+1. Confirmar si V22 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
    preservar los cambios locales y no volver a implementarla.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V21 ya pertenecen al historial; nunca editarlas una vez que V21 se haya
-   compartido/aplicado. La siguiente migración disponible es V22.
-5. En V22 implementar devoluciones de pagos de forma atómica. Reversas generales,
-   cortes y retiros continúan pendientes.
+4. Flyway V1–V22 ya fueron aplicadas en el volumen verificado; nunca editarlas. Cuando
+   V22 se confirme y comparta, la siguiente migración disponible será V23.
+5. Primero terminar la prueba funcional de V22 con `PAGO_DEVOLVER`. Después diseñar V23
+   para reversas generales sin mezclar cancelación de pagos, cortes ni retiros.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.

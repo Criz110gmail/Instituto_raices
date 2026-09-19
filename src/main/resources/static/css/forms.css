@@ -113,6 +113,22 @@
 .movement-card strong { overflow-wrap: anywhere; font-size: .84rem; }
 .applied-list article { border-left: 3px solid #159c8d; }
 .rejection-section { background: #fffafa; }
+.refund-history .requested-list article { border-left: 3px solid #c64251; }
+.refund-console { background: linear-gradient(135deg,#fffafa,#fff7f0); }
+.refund-form { display: grid; gap: 20px; }
+.refund-form .form-grid { padding: 22px; border: 1px solid #ead3d5; border-radius: 16px; background: var(--surface); }
+.refund-form .form-grid > label { display: block; }
+.refund-form .form-grid > label > small:not(.field-error) { color: var(--muted); }
+.refund-applications { display: grid; gap: 8px; margin: 0; padding: 18px; border: 1px solid var(--line); border-radius: 15px; }
+.refund-applications legend { padding: 0 8px; font-size: .8rem; font-weight: 800; }
+.refund-applications > p { margin: 0 0 5px; color: var(--muted); font-size: .75rem; line-height: 1.5; }
+.refund-applications > label { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 12px; padding: 12px 13px; border: 1px solid var(--line); border-radius: 11px; cursor: pointer; }
+.refund-applications > label span { display: grid; gap: 3px; }
+.refund-applications > label strong { font-size: .78rem; }
+.refund-applications > label small { color: var(--muted); font-size: .7rem; }
+.refund-applications > label b { white-space: nowrap; font-size: .78rem; }
+.refund-warning { display: flex; gap: 8px; padding: 13px 15px; border: 1px solid #efc4c8; border-radius: 11px; background: #fff3f4; color: #8c2935; font-size: .76rem; }
+.refund-button { max-width: 390px; justify-self: end; }
 [data-theme=dark] .payment-principle.resolved-success { background: linear-gradient(135deg,#0d3029,#0b1b2c); }
 [data-theme=dark] .payment-principle.resolved-rejected { border-color: #713944; background: linear-gradient(135deg,#2a171d,#0b1b2c); }
 [data-theme=dark] .validation-console { background: linear-gradient(135deg,#091827,#0c2223); }
@@ -121,11 +137,16 @@
 [data-theme=dark] .movement-card { border-color: #216b61; background: #0d2928; }
 [data-theme=dark] .movement-card small { color: #9ac9c0; }
 [data-theme=dark] .rejection-section { background: #22151b; }
+[data-theme=dark] .refund-console { background: linear-gradient(135deg,#24171d,#191c25); }
+[data-theme=dark] .refund-form .form-grid { border-color: #61303e; }
+[data-theme=dark] .refund-warning { border-color: #713944; background: #321b23; color: #f0abb3; }
 
 @media (max-width: 760px) {
     .validation-console { padding: 24px 20px; }
     .validation-columns,.movement-card { grid-template-columns: 1fr; }
     .operation-error { margin: 16px 20px 0; }
+    .refund-warning { display: grid; }
+    .refund-button { max-width: none; }
 }
 
 .adjustment-list { display: grid; gap: .7rem; }

@@ -41,6 +41,8 @@ public class MovimientoFinanciero extends EntidadAuditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transferencia_id") private TransferenciaCuenta transferencia;
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "devolucion_pago_id") private DevolucionPago devolucionPago;
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reversa_de_id") private MovimientoFinanciero reversaDe;
     @Column(name = "clave_idempotencia", nullable = false, length = 120) private String claveIdempotencia;
     @Column(name = "saldo_anterior", nullable = false, precision = 19, scale = 2) private BigDecimal saldoAnterior;

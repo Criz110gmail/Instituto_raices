@@ -6,6 +6,7 @@ import escuela.archivo.dto.ArchivoDescarga;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.finanzas.dto.response.PagoResponse;
 import escuela.finanzas.entity.MetodoPago;
+import escuela.finanzas.service.DevolucionPagoService;
 import escuela.finanzas.service.PagoService;
 import escuela.finanzas.service.ValidacionPagoService;
 import escuela.finanzas.dto.request.ValidacionPagoRequest;
@@ -37,6 +38,7 @@ import java.util.*;
 public class PagoAdminController {
     private final PagoService service;
     private final ValidacionPagoService validacionService;
+    private final DevolucionPagoService devolucionService;
     private final InstitucionService institucionService;
     private final PlantelService plantelService;
     private final AlcanceDatosService alcance;
@@ -114,7 +116,34 @@ public class PagoAdminController {
         }
     }
 
+    @PostMapping("/{id}/devolver")
+    String devolver(@PathVariable Long id,
+                    @Valid @ModelAttribute("devolucionForm") DevolucionPagoForm form,
+                    BindingResult errores, Authentication authentication,
+                    Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.PAGOS, id);
+        if (errores.hasErrors()) {
+            prepararDetalle(model, service.obtener(id), authentication, form);
+            return "admin/pago-detalle";
+        }
+        try {
+            var devolucion = devolucionService.ejecutar(form.request(id));
+            flash.addFlashAttribute("mensaje", "Devolución por " + devolucion.monto().toPlainString()
+                    + " " + devolucion.moneda() + " ejecutada y publicada como egreso");
+            return "redirect:/admin/pagos/" + id + "/editar";
+        } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
+            prepararDetalle(model, service.obtener(id), authentication, form);
+            model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
+            return "admin/pago-detalle";
+        }
+    }
+
     private void prepararDetalle(Model model, PagoResponse pago, Authentication authentication) {
+        prepararDetalle(model, pago, authentication, null);
+    }
+
+    private void prepararDetalle(Model model, PagoResponse pago, Authentication authentication,
+                                  DevolucionPagoForm formCapturado) {
         model.addAttribute("pago", pago);
         String zona = institucionService.obtener(pago.institucionId()).zonaHoraria();
         model.addAttribute("fechaPagoLocal", DateTimeFormatter.ofPattern("dd MMM yyyy · HH:mm", new Locale("es", "MX"))
@@ -125,6 +154,31 @@ public class PagoAdminController {
         }
         model.addAttribute("puedeValidar", authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("PAGO_VALIDAR")));
+        boolean puedeDevolver = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("PAGO_DEVOLVER"));
+        model.addAttribute("puedeDevolver", puedeDevolver);
+        if (pago.estado() == escuela.finanzas.entity.EstadoPago.VALIDADO) {
+            var resumen = devolucionService.resumen(pago.id());
+            model.addAttribute("resumenDevolucion", resumen);
+            Map<Long, String> fechasDevolucion = new LinkedHashMap<>();
+            var formato = DateTimeFormatter.ofPattern("dd MMM yyyy · HH:mm", new Locale("es", "MX"))
+                    .withZone(java.time.ZoneId.of(zona));
+            resumen.devoluciones().forEach(d -> fechasDevolucion.put(d.id(), formato.format(d.fecha())));
+            model.addAttribute("fechasDevolucion", fechasDevolucion);
+            DevolucionPagoForm form = formCapturado == null ? formularioDevolucion(pago, zona) : formCapturado;
+            model.addAttribute("devolucionForm", form);
+        }
+    }
+
+    private DevolucionPagoForm formularioDevolucion(PagoResponse pago, String zona) {
+        DevolucionPagoForm form = new DevolucionPagoForm();
+        form.setCuentaOrigenId(pago.cuentaDestinoId());
+        form.setCuentaOrigenTexto(pago.cuentaDestinoNombre());
+        form.setFecha(java.time.LocalDateTime.now(java.time.ZoneId.of(zona)).withSecond(0).withNano(0));
+        form.setBeneficiario(pago.nombrePagador() == null || pago.nombrePagador().isBlank()
+                ? pago.tutorNombre() : pago.nombrePagador());
+        form.setPagoVersion(pago.auditoria().version());
+        return form;
     }
 
     @GetMapping("/{pagoId}/comprobantes/{comprobanteId}")

@@ -33,4 +33,15 @@ public interface MotivoFinancieroRepository extends JpaRepository<MotivoFinancie
             """, nativeQuery = true)
     int crearTraspasoInternoSiAusente(@Param("institucionId") Long institucionId,
                                       @Param("actorId") Long actorId);
+
+    @Modifying
+    @Query(value = """
+            INSERT INTO motivo_financiero (institucion_id, codigo, nombre, naturaleza, categoria,
+                creado_por_id, actualizado_por_id)
+            VALUES (:institucionId, 'DEVOLUCION_PAGO', 'Devolución de pago', 'EGRESO', 'DEVOLUCIONES',
+                :actorId, :actorId)
+            ON CONFLICT DO NOTHING
+            """, nativeQuery = true)
+    int crearDevolucionPagoSiAusente(@Param("institucionId") Long institucionId,
+                                     @Param("actorId") Long actorId);
 }

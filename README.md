@@ -257,3 +257,10 @@ de la misma institución y moneda; el origen necesita fondos suficientes. Los bl
 se solicitan por identificador ascendente, los dos lados conservan secuencia y saldo, y
 la idempotencia impide duplicarlos. Requiere `TRANSFERENCIA_CUENTA_REGISTRAR`, permiso
 que V21 tampoco asigna automáticamente a roles existentes.
+
+Devoluciones de pagos permite regresar total o parcialmente dinero de un pago validado.
+Calcula el disponible descontando aplicaciones y devoluciones anteriores; si hace falta,
+revierte los abonos seleccionados y reaplica automáticamente el remanente que deba seguir
+cubriendo el cargo. En la misma transacción publica un único egreso, conserva el pago
+validado y agrega el evento a su historial. La cuenta usa autocompletado remoto y se
+requiere `PAGO_DEVOLVER`, permiso que V22 no asigna automáticamente a roles existentes.

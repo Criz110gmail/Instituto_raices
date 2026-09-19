@@ -20,6 +20,9 @@ public class PagoMapper {
                 .map(a -> a.getOperacion() == OperacionAplicacionPago.APLICAR
                         ? a.getMonto() : a.getMonto().negate())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal devuelto = pago.getDevoluciones().stream()
+                .filter(d -> d.getEstado() == EstadoDevolucionPago.EJECUTADA)
+                .map(DevolucionPago::getMonto).reduce(BigDecimal.ZERO, BigDecimal::add);
         return new PagoResponse(pago.getId(), pago.getInstitucion().getId(), pago.getInstitucion().getNombre(),
                 pago.getPlantelRegistro().getId(), pago.getPlantelRegistro().getNombre(),
                 pago.getTutor().getId(), nombreTutor(pago.getTutor()), pago.getNombrePagador(),
@@ -37,9 +40,10 @@ public class PagoMapper {
                         c.getArchivo().getTamanoBytes(), c.getCreadoEn())).toList(),
                 pago.getSolicitudes().stream().map(this::solicitud).toList(),
                 pago.getAplicaciones().stream()
-                        .filter(a -> a.getOperacion() == OperacionAplicacionPago.APLICAR)
+                        .filter(a -> a.getOperacion() == OperacionAplicacionPago.APLICAR && a.getReversa() == null)
                         .map(this::aplicacion).toList(), solicitado, pago.getMonto().subtract(solicitado), aplicado,
-                pago.getMonto().subtract(aplicado), movimiento(pago.getMovimiento(), pago.getMoneda()),
+                devuelto, pago.getMonto().subtract(aplicado).subtract(devuelto),
+                movimiento(pago.getMovimiento(), pago.getMoneda()),
                 desde(pago));
     }
 

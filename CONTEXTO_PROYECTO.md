@@ -1021,3 +1021,33 @@
 - El propietario debe asignar `TRANSFERENCIA_CUENTA_REGISTRAR`, volver a iniciar sesión
   y probar con datos controlados. La siguiente etapa recomendada es V22 con devoluciones
   de pagos; las reversas generales quedan separadas.
+
+## Decisiones — devoluciones de pagos
+
+- Flyway V22 crea `DevolucionPago`, relaciona los ajustes de `AplicacionPago` y agrega
+  un vínculo único desde `MovimientoFinanciero`. También crea `PAGO_DEVOLVER` y el motivo
+  técnico reservado `DEVOLUCION_PAGO`, sin ampliar roles existentes.
+- Sólo se devuelve un pago `VALIDADO`. El pago conserva ese estado porque la devolución
+  representa salida real de dinero, no cancelación. Fecha, cuenta, moneda, alcance,
+  fondos, monto acumulado, versión e idempotencia se validan dentro de la transacción.
+- El disponible es monto del pago menos aplicaciones netas menos devoluciones ejecutadas.
+  Si resulta insuficiente, el usuario selecciona aplicaciones vigentes. Para mantener
+  historial inmutable, una aplicación se revierte completa y se reaplica su remanente
+  cuando la liberación requerida es parcial.
+- La entidad de devolución, los ajustes de cargos y exactamente un movimiento
+  `DEVOLUCION/EGRESO` se publican juntos. El formulario permanece en el expediente ante
+  errores y usa autocompletado acotado para la cuenta de origen.
+- El expediente de pago muestra aplicado, devuelto, disponible e historial. El acceso
+  de recuperación no puede devolver fondos y se requiere una cuenta de usuario persistida.
+
+## Verificación de devoluciones
+
+- Docker compiló 382 fuentes Java y ejecutó 235 pruebas sin fallos ni errores. Las seis
+  pruebas añadidas cubren egreso único, devolución parcial aplicada, selección
+  insuficiente, límite acumulado, fondos de cuenta y motivo técnico reservado.
+- Flyway validó 22 migraciones y aplicó V22 sobre PostgreSQL 17. Hibernate validó el
+  esquema, detectó 38 repositorios y `/actuator/health` respondió `UP`.
+- No se ejecutaron devoluciones ni otros movimientos monetarios durante la verificación.
+- El propietario debe asignar `PAGO_DEVOLVER`, iniciar una sesión nueva y probar con
+  datos controlados. Después, la etapa recomendada es V23 para reversas trazables de
+  operaciones manuales y transferencias; cancelaciones, cortes y retiros quedan separados.

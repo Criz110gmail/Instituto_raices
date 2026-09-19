@@ -28,4 +28,6 @@ public class AplicacionPago extends EntidadAuditable {
     @JoinColumn(name = "reversa_de_id") private AplicacionPago reversaDe;
     @OneToOne(mappedBy = "reversaDe", fetch = FetchType.LAZY) private AplicacionPago reversa;
     @Column(length = 2000) private String motivo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "devolucion_pago_id") private DevolucionPago devolucionPago;
 }

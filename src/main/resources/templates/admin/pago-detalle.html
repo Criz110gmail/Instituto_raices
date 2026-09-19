@@ -50,7 +50,38 @@
     <section class="detail-section" th:if="${pago.estado.name() == 'VALIDADO'}">
         <div class="section-heading"><div><span>Aplicaciones efectivas</span><h2>Abonos publicados por alumno</h2></div><p>Estos importes ya reducen el saldo de cada cargo.</p></div>
         <div class="requested-list applied-list" th:if="${!pago.aplicaciones.empty}"><article th:each="a : ${pago.aplicaciones}"><div><strong th:text="${a.matricula + ' · ' + a.alumno}">Alumno</strong><small th:text="${a.concepto + ' · ' + a.descripcionCargo}">Cargo</small></div><b th:text="${a.monto.toPlainString() + ' ' + a.moneda}">Monto</b></article></div>
-        <div class="distribution-empty" th:if="${pago.aplicaciones.empty}"><strong>Ingreso conservado como anticipo</strong><p>No hubo saldo vigente aplicable al momento de validar.</p></div><div class="detail-totals"><span>Aplicado <strong th:text="${pago.montoAplicado.toPlainString() + ' ' + pago.moneda}"></strong></span><span>Disponible <strong th:text="${pago.montoDisponible.toPlainString() + ' ' + pago.moneda}"></strong></span></div>
+        <div class="distribution-empty" th:if="${pago.aplicaciones.empty}"><strong>Ingreso conservado como anticipo</strong><p>No hay aplicaciones vigentes para este pago.</p></div><div class="detail-totals"><span>Aplicado <strong th:text="${pago.montoAplicado.toPlainString() + ' ' + pago.moneda}"></strong></span><span>Devuelto <strong th:text="${pago.montoDevuelto.toPlainString() + ' ' + pago.moneda}"></strong></span><span>Disponible <strong th:text="${pago.montoDisponible.toPlainString() + ' ' + pago.moneda}"></strong></span></div>
+    </section>
+    <section class="detail-section refund-history" th:if="${pago.estado.name() == 'VALIDADO'}">
+        <div class="section-heading"><div><span>Devoluciones</span><h2>Historial de dinero devuelto</h2></div><p>Cada devolución conserva cuenta, autorización y movimiento de egreso.</p></div>
+        <div class="requested-list" th:if="${!resumenDevolucion.devoluciones.empty}">
+            <article th:each="d : ${resumenDevolucion.devoluciones}"><div><strong th:text="${d.beneficiario}">Beneficiario</strong><small th:text="${fechasDevolucion[d.id] + ' · ' + d.cuentaOrigenNombre}">Fecha y cuenta</small><small th:text="${d.motivo}">Motivo</small></div><b th:text="${d.monto.toPlainString() + ' ' + d.moneda}">Monto</b></article>
+        </div>
+        <div class="distribution-empty" th:if="${resumenDevolucion.devoluciones.empty}"><strong>Sin devoluciones</strong><p>El pago conserva íntegro su importe recibido.</p></div>
+    </section>
+    <section class="validation-console refund-console" th:if="${pago.estado.name() == 'VALIDADO' and puedeDevolver and resumenDevolucion.montoDevuelto.compareTo(resumenDevolucion.montoPago) < 0}">
+        <div class="section-heading"><div><span>Operación sensible</span><h2>Ejecutar devolución</h2></div><p>Se publicará un egreso real. Si el disponible no alcanza, selecciona abonos para liberar el importe faltante.</p></div>
+        <form method="post" th:action="@{/admin/pagos/{id}/devolver(id=${pago.id})}" th:object="${devolucionForm}" class="refund-form">
+            <input type="hidden" id="refund-institution" th:value="${pago.institucionId}">
+            <input type="hidden" th:field="*{claveIdempotencia}">
+            <input type="hidden" th:field="*{pagoVersion}">
+            <div class="form-grid">
+                <div class="autocomplete wide" data-autocomplete data-endpoint="/admin/autocompletado/cuentas-movimiento" data-institution-input="refund-institution" data-scope-label="la institución">
+                    <label for="refund-account"><span>Cuenta de origen *</span></label>
+                    <div class="autocomplete-control"><input class="autocomplete-input" id="refund-account" th:field="*{cuentaOrigenTexto}" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="refund-account-results" placeholder="Código o nombre (3 caracteres)"><button class="autocomplete-clear" type="button" aria-label="Quitar cuenta">×</button></div>
+                    <input class="autocomplete-value" type="hidden" th:field="*{cuentaOrigenId}"><div class="autocomplete-results" id="refund-account-results" role="listbox" hidden></div>
+                    <small class="autocomplete-status" aria-live="polite">Escribe al menos 3 caracteres para buscar.</small><small class="field-error" th:errors="*{cuentaOrigenId}"></small>
+                </div>
+                <label><span>Fecha y hora *</span><input type="datetime-local" th:field="*{fecha}" required><small class="field-error" th:errors="*{fecha}"></small></label>
+                <label><span>Monto *</span><input type="number" th:field="*{monto}" min="0.01" step="0.01" required th:attr="max=${resumenDevolucion.montoPago.subtract(resumenDevolucion.montoDevuelto)}"><small th:text="${'Máximo pendiente: ' + resumenDevolucion.montoPago.subtract(resumenDevolucion.montoDevuelto).toPlainString() + ' ' + pago.moneda}">Máximo</small><small class="field-error" th:errors="*{monto}"></small></label>
+                <label><span>Beneficiario *</span><input type="text" th:field="*{beneficiario}" maxlength="180" required><small class="field-error" th:errors="*{beneficiario}"></small></label>
+                <label><span>Referencia</span><input type="text" th:field="*{referencia}" maxlength="150"><small class="field-error" th:errors="*{referencia}"></small></label>
+                <label class="wide"><span>Motivo *</span><textarea th:field="*{motivo}" maxlength="2000" rows="3" required></textarea><small class="field-error" th:errors="*{motivo}"></small></label>
+            </div>
+            <fieldset class="refund-applications" th:if="${!resumenDevolucion.aplicacionesActivas.empty}"><legend>Abonos que se pueden liberar</legend><p th:text="${'Hay ' + resumenDevolucion.montoDisponible.toPlainString() + ' ' + pago.moneda + ' sin aplicar. Selecciona sólo los abonos necesarios cuando la devolución sea mayor.'}">Ayuda</p><label th:each="a : ${resumenDevolucion.aplicacionesActivas}"><input type="checkbox" th:field="*{aplicacionIdsRevertir}" th:value="${a.id}"><span><strong th:text="${a.matricula + ' · ' + a.alumno}">Alumno</strong><small th:text="${a.concepto + ' · ' + a.descripcionCargo}">Cargo</small></span><b th:text="${a.monto.toPlainString() + ' ' + a.moneda}">Monto</b></label></fieldset>
+            <div class="refund-warning"><strong>Esta acción mueve dinero.</strong><span>El pago seguirá validado y el sistema conservará la trazabilidad completa.</span></div>
+            <button type="submit" class="reject-button refund-button">Ejecutar devolución y publicar egreso</button>
+        </form>
     </section>
     <section class="detail-section movement-section" th:if="${pago.movimiento != null}">
         <div class="section-heading"><div><span>Tesorería</span><h2>Movimiento único de ingreso</h2></div><p th:text="${'Validado por ' + pago.validadoPor + ' · ' + fechaValidacionLocal}">Validación</p></div>
@@ -60,4 +91,4 @@
     <section class="detail-section"><div class="section-heading"><div><span>Archivos privados</span><h2>Comprobantes</h2></div><p>La descarga vuelve a validar permisos y no utiliza caché.</p></div><div class="receipt-list" th:if="${!pago.comprobantes.empty}"><a th:each="c : ${pago.comprobantes}" th:href="@{/admin/pagos/{p}/comprobantes/{c}(p=${pago.id},c=${c.id})}"><span>↧</span><div><strong th:text="${c.nombreOriginal}">Archivo</strong><small th:text="${c.tipoMime + ' · ' + c.tamanoBytes + ' bytes'}">Tipo</small></div></a></div><div class="distribution-empty" th:if="${pago.comprobantes.empty}"><strong>Sin comprobantes</strong><p>Los pagos en efectivo pueden registrarse sin archivo.</p></div></section>
     <section class="detail-section" th:if="${pago.observaciones}"><div class="section-heading"><div><span>Notas</span><h2>Observaciones</h2></div></div><p class="detail-notes" th:text="${pago.observaciones}"></p></section>
     <footer class="form-actions"><a href="/admin/catalogos/pagos">Volver al listado</a></footer>
-</section></main><script src="/js/pago-validacion.js"></script></body></html>
+</section></main><script src="/js/autocomplete.js"></script><script src="/js/pago-validacion.js"></script></body></html>

@@ -16,4 +16,5 @@ public interface MovimientoFinancieroRepository extends JpaRepository<Movimiento
 
     Optional<MovimientoFinanciero> findFirstByCuentaIdOrderBySecuenciaCuentaDesc(Long cuentaId);
     List<MovimientoFinanciero> findAllByTransferenciaIdOrderByDireccionDesc(Long transferenciaId);
+    Optional<MovimientoFinanciero> findByDevolucionPagoId(Long devolucionPagoId);
 }

@@ -447,9 +447,14 @@ public class CatalogoConsultaService {
                 .map(a -> a.getOperacion() == escuela.finanzas.entity.OperacionAplicacionPago.APLICAR
                         ? a.getMonto() : a.getMonto().negate())
                 .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+        java.math.BigDecimal devuelto = pago.getDevoluciones().stream()
+                .filter(d -> d.getEstado() == escuela.finanzas.entity.EstadoDevolucionPago.EJECUTADA)
+                .map(escuela.finanzas.entity.DevolucionPago::getMonto)
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
         String distribucion = pago.getEstado() == escuela.finanzas.entity.EstadoPago.VALIDADO
                 ? aplicado.toPlainString() + " aplicado · "
-                    + pago.getMonto().subtract(aplicado).toPlainString() + " disponible"
+                    + devuelto.toPlainString() + " devuelto · "
+                    + pago.getMonto().subtract(aplicado).subtract(devuelto).toPlainString() + " disponible"
                 : solicitado.signum() == 0 ? "Sin asignar"
                     : solicitado.toPlainString() + " " + pago.getMoneda() + " · "
                     + pago.getSolicitudes().size() + " cargo(s)";

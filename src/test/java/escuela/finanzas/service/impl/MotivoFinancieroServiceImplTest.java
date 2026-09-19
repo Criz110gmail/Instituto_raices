@@ -59,6 +59,17 @@ class MotivoFinancieroServiceImplTest {
                 .isInstanceOf(ReglaNegocioException.class).hasMessageContaining("reservado");
     }
 
+    @Test
+    void noPermiteCambiarNaturalezaDelMotivoReservadoDeDevoluciones() {
+        MotivoFinanciero motivo = motivoReservado();
+        motivo.setCodigo("DEVOLUCION_PAGO");
+        motivo.setNaturaleza(NaturalezaMotivoFinanciero.EGRESO);
+        when(motivos.findById(5L)).thenReturn(Optional.of(motivo));
+        assertThatThrownBy(() -> service.actualizar(5L,
+                request("DEVOLUCION_PAGO", NaturalezaMotivoFinanciero.INGRESO, true, 0L)))
+                .isInstanceOf(ReglaNegocioException.class).hasMessageContaining("reservado");
+    }
+
     private Institucion institucion() {
         Institucion institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Raíces");
         institucion.setActivo(true); return institucion;

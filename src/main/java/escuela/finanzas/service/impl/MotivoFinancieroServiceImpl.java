@@ -25,6 +25,7 @@ import static escuela.common.service.ValidacionVersion.verificar;
 public class MotivoFinancieroServiceImpl implements MotivoFinancieroService {
     private static final String MOTIVO_RESERVADO = "COBROS_ESCOLARES";
     private static final String MOTIVO_TRASPASO = "TRASPASO_INTERNO";
+    private static final String MOTIVO_DEVOLUCION = "DEVOLUCION_PAGO";
     private final MotivoFinancieroRepository repository;
     private final InstitucionRepository institucionRepository;
     private final MotivoFinancieroMapper mapper;
@@ -66,7 +67,7 @@ public class MotivoFinancieroServiceImpl implements MotivoFinancieroService {
         MotivoFinanciero motivo = buscar(id);
         verificar(motivo, version, "Motivo financiero");
         if (esReservado(motivo.getCodigo()))
-            throw new ReglaNegocioException("El motivo es reservado para cobros o traspasos y no puede desactivarse");
+            throw new ReglaNegocioException("El motivo es reservado para operaciones técnicas y no puede desactivarse");
         motivo.setActivo(false);
     }
 
@@ -79,10 +80,15 @@ public class MotivoFinancieroServiceImpl implements MotivoFinancieroService {
                 && (!MOTIVO_TRASPASO.equalsIgnoreCase(request.codigo()) || !request.activo()
                 || request.naturaleza() != escuela.finanzas.entity.NaturalezaMotivoFinanciero.AMBOS))
             throw new ReglaNegocioException("El motivo TRASPASO_INTERNO es reservado y debe permanecer activo para ambas direcciones");
+        if (MOTIVO_DEVOLUCION.equalsIgnoreCase(actual.getCodigo())
+                && (!MOTIVO_DEVOLUCION.equalsIgnoreCase(request.codigo()) || !request.activo()
+                || request.naturaleza() != escuela.finanzas.entity.NaturalezaMotivoFinanciero.EGRESO))
+            throw new ReglaNegocioException("El motivo DEVOLUCION_PAGO es reservado y debe permanecer activo como egreso");
     }
 
     private boolean esReservado(String codigo) {
-        return MOTIVO_RESERVADO.equalsIgnoreCase(codigo) || MOTIVO_TRASPASO.equalsIgnoreCase(codigo);
+        return MOTIVO_RESERVADO.equalsIgnoreCase(codigo) || MOTIVO_TRASPASO.equalsIgnoreCase(codigo)
+                || MOTIVO_DEVOLUCION.equalsIgnoreCase(codigo);
     }
 
     private void validarCodigo(MotivoFinancieroRequest request, Long id) {
