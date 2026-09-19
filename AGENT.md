@@ -20,10 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main`: `3120bf0` — `cambio compose`.
-- V19 (libro de movimientos) ya está confirmado en Git. V20 (motivos financieros y
-  operaciones manuales) es el cambio local actual; el agente nuevo debe confirmar
-  `git status` y `git log` antes de continuar y no debe reconstruir V1–V20.
+- Último commit confirmado en `main` y `origin/main`: `10e9870` — `Motivos financieros`.
+- V20 ya está confirmado en Git. V21 (transferencias atómicas entre cuentas) es el
+  cambio local actual; el agente nuevo debe confirmar `git status` y `git log` antes de
+  continuar y no debe reconstruir V1–V21.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -452,13 +452,25 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   guardar. El acceso de recuperación no puede publicar dinero.
 - Los movimientos son inmutables: V20 no permite editarlos ni eliminarlos. Las
   correcciones se resolverán mediante reversas en una etapa posterior.
+- Flyway V21 crea `TransferenciaCuenta`, agrega la relación desde los dos movimientos
+  `TRASPASO`, el motivo técnico `TRASPASO_INTERNO` y el permiso
+  `TRANSFERENCIA_CUENTA_REGISTRAR`, sin asignarlo automáticamente a roles.
+- Una transferencia exige cuentas distintas, activas, autorizadas, de la misma
+  institución y moneda. La fecha debe ser válida para ambas aperturas y la cuenta de
+  origen debe conservar saldo no negativo.
+- El servicio bloquea las dos cuentas por identificador ascendente, aunque origen y
+  destino vengan en orden contrario. Crea en una sola transacción la transferencia, un
+  egreso de origen y un ingreso de destino, cada uno con secuencia y saldo propios.
+- La transferencia tiene idempotencia institucional y cada lado es único en la base de
+  datos. El acceso de recuperación no puede mover fondos. V21 no implementa todavía la
+  reversa; `REVERTIDA` queda reservado para una etapa posterior.
 
 ## Verificación confirmada
 
-- Compilación correcta de 364 archivos Java de producción.
-- 223 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V20 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 36 repositorios.
+- Compilación correcta de 373 archivos Java de producción.
+- 229 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V21 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 37 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -490,28 +502,28 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-El propietario debe conceder a su rol los permisos nuevos de V20 y probar el catálogo
-de motivos y un ingreso/egreso manual con datos controlados. Después de su confirmación,
-la siguiente etapa funcional es V21: transferencias entre cuentas como una sola operación
-atómica con salida y entrada relacionadas, bloqueo de ambas cuentas en orden estable,
-idempotencia y conservación del saldo secuencial. No mezclar todavía devoluciones de
-pago, reversas generales, cortes ni retiros.
+El propietario debe conceder `TRANSFERENCIA_CUENTA_REGISTRAR` a su rol, volver a iniciar
+sesión y probar una transferencia con cuentas e importes controlados. Después de su
+confirmación, la siguiente etapa funcional recomendada es V22 con devoluciones de pagos:
+validar el disponible del pago, revertir aplicaciones necesarias y publicar el egreso
+de la cuenta de manera atómica. Las reversas generales, incluida la reversa conjunta de
+transferencias, siguen pendientes para una etapa separada.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. Confirmar si V20 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
+1. Confirmar si V21 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
    preservar los cambios locales y no volver a implementarla.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V20 ya pertenecen al historial; nunca editarlas una vez que V20 se haya
-   compartido/aplicado. La siguiente migración disponible es V21.
-5. En V21 implementar transferencias atómicas entre cuentas. Devoluciones, reversos,
+4. Flyway V1–V21 ya pertenecen al historial; nunca editarlas una vez que V21 se haya
+   compartido/aplicado. La siguiente migración disponible es V22.
+5. En V22 implementar devoluciones de pagos de forma atómica. Reversas generales,
    cortes y retiros continúan pendientes.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,

@@ -993,3 +993,31 @@
 - El propietario debe conceder los permisos de V20 y probar la interfaz. Después, el
   siguiente paso es V21 con transferencias atómicas entre cuentas; devoluciones,
   reversas generales, cortes y retiros permanecen fuera de alcance.
+
+## Decisiones — transferencias entre cuentas
+
+- Flyway V21 crea `TransferenciaCuenta`, agrega `transferencia_id` al libro financiero,
+  protege con unicidad los lados ingreso/egreso y suma el permiso
+  `TRANSFERENCIA_CUENTA_REGISTRAR` sin modificar roles existentes.
+- Una transferencia sólo admite cuentas distintas, activas, de la misma institución y
+  moneda. Debe respetar ambas fechas de apertura y no puede dejar negativo el origen.
+- Las cuentas se buscan mediante autocompletado. El servicio las bloquea siempre por ID
+  ascendente para evitar interbloqueos y valida el alcance institucional o de plantel.
+- La entidad principal, el egreso de origen y el ingreso de destino se publican en una
+  única transacción. Cada movimiento conserva su propia secuencia, saldos y una clave
+  derivada de la transferencia; la operación principal también es idempotente.
+- `TRASPASO_INTERNO` es un motivo técnico reservado con naturaleza `AMBOS`. El traspaso
+  no representa ingreso ni gasto operativo y una comisión bancaria se registra aparte.
+- V21 sólo registra transferencias aplicadas. El estado `REVERTIDA` prepara una futura
+  reversa conjunta, pero no existe acción de reversión en esta entrega.
+
+## Verificación de transferencias
+
+- Docker compiló 373 fuentes Java y ejecutó 229 pruebas sin fallos ni errores. Las seis
+  pruebas añadidas cubren ambos movimientos, saldos, bloqueo ascendente, fondos,
+  monedas, cuenta repetida, acceso de recuperación y motivo técnico reservado.
+- Flyway validó 21 migraciones y aplicó V21 sobre PostgreSQL 17. Hibernate validó el
+  esquema y detectó 37 repositorios. No se generaron transferencias operativas.
+- El propietario debe asignar `TRANSFERENCIA_CUENTA_REGISTRAR`, volver a iniciar sesión
+  y probar con datos controlados. La siguiente etapa recomendada es V22 con devoluciones
+  de pagos; las reversas generales quedan separadas.

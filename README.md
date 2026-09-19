@@ -250,3 +250,10 @@ egresos sin fondos; no pueden editarse ni eliminarse. Se requieren
 `MOTIVO_FINANCIERO_LEER`/`MOTIVO_FINANCIERO_ADMINISTRAR` para el catálogo y
 `MOVIMIENTO_FINANCIERO_REGISTRAR` para publicar. V20 no concede estos permisos a roles
 existentes: deben asignarse desde Roles y permisos.
+
+Transferencias entre cuentas publica en una sola transacción un egreso en la cuenta de
+origen y un ingreso en la cuenta de destino. Ambas cuentas deben ser activas, distintas,
+de la misma institución y moneda; el origen necesita fondos suficientes. Los bloqueos
+se solicitan por identificador ascendente, los dos lados conservan secuencia y saldo, y
+la idempotencia impide duplicarlos. Requiere `TRANSFERENCIA_CUENTA_REGISTRAR`, permiso
+que V21 tampoco asigna automáticamente a roles existentes.

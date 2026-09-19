@@ -66,7 +66,7 @@
         <div class="form-error ledger-error" th:if="${errorFiltro}"><strong>No se pudo aplicar el filtro</strong><p th:text="${errorFiltro}">Revisa los datos.</p></div>
         <div class="panel-heading">
             <div><h2>Libro de movimientos</h2><p>Consulta paginada en PostgreSQL; el Excel usa exactamente estos filtros.</p></div>
-            <div class="panel-actions"><a class="new-button" th:if="${puedeRegistrar}" href="/admin/movimientos-financieros/nuevo">+ Registrar movimiento</a><a class="export-button" th:href="@{/admin/movimientos-financieros/excel(institucionId=${filtro.institucionId},cuentaId=${filtro.cuentaId},cuentaTexto=${filtro.cuentaTexto},plantelId=${filtro.plantelId},direccion=${filtro.direccion},clase=${filtro.clase},fechaDesde=${filtro.fechaDesde},fechaHasta=${filtro.fechaHasta})}">
+            <div class="panel-actions"><a class="new-button" th:if="${puedeRegistrar}" href="/admin/movimientos-financieros/nuevo">+ Registrar movimiento</a><a class="new-button" th:if="${puedeTransferir}" href="/admin/transferencias/nueva">Transferir entre cuentas</a><a class="export-button" th:href="@{/admin/movimientos-financieros/excel(institucionId=${filtro.institucionId},cuentaId=${filtro.cuentaId},cuentaTexto=${filtro.cuentaTexto},plantelId=${filtro.plantelId},direccion=${filtro.direccion},clase=${filtro.clase},fechaDesde=${filtro.fechaDesde},fechaHasta=${filtro.fechaHasta})}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>Exportar Excel
             </a></div>
         </div>

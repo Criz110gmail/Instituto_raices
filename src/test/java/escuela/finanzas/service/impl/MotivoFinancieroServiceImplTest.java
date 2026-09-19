@@ -49,6 +49,16 @@ class MotivoFinancieroServiceImplTest {
                 .isInstanceOf(ReglaNegocioException.class).hasMessageContaining("reservado");
     }
 
+    @Test
+    void noPermiteDesactivarMotivoReservadoDeTraspasos() {
+        MotivoFinanciero motivo = motivoReservado();
+        motivo.setCodigo("TRASPASO_INTERNO");
+        motivo.setNaturaleza(NaturalezaMotivoFinanciero.AMBOS);
+        when(motivos.findById(5L)).thenReturn(Optional.of(motivo));
+        assertThatThrownBy(() -> service.desactivar(5L, 0L))
+                .isInstanceOf(ReglaNegocioException.class).hasMessageContaining("reservado");
+    }
+
     private Institucion institucion() {
         Institucion institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Raíces");
         institucion.setActivo(true); return institucion;

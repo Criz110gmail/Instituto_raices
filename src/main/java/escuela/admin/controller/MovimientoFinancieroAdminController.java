@@ -72,6 +72,8 @@ public class MovimientoFinancieroAdminController {
         model.addAttribute("moduloActual", ModuloCatalogo.MOVIMIENTOS_FINANCIEROS);
         model.addAttribute("puedeRegistrar", authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("MOVIMIENTO_FINANCIERO_REGISTRAR")));
+        model.addAttribute("puedeTransferir", authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("TRANSFERENCIA_CUENTA_REGISTRAR")));
         return "admin/movimientos-financieros";
     }
 

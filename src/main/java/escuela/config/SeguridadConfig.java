@@ -59,7 +59,8 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/autocompletado/cuentas-pago", "/admin/autocompletado/cargos-pago")
                         .hasAnyAuthority("PAGO_REGISTRAR", "PAGO_VALIDAR")
                         .requestMatchers("/admin/autocompletado/cuentas-movimiento")
-                        .hasAnyAuthority("MOVIMIENTO_FINANCIERO_LEER", "MOVIMIENTO_FINANCIERO_REGISTRAR")
+                        .hasAnyAuthority("MOVIMIENTO_FINANCIERO_LEER", "MOVIMIENTO_FINANCIERO_REGISTRAR",
+                                "TRANSFERENCIA_CUENTA_REGISTRAR")
                         .requestMatchers("/admin/autocompletado/usuarios")
                         .hasAnyAuthority("TUTOR_ADMINISTRAR", "USUARIO_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/inscripciones", "/admin/autocompletado/conceptos-cobro")
@@ -96,8 +97,11 @@ public class SeguridadConfig {
                         .hasAuthority("MOVIMIENTO_FINANCIERO_REGISTRAR")
                         .requestMatchers(HttpMethod.POST, "/admin/movimientos-financieros")
                         .hasAuthority("MOVIMIENTO_FINANCIERO_REGISTRAR")
+                        .requestMatchers("/admin/transferencias/**")
+                        .hasAuthority("TRANSFERENCIA_CUENTA_REGISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/movimientos-financieros")
-                        .hasAnyAuthority("MOVIMIENTO_FINANCIERO_LEER", "MOVIMIENTO_FINANCIERO_REGISTRAR")
+                        .hasAnyAuthority("MOVIMIENTO_FINANCIERO_LEER", "MOVIMIENTO_FINANCIERO_REGISTRAR",
+                                "TRANSFERENCIA_CUENTA_REGISTRAR")
                         .requestMatchers("/admin/movimientos-financieros/**", "/admin/catalogos/movimientos-financieros/**")
                         .hasAuthority("MOVIMIENTO_FINANCIERO_LEER")
                         .anyRequest().authenticated())

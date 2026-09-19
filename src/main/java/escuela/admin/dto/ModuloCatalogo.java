@@ -87,7 +87,8 @@ public enum ModuloCatalogo {
         if (this == PAGOS) return permisos.contains("PAGO_LEER") || permisos.contains("PAGO_REGISTRAR")
                 || permisos.contains("PAGO_VALIDAR");
         if (this == MOVIMIENTOS_FINANCIEROS) return permisos.contains("MOVIMIENTO_FINANCIERO_LEER")
-                || permisos.contains("MOVIMIENTO_FINANCIERO_REGISTRAR");
+                || permisos.contains("MOVIMIENTO_FINANCIERO_REGISTRAR")
+                || permisos.contains("TRANSFERENCIA_CUENTA_REGISTRAR");
         boolean administra = permisos.contains(base + "_ADMINISTRAR");
         if (this == ROLES || this == USUARIOS) return administra;
         return administra || permisos.contains(base + "_LEER");
