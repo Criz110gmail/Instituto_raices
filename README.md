@@ -238,3 +238,15 @@ se crean aplicaciones independientes por alumno. En la misma transacción se pub
 solo movimiento de ingreso por todo el pago; el remanente queda disponible. El rechazo
 exige motivo y conserva el comprobante sin afectar saldos. Los bloqueos, secuencias y
 claves idempotentes impiden aplicar o ingresar dos veces el mismo pago.
+
+Movimientos financieros ofrece un libro inmutable con saldo actual por cuenta, filtros
+paginados por cuenta, plantel, dirección, clase y fechas, además de Excel equivalente.
+La búsqueda de cuentas usa autocompletado remoto para no cargar catálogos grandes.
+Requiere `MOVIMIENTO_FINANCIERO_LEER` para consultar.
+
+Motivos financieros clasifica operaciones como ingreso, egreso o ambos. Las operaciones
+manuales bloquean la cuenta, asignan una secuencia, calculan el nuevo saldo y rechazan
+egresos sin fondos; no pueden editarse ni eliminarse. Se requieren
+`MOTIVO_FINANCIERO_LEER`/`MOTIVO_FINANCIERO_ADMINISTRAR` para el catálogo y
+`MOVIMIENTO_FINANCIERO_REGISTRAR` para publicar. V20 no concede estos permisos a roles
+existentes: deben asignarse desde Roles y permisos.

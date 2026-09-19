@@ -24,6 +24,7 @@ public enum ModuloCatalogo {
     BECAS_ALUMNO("becas-alumno", "Becas por alumno", List.of("Alumno", "Tipo", "Concepto", "Beneficio", "Vigencia")),
     AJUSTES_CARGO("ajustes-cargo", "Ajustes de cargos", List.of("Alumno", "Concepto", "Tipo", "Efecto", "Monto", "Fecha", "Motivo")),
     POLITICAS_RECARGO("politicas-recargo", "Políticas de recargo", List.of("Concepto", "Institución", "Recargo", "Gracia", "Periodicidad", "Límite", "Generación")),
+    MOTIVOS_FINANCIEROS("motivos-financieros", "Motivos financieros", List.of("Código", "Motivo", "Institución", "Naturaleza", "Categoría")),
     CUENTAS_FINANCIERAS("cuentas-financieras", "Cuentas financieras", List.of("Código", "Cuenta", "Alcance", "Tipo", "Institución financiera", "Identificador", "Saldo inicial", "Fecha inicial")),
     PAGOS("pagos", "Pagos", List.of("Folio", "Tutor", "Plantel de registro", "Fecha", "Método", "Monto", "Distribución", "Comprobantes")),
     MOVIMIENTOS_FINANCIEROS("movimientos-financieros", "Movimientos financieros", List.of()),
@@ -50,7 +51,7 @@ public enum ModuloCatalogo {
             case ALUMNOS, TUTORES, VINCULOS_TUTOR -> "Personas";
             case INSCRIPCIONES -> "Trayectoria";
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
-            case CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS -> "Finanzas";
+            case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS -> "Finanzas";
             case ROLES, USUARIOS -> "Seguridad";
         };
     }
@@ -76,6 +77,7 @@ public enum ModuloCatalogo {
             case BECAS_ALUMNO -> "BECA_ALUMNO";
             case AJUSTES_CARGO -> "AJUSTE_CARGO";
             case POLITICAS_RECARGO -> "POLITICA_RECARGO";
+            case MOTIVOS_FINANCIEROS -> "MOTIVO_FINANCIERO";
             case CUENTAS_FINANCIERAS -> "CUENTA_FINANCIERA";
             case PAGOS -> "PAGO";
             case MOVIMIENTOS_FINANCIEROS -> "MOVIMIENTO_FINANCIERO";
@@ -84,6 +86,8 @@ public enum ModuloCatalogo {
         };
         if (this == PAGOS) return permisos.contains("PAGO_LEER") || permisos.contains("PAGO_REGISTRAR")
                 || permisos.contains("PAGO_VALIDAR");
+        if (this == MOVIMIENTOS_FINANCIEROS) return permisos.contains("MOVIMIENTO_FINANCIERO_LEER")
+                || permisos.contains("MOVIMIENTO_FINANCIERO_REGISTRAR");
         boolean administra = permisos.contains(base + "_ADMINISTRAR");
         if (this == ROLES || this == USUARIOS) return administra;
         return administra || permisos.contains(base + "_LEER");
@@ -97,6 +101,7 @@ public enum ModuloCatalogo {
                 || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == CARGOS
                 || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO || this == POLITICAS_RECARGO
+                || this == MOTIVOS_FINANCIEROS
                 || this == CUENTAS_FINANCIERAS
                 || this == PAGOS
                 || this == ROLES || this == USUARIOS;
@@ -123,6 +128,7 @@ public enum ModuloCatalogo {
             case BECAS_ALUMNO -> "/admin/becas-alumno";
             case AJUSTES_CARGO -> "/admin/ajustes-cargo";
             case POLITICAS_RECARGO -> "/admin/politicas-recargo";
+            case MOTIVOS_FINANCIEROS -> "/admin/motivos-financieros";
             case CUENTAS_FINANCIERAS -> "/admin/cuentas-financieras";
             case PAGOS -> "/admin/pagos";
             case MOVIMIENTOS_FINANCIEROS -> "/admin/movimientos-financieros";
@@ -145,6 +151,7 @@ public enum ModuloCatalogo {
                 || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == CARGOS
                 || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO || this == POLITICAS_RECARGO
+                || this == MOTIVOS_FINANCIEROS
                 || this == CUENTAS_FINANCIERAS
                 || this == PAGOS
                 || this == ROLES || this == USUARIOS

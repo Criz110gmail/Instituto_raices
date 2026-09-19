@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface MovimientoFinancieroRepository extends JpaRepository<MovimientoFinanciero, Long>,
         JpaSpecificationExecutor<MovimientoFinanciero> {
     Optional<MovimientoFinanciero> findByPagoId(Long pagoId);
+    Optional<MovimientoFinanciero> findByInstitucionIdAndClaveIdempotencia(Long institucionId,
+                                                                            String claveIdempotencia);
     boolean existsByCuentaId(Long cuentaId);
 
     Optional<MovimientoFinanciero> findFirstByCuentaIdOrderBySecuenciaCuentaDesc(Long cuentaId);

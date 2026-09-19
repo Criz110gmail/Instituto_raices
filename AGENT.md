@@ -20,10 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit local confirmado: `298741c` — `módulo de Pagos`.
-- Flyway V18 con validación y aplicación de pagos permanece como cambio local hasta que
-  el propietario lo revise, confirme y suba. El agente nuevo siempre debe confirmar
-  `git status` y `git log`; no debe reconstruir V17.
+- Último commit confirmado en `main` y `origin/main`: `3120bf0` — `cambio compose`.
+- V19 (libro de movimientos) ya está confirmado en Git. V20 (motivos financieros y
+  operaciones manuales) es el cambio local actual; el agente nuevo debe confirmar
+  `git status` y `git log` antes de continuar y no debe reconstruir V1–V20.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -435,12 +435,29 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   saldos de Cargo, su situación pagada/parcial y los autocompletados ya descuentan las
   aplicaciones efectivas. Un cargo con aplicaciones no puede cancelarse y una cuenta
   con movimientos ya no permite cambiar moneda, fecha ni saldo inicial.
+- Flyway V19 agrega `MOVIMIENTO_FINANCIERO_LEER`, índices de consulta y el libro
+  inmutable paginado. Permite filtrar por cuenta mediante autocompletado, plantel,
+  dirección, clase y fechas; muestra el saldo vigente de la cuenta y exporta a Excel
+  exactamente los filtros visibles.
+- Flyway V20 agrega `MOTIVO_FINANCIERO_LEER`, `MOTIVO_FINANCIERO_ADMINISTRAR` y
+  `MOVIMIENTO_FINANCIERO_REGISTRAR`, sin concederlos automáticamente a roles.
+- Motivos financieros es un catálogo institucional de ingreso, egreso o ambos. El
+  motivo `COBROS_ESCOLARES` es reservado: no puede desactivarse, renombrarse ni cambiar
+  a egreso porque sostiene la publicación de pagos validados.
+- El registro manual publica únicamente movimientos `OPERACION`, usa una clave de
+  idempotencia por formulario, bloquea la cuenta, toma la última secuencia, calcula
+  saldo anterior/posterior y rechaza egresos que producirían saldo negativo.
+- La cuenta se busca por autocompletado. El plantel, la institución, el motivo activo,
+  la fecha de apertura, la zona horaria y el actor persistido se validan antes de
+  guardar. El acceso de recuperación no puede publicar dinero.
+- Los movimientos son inmutables: V20 no permite editarlos ni eliminarlos. Las
+  correcciones se resolverán mediante reversas en una etapa posterior.
 
 ## Verificación confirmada
 
-- Compilación correcta de 345 archivos Java de producción.
-- 216 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V18 validados y aplicados correctamente sobre el volumen existente.
+- Compilación correcta de 364 archivos Java de producción.
+- 223 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V20 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 36 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
@@ -473,36 +490,34 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-Revisar y confirmar los cambios locales de V18. Después iniciar Flyway V19 con el libro
-consultable de movimientos financieros y el saldo actual de cada cuenta. Debe incluir
-filtros por cuenta, plantel, dirección, clase y rango de fechas, paginación PostgreSQL y
-Excel por bloques con los mismos filtros. Esta etapa será primero de consulta y permitirá
-comprobar el ingreso único de cada pago antes de agregar operaciones manuales, traspasos,
-devoluciones o reversos.
+El propietario debe conceder a su rol los permisos nuevos de V20 y probar el catálogo
+de motivos y un ingreso/egreso manual con datos controlados. Después de su confirmación,
+la siguiente etapa funcional es V21: transferencias entre cuentas como una sola operación
+atómica con salida y entrada relacionadas, bloqueo de ambas cuentas en orden estable,
+idempotencia y conservación del saldo secuencial. No mezclar todavía devoluciones de
+pago, reversas generales, cortes ni retiros.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. Confirmar si los cambios locales de V18 ya fueron revisados, confirmados y subidos.
-   Si no están en `origin/main`, no reconstruirlos: pedir al propietario el push desde
-   la computadora donde se implementaron.
+1. Confirmar si V20 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
+   preservar los cambios locales y no volver a implementarla.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V10–V18 ya pertenecen a trayectoria, cobranza, cuentas, recepción y validación
-   de pagos; nunca editar V1–V18. La siguiente migración disponible es V19.
-5. En V19 exponer movimientos y saldos actuales con consulta paginada y Excel filtrado.
-   Devoluciones, traspasos, reversos, cortes y retiros continúan pendientes.
+4. Flyway V1–V20 ya pertenecen al historial; nunca editarlas una vez que V20 se haya
+   compartido/aplicado. La siguiente migración disponible es V21.
+5. En V21 implementar transferencias atómicas entre cuentas. Devoluciones, reversos,
+   cortes y retiros continúan pendientes.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.
-7. La base de cuentas por cobrar quedó cerrada con V15. Implementar pagos y aplicaciones
-   por etapas, manteniendo caja y tesorería fuera de alcance hasta acordarlas. No generar
-   registros reales de prueba salvo autorización expresa.
+7. No generar movimientos monetarios reales de prueba sin autorización expresa. Para
+   validar la interfaz, el propietario debe usar importes y cuentas controlados.
 
 ## Disciplina de cambios y entrega
 

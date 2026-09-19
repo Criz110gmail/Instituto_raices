@@ -962,3 +962,34 @@
 - El siguiente paso es V19 con libro paginado de movimientos y saldo actual por cuenta,
   filtros y Excel equivalente. Operaciones manuales, traspasos, devoluciones y reversos
   siguen fuera de esta entrega.
+
+## Decisiones — libro financiero y operaciones manuales
+
+- Flyway V19 incorpora el permiso `MOVIMIENTO_FINANCIERO_LEER`, índices para las
+  consultas frecuentes y un libro inmutable con paginación PostgreSQL. La vista filtra
+  por cuenta, plantel, dirección, clase y fechas, calcula totales de página, muestra el
+  saldo vigente de una cuenta seleccionada y exporta los mismos filtros por bloques.
+- Flyway V20 incorpora `MOTIVO_FINANCIERO_LEER`,
+  `MOTIVO_FINANCIERO_ADMINISTRAR` y `MOVIMIENTO_FINANCIERO_REGISTRAR`; ningún permiso
+  nuevo se asigna automáticamente. También siembra motivos comunes por institución.
+- El catálogo de motivos admite naturaleza `INGRESO`, `EGRESO` o `AMBOS`. El motivo
+  técnico `COBROS_ESCOLARES` permanece reservado y activo para no romper la publicación
+  de pagos validados.
+- Una operación manual exige cuenta activa por autocompletado, motivo activo compatible,
+  fecha no futura ni anterior a la apertura, institución/plantel autorizados y usuario
+  persistido. El acceso de recuperación no puede registrar dinero.
+- El servicio bloquea la cuenta, obtiene la última secuencia, calcula saldos y confirma
+  con idempotencia. No admite saldo negativo. Los movimientos `OPERACION` no se editan
+  ni eliminan; una corrección futura utilizará un movimiento reverso relacionado.
+
+## Verificación de V19 y V20
+
+- Docker compiló 364 fuentes Java y ejecutó 223 pruebas sin fallos ni errores. Las siete
+  pruebas nuevas cubren catálogo reservado, normalización, saldo secuencial, fondos
+  insuficientes, naturaleza incompatible y bloqueo del acceso de recuperación.
+- Flyway validó veinte migraciones y aplicó V20 sobre PostgreSQL 17. Hibernate validó
+  el esquema, detectó 36 repositorios y `/actuator/health` respondió `UP`.
+- No se creó ningún movimiento monetario durante la verificación automática.
+- El propietario debe conceder los permisos de V20 y probar la interfaz. Después, el
+  siguiente paso es V21 con transferencias atómicas entre cuentas; devoluciones,
+  reversas generales, cortes y retiros permanecen fuera de alcance.

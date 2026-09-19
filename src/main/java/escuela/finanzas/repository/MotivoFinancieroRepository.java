@@ -6,8 +6,11 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface MotivoFinancieroRepository extends JpaRepository<MotivoFinanciero, Long> {
+public interface MotivoFinancieroRepository extends JpaRepository<MotivoFinanciero, Long>,
+        JpaSpecificationExecutor<MotivoFinanciero> {
     Optional<MotivoFinanciero> findByInstitucionIdAndCodigoIgnoreCase(Long institucionId, String codigo);
+    boolean existsByInstitucionIdAndCodigoIgnoreCaseAndIdNot(Long institucionId, String codigo, Long id);
+    java.util.List<MotivoFinanciero> findAllByInstitucionIdAndActivoTrueOrderByNombreAsc(Long institucionId);
 
     @Modifying
     @Query(value = """

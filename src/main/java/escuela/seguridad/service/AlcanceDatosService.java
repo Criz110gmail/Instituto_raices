@@ -15,6 +15,7 @@ import escuela.cobranza.repository.BecaAlumnoRepository;
 import escuela.cobranza.repository.AjusteCargoRepository;
 import escuela.cobranza.repository.PoliticaRecargoRepository;
 import escuela.finanzas.repository.CuentaFinancieraRepository;
+import escuela.finanzas.repository.MotivoFinancieroRepository;
 import escuela.finanzas.repository.PagoRepository;
 import escuela.admin.dto.ModuloCatalogo;
 import escuela.institucion.dto.response.InstitucionResponse;
@@ -65,6 +66,7 @@ public class AlcanceDatosService {
     private final BecaAlumnoRepository becaAlumnoRepository;
     private final AjusteCargoRepository ajusteCargoRepository;
     private final PoliticaRecargoRepository politicaRecargoRepository;
+    private final MotivoFinancieroRepository motivoFinancieroRepository;
     private final CuentaFinancieraRepository cuentaFinancieraRepository;
     private final PagoRepository pagoRepository;
     private final RolRepository rolRepository;
@@ -76,7 +78,7 @@ public class AlcanceDatosService {
         return (root, query, cb) -> {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
-                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, ROLES, USUARIOS -> root.get("institucion").get("id");
+                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, ROLES, USUARIOS -> root.get("institucion").get("id");
                 case POLITICAS_RECARGO -> root.get("conceptoCobro").get("institucion").get("id");
                 case VINCULOS_TUTOR, INSCRIPCIONES -> root.get("alumno").get("institucion").get("id");
                 case CUOTAS_ALUMNO, CARGOS, BECAS_ALUMNO -> root.get("inscripcion").get("alumno").get("institucion").get("id");
@@ -159,6 +161,8 @@ public class AlcanceDatosService {
                     .orElseThrow(this::denegado).getCargo().getInscripcion().getPlantel().getId());
             case POLITICAS_RECARGO -> validarInstitucion(politicaRecargoRepository.findById(id)
                     .orElseThrow(this::denegado).getConceptoCobro().getInstitucion().getId());
+            case MOTIVOS_FINANCIEROS -> validarAdministracionInstitucional(motivoFinancieroRepository.findById(id)
+                    .orElseThrow(this::denegado).getInstitucion().getId());
             case CUENTAS_FINANCIERAS -> {
                 var cuenta = cuentaFinancieraRepository.findById(id).orElseThrow(this::denegado);
                 if (cuenta.getPlantel() == null) validarAdministracionInstitucional(cuenta.getInstitucion().getId());

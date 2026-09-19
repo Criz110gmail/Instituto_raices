@@ -21,6 +21,8 @@ import escuela.cobranza.repository.AjusteCargoRepository;
 import escuela.cobranza.repository.PoliticaRecargoRepository;
 import escuela.finanzas.entity.CuentaFinanciera;
 import escuela.finanzas.repository.CuentaFinancieraRepository;
+import escuela.finanzas.entity.MotivoFinanciero;
+import escuela.finanzas.repository.MotivoFinancieroRepository;
 import escuela.finanzas.entity.Pago;
 import escuela.finanzas.repository.PagoRepository;
 import escuela.institucion.entity.*;
@@ -76,6 +78,7 @@ public class CatalogoConsultaService {
     private final BecaAlumnoRepository becaAlumnoRepository;
     private final AjusteCargoRepository ajusteCargoRepository;
     private final PoliticaRecargoRepository politicaRecargoRepository;
+    private final MotivoFinancieroRepository motivoFinancieroRepository;
     private final CuentaFinancieraRepository cuentaFinancieraRepository;
     private final PagoRepository pagoRepository;
     private final RolRepository rolRepository;
@@ -149,6 +152,11 @@ public class CatalogoConsultaService {
                     estadoAjuste(f), pagina, this::filaAjuste);
             case POLITICAS_RECARGO -> consultar(modulo, politicaRecargoRepository,
                     textoPoliticaRecargo(f), activo(f), pagina, this::filaPoliticaRecargo);
+            case MOTIVOS_FINANCIEROS -> consultar(modulo, motivoFinancieroRepository,
+                    texto(f, "codigo", "nombre", "categoria"), activo(f), pagina,
+                    e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(),
+                            e.getInstitucion().getNombre(), etiqueta(e.getNaturaleza().name()),
+                            etiqueta(e.getCategoria())));
             case CUENTAS_FINANCIERAS -> consultar(modulo, cuentaFinancieraRepository,
                     textoCuentaFinanciera(f), activo(f), pagina, this::filaCuentaFinanciera);
             case PAGOS -> consultar(modulo, pagoRepository, textoPago(f),
