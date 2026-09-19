@@ -264,3 +264,9 @@ revierte los abonos seleccionados y reaplica automáticamente el remanente que d
 cubriendo el cargo. En la misma transacción publica un único egreso, conserva el pago
 validado y agrega el evento a su historial. La cuenta usa autocompletado remoto y se
 requiere `PAGO_DEVOLVER`, permiso que V22 no asigna automáticamente a roles existentes.
+
+Reversiones financieras corrige operaciones manuales y transferencias sin modificar ni
+eliminar sus movimientos originales. Una operación crea un movimiento compensatorio;
+una transferencia revierte atómicamente sus dos lados y exige fondos suficientes en la
+cuenta que recibió el dinero. El libro muestra la relación y evita dobles reversas. Se
+requiere `MOVIMIENTO_FINANCIERO_REVERTIR`, permiso que V23 no asigna automáticamente.

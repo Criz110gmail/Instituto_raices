@@ -95,7 +95,7 @@
         </form>
 
         <div class="table-wrap ledger-table" th:if="${!resultado.pagina.empty}">
-            <table><thead><tr><th>Fecha</th><th>Cuenta / concepto</th><th>Plantel</th><th>Movimiento</th><th>Monto</th><th>Saldos</th><th>Referencia</th></tr></thead>
+            <table><thead><tr><th>Fecha</th><th>Cuenta / concepto</th><th>Plantel</th><th>Movimiento</th><th>Monto</th><th>Saldos</th><th>Referencia</th><th th:if="${puedeRevertir}">Corrección</th></tr></thead>
                 <tbody><tr th:each="fila : ${resultado.pagina.content}">
                     <td data-label="Fecha"><strong th:text="${fila.fecha}">Fecha</strong><small th:text="${'#' + fila.secuenciaCuenta}">#1</small></td>
                     <td data-label="Cuenta / concepto"><strong th:text="${fila.cuenta}">Cuenta</strong><small th:text="${fila.concepto}">Concepto</small></td>
@@ -104,6 +104,13 @@
                     <td data-label="Monto" class="money" th:classappend="${fila.direccion == 'INGRESO'} ? ' positive' : ' negative'"><strong th:text="${(fila.direccion == 'INGRESO' ? '+ ' : '− ') + #numbers.formatDecimal(fila.monto, 1, 'COMMA', 2, 'POINT')}">+ 0.00</strong><small th:text="${fila.moneda}">MXN</small></td>
                     <td data-label="Saldos"><strong th:text="${#numbers.formatDecimal(fila.saldoPosterior, 1, 'COMMA', 2, 'POINT') + ' ' + fila.moneda}">0.00</strong><small th:text="${'Antes: ' + #numbers.formatDecimal(fila.saldoAnterior, 1, 'COMMA', 2, 'POINT')}">Antes</small></td>
                     <td data-label="Referencia"><strong th:text="${fila.folioPago != '—' ? fila.folioPago : fila.referencia}">Referencia</strong><small th:text="${fila.tercero}">Tercero</small></td>
+                    <td data-label="Corrección" th:if="${puedeRevertir}" class="reversal-action-cell">
+                        <a th:if="${fila.clase == 'OPERACION' and !fila.revertido}" th:href="@{/admin/reversiones/movimientos/{id}/nueva(id=${fila.id})}">Revertir operación</a>
+                        <a th:if="${fila.clase == 'TRASPASO' and !fila.revertido}" th:href="@{/admin/reversiones/transferencias/{id}/nueva(id=${fila.transferenciaId})}">Revertir transferencia</a>
+                        <span th:if="${fila.revertido}">Revertido</span>
+                        <small th:if="${fila.clase == 'REVERSO'}" th:text="${'Compensa #' + fila.reversaDeId}">Compensa</small>
+                        <span th:if="${!fila.revertido and fila.clase != 'OPERACION' and fila.clase != 'TRASPASO' and fila.clase != 'REVERSO'}">No aplica</span>
+                    </td>
                 </tr></tbody></table>
         </div>
         <div class="empty" th:if="${resultado.pagina.empty}"><span>∅</span><h3>No hay movimientos para estos filtros</h3><p>Los pagos aparecerán aquí después de ser validados y publicados en una cuenta.</p></div>

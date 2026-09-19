@@ -107,7 +107,14 @@ public class MovimientoFinancieroConsultaService {
                 movimiento.getDireccion().name(), movimiento.getClase().name(), movimiento.getConcepto(),
                 valor(movimiento.getReferencia()), valor(movimiento.getTerceroNombre()), movimiento.getMonto(),
                 movimiento.getCuenta().getMoneda(), movimiento.getSaldoAnterior(), movimiento.getSaldoPosterior(),
-                movimiento.getPago() == null ? "—" : movimiento.getPago().getFolio(), movimiento.getSecuenciaCuenta());
+                movimiento.getPago() == null ? "—" : movimiento.getPago().getFolio(), movimiento.getSecuenciaCuenta(),
+                movimiento.getTransferencia() == null ? null : movimiento.getTransferencia().getId(),
+                movimiento.getReversaDe() == null ? null : movimiento.getReversaDe().getId(),
+                movimiento.getClase() == escuela.finanzas.entity.ClaseMovimiento.OPERACION
+                        ? movimiento.getReversa() != null
+                        : movimiento.getClase() == escuela.finanzas.entity.ClaseMovimiento.TRASPASO
+                        && movimiento.getTransferencia().getEstado()
+                        == escuela.finanzas.entity.EstadoTransferenciaCuenta.REVERTIDA);
     }
 
     private String valor(String valor) {

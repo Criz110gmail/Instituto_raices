@@ -20,10 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main`: `cb439b2` — `transferencias entre cuentas`.
-- V21 ya está confirmado en Git. V22 (devoluciones de pagos) es el cambio local actual;
+- Último commit confirmado en `main` y `origin/main`: `103f9bd` — `devoluciones de pagos.`.
+- V22 ya está confirmado en Git. V23 (reversiones financieras) es el cambio local actual;
   el agente nuevo debe confirmar `git status` y `git log` antes de continuar y no debe
-  reconstruir V1–V22.
+  reconstruir V1–V23.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -478,13 +478,28 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - El expediente muestra saldos, historial y formulario responsivo. La cuenta se busca
   por autocompletado remoto; cualquier validación o restricción vuelve a la misma
   pantalla conservando los datos capturados.
+- Flyway V23 crea `ReversionFinanciera`, enlaza sus movimientos compensatorios y agrega
+  `MOVIMIENTO_FINANCIERO_REVERTIR` sin asignarlo automáticamente a roles existentes.
+- Sólo las operaciones manuales y transferencias aplicadas se revierten por este flujo.
+  Cobros, devoluciones, aplicaciones de pagos y otros movimientos técnicos conservan
+  sus procesos específicos. El original nunca se edita ni elimina.
+- Una operación manual produce un `REVERSO` con dirección contraria, mismo importe y
+  relación única con el original. Si deshace un ingreso, la cuenta debe conservar saldo.
+- Una transferencia se revierte completa: bloquea ambas cuentas por ID ascendente,
+  exige fondos en la receptora, publica el egreso de retorno y el ingreso en el origen
+  dentro de una sola transacción, y cambia la transferencia a `REVERTIDA`.
+- La cabecera de reversa conserva tipo, objetivo, fecha, motivo, actor e idempotencia.
+  No existe segunda reversa. La fecha no puede ser futura ni anterior al original o a
+  la apertura de las cuentas. El acceso de recuperación no puede mover fondos.
+- El libro muestra acciones únicamente para objetivos elegibles, estado revertido y el
+  movimiento original compensado. El formulario es responsivo y conserva errores.
 
 ## Verificación confirmada
 
-- Compilación correcta de 382 archivos Java de producción.
-- 235 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V22 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 38 repositorios.
+- Compilación correcta de 392 archivos Java de producción.
+- 241 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V23 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 39 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -516,30 +531,30 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-El propietario debe conceder `PAGO_DEVOLVER` a su rol, cerrar sesión, volver a entrar y
-probar una devolución desde el expediente de un pago validado usando una cuenta e importe
-controlados. Debe comprobar un caso cubierto por el monto disponible y otro que requiera
-seleccionar un abono; en ambos, revisar el historial, el saldo del cargo y el egreso en el
-libro. Después de su confirmación, la siguiente etapa funcional recomendada es V23 con
-reversas trazables de operaciones manuales y transferencias. La cancelación completa de
-pagos y los cortes/retiros siguen pendientes y deben diseñarse por separado.
+El propietario debe conceder `MOVIMIENTO_FINANCIERO_REVERTIR` a su rol, cerrar sesión,
+volver a entrar y probar con datos controlados una operación manual y una transferencia.
+Debe revisar que el original siga visible, aparezcan uno o dos movimientos `REVERSO`, los
+saldos regresen correctamente y no se ofrezca una segunda reversa. Después de confirmar
+V23, la siguiente etapa funcional recomendada es V24 con cortes de caja y conciliación:
+saldo esperado, efectivo declarado, diferencia, responsable y cierre inmutable. La
+cancelación completa de pagos y los retiros especializados siguen separados.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. Confirmar si V22 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
+1. Confirmar si V23 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
    preservar los cambios locales y no volver a implementarla.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V22 ya fueron aplicadas en el volumen verificado; nunca editarlas. Cuando
-   V22 se confirme y comparta, la siguiente migración disponible será V23.
-5. Primero terminar la prueba funcional de V22 con `PAGO_DEVOLVER`. Después diseñar V23
-   para reversas generales sin mezclar cancelación de pagos, cortes ni retiros.
+4. Flyway V1–V23 ya fueron aplicadas en el volumen verificado; nunca editarlas. Cuando
+   V23 se confirme y comparta, la siguiente migración disponible será V24.
+5. Primero terminar la prueba funcional de V23 con `MOVIMIENTO_FINANCIERO_REVERTIR`.
+   Después diseñar V24 para cortes de caja sin mezclar cancelación de pagos ni retiros.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.

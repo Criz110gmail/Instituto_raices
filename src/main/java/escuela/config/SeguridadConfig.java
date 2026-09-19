@@ -101,9 +101,11 @@ public class SeguridadConfig {
                         .hasAuthority("MOVIMIENTO_FINANCIERO_REGISTRAR")
                         .requestMatchers("/admin/transferencias/**")
                         .hasAuthority("TRANSFERENCIA_CUENTA_REGISTRAR")
+                        .requestMatchers("/admin/reversiones/**")
+                        .hasAuthority("MOVIMIENTO_FINANCIERO_REVERTIR")
                         .requestMatchers(HttpMethod.GET, "/admin/movimientos-financieros")
                         .hasAnyAuthority("MOVIMIENTO_FINANCIERO_LEER", "MOVIMIENTO_FINANCIERO_REGISTRAR",
-                                "TRANSFERENCIA_CUENTA_REGISTRAR")
+                                "TRANSFERENCIA_CUENTA_REGISTRAR", "MOVIMIENTO_FINANCIERO_REVERTIR")
                         .requestMatchers("/admin/movimientos-financieros/**", "/admin/catalogos/movimientos-financieros/**")
                         .hasAuthority("MOVIMIENTO_FINANCIERO_LEER")
                         .anyRequest().authenticated())

@@ -1051,3 +1051,33 @@
 - El propietario debe asignar `PAGO_DEVOLVER`, iniciar una sesión nueva y probar con
   datos controlados. Después, la etapa recomendada es V23 para reversas trazables de
   operaciones manuales y transferencias; cancelaciones, cortes y retiros quedan separados.
+
+## Decisiones — reversas financieras
+
+- Flyway V23 crea `ReversionFinanciera`, agrega la relación desde los movimientos
+  compensatorios y suma `MOVIMIENTO_FINANCIERO_REVERTIR` sin modificar roles existentes.
+- El flujo general sólo acepta `OPERACION` manual y transferencias `APLICADA`. Cobros,
+  devoluciones y aplicaciones de pago mantienen sus procesos propios; ningún original
+  se edita o elimina y una restricción impide una segunda reversa.
+- La reversa manual publica un movimiento `REVERSO` opuesto con el mismo importe, motivo
+  financiero, alcance y referencia. Deshacer un ingreso requiere saldo actual suficiente.
+- La reversa de transferencia bloquea ambas cuentas por ID ascendente y publica de forma
+  atómica el retorno al origen y la salida del destino. La cuenta receptora debe conservar
+  el importe y la transferencia cambia a `REVERTIDA` en la misma transacción.
+- La cabecera conserva objetivo, fecha, motivo, actor e idempotencia. Se validan cuenta
+  activa, alcance, fecha original, aperturas y actor persistido; recuperación no autoriza.
+- El libro identifica movimientos revertidos y reversos compensatorios, y presenta la
+  acción sólo cuando corresponde. Los errores permanecen en el formulario.
+
+## Verificación de reversas financieras
+
+- Docker compiló 392 fuentes Java y ejecutó 241 pruebas sin fallos ni errores. Las seis
+  pruebas nuevas cubren reversa simple, pareja inversa, saldos, clases no admitidas,
+  fondos gastados en la receptora y acceso de recuperación.
+- Flyway validó 23 migraciones y aplicó V23 sobre PostgreSQL 17. Hibernate validó el
+  esquema, detectó 39 repositorios y `/actuator/health` respondió `UP`.
+- PostgreSQL confirmó cero cabeceras y cero movimientos de reversa; no se movió dinero
+  real durante la verificación automática.
+- El propietario debe asignar `MOVIMIENTO_FINANCIERO_REVERTIR`, iniciar una sesión nueva
+  y probar con datos controlados. Después se recomienda V24 para cortes de caja y
+  conciliación; cancelaciones de pagos y retiros especializados quedan separados.

@@ -30,4 +30,6 @@ public class TransferenciaCuenta extends EntidadAuditable {
     @Column(name = "clave_idempotencia", nullable = false, length = 120) private String claveIdempotencia;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 12) private EstadoTransferenciaCuenta estado = EstadoTransferenciaCuenta.APLICADA;
+    @OneToOne(mappedBy = "transferenciaOrigen", fetch = FetchType.LAZY)
+    private ReversionFinanciera reversion;
 }

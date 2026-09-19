@@ -154,6 +154,25 @@
 .adjustment-row small { grid-column: 1 / -1; color: var(--muted); }
 .adjustment-row:hover { border-color: var(--accent); transform: translateY(-1px); }
 
+.reversal-principle { background: radial-gradient(circle at 90% 20%,#ef667326,transparent 30%),linear-gradient(125deg,#20101a,#553040); }
+.reversal-summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; margin: 0 34px 8px; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--line); }
+.reversal-summary > div { display: grid; gap: 5px; padding: 15px; background: var(--surface); }
+.reversal-summary small { color: var(--muted); font-size: .67rem; letter-spacing: .05em; text-transform: uppercase; }
+.reversal-summary strong { font-size: .82rem; overflow-wrap: anywhere; }
+.reversal-warning,.already-reversed { margin: 20px 0 0; padding: 15px 17px; border: 1px solid #efc4c8; border-radius: 12px; background: #fff5f6; color: #8f2b37; }
+.reversal-warning p,.already-reversed p { margin: 5px 0 0; font-size: .76rem; line-height: 1.5; }
+.already-reversed { margin: 24px 34px 30px; }
+.danger-submit { background: #ad2e3c!important; }
+.reversal-action-cell a { display: inline-flex; padding: 7px 9px; border: 1px solid #e4aeb5; border-radius: 8px; color: #a42634; text-decoration: none; font-size: .7rem; font-weight: 800; white-space: nowrap; }
+.reversal-action-cell span { color: var(--muted); font-size: .7rem; }
+.reversal-action-cell small { display: block; color: #9b3340!important; }
+[data-theme=dark] .reversal-warning,[data-theme=dark] .already-reversed { border-color: #713944; background: #321b23; color: #f0abb3; }
+
+@media (max-width: 720px) {
+    .reversal-summary { grid-template-columns: 1fr; margin: 0 20px 8px; }
+    .already-reversed { margin: 20px; }
+}
+
 .form-grid select:focus {
     border-color: var(--blue);
     box-shadow: 0 0 0 3px #2979ff18;

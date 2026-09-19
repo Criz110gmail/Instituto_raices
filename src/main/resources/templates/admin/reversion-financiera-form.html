@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930"><title>Revertir movimiento · Nexo Escolar</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script></head>
+<body class="form-page"><main class="form-shell narrow-form">
+<header class="form-top"><a href="/admin/movimientos-financieros">← Volver al libro</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+<div class="finance-principle reversal-principle"><span>Corrección contable trazable</span><strong th:text="${esTransferencia ? 'Revertir transferencia' : 'Revertir operación manual'}">Revertir</strong><p>El registro original no se editará ni eliminará. Se publicará el movimiento opuesto con una relación permanente al original.</p></div>
+<section class="form-card">
+    <div class="form-error operation-error" th:if="${errorOperacion}" th:text="${errorOperacion}"></div>
+    <div class="form-intro"><span>Operación original</span><h1 th:text="${objetivo.titulo}">Concepto</h1><p th:text="${objetivo.detalle}">Detalle</p></div>
+    <div class="reversal-summary"><div><small>Importe</small><strong th:text="${objetivo.monto.toPlainString() + ' ' + objetivo.moneda}">0 MXN</strong></div><div><small>Fecha original</small><strong th:text="${fechaOriginalLocal}">Fecha</strong></div><div><small>Resultado</small><strong th:text="${esTransferencia ? 'Dos movimientos inversos' : 'Un movimiento inverso'}">Resultado</strong></div></div>
+    <div class="already-reversed" th:if="${objetivo.revertido}"><strong>Esta operación ya fue revertida</strong><p>No es posible publicar una segunda reversa.</p></div>
+    <form class="entity-form" method="post" th:unless="${objetivo.revertido}" th:action="${esTransferencia ? '/admin/reversiones/transferencias/' + objetivo.id : '/admin/reversiones/movimientos/' + objetivo.id}" th:object="${form}">
+        <input type="hidden" th:field="*{claveIdempotencia}"><input type="hidden" th:field="*{version}">
+        <div class="form-grid"><label><span>Fecha y hora de reversa *</span><input type="datetime-local" th:field="*{fecha}" required><small th:errors="*{fecha}"></small></label><label class="wide"><span>Motivo de la corrección *</span><textarea th:field="*{motivo}" maxlength="2000" rows="5" required placeholder="Explica por qué debe compensarse la operación original"></textarea><small th:errors="*{motivo}"></small></label></div>
+        <div class="reversal-warning"><strong>La reversa también mueve dinero.</strong><p th:text="${esTransferencia ? 'La cuenta que recibió el dinero debe conservar fondos suficientes para devolverlo.' : 'Si el original fue un ingreso, la cuenta debe conservar saldo suficiente para compensarlo.'}">Advertencia</p></div>
+        <footer class="form-actions"><a href="/admin/movimientos-financieros">Cancelar</a><button type="submit" class="danger-submit">Confirmar reversa trazable</button></footer>
+    </form>
+</section></main></body></html>

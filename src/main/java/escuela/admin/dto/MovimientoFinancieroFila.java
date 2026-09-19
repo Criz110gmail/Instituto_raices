@@ -6,6 +6,7 @@ public record MovimientoFinancieroFila(
         Long id, String fecha, String cuenta, String plantel, String direccion, String clase,
         String concepto, String referencia, String tercero, BigDecimal monto,
         String moneda, BigDecimal saldoAnterior, BigDecimal saldoPosterior,
-        String folioPago, Long secuenciaCuenta
+        String folioPago, Long secuenciaCuenta, Long transferenciaId,
+        Long reversaDeId, boolean revertido
 ) {
 }
