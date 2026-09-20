@@ -1114,3 +1114,41 @@
 - El propietario debe asignar ambos permisos, iniciar una sesión nueva y probar apertura,
   movimientos, conteo, cierre con y sin diferencia y Excel. Después se recomienda V25
   para estados de cuenta y reportes financieros operativos.
+
+## Decisiones — estados de cuenta y reportes financieros
+
+- Flyway V25 agrega `REPORTE_FINANCIERO_CONSULTAR` y tres índices de apoyo; no crea
+  entidades de saldo ni asigna el permiso a roles existentes. Los reportes se reconstruyen
+  desde los libros inmutables de cargos, ajustes, aplicaciones y movimientos.
+- El estado de cuenta administrativo exige un alumno por autocompletado y admite corte,
+  plantel y situación. Calcula importe original, ajustes efectivos, aplicaciones netas,
+  saldo y vencimiento. Un adeudo parcial vencido se clasifica como `VENCIDO`; un cargo
+  cancelado permanece visible pero no suma al exigible.
+- Tesorería admite cuenta, plantel de operación, periodo y agrupación diaria, mensual o
+  anual. Usa `fechaOperacion` interpretada en la zona horaria institucional. Los
+  traspasos y reversas de transferencia se excluyen de ingresos/egresos operativos y se
+  reportan aparte para evitar doble conteo.
+- Apertura y cierre se calculan desde saldo inicial y movimientos sólo cuando el filtro
+  representa cuentas completas. Un filtro por plantel de operación no prorratea cuentas
+  institucionales ni inventa un saldo atribuible.
+- Los usuarios con alcance de plantel sólo consultan cargos y cuentas de sus planteles;
+  no reciben cuentas compartidas institucionales. Ambos reportes pagan el costo de la
+  consulta en PostgreSQL, tienen paginación y exportan XLSX por bloques con los mismos
+  filtros. No publican ni modifican movimientos monetarios.
+- Identificadores inexistentes o filtros de negocio inválidos muestran el error dentro
+  de la pantalla. Las vistas son responsivas y compatibles con temas claro y oscuro.
+
+## Verificación de reportes financieros
+
+- Docker compiló 424 fuentes Java y ejecutó 254 pruebas sin fallos ni errores. Las cinco
+  pruebas nuevas cubren fecha local institucional, estado vacío, pertenencia del alumno,
+  periodo invertido y conversión de fechas a instantes en la zona institucional.
+- Flyway validó 25 migraciones y aplicó V25 sobre PostgreSQL 17. Hibernate validó el
+  esquema, detectó 40 repositorios y la aplicación inició en el puerto 8080.
+- PostgreSQL confirmó V25, los tres índices y el permiso nuevo, y aceptó las consultas
+  nativas de estado de cuenta, agrupación de tesorería y saldo de apertura. La validación
+  fue de solo lectura y no creó movimientos, cargos ni saldos ficticios.
+- El propietario debe asignar `REPORTE_FINANCIERO_CONSULTAR`, iniciar una sesión nueva y
+  revisar ambas pestañas y sus Excel con datos existentes. Después se recomienda acordar
+  V26 para eventos escolares y destinatarios como base del futuro portal del tutor;
+  avisos y notificaciones quedan para una etapa posterior.

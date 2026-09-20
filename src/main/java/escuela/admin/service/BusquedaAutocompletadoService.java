@@ -235,6 +235,28 @@ public class BusquedaAutocompletadoService {
                 .toList(), hayMas);
     }
 
+    public ResultadoAutocompletado cuentasParaReportes(Long institucionId, String consulta) {
+        alcance.validarInstitucion(institucionId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        String patron = "%" + texto + "%";
+        Specification<CuentaFinanciera> busqueda = (root, query, cb) -> cb.and(
+                cb.equal(root.get("institucion").get("id"), institucionId),
+                cb.or(cb.like(cb.lower(root.get("codigo")), patron),
+                        cb.like(cb.lower(root.get("nombre")), patron),
+                        cb.like(cb.lower(root.get("bancoNombre")), patron)));
+        var resultado = cuentaFinancieraRepository.findAll(Specification.where(busqueda)
+                        .and(alcance.especificacionCuentasReporte()),
+                PageRequest.of(0, MAXIMO_RESULTADOS + 1));
+        boolean hayMas = resultado.getNumberOfElements() > MAXIMO_RESULTADOS;
+        return new ResultadoAutocompletado(resultado.getContent().stream().limit(MAXIMO_RESULTADOS)
+                .map(cuenta -> new OpcionAutocompletado(cuenta.getId(),
+                        cuenta.getCodigo() + " · " + cuenta.getNombre(),
+                        cuenta.getTipo().name() + " · " + identificadorCuenta(cuenta)
+                                + (cuenta.isActivo() ? "" : " · Inactiva")))
+                .toList(), hayMas);
+    }
+
     public ResultadoAutocompletado cargosParaPago(Long institucionId, Long tutorId, String consulta) {
         alcance.validarInstitucion(institucionId);
         alcance.validarRecurso(ModuloCatalogo.TUTORES, tutorId);

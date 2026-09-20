@@ -97,4 +97,16 @@ public class AutocompletadoAdminController {
                                         @RequestParam(defaultValue = "") String q) {
         return service.cuentasParaCortes(institucionId, q);
     }
+
+    @GetMapping("/alumnos-reporte")
+    ResultadoAutocompletado alumnosReporte(@RequestParam Long institucionId,
+                                           @RequestParam(defaultValue = "") String q) {
+        return service.alumnosParaInscripcion(institucionId, q);
+    }
+
+    @GetMapping("/cuentas-reporte")
+    ResultadoAutocompletado cuentasReporte(@RequestParam Long institucionId,
+                                           @RequestParam(defaultValue = "") String q) {
+        return service.cuentasParaReportes(institucionId, q);
+    }
 }

@@ -80,7 +80,7 @@ public class AlcanceDatosService {
         return (root, query, cb) -> {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
-                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, ROLES, USUARIOS -> root.get("institucion").get("id");
+                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, REPORTES_FINANCIEROS, ROLES, USUARIOS -> root.get("institucion").get("id");
                 case POLITICAS_RECARGO -> root.get("conceptoCobro").get("institucion").get("id");
                 case VINCULOS_TUTOR, INSCRIPCIONES -> root.get("alumno").get("institucion").get("id");
                 case CUOTAS_ALUMNO, CARGOS, BECAS_ALUMNO -> root.get("inscripcion").get("alumno").get("institucion").get("id");
@@ -140,6 +140,16 @@ public class AlcanceDatosService {
     }
 
     public Specification<CuentaFinanciera> especificacionCuentasParaCorte() {
+        return especificacionCuentasRestringidas();
+    }
+
+    public Specification<CuentaFinanciera> especificacionCuentasReporte() {
+        UsuarioPrincipal principal = principal();
+        if (principal.accesoRecuperacion()) return (root, query, cb) -> cb.conjunction();
+        return especificacionCuentasRestringidas();
+    }
+
+    private Specification<CuentaFinanciera> especificacionCuentasRestringidas() {
         UsuarioPrincipal principal = principal();
         if (principal.accesoRecuperacion()) return (root, query, cb) -> cb.disjunction();
         return (root, query, cb) -> {
@@ -197,6 +207,7 @@ public class AlcanceDatosService {
             case PAGOS -> validarPlantel(pagoRepository.findById(id)
                     .orElseThrow(this::denegado).getPlantelRegistro().getId());
             case MOVIMIENTOS_FINANCIEROS -> throw denegado();
+            case REPORTES_FINANCIEROS -> throw denegado();
             case ROLES -> validarInstitucion(rolRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());
             case USUARIOS -> validarInstitucion(usuarioRepository.findById(id)
@@ -209,6 +220,19 @@ public class AlcanceDatosService {
         if (!principal.accesoRecuperacion()
                 && (!principal.institucionId().equals(institucionId)
                 || (!principal.alcanceInstitucional() && principal.plantelIds().isEmpty()))) throw denegado();
+    }
+
+    public boolean alcanceInstitucionalActual(Long institucionId) {
+        validarInstitucion(institucionId);
+        UsuarioPrincipal principal = principal();
+        return principal.accesoRecuperacion() || principal.alcanceInstitucional();
+    }
+
+    public java.util.Set<Long> plantelesActuales(Long institucionId) {
+        validarInstitucion(institucionId);
+        UsuarioPrincipal principal = principal();
+        return principal.accesoRecuperacion() || principal.alcanceInstitucional()
+                ? java.util.Set.of() : principal.plantelIds();
     }
 
     public void validarNuevaInstitucion() {

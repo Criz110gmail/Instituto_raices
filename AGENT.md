@@ -20,10 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main`: `dede237` — `devoluciones de pagos final`.
-- V23 ya está confirmado en Git. V24 (cortes de caja) es el cambio local actual; el
-  agente nuevo debe confirmar `git status` y `git log` antes de continuar y no debe
-  reconstruir V1–V24.
+- Último commit confirmado en `main` y `origin/main`: `3f35366` — `cortes de caja`.
+- V24 ya está confirmado en Git. V25 (reportes financieros) es el cambio local actual;
+  el agente nuevo debe confirmar `git status` y `git log` antes de continuar y no debe
+  reconstruir V1–V25.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -510,12 +510,29 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - El módulo tiene listado filtrado y paginado en PostgreSQL, búsqueda remota de cajas,
   Excel por bloques, detalle y formularios responsivos. Los usuarios de plantel sólo
   ven cajas y cortes de sus planteles; una caja institucional exige alcance institucional.
+- Flyway V25 no crea saldos duplicados: agrega el permiso
+  `REPORTE_FINANCIERO_CONSULTAR` y tres índices de apoyo para ajustes, aplicaciones y
+  movimientos. El permiso no se asigna automáticamente a roles existentes.
+- Reportes financieros ofrece dos vistas administrativas derivadas. El estado de cuenta
+  reconstruye por alumno los cargos, ajustes y aplicaciones efectivos hasta una fecha
+  de corte, y clasifica pendiente, parcial, pagado, vencido o cancelado. Un cargo parcial
+  ya vencido se presenta como vencido y los cancelados conservan historial sin saldo.
+- Tesorería agrupa por día, mes o año los ingresos y egresos operativos por cuenta. Los
+  traspasos internos y sus reversas no inflan el flujo operativo y se muestran en
+  columnas separadas. La fecha se interpreta en la zona horaria institucional.
+- Los saldos de apertura y cierre sólo aparecen cuando se consultan cuentas completas.
+  Al filtrar por plantel de operación se muestran flujos atribuidos, pero no se inventa
+  una división del saldo de cuentas compartidas. El alcance de plantel tampoco expone
+  cuentas institucionales.
+- Ambos reportes filtran y paginan en PostgreSQL, usan autocompletado remoto para
+  alumnos/cuentas y exportan los mismos filtros a XLSX por bloques. Son consultas de
+  solo lectura: no publican movimientos ni modifican cargos, pagos o saldos.
 
 ## Verificación confirmada
 
-- Compilación correcta de 409 archivos Java de producción.
-- 249 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V24 validados y aplicados correctamente sobre el volumen existente.
+- Compilación correcta de 424 archivos Java de producción.
+- 254 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V25 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 40 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
@@ -543,6 +560,10 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - La última instancia local verificada quedó en `http://localhost:8080`.
 - PostgreSQL confirmó V24 exitosa, los dos permisos de corte y cero cortes de prueba;
   la verificación automática no generó movimientos ni alteró saldos.
+- PostgreSQL confirmó V25 exitosa, sus tres índices y el permiso de reportes. También
+  analizó correctamente las consultas nativas de estado de cuenta, tesorería agrupada y
+  saldos; la base verificada no contenía filas operativas para esos filtros y no se
+  modificaron datos monetarios.
 - El nombre visible de sesión se publica al modelo Thymeleaf mediante
   `IdentidadSesionAdvice`; no usar `#authentication`, porque el dialecto de seguridad
   no forma parte de las dependencias actuales. Una prueba de regresión cubre presencia
@@ -550,31 +571,35 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-El propietario debe conceder `CORTE_CAJA_LEER` y `CORTE_CAJA_ADMINISTRAR` a su rol,
-cerrar sesión, volver a entrar y probar con una caja controlada: abrir, registrar uno o
-más movimientos, contar el efectivo, cerrar y revisar el Excel. Debe probar también una
-diferencia para confirmar que exige justificación y permanece en la misma pantalla.
-Después de confirmar V24, la siguiente etapa funcional recomendada es V25 con estado de
-cuenta y reportes financieros operativos. La cancelación completa de pagos, retiros
-especializados y conciliación bancaria siguen siendo flujos separados.
+El propietario debe conceder `REPORTE_FINANCIERO_CONSULTAR` a su rol, cerrar sesión,
+volver a entrar y revisar las dos pestañas de Reportes financieros con datos reales ya
+existentes. Debe confirmar filtros, alcance por plantel y ambos Excel; esta prueba es de
+solo lectura y no requiere crear movimientos.
+
+Después de confirmar V25, el siguiente bloque del modelo todavía no implementado es
+comunicación y portal. Se recomienda acordar V26 para `EventoEscolar` y
+`DestinatarioEvento`, con alcance por institución, plantel, grupo o selección, antes de
+abrir el portal del tutor. Avisos y notificaciones internas quedarían después. La
+cancelación completa de pagos, retiros especializados y conciliación bancaria continúan
+siendo flujos financieros separados que no deben mezclarse con reportes.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. Confirmar si V24 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
+1. Confirmar si V25 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
    preservar los cambios locales y no volver a implementarla.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V24 ya fueron aplicadas en el volumen verificado; nunca editarlas. Cuando
-   V24 se confirme y comparta, la siguiente migración disponible será V25.
-5. Primero terminar la prueba funcional de V24 con `CORTE_CAJA_LEER` y
-   `CORTE_CAJA_ADMINISTRAR`. Después diseñar V25 para estados de cuenta y reportes sin
-   mezclar cancelación de pagos, retiros ni conciliación bancaria.
+4. Flyway V1–V25 ya fueron aplicadas en el volumen verificado; nunca editarlas. Cuando
+   V25 se confirme y comparta, la siguiente migración disponible será V26.
+5. Primero terminar la prueba funcional de V25 con
+   `REPORTE_FINANCIERO_CONSULTAR`. Después acordar el alcance de eventos y portal del
+   tutor antes de crear V26; no asumir envíos por correo o WhatsApp.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.

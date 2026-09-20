@@ -28,6 +28,7 @@ public enum ModuloCatalogo {
     CUENTAS_FINANCIERAS("cuentas-financieras", "Cuentas financieras", List.of("Código", "Cuenta", "Alcance", "Tipo", "Institución financiera", "Identificador", "Saldo inicial", "Fecha inicial")),
     PAGOS("pagos", "Pagos", List.of("Folio", "Tutor", "Plantel de registro", "Fecha", "Método", "Monto", "Distribución", "Comprobantes")),
     MOVIMIENTOS_FINANCIEROS("movimientos-financieros", "Movimientos financieros", List.of()),
+    REPORTES_FINANCIEROS("reportes-financieros", "Reportes financieros", List.of()),
     ROLES("roles", "Roles y permisos", List.of("Código", "Rol", "Institución", "Descripción")),
     USUARIOS("usuarios", "Usuarios", List.of("Usuario", "Correo", "Institución", "Credencial"));
 
@@ -51,7 +52,7 @@ public enum ModuloCatalogo {
             case ALUMNOS, TUTORES, VINCULOS_TUTOR -> "Personas";
             case INSCRIPCIONES -> "Trayectoria";
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
-            case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS -> "Finanzas";
+            case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, REPORTES_FINANCIEROS -> "Finanzas";
             case ROLES, USUARIOS -> "Seguridad";
         };
     }
@@ -81,6 +82,7 @@ public enum ModuloCatalogo {
             case CUENTAS_FINANCIERAS -> "CUENTA_FINANCIERA";
             case PAGOS -> "PAGO";
             case MOVIMIENTOS_FINANCIEROS -> "MOVIMIENTO_FINANCIERO";
+            case REPORTES_FINANCIEROS -> "REPORTE_FINANCIERO";
             case ROLES -> "ROL";
             case USUARIOS -> "USUARIO";
         };
@@ -91,6 +93,7 @@ public enum ModuloCatalogo {
                 || permisos.contains("TRANSFERENCIA_CUENTA_REGISTRAR")
                 || permisos.contains("MOVIMIENTO_FINANCIERO_REVERTIR")
                 || permisos.contains("CORTE_CAJA_LEER") || permisos.contains("CORTE_CAJA_ADMINISTRAR");
+        if (this == REPORTES_FINANCIEROS) return permisos.contains("REPORTE_FINANCIERO_CONSULTAR");
         boolean administra = permisos.contains(base + "_ADMINISTRAR");
         if (this == ROLES || this == USUARIOS) return administra;
         return administra || permisos.contains(base + "_LEER");
@@ -135,6 +138,7 @@ public enum ModuloCatalogo {
             case CUENTAS_FINANCIERAS -> "/admin/cuentas-financieras";
             case PAGOS -> "/admin/pagos";
             case MOVIMIENTOS_FINANCIEROS -> "/admin/movimientos-financieros";
+            case REPORTES_FINANCIEROS -> "/admin/reportes-financieros/tesoreria";
             case ROLES -> "/admin/roles";
             case USUARIOS -> "/admin/usuarios";
             default -> "";
@@ -142,8 +146,8 @@ public enum ModuloCatalogo {
     }
 
     public String rutaListado() {
-        return this == MOVIMIENTOS_FINANCIEROS
-                ? "/admin/movimientos-financieros"
+        return this == MOVIMIENTOS_FINANCIEROS || this == REPORTES_FINANCIEROS
+                ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }
 

@@ -278,3 +278,13 @@ cualquier faltante o sobrante. El conteo es ciego para evitar sesgo, el cierre n
 dinero y queda inmutable. El historial es paginado, filtra en PostgreSQL, usa búsqueda
 remota de cajas y exporta esos mismos filtros a Excel. Requiere `CORTE_CAJA_LEER` y/o
 `CORTE_CAJA_ADMINISTRAR`; V24 no concede estos permisos automáticamente a roles.
+
+Reportes financieros incorpora un estado de cuenta derivado por alumno y un reporte de
+tesorería por cuenta. El primero reconstruye cargos, ajustes, aplicaciones, saldo y
+vencimiento hasta una fecha de corte. El segundo agrupa flujos diarios, mensuales o
+anuales en la zona horaria institucional, excluye traspasos internos y sus reversas del
+resultado operativo y los muestra por separado. Los saldos de apertura/cierre sólo se
+calculan para cuentas completas, no cuando se filtra una atribución parcial por plantel.
+Ambas vistas filtran y paginan en PostgreSQL, usan autocompletado y exportan XLSX por
+bloques sin crear movimientos ni guardar saldos duplicados. Requiere
+`REPORTE_FINANCIERO_CONSULTAR`; V25 tampoco lo concede automáticamente a roles.
