@@ -1187,3 +1187,38 @@
   edición, publicación, cancelación, filtros, autocompletado y Excel. Tras confirmar y
   subir V26, debe acordarse V27 para la primera entrega del portal del tutor con hijos
   vinculados, estado de cuenta derivado y eventos publicados aplicables.
+
+## Decisiones — primer portal del tutor
+
+- Flyway V27 agrega `PORTAL_TUTOR_ACCEDER` y un índice parcial para eventos publicados;
+  no crea tablas duplicadas ni asigna el permiso a roles existentes.
+- El portal vive en `/portal`, separado de administración. La cuenta debe estar enlazada
+  con un tutor activo y cada consulta limita alumnos y fotografías a vínculos activos y
+  vigentes. El acceso de recuperación y los identificadores ajenos se rechazan.
+- El selector familiar muestra matrícula, parentesco, fotografía y situación académica
+  vigente derivada de inscripción y asignación de grupo. La ausencia de inscripción se
+  presenta explícitamente.
+- Finanzas se habilita sólo si el vínculo es responsable financiero y además permite ver
+  finanzas. El estado de cuenta reutiliza la reconstrucción de cargos, ajustes y abonos,
+  con paginación, sin persistir saldos ni permitir operaciones monetarias.
+- La agenda resuelve únicamente eventos publicados del mismo ciclo que alcancen al alumno
+  por institución, plantel, nivel, grado, grupo o destino individual. Presenta próximos
+  eventos y hasta 30 días de historial reciente, paginados de diez en diez.
+- La vista es responsiva, compatible con tema claro y oscuro, incorpora fotografía
+  privada y cierre de sesión. Un usuario sólo de portal que entra por `/admin` es enviado
+  al portal en lugar de recibir una pantalla de acceso denegado.
+
+## Verificación del primer portal del tutor
+
+- Docker compiló 453 fuentes Java y ejecutó 268 pruebas sin fallos ni errores. Las siete
+  pruebas nuevas cubren recuperación, tutor no vinculado, familia vacía, restricción y
+  autorización financiera, alumno ajeno y protección de fotografía.
+- Flyway validó 27 migraciones y aplicó V27 sobre PostgreSQL 17. Hibernate validó el
+  esquema, detectó 41 repositorios y `/actuator/health` respondió `UP`.
+- PostgreSQL confirmó el permiso y el índice; además ejecutó las consultas completas de
+  vínculos e intersección de eventos con identificadores inexistentes, sólo en lectura.
+  No se crearon tutores, vínculos, cargos o eventos ficticios.
+- El propietario debe asignar `PORTAL_TUTOR_ACCEDER` a un rol con alcance
+  `VINCULOS_TUTOR`, iniciar una sesión nueva con una cuenta enlazada y comprobar `/portal`.
+  Después de confirmar y subir V27 se recomienda acordar V28 para Avisos institucionales
+  y de plantel; las notificaciones internas quedan para una etapa posterior.

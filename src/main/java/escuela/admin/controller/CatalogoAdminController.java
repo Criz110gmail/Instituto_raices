@@ -32,7 +32,9 @@ public class CatalogoAdminController {
     String admin(Authentication authentication) {
         return modulosVisibles(authentication).stream().findFirst()
                 .map(modulo -> "redirect:" + modulo.rutaListado())
-                .orElse("redirect:/acceso-denegado");
+                .orElseGet(() -> authentication.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("PORTAL_TUTOR_ACCEDER"))
+                        ? "redirect:/portal" : "redirect:/acceso-denegado");
     }
 
     @GetMapping("/admin/catalogos/{slug}")

@@ -298,3 +298,12 @@ autocompletado remoto y el Excel reutiliza los mismos filtros por bloques. Requi
 `EVENTO_ESCOLAR_LEER` y/o `EVENTO_ESCOLAR_ADMINISTRAR`; V26 no concede estos permisos
 automáticamente. Esta etapa no envía correo o WhatsApp y todavía no incorpora el portal
 del tutor.
+
+El portal familiar está disponible en `/portal`. Una cuenta con
+`PORTAL_TUTOR_ACCEDER` sólo consulta alumnos asociados mediante vínculos activos y
+vigentes. Presenta ficha académica actual, fotografía privada y eventos publicados que
+alcancen al alumno por institución, plantel, nivel, grado, grupo o selección individual.
+El estado de cuenta aparece únicamente cuando el vínculo combina responsabilidad
+financiera y autorización para ver finanzas; se calcula desde el historial existente y
+no permite registrar operaciones. V27 no concede el permiso automáticamente y no envía
+notificaciones, correo ni WhatsApp.

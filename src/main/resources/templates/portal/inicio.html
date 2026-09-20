@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#0b1930">
+    <title>Portal familiar · Nexo Escolar</title>
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/portal.css">
+    <script src="/js/theme.js"></script>
+</head>
+<body>
+<header class="portal-topbar">
+    <a class="portal-brand" href="/portal"><span>NE</span><strong>Nexo Escolar</strong><small>Portal familiar</small></a>
+    <div class="portal-session">
+        <div><small>Sesión de</small><strong th:text="${portal.tutor}">Tutor</strong></div>
+        <button class="theme-button" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button>
+        <form method="post" th:action="@{/logout}"><button type="submit">Cerrar sesión</button></form>
+    </div>
+</header>
+
+<main class="portal-shell">
+    <section class="welcome">
+        <div><span>Tu familia, en un solo lugar</span><h1 th:text="${'Hola, '+portal.tutor}">Hola</h1>
+            <p>Consulta información escolar vigente, próximos eventos y el estado de cuenta autorizado.</p></div>
+        <div class="privacy-note"><strong>Acceso privado</strong><span>La información se limita a tus vínculos vigentes.</span></div>
+    </section>
+
+    <section class="empty-family" th:if="${portal.hijos.empty}">
+        <span>◎</span><h2>No hay alumnos vinculados actualmente</h2>
+        <p>La cuenta está activa, pero no tiene vínculos vigentes. Solicita a la administración escolar revisar las fechas y permisos del vínculo.</p>
+    </section>
+
+    <div th:if="${portal.hijo != null}">
+        <nav class="student-switcher" aria-label="Seleccionar alumno">
+            <a th:each="h:${portal.hijos}" th:href="@{/portal(alumnoId=${h.alumnoId})}"
+               th:classappend="${h.alumnoId.equals(portal.hijo.alumnoId)}?' active'">
+                <img th:src="@{/portal/alumnos/{id}/fotografia(id=${h.alumnoId})}" alt="">
+                <span><strong th:text="${h.nombre}">Alumno</strong><small th:text="${h.parentesco+' · '+h.matricula}">Vínculo</small></span>
+            </a>
+        </nav>
+
+        <section class="student-profile">
+            <img th:src="@{/portal/alumnos/{id}/fotografia(id=${portal.hijo.alumnoId})}" th:alt="${'Fotografía de '+portal.hijo.nombre}">
+            <div class="student-title"><span>Expediente vigente</span><h2 th:text="${portal.hijo.nombre}">Alumno</h2>
+                <p th:text="${portal.hijo.matricula+' · '+portal.hijo.parentesco}">Matrícula</p></div>
+            <dl>
+                <div><dt>Plantel</dt><dd th:text="${portal.hijo.plantel}"></dd></div>
+                <div><dt>Ciclo</dt><dd th:text="${portal.hijo.ciclo}"></dd></div>
+                <div><dt>Grado</dt><dd th:text="${portal.hijo.grado}"></dd></div>
+                <div><dt>Grupo</dt><dd th:text="${portal.hijo.grupo}"></dd></div>
+            </dl>
+        </section>
+
+        <section class="portal-section">
+            <header class="section-heading"><div><span>Agenda escolar</span><h2>Eventos para tu familia</h2>
+                <p>Incluye los eventos publicados que corresponden al ciclo y audiencia del alumno.</p></div>
+                <strong th:text="${portal.eventos.totalElements+' eventos'}">0 eventos</strong></header>
+            <div class="event-grid" th:if="${!portal.eventos.empty}">
+                <article th:each="evento:${portal.eventos.content}">
+                    <div class="event-date"><strong th:text="${#temporals.format(evento.inicio,'dd')}">01</strong>
+                        <span th:text="${#temporals.format(evento.inicio,'MMM')}">ENE</span></div>
+                    <div><span class="event-type" th:text="${evento.tipo}">EVENTO</span><h3 th:text="${evento.titulo}">Título</h3>
+                        <p th:text="${evento.descripcion != null ? evento.descripcion : 'Sin indicaciones adicionales'}"></p>
+                        <small th:text="${#temporals.format(evento.inicio,'dd/MM/yyyy HH:mm')+' a '+#temporals.format(evento.fin,'HH:mm')+' · '+evento.ubicacion}"></small>
+                        <small th:text="${evento.plantel}"></small></div>
+                </article>
+            </div>
+            <div class="section-empty" th:if="${portal.eventos.empty}"><span>◇</span><div><strong>No hay eventos publicados</strong><p>Cuando la escuela publique una actividad aplicable aparecerá aquí.</p></div></div>
+            <nav class="pager" th:if="${portal.eventos.totalPages > 1}">
+                <a th:if="${portal.eventos.hasPrevious()}" th:href="@{/portal(alumnoId=${portal.hijo.alumnoId},paginaEventos=${portal.eventos.number-1})}">← Anteriores</a>
+                <span th:text="${'Página '+(portal.eventos.number+1)+' de '+portal.eventos.totalPages}"></span>
+                <a th:if="${portal.eventos.hasNext()}" th:href="@{/portal(alumnoId=${portal.hijo.alumnoId},paginaEventos=${portal.eventos.number+1})}">Siguientes →</a>
+            </nav>
+        </section>
+
+        <section class="portal-section finance-section" th:if="${portal.estadoCuenta != null}">
+            <header class="section-heading"><div><span>Estado de cuenta</span><h2>Situación financiera</h2>
+                <p>Calculada al momento desde cargos, ajustes y abonos registrados.</p></div>
+                <div class="balance"><small>Saldo pendiente</small><strong th:text="${#numbers.formatDecimal(portal.estadoCuenta.resumen.saldo,1,'COMMA',2,'POINT')}">0.00</strong><span th:text="${portal.estadoCuenta.resumen.moneda}">MXN</span></div>
+            </header>
+            <div class="finance-metrics">
+                <div><span>Importe exigible</span><strong th:text="${#numbers.formatDecimal(portal.estadoCuenta.resumen.importeTotal,1,'COMMA',2,'POINT')}"></strong></div>
+                <div><span>Abonos aplicados</span><strong th:text="${#numbers.formatDecimal(portal.estadoCuenta.resumen.aplicado,1,'COMMA',2,'POINT')}"></strong></div>
+                <div class="overdue"><span>Saldo vencido</span><strong th:text="${#numbers.formatDecimal(portal.estadoCuenta.resumen.saldoVencido,1,'COMMA',2,'POINT')}"></strong></div>
+            </div>
+            <div class="portal-table" th:if="${!portal.estadoCuenta.pagina.empty}"><table><thead><tr><th>Concepto</th><th>Vencimiento</th><th>Total</th><th>Aplicado</th><th>Saldo</th><th>Situación</th></tr></thead>
+                <tbody><tr th:each="fila:${portal.estadoCuenta.pagina.content}"><td data-label="Concepto"><strong th:text="${fila.concepto}"></strong><small th:text="${fila.descripcion+' · '+fila.plantel}"></small></td><td data-label="Vencimiento" th:text="${#temporals.format(fila.fechaVencimiento,'dd/MM/yyyy')}"></td><td data-label="Total" th:text="${#numbers.formatDecimal(fila.importeTotal,1,'COMMA',2,'POINT')}"></td><td data-label="Aplicado" th:text="${#numbers.formatDecimal(fila.aplicado,1,'COMMA',2,'POINT')}"></td><td data-label="Saldo"><strong th:text="${#numbers.formatDecimal(fila.saldo,1,'COMMA',2,'POINT')+' '+fila.moneda}"></strong></td><td data-label="Situación"><span class="account-status" th:classappend="${' '+fila.situacion.toLowerCase()}" th:text="${fila.situacion}"></span></td></tr></tbody></table></div>
+            <div class="section-empty" th:if="${portal.estadoCuenta.pagina.empty}"><span>✓</span><div><strong>No hay cargos registrados</strong><p>El estado de cuenta no presenta movimientos para este alumno.</p></div></div>
+            <nav class="pager" th:if="${portal.estadoCuenta.pagina.totalPages > 1}">
+                <a th:if="${portal.estadoCuenta.pagina.hasPrevious()}" th:href="@{/portal(alumnoId=${portal.hijo.alumnoId},paginaCargos=${portal.estadoCuenta.pagina.number-1})}">← Anteriores</a>
+                <span th:text="${'Página '+(portal.estadoCuenta.pagina.number+1)+' de '+portal.estadoCuenta.pagina.totalPages}"></span>
+                <a th:if="${portal.estadoCuenta.pagina.hasNext()}" th:href="@{/portal(alumnoId=${portal.hijo.alumnoId},paginaCargos=${portal.estadoCuenta.pagina.number+1})}">Siguientes →</a>
+            </nav>
+        </section>
+
+        <section class="finance-locked" th:if="${portal.estadoCuenta == null}"><span>⌾</span><div><strong>Información financiera restringida</strong><p>Este vínculo permite consultar el expediente y los eventos, pero no tiene autorización financiera.</p></div></section>
+    </div>
+</main>
+<footer class="portal-footer"><span>Nexo Escolar</span><p>Información privada de la comunidad escolar.</p></footer>
+</body>
+</html>

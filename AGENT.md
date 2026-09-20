@@ -20,10 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main`: `76d2b55` — `reportes financieros`.
-- V25 ya está confirmado en Git. V26 (eventos escolares) es el cambio local actual;
+- Último commit confirmado en `main` y `origin/main`: `a17e910` — `Eventos escolares`.
+- V26 ya está confirmado en Git. V27 (primer portal del tutor) es el cambio local actual;
   el agente nuevo debe confirmar `git status` y `git log` antes de continuar y no debe
-  reconstruir V1–V26.
+  reconstruir V1–V27.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -543,12 +543,30 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   bloques, formulario, ficha, publicación, cancelación y autocompletado remoto de
   destinatarios. Los errores esperables se muestran en la misma pantalla. V26 todavía
   no envía correo, WhatsApp ni notificaciones y aún no es el portal del tutor.
+- Flyway V27 agrega `PORTAL_TUTOR_ACCEDER` y un índice parcial para la agenda publicada;
+  no asigna el permiso automáticamente ni crea copias de expedientes o saldos.
+- `/portal` es una experiencia familiar separada de `/admin`. Una cuenta persistida debe
+  corresponder a un tutor activo y sólo obtiene alumnos activos mediante vínculos activos
+  y vigentes. Elegir otro identificador o solicitar su fotografía vuelve a validar el
+  vínculo; el acceso de recuperación nunca entra al portal.
+- La ficha muestra matrícula, parentesco, plantel, ciclo, grado, grupo y fotografía
+  actual. Si no existe inscripción vigente se informa sin inventar una situación
+  académica. El selector de hijos y toda la pantalla son responsivos y admiten tema
+  claro u oscuro.
+- El estado de cuenta se deriva de cargos, ajustes y aplicaciones existentes y sólo se
+  muestra cuando el vínculo marca simultáneamente responsabilidad financiera y permiso
+  para ver finanzas. La consulta queda limitada al alumno validado y se pagina en bloques
+  de diez; el portal no registra pagos ni altera saldos.
+- La agenda sólo muestra eventos `PUBLICADO` aplicables al alumno por ciclo y alcance
+  institucional, plantel, nivel, grado, grupo o alumno. Incluye próximos eventos y los
+  finalizados durante los últimos 30 días, con paginación. No expone borradores ni
+  cancelados.
 
 ## Verificación confirmada
 
-- Compilación correcta de 447 archivos Java de producción.
-- 261 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V26 validados y aplicados correctamente sobre el volumen existente.
+- Compilación correcta de 453 archivos Java de producción.
+- 268 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V27 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 41 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
@@ -583,6 +601,9 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - PostgreSQL confirmó V26 exitosa, las tablas `evento_escolar` y
   `destinatario_evento`, y los dos permisos de eventos. La imagen reconstruida inició
   con salud `UP`; no se crearon eventos ni destinatarios ficticios.
+- PostgreSQL confirmó V27, `PORTAL_TUTOR_ACCEDER` y el índice parcial de agenda. Las
+  consultas reales de vínculos y segmentación de eventos se ejecutaron en modo lectura
+  con identificadores inexistentes; no se crearon ni modificaron datos escolares.
 - El nombre visible de sesión se publica al modelo Thymeleaf mediante
   `IdentidadSesionAdvice`; no usar `#authentication`, porque el dialecto de seguridad
   no forma parte de las dependencias actuales. Una prueba de regresión cubre presencia
@@ -590,18 +611,17 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-El propietario debe conceder `EVENTO_ESCOLAR_LEER` y
-`EVENTO_ESCOLAR_ADMINISTRAR` a su rol, cerrar sesión, volver a entrar y probar el módulo
-Eventos escolares: crear un borrador institucional, de plantel y por selección; editar,
-publicar, cancelar con motivo, filtrar y exportar Excel. Debe confirmar especialmente el
-autocompletado de nivel, grado, grupo y alumno. La prueba debe usar datos controlados y
-no requiere enviar comunicaciones externas.
+El propietario debe conceder `PORTAL_TUTOR_ACCEDER` a un rol de tutor con alcance
+`VINCULOS_TUTOR`, confirmar que el tutor esté enlazado con esa cuenta y cerrar sesión
+antes de probar `/portal`. Debe revisar selector de hijos, ficha, fotografía, eventos,
+paginación y que las finanzas aparezcan exclusivamente cuando el vínculo tenga ambas
+autorizaciones. También debe intentar un alumno sin vínculo para confirmar el rechazo.
 
-Después de confirmar y subir V26, el siguiente bloque recomendado es el primer portal
-del tutor: acceso sólo a sus vínculos vigentes, selector de hijos y lectura de expediente
-básico, estado de cuenta derivado y eventos `PUBLICADO` que alcancen a cada alumno. Debe
-acordarse el alcance exacto antes de crear V27. Avisos, notificaciones internas, correo y
-WhatsApp siguen fuera de V26 y deben diseñarse como una etapa posterior. La cancelación
+Después de confirmar y subir V27, el siguiente bloque recomendado es V28 para `Aviso`
+administrativo y lectura en el portal con alcance inicial de institución o plantel. Las
+notificaciones internas por usuario deben quedar después de consolidar Avisos; correo y
+WhatsApp siguen fuera de alcance hasta diseñar consentimiento, proveedor, reintentos y
+trazabilidad. La cancelación
 completa de pagos, retiros especializados y conciliación bancaria continúan siendo
 flujos financieros separados.
 
@@ -610,18 +630,18 @@ pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. Confirmar si V26 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
+1. Confirmar si V27 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
    preservar los cambios locales y no volver a implementarla.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V26 ya fueron aplicadas en el volumen verificado; nunca editarlas. Cuando
-   V26 se confirme y comparta, la siguiente migración disponible será V27.
-5. Primero terminar la prueba funcional de V26 con `EVENTO_ESCOLAR_LEER` y
-   `EVENTO_ESCOLAR_ADMINISTRAR`. Después acordar la primera entrega del portal del tutor
-   antes de crear V27; no asumir envíos por correo, WhatsApp o notificaciones.
+4. Flyway V1–V27 ya fueron aplicadas en el volumen verificado; nunca editarlas. Cuando
+   V27 se confirme y comparta, la siguiente migración disponible será V28.
+5. Primero terminar la prueba funcional de V27 con `PORTAL_TUTOR_ACCEDER`, una cuenta
+   enlazada y vínculos controlados. Después acordar reglas de vigencia, retiro y audiencia
+   de Avisos antes de crear V28; no asumir envíos por correo, WhatsApp o notificaciones.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.
