@@ -20,10 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main`: `103f9bd` — `devoluciones de pagos.`.
-- V22 ya está confirmado en Git. V23 (reversiones financieras) es el cambio local actual;
-  el agente nuevo debe confirmar `git status` y `git log` antes de continuar y no debe
-  reconstruir V1–V23.
+- Último commit confirmado en `main` y `origin/main`: `dede237` — `devoluciones de pagos final`.
+- V23 ya está confirmado en Git. V24 (cortes de caja) es el cambio local actual; el
+  agente nuevo debe confirmar `git status` y `git log` antes de continuar y no debe
+  reconstruir V1–V24.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -493,13 +493,30 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   la apertura de las cuentas. El acceso de recuperación no puede mover fondos.
 - El libro muestra acciones únicamente para objetivos elegibles, estado revertido y el
   movimiento original compensado. El formulario es responsivo y conserva errores.
+- Flyway V24 crea `CorteCaja` y agrega `CORTE_CAJA_LEER` y
+  `CORTE_CAJA_ADMINISTRAR` sin asignarlos automáticamente a roles existentes.
+- Sólo las cuentas de tipo `CAJA` pueden abrir un corte. La apertura captura hora del
+  servidor, usuario persistido, último folio y saldo vigente; una restricción parcial
+  impide dos cortes abiertos en la misma caja. Una caja inactiva no abre cortes nuevos,
+  pero sí permite cerrar el que ya estuviera pendiente.
+- El cierre bloquea primero la cuenta y después el corte, toma el folio final y resume
+  ingresos y egresos por secuencia contable. Por ello, un movimiento capturado después
+  no se pierde aunque su fecha operativa sea anterior a la apertura.
+- El usuario realiza un conteo ciego: la pantalla no revela el saldo esperado antes de
+  declarar el efectivo. Al cerrar conserva saldo esperado, efectivo declarado,
+  diferencia, responsables y observaciones; cualquier diferencia exige justificación.
+- Abrir o cerrar no crea movimientos monetarios. El cierre es inmutable, usa versión
+  optimista y claves de idempotencia separadas para soportar reintentos seguros.
+- El módulo tiene listado filtrado y paginado en PostgreSQL, búsqueda remota de cajas,
+  Excel por bloques, detalle y formularios responsivos. Los usuarios de plantel sólo
+  ven cajas y cortes de sus planteles; una caja institucional exige alcance institucional.
 
 ## Verificación confirmada
 
-- Compilación correcta de 392 archivos Java de producción.
-- 242 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V23 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 39 repositorios.
+- Compilación correcta de 409 archivos Java de producción.
+- 249 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V24 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 40 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -524,6 +541,8 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   filtrada de cuotas comenzó con firma XLSX `504b0304`. Las tablas de conceptos y cuotas
   permanecieron vacías y PostgreSQL confirmó 30 permisos técnicos totales.
 - La última instancia local verificada quedó en `http://localhost:8080`.
+- PostgreSQL confirmó V24 exitosa, los dos permisos de corte y cero cortes de prueba;
+  la verificación automática no generó movimientos ni alteró saldos.
 - El nombre visible de sesión se publica al modelo Thymeleaf mediante
   `IdentidadSesionAdvice`; no usar `#authentication`, porque el dialecto de seguridad
   no forma parte de las dependencias actuales. Una prueba de regresión cubre presencia
@@ -531,30 +550,31 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-El propietario debe conceder `MOVIMIENTO_FINANCIERO_REVERTIR` a su rol, cerrar sesión,
-volver a entrar y probar con datos controlados una operación manual y una transferencia.
-Debe revisar que el original siga visible, aparezcan uno o dos movimientos `REVERSO`, los
-saldos regresen correctamente y no se ofrezca una segunda reversa. Después de confirmar
-V23, la siguiente etapa funcional recomendada es V24 con cortes de caja y conciliación:
-saldo esperado, efectivo declarado, diferencia, responsable y cierre inmutable. La
-cancelación completa de pagos y los retiros especializados siguen separados.
+El propietario debe conceder `CORTE_CAJA_LEER` y `CORTE_CAJA_ADMINISTRAR` a su rol,
+cerrar sesión, volver a entrar y probar con una caja controlada: abrir, registrar uno o
+más movimientos, contar el efectivo, cerrar y revisar el Excel. Debe probar también una
+diferencia para confirmar que exige justificación y permanece en la misma pantalla.
+Después de confirmar V24, la siguiente etapa funcional recomendada es V25 con estado de
+cuenta y reportes financieros operativos. La cancelación completa de pagos, retiros
+especializados y conciliación bancaria siguen siendo flujos separados.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. Confirmar si V23 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
+1. Confirmar si V24 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
    preservar los cambios locales y no volver a implementarla.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V23 ya fueron aplicadas en el volumen verificado; nunca editarlas. Cuando
-   V23 se confirme y comparta, la siguiente migración disponible será V24.
-5. Primero terminar la prueba funcional de V23 con `MOVIMIENTO_FINANCIERO_REVERTIR`.
-   Después diseñar V24 para cortes de caja sin mezclar cancelación de pagos ni retiros.
+4. Flyway V1–V24 ya fueron aplicadas en el volumen verificado; nunca editarlas. Cuando
+   V24 se confirme y comparta, la siguiente migración disponible será V25.
+5. Primero terminar la prueba funcional de V24 con `CORTE_CAJA_LEER` y
+   `CORTE_CAJA_ADMINISTRAR`. Después diseñar V25 para estados de cuenta y reportes sin
+   mezclar cancelación de pagos, retiros ni conciliación bancaria.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.

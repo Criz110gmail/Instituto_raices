@@ -63,6 +63,8 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/autocompletado/cuentas-movimiento")
                         .hasAnyAuthority("MOVIMIENTO_FINANCIERO_LEER", "MOVIMIENTO_FINANCIERO_REGISTRAR",
                                 "TRANSFERENCIA_CUENTA_REGISTRAR", "PAGO_DEVOLVER")
+                        .requestMatchers("/admin/autocompletado/cuentas-caja")
+                        .hasAnyAuthority("CORTE_CAJA_LEER", "CORTE_CAJA_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/usuarios")
                         .hasAnyAuthority("TUTOR_ADMINISTRAR", "USUARIO_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/inscripciones", "/admin/autocompletado/conceptos-cobro")
@@ -103,9 +105,16 @@ public class SeguridadConfig {
                         .hasAuthority("TRANSFERENCIA_CUENTA_REGISTRAR")
                         .requestMatchers("/admin/reversiones/**")
                         .hasAuthority("MOVIMIENTO_FINANCIERO_REVERTIR")
+                        .requestMatchers(HttpMethod.GET, "/admin/cortes-caja/nuevo")
+                        .hasAuthority("CORTE_CAJA_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.POST, "/admin/cortes-caja/**")
+                        .hasAuthority("CORTE_CAJA_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.GET, "/admin/cortes-caja/**")
+                        .hasAnyAuthority("CORTE_CAJA_LEER", "CORTE_CAJA_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/movimientos-financieros")
                         .hasAnyAuthority("MOVIMIENTO_FINANCIERO_LEER", "MOVIMIENTO_FINANCIERO_REGISTRAR",
-                                "TRANSFERENCIA_CUENTA_REGISTRAR", "MOVIMIENTO_FINANCIERO_REVERTIR")
+                                "TRANSFERENCIA_CUENTA_REGISTRAR", "MOVIMIENTO_FINANCIERO_REVERTIR",
+                                "CORTE_CAJA_LEER", "CORTE_CAJA_ADMINISTRAR")
                         .requestMatchers("/admin/movimientos-financieros/**", "/admin/catalogos/movimientos-financieros/**")
                         .hasAuthority("MOVIMIENTO_FINANCIERO_LEER")
                         .anyRequest().authenticated())

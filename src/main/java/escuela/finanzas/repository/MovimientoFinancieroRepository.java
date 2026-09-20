@@ -26,4 +26,17 @@ public interface MovimientoFinancieroRepository extends JpaRepository<Movimiento
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select m from MovimientoFinanciero m where m.id = :id")
     Optional<MovimientoFinanciero> findByIdForUpdate(@Param("id") Long id);
+
+    @Query(value = """
+            SELECT count(*) AS cantidad,
+                   COALESCE(sum(CASE WHEN direccion = 'INGRESO' THEN monto ELSE 0 END), 0) AS ingresos,
+                   COALESCE(sum(CASE WHEN direccion = 'EGRESO' THEN monto ELSE 0 END), 0) AS egresos
+            FROM movimiento_financiero
+            WHERE cuenta_id = :cuentaId
+              AND secuencia_cuenta > :secuenciaInicial
+              AND secuencia_cuenta <= :secuenciaFinal
+            """, nativeQuery = true)
+    ResumenMovimientosCorte resumirParaCorte(@Param("cuentaId") Long cuentaId,
+                                             @Param("secuenciaInicial") Long secuenciaInicial,
+                                             @Param("secuenciaFinal") Long secuenciaFinal);
 }

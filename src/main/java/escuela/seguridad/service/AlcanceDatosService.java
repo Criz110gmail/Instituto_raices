@@ -17,6 +17,8 @@ import escuela.cobranza.repository.PoliticaRecargoRepository;
 import escuela.finanzas.repository.CuentaFinancieraRepository;
 import escuela.finanzas.repository.MotivoFinancieroRepository;
 import escuela.finanzas.repository.PagoRepository;
+import escuela.finanzas.entity.CorteCaja;
+import escuela.finanzas.entity.CuentaFinanciera;
 import escuela.admin.dto.ModuloCatalogo;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.dto.response.PlantelResponse;
@@ -121,6 +123,30 @@ public class AlcanceDatosService {
             };
             if (plantel == null) return mismaInstitucion;
             return cb.and(mismaInstitucion, plantel.in(principal.plantelIds()));
+        };
+    }
+
+    /** Alcance especializado: los cortes institucionales sólo son visibles con alcance institucional. */
+    public Specification<CorteCaja> especificacionCortesCaja() {
+        UsuarioPrincipal principal = principal();
+        if (principal.accesoRecuperacion()) return (root, query, cb) -> cb.disjunction();
+        return (root, query, cb) -> {
+            var mismaInstitucion = cb.equal(root.get("institucion").get("id"), principal.institucionId());
+            if (principal.alcanceInstitucional()) return mismaInstitucion;
+            if (principal.plantelIds().isEmpty()) return cb.disjunction();
+            return cb.and(mismaInstitucion,
+                    root.get("cuenta").get("plantel").get("id").in(principal.plantelIds()));
+        };
+    }
+
+    public Specification<CuentaFinanciera> especificacionCuentasParaCorte() {
+        UsuarioPrincipal principal = principal();
+        if (principal.accesoRecuperacion()) return (root, query, cb) -> cb.disjunction();
+        return (root, query, cb) -> {
+            var mismaInstitucion = cb.equal(root.get("institucion").get("id"), principal.institucionId());
+            if (principal.alcanceInstitucional()) return mismaInstitucion;
+            if (principal.plantelIds().isEmpty()) return cb.disjunction();
+            return cb.and(mismaInstitucion, root.get("plantel").get("id").in(principal.plantelIds()));
         };
     }
 

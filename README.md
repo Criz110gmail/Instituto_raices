@@ -270,3 +270,11 @@ eliminar sus movimientos originales. Una operación crea un movimiento compensat
 una transferencia revierte atómicamente sus dos lados y exige fondos suficientes en la
 cuenta que recibió el dinero. El libro muestra la relación y evita dobles reversas. Se
 requiere `MOVIMIENTO_FINANCIERO_REVERTIR`, permiso que V23 no asigna automáticamente.
+
+Cortes de caja permite abrir y cerrar conciliaciones únicamente sobre cuentas de tipo
+caja. La apertura congela el saldo y folio vigentes; el cierre resume por secuencia los
+ingresos y egresos, compara el saldo esperado con el efectivo contado y exige explicar
+cualquier faltante o sobrante. El conteo es ciego para evitar sesgo, el cierre no mueve
+dinero y queda inmutable. El historial es paginado, filtra en PostgreSQL, usa búsqueda
+remota de cajas y exporta esos mismos filtros a Excel. Requiere `CORTE_CAJA_LEER` y/o
+`CORTE_CAJA_ADMINISTRAR`; V24 no concede estos permisos automáticamente a roles.

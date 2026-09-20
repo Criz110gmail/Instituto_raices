@@ -24,6 +24,7 @@ import escuela.tutor.entity.Tutor;
 import escuela.tutor.repository.TutorRepository;
 import escuela.finanzas.entity.CuentaFinanciera;
 import escuela.finanzas.entity.MetodoPago;
+import escuela.finanzas.entity.TipoCuentaFinanciera;
 import escuela.finanzas.repository.CuentaFinancieraRepository;
 import org.springframework.security.access.AccessDeniedException;
 
@@ -209,6 +210,28 @@ public class BusquedaAutocompletadoService {
                         cuenta.getCodigo() + " · " + cuenta.getNombre(),
                         cuenta.getTipo().name() + " · " + identificadorCuenta(cuenta)
                                 + (cuenta.isActivo() ? "" : " · Inactiva")))
+                .toList(), hayMas);
+    }
+
+    public ResultadoAutocompletado cuentasParaCortes(Long institucionId, String consulta) {
+        alcance.validarInstitucion(institucionId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        String patron = "%" + texto + "%";
+        Specification<CuentaFinanciera> busqueda = (root, query, cb) -> cb.and(
+                cb.equal(root.get("institucion").get("id"), institucionId),
+                cb.equal(root.get("tipo"), TipoCuentaFinanciera.CAJA),
+                cb.isTrue(root.get("activo")),
+                cb.or(cb.like(cb.lower(root.get("codigo")), patron),
+                        cb.like(cb.lower(root.get("nombre")), patron)));
+        var resultado = cuentaFinancieraRepository.findAll(Specification.where(busqueda)
+                        .and(alcance.especificacionCuentasParaCorte()),
+                PageRequest.of(0, MAXIMO_RESULTADOS + 1));
+        boolean hayMas = resultado.getNumberOfElements() > MAXIMO_RESULTADOS;
+        return new ResultadoAutocompletado(resultado.getContent().stream().limit(MAXIMO_RESULTADOS)
+                .map(cuenta -> new OpcionAutocompletado(cuenta.getId(),
+                        cuenta.getCodigo() + " · " + cuenta.getNombre(),
+                        "CAJA · " + identificadorCuenta(cuenta)))
                 .toList(), hayMas);
     }
 

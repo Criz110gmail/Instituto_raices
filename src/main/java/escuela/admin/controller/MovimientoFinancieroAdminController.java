@@ -76,6 +76,9 @@ public class MovimientoFinancieroAdminController {
                 .anyMatch(a -> a.getAuthority().equals("TRANSFERENCIA_CUENTA_REGISTRAR")));
         model.addAttribute("puedeRevertir", authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("MOVIMIENTO_FINANCIERO_REVERTIR")));
+        model.addAttribute("puedeCortes", authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("CORTE_CAJA_LEER")
+                        || a.getAuthority().equals("CORTE_CAJA_ADMINISTRAR")));
         return "admin/movimientos-financieros";
     }
 

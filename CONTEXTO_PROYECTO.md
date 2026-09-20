@@ -1081,3 +1081,36 @@
 - El propietario debe asignar `MOVIMIENTO_FINANCIERO_REVERTIR`, iniciar una sesión nueva
   y probar con datos controlados. Después se recomienda V24 para cortes de caja y
   conciliación; cancelaciones de pagos y retiros especializados quedan separados.
+
+## Decisiones — cortes de caja
+
+- Flyway V24 crea `CorteCaja` y agrega `CORTE_CAJA_LEER` y
+  `CORTE_CAJA_ADMINISTRAR` sin modificar roles existentes. El flujo aplica únicamente a
+  cuentas `CAJA`; no incluye bancos, inversiones, cancelaciones de pagos ni retiros.
+- La apertura captura el momento del servidor, actor persistido, saldo vigente y último
+  folio de la cuenta. Existe un solo corte abierto por caja y claves institucionales de
+  idempotencia distintas para apertura y cierre.
+- El cierre bloquea la cuenta y el corte, resume por secuencia los movimientos posteriores
+  a la apertura y conserva folio final, cantidad, ingresos, egresos y saldo esperado. La
+  secuencia evita perder movimientos capturados tarde con una fecha operativa anterior.
+- El efectivo se declara mediante conteo ciego; el saldo esperado se muestra sólo tras
+  cerrar. La diferencia es declarado menos esperado y, cuando no es cero, la justificación
+  es obligatoria tanto en servicio como en PostgreSQL.
+- El cierre conserva responsables y observaciones, es inmutable y no genera movimientos
+  monetarios. Una caja inactiva puede cerrar un corte pendiente, pero no abrir otro.
+- El listado filtra y pagina en PostgreSQL, exporta los mismos filtros por bloques y usa
+  autocompletado remoto limitado a cajas activas. El alcance de plantel nunca expone cajas
+  institucionales ni cortes de otros planteles.
+
+## Verificación de cortes de caja
+
+- Docker compiló 409 fuentes Java y ejecutó 249 pruebas sin fallos ni errores. Las siete
+  pruebas nuevas cubren apertura, exclusividad, cálculo por folios, diferencia obligatoria,
+  idempotencia de cierre, tipo de cuenta y bloqueo del acceso de recuperación.
+- Flyway validó 24 migraciones y aplicó V24 sobre PostgreSQL 17. Hibernate validó el
+  esquema, detectó 40 repositorios y `/actuator/health` respondió `UP`.
+- PostgreSQL confirmó V24 exitosa, dos permisos nuevos y cero cortes. No se crearon cortes
+  ficticios ni movimientos monetarios durante la verificación.
+- El propietario debe asignar ambos permisos, iniciar una sesión nueva y probar apertura,
+  movimientos, conteo, cierre con y sin diferencia y Excel. Después se recomienda V25
+  para estados de cuenta y reportes financieros operativos.
