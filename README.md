@@ -288,3 +288,13 @@ calculan para cuentas completas, no cuando se filtra una atribución parcial por
 Ambas vistas filtran y paginan en PostgreSQL, usan autocompletado y exportan XLSX por
 bloques sin crear movimientos ni guardar saldos duplicados. Requiere
 `REPORTE_FINANCIERO_CONSULTAR`; V25 tampoco lo concede automáticamente a roles.
+
+Eventos escolares administra juntas, festivales, suspensiones y otras actividades como
+borradores revisables. La publicación es explícita y la cancelación conserva fecha y
+motivo; no hay eliminación física. El alcance puede ser institucional, de plantel o una
+selección combinada de niveles, grados, grupos y alumnos, con validaciones de ciclo,
+oferta e inscripción. El listado pagina y filtra en PostgreSQL, la selección usa
+autocompletado remoto y el Excel reutiliza los mismos filtros por bloques. Requiere
+`EVENTO_ESCOLAR_LEER` y/o `EVENTO_ESCOLAR_ADMINISTRAR`; V26 no concede estos permisos
+automáticamente. Esta etapa no envía correo o WhatsApp y todavía no incorpora el portal
+del tutor.

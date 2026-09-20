@@ -1152,3 +1152,38 @@
   revisar ambas pestañas y sus Excel con datos existentes. Después se recomienda acordar
   V26 para eventos escolares y destinatarios como base del futuro portal del tutor;
   avisos y notificaciones quedan para una etapa posterior.
+
+## Decisiones — eventos escolares
+
+- Flyway V26 crea `EventoEscolar` y `DestinatarioEvento`, y agrega
+  `EVENTO_ESCOLAR_LEER` y `EVENTO_ESCOLAR_ADMINISTRAR` sin modificar roles existentes.
+- Los estados son `BORRADOR`, `PUBLICADO` y `CANCELADO`. Sólo se edita un borrador;
+  publicar es explícito y cancelar exige motivo, conserva el historial y nunca elimina
+  el registro. Los tipos iniciales son junta, festival, suspensión, actividad y otro.
+- El alcance puede ser institución, plantel o selección. Una selección puede combinar
+  niveles, grados, grupos y alumnos con semántica de unión; se validan institución,
+  oferta, ciclo, plantel, inscripción vigente y ausencia de duplicados.
+- Las fechas locales se convierten a `Instant` con la zona horaria institucional y deben
+  quedar dentro de un ciclo no cerrado. La administración institucional exige alcance
+  institucional y el usuario de plantel queda limitado a sus planteles.
+- El listado filtra y pagina en PostgreSQL y exporta XLSX por bloques. La selección usa
+  autocompletado remoto indexado y acotado, no listas completas. Crear y actualizar
+  conservan la captura ante errores; publicación y cancelación muestran los errores en
+  la ficha del evento.
+- V26 constituye la fuente administrativa de eventos para el futuro portal del tutor.
+  No implementa todavía el portal, avisos libres, notificaciones internas, correo ni
+  WhatsApp.
+
+## Verificación de eventos escolares
+
+- Docker compiló 447 fuentes Java y ejecutó 261 pruebas sin fallos ni errores. Las siete
+  pruebas nuevas cubren zona horaria, rango invertido, selección vacía, grupo de otro
+  ciclo, publicación única y cancelación histórica con motivo normalizado.
+- Flyway validó 26 migraciones y aplicó V26 sobre PostgreSQL 17. Hibernate validó el
+  esquema, detectó 41 repositorios y `/actuator/health` respondió `UP`.
+- PostgreSQL confirmó la migración V26, sus dos tablas y sus dos permisos. No se crearon
+  eventos ni destinatarios ficticios durante la verificación.
+- El propietario debe asignar ambos permisos, iniciar una sesión nueva y probar creación,
+  edición, publicación, cancelación, filtros, autocompletado y Excel. Tras confirmar y
+  subir V26, debe acordarse V27 para la primera entrega del portal del tutor con hijos
+  vinculados, estado de cuenta derivado y eventos publicados aplicables.

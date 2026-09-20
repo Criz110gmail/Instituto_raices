@@ -51,4 +51,15 @@ public interface InscripcionRepository extends JpaRepository<Inscripcion, Long>,
     Slice<Inscripcion> buscarParaAutocompletado(@Param("plantelId") Long plantelId,
                                                  @Param("texto") String texto,
                                                  Pageable limite);
+
+    @Query("""
+            select (count(i) > 0) from Inscripcion i
+            where i.alumno.id = :alumnoId and i.cicloEscolar.id = :cicloId
+              and i.estado in (escuela.inscripcion.entity.EstadoInscripcion.PREINSCRITA,
+                               escuela.inscripcion.entity.EstadoInscripcion.ACTIVA)
+              and (:plantelId is null or i.plantel.id = :plantelId)
+            """)
+    boolean existeAlumnoEnCicloYPlantel(@Param("alumnoId") Long alumnoId,
+                                         @Param("cicloId") Long cicloId,
+                                         @Param("plantelId") Long plantelId);
 }

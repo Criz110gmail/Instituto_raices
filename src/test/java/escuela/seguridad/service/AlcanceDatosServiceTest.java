@@ -29,6 +29,7 @@ import escuela.finanzas.repository.CuentaFinancieraRepository;
 import escuela.finanzas.repository.MotivoFinancieroRepository;
 import escuela.finanzas.repository.PagoRepository;
 import escuela.finanzas.entity.CuentaFinanciera;
+import escuela.comunicacion.repository.EventoEscolarRepository;
 import escuela.cobranza.entity.CuotaAlumno;
 import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.repository.UsuarioRepository;
@@ -78,6 +79,7 @@ class AlcanceDatosServiceTest {
             mock(MotivoFinancieroRepository.class),
             cuentaFinancieraRepository,
             mock(PagoRepository.class),
+            mock(EventoEscolarRepository.class),
             mock(RolRepository.class), mock(UsuarioRepository.class));
 
     @AfterEach

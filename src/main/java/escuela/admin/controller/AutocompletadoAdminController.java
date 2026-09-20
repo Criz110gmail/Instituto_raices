@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.context.SecurityContextHolder;
 import escuela.finanzas.entity.MetodoPago;
+import escuela.comunicacion.entity.TipoDestinatarioEvento;
+import escuela.admin.service.DestinatarioEventoBusquedaService;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class AutocompletadoAdminController {
 
     private final BusquedaAutocompletadoService service;
     private final AlcanceDatosService alcance;
+    private final DestinatarioEventoBusquedaService destinatariosEvento;
 
     @GetMapping("/alumnos")
     ResultadoAutocompletado alumnos(@RequestParam Long institucionId,
@@ -108,5 +111,14 @@ public class AutocompletadoAdminController {
     ResultadoAutocompletado cuentasReporte(@RequestParam Long institucionId,
                                            @RequestParam(defaultValue = "") String q) {
         return service.cuentasParaReportes(institucionId, q);
+    }
+
+    @GetMapping("/destinatarios-evento")
+    ResultadoAutocompletado destinatariosEvento(@RequestParam TipoDestinatarioEvento tipo,
+                                                 @RequestParam Long institucionId,
+                                                 @RequestParam Long cicloId,
+                                                 @RequestParam(required = false) Long plantelId,
+                                                 @RequestParam(defaultValue = "") String q) {
+        return destinatariosEvento.buscar(tipo, institucionId, cicloId, plantelId, q);
     }
 }
