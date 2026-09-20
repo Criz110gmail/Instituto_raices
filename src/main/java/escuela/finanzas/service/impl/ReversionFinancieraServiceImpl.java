@@ -61,7 +61,6 @@ public class ReversionFinancieraServiceImpl implements ReversionFinancieraServic
         MovimientoFinanciero original = movimientoRepository.findByIdForUpdate(movimientoId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("el movimiento", movimientoId));
         validarOperacionManual(original);
-        verificar(original, request.version(), "Movimiento financiero");
         Usuario actor = actorPersistido(original.getInstitucion().getId());
         Optional<ReversionFinanciera> existente = reversionRepository
                 .findByInstitucionIdAndClaveIdempotencia(original.getInstitucion().getId(),
@@ -70,6 +69,7 @@ public class ReversionFinancieraServiceImpl implements ReversionFinancieraServic
             validarReintentoMovimiento(existente.get(), movimientoId);
             return respuesta(existente.get());
         }
+        verificar(original, request.version(), "Movimiento financiero");
         if (original.getReversa() != null)
             throw new ReglaNegocioException("El movimiento ya tiene una reversa publicada");
 
@@ -96,7 +96,6 @@ public class ReversionFinancieraServiceImpl implements ReversionFinancieraServic
                                                               ReversionFinancieraRequest request) {
         TransferenciaCuenta transferencia = transferenciaRepository.findByIdForUpdate(transferenciaId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("la transferencia", transferenciaId));
-        verificar(transferencia, request.version(), "Transferencia");
         Usuario actor = actorPersistido(transferencia.getInstitucion().getId());
         Optional<ReversionFinanciera> existente = reversionRepository
                 .findByInstitucionIdAndClaveIdempotencia(transferencia.getInstitucion().getId(),
@@ -105,6 +104,7 @@ public class ReversionFinancieraServiceImpl implements ReversionFinancieraServic
             validarReintentoTransferencia(existente.get(), transferenciaId);
             return respuesta(existente.get());
         }
+        verificar(transferencia, request.version(), "Transferencia");
         if (transferencia.getEstado() != EstadoTransferenciaCuenta.APLICADA || transferencia.getReversion() != null)
             throw new ReglaNegocioException("La transferencia ya fue revertida");
 

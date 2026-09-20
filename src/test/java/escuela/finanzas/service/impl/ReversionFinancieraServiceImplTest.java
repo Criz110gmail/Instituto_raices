@@ -174,6 +174,25 @@ class ReversionFinancieraServiceImplTest {
                 .hasMessageContaining("acceso de recuperación");
     }
 
+    @Test
+    void reintentoIdempotenteDeTransferenciaIgnoraLaVersionYaIncrementada() {
+        TransferenciaCuenta transferencia = transferencia();
+        transferencia.setVersion(1L); transferencia.setEstado(EstadoTransferenciaCuenta.REVERTIDA);
+        ReversionFinanciera existente = new ReversionFinanciera(); existente.setId(60L);
+        existente.setTipo(TipoReversionFinanciera.TRANSFERENCIA); existente.setInstitucion(institucion);
+        existente.setTransferenciaOrigen(transferencia); existente.setFecha(Instant.now().minusSeconds(30));
+        existente.setMotivo("Captura incorrecta"); existente.setAutorizadoPor(usuarios.findById(9L).orElseThrow());
+        when(transferencias.findByIdForUpdate(40L)).thenReturn(Optional.of(transferencia));
+        when(reversiones.findByInstitucionIdAndClaveIdempotencia(1L, "reversa-1"))
+                .thenReturn(Optional.of(existente));
+
+        var respuesta = service.revertirTransferencia(40L, request(0L));
+
+        assertThat(respuesta.id()).isEqualTo(60L);
+        verify(cuentas, never()).findByIdForUpdate(anyLong());
+        verify(reversiones, never()).saveAndFlush(any());
+    }
+
     private TransferenciaCuenta transferencia() {
         TransferenciaCuenta transferencia = new TransferenciaCuenta(); transferencia.setId(40L);
         transferencia.setVersion(0L); transferencia.setInstitucion(institucion);

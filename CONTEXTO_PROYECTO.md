@@ -1071,9 +1071,9 @@
 
 ## Verificación de reversas financieras
 
-- Docker compiló 392 fuentes Java y ejecutó 241 pruebas sin fallos ni errores. Las seis
+- Docker compiló 392 fuentes Java y ejecutó 242 pruebas sin fallos ni errores. Las siete
   pruebas nuevas cubren reversa simple, pareja inversa, saldos, clases no admitidas,
-  fondos gastados en la receptora y acceso de recuperación.
+  fondos gastados en la receptora, acceso de recuperación y reintento idempotente.
 - Flyway validó 23 migraciones y aplicó V23 sobre PostgreSQL 17. Hibernate validó el
   esquema, detectó 39 repositorios y `/actuator/health` respondió `UP`.
 - PostgreSQL confirmó cero cabeceras y cero movimientos de reversa; no se movió dinero

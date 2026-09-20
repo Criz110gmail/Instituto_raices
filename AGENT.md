@@ -497,7 +497,7 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 ## Verificación confirmada
 
 - Compilación correcta de 392 archivos Java de producción.
-- 241 pruebas Maven sin fallos ni errores.
+- 242 pruebas Maven sin fallos ni errores.
 - Flyway V1 a V23 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 39 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
