@@ -127,6 +127,12 @@ public class SeguridadConfig {
                         .hasAuthority("EVENTO_ESCOLAR_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/eventos-escolares/**")
                         .hasAnyAuthority("EVENTO_ESCOLAR_LEER", "EVENTO_ESCOLAR_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.GET, "/admin/avisos/nuevo", "/admin/avisos/*/editar")
+                        .hasAuthority("AVISO_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.POST, "/admin/avisos/**")
+                        .hasAuthority("AVISO_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.GET, "/admin/avisos/**")
+                        .hasAnyAuthority("AVISO_LEER", "AVISO_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/movimientos-financieros")
                         .hasAnyAuthority("MOVIMIENTO_FINANCIERO_LEER", "MOVIMIENTO_FINANCIERO_REGISTRAR",
                                 "TRANSFERENCIA_CUENTA_REGISTRAR", "MOVIMIENTO_FINANCIERO_REVERTIR",

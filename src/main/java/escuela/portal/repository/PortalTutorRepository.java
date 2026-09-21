@@ -127,4 +127,32 @@ public class PortalTutorRepository {
                 rs.getString("alcance")));
         return new PageImpl<>(filas, PageRequest.of(pagina, tamanio), total == null ? 0 : total);
     }
+
+    public Page<PortalAvisoFila> avisos(Long alumnoId, Long institucionId, String zona,
+                                        LocalDate hoy, Instant ahora, int pagina, int tamanio) {
+        String desde = """
+                FROM aviso a
+                LEFT JOIN plantel p ON p.id=a.plantel_id
+                WHERE a.institucion_id=:institucionId AND a.estado='PUBLICADO'
+                  AND a.publicado_en <= :ahora AND (a.expira_en IS NULL OR a.expira_en > :ahora)
+                  AND (a.plantel_id IS NULL OR EXISTS (
+                      SELECT 1 FROM inscripcion i WHERE i.alumno_id=:alumnoId
+                        AND i.plantel_id=a.plantel_id AND i.estado IN ('PREINSCRITA','ACTIVA')
+                        AND i.fecha_inicio <= :hoy AND (i.fecha_fin IS NULL OR i.fecha_fin >= :hoy)))
+                """;
+        var p = new MapSqlParameterSource().addValue("alumnoId", alumnoId)
+                .addValue("institucionId", institucionId).addValue("zona", zona)
+                .addValue("hoy", hoy).addValue("ahora", Timestamp.from(ahora))
+                .addValue("limite", tamanio).addValue("offset", (long) pagina*tamanio);
+        Long total=jdbc.queryForObject("SELECT count(*) "+desde,p,Long.class);
+        var filas=jdbc.query("""
+                SELECT a.id,a.titulo,a.contenido,COALESCE(p.nombre,'Toda la institución') alcance,
+                       timezone(:zona,a.publicado_en) publicado_local,
+                       timezone(:zona,a.expira_en) expira_local
+                """+desde+" ORDER BY a.publicado_en DESC,a.id DESC LIMIT :limite OFFSET :offset",p,
+                (rs,n)->new PortalAvisoFila(rs.getLong("id"),rs.getString("titulo"),rs.getString("contenido"),
+                        rs.getString("alcance"),rs.getObject("publicado_local",LocalDateTime.class),
+                        rs.getObject("expira_local",LocalDateTime.class)));
+        return new PageImpl<>(filas,PageRequest.of(pagina,tamanio),total==null?0:total);
+    }
 }

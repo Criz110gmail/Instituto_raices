@@ -25,7 +25,7 @@ public class PortalTutorService {
     private final InstitucionService institucionService;
 
     public PortalTutorResultado consultar(UsuarioPrincipal principal, Long alumnoId,
-                                           int paginaEventos, int paginaCargos) {
+                                           int paginaEventos, int paginaCargos, int paginaAvisos) {
         validarPrincipal(principal);
         var institucion = institucionService.obtener(principal.institucionId());
         ZoneId zona = ZoneId.of(institucion.zonaHoraria());
@@ -37,16 +37,18 @@ public class PortalTutorService {
                 principal.usuarioId(), principal.institucionId(), hoy);
         PortalHijoResumen hijo = seleccionar(hijos, alumnoId);
         if (hijo == null) return new PortalTutorResultado(tutor, institucion.nombre(), hijos, null, null,
-                org.springframework.data.domain.Page.empty());
+                org.springframework.data.domain.Page.empty(), org.springframework.data.domain.Page.empty());
         int eventosPagina = Math.max(0, paginaEventos);
         int cargosPagina = Math.max(0, paginaCargos);
         Instant desdeEventos = hoy.minusDays(30).atStartOfDay(zona).toInstant();
         var eventos = portalRepository.eventos(hijo.alumnoId(), principal.institucionId(),
                 institucion.zonaHoraria(), desdeEventos, eventosPagina, TAMANIO);
+        var avisos = portalRepository.avisos(hijo.alumnoId(), principal.institucionId(),
+                institucion.zonaHoraria(), hoy, Instant.now(), Math.max(0, paginaAvisos), TAMANIO);
         ResultadoEstadoCuentaAlumno estadoCuenta = hijo.accesoFinanciero()
                 ? estadoCuenta(hijo, principal.institucionId(), hoy, zona, institucion.monedaPredeterminada(), cargosPagina)
                 : null;
-        return new PortalTutorResultado(tutor, institucion.nombre(), hijos, hijo, estadoCuenta, eventos);
+        return new PortalTutorResultado(tutor, institucion.nombre(), hijos, hijo, estadoCuenta, eventos, avisos);
     }
 
     public PortalHijoResumen validarHijo(UsuarioPrincipal principal, Long alumnoId) {

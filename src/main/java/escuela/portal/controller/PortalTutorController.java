@@ -25,8 +25,9 @@ public class PortalTutorController {
     String portal(@RequestParam(required = false) Long alumnoId,
                   @RequestParam(defaultValue = "0") int paginaEventos,
                   @RequestParam(defaultValue = "0") int paginaCargos,
+                  @RequestParam(defaultValue = "0") int paginaAvisos,
                   @AuthenticationPrincipal UsuarioPrincipal principal, Model model) {
-        model.addAttribute("portal", service.consultar(principal, alumnoId, paginaEventos, paginaCargos));
+        model.addAttribute("portal", service.consultar(principal, alumnoId, paginaEventos, paginaCargos, paginaAvisos));
         return "portal/inicio";
     }
 

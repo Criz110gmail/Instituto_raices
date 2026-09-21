@@ -1234,6 +1234,32 @@
   compacta de tamaños de página y dejaba la respuesta HTML incompleta. Se corrigió la
   sintaxis en Tesorería, Estado de cuenta, Cortes de caja y Eventos; la compilación
   posterior ejecutó 271 pruebas, incluida una regresión para las cuatro plantillas.
+
+## Decisiones — avisos escolares y lectura familiar
+
+- Flyway V28 crea `Aviso` y los permisos `AVISO_LEER` y `AVISO_ADMINISTRAR`, sin
+  asignarlos automáticamente a roles existentes.
+- Un aviso pertenece a una institución y opcionalmente a un plantel. Nace como
+  `BORRADOR`, sólo el borrador se edita, la publicación es explícita y `RETIRADO`
+  conserva fecha y motivo. No existe eliminación física.
+- El vencimiento es opcional y se interpreta en la zona horaria institucional. Un aviso
+  vencido no puede publicarse y uno publicado deja de aparecer automáticamente cuando
+  vence, sin perder historial administrativo.
+- El módulo aplica aislamiento institucional y de plantel, listado filtrado y paginado
+  en PostgreSQL, exportación XLSX por bloques y errores dentro de formularios y detalle.
+- El portal resuelve avisos por el hijo seleccionado: muestra sólo publicaciones
+  vigentes de toda la institución o del plantel de una inscripción actual. No incluye
+  correo, WhatsApp ni notificaciones internas por usuario.
+
+## Verificación de avisos escolares
+
+- Docker compiló 469 fuentes Java y ejecutó 274 pruebas sin fallos ni errores. Tres
+  pruebas nuevas cubren publicación vigente, rechazo de vencimiento y retiro histórico.
+- Flyway aplicó V28 correctamente; PostgreSQL confirmó la tabla `aviso`, ambos permisos
+  y cero avisos ficticios. Hibernate validó el esquema y la aplicación respondió `UP`.
+- Antes de la prueba manual se deben asignar los permisos a un rol y abrir una sesión
+  nueva. Después de confirmar V28, el siguiente bloque propuesto es V29 para
+  notificaciones internas; los canales externos continúan fuera de alcance.
 - El propietario debe asignar `PORTAL_TUTOR_ACCEDER` a un rol con alcance
   `VINCULOS_TUTOR`, iniciar una sesión nueva con una cuenta enlazada y comprobar `/portal`.
   Después de confirmar y subir V27 se recomienda acordar V28 para Avisos institucionales

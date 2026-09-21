@@ -312,3 +312,10 @@ no permite registrar operaciones. V27 no concede el permiso automáticamente y n
 notificaciones, correo ni WhatsApp. Su interfaz es independiente de administración y
 está diseñada para familias: lenguaje cotidiano, agenda visual, pagos simplificados y
 navegación móvil tipo aplicación.
+
+Avisos escolares permite preparar mensajes como borrador, publicarlos para toda una
+institución o un plantel y retirarlos con motivo sin borrar el historial. El listado se
+filtra y pagina en PostgreSQL y exporta los mismos filtros a Excel por bloques. En el
+portal familiar sólo aparecen avisos publicados, ya vigentes, no vencidos y aplicables
+al plantel actual del hijo seleccionado. Requiere `AVISO_LEER` o `AVISO_ADMINISTRAR`;
+V28 no asigna estos permisos automáticamente ni envía correo o WhatsApp.

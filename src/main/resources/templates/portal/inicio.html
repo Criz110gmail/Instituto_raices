@@ -23,10 +23,17 @@
             <div class="school-snapshot"><div><span aria-hidden="true">⌂</span><small>Escuela</small><strong th:text="${portal.hijo.plantel}"></strong></div><div><span aria-hidden="true">✦</span><small>Grado y grupo</small><strong th:text="${portal.hijo.grado+' · '+portal.hijo.grupo}"></strong></div><div><span aria-hidden="true">◷</span><small>Ciclo actual</small><strong th:text="${portal.hijo.ciclo}"></strong></div></div>
         </section>
         <nav class="quick-links" aria-label="Accesos rápidos">
+            <a href="#avisos"><span class="quick-icon lavender">♡</span><span><strong>Avisos</strong><small th:text="${portal.avisos.totalElements == 0 ? 'Sin avisos nuevos' : portal.avisos.totalElements+' avisos para ti'}"></small></span><b>›</b></a>
             <a href="#agenda"><span class="quick-icon coral">▣</span><span><strong>Agenda</strong><small th:text="${portal.eventos.totalElements == 0 ? 'Sin eventos por ahora' : portal.eventos.totalElements+' eventos para ti'}"></small></span><b>›</b></a>
             <a href="#cuenta" th:if="${portal.estadoCuenta != null}"><span class="quick-icon mint">$</span><span><strong>Tus pagos</strong><small th:text="${#numbers.formatDecimal(portal.estadoCuenta.resumen.saldo,1,'COMMA',2,'POINT')+' '+portal.estadoCuenta.resumen.moneda+' pendientes'}"></small></span><b>›</b></a>
             <div th:if="${portal.estadoCuenta == null}"><span class="quick-icon lavender">♡</span><span><strong>Vista familiar</strong><small>Información financiera no incluida</small></span></div>
         </nav>
+        <section class="family-section" id="avisos">
+            <header class="friendly-heading"><div><span>Mensajes de tu escuela</span><h2>Avisos importantes</h2></div><div class="count-pill" th:text="${portal.avisos.totalElements}">0</div></header>
+            <div class="charge-list" th:if="${!portal.avisos.empty}"><article th:each="aviso:${portal.avisos.content}"><div class="charge-icon" aria-hidden="true">♡</div><div class="charge-name"><strong th:text="${aviso.titulo}"></strong><small th:text="${aviso.alcance+' · '+#temporals.format(aviso.publicado,'dd/MM/yyyy')}"></small><p style="white-space:pre-line" th:text="${aviso.contenido}"></p></div></article></div>
+            <div class="calm-empty" th:if="${portal.avisos.empty}"><span>✓</span><div><strong>Todo al día</strong><p>Cuando la escuela publique un aviso vigente para ustedes, aparecerá aquí.</p></div></div>
+            <nav class="pager" th:if="${portal.avisos.totalPages > 1}"><a th:if="${portal.avisos.hasPrevious()}" th:href="@{/portal(alumnoId=${portal.hijo.alumnoId},paginaAvisos=${portal.avisos.number-1})}">← Más recientes</a><span th:text="${(portal.avisos.number+1)+' de '+portal.avisos.totalPages}"></span><a th:if="${portal.avisos.hasNext()}" th:href="@{/portal(alumnoId=${portal.hijo.alumnoId},paginaAvisos=${portal.avisos.number+1})}">Ver anteriores →</a></nav>
+        </section>
         <section class="family-section" id="agenda">
             <header class="friendly-heading"><div><span>Para que no se te pase nada</span><h2>Lo que viene</h2></div><div class="count-pill" th:text="${portal.eventos.totalElements}">0</div></header>
             <div class="timeline" th:if="${!portal.eventos.empty}"><article th:each="evento:${portal.eventos.content}">
@@ -47,6 +54,6 @@
         <section class="gentle-lock" id="cuenta" th:if="${portal.estadoCuenta == null}"><span>♡</span><div><strong>Aquí sólo verás lo que te corresponde</strong><p>Tu acceso incluye información escolar y eventos. Los pagos están a cargo de otro familiar autorizado.</p></div></section>
     </div>
 </main>
-<nav class="mobile-dock" th:if="${portal.hijo != null}" aria-label="Navegación principal"><a href="#inicio"><span>⌂</span><small>Inicio</small></a><a href="#agenda"><span>▣</span><small>Agenda</small></a><a href="#cuenta"><span>$</span><small>Pagos</small></a></nav>
+<nav class="mobile-dock" th:if="${portal.hijo != null}" aria-label="Navegación principal"><a href="#inicio"><span>⌂</span><small>Inicio</small></a><a href="#avisos"><span>♡</span><small>Avisos</small></a><a href="#agenda"><span>▣</span><small>Agenda</small></a><a href="#cuenta"><span>$</span><small>Pagos</small></a></nav>
 <footer class="family-footer"><span>Hecho para acompañar a tu familia</span><small>La información es privada y sólo está disponible para personas autorizadas.</small></footer>
 </body></html>

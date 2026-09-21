@@ -15,6 +15,7 @@ import escuela.cobranza.repository.BecaAlumnoRepository;
 import escuela.cobranza.repository.AjusteCargoRepository;
 import escuela.cobranza.repository.PoliticaRecargoRepository;
 import escuela.comunicacion.repository.EventoEscolarRepository;
+import escuela.comunicacion.repository.AvisoRepository;
 import escuela.finanzas.repository.CuentaFinancieraRepository;
 import escuela.finanzas.repository.MotivoFinancieroRepository;
 import escuela.finanzas.repository.PagoRepository;
@@ -73,6 +74,7 @@ public class AlcanceDatosService {
     private final CuentaFinancieraRepository cuentaFinancieraRepository;
     private final PagoRepository pagoRepository;
     private final EventoEscolarRepository eventoEscolarRepository;
+    private final AvisoRepository avisoRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
 
@@ -82,7 +84,7 @@ public class AlcanceDatosService {
         return (root, query, cb) -> {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
-                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, REPORTES_FINANCIEROS, EVENTOS_ESCOLARES, ROLES, USUARIOS -> root.get("institucion").get("id");
+                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, REPORTES_FINANCIEROS, EVENTOS_ESCOLARES, AVISOS, ROLES, USUARIOS -> root.get("institucion").get("id");
                 case POLITICAS_RECARGO -> root.get("conceptoCobro").get("institucion").get("id");
                 case VINCULOS_TUTOR, INSCRIPCIONES -> root.get("alumno").get("institucion").get("id");
                 case CUOTAS_ALUMNO, CARGOS, BECAS_ALUMNO -> root.get("inscripcion").get("alumno").get("institucion").get("id");
@@ -114,7 +116,7 @@ public class AlcanceDatosService {
             if (modulo == ModuloCatalogo.USUARIOS) {
                 return cb.and(mismaInstitucion, cb.equal(root.get("id"), principal.usuarioId()));
             }
-            if (modulo == ModuloCatalogo.EVENTOS_ESCOLARES) {
+            if (modulo == ModuloCatalogo.EVENTOS_ESCOLARES || modulo == ModuloCatalogo.AVISOS) {
                 return cb.and(mismaInstitucion, cb.or(cb.isNull(root.get("plantel")),
                         root.get("plantel").get("id").in(principal.plantelIds())));
             }
@@ -218,6 +220,11 @@ public class AlcanceDatosService {
                 var evento = eventoEscolarRepository.findById(id).orElseThrow(this::denegado);
                 if (evento.getPlantel() == null) validarInstitucion(evento.getInstitucion().getId());
                 else validarPlantel(evento.getPlantel().getId());
+            }
+            case AVISOS -> {
+                var aviso = avisoRepository.findById(id).orElseThrow(this::denegado);
+                if (aviso.getPlantel() == null) validarInstitucion(aviso.getInstitucion().getId());
+                else validarPlantel(aviso.getPlantel().getId());
             }
             case ROLES -> validarInstitucion(rolRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());
