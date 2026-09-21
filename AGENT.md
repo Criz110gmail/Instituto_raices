@@ -20,10 +20,11 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main`: `b7814f3` — `bitácora central e inmutable de auditoría para operaciones sensibles`.
-- V31 ya está confirmada en Git. V32 (cancelación controlada de pagos) es el cambio
-  local actual; el agente nuevo debe confirmar `git status` y `git log` antes de
-  continuar y no debe reconstruir V1–V32.
+- Último commit confirmado en `main` y `origin/main` al iniciar esta etapa: `fcbde0d` —
+  `cancelacion pagos desde su expediente`.
+- V32 ya está confirmada en Git. El cambio local actual añade estado de cuenta interno
+  por cuenta con cortes mensuales/anuales y exportaciones Excel/PDF; el agente nuevo
+  debe confirmar `git status` y `git log` antes de continuar.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -629,6 +630,11 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   rechazado no se cancela. El portal conserva las notificaciones anteriores como
   historial, pero deja de mostrar las que ya no coinciden con el estado vigente y
   presenta una nueva notificación de cancelación al tutor autorizado.
+- La conciliación bancaria se descarta por decisión del propietario. No se importan
+  estados de cuenta externos. El estado de cuenta por cuenta financiera es un reporte
+  interno mensual o anual construido sólo con movimientos de Nexo Escolar; muestra
+  apertura, ingresos, egresos, cierre y detalle paginado, con Excel y PDF equivalentes.
+  Reutiliza `REPORTE_FINANCIERO_CONSULTAR` y no requiere Flyway V33.
 
 ## Verificación confirmada
 
@@ -706,33 +712,33 @@ saldo, que el libro financiero muestra la compensación y que `/admin/auditoria`
 contiene `PAGO_CANCELADO`. También confirmar la notificación en `/portal` con una
 cuenta de tutor autorizada. No cancelar un pago operativo real sólo para probar.
 
-Después de revisar y subir V32, el siguiente bloque recomendado es V33 para
-conciliación bancaria de cuentas `BANCO`/`INVERSION`, empezando por definir importación
-de estados de cuenta, coincidencia de movimientos, discrepancias y cierre sin alterar
-el libro inmutable. Los archivos bancarios requerirán almacenamiento privado y reglas
-de privacidad antes de implementarse.
+El propietario confirmó V32 como terminada para el primer análisis. El estado de cuenta
+interno por cuenta con cortes mensuales y anuales, Excel y PDF está implementado y pasó
+compilación, 292 pruebas, inspección visual del PDF y arranque temporal con salud `UP`.
+No crear V33 para conciliación bancaria: esa etapa fue descartada. Falta la revisión
+funcional autenticada del propietario con sus cuentas y movimientos controlados.
 
 Correo y WhatsApp siguen fuera de alcance hasta diseñar consentimiento, proveedor,
-reintentos y trazabilidad. Retiros especializados y conciliación bancaria continúan
-como flujos posteriores separados.
+reintentos y trazabilidad. Los retiros especializados también quedan pendientes.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. V31 está en `origin/main`; V32 es el cambio local actual. Confirmar si ya fue revisada
-   y subida; si no, preservar los cambios locales y no volver a implementarla.
+1. V32 está en `origin/main`; preservar el estado de cuenta interno que se desarrolla
+   localmente y no reconstruir V1–V32.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V32 ya fueron aplicadas en el volumen verificado; nunca editarlas. La
-   siguiente migración disponible será V33.
-5. Primero terminar la prueba funcional de V32 asignando `PAGO_CANCELAR` y usando sólo
-   pagos/cuentas controlados. Después definir reglas y formato de conciliación bancaria
-   antes de crear V33; no asumir envíos por correo o WhatsApp.
+4. Flyway V1–V32 ya existen; nunca editarlas. El estado de cuenta interno no necesita
+   una migración nueva. La siguiente migración disponible, si hiciera falta, será V33.
+5. Abrir el estado de cuenta por cuenta con `REPORTE_FINANCIERO_CONSULTAR` en una sesión
+   nueva y cotejar pantalla, Excel y PDF para un mes y un año con datos controlados.
+   Revisar especialmente apertura, cierre, traspasos y cuentas abiertas en el corte.
+   No importar estados bancarios.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.

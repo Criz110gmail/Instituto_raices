@@ -28,6 +28,9 @@ import java.util.stream.Collectors;
 public class ReporteFinancieroAdminController {
     private final ReporteFinancieroConsultaService consulta;
     private final ExcelReporteFinancieroService excel;
+    private final EstadoCuentaCuentaService estadoCuentaCuenta;
+    private final ExcelEstadoCuentaCuentaService excelCuenta;
+    private final PdfEstadoCuentaCuentaService pdfCuenta;
     private final InstitucionService institucionService;
     private final PlantelService plantelService;
     private final AlcanceDatosService alcance;
@@ -62,6 +65,61 @@ public class ReporteFinancieroAdminController {
         model.addAttribute("agrupaciones", AgrupacionReporte.values());
         model.addAttribute("reporteActual", "TESORERIA");
         return "admin/reporte-tesoreria";
+    }
+
+    @GetMapping("/estado-cuenta-cuenta")
+    String estadoCuentaCuenta(@RequestParam(required = false) Long institucionId,
+                             @RequestParam(required = false) Long cuentaId,
+                             @RequestParam(defaultValue = "") String cuentaTexto,
+                             @RequestParam(defaultValue = "MENSUAL") String periodo,
+                             @RequestParam(defaultValue = "0") int anio,
+                             @RequestParam(required = false) Integer mes,
+                             @RequestParam(defaultValue = "0") int pagina,
+                             @RequestParam(defaultValue = "25") int tamanio,
+                             Authentication authentication, Model model) {
+        var instituciones = instituciones();
+        if (institucionId == null && !instituciones.isEmpty()) institucionId = instituciones.getFirst().id();
+        FiltroEstadoCuentaCuenta filtro = new FiltroEstadoCuentaCuenta(institucionId, cuentaId,
+                cuentaTexto, periodo, anio, mes, pagina, tamanio);
+        try {
+            filtro = estadoCuentaCuenta.normalizar(filtro);
+            model.addAttribute("resultadoCuenta", estadoCuentaCuenta.consultar(filtro));
+        } catch (ReglaNegocioException | RecursoNoEncontradoException excepcion) {
+            model.addAttribute("errorFiltro", excepcion.getMessage());
+            model.addAttribute("resultadoCuenta", new ResultadoEstadoCuentaCuenta(null, null, Page.empty()));
+        }
+        comunes(model, authentication, instituciones);
+        model.addAttribute("filtroCuenta", filtro);
+        model.addAttribute("meses", new String[]{"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"});
+        return "admin/estado-cuenta-cuenta";
+    }
+
+    @GetMapping("/estado-cuenta-cuenta/excel")
+    void estadoCuentaCuentaExcel(@RequestParam Long institucionId, @RequestParam Long cuentaId,
+                                 @RequestParam(defaultValue = "") String cuentaTexto,
+                                 @RequestParam(defaultValue = "MENSUAL") String periodo,
+                                 @RequestParam int anio, @RequestParam(required = false) Integer mes,
+                                 HttpServletResponse response) throws IOException {
+        var filtro = estadoCuentaCuenta.normalizar(new FiltroEstadoCuentaCuenta(institucionId, cuentaId,
+                cuentaTexto, periodo, anio, mes, 0, 100));
+        prepararExcel(response, "estado-cuenta-" + filtro.periodo().toLowerCase() + "-" + filtro.anio() + ".xlsx");
+        excelCuenta.exportar(filtro, response.getOutputStream());
+    }
+
+    @GetMapping("/estado-cuenta-cuenta/pdf")
+    void estadoCuentaCuentaPdf(@RequestParam Long institucionId, @RequestParam Long cuentaId,
+                               @RequestParam(defaultValue = "") String cuentaTexto,
+                               @RequestParam(defaultValue = "MENSUAL") String periodo,
+                               @RequestParam int anio, @RequestParam(required = false) Integer mes,
+                               HttpServletResponse response) throws IOException {
+        var filtro = estadoCuentaCuenta.normalizar(new FiltroEstadoCuentaCuenta(institucionId, cuentaId,
+                cuentaTexto, periodo, anio, mes, 0, 100));
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" +
+                URLEncoder.encode("estado-cuenta-" + filtro.periodo().toLowerCase() + "-" + filtro.anio() + ".pdf",
+                        StandardCharsets.UTF_8));
+        pdfCuenta.exportar(filtro, response.getOutputStream());
     }
 
     @GetMapping("/tesoreria/excel")

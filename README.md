@@ -349,3 +349,12 @@ actor, fecha, ingreso y aplicaciones originales para auditoría. Requiere
 `PAGO_CANCELAR`, que V32 no asigna automáticamente; el acceso de recuperación no
 puede ejecutarla. El portal informa la cancelación al tutor autorizado y deja de
 mostrar notificaciones financieras que ya no correspondan al estado actual.
+
+El estado de cuenta por cuenta financiera se obtiene únicamente de los movimientos
+registrados en Nexo Escolar. Permite seleccionar un mes o un año, consultar el detalle
+paginado y exportar el mismo corte a Excel o PDF. Muestra saldo de apertura, ingresos,
+egresos y saldo de cierre; los traspasos y anulaciones se incluyen para que el saldo
+cuadre. Si la cuenta se abrió dentro del periodo, identifica por separado su saldo
+inicial, que no es un ingreso por movimiento. Este documento no equivale a un estado
+emitido por el banco ni realiza conciliación bancaria. Reutiliza el permiso
+`REPORTE_FINANCIERO_CONSULTAR` y no requiere una migración nueva.

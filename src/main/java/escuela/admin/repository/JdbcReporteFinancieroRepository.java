@@ -182,7 +182,7 @@ public class JdbcReporteFinancieroRepository implements ReporteFinancieroReposit
                       AND (:institucional OR c.plantel_id IN (:plantelIds))
                       AND (CAST(:cuentaId AS bigint) IS NULL OR c.id=:cuentaId)
                     """, p.addValue("fechaDesdeLocal", filtro.fechaDesde())
-                            .addValue("fechaHastaLocal", filtro.fechaHasta()),
+                            .addValue("fechaHastaLocal", filtro.fechaHasta().plusDays(1)),
                     (rs, n) -> new Saldo(rs.getBigDecimal("apertura"), rs.getBigDecimal("cierre")));
             apertura = saldo.apertura(); cierre = saldo.cierre();
         }

@@ -1399,3 +1399,24 @@
 - Falta prueba funcional manual con pagos y cuentas controlados por el propietario.
   Después de su revisión y commit, el siguiente bloque recomendado es definir V33 de
   conciliación bancaria, sin alterar el libro inmutable.
+
+## Decisión posterior — estado de cuenta interno mensual y anual
+
+- El propietario descartó la conciliación bancaria: no se importarán PDFs de bancos ni
+  se comparará el libro contra movimientos externos. Los PDFs que descarga del banco
+  no forman parte del flujo del sistema.
+- En su lugar, el reporte por cuenta financiera ofrece cortes mensuales o anuales con
+  los movimientos capturados en Nexo Escolar, saldo de apertura y cierre y exportación
+  del mismo periodo a Excel y PDF. Es un documento interno, no bancario.
+- El cálculo incluye ingresos, egresos, traspasos, reversas y anulaciones. Si una cuenta
+  inició dentro del corte, el saldo inicial se identifica aparte; no se presenta como
+  ingreso. El alcance de la cuenta sigue el permiso `REPORTE_FINANCIERO_CONSULTAR` y
+  las reglas de reportes existentes. La consulta no altera el libro ni necesita V33.
+- Maven compiló 495 fuentes y ejecutó 292 pruebas sin fallos. Se verificaron las
+  celdas del Excel, la extracción de texto del PDF y una página renderizada del PDF.
+  El empaquetado terminó correctamente. Una instancia temporal aislada en el puerto
+  18081, conectada al PostgreSQL existente, respondió `UP`; la ruta nueva sin sesión
+  respondió HTTP 401. No se crearon movimientos ni se alteraron saldos.
+- Falta la revisión funcional autenticada con cuentas y movimientos controlados del
+  propietario: comparar pantalla, Excel y PDF del mismo mes y año, incluyendo una
+  cuenta abierta dentro del periodo y un traspaso. La instancia habitual no se reemplazó.
