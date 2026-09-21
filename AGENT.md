@@ -20,11 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main`: `58ff17b` — `correccion reportes`.
-- V27, el rediseño familiar y la corrección de reportes ya están confirmados en Git.
-  V28 (Avisos escolares y lectura familiar) es el cambio local actual; el agente nuevo
-  debe confirmar `git status` y `git log` antes de continuar y no debe reconstruir
-  V1–V28.
+- Último commit confirmado en `main` y `origin/main`: `b2779ad` — `avisos escolares`.
+- V28 ya está confirmada en Git. V29 (notificaciones internas del portal familiar) es
+  el cambio local actual; el agente nuevo debe confirmar `git status` y `git log` antes
+  de continuar y no debe reconstruir V1–V29.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -581,13 +580,26 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - El portal familiar muestra por hijo sólo avisos publicados, ya vigentes, no vencidos
   y aplicables a toda la institución o a su plantel actual, paginados de diez en diez.
   V28 no crea notificaciones internas ni envía correo o WhatsApp.
+- Flyway V29 crea `NotificacionUsuario` para la bandeja interna del portal. La
+  sincronización ocurre al abrir `/portal`, genera como máximo una fila por usuario y
+  origen mediante una clave única, e incorpora eventos publicados de los últimos 30
+  días y avisos publicados vigentes que correspondan a cualquiera de sus hijos.
+- Sólo se generan notificaciones para vínculos activos, vigentes y con
+  `puede_recibir_notificaciones=true`. Eventos respeta institución, plantel, ciclo,
+  nivel, grado, grupo o alumno; Avisos respeta institución o plantel.
+- La campana muestra pendientes y la bandeja pagina diez filas en PostgreSQL, primero
+  las no leídas. Al abrir una notificación se bloquea la fila, se comprueba que sea de
+  la cuenta autenticada y se revalida que el evento o aviso siga accesible antes de
+  marcarla como leída. No se borran filas ni se generan datos ficticios.
+- V29 usa el permiso existente `PORTAL_TUTOR_ACCEDER`; no agrega permisos y no envía
+  correo, WhatsApp ni notificaciones push.
 
 ## Verificación confirmada
 
-- Compilación correcta de 469 archivos Java de producción.
-- 274 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V27 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 41 repositorios.
+- Compilación correcta de 476 archivos Java de producción.
+- 277 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V29 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 43 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -635,15 +647,20 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - PostgreSQL confirmó V28, la tabla `aviso` vacía y los permisos `AVISO_LEER` y
   `AVISO_ADMINISTRAR`. La imagen reconstruida inició con salud `UP`; no se crearon
   avisos ficticios ni se modificaron datos escolares.
+- PostgreSQL confirmó V29 exitosa y la tabla `notificacion_usuario` inicialmente vacía.
+  La imagen Docker inició por completo y las pruebas nuevas cubren sincronización,
+  página normalizada, lectura propia y rechazo de una notificación de otra cuenta.
 
 ## Siguiente paso acordado
 
-V28 está implementada localmente. El propietario debe asignar `AVISO_LEER` y/o
-`AVISO_ADMINISTRAR`, iniciar una sesión nueva y probar borrador, edición, publicación,
-retiro, filtros, Excel y lectura desde una cuenta de tutor. Después de confirmar y subir
-V28, el siguiente bloque recomendado es V29 para notificaciones internas por usuario.
-Correo y WhatsApp siguen fuera de alcance hasta diseñar consentimiento, proveedor,
-reintentos y trazabilidad. La cancelación
+V29 está implementada localmente. El propietario debe entrar con una cuenta de tutor
+que tenga `PORTAL_TUTOR_ACCEDER` y al menos un vínculo vigente con
+`puede_recibir_notificaciones=true`; debe comprobar la campana, la deduplicación, la
+paginación y que abrir una fila la marque como leída y lleve a Agenda o Avisos. Después
+de confirmar y subir V29, el siguiente bloque recomendado es V30 para extender la
+bandeja interna con resultados de pagos (`PAGO_VALIDADO` y `PAGO_RECHAZADO`) sin mezclar
+todavía canales externos. Correo y WhatsApp siguen fuera de alcance hasta diseñar
+consentimiento, proveedor, reintentos y trazabilidad. La cancelación
 completa de pagos, retiros especializados y conciliación bancaria continúan siendo
 flujos financieros separados.
 
@@ -652,18 +669,18 @@ pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. V27 y la corrección de reportes ya están en `origin/main`. Confirmar si V28 ya fue
-   revisada y subida; si no, preservar los cambios locales y no volver a implementarla.
+1. V28 está en `origin/main`; V29 es el cambio local actual. Confirmar si ya fue revisada
+   y subida; si no, preservar los cambios locales y no volver a implementarla.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V28 ya fueron aplicadas en el volumen verificado; nunca editarlas. La
-   siguiente migración disponible será V29.
-5. Primero terminar la prueba funcional de Avisos con permisos nuevos y una cuenta de
-   tutor vinculada. Después acordar deduplicación, lectura y vigencia de notificaciones
-   internas antes de crear V29; no asumir envíos por correo o WhatsApp.
+4. Flyway V1–V29 ya fueron aplicadas en el volumen verificado; nunca editarlas. La
+   siguiente migración disponible será V30.
+5. Primero terminar la prueba funcional de V29 con una cuenta de tutor vinculada y el
+   indicador `puede_recibir_notificaciones`. Después acordar las notificaciones internas
+   de pagos antes de crear V30; no asumir envíos por correo o WhatsApp.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.

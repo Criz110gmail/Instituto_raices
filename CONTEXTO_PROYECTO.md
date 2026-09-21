@@ -1257,10 +1257,37 @@
   pruebas nuevas cubren publicación vigente, rechazo de vencimiento y retiro histórico.
 - Flyway aplicó V28 correctamente; PostgreSQL confirmó la tabla `aviso`, ambos permisos
   y cero avisos ficticios. Hibernate validó el esquema y la aplicación respondió `UP`.
-- Antes de la prueba manual se deben asignar los permisos a un rol y abrir una sesión
-  nueva. Después de confirmar V28, el siguiente bloque propuesto es V29 para
-  notificaciones internas; los canales externos continúan fuera de alcance.
-- El propietario debe asignar `PORTAL_TUTOR_ACCEDER` a un rol con alcance
-  `VINCULOS_TUTOR`, iniciar una sesión nueva con una cuenta enlazada y comprobar `/portal`.
-  Después de confirmar y subir V27 se recomienda acordar V28 para Avisos institucionales
-  y de plantel; las notificaciones internas quedan para una etapa posterior.
+- V28 fue revisada por el propietario y quedó confirmada en Git como `b2779ad`.
+
+## Decisiones — notificaciones internas del portal familiar
+
+- Flyway V29 crea `notificacion_usuario` con origen exclusivo de Evento o Aviso, estado
+  de lectura, auditoría, índices para bandeja y una clave única por usuario y origen.
+- La sincronización es perezosa y transaccional al abrir `/portal`; `ON CONFLICT DO
+  NOTHING` permite reintentos seguros y evita duplicados sin necesitar un proceso en
+  segundo plano en esta etapa.
+- Sólo participan tutores, alumnos y vínculos activos y vigentes cuyo indicador
+  `puede_recibir_notificaciones` esté habilitado. Eventos aplica ciclo, plantel y los
+  destinatarios de nivel, grado, grupo o alumno; Avisos aplica institución o plantel.
+- La bandeja es independiente del hijo seleccionado porque reúne todo lo dirigido a la
+  familia, pagina diez filas en PostgreSQL, ordena pendientes primero y muestra un
+  contador en la campana.
+- Marcar como leída usa bloqueo pesimista, valida que la fila pertenezca a la cuenta y
+  vuelve a comprobar acceso al evento o aviso. Un identificador ajeno o contenido ya
+  inaccesible no se abre ni se marca.
+- La etapa reutiliza `PORTAL_TUTOR_ACCEDER`, no agrega permisos, no elimina historial y
+  no incluye correo, WhatsApp o push. Los estados de pagos quedan para una ampliación.
+
+## Verificación de notificaciones internas
+
+- Docker compiló 476 fuentes Java y ejecutó 277 pruebas sin fallos ni errores. Las tres
+  pruebas nuevas cubren sincronización/paginación, lectura autorizada y rechazo de una
+  fila perteneciente a otra cuenta.
+- Flyway validó 29 migraciones y aplicó V29 sobre PostgreSQL 17. Hibernate detectó 43
+  repositorios y la aplicación completó el arranque en el puerto 8080.
+- PostgreSQL confirmó V29 exitosa y cero filas iniciales en `notificacion_usuario`; no
+  se generaron tutores, eventos, avisos ni notificaciones ficticias.
+- Falta la prueba manual del propietario: abrir `/portal` con un vínculo autorizado,
+  comprobar deduplicación, contador, paginación y marcado de lectura. Después de subir
+  V29, la siguiente propuesta es V30 con notificaciones internas por pago validado o
+  rechazado; los canales externos permanecen fuera de alcance.

@@ -27,6 +27,8 @@ public class SeguridadConfig {
                         .requestMatchers("/", "/login", "/familias", "/activar-cuenta", "/restablecer-password", "/acceso-denegado", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/portal/**")
                         .hasAuthority("PORTAL_TUTOR_ACCEDER")
+                        .requestMatchers(HttpMethod.POST, "/portal/notificaciones/**")
+                        .hasAuthority("PORTAL_TUTOR_ACCEDER")
                         .requestMatchers("/admin/instituciones/**").hasAuthority("INSTITUCION_ADMINISTRAR")
                         .requestMatchers("/admin/planteles/**").hasAuthority("PLANTEL_ADMINISTRAR")
                         .requestMatchers("/admin/niveles/**").hasAuthority("NIVEL_ADMINISTRAR")

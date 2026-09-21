@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#fff9f2"><title>Mi familia · Nexo Escolar</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/portal.css"><script src="/js/theme.js"></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/portal.css"><link rel="stylesheet" href="/css/notifications.css"><script src="/js/theme.js"></script>
 </head>
 <body>
 <header class="family-bar">
     <a class="family-brand" href="/portal" aria-label="Ir al inicio"><span class="brand-heart">♥</span><span><strong>Mi familia</strong><small th:text="${portal.institucion}">Instituto</small></span></a>
-    <div class="family-actions"><button class="theme-button" type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button><form method="post" th:action="@{/logout}"><input type="hidden" name="origen" value="familias"><button class="sign-out" type="submit"><span>Salir</span><b aria-hidden="true">↗</b></button></form></div>
+    <div class="family-actions"><a class="notification-bell" href="#notificaciones" aria-label="Ver notificaciones"><span aria-hidden="true">♡</span><b th:if="${portal.notificaciones.pendientes>0}" th:text="${portal.notificaciones.pendientes}">0</b></a><button class="theme-button" type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button><form method="post" th:action="@{/logout}"><input type="hidden" name="origen" value="familias"><button class="sign-out" type="submit"><span>Salir</span><b aria-hidden="true">↗</b></button></form></div>
 </header>
 <main class="family-shell" id="inicio">
     <section class="hello-card"><div><span class="hello-kicker">Todo está bien por aquí</span><h1 th:text="${'Hola, '+portal.tutor}">Hola</h1><p>Lo importante de tus hijos, claro y siempre a la mano.</p></div><div class="hello-art" aria-hidden="true"><i></i><i></i><span>☺</span></div></section>
@@ -28,6 +28,12 @@
             <a href="#cuenta" th:if="${portal.estadoCuenta != null}"><span class="quick-icon mint">$</span><span><strong>Tus pagos</strong><small th:text="${#numbers.formatDecimal(portal.estadoCuenta.resumen.saldo,1,'COMMA',2,'POINT')+' '+portal.estadoCuenta.resumen.moneda+' pendientes'}"></small></span><b>›</b></a>
             <div th:if="${portal.estadoCuenta == null}"><span class="quick-icon lavender">♡</span><span><strong>Vista familiar</strong><small>Información financiera no incluida</small></span></div>
         </nav>
+        <section class="family-section" id="notificaciones">
+            <header class="friendly-heading"><div><span>Tu bandeja personal</span><h2>Notificaciones</h2><p>Reunimos aquí los eventos y avisos que corresponden a tu familia.</p></div><div class="count-pill" th:text="${portal.notificaciones.pendientes}">0</div></header>
+            <div class="charge-list notification-list" th:if="${!portal.notificaciones.pagina.empty}"><article th:each="n:${portal.notificaciones.pagina.content}" th:classappend="${n.leida}?' read':' unread'"><div class="charge-icon" aria-hidden="true" th:text="${n.tipo=='EVENTO'?'▣':'♡'}"></div><div class="charge-name"><strong th:text="${n.titulo}"></strong><small th:text="${(n.tipo=='EVENTO'?'Agenda':'Aviso')+' · '+#temporals.format(n.creada,'dd/MM/yyyy HH:mm')}"></small><p th:text="${n.mensaje}"></p></div><form method="post" th:action="@{/portal/notificaciones/{id}/leer(id=${n.id})}"><input type="hidden" name="alumnoId" th:value="${portal.hijo.alumnoId}"><button class="notification-open" type="submit" th:text="${n.leida?'Abrir':'Ver y marcar leída'}"></button></form></article></div>
+            <div class="calm-empty" th:if="${portal.notificaciones.pagina.empty}"><span>☀</span><div><strong>Sin pendientes</strong><p>Cuando haya algo nuevo para tu familia, te lo mostraremos aquí.</p></div></div>
+            <nav class="pager" th:if="${portal.notificaciones.pagina.totalPages>1}"><a th:if="${portal.notificaciones.pagina.hasPrevious()}" th:href="@{/portal(alumnoId=${portal.hijo.alumnoId},paginaNotificaciones=${portal.notificaciones.pagina.number-1})}">← Más nuevas</a><span th:text="${(portal.notificaciones.pagina.number+1)+' de '+portal.notificaciones.pagina.totalPages}"></span><a th:if="${portal.notificaciones.pagina.hasNext()}" th:href="@{/portal(alumnoId=${portal.hijo.alumnoId},paginaNotificaciones=${portal.notificaciones.pagina.number+1})}">Más antiguas →</a></nav>
+        </section>
         <section class="family-section" id="avisos">
             <header class="friendly-heading"><div><span>Mensajes de tu escuela</span><h2>Avisos importantes</h2></div><div class="count-pill" th:text="${portal.avisos.totalElements}">0</div></header>
             <div class="charge-list" th:if="${!portal.avisos.empty}"><article th:each="aviso:${portal.avisos.content}"><div class="charge-icon" aria-hidden="true">♡</div><div class="charge-name"><strong th:text="${aviso.titulo}"></strong><small th:text="${aviso.alcance+' · '+#temporals.format(aviso.publicado,'dd/MM/yyyy')}"></small><p style="white-space:pre-line" th:text="${aviso.contenido}"></p></div></article></div>

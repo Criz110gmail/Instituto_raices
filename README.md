@@ -319,3 +319,10 @@ filtra y pagina en PostgreSQL y exporta los mismos filtros a Excel por bloques. 
 portal familiar sólo aparecen avisos publicados, ya vigentes, no vencidos y aplicables
 al plantel actual del hijo seleccionado. Requiere `AVISO_LEER` o `AVISO_ADMINISTRAR`;
 V28 no asigna estos permisos automáticamente ni envía correo o WhatsApp.
+
+El portal familiar incorpora una bandeja de notificaciones internas. Al abrirlo se
+sincronizan, sin duplicados, los eventos publicados recientes y avisos vigentes que
+correspondan a los hijos de la cuenta mediante vínculos autorizados para recibir
+notificaciones. La campana muestra pendientes, la bandeja se pagina en PostgreSQL y
+cada lectura vuelve a validar propiedad y acceso al contenido. V29 reutiliza
+`PORTAL_TUTOR_ACCEDER`; no envía correo, WhatsApp ni notificaciones push.

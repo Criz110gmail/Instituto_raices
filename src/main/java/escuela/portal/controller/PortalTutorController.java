@@ -3,6 +3,7 @@ package escuela.portal.controller;
 import escuela.alumno.service.FotografiaAlumnoService;
 import escuela.archivo.dto.ArchivoDescarga;
 import escuela.portal.service.PortalTutorService;
+import escuela.portal.service.NotificacionPortalService;
 import escuela.seguridad.service.UsuarioPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.*;
@@ -20,15 +21,25 @@ import java.nio.charset.StandardCharsets;
 public class PortalTutorController {
     private final PortalTutorService service;
     private final FotografiaAlumnoService fotografiaService;
+    private final NotificacionPortalService notificaciones;
 
     @GetMapping
     String portal(@RequestParam(required = false) Long alumnoId,
                   @RequestParam(defaultValue = "0") int paginaEventos,
                   @RequestParam(defaultValue = "0") int paginaCargos,
                   @RequestParam(defaultValue = "0") int paginaAvisos,
+                  @RequestParam(defaultValue = "0") int paginaNotificaciones,
                   @AuthenticationPrincipal UsuarioPrincipal principal, Model model) {
-        model.addAttribute("portal", service.consultar(principal, alumnoId, paginaEventos, paginaCargos, paginaAvisos));
+        model.addAttribute("portal", service.consultar(principal, alumnoId, paginaEventos, paginaCargos,
+                paginaAvisos, paginaNotificaciones));
         return "portal/inicio";
+    }
+
+    @PostMapping("/notificaciones/{id}/leer")
+    String leer(@PathVariable Long id,@RequestParam(required=false)Long alumnoId,
+                @AuthenticationPrincipal UsuarioPrincipal principal){
+        String destino=notificaciones.marcarLeida(principal,id);
+        return "redirect:/portal"+(alumnoId==null?"":"?alumnoId="+alumnoId)+"#"+destino;
     }
 
     @GetMapping("/alumnos/{alumnoId}/fotografia")
