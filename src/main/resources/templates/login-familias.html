@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#fff9f2"><title>Familias · Nexo Escolar</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/familias-login.css"><script src="/js/theme.js"></script>
+</head>
+<body>
+<button class="family-theme" type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button>
+<main class="family-login">
+    <section class="family-welcome">
+        <a href="/" class="welcome-brand"><span>♥</span><strong>Mi familia</strong></a>
+        <div class="welcome-copy"><span>Un espacio hecho para ti</span><h1>Todo lo importante de tus hijos, sin complicaciones.</h1><p>Eventos, información escolar y pagos autorizados en un lugar sencillo y privado.</p></div>
+        <div class="family-figures" aria-hidden="true"><i>☺</i><i>★</i><i>♥</i></div>
+        <small>Tu información está protegida y sólo tú puedes verla.</small>
+    </section>
+    <section class="family-access">
+        <div class="mobile-family-brand"><span>♥</span><strong>Mi familia</strong></div>
+        <div class="access-heading"><span>Qué gusto verte</span><h2>Entra a tu espacio familiar</h2><p>Usa el usuario y la contraseña que te proporcionó la escuela.</p></div>
+        <div class="family-alert error" role="alert" th:if="${param.error}"><strong>No pudimos ingresar</strong><span>Revisa tu usuario y contraseña e inténtalo nuevamente.</span></div>
+        <div class="family-alert success" role="status" th:if="${param.logout}"><strong>Sesión cerrada</strong><span>Tu información quedó protegida. Vuelve cuando quieras.</span></div>
+        <form method="post" th:action="@{/login}">
+            <input type="hidden" name="origen" value="familias">
+            <label><span>Tu usuario</span><input name="username" autocomplete="username" required autofocus placeholder="Escribe tu usuario"></label>
+            <label><span>Tu contraseña</span><input type="password" name="password" autocomplete="current-password" required placeholder="••••••••••••"></label>
+            <button type="submit">Entrar a mi familia <span>→</span></button>
+        </form>
+        <p class="family-help">¿No puedes entrar? Comunícate con la administración de tu escuela.</p>
+        <a class="staff-link" href="/login">Soy personal de la escuela</a>
+    </section>
+</main>
+</body>
+</html>

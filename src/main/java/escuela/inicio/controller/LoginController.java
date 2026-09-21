@@ -7,4 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class LoginController {
     @GetMapping("/login")
     String login() { return "login"; }
+
+    @GetMapping("/familias")
+    String familias() { return "login-familias"; }
 }

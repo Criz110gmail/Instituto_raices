@@ -20,10 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main`: `a17e910` — `Eventos escolares`.
-- V26 ya está confirmado en Git. V27 (primer portal del tutor) es el cambio local actual;
-  el agente nuevo debe confirmar `git status` y `git log` antes de continuar y no debe
-  reconstruir V1–V27.
+- Último commit confirmado en `main` y `origin/main`: `6ce0519` — `versión del portal del tutor`.
+- V27 ya está confirmado en Git. El rediseño familiar y su acceso dedicado son el
+  cambio local actual; el agente nuevo debe confirmar `git status` y `git log` antes de
+  continuar y no debe reconstruir V1–V27.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -553,6 +553,14 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   actual. Si no existe inscripción vigente se informa sin inventar una situación
   académica. El selector de hijos y toda la pantalla son responsivos y admiten tema
   claro u oscuro.
+- La experiencia visual del portal es deliberadamente distinta de administración:
+  lenguaje cotidiano, colores cálidos, jerarquía centrada en la fotografía y el nombre
+  del hijo, agenda tipo línea de tiempo, pagos resumidos sin vocabulario contable y
+  navegación inferior en móvil. El nombre institucional aparece sólo como contexto.
+- `/familias` es la entrada dedicada para madres, padres y tutores: conserva el mismo
+  motor de autenticación y las mismas credenciales seguras, pero muestra una bienvenida
+  propia, dirige al portal después de autenticar y regresa allí al cerrar sesión o al
+  equivocarse de contraseña. `/login` permanece como acceso del personal.
 - El estado de cuenta se deriva de cargos, ajustes y aplicaciones existentes y sólo se
   muestra cuando el vínculo marca simultáneamente responsabilidad financiera y permiso
   para ver finanzas. La consulta queda limitada al alumno validado y se pagina en bloques
@@ -565,7 +573,7 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 ## Verificación confirmada
 
 - Compilación correcta de 453 archivos Java de producción.
-- 268 pruebas Maven sin fallos ni errores.
+- 270 pruebas Maven sin fallos ni errores.
 - Flyway V1 a V27 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 41 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
@@ -611,13 +619,14 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-El propietario debe conceder `PORTAL_TUTOR_ACCEDER` a un rol de tutor con alcance
-`VINCULOS_TUTOR`, confirmar que el tutor esté enlazado con esa cuenta y cerrar sesión
-antes de probar `/portal`. Debe revisar selector de hijos, ficha, fotografía, eventos,
-paginación y que las finanzas aparezcan exclusivamente cuando el vínculo tenga ambas
-autorizaciones. También debe intentar un alumno sin vínculo para confirmar el rechazo.
+V27 ya fue confirmada y subida. El cambio local pendiente es la experiencia familiar:
+el propietario debe entrar por `/familias` con una cuenta de tutor enlazada y permiso
+`PORTAL_TUTOR_ACCEDER`, revisar el diseño en escritorio y móvil, selector de hijos,
+fotografía, eventos, paginación y que las finanzas aparezcan exclusivamente cuando el
+vínculo tenga ambas autorizaciones. También debe intentar un alumno sin vínculo para
+confirmar el rechazo y comprobar que el cierre de sesión regrese a `/familias`.
 
-Después de confirmar y subir V27, el siguiente bloque recomendado es V28 para `Aviso`
+Después de confirmar y subir este rediseño, el siguiente bloque recomendado es V28 para `Aviso`
 administrativo y lectura en el portal con alcance inicial de institución o plantel. Las
 notificaciones internas por usuario deben quedar después de consolidar Avisos; correo y
 WhatsApp siguen fuera de alcance hasta diseñar consentimiento, proveedor, reintentos y
@@ -630,17 +639,17 @@ pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. Confirmar si V27 ya fue revisada, confirmada y subida. Si no está en `origin/main`,
-   preservar los cambios locales y no volver a implementarla.
+1. V27 ya está en `origin/main`. Confirmar si el rediseño familiar posterior ya fue
+   revisado y subido; si no, preservar los cambios locales y no volver a implementarlo.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V27 ya fueron aplicadas en el volumen verificado; nunca editarlas. Cuando
-   V27 se confirme y comparta, la siguiente migración disponible será V28.
-5. Primero terminar la prueba funcional de V27 con `PORTAL_TUTOR_ACCEDER`, una cuenta
-   enlazada y vínculos controlados. Después acordar reglas de vigencia, retiro y audiencia
+4. Flyway V1–V27 ya fueron aplicadas en el volumen verificado; nunca editarlas. La
+   siguiente migración disponible será V28.
+5. Primero terminar la prueba funcional del rediseño en `/familias` con
+   `PORTAL_TUTOR_ACCEDER`, una cuenta enlazada y vínculos controlados. Después acordar reglas de vigencia, retiro y audiencia
    de Avisos antes de crear V28; no asumir envíos por correo, WhatsApp o notificaciones.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,

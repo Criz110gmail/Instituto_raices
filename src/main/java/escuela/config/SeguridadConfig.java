@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +24,7 @@ public class SeguridadConfig {
             throws Exception {
         return http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/login", "/activar-cuenta", "/restablecer-password", "/acceso-denegado", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
+                        .requestMatchers("/", "/login", "/familias", "/activar-cuenta", "/restablecer-password", "/acceso-denegado", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/portal/**")
                         .hasAuthority("PORTAL_TUTOR_ACCEDER")
                         .requestMatchers("/admin/instituciones/**").hasAuthority("INSTITUCION_ADMINISTRAR")
@@ -133,11 +134,30 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/movimientos-financieros/**", "/admin/catalogos/movimientos-financieros/**")
                         .hasAuthority("MOVIMIENTO_FINANCIERO_LEER")
                         .anyRequest().authenticated())
-                .formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/admin", true).permitAll())
+                .formLogin(form -> form.loginPage("/login")
+                        .successHandler((request, response, authentication) -> {
+                            boolean entradaFamiliar = "familias".equals(request.getParameter("origen"));
+                            boolean tienePortal = authentication.getAuthorities().stream()
+                                    .anyMatch(a -> a.getAuthority().equals("PORTAL_TUTOR_ACCEDER"));
+                            response.sendRedirect(request.getContextPath()
+                                    + (entradaFamiliar && tienePortal ? "/portal" : "/admin"));
+                        })
+                        .failureHandler((request, response, exception) -> response.sendRedirect(
+                                request.getContextPath() + ("familias".equals(request.getParameter("origen"))
+                                        ? "/familias?error" : "/login?error")))
+                        .permitAll())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(sesion -> sesion.invalidSessionUrl("/login?sesionExpirada"))
-                .exceptionHandling(excepciones -> excepciones.accessDeniedHandler(accesoDenegadoHandler))
-                .logout(logout -> logout.logoutSuccessUrl("/").deleteCookies("JSESSIONID"))
+                .exceptionHandling(excepciones -> excepciones
+                        .defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint("/familias"),
+                                request -> request.getRequestURI().startsWith(
+                                        request.getContextPath() + "/portal"))
+                        .accessDeniedHandler(accesoDenegadoHandler))
+                .logout(logout -> logout
+                        .logoutSuccessHandler((request, response, authentication) -> response.sendRedirect(
+                                request.getContextPath() + ("familias".equals(request.getParameter("origen"))
+                                        ? "/familias?logout" : "/")))
+                        .deleteCookies("JSESSIONID"))
                 .build();
     }
 }

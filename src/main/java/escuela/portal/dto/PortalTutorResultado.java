@@ -6,5 +6,5 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public record PortalTutorResultado(
-        String tutor, List<PortalHijoResumen> hijos, PortalHijoResumen hijo,
+        String tutor, String institucion, List<PortalHijoResumen> hijos, PortalHijoResumen hijo,
         ResultadoEstadoCuentaAlumno estadoCuenta, Page<PortalEventoFila> eventos) { }

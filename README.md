@@ -299,11 +299,16 @@ autocompletado remoto y el Excel reutiliza los mismos filtros por bloques. Requi
 automáticamente. Esta etapa no envía correo o WhatsApp y todavía no incorpora el portal
 del tutor.
 
-El portal familiar está disponible en `/portal`. Una cuenta con
+El acceso de las familias está disponible en `/familias` y conduce al portal en
+`/portal` después de autenticar. Usa las mismas credenciales seguras que el sistema,
+pero con una bienvenida, mensajes y recorrido propios; `/login` permanece como entrada
+del personal. Una cuenta con
 `PORTAL_TUTOR_ACCEDER` sólo consulta alumnos asociados mediante vínculos activos y
 vigentes. Presenta ficha académica actual, fotografía privada y eventos publicados que
 alcancen al alumno por institución, plantel, nivel, grado, grupo o selección individual.
 El estado de cuenta aparece únicamente cuando el vínculo combina responsabilidad
 financiera y autorización para ver finanzas; se calcula desde el historial existente y
 no permite registrar operaciones. V27 no concede el permiso automáticamente y no envía
-notificaciones, correo ni WhatsApp.
+notificaciones, correo ni WhatsApp. Su interfaz es independiente de administración y
+está diseñada para familias: lenguaje cotidiano, agenda visual, pagos simplificados y
+navegación móvil tipo aplicación.

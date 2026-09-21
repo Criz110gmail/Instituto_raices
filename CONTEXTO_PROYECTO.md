@@ -1207,17 +1207,29 @@
 - La vista es responsiva, compatible con tema claro y oscuro, incorpora fotografía
   privada y cierre de sesión. Un usuario sólo de portal que entra por `/admin` es enviado
   al portal en lugar de recibir una pantalla de acceso denegado.
+- El diseño se separa intencionalmente del sistema administrativo: usa una identidad
+  familiar cálida, lenguaje directo, selector visual de hijos, accesos rápidos, agenda
+  cronológica, resumen simple de pagos y una barra inferior tipo aplicación en móvil.
+  No expone términos técnicos como expediente, libros contables o permisos al tutor.
+- Se incorporó `/familias` como acceso visual exclusivo para tutores. El formulario
+  reutiliza la autenticación segura existente, pero los aciertos, errores y cierres de
+  sesión conservan el recorrido familiar; `/login` continúa reservado visualmente para
+  el personal. Una visita sin sesión a `/portal` se dirige a `/familias`.
 
 ## Verificación del primer portal del tutor
 
-- Docker compiló 453 fuentes Java y ejecutó 268 pruebas sin fallos ni errores. Las siete
+- Docker compiló 453 fuentes Java y ejecutó 270 pruebas sin fallos ni errores. Las siete
   pruebas nuevas cubren recuperación, tutor no vinculado, familia vacía, restricción y
   autorización financiera, alumno ajeno y protección de fotografía.
+- Dos pruebas adicionales fijan las vistas independientes de acceso para personal y
+  familias.
 - Flyway validó 27 migraciones y aplicó V27 sobre PostgreSQL 17. Hibernate validó el
   esquema, detectó 41 repositorios y `/actuator/health` respondió `UP`.
 - PostgreSQL confirmó el permiso y el índice; además ejecutó las consultas completas de
   vínculos e intersección de eventos con identificadores inexistentes, sólo en lectura.
   No se crearon tutores, vínculos, cargos o eventos ficticios.
+- La imagen posterior al rediseño conservó salud `UP`; `/familias` respondió HTTP 200
+  y una solicitud anónima a `/portal` respondió HTTP 302 hacia `/familias`.
 - El propietario debe asignar `PORTAL_TUTOR_ACCEDER` a un rol con alcance
   `VINCULOS_TUTOR`, iniciar una sesión nueva con una cuenta enlazada y comprobar `/portal`.
   Después de confirmar y subir V27 se recomienda acordar V28 para Avisos institucionales

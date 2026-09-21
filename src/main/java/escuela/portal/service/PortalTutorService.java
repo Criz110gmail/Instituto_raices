@@ -36,7 +36,7 @@ public class PortalTutorService {
         List<PortalHijoResumen> hijos = portalRepository.hijos(
                 principal.usuarioId(), principal.institucionId(), hoy);
         PortalHijoResumen hijo = seleccionar(hijos, alumnoId);
-        if (hijo == null) return new PortalTutorResultado(tutor, hijos, null, null,
+        if (hijo == null) return new PortalTutorResultado(tutor, institucion.nombre(), hijos, null, null,
                 org.springframework.data.domain.Page.empty());
         int eventosPagina = Math.max(0, paginaEventos);
         int cargosPagina = Math.max(0, paginaCargos);
@@ -46,7 +46,7 @@ public class PortalTutorService {
         ResultadoEstadoCuentaAlumno estadoCuenta = hijo.accesoFinanciero()
                 ? estadoCuenta(hijo, principal.institucionId(), hoy, zona, institucion.monedaPredeterminada(), cargosPagina)
                 : null;
-        return new PortalTutorResultado(tutor, hijos, hijo, estadoCuenta, eventos);
+        return new PortalTutorResultado(tutor, institucion.nombre(), hijos, hijo, estadoCuenta, eventos);
     }
 
     public PortalHijoResumen validarHijo(UsuarioPrincipal principal, Long alumnoId) {
