@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface NotificacionUsuarioRepository extends JpaRepository<NotificacionUsuario,Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @EntityGraph(attributePaths={"usuario","evento","aviso"})
+    @EntityGraph(attributePaths={"usuario","evento","aviso","pago"})
     @Query("select n from NotificacionUsuario n where n.id=:id") Optional<NotificacionUsuario> findByIdForUpdate(@Param("id")Long id);
 }

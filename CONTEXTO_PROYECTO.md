@@ -1276,7 +1276,7 @@
   vuelve a comprobar acceso al evento o aviso. Un identificador ajeno o contenido ya
   inaccesible no se abre ni se marca.
 - La etapa reutiliza `PORTAL_TUTOR_ACCEDER`, no agrega permisos, no elimina historial y
-  no incluye correo, WhatsApp o push. Los estados de pagos quedan para una ampliación.
+  no incluye correo, WhatsApp o push.
 
 ## Verificación de notificaciones internas
 
@@ -1287,7 +1287,37 @@
   repositorios y la aplicación completó el arranque en el puerto 8080.
 - PostgreSQL confirmó V29 exitosa y cero filas iniciales en `notificacion_usuario`; no
   se generaron tutores, eventos, avisos ni notificaciones ficticias.
-- Falta la prueba manual del propietario: abrir `/portal` con un vínculo autorizado,
-  comprobar deduplicación, contador, paginación y marcado de lectura. Después de subir
-  V29, la siguiente propuesta es V30 con notificaciones internas por pago validado o
-  rechazado; los canales externos permanecen fuera de alcance.
+- V29 fue revisada y confirmada en Git por el propietario como `829b2d2`.
+
+## Decisiones — resultados de pagos en la bandeja familiar
+
+- Flyway V30 agrega `pago_id`, amplía el tipo a 20 caracteres, incorpora
+  `PAGO_VALIDADO` y `PAGO_RECHAZADO`, y endurece la restricción para que cada fila tenga
+  exactamente un origen entre evento, aviso o pago.
+- La sincronización perezosa considera cambios de estado de los últimos 90 días. La
+  clave `PAGO_<ESTADO>:<ID>` por usuario evita duplicados y permite distinguir el
+  resultado sin acoplar la transacción financiera a la capa de portal.
+- El destinatario es la cuenta vinculada al tutor titular del pago. Además debe existir
+  al menos un vínculo activo y vigente con alumno activo que combine responsabilidad
+  financiera, permiso para ver finanzas y permiso para recibir notificaciones.
+- El mensaje presenta folio, importe, moneda y resultado; un rechazo incluye su motivo.
+  La vista escapa el contenido y usa el mismo contador y paginación de la bandeja.
+- Al abrir se bloquea la notificación y se revalidan cuenta, institución, estado exacto
+  del pago y acceso financiero. Si algo fue revocado permanece sin leer; si es válido se
+  dirige a `#cuenta`.
+- V30 no altera validación/rechazo, no publica movimientos adicionales, no crea permisos
+  y no incorpora correo, WhatsApp o push.
+
+## Verificación de resultados de pagos
+
+- Docker compiló 476 fuentes Java y ejecutó 279 pruebas sin fallos ni errores. Dos
+  pruebas nuevas cubren pago validado accesible y pago rechazado cuyo acceso financiero
+  ya no está disponible.
+- Flyway validó 30 migraciones y aplicó V30 sobre PostgreSQL 17. Hibernate validó el
+  esquema, detectó 43 repositorios y la aplicación completó el arranque en el puerto
+  8080.
+- PostgreSQL confirmó la columna `pago_id`, el índice parcial, los cuatro tipos y la
+  exclusividad del origen. La tabla conservó cero filas; no se crearon ni modificaron
+  pagos, movimientos o notificaciones de prueba.
+- Falta la prueba manual con un pago controlado. Después de revisar y subir V30, el
+  siguiente bloque recomendado es V31 para la bitácora central e inmutable de auditoría.

@@ -13,9 +13,10 @@ import java.time.*;
 public class PortalNotificacionRepository {
     private final NamedParameterJdbcTemplate jdbc;
 
-    public void sincronizar(Long usuarioId,Long institucionId,LocalDate hoy,Instant desdeEventos,Instant ahora){
+    public void sincronizar(Long usuarioId,Long institucionId,LocalDate hoy,Instant desdeEventos,Instant desdePagos,Instant ahora){
         var p=new MapSqlParameterSource().addValue("usuarioId",usuarioId).addValue("institucionId",institucionId)
-                .addValue("hoy",hoy).addValue("desdeEventos",Timestamp.from(desdeEventos)).addValue("ahora",Timestamp.from(ahora));
+                .addValue("hoy",hoy).addValue("desdeEventos",Timestamp.from(desdeEventos))
+                .addValue("desdePagos",Timestamp.from(desdePagos)).addValue("ahora",Timestamp.from(ahora));
         jdbc.update("""
             INSERT INTO notificacion_usuario(usuario_id,tipo,titulo,mensaje,evento_id,clave_deduplicacion)
             SELECT :usuarioId,'EVENTO',e.titulo,left(concat(e.tipo,' · ',e.ubicacion),1000),e.id,concat('EVENTO:',e.id)
@@ -37,6 +38,24 @@ public class PortalNotificacionRepository {
                             AND ag.fecha_inicio<=timezone(inst.zona_horaria,e.inicio_en)::date
                             AND (ag.fecha_fin IS NULL OR ag.fecha_fin>=timezone(inst.zona_horaria,e.inicio_en)::date))))))
               ) ON CONFLICT(usuario_id,clave_deduplicacion) DO NOTHING
+            """,p);
+        jdbc.update("""
+            INSERT INTO notificacion_usuario(usuario_id,tipo,titulo,mensaje,pago_id,clave_deduplicacion)
+            SELECT :usuarioId,concat('PAGO_',pago.estado),
+                   CASE pago.estado WHEN 'VALIDADO' THEN 'Pago validado' ELSE 'Pago rechazado' END,
+                   left(CASE pago.estado
+                     WHEN 'VALIDADO' THEN concat('El pago ',pago.folio,' por ',pago.monto,' ',pago.moneda,' fue validado correctamente.')
+                     ELSE concat('El pago ',pago.folio,' por ',pago.monto,' ',pago.moneda,' fue rechazado. Motivo: ',pago.motivo_rechazo_cancelacion)
+                   END,1000),pago.id,concat('PAGO_',pago.estado,':',pago.id)
+            FROM pago JOIN tutor t ON t.id=pago.tutor_id
+            WHERE pago.institucion_id=:institucionId AND pago.estado IN ('VALIDADO','RECHAZADO')
+              AND pago.actualizado_en>=:desdePagos AND t.usuario_id=:usuarioId AND t.activo=true
+              AND EXISTS(SELECT 1 FROM alumno_tutor at JOIN alumno al ON al.id=at.alumno_id
+                WHERE at.tutor_id=t.id AND at.activo=true AND al.activo=true
+                  AND at.es_responsable_financiero=true AND at.puede_ver_finanzas=true
+                  AND at.puede_recibir_notificaciones=true AND at.fecha_inicio<=:hoy
+                  AND (at.fecha_fin IS NULL OR at.fecha_fin>=:hoy))
+            ON CONFLICT(usuario_id,clave_deduplicacion) DO NOTHING
             """,p);
         jdbc.update("""
             INSERT INTO notificacion_usuario(usuario_id,tipo,titulo,mensaje,aviso_id,clave_deduplicacion)
@@ -61,7 +80,7 @@ public class PortalNotificacionRepository {
         Long pendientes=jdbc.queryForObject("SELECT count(*) FROM notificacion_usuario WHERE usuario_id=:usuarioId AND leida_en IS NULL",p,Long.class);
         var filas=jdbc.query("""
             SELECT id,tipo,titulo,mensaje,timezone(:zona,creado_en) creada_local,leida_en,
-                   CASE tipo WHEN 'EVENTO' THEN '#agenda' ELSE '#avisos' END destino
+                   CASE WHEN tipo='EVENTO' THEN '#agenda' WHEN tipo='AVISO' THEN '#avisos' ELSE '#cuenta' END destino
             FROM notificacion_usuario WHERE usuario_id=:usuarioId
             ORDER BY (leida_en IS NULL) DESC,creado_en DESC,id DESC LIMIT :limite OFFSET :offset
             """,p,(rs,n)->new PortalNotificacionFila(rs.getLong("id"),rs.getString("tipo"),rs.getString("titulo"),
@@ -99,4 +118,15 @@ public class PortalNotificacionRepository {
                 AND i.fecha_inicio<=:hoy AND (i.fecha_fin IS NULL OR i.fecha_fin>=:hoy)))))
         """,new MapSqlParameterSource().addValue("usuarioId",usuarioId).addValue("institucionId",institucionId).addValue("avisoId",avisoId)
                 .addValue("hoy",hoy).addValue("ahora",Timestamp.from(ahora)),Boolean.class));}
+
+    public boolean pagoAccesible(Long usuarioId,Long institucionId,Long pagoId,String estado,LocalDate hoy){return Boolean.TRUE.equals(jdbc.queryForObject("""
+        SELECT EXISTS(SELECT 1 FROM pago p JOIN tutor t ON t.id=p.tutor_id
+          WHERE p.id=:pagoId AND p.institucion_id=:institucionId AND p.estado=:estado
+            AND t.usuario_id=:usuarioId AND t.activo=true
+            AND EXISTS(SELECT 1 FROM alumno_tutor at JOIN alumno al ON al.id=at.alumno_id
+              WHERE at.tutor_id=t.id AND at.activo=true AND al.activo=true
+                AND at.es_responsable_financiero=true AND at.puede_ver_finanzas=true
+                AND at.fecha_inicio<=:hoy AND (at.fecha_fin IS NULL OR at.fecha_fin>=:hoy)))
+        """,new MapSqlParameterSource().addValue("usuarioId",usuarioId).addValue("institucionId",institucionId)
+                .addValue("pagoId",pagoId).addValue("estado",estado).addValue("hoy",hoy),Boolean.class));}
 }

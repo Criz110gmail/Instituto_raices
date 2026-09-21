@@ -2,6 +2,7 @@ package escuela.portal.service;
 
 import escuela.comunicacion.entity.*;
 import escuela.comunicacion.repository.NotificacionUsuarioRepository;
+import escuela.finanzas.entity.Pago;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.service.InstitucionService;
 import escuela.portal.dto.PortalNotificaciones;
@@ -43,7 +44,8 @@ class NotificacionPortalServiceTest {
         PortalNotificaciones resultado = service.sincronizarYConsultar(principal, -5);
 
         assertThat(resultado).isSameAs(resultadoEsperado);
-        verify(portal).sincronizar(eq(7L), eq(1L), any(LocalDate.class), any(Instant.class), any(Instant.class));
+        verify(portal).sincronizar(eq(7L), eq(1L), any(LocalDate.class), any(Instant.class),
+                any(Instant.class), any(Instant.class));
         verify(portal).consultar(7L, "America/Mexico_City", 0, 10);
     }
 
@@ -72,6 +74,34 @@ class NotificacionPortalServiceTest {
         verify(repository, never()).saveAndFlush(any());
     }
 
+    @Test
+    void abrePagoValidadoSoloSiConservaAccesoFinanciero() {
+        NotificacionUsuario notificacion = pago(7L, 50L, TipoNotificacion.PAGO_VALIDADO);
+        when(repository.findByIdForUpdate(90L)).thenReturn(Optional.of(notificacion));
+        when(portal.pagoAccesible(eq(7L), eq(1L), eq(50L), eq("VALIDADO"), any(LocalDate.class)))
+                .thenReturn(true);
+
+        String destino = service.marcarLeida(principal, 90L);
+
+        assertThat(destino).isEqualTo("cuenta");
+        assertThat(notificacion.getLeidaEn()).isNotNull();
+        verify(repository).saveAndFlush(notificacion);
+    }
+
+    @Test
+    void pagoRechazadoInaccesiblePermaneceSinLeer() {
+        NotificacionUsuario notificacion = pago(7L, 51L, TipoNotificacion.PAGO_RECHAZADO);
+        when(repository.findByIdForUpdate(90L)).thenReturn(Optional.of(notificacion));
+        when(portal.pagoAccesible(eq(7L), eq(1L), eq(51L), eq("RECHAZADO"), any(LocalDate.class)))
+                .thenReturn(false);
+
+        assertThatThrownBy(() -> service.marcarLeida(principal, 90L))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("ya no está disponible");
+        assertThat(notificacion.getLeidaEn()).isNull();
+        verify(repository, never()).saveAndFlush(any());
+    }
+
     private NotificacionUsuario evento(Long usuarioId, Long eventoId) {
         Usuario usuario = new Usuario();
         usuario.setId(usuarioId);
@@ -82,6 +112,19 @@ class NotificacionPortalServiceTest {
         notificacion.setUsuario(usuario);
         notificacion.setTipo(TipoNotificacion.EVENTO);
         notificacion.setEvento(evento);
+        return notificacion;
+    }
+
+    private NotificacionUsuario pago(Long usuarioId, Long pagoId, TipoNotificacion tipo) {
+        Usuario usuario = new Usuario();
+        usuario.setId(usuarioId);
+        Pago pago = new Pago();
+        pago.setId(pagoId);
+        NotificacionUsuario notificacion = new NotificacionUsuario();
+        notificacion.setId(90L);
+        notificacion.setUsuario(usuario);
+        notificacion.setTipo(tipo);
+        notificacion.setPago(pago);
         return notificacion;
     }
 }

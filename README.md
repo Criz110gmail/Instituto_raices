@@ -326,3 +326,9 @@ correspondan a los hijos de la cuenta mediante vínculos autorizados para recibi
 notificaciones. La campana muestra pendientes, la bandeja se pagina en PostgreSQL y
 cada lectura vuelve a validar propiedad y acceso al contenido. V29 reutiliza
 `PORTAL_TUTOR_ACCEDER`; no envía correo, WhatsApp ni notificaciones push.
+
+La misma bandeja informa pagos validados o rechazados durante los últimos 90 días. La
+notificación se dirige únicamente al tutor titular que conserva responsabilidad
+financiera, acceso a finanzas y autorización para recibir notificaciones; abrirla vuelve
+a comprobar institución, estado y permisos antes de llevar a “Tus pagos”. V30 no crea
+movimientos ni modifica el flujo financiero y mantiene deduplicación por resultado.

@@ -20,10 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main`: `b2779ad` — `avisos escolares`.
-- V28 ya está confirmada en Git. V29 (notificaciones internas del portal familiar) es
-  el cambio local actual; el agente nuevo debe confirmar `git status` y `git log` antes
-  de continuar y no debe reconstruir V1–V29.
+- Último commit confirmado en `main` y `origin/main`: `829b2d2` — `otificaciones internas para tutores`.
+- V29 ya está confirmada en Git. V30 (resultados de pagos en la bandeja familiar) es el
+  cambio local actual; el agente nuevo debe confirmar `git status` y `git log` antes de
+  continuar y no debe reconstruir V1–V30.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -593,12 +593,22 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   marcarla como leída. No se borran filas ni se generan datos ficticios.
 - V29 usa el permiso existente `PORTAL_TUTOR_ACCEDER`; no agrega permisos y no envía
   correo, WhatsApp ni notificaciones push.
+- Flyway V30 amplía `NotificacionUsuario` con `pago_id` y los tipos
+  `PAGO_VALIDADO` y `PAGO_RECHAZADO`. Al abrir el portal sincroniza resultados de los
+  últimos 90 días para el tutor titular del pago, con clave única por usuario, pago y
+  resultado; un reintento no duplica filas.
+- Las notificaciones financieras exigen tutor, alumno y vínculo activos y vigentes,
+  además de responsabilidad financiera, permiso para ver finanzas y permiso para
+  recibir notificaciones. La lectura vuelve a validar usuario, institución, estado del
+  pago y acceso financiero, y dirige a `#cuenta`.
+- V30 no crea pagos, movimientos ni permisos, no cambia el proceso atómico de validación
+  o rechazo y continúa sin correo, WhatsApp o push.
 
 ## Verificación confirmada
 
 - Compilación correcta de 476 archivos Java de producción.
-- 277 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V29 validados y aplicados correctamente sobre el volumen existente.
+- 279 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V30 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 43 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
@@ -650,16 +660,21 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - PostgreSQL confirmó V29 exitosa y la tabla `notificacion_usuario` inicialmente vacía.
   La imagen Docker inició por completo y las pruebas nuevas cubren sincronización,
   página normalizada, lectura propia y rechazo de una notificación de otra cuenta.
+- PostgreSQL confirmó V30 exitosa, `pago_id`, sus restricciones e índice, y cero
+  notificaciones iniciales. Las pruebas nuevas cubren lectura de pago validado y rechazo
+  de lectura cuando ya no existe acceso financiero.
 
 ## Siguiente paso acordado
 
-V29 está implementada localmente. El propietario debe entrar con una cuenta de tutor
-que tenga `PORTAL_TUTOR_ACCEDER` y al menos un vínculo vigente con
-`puede_recibir_notificaciones=true`; debe comprobar la campana, la deduplicación, la
-paginación y que abrir una fila la marque como leída y lleve a Agenda o Avisos. Después
-de confirmar y subir V29, el siguiente bloque recomendado es V30 para extender la
-bandeja interna con resultados de pagos (`PAGO_VALIDADO` y `PAGO_RECHAZADO`) sin mezclar
-todavía canales externos. Correo y WhatsApp siguen fuera de alcance hasta diseñar
+V30 está implementada localmente. El propietario debe usar un pago controlado asociado
+al tutor de su cuenta, validar o rechazarlo desde administración y después abrir
+`/portal`; debe comprobar el mensaje, la ausencia de duplicados, el marcado de lectura
+y el destino a Tus pagos. El vínculo requiere responsabilidad financiera,
+`puede_ver_finanzas=true` y `puede_recibir_notificaciones=true`.
+
+Después de confirmar y subir V30, el siguiente bloque recomendado es V31 para una
+bitácora central e inmutable de auditoría sobre acciones sensibles de seguridad,
+finanzas y comunicación. Correo y WhatsApp siguen fuera de alcance hasta diseñar
 consentimiento, proveedor, reintentos y trazabilidad. La cancelación
 completa de pagos, retiros especializados y conciliación bancaria continúan siendo
 flujos financieros separados.
@@ -669,18 +684,18 @@ pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. V28 está en `origin/main`; V29 es el cambio local actual. Confirmar si ya fue revisada
+1. V29 está en `origin/main`; V30 es el cambio local actual. Confirmar si ya fue revisada
    y subida; si no, preservar los cambios locales y no volver a implementarla.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V29 ya fueron aplicadas en el volumen verificado; nunca editarlas. La
-   siguiente migración disponible será V30.
-5. Primero terminar la prueba funcional de V29 con una cuenta de tutor vinculada y el
-   indicador `puede_recibir_notificaciones`. Después acordar las notificaciones internas
-   de pagos antes de crear V30; no asumir envíos por correo o WhatsApp.
+4. Flyway V1–V30 ya fueron aplicadas en el volumen verificado; nunca editarlas. La
+   siguiente migración disponible será V31.
+5. Primero terminar la prueba funcional de V30 con un pago controlado y un vínculo con
+   permisos financieros y de notificación. Después acordar el alcance de la bitácora
+   central antes de crear V31; no asumir envíos por correo o WhatsApp.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.
