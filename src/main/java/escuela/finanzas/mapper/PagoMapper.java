@@ -42,7 +42,8 @@ public class PagoMapper {
                 pago.getAplicaciones().stream()
                         .filter(a -> a.getOperacion() == OperacionAplicacionPago.APLICAR && a.getReversa() == null)
                         .map(this::aplicacion).toList(), solicitado, pago.getMonto().subtract(solicitado), aplicado,
-                devuelto, pago.getMonto().subtract(aplicado).subtract(devuelto),
+                devuelto, pago.getEstado() == EstadoPago.VALIDADO
+                        ? pago.getMonto().subtract(aplicado).subtract(devuelto) : BigDecimal.ZERO,
                 movimiento(pago.getMovimiento(), pago.getMoneda()),
                 desde(pago));
     }

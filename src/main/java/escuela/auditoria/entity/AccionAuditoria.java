@@ -3,6 +3,7 @@ package escuela.auditoria.entity;
 public enum AccionAuditoria {
     PAGO_VALIDADO,
     PAGO_RECHAZADO,
+    PAGO_CANCELADO,
     DEVOLUCION_EJECUTADA,
     TRANSFERENCIA_APLICADA,
     MOVIMIENTO_REVERTIDO,

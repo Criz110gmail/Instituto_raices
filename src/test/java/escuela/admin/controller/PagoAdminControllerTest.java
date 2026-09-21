@@ -6,6 +6,8 @@ import escuela.finanzas.dto.response.PagoResponse;
 import escuela.finanzas.entity.MetodoPago;
 import escuela.finanzas.service.PagoService;
 import escuela.finanzas.service.ValidacionPagoService;
+import escuela.finanzas.service.CancelacionPagoService;
+import escuela.finanzas.dto.request.CancelacionPagoRequest;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.service.*;
 import escuela.seguridad.service.AlcanceDatosService;
@@ -30,6 +32,7 @@ import static org.mockito.Mockito.*;
 class PagoAdminControllerTest {
     @Mock private PagoService service;
     @Mock private ValidacionPagoService validacionService;
+    @Mock private CancelacionPagoService cancelacionService;
     @Mock private InstitucionService institucionService;
     @Mock private PlantelService plantelService;
     @Mock private AlcanceDatosService alcance;
@@ -110,6 +113,20 @@ class PagoAdminControllerTest {
 
         verify(validacionService).rechazar(eq(50L), argThat(r -> r.motivo().equals("Duplicado")
                 && r.version().equals(3L)));
+        assertThat(vista).isEqualTo("redirect:/admin/pagos/50/editar");
+    }
+
+    @Test
+    void cancelaPagoConMotivoYRedirigeAlExpediente() {
+        PagoResponse respuesta = mock(PagoResponse.class);
+        when(respuesta.folio()).thenReturn("PAG-001");
+        when(cancelacionService.cancelar(eq(50L), any())).thenReturn(respuesta);
+
+        String vista = controller.cancelar(50L, 3L, "Registro duplicado", mock(Authentication.class),
+                new ExtendedModelMap(), new RedirectAttributesModelMap());
+
+        verify(cancelacionService).cancelar(eq(50L), argThat((CancelacionPagoRequest r) ->
+                r.version().equals(3L) && r.motivo().equals("Registro duplicado")));
         assertThat(vista).isEqualTo("redirect:/admin/pagos/50/editar");
     }
 

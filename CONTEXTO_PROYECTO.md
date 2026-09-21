@@ -1361,3 +1361,41 @@
   nueva, ejecutar una acción controlada y revisar listado, filtros, detalle y Excel.
   Después de confirmar V31, la recomendación es diseñar V32 para cancelación controlada
   de pagos, separada de las devoluciones.
+
+## Decisiones — cancelación controlada de pagos
+
+- Flyway V32 agrega `PAGO_CANCELAR` sin asignarlo a roles existentes. Añade
+  `cancelado_en` y `cancelado_por_id` a Pago con restricción que exige ambos cuando
+  el estado es `CANCELADO` y los prohíbe en los demás estados.
+- Cancelar es corregir un registro creado por error, no devolver dinero realmente
+  recibido. Se aceptan sólo `PENDIENTE_VALIDACION` y `VALIDADO`; un pago rechazado no
+  se vuelve a resolver. Se exige motivo, versión y usuario administrativo persistido;
+  el acceso de recuperación no ejecuta cancelaciones.
+- Un pendiente se cancela sin afectar cuentas o cargos. Un validado no puede tener
+  devoluciones ejecutadas ni un ingreso ya compensado. La operación bloquea pago,
+  cuenta y cargos, comprueba saldo suficiente y revierte cada aplicación vigente
+  mediante una fila histórica `REVERTIR` de igual importe y con referencia al original.
+- V32 amplía las clases de movimiento con `ANULACION`: publica un egreso de igual
+  monto y en la misma cuenta del `COBRO`, con secuencia, saldos y referencia única al
+  ingreso original. El movimiento previo, el pago y los abonos históricos permanecen.
+  Un reintento con el mismo motivo no crea otra operación.
+- La bitácora V31 registra `PAGO_CANCELADO` en la misma transacción. El expediente
+  administrativo muestra motivo y permite la acción sólo con `PAGO_CANCELAR`; los
+  errores esperables regresan a la misma ficha.
+- V32 agrega `PAGO_CANCELADO` a la bandeja familiar. Una notificación previa de
+  validación se conserva en la base, pero deja de mostrarse al no coincidir con el
+  estado actual; se crea una notificación de cancelación para el tutor que mantenga
+  vínculo y autorización financiera/de notificaciones. Su apertura revalida acceso.
+
+## Verificación de cancelación de pagos
+
+- Docker compiló 490 fuentes Java y ejecutó 289 pruebas sin fallos ni errores. Las
+  pruebas nuevas cubren pendiente sin movimiento, validado con reversas y un egreso,
+  bloqueo por devolución, saldo insuficiente, reintento y notificación familiar.
+- Flyway validó 32 migraciones y aplicó V32 sobre PostgreSQL 17. Hibernate validó el
+  esquema y detectó 44 repositorios; la aplicación completó el arranque.
+- PostgreSQL confirmó permiso, columnas y restricciones nuevos; había cero pagos en
+  estado `CANCELADO`. No se ejecutó ninguna operación de cancelación en datos reales.
+- Falta prueba funcional manual con pagos y cuentas controlados por el propietario.
+  Después de su revisión y commit, el siguiente bloque recomendado es definir V33 de
+  conciliación bancaria, sin alterar el libro inmutable.

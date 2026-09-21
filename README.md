@@ -340,3 +340,12 @@ la pantalla filtra y pagina en la base y exporta el mismo resultado a Excel por 
 Cada registro conserva actor, entidad, motivo, cambios no sensibles y correlación, sin
 guardar contraseñas, tokens, datos bancarios ni archivos. Requiere
 `AUDITORIA_CONSULTAR`; V31 no concede el permiso automáticamente a roles existentes.
+
+La cancelación de pagos registrados por error está separada de la devolución real.
+Un pago pendiente se cancela sin mover dinero; uno validado revierte todas sus
+aplicaciones y publica un egreso compensatorio en la misma cuenta, siempre que no
+tenga devoluciones ejecutadas y exista saldo suficiente. Se conservan el motivo,
+actor, fecha, ingreso y aplicaciones originales para auditoría. Requiere
+`PAGO_CANCELAR`, que V32 no asigna automáticamente; el acceso de recuperación no
+puede ejecutarla. El portal informa la cancelación al tutor autorizado y deja de
+mostrar notificaciones financieras que ya no correspondan al estado actual.

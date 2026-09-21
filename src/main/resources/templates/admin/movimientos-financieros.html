@@ -108,8 +108,8 @@
                         <a th:if="${fila.clase == 'OPERACION' and !fila.revertido}" th:href="@{/admin/reversiones/movimientos/{id}/nueva(id=${fila.id})}">Revertir operación</a>
                         <a th:if="${fila.clase == 'TRASPASO' and !fila.revertido}" th:href="@{/admin/reversiones/transferencias/{id}/nueva(id=${fila.transferenciaId})}">Revertir transferencia</a>
                         <span th:if="${fila.revertido}">Revertido</span>
-                        <small th:if="${fila.clase == 'REVERSO'}" th:text="${'Compensa #' + fila.reversaDeId}">Compensa</small>
-                        <span th:if="${!fila.revertido and fila.clase != 'OPERACION' and fila.clase != 'TRASPASO' and fila.clase != 'REVERSO'}">No aplica</span>
+                        <small th:if="${fila.clase == 'REVERSO' or fila.clase == 'ANULACION'}" th:text="${'Compensa #' + fila.reversaDeId}">Compensa</small>
+                        <span th:if="${!fila.revertido and fila.clase != 'OPERACION' and fila.clase != 'TRASPASO' and fila.clase != 'REVERSO' and fila.clase != 'ANULACION'}">No aplica</span>
                     </td>
                 </tr></tbody></table>
         </div>

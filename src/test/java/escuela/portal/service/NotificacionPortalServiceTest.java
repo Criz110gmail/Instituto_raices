@@ -102,6 +102,17 @@ class NotificacionPortalServiceTest {
         verify(repository, never()).saveAndFlush(any());
     }
 
+    @Test
+    void abreCancelacionSoloSiSigueAccesibleParaElTutor() {
+        NotificacionUsuario notificacion = pago(7L, 52L, TipoNotificacion.PAGO_CANCELADO);
+        when(repository.findByIdForUpdate(90L)).thenReturn(Optional.of(notificacion));
+        when(portal.pagoAccesible(eq(7L), eq(1L), eq(52L), eq("CANCELADO"), any(LocalDate.class)))
+                .thenReturn(true);
+
+        assertThat(service.marcarLeida(principal, 90L)).isEqualTo("cuenta");
+        assertThat(notificacion.getLeidaEn()).isNotNull();
+    }
+
     private NotificacionUsuario evento(Long usuarioId, Long eventoId) {
         Usuario usuario = new Usuario();
         usuario.setId(usuarioId);

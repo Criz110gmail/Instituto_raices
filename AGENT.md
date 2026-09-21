@@ -20,10 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main`: `227af17` — `tutor notificaciones`.
-- V30 ya está confirmada en Git. V31 (bitácora central e inmutable de auditoría) es el
-  cambio local actual; el agente nuevo debe confirmar `git status` y `git log` antes de
-  continuar y no debe reconstruir V1–V31.
+- Último commit confirmado en `main` y `origin/main`: `b7814f3` — `bitácora central e inmutable de auditoría para operaciones sensibles`.
+- V31 ya está confirmada en Git. V32 (cancelación controlada de pagos) es el cambio
+  local actual; el agente nuevo debe confirmar `git status` y `git log` antes de
+  continuar y no debe reconstruir V1–V32.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -616,12 +616,25 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - Cada petición recibe `X-Correlation-ID`; el registro atribuye el usuario persistido,
   el acceso de recuperación o un proceso de sistema. Nunca conserva contraseñas, hashes,
   tokens, cuentas bancarias, comprobantes ni contenido de archivos.
+- Flyway V32 agrega `PAGO_CANCELAR` sin autoasignarlo a roles; registra actor y fecha de
+  cancelación, permite la clase de movimiento `ANULACION` con relación única al ingreso
+  original y amplía las notificaciones a `PAGO_CANCELADO`.
+- Un pago pendiente se puede cancelar con motivo sin mover saldos. Un pago validado por
+  error requiere saldo suficiente en la misma cuenta, no puede tener devoluciones
+  ejecutadas y se cancela revirtiendo todas sus aplicaciones activas y publicando un
+  solo egreso compensatorio. Pago, aplicaciones, movimiento y auditoría se confirman
+  juntos. No se borran registros ni se reusa el flujo de devolución real.
+- La cancelación exige usuario persistido, `PAGO_CANCELAR`, versión optimista y alcance
+  de plantel/cuenta; un reintento con el mismo motivo no duplica movimientos. El pago
+  rechazado no se cancela. El portal conserva las notificaciones anteriores como
+  historial, pero deja de mostrar las que ya no coinciden con el estado vigente y
+  presenta una nueva notificación de cancelación al tutor autorizado.
 
 ## Verificación confirmada
 
-- Compilación correcta de 487 archivos Java de producción.
-- 282 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V31 validados y aplicados correctamente sobre el volumen existente.
+- Compilación correcta de 490 archivos Java de producción.
+- 288 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V32 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 44 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
@@ -679,20 +692,25 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - PostgreSQL confirmó V31 exitosa, el permiso `AUDITORIA_CONSULTAR`, cuatro índices y
   `tg_auditoria_inmutable` para impedir cambios o eliminaciones. La tabla permaneció
   vacía: no se inventaron acciones sensibles para verificarla.
+- PostgreSQL confirmó V32 exitosa, el permiso `PAGO_CANCELAR`, las columnas de actor y
+  fecha y las restricciones de cancelación y movimiento. No se cancelaron pagos reales
+  para verificarla; la suite de pruebas cubre los caminos sensibles.
 
 ## Siguiente paso acordado
 
-V31 está implementada localmente, compilada y aplicada en el volumen actual. El
-propietario debe conceder `AUDITORIA_CONSULTAR` a un rol administrativo, iniciar una
-sesión nueva, ejecutar una acción sensible controlada y comprobar
-`/admin/auditoria`, sus filtros, detalle y Excel. No modificar la tabla directamente.
+V32 está implementada localmente, compilada y aplicada en el volumen actual. El
+propietario debe conceder `PAGO_CANCELAR` a un rol administrativo e iniciar sesión de
+nuevo. Probar primero con un pago pendiente de prueba y después con uno validado y
+controlado en una cuenta con saldo suficiente, comprobando que el cargo recupera su
+saldo, que el libro financiero muestra la compensación y que `/admin/auditoria`
+contiene `PAGO_CANCELADO`. También confirmar la notificación en `/portal` con una
+cuenta de tutor autorizada. No cancelar un pago operativo real sólo para probar.
 
-Después de confirmar y subir V31, el siguiente bloque recomendado es V32 para la
-cancelación controlada de pagos registrados o validados por error. Debe diseñarse como
-flujo distinto de una devolución: conservar el pago original, exigir motivo y permiso,
-revertir atómicamente aplicaciones y movimiento cuando corresponda, ser idempotente y
-dejar evidencia en la bitácora. Antes de codificar se deben precisar estados admitidos,
-restricciones cuando ya existan devoluciones y efecto sobre las notificaciones.
+Después de revisar y subir V32, el siguiente bloque recomendado es V33 para
+conciliación bancaria de cuentas `BANCO`/`INVERSION`, empezando por definir importación
+de estados de cuenta, coincidencia de movimientos, discrepancias y cierre sin alterar
+el libro inmutable. Los archivos bancarios requerirán almacenamiento privado y reglas
+de privacidad antes de implementarse.
 
 Correo y WhatsApp siguen fuera de alcance hasta diseñar consentimiento, proveedor,
 reintentos y trazabilidad. Retiros especializados y conciliación bancaria continúan
@@ -703,18 +721,18 @@ pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. V30 está en `origin/main`; V31 es el cambio local actual. Confirmar si ya fue revisada
+1. V31 está en `origin/main`; V32 es el cambio local actual. Confirmar si ya fue revisada
    y subida; si no, preservar los cambios locales y no volver a implementarla.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V31 ya fueron aplicadas en el volumen verificado; nunca editarlas. La
-   siguiente migración disponible será V32.
-5. Primero terminar la prueba funcional de V31 asignando `AUDITORIA_CONSULTAR` y
-   ejecutando una acción controlada. Después precisar las reglas de cancelación de pagos
-   antes de crear V32; no asumir envíos por correo o WhatsApp.
+4. Flyway V1–V32 ya fueron aplicadas en el volumen verificado; nunca editarlas. La
+   siguiente migración disponible será V33.
+5. Primero terminar la prueba funcional de V32 asignando `PAGO_CANCELAR` y usando sólo
+   pagos/cuentas controlados. Después definir reglas y formato de conciliación bancaria
+   antes de crear V33; no asumir envíos por correo o WhatsApp.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.

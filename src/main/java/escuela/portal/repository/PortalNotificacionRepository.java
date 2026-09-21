@@ -42,13 +42,15 @@ public class PortalNotificacionRepository {
         jdbc.update("""
             INSERT INTO notificacion_usuario(usuario_id,tipo,titulo,mensaje,pago_id,clave_deduplicacion)
             SELECT :usuarioId,concat('PAGO_',pago.estado),
-                   CASE pago.estado WHEN 'VALIDADO' THEN 'Pago validado' ELSE 'Pago rechazado' END,
+                   CASE pago.estado WHEN 'VALIDADO' THEN 'Pago validado'
+                     WHEN 'RECHAZADO' THEN 'Pago rechazado' ELSE 'Pago cancelado' END,
                    left(CASE pago.estado
                      WHEN 'VALIDADO' THEN concat('El pago ',pago.folio,' por ',pago.monto,' ',pago.moneda,' fue validado correctamente.')
-                     ELSE concat('El pago ',pago.folio,' por ',pago.monto,' ',pago.moneda,' fue rechazado. Motivo: ',pago.motivo_rechazo_cancelacion)
+                     WHEN 'RECHAZADO' THEN concat('El pago ',pago.folio,' por ',pago.monto,' ',pago.moneda,' fue rechazado. Motivo: ',pago.motivo_rechazo_cancelacion)
+                     ELSE concat('El pago ',pago.folio,' por ',pago.monto,' ',pago.moneda,' fue cancelado. Motivo: ',pago.motivo_rechazo_cancelacion)
                    END,1000),pago.id,concat('PAGO_',pago.estado,':',pago.id)
             FROM pago JOIN tutor t ON t.id=pago.tutor_id
-            WHERE pago.institucion_id=:institucionId AND pago.estado IN ('VALIDADO','RECHAZADO')
+            WHERE pago.institucion_id=:institucionId AND pago.estado IN ('VALIDADO','RECHAZADO','CANCELADO')
               AND pago.actualizado_en>=:desdePagos AND t.usuario_id=:usuarioId AND t.activo=true
               AND EXISTS(SELECT 1 FROM alumno_tutor at JOIN alumno al ON al.id=at.alumno_id
                 WHERE at.tutor_id=t.id AND at.activo=true AND al.activo=true
@@ -76,14 +78,15 @@ public class PortalNotificacionRepository {
     public PortalNotificaciones consultar(Long usuarioId,String zona,int pagina,int tamanio){
         var p=new MapSqlParameterSource().addValue("usuarioId",usuarioId).addValue("zona",zona)
                 .addValue("limite",tamanio).addValue("offset",(long)pagina*tamanio);
-        Long total=jdbc.queryForObject("SELECT count(*) FROM notificacion_usuario WHERE usuario_id=:usuarioId",p,Long.class);
-        Long pendientes=jdbc.queryForObject("SELECT count(*) FROM notificacion_usuario WHERE usuario_id=:usuarioId AND leida_en IS NULL",p,Long.class);
+        String base=" FROM notificacion_usuario n LEFT JOIN pago pago_actual ON pago_actual.id=n.pago_id "
+                + "WHERE n.usuario_id=:usuarioId AND (n.pago_id IS NULL OR n.tipo=concat('PAGO_',pago_actual.estado))";
+        Long total=jdbc.queryForObject("SELECT count(*)"+base,p,Long.class);
+        Long pendientes=jdbc.queryForObject("SELECT count(*)"+base+" AND n.leida_en IS NULL",p,Long.class);
         var filas=jdbc.query("""
-            SELECT id,tipo,titulo,mensaje,timezone(:zona,creado_en) creada_local,leida_en,
-                   CASE WHEN tipo='EVENTO' THEN '#agenda' WHEN tipo='AVISO' THEN '#avisos' ELSE '#cuenta' END destino
-            FROM notificacion_usuario WHERE usuario_id=:usuarioId
-            ORDER BY (leida_en IS NULL) DESC,creado_en DESC,id DESC LIMIT :limite OFFSET :offset
-            """,p,(rs,n)->new PortalNotificacionFila(rs.getLong("id"),rs.getString("tipo"),rs.getString("titulo"),
+            SELECT n.id,n.tipo,n.titulo,n.mensaje,timezone(:zona,n.creado_en) creada_local,n.leida_en,
+                   CASE WHEN n.tipo='EVENTO' THEN '#agenda' WHEN n.tipo='AVISO' THEN '#avisos' ELSE '#cuenta' END destino
+            """+base+" ORDER BY (n.leida_en IS NULL) DESC,n.creado_en DESC,n.id DESC LIMIT :limite OFFSET :offset",
+                p,(rs,n)->new PortalNotificacionFila(rs.getLong("id"),rs.getString("tipo"),rs.getString("titulo"),
                 rs.getString("mensaje"),rs.getObject("creada_local",LocalDateTime.class),rs.getObject("leida_en")!=null,rs.getString("destino")));
         return new PortalNotificaciones(pendientes==null?0:pendientes,new PageImpl<>(filas,PageRequest.of(pagina,tamanio),total==null?0:total));
     }

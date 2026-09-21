@@ -7,10 +7,12 @@ import escuela.common.exception.ReglaNegocioException;
 import escuela.finanzas.dto.response.PagoResponse;
 import escuela.finanzas.entity.MetodoPago;
 import escuela.finanzas.service.DevolucionPagoService;
+import escuela.finanzas.service.CancelacionPagoService;
 import escuela.finanzas.service.PagoService;
 import escuela.finanzas.service.ValidacionPagoService;
 import escuela.finanzas.dto.request.ValidacionPagoRequest;
 import escuela.finanzas.dto.request.RechazoPagoRequest;
+import escuela.finanzas.dto.request.CancelacionPagoRequest;
 import escuela.institucion.dto.response.*;
 import escuela.institucion.service.*;
 import escuela.seguridad.service.AlcanceDatosService;
@@ -18,6 +20,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,6 +42,7 @@ public class PagoAdminController {
     private final PagoService service;
     private final ValidacionPagoService validacionService;
     private final DevolucionPagoService devolucionService;
+    private final CancelacionPagoService cancelacionService;
     private final InstitucionService institucionService;
     private final PlantelService plantelService;
     private final AlcanceDatosService alcance;
@@ -138,6 +142,25 @@ public class PagoAdminController {
         }
     }
 
+    @PostMapping("/{id}/cancelar")
+    String cancelar(@PathVariable Long id, @RequestParam Long version,
+                    @RequestParam(required = false) String motivo, Authentication authentication,
+                    Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.PAGOS, id);
+        try {
+            PagoResponse pago = cancelacionService.cancelar(id, new CancelacionPagoRequest(version, motivo));
+            flash.addFlashAttribute("mensaje", "Pago " + pago.folio()
+                    + " cancelado; el historial y las compensaciones quedaron registrados");
+            return "redirect:/admin/pagos/" + id + "/editar";
+        } catch (ReglaNegocioException | DataIntegrityViolationException
+                 | ObjectOptimisticLockingFailureException excepcion) {
+            prepararDetalle(model, service.obtener(id), authentication);
+            model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
+            model.addAttribute("motivoCancelacionCapturado", motivo);
+            return "admin/pago-detalle";
+        }
+    }
+
     private void prepararDetalle(Model model, PagoResponse pago, Authentication authentication) {
         prepararDetalle(model, pago, authentication, null);
     }
@@ -157,6 +180,8 @@ public class PagoAdminController {
         boolean puedeDevolver = authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("PAGO_DEVOLVER"));
         model.addAttribute("puedeDevolver", puedeDevolver);
+        model.addAttribute("puedeCancelar", authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("PAGO_CANCELAR")));
         if (pago.estado() == escuela.finanzas.entity.EstadoPago.VALIDADO) {
             var resumen = devolucionService.resumen(pago.id());
             model.addAttribute("resumenDevolucion", resumen);

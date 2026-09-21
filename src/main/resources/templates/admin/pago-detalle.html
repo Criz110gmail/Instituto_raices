@@ -8,19 +8,20 @@
 </head>
 <body class="form-page"><main class="form-shell payment-shell">
 <header class="form-top"><a href="/admin/catalogos/pagos">← Volver a pagos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
-<div class="finance-principle payment-principle" th:classappend="${pago.estado.name() == 'VALIDADO'} ? ' resolved-success' : (${pago.estado.name() == 'RECHAZADO'} ? ' resolved-rejected' : '')">
-    <span th:text="${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? 'Recepción pendiente' : (${pago.estado.name() == 'VALIDADO'} ? 'Ingreso confirmado' : 'Recepción rechazada')">Estado</span>
+<div class="finance-principle payment-principle" th:classappend="${pago.estado.name() == 'VALIDADO'} ? ' resolved-success' : (${pago.estado.name() == 'RECHAZADO' or pago.estado.name() == 'CANCELADO'} ? ' resolved-rejected' : '')">
+    <span th:text="${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? 'Recepción pendiente' : (${pago.estado.name() == 'VALIDADO'} ? 'Ingreso confirmado' : (${pago.estado.name() == 'CANCELADO'} ? 'Pago cancelado' : 'Recepción rechazada'))">Estado</span>
     <strong th:text="${pago.folio}">Folio</strong>
     <p th:if="${pago.estado.name() == 'PENDIENTE_VALIDACION'}">Revisa la cuenta destino y la distribución antes de confirmar. La operación se publicará completa o no se guardará.</p>
     <p th:if="${pago.estado.name() == 'VALIDADO'}">El ingreso y las aplicaciones por alumno quedaron publicados de forma indivisible.</p>
     <p th:if="${pago.estado.name() == 'RECHAZADO'}">El comprobante se conserva para trazabilidad; no se afectaron cargos ni cuentas.</p>
+    <p th:if="${pago.estado.name() == 'CANCELADO'}">Este pago se registró por error. Su historial permanece visible y, si había sido validado, se compensaron el ingreso y sus aplicaciones.</p>
 </div>
 <section class="form-card payment-card">
     <div class="flash" th:if="${mensaje}" th:text="${mensaje}"></div>
     <div class="form-error operation-error" th:if="${errorOperacion}" th:text="${errorOperacion}"></div>
     <div class="form-intro finance-intro"><span>Expediente financiero</span><h1 th:text="${pago.monto.toPlainString() + ' ' + pago.moneda}">Monto</h1><p th:text="${pago.tutorNombre + ' · ' + pago.plantelRegistroNombre}">Tutor</p></div>
     <div class="payment-detail-grid">
-        <article><small>Estado</small><strong class="pending-badge" th:classappend="${pago.estado.name() == 'VALIDADO'} ? ' success' : (${pago.estado.name() == 'RECHAZADO'} ? ' rejected' : '')" th:text="${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? 'Pendiente de validación' : (${pago.estado.name() == 'VALIDADO'} ? 'Validado' : 'Rechazado')">Estado</strong></article>
+        <article><small>Estado</small><strong class="pending-badge" th:classappend="${pago.estado.name() == 'VALIDADO'} ? ' success' : (${pago.estado.name() == 'RECHAZADO' or pago.estado.name() == 'CANCELADO'} ? ' rejected' : '')" th:text="${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? 'Pendiente de validación' : (${pago.estado.name() == 'VALIDADO'} ? 'Validado' : (${pago.estado.name() == 'CANCELADO'} ? 'Cancelado' : 'Rechazado'))">Estado</strong></article>
         <article><small>Fecha del pago</small><strong th:text="${fechaPagoLocal}">Fecha</strong></article>
         <article><small>Método</small><strong th:text="${pago.metodo.name() == 'EFECTIVO' ? 'Efectivo' : 'Transferencia'}">Método</strong></article>
         <article><small>Cuenta declarada</small><strong th:text="${pago.cuentaDeclaradaNombre ?: 'Sin cuenta declarada'}">Cuenta</strong></article>
@@ -88,6 +89,16 @@
         <div class="movement-card"><div><small>Cuenta destino</small><strong th:text="${pago.movimiento.cuentaNombre}">Cuenta</strong></div><div><small>Secuencia</small><strong th:text="${'#' + pago.movimiento.secuenciaCuenta}">#1</strong></div><div><small>Ingreso</small><strong th:text="${pago.movimiento.monto.toPlainString() + ' ' + pago.moneda}">Monto</strong></div><div><small>Saldo posterior</small><strong th:text="${pago.movimiento.saldoPosterior.toPlainString() + ' ' + pago.moneda}">Saldo</strong></div></div>
     </section>
     <section class="detail-section rejection-section" th:if="${pago.estado.name() == 'RECHAZADO'}"><div class="section-heading"><div><span>Resolución</span><h2>Motivo del rechazo</h2></div></div><p class="detail-notes" th:text="${pago.motivoRechazoCancelacion}"></p></section>
+    <section class="detail-section rejection-section" th:if="${pago.estado.name() == 'CANCELADO'}"><div class="section-heading"><div><span>Resolución</span><h2>Motivo de la cancelación</h2></div></div><p class="detail-notes" th:text="${pago.motivoRechazoCancelacion}"></p></section>
+    <section class="validation-console refund-console" th:if="${puedeCancelar and (pago.estado.name() == 'PENDIENTE_VALIDACION' or (pago.estado.name() == 'VALIDADO' and resumenDevolucion.devoluciones.empty))}">
+        <div class="section-heading"><div><span>Corrección excepcional</span><h2>Cancelar pago registrado por error</h2></div><p>Es distinto de devolver dinero al tutor. Si el pago está validado, se liberarán todos sus abonos y se publicará un egreso compensatorio; no se borrará el historial.</p></div>
+        <form method="post" th:action="@{/admin/pagos/{id}/cancelar(id=${pago.id})}" class="refund-form">
+            <input type="hidden" name="version" th:value="${pago.auditoria.version}">
+            <label><span>Motivo obligatorio *</span><textarea name="motivo" maxlength="2000" required rows="4" th:text="${motivoCancelacionCapturado}"></textarea></label>
+            <div class="refund-warning"><strong>Confirma la causa antes de continuar.</strong><span>Si el dinero sí se recibió y debe entregarse al tutor, usa Devolución en lugar de cancelar. Con devoluciones ejecutadas, la cancelación está bloqueada.</span></div>
+            <button type="submit" class="reject-button refund-button">Cancelar y conservar trazabilidad</button>
+        </form>
+    </section>
     <section class="detail-section"><div class="section-heading"><div><span>Archivos privados</span><h2>Comprobantes</h2></div><p>La descarga vuelve a validar permisos y no utiliza caché.</p></div><div class="receipt-list" th:if="${!pago.comprobantes.empty}"><a th:each="c : ${pago.comprobantes}" th:href="@{/admin/pagos/{p}/comprobantes/{c}(p=${pago.id},c=${c.id})}"><span>↧</span><div><strong th:text="${c.nombreOriginal}">Archivo</strong><small th:text="${c.tipoMime + ' · ' + c.tamanoBytes + ' bytes'}">Tipo</small></div></a></div><div class="distribution-empty" th:if="${pago.comprobantes.empty}"><strong>Sin comprobantes</strong><p>Los pagos en efectivo pueden registrarse sin archivo.</p></div></section>
     <section class="detail-section" th:if="${pago.observaciones}"><div class="section-heading"><div><span>Notas</span><h2>Observaciones</h2></div></div><p class="detail-notes" th:text="${pago.observaciones}"></p></section>
     <footer class="form-actions"><a href="/admin/catalogos/pagos">Volver al listado</a></footer>

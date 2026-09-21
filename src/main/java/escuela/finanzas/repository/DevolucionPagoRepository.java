@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DevolucionPagoRepository extends JpaRepository<DevolucionPago, Long> {
+    boolean existsByPagoIdAndEstado(Long pagoId, EstadoDevolucionPago estado);
     Optional<DevolucionPago> findByInstitucionIdAndClaveIdempotencia(Long institucionId,
                                                                      String claveIdempotencia);
     List<DevolucionPago> findAllByPagoIdAndEstadoOrderByFechaDescIdDesc(Long pagoId,

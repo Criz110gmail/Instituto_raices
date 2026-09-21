@@ -43,13 +43,14 @@ public class NotificacionPortalService {
             case AVISO -> portal.avisoAccesible(principal.usuarioId(),principal.institucionId(),n.getAviso().getId(),hoy,ahora);
             case PAGO_VALIDADO -> portal.pagoAccesible(principal.usuarioId(),principal.institucionId(),n.getPago().getId(),"VALIDADO",hoy);
             case PAGO_RECHAZADO -> portal.pagoAccesible(principal.usuarioId(),principal.institucionId(),n.getPago().getId(),"RECHAZADO",hoy);
+            case PAGO_CANCELADO -> portal.pagoAccesible(principal.usuarioId(),principal.institucionId(),n.getPago().getId(),"CANCELADO",hoy);
         };
         if(!accesible)throw new AccessDeniedException("El contenido de la notificación ya no está disponible para esta cuenta");
         if(n.getLeidaEn()==null)n.setLeidaEn(ahora);
         repository.saveAndFlush(n);return switch(n.getTipo()){
             case EVENTO -> "agenda";
             case AVISO -> "avisos";
-            case PAGO_VALIDADO,PAGO_RECHAZADO -> "cuenta";
+            case PAGO_VALIDADO,PAGO_RECHAZADO,PAGO_CANCELADO -> "cuenta";
         };
     }
 

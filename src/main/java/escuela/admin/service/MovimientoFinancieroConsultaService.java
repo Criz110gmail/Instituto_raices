@@ -110,7 +110,8 @@ public class MovimientoFinancieroConsultaService {
                 movimiento.getPago() == null ? "—" : movimiento.getPago().getFolio(), movimiento.getSecuenciaCuenta(),
                 movimiento.getTransferencia() == null ? null : movimiento.getTransferencia().getId(),
                 movimiento.getReversaDe() == null ? null : movimiento.getReversaDe().getId(),
-                movimiento.getClase() == escuela.finanzas.entity.ClaseMovimiento.OPERACION
+                (movimiento.getClase() == escuela.finanzas.entity.ClaseMovimiento.OPERACION
+                        || movimiento.getClase() == escuela.finanzas.entity.ClaseMovimiento.COBRO)
                         ? movimiento.getReversa() != null
                         : movimiento.getClase() == escuela.finanzas.entity.ClaseMovimiento.TRASPASO
                         && movimiento.getTransferencia().getEstado()

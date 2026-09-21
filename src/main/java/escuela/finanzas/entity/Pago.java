@@ -78,6 +78,13 @@ public class Pago extends EntidadAuditable {
     @Column(name = "motivo_rechazo_cancelacion", length = 2000)
     private String motivoRechazoCancelacion;
 
+    @Column(name = "cancelado_en")
+    private Instant canceladoEn;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cancelado_por_id")
+    private Usuario canceladoPor;
+
     @Column(length = 4000)
     private String observaciones;
 
