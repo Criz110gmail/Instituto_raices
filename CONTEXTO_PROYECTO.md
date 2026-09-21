@@ -1321,3 +1321,43 @@
   pagos, movimientos o notificaciones de prueba.
 - Falta la prueba manual con un pago controlado. Después de revisar y subir V30, el
   siguiente bloque recomendado es V31 para la bitácora central e inmutable de auditoría.
+
+## Decisiones — bitácora central e inmutable de auditoría
+
+- Flyway V31 crea `auditoria` y `AUDITORIA_CONSULTAR` sin conceder el permiso a roles
+  existentes. La fila identifica institución, actor persistido o actor de sistema,
+  acción, entidad, instante, motivo, cambios permitidos y correlación.
+- La tabla es de sólo inserción. Además de `@Immutable`, PostgreSQL ejecuta
+  `tg_auditoria_inmutable` antes de `UPDATE` o `DELETE` y rechaza la operación. Cuatro
+  índices cubren institución/fecha, entidad, actor y correlación.
+- `RegistroAuditoriaService` exige una transacción existente, de modo que una operación
+  sensible y su evidencia se confirman o revierten juntas. Las claves idempotentes de
+  los servicios evitan registrar otra acción cuando un reintento sólo devuelve el
+  resultado anterior.
+- Se registran validación y rechazo de pagos, devolución, transferencia, reversa de
+  movimiento o transferencia, concesión de permiso a rol, asignación o retiro de rol de
+  usuario, publicación/cancelación de eventos y publicación/retiro de avisos.
+- Los detalles usan una lista permitida y excluyen claves de contraseñas, hashes,
+  tokens, secretos, cuentas o CLABE, comprobantes y contenido de archivos. No se guarda
+  el cuerpo completo de entidades ni información binaria.
+- Un filtro de petición crea `X-Correlation-ID`, lo comparte durante la operación y
+  limpia el contexto al terminar. El acceso de recuperación queda identificado como tal
+  sin inventar un usuario de base de datos.
+- `/admin/auditoria` exige el permiso nuevo y alcance institucional. Consulta y pagina
+  en PostgreSQL por fechas, acción, tipo/ID de entidad, actor y correlación; el Excel
+  recorre por bloques exactamente el mismo filtro. No tiene alta, edición ni borrado.
+
+## Verificación de la bitácora central
+
+- Docker compiló 487 fuentes Java y ejecutó 282 pruebas sin fallos ni errores. Tres
+  pruebas nuevas cubren atribución del actor, exclusión de secretos, acceso de
+  recuperación y ciclo de vida de la correlación.
+- Flyway validó 31 migraciones y aplicó V31 sobre PostgreSQL 17. Hibernate validó el
+  esquema, detectó 44 repositorios y Spring Boot completó el arranque en el puerto 8080.
+- PostgreSQL confirmó el permiso, los cuatro índices y la definición del trigger para
+  impedir actualizaciones y eliminaciones. `auditoria` conservó cero filas porque no se
+  simularon acciones sensibles sobre los datos operativos.
+- La prueba funcional pendiente es asignar `AUDITORIA_CONSULTAR`, abrir una sesión
+  nueva, ejecutar una acción controlada y revisar listado, filtros, detalle y Excel.
+  Después de confirmar V31, la recomendación es diseñar V32 para cancelación controlada
+  de pagos, separada de las devoluciones.

@@ -1,5 +1,7 @@
 package escuela.seguridad.service.impl;
 
+import escuela.auditoria.entity.AccionAuditoria;
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.common.exception.RecursoDuplicadoException;
 import escuela.common.exception.RecursoNoEncontradoException;
 import escuela.common.exception.ReglaNegocioException;
@@ -24,7 +26,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static escuela.common.service.ValidacionVersion.verificar;
@@ -40,6 +44,7 @@ public class AdministracionAccesoServiceImpl implements AdministracionAccesoServ
     private final UsuarioRepository usuarioRepository;
     private final UsuarioRolRepository usuarioRolRepository;
     private final PlantelRepository plantelRepository;
+    private final RegistroAuditoriaService auditoria;
 
     @Override
     public Long agregarPermiso(Long rolId, Long permisoId) {
@@ -55,12 +60,16 @@ public class AdministracionAccesoServiceImpl implements AdministracionAccesoServ
                 throw new RecursoDuplicadoException("El rol ya tiene asignado ese permiso");
             }
             existente.get().setActivo(true);
-            return rolPermisoRepository.saveAndFlush(existente.get()).getId();
+            Long id = rolPermisoRepository.saveAndFlush(existente.get()).getId();
+            registrarPermiso(rol, permiso, id);
+            return id;
         }
         RolPermiso relacion = new RolPermiso();
         relacion.setRol(rol);
         relacion.setPermiso(permiso);
-        return rolPermisoRepository.saveAndFlush(relacion).getId();
+        Long id = rolPermisoRepository.saveAndFlush(relacion).getId();
+        registrarPermiso(rol, permiso, id);
+        return id;
     }
 
     @Override
@@ -89,7 +98,9 @@ public class AdministracionAccesoServiceImpl implements AdministracionAccesoServ
                 throw new RecursoDuplicadoException("El usuario ya tiene esa asignación de rol");
             }
             existente.get().setActivo(true);
-            return usuarioRolRepository.saveAndFlush(existente.get()).getId();
+            Long id = usuarioRolRepository.saveAndFlush(existente.get()).getId();
+            registrarRolUsuario(usuario, rol, request, id);
+            return id;
         }
 
         UsuarioRol asignacion = new UsuarioRol();
@@ -98,7 +109,9 @@ public class AdministracionAccesoServiceImpl implements AdministracionAccesoServ
         asignacion.setAlcance(request.alcance());
         asignacion.setPlantel(plantel);
         asignacion.setActivo(true);
-        return usuarioRolRepository.saveAndFlush(asignacion).getId();
+        Long id = usuarioRolRepository.saveAndFlush(asignacion).getId();
+        registrarRolUsuario(usuario, rol, request, id);
+        return id;
     }
 
     @Override
@@ -125,6 +138,25 @@ public class AdministracionAccesoServiceImpl implements AdministracionAccesoServ
         }
         verificar(asignacion, version, "Asignación de rol");
         asignacion.setActivo(false);
+        auditoria.registrar(asignacion.getUsuario().getInstitucion().getId(), AccionAuditoria.ROL_USUARIO_RETIRADO,
+                "USUARIO_ROL", asignacion.getId(), null, Map.of("usuarioId", asignacion.getUsuario().getId(),
+                        "rolId", asignacion.getRol().getId(), "alcance", asignacion.getAlcance().name()));
+    }
+
+    private void registrarPermiso(Rol rol, Permiso permiso, Long relacionId) {
+        auditoria.registrar(rol.getInstitucion().getId(), AccionAuditoria.PERMISO_ROL_ASIGNADO,
+                "ROL_PERMISO", relacionId, null,
+                Map.of("rolId", rol.getId(), "rol", rol.getCodigo(), "permisoId", permiso.getId(),
+                        "permiso", permiso.getCodigo()));
+    }
+
+    private void registrarRolUsuario(Usuario usuario, Rol rol, AsignacionRolRequest request, Long asignacionId) {
+        Map<String,Object> cambios = new LinkedHashMap<>();
+        cambios.put("usuarioId", usuario.getId()); cambios.put("rolId", rol.getId());
+        cambios.put("rol", rol.getCodigo()); cambios.put("alcance", request.alcance().name());
+        if (request.plantelId() != null) cambios.put("plantelId", request.plantelId());
+        auditoria.registrar(usuario.getInstitucion().getId(), AccionAuditoria.ROL_USUARIO_ASIGNADO,
+                "USUARIO_ROL", asignacionId, null, cambios);
     }
 
     private Plantel validarPlantel(AsignacionRolRequest request, Usuario usuario) {

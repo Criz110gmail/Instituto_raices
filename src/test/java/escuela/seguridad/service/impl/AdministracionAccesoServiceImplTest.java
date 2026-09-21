@@ -1,5 +1,6 @@
 package escuela.seguridad.service.impl;
 
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.entity.Institucion;
 import escuela.institucion.entity.Plantel;
@@ -31,6 +32,7 @@ class AdministracionAccesoServiceImplTest {
     private final UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
     private final UsuarioRolRepository usuarioRolRepository = mock(UsuarioRolRepository.class);
     private final PlantelRepository plantelRepository = mock(PlantelRepository.class);
+    private final RegistroAuditoriaService auditoria = mock(RegistroAuditoriaService.class);
     private AdministracionAccesoServiceImpl service;
     private Usuario usuario;
     private Rol rol;
@@ -48,7 +50,7 @@ class AdministracionAccesoServiceImplTest {
         when(usuarioRepository.findById(10L)).thenReturn(Optional.of(usuario));
         when(rolRepository.findById(20L)).thenReturn(Optional.of(rol));
         service = new AdministracionAccesoServiceImpl(rolRepository, permisoRepository,
-                rolPermisoRepository, usuarioRepository, usuarioRolRepository, plantelRepository);
+                rolPermisoRepository, usuarioRepository, usuarioRolRepository, plantelRepository, auditoria);
     }
 
     @Test

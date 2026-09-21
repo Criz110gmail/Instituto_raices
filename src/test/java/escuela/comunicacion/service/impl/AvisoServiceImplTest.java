@@ -1,5 +1,6 @@
 package escuela.comunicacion.service.impl;
 
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.comunicacion.entity.*;
 import escuela.comunicacion.mapper.AvisoMapper;
 import escuela.comunicacion.repository.AvisoRepository;
@@ -18,8 +19,9 @@ import static org.mockito.Mockito.*;
 class AvisoServiceImplTest {
     private final AvisoRepository repository=mock(AvisoRepository.class);
     private final AlcanceDatosService alcance=mock(AlcanceDatosService.class);
+    private final RegistroAuditoriaService auditoria=mock(RegistroAuditoriaService.class);
     private final AvisoServiceImpl service=new AvisoServiceImpl(repository,
-            mock(InstitucionRepository.class),mock(PlantelRepository.class),mock(AvisoMapper.class),alcance);
+            mock(InstitucionRepository.class),mock(PlantelRepository.class),mock(AvisoMapper.class),alcance,auditoria);
 
     @Test void publicaUnBorradorVigente(){Aviso a=aviso(EstadoAviso.BORRADOR);a.setExpiraEn(Instant.now().plusSeconds(3600));
         when(repository.findByIdForUpdate(1L)).thenReturn(Optional.of(a));when(repository.saveAndFlush(a)).thenReturn(a);

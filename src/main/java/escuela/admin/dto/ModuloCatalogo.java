@@ -32,7 +32,8 @@ public enum ModuloCatalogo {
     EVENTOS_ESCOLARES("eventos-escolares", "Eventos escolares", List.of()),
     AVISOS("avisos", "Avisos escolares", List.of()),
     ROLES("roles", "Roles y permisos", List.of("Código", "Rol", "Institución", "Descripción")),
-    USUARIOS("usuarios", "Usuarios", List.of("Usuario", "Correo", "Institución", "Credencial"));
+    USUARIOS("usuarios", "Usuarios", List.of("Usuario", "Correo", "Institución", "Credencial")),
+    AUDITORIA("auditoria", "Auditoría", List.of());
 
     private final String slug;
     private final String titulo;
@@ -56,7 +57,7 @@ public enum ModuloCatalogo {
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
             case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, REPORTES_FINANCIEROS -> "Finanzas";
             case EVENTOS_ESCOLARES, AVISOS -> "Comunicación";
-            case ROLES, USUARIOS -> "Seguridad";
+            case ROLES, USUARIOS, AUDITORIA -> "Seguridad";
         };
     }
 
@@ -90,6 +91,7 @@ public enum ModuloCatalogo {
             case AVISOS -> "AVISO";
             case ROLES -> "ROL";
             case USUARIOS -> "USUARIO";
+            case AUDITORIA -> "AUDITORIA";
         };
         if (this == PAGOS) return permisos.contains("PAGO_LEER") || permisos.contains("PAGO_REGISTRAR")
                 || permisos.contains("PAGO_VALIDAR") || permisos.contains("PAGO_DEVOLVER");
@@ -102,6 +104,7 @@ public enum ModuloCatalogo {
         if (this == EVENTOS_ESCOLARES) return permisos.contains("EVENTO_ESCOLAR_LEER")
                 || permisos.contains("EVENTO_ESCOLAR_ADMINISTRAR");
         if (this == AVISOS) return permisos.contains("AVISO_LEER") || permisos.contains("AVISO_ADMINISTRAR");
+        if (this == AUDITORIA) return permisos.contains("AUDITORIA_CONSULTAR");
         boolean administra = permisos.contains(base + "_ADMINISTRAR");
         if (this == ROLES || this == USUARIOS) return administra;
         return administra || permisos.contains(base + "_LEER");
@@ -151,12 +154,13 @@ public enum ModuloCatalogo {
             case AVISOS -> "/admin/avisos";
             case ROLES -> "/admin/roles";
             case USUARIOS -> "/admin/usuarios";
+            case AUDITORIA -> "/admin/auditoria";
             default -> "";
         };
     }
 
     public String rutaListado() {
-        return this == MOVIMIENTOS_FINANCIEROS || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS
+        return this == MOVIMIENTOS_FINANCIEROS || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA
                 ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }

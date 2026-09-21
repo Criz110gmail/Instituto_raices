@@ -1,5 +1,7 @@
 package escuela.comunicacion.service.impl;
 
+import escuela.auditoria.entity.AccionAuditoria;
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.academico.entity.*;
 import escuela.academico.repository.*;
 import escuela.alumno.repository.AlumnoRepository;
@@ -38,6 +40,7 @@ public class EventoEscolarServiceImpl implements EventoEscolarService {
     private final InscripcionRepository inscripcionRepository;
     private final EventoEscolarMapper mapper;
     private final AlcanceDatosService alcanceDatos;
+    private final RegistroAuditoriaService auditoria;
 
     @Override public EventoEscolarResponse crear(EventoEscolarRequest request) {
         var contexto = contexto(request);
@@ -69,7 +72,15 @@ public class EventoEscolarServiceImpl implements EventoEscolarService {
         if (evento.getAlcance() == AlcanceEventoEscolar.SELECCION && evento.getDestinatarios().isEmpty())
             throw new ReglaNegocioException("Agrega al menos un destinatario antes de publicar");
         evento.setEstado(EstadoEventoEscolar.PUBLICADO); evento.setPublicadoEn(Instant.now());
-        return mapper.respuesta(repository.saveAndFlush(evento));
+        EventoEscolar guardado=repository.saveAndFlush(evento);
+        Map<String, Object> cambios = new LinkedHashMap<>();
+        cambios.put("titulo", evento.getTitulo());
+        cambios.put("alcance", evento.getAlcance() == null ? null : evento.getAlcance().name());
+        cambios.put("tipo", evento.getTipo() == null ? null : evento.getTipo().name());
+        cambios.put("destinatarios", evento.getDestinatarios().size());
+        auditoria.registrar(evento.getInstitucion().getId(), AccionAuditoria.EVENTO_PUBLICADO,
+                "EVENTO_ESCOLAR", evento.getId(), null, cambios);
+        return mapper.respuesta(guardado);
     }
 
     @Override public EventoEscolarResponse cancelar(Long id, Long version, String motivo) {
@@ -82,7 +93,13 @@ public class EventoEscolarServiceImpl implements EventoEscolarService {
             throw new ReglaNegocioException("Explica la cancelación en un máximo de 2000 caracteres");
         evento.setEstado(EstadoEventoEscolar.CANCELADO); evento.setCanceladoEn(Instant.now());
         evento.setMotivoCancelacion(razon);
-        return mapper.respuesta(repository.saveAndFlush(evento));
+        EventoEscolar guardado=repository.saveAndFlush(evento);
+        Map<String, Object> cambios = new LinkedHashMap<>();
+        cambios.put("titulo", evento.getTitulo());
+        cambios.put("estadoAnterior", evento.getPublicadoEn()==null?"BORRADOR":"PUBLICADO");
+        auditoria.registrar(evento.getInstitucion().getId(), AccionAuditoria.EVENTO_CANCELADO,
+                "EVENTO_ESCOLAR", evento.getId(), razon, cambios);
+        return mapper.respuesta(guardado);
     }
 
     @Override @Transactional(readOnly = true) public EventoEscolarResponse obtener(Long id) {

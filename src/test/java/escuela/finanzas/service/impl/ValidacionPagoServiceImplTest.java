@@ -1,5 +1,6 @@
 package escuela.finanzas.service.impl;
 
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.alumno.entity.Alumno;
 import escuela.alumno.repository.AlumnoTutorRepository;
 import escuela.cobranza.entity.*;
@@ -38,8 +39,9 @@ class ValidacionPagoServiceImplTest {
     private final MotivoFinancieroRepository motivos = mock(MotivoFinancieroRepository.class);
     private final AlumnoTutorRepository vinculos = mock(AlumnoTutorRepository.class);
     private final UsuarioRepository usuarios = mock(UsuarioRepository.class);
+    private final RegistroAuditoriaService auditoria = mock(RegistroAuditoriaService.class);
     private final ValidacionPagoServiceImpl service = new ValidacionPagoServiceImpl(pagos, cuentas, cargos,
-            solicitudes, aplicaciones, movimientos, motivos, vinculos, usuarios, new PagoMapper());
+            solicitudes, aplicaciones, movimientos, motivos, vinculos, usuarios, new PagoMapper(), auditoria);
 
     private Institucion institucion;
     private Plantel plantel;

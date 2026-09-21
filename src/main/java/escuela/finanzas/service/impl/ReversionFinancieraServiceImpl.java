@@ -1,5 +1,7 @@
 package escuela.finanzas.service.impl;
 
+import escuela.auditoria.entity.AccionAuditoria;
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.common.exception.RecursoNoEncontradoException;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.finanzas.dto.request.ReversionFinancieraRequest;
@@ -34,6 +36,7 @@ public class ReversionFinancieraServiceImpl implements ReversionFinancieraServic
     private final CuentaFinancieraRepository cuentaRepository;
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcance;
+    private final RegistroAuditoriaService auditoria;
 
     @Override
     @Transactional(readOnly = true)
@@ -88,6 +91,11 @@ public class ReversionFinancieraServiceImpl implements ReversionFinancieraServic
         MovimientoFinanciero reversa = reversa(original, cuenta, reversion, fecha, direccion, estado,
                 "Reversa de operación: " + original.getConcepto(), "MOVIMIENTO");
         reversa = movimientoRepository.saveAndFlush(reversa);
+        auditoria.registrar(original.getInstitucion().getId(), AccionAuditoria.MOVIMIENTO_REVERTIDO,
+                "MOVIMIENTO_FINANCIERO", original.getId(), reversion.getMotivo(),
+                Map.of("reversionId", reversion.getId(), "movimientoReversaId", reversa.getId(),
+                        "cuentaId", cuenta.getId(), "monto", original.getMonto(),
+                        "direccionOriginal", original.getDireccion().name()));
         return respuesta(reversion, List.of(reversa));
     }
 
@@ -142,6 +150,11 @@ public class ReversionFinancieraServiceImpl implements ReversionFinancieraServic
                 .saveAllAndFlush(List.of(retornoOrigen, salidaDestino));
         transferencia.setEstado(EstadoTransferenciaCuenta.REVERTIDA);
         transferenciaRepository.saveAndFlush(transferencia);
+        auditoria.registrar(transferencia.getInstitucion().getId(), AccionAuditoria.TRANSFERENCIA_REVERTIDA,
+                "TRANSFERENCIA_CUENTA", transferencia.getId(), reversion.getMotivo(),
+                Map.of("reversionId", reversion.getId(), "cuentaOrigenId", origen.getId(),
+                        "cuentaDestinoId", destino.getId(), "monto", transferencia.getMonto(),
+                        "moneda", origen.getMoneda()));
         return respuesta(reversion, guardados);
     }
 

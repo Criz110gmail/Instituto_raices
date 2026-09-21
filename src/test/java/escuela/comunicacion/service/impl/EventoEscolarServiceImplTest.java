@@ -1,5 +1,6 @@
 package escuela.comunicacion.service.impl;
 
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.academico.entity.*;
 import escuela.academico.repository.*;
 import escuela.alumno.repository.AlumnoRepository;
@@ -36,8 +37,9 @@ class EventoEscolarServiceImplTest {
     private final InscripcionRepository inscripciones = mock(InscripcionRepository.class);
     private final EventoEscolarMapper mapper = mock(EventoEscolarMapper.class);
     private final AlcanceDatosService alcance = mock(AlcanceDatosService.class);
+    private final RegistroAuditoriaService auditoria = mock(RegistroAuditoriaService.class);
     private final EventoEscolarServiceImpl service = new EventoEscolarServiceImpl(eventos, instituciones,
-            ciclos, planteles, niveles, grados, grupos, alumnos, ofertas, inscripciones, mapper, alcance);
+            ciclos, planteles, niveles, grados, grupos, alumnos, ofertas, inscripciones, mapper, alcance, auditoria);
 
     private Institucion institucion;
     private CicloEscolar ciclo;

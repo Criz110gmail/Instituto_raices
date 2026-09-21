@@ -1,5 +1,7 @@
 package escuela.comunicacion.service.impl;
 
+import escuela.auditoria.entity.AccionAuditoria;
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.comunicacion.dto.request.AvisoRequest;
 import escuela.comunicacion.dto.response.AvisoResponse;
 import escuela.comunicacion.entity.*;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
+import java.util.Map;
 
 import static escuela.common.mapper.NormalizacionTexto.limpiar;
 import static escuela.common.service.ValidacionVersion.verificar;
@@ -27,6 +30,7 @@ public class AvisoServiceImpl implements AvisoService {
     private final PlantelRepository plantelRepository;
     private final AvisoMapper mapper;
     private final AlcanceDatosService alcance;
+    private final RegistroAuditoriaService auditoria;
 
     @Override public AvisoResponse crear(AvisoRequest r) {
         Contexto c = contexto(r); Aviso a = new Aviso(); a.setInstitucion(c.institucion());
@@ -47,7 +51,12 @@ public class AvisoServiceImpl implements AvisoService {
         if (a.getExpiraEn() != null && !a.getExpiraEn().isAfter(ahora))
             throw new ReglaNegocioException("El vencimiento debe ser posterior al momento de publicación");
         a.setEstado(EstadoAviso.PUBLICADO); a.setPublicadoEn(ahora);
-        return mapper.respuesta(repository.saveAndFlush(a));
+        Aviso guardado=repository.saveAndFlush(a);
+        auditoria.registrar(a.getInstitucion().getId(), AccionAuditoria.AVISO_PUBLICADO,
+                "AVISO", a.getId(), null, Map.of("titulo", a.getTitulo(), "alcance",
+                        a.getPlantel()==null?"INSTITUCION":"PLANTEL", "plantelId",
+                        a.getPlantel()==null?"":a.getPlantel().getId()));
+        return mapper.respuesta(guardado);
     }
     @Override public AvisoResponse retirar(Long id, Long version, String motivo) {
         Aviso a = bloquear(id); verificar(a, version, "Aviso"); validarAlcance(a.getInstitucion().getId(), a.getPlantel());
@@ -55,7 +64,10 @@ public class AvisoServiceImpl implements AvisoService {
         String razon = limpiar(motivo);
         if (razon == null || razon.length() > 1000) throw new ReglaNegocioException("Explica el retiro en un máximo de 1000 caracteres");
         a.setEstado(EstadoAviso.RETIRADO); a.setRetiradoEn(Instant.now()); a.setMotivoRetiro(razon);
-        return mapper.respuesta(repository.saveAndFlush(a));
+        Aviso guardado=repository.saveAndFlush(a);
+        auditoria.registrar(a.getInstitucion().getId(), AccionAuditoria.AVISO_RETIRADO,
+                "AVISO", a.getId(), razon, Map.of("titulo", a.getTitulo()));
+        return mapper.respuesta(guardado);
     }
     @Override @Transactional(readOnly = true) public AvisoResponse obtener(Long id) {
         alcance.validarRecurso(escuela.admin.dto.ModuloCatalogo.AVISOS, id);

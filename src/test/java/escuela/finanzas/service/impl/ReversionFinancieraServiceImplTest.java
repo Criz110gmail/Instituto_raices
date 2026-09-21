@@ -1,5 +1,6 @@
 package escuela.finanzas.service.impl;
 
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.finanzas.dto.request.ReversionFinancieraRequest;
 import escuela.finanzas.entity.*;
@@ -30,8 +31,9 @@ class ReversionFinancieraServiceImplTest {
     private final CuentaFinancieraRepository cuentas = mock(CuentaFinancieraRepository.class);
     private final UsuarioRepository usuarios = mock(UsuarioRepository.class);
     private final AlcanceDatosService alcance = mock(AlcanceDatosService.class);
+    private final RegistroAuditoriaService auditoria = mock(RegistroAuditoriaService.class);
     private final ReversionFinancieraServiceImpl service = new ReversionFinancieraServiceImpl(
-            movimientos, transferencias, reversiones, cuentas, usuarios, alcance);
+            movimientos, transferencias, reversiones, cuentas, usuarios, alcance, auditoria);
 
     private Institucion institucion;
     private Plantel plantel;

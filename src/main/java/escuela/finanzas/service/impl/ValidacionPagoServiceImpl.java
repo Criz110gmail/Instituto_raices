@@ -1,5 +1,7 @@
 package escuela.finanzas.service.impl;
 
+import escuela.auditoria.entity.AccionAuditoria;
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.alumno.repository.AlumnoTutorRepository;
 import escuela.cobranza.entity.*;
 import escuela.cobranza.repository.CargoRepository;
@@ -43,6 +45,7 @@ public class ValidacionPagoServiceImpl implements ValidacionPagoService {
     private final AlumnoTutorRepository vinculoRepository;
     private final UsuarioRepository usuarioRepository;
     private final PagoMapper mapper;
+    private final RegistroAuditoriaService auditoria;
 
     @Override
     public PagoResponse validar(Long pagoId, ValidacionPagoRequest request) {
@@ -96,7 +99,13 @@ public class ValidacionPagoServiceImpl implements ValidacionPagoService {
         pago.setValidadoEn(ahora);
         pago.setEstado(EstadoPago.VALIDADO);
         pago.setMovimiento(movimiento);
-        return mapper.respuesta(pagoRepository.saveAndFlush(pago));
+        Pago guardado = pagoRepository.saveAndFlush(pago);
+        PagoResponse respuesta = mapper.respuesta(guardado);
+        auditoria.registrar(pago.getInstitucion().getId(), AccionAuditoria.PAGO_VALIDADO,
+                "PAGO", pago.getId(), null, Map.of("folio", pago.getFolio(), "monto", pago.getMonto(),
+                        "moneda", pago.getMoneda(), "cuentaDestinoId", cuenta.getId(),
+                        "montoAplicado", respuesta.montoAplicado(), "montoDisponible", respuesta.montoDisponible()));
+        return respuesta;
     }
 
     @Override
@@ -113,7 +122,11 @@ public class ValidacionPagoServiceImpl implements ValidacionPagoService {
         actorPersistido(pago);
         pago.setEstado(EstadoPago.RECHAZADO);
         pago.setMotivoRechazoCancelacion(motivo);
-        return mapper.respuesta(pagoRepository.saveAndFlush(pago));
+        Pago guardado = pagoRepository.saveAndFlush(pago);
+        auditoria.registrar(pago.getInstitucion().getId(), AccionAuditoria.PAGO_RECHAZADO,
+                "PAGO", pago.getId(), motivo, Map.of("folio", pago.getFolio(), "monto", pago.getMonto(),
+                        "moneda", pago.getMoneda()));
+        return mapper.respuesta(guardado);
     }
 
     private Pago buscarBloqueado(Long id) {

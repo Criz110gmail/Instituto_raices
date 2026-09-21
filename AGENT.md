@@ -20,10 +20,10 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main`: `829b2d2` — `otificaciones internas para tutores`.
-- V29 ya está confirmada en Git. V30 (resultados de pagos en la bandeja familiar) es el
+- Último commit confirmado en `main` y `origin/main`: `227af17` — `tutor notificaciones`.
+- V30 ya está confirmada en Git. V31 (bitácora central e inmutable de auditoría) es el
   cambio local actual; el agente nuevo debe confirmar `git status` y `git log` antes de
-  continuar y no debe reconstruir V1–V30.
+  continuar y no debe reconstruir V1–V31.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -47,8 +47,8 @@ no vuelvas a implementar componentes que ya existan.
 - Paquete base: `escuela`.
 - Módulos principales: `escuela.institucion`, `escuela.academico`, `escuela.seguridad`,
   `escuela.alumno`, `escuela.tutor`, `escuela.inscripcion`, `escuela.cobranza`,
-  `escuela.finanzas`, `escuela.comunicacion`, `escuela.admin`, `escuela.config` y
-  `escuela.common`.
+  `escuela.finanzas`, `escuela.comunicacion`, `escuela.auditoria`, `escuela.admin`,
+  `escuela.config` y `escuela.common`.
 - Cada entidad usa identificador `Long`, auditoría y versión para concurrencia optimista.
 - Los controladores y formularios usan DTO; nunca deben enlazarse directamente con
   entidades JPA.
@@ -603,13 +603,26 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   pago y acceso financiero, y dirige a `#cuenta`.
 - V30 no crea pagos, movimientos ni permisos, no cambia el proceso atómico de validación
   o rechazo y continúa sin correo, WhatsApp o push.
+- Flyway V31 crea `Auditoria`, el permiso `AUDITORIA_CONSULTAR`, cuatro índices de
+  consulta y un trigger PostgreSQL que rechaza cualquier `UPDATE` o `DELETE`. El permiso
+  no se asigna automáticamente a roles existentes.
+- `/admin/auditoria` permite consultar por institución, fechas, acción, tipo e ID de
+  entidad, actor o correlación; pagina en PostgreSQL y exporta exactamente los mismos
+  filtros a XLSX por bloques. Sólo admite alcance institucional.
+- La bitácora captura en la misma transacción validación/rechazo de pagos,
+  devoluciones, transferencias, reversas, cambios de permisos y roles, y
+  publicación/cancelación o retiro de eventos y avisos. Los reintentos idempotentes no
+  duplican registros.
+- Cada petición recibe `X-Correlation-ID`; el registro atribuye el usuario persistido,
+  el acceso de recuperación o un proceso de sistema. Nunca conserva contraseñas, hashes,
+  tokens, cuentas bancarias, comprobantes ni contenido de archivos.
 
 ## Verificación confirmada
 
-- Compilación correcta de 476 archivos Java de producción.
-- 279 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V30 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 43 repositorios.
+- Compilación correcta de 487 archivos Java de producción.
+- 282 pruebas Maven sin fallos ni errores.
+- Flyway V1 a V31 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 44 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -663,39 +676,45 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - PostgreSQL confirmó V30 exitosa, `pago_id`, sus restricciones e índice, y cero
   notificaciones iniciales. Las pruebas nuevas cubren lectura de pago validado y rechazo
   de lectura cuando ya no existe acceso financiero.
+- PostgreSQL confirmó V31 exitosa, el permiso `AUDITORIA_CONSULTAR`, cuatro índices y
+  `tg_auditoria_inmutable` para impedir cambios o eliminaciones. La tabla permaneció
+  vacía: no se inventaron acciones sensibles para verificarla.
 
 ## Siguiente paso acordado
 
-V30 está implementada localmente. El propietario debe usar un pago controlado asociado
-al tutor de su cuenta, validar o rechazarlo desde administración y después abrir
-`/portal`; debe comprobar el mensaje, la ausencia de duplicados, el marcado de lectura
-y el destino a Tus pagos. El vínculo requiere responsabilidad financiera,
-`puede_ver_finanzas=true` y `puede_recibir_notificaciones=true`.
+V31 está implementada localmente, compilada y aplicada en el volumen actual. El
+propietario debe conceder `AUDITORIA_CONSULTAR` a un rol administrativo, iniciar una
+sesión nueva, ejecutar una acción sensible controlada y comprobar
+`/admin/auditoria`, sus filtros, detalle y Excel. No modificar la tabla directamente.
 
-Después de confirmar y subir V30, el siguiente bloque recomendado es V31 para una
-bitácora central e inmutable de auditoría sobre acciones sensibles de seguridad,
-finanzas y comunicación. Correo y WhatsApp siguen fuera de alcance hasta diseñar
-consentimiento, proveedor, reintentos y trazabilidad. La cancelación
-completa de pagos, retiros especializados y conciliación bancaria continúan siendo
-flujos financieros separados.
+Después de confirmar y subir V31, el siguiente bloque recomendado es V32 para la
+cancelación controlada de pagos registrados o validados por error. Debe diseñarse como
+flujo distinto de una devolución: conservar el pago original, exigir motivo y permiso,
+revertir atómicamente aplicaciones y movimiento cuando corresponda, ser idempotente y
+dejar evidencia en la bitácora. Antes de codificar se deben precisar estados admitidos,
+restricciones cuando ya existan devoluciones y efecto sobre las notificaciones.
+
+Correo y WhatsApp siguen fuera de alcance hasta diseñar consentimiento, proveedor,
+reintentos y trazabilidad. Retiros especializados y conciliación bancaria continúan
+como flujos posteriores separados.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. V29 está en `origin/main`; V30 es el cambio local actual. Confirmar si ya fue revisada
+1. V30 está en `origin/main`; V31 es el cambio local actual. Confirmar si ya fue revisada
    y subida; si no, preservar los cambios locales y no volver a implementarla.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V30 ya fueron aplicadas en el volumen verificado; nunca editarlas. La
-   siguiente migración disponible será V31.
-5. Primero terminar la prueba funcional de V30 con un pago controlado y un vínculo con
-   permisos financieros y de notificación. Después acordar el alcance de la bitácora
-   central antes de crear V31; no asumir envíos por correo o WhatsApp.
+4. Flyway V1–V31 ya fueron aplicadas en el volumen verificado; nunca editarlas. La
+   siguiente migración disponible será V32.
+5. Primero terminar la prueba funcional de V31 asignando `AUDITORIA_CONSULTAR` y
+   ejecutando una acción controlada. Después precisar las reglas de cancelación de pagos
+   antes de crear V32; no asumir envíos por correo o WhatsApp.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.

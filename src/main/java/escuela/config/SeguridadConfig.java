@@ -135,6 +135,8 @@ public class SeguridadConfig {
                         .hasAuthority("AVISO_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/avisos/**")
                         .hasAnyAuthority("AVISO_LEER", "AVISO_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.GET, "/admin/auditoria/**")
+                        .hasAuthority("AUDITORIA_CONSULTAR")
                         .requestMatchers(HttpMethod.GET, "/admin/movimientos-financieros")
                         .hasAnyAuthority("MOVIMIENTO_FINANCIERO_LEER", "MOVIMIENTO_FINANCIERO_REGISTRAR",
                                 "TRANSFERENCIA_CUENTA_REGISTRAR", "MOVIMIENTO_FINANCIERO_REVERTIR",

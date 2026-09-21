@@ -1,5 +1,7 @@
 package escuela.finanzas.service.impl;
 
+import escuela.auditoria.entity.AccionAuditoria;
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.common.exception.RecursoNoEncontradoException;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.finanzas.dto.request.TransferenciaCuentaRequest;
@@ -23,6 +25,7 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 
 import static escuela.common.mapper.NormalizacionTexto.limpiar;
 
@@ -37,6 +40,7 @@ public class TransferenciaCuentaServiceImpl implements TransferenciaCuentaServic
     private final MotivoFinancieroRepository motivoRepository;
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcance;
+    private final RegistroAuditoriaService auditoria;
 
     @Override
     public TransferenciaCuentaResponse transferir(TransferenciaCuentaRequest request) {
@@ -96,6 +100,10 @@ public class TransferenciaCuentaServiceImpl implements TransferenciaCuentaServic
                 DireccionMovimiento.INGRESO, monto, estadoDestino,
                 "Transferencia desde " + origen.getNombre(), "ENTRADA");
         List<MovimientoFinanciero> guardados = movimientoRepository.saveAllAndFlush(List.of(salida, entrada));
+        auditoria.registrar(transferencia.getInstitucion().getId(), AccionAuditoria.TRANSFERENCIA_APLICADA,
+                "TRANSFERENCIA_CUENTA", transferencia.getId(), transferencia.getObservaciones(),
+                Map.of("cuentaOrigenId", origen.getId(), "cuentaDestinoId", destino.getId(),
+                        "monto", monto, "moneda", origen.getMoneda()));
         return respuesta(transferencia, guardados.get(0), guardados.get(1));
     }
 

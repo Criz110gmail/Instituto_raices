@@ -1,5 +1,6 @@
 package escuela.finanzas.service.impl;
 
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.cobranza.entity.Cargo;
 import escuela.cobranza.repository.CargoRepository;
 import escuela.common.exception.ReglaNegocioException;
@@ -36,8 +37,9 @@ class DevolucionPagoServiceImplTest {
     private final CargoRepository cargos = mock(CargoRepository.class);
     private final UsuarioRepository usuarios = mock(UsuarioRepository.class);
     private final AlcanceDatosService alcance = mock(AlcanceDatosService.class);
+    private final RegistroAuditoriaService auditoria = mock(RegistroAuditoriaService.class);
     private final DevolucionPagoServiceImpl service = new DevolucionPagoServiceImpl(
-            pagos, devoluciones, aplicaciones, cuentas, movimientos, motivos, cargos, usuarios, alcance);
+            pagos, devoluciones, aplicaciones, cuentas, movimientos, motivos, cargos, usuarios, alcance, auditoria);
 
     private Institucion institucion;
     private Pago pago;

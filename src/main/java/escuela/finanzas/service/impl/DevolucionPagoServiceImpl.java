@@ -1,5 +1,7 @@
 package escuela.finanzas.service.impl;
 
+import escuela.auditoria.entity.AccionAuditoria;
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.cobranza.entity.Cargo;
 import escuela.cobranza.repository.CargoRepository;
 import escuela.common.exception.RecursoNoEncontradoException;
@@ -41,6 +43,7 @@ public class DevolucionPagoServiceImpl implements DevolucionPagoService {
     private final CargoRepository cargoRepository;
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcance;
+    private final RegistroAuditoriaService auditoria;
 
     @Override
     public DevolucionPagoResponse ejecutar(DevolucionPagoRequest request) {
@@ -121,6 +124,10 @@ public class DevolucionPagoServiceImpl implements DevolucionPagoService {
         movimiento.setSaldoPosterior(estadoCuenta.saldo().subtract(monto));
         movimiento = movimientoRepository.saveAndFlush(movimiento);
         devolucion.setMovimiento(movimiento);
+        auditoria.registrar(pago.getInstitucion().getId(), AccionAuditoria.DEVOLUCION_EJECUTADA,
+                "DEVOLUCION_PAGO", devolucion.getId(), devolucion.getMotivo(),
+                Map.of("pagoId", pago.getId(), "folioPago", pago.getFolio(), "cuentaOrigenId", cuenta.getId(),
+                        "monto", monto, "moneda", pago.getMoneda(), "aplicacionesAjustadas", ajustes.size()));
         return respuesta(devolucion, movimiento);
     }
 

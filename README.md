@@ -70,6 +70,7 @@ comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME
 - `escuela.inscripcion`: trayectoria académica e historial de asignaciones de grupo.
 - `escuela.cobranza`: conceptos, cuotas, cargos, becas y ajustes por inscripción/alumno.
 - `escuela.finanzas`: cuentas financieras, pagos pendientes, comprobantes privados y distribución solicitada.
+- `escuela.auditoria`: bitácora inmutable de operaciones sensibles y correlación.
 - `escuela.config`: seguridad y auditoría JPA.
 - `escuela.common`: excepciones, respuesta de auditoría y utilidades compartidas.
 - Cada módulo contiene DTO, mappers, repositorios y servicios transaccionales.
@@ -332,3 +333,10 @@ notificación se dirige únicamente al tutor titular que conserva responsabilida
 financiera, acceso a finanzas y autorización para recibir notificaciones; abrirla vuelve
 a comprobar institución, estado y permisos antes de llevar a “Tus pagos”. V30 no crea
 movimientos ni modifica el flujo financiero y mantiene deduplicación por resultado.
+
+Auditoría ofrece una bitácora institucional de sólo inserción para operaciones sensibles
+de finanzas, seguridad y comunicación. PostgreSQL impide editar o eliminar sus filas;
+la pantalla filtra y pagina en la base y exporta el mismo resultado a Excel por bloques.
+Cada registro conserva actor, entidad, motivo, cambios no sensibles y correlación, sin
+guardar contraseñas, tokens, datos bancarios ni archivos. Requiere
+`AUDITORIA_CONSULTAR`; V31 no concede el permiso automáticamente a roles existentes.

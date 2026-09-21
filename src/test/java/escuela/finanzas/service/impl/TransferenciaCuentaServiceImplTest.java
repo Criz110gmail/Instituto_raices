@@ -1,5 +1,6 @@
 package escuela.finanzas.service.impl;
 
+import escuela.auditoria.service.RegistroAuditoriaService;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.finanzas.dto.request.TransferenciaCuentaRequest;
 import escuela.finanzas.entity.*;
@@ -31,8 +32,9 @@ class TransferenciaCuentaServiceImplTest {
     private final MotivoFinancieroRepository motivos = mock(MotivoFinancieroRepository.class);
     private final UsuarioRepository usuarios = mock(UsuarioRepository.class);
     private final AlcanceDatosService alcance = mock(AlcanceDatosService.class);
+    private final RegistroAuditoriaService auditoria = mock(RegistroAuditoriaService.class);
     private final TransferenciaCuentaServiceImpl service = new TransferenciaCuentaServiceImpl(
-            cuentas, transferencias, movimientos, motivos, usuarios, alcance);
+            cuentas, transferencias, movimientos, motivos, usuarios, alcance, auditoria);
 
     private Institucion institucion;
     private CuentaFinanciera origen;

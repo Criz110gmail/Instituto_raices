@@ -15,7 +15,8 @@ class PlantillasPaginacionTest {
                 "admin/reporte-tesoreria.html",
                 "admin/estado-cuenta-alumno.html",
                 "admin/cortes-caja.html",
-                "admin/eventos-escolares.html"}) {
+                "admin/eventos-escolares.html",
+                "admin/auditoria.html"}) {
             String contenido;
             try (var entrada = getClass().getClassLoader()
                     .getResourceAsStream("templates/" + plantilla)) {
