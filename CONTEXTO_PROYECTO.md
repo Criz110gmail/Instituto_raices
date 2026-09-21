@@ -1230,6 +1230,10 @@
   No se crearon tutores, vínculos, cargos o eventos ficticios.
 - La imagen posterior al rediseño conservó salud `UP`; `/familias` respondió HTTP 200
   y una solicitud anónima a `/portal` respondió HTTP 302 hacia `/familias`.
+- Durante la revisión manual de Tesorería se detectó que Thymeleaf rechazaba la lista
+  compacta de tamaños de página y dejaba la respuesta HTML incompleta. Se corrigió la
+  sintaxis en Tesorería, Estado de cuenta, Cortes de caja y Eventos; la compilación
+  posterior ejecutó 271 pruebas, incluida una regresión para las cuatro plantillas.
 - El propietario debe asignar `PORTAL_TUTOR_ACCEDER` a un rol con alcance
   `VINCULOS_TUTOR`, iniciar una sesión nueva con una cuenta enlazada y comprobar `/portal`.
   Después de confirmar y subir V27 se recomienda acordar V28 para Avisos institucionales

@@ -20,10 +20,11 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main`: `6ce0519` — `versión del portal del tutor`.
-- V27 ya está confirmado en Git. El rediseño familiar y su acceso dedicado son el
-  cambio local actual; el agente nuevo debe confirmar `git status` y `git log` antes de
-  continuar y no debe reconstruir V1–V27.
+- Último commit confirmado en `main` y `origin/main`: `b338a8d` — `versión del portal del tutor completo`.
+- V27, el rediseño familiar y su acceso dedicado ya están confirmados en Git. La
+  corrección local actual evita el error de renderizado de paginación en cuatro
+  plantillas administrativas; el agente nuevo debe confirmar `git status` y `git log`
+  antes de continuar y no debe reconstruir V1–V27.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -573,7 +574,7 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 ## Verificación confirmada
 
 - Compilación correcta de 453 archivos Java de producción.
-- 270 pruebas Maven sin fallos ni errores.
+- 271 pruebas Maven sin fallos ni errores.
 - Flyway V1 a V27 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 41 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
@@ -616,6 +617,10 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   `IdentidadSesionAdvice`; no usar `#authentication`, porque el dialecto de seguridad
   no forma parte de las dependencias actuales. Una prueba de regresión cubre presencia
   y ausencia de autenticación.
+- Se corrigió la sintaxis Thymeleaf de los tamaños de página en Tesorería, Estado de
+  cuenta, Cortes de caja y Eventos. La expresión compacta `${{10,25,50,100}}` se
+  interpretaba como SpEL inválido y cortaba el HTML; una prueba de regresión protege
+  las cuatro plantillas.
 
 ## Siguiente paso acordado
 
