@@ -161,7 +161,7 @@ public class CatalogoConsultaService {
                     textoCuentaFinanciera(f), activo(f), pagina, this::filaCuentaFinanciera);
             case PAGOS -> consultar(modulo, pagoRepository, textoPago(f),
                     estado(f, "estado"), pagina, this::filaPago);
-            case MOVIMIENTOS_FINANCIEROS -> throw new IllegalArgumentException(
+            case RETIROS_FONDO, MOVIMIENTOS_FINANCIEROS -> throw new IllegalArgumentException(
                     "Los movimientos usan su consulta especializada");
             case REPORTES_FINANCIEROS -> throw new IllegalArgumentException(
                     "Los reportes financieros usan su consulta especializada");

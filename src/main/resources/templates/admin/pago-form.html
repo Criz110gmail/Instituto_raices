@@ -12,8 +12,8 @@
     <div class="finance-principle payment-principle"><span>Recepción protegida</span><strong>Un solo pago, distribución clara por cada alumno</strong><p>El registro queda pendiente de validación. Las cantidades sugeridas no reducen todavía el saldo de ningún cargo ni incrementan una cuenta.</p></div>
     <section class="form-card payment-card">
         <div class="form-intro finance-intro"><span>Control de ingresos</span><h1>Registrar pago pendiente</h1><p>Captura quién pagó, dónde se reportó y cómo desea distribuirse. La validación administrativa confirmará todo en la siguiente etapa.</p></div>
-        <form id="pago-form" class="entity-form" th:object="${form}" method="post" action="/admin/pagos" enctype="multipart/form-data">
-            <div class="form-error" role="alert" th:if="${errorOperacion or #fields.hasErrors('*')}">
+        <form id="pago-form" class="entity-form" th:object="${form}" method="post" th:action="@{/admin/pagos}" enctype="multipart/form-data">
+            <div class="form-error" role="alert" th:if="${errorOperacion != null or #fields.hasErrors('*')}">
                 <strong>No se pudo registrar el pago</strong><p th:if="${errorOperacion}" th:text="${errorOperacion}"></p>
                 <ul th:if="${#fields.hasErrors('*')}"><li th:each="e : ${#fields.errors('*')}" th:text="${e}"></li></ul>
             </div>

@@ -20,11 +20,11 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main` al iniciar esta etapa: `fcbde0d` —
-  `cancelacion pagos desde su expediente`.
-- V32 ya está confirmada en Git. El cambio local actual añade estado de cuenta interno
-  por cuenta con cortes mensuales/anuales y exportaciones Excel/PDF; el agente nuevo
-  debe confirmar `git status` y `git log` antes de continuar.
+- Último commit confirmado en `main` al iniciar esta etapa: `256986f` —
+  `update estados de cuenta`. Confirma `git status` y `git log` antes de continuar.
+- El cambio local actual implementa V33 para retiros externos de fondos. No se ha
+  confirmado ni subido desde este equipo; la imagen nueva ya está desplegada y el
+  esquema habitual está en V33.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -635,6 +635,11 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   interno mensual o anual construido sólo con movimientos de Nexo Escolar; muestra
   apertura, ingresos, egresos, cierre y detalle paginado, con Excel y PDF equivalentes.
   Reutiliza `REPORTE_FINANCIERO_CONSULTAR` y no requiere Flyway V33.
+- V33 registra retiros externos con destinatario, motivo, concepto y referencia de
+  comprobante. Cada retiro enlaza un solo `OPERACION/EGRESO`, conserva el actor y una
+  auditoría inmutable; no sustituye traspasos entre cuentas ni devoluciones de pagos.
+  Usa permisos propios, listado paginado y Excel con los mismos filtros. Una reversa del
+  movimiento lo muestra como revertido, sin borrar su expediente.
 
 ## Verificación confirmada
 
@@ -701,6 +706,25 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - PostgreSQL confirmó V32 exitosa, el permiso `PAGO_CANCELAR`, las columnas de actor y
   fecha y las restricciones de cancelación y movimiento. No se cancelaron pagos reales
   para verificarla; la suite de pruebas cubre los caminos sensibles.
+- Para V33, Docker compiló el módulo y pasó 298 pruebas. Flyway aplicó V1–V33 en un
+  PostgreSQL 17 temporal y vacío, Hibernate detectó 45 repositorios, `/actuator/health`
+  respondió `UP` y las dos plantillas nuevas renderizaron completas. Tras autorización
+  explícita del propietario, se desplegó la imagen nueva en la instancia habitual.
+  Flyway confirmó el esquema en V33, ambos permisos existen, la app respondió `UP` y
+  `retiro_fondo` conservó cero filas; no hubo retiros en datos reales.
+- Corrección posterior del formulario V33: el `POST` de retiro no generaba el campo
+  CSRF porque usaba `action` HTML en vez de `th:action`; ahora lo incluye. La ayuda
+  de autocompletado tiene color neutro y se limpia al seleccionar, junto con el
+  error previo de cuenta. La suite pasó 299 pruebas. En PostgreSQL temporal, un
+  usuario administrativo de prueba registró un retiro de 25 sobre saldo 100; quedó
+  saldo 75 y un solo egreso incluso tras reintentar la misma clave. La imagen
+  corregida está desplegada en el entorno habitual y respondió `UP`; no se creó
+  ningún retiro de prueba en sus cuentas reales.
+- Corrección posterior de Pagos: `/admin/pagos/nuevo` fallaba al evaluar
+  `errorOperacion or #fields.hasErrors('*')` cuando `errorOperacion` no existía. El
+  formulario ahora comprueba explícitamente `errorOperacion != null` y usa
+  `th:action` para incluir CSRF en el `POST`. Docker compiló y pasó 300 pruebas;
+  una instancia aislada autenticada respondió HTTP 200 y mostró el token CSRF.
 
 ## Siguiente paso acordado
 
@@ -712,33 +736,35 @@ saldo, que el libro financiero muestra la compensación y que `/admin/auditoria`
 contiene `PAGO_CANCELADO`. También confirmar la notificación en `/portal` con una
 cuenta de tutor autorizada. No cancelar un pago operativo real sólo para probar.
 
-El propietario confirmó V32 como terminada para el primer análisis. El estado de cuenta
-interno por cuenta con cortes mensuales y anuales, Excel y PDF está implementado y pasó
-compilación, 292 pruebas, inspección visual del PDF y arranque temporal con salud `UP`.
-No crear V33 para conciliación bancaria: esa etapa fue descartada. Falta la revisión
-funcional autenticada del propietario con sus cuentas y movimientos controlados.
+El estado de cuenta interno por cuenta quedó en el commit `256986f`. V33 se usa para
+retiros externos de fondos, no para conciliación bancaria. La implementación local pasó
+la suite y está desplegada en el entorno habitual con salud `UP`. Falta revisarla con
+un retiro controlado, permiso asignado y sesión nueva. Ningún retiro de prueba fue
+registrado en las cuentas actuales.
 
 Correo y WhatsApp siguen fuera de alcance hasta diseñar consentimiento, proveedor,
-reintentos y trazabilidad. Los retiros especializados también quedan pendientes.
+reintentos y trazabilidad. Los retiros externos especializados quedaron implementados
+en V33; banco a caja registrada sigue siendo traspaso, no retiro.
 
 La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
 pero no bloquea el siguiente módulo funcional.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. V32 está en `origin/main`; preservar el estado de cuenta interno que se desarrolla
-   localmente y no reconstruir V1–V32.
+1. El estado de cuenta interno está en `main` y `origin/main` en `256986f`; preservar
+   el cambio local V33 y no reconstruir V1–V32.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V32 ya existen; nunca editarlas. El estado de cuenta interno no necesita
-   una migración nueva. La siguiente migración disponible, si hiciera falta, será V33.
-5. Abrir el estado de cuenta por cuenta con `REPORTE_FINANCIERO_CONSULTAR` en una sesión
-   nueva y cotejar pantalla, Excel y PDF para un mes y un año con datos controlados.
-   Revisar especialmente apertura, cierre, traspasos y cuentas abiertas en el corte.
-   No importar estados bancarios.
+4. Flyway V1–V33 ya existen y V33 está aplicada al volumen habitual; nunca editarlas.
+   La siguiente migración disponible será V34.
+5. Asignar `RETIRO_FONDO_LEER` y `RETIRO_FONDO_REGISTRAR` al rol adecuado e iniciar
+   una sesión nueva. Probar con una cuenta y destinatario controlados: un retiro válido,
+   saldo insuficiente, reintento sin doble egreso, filtros, Excel y reversa. No crear
+   movimientos operativos reales sólo para verificar. Revisar también el estado de
+   cuenta mensual/anual previo con Excel y PDF.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.

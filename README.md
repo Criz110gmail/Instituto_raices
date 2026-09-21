@@ -358,3 +358,17 @@ cuadre. Si la cuenta se abrió dentro del periodo, identifica por separado su sa
 inicial, que no es un ingreso por movimiento. Este documento no equivale a un estado
 emitido por el banco ni realiza conciliación bancaria. Reutiliza el permiso
 `REPORTE_FINANCIERO_CONSULTAR` y no requiere una migración nueva.
+
+Retiros de fondos registra salidas hacia un destinatario externo con motivo de egreso,
+concepto, folio o referencia de comprobante y usuario autorizante. Publica un único
+egreso en la cuenta mediante el mismo bloqueo, control de saldo e idempotencia de las
+operaciones manuales; conserva un expediente enlazado al movimiento y una entrada de
+auditoría. Su historial tiene filtros, paginación en PostgreSQL y Excel equivalente.
+La reversa del movimiento deja el retiro visible como `REVERTIDO`. Mover dinero entre
+cuentas o a una caja del sistema sigue siendo un traspaso; regresar un pago al tutor
+sigue siendo una devolución. Esta pantalla registra el folio del comprobante, no
+adjunta archivos. V33 agrega `RETIRO_FONDO_LEER` y `RETIRO_FONDO_REGISTRAR`, sin
+asignarlos automáticamente a roles existentes.
+
+El formulario «Nuevo pago» renderiza incluso sin errores previos y envía su token
+CSRF en el registro multipart; las validaciones vuelven al mismo formulario.

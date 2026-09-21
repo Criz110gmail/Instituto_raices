@@ -147,7 +147,10 @@
             valor.dispatchEvent(new Event('change', {bubbles: true}));
             etiquetaSeleccionada = opcion.titulo;
             cerrarLista();
-            mostrarEstado(`Seleccionado: ${opcion.titulo}`);
+            mostrarEstado('');
+            contenedor.querySelectorAll('[data-autocomplete-error]').forEach(error => {
+                error.textContent = '';
+            });
             actualizarLimpiar();
         }
 

@@ -1420,3 +1420,48 @@
 - Falta la revisión funcional autenticada con cuentas y movimientos controlados del
   propietario: comparar pantalla, Excel y PDF del mismo mes y año, incluyendo una
   cuenta abierta dentro del periodo y un traspaso. La instancia habitual no se reemplazó.
+
+## V33 — retiros externos de fondos
+
+- El propietario confirmó que el retiro especializado es una salida hacia persona o
+  destino externo. Banco a caja registrada sigue siendo `TransferenciaCuenta`, y la
+  entrega de dinero de un pago al tutor sigue siendo `DevolucionPago`. No se implementa
+  conciliación bancaria.
+- V33 crea `retiro_fondo` con referencia única al movimiento financiero publicado,
+  destinatario, motivo, concepto, referencia de comprobante, usuario autorizante y
+  clave idempotente. Agrega `RETIRO_FONDO_LEER` y `RETIRO_FONDO_REGISTRAR` sin asignarlos
+  automáticamente. El retiro reutiliza `MovimientoManualService` para publicar un
+  único `OPERACION/EGRESO`: bloqueo de cuenta, fecha institucional, saldo no negativo,
+  alcance y actor persistido. Toda la operación y su bitácora son transaccionales.
+- Los motivos técnicos de cobros, traspasos y devoluciones se rechazan. El historial
+  permanece incluso si el movimiento se revierte: el estado se deriva de la reversa.
+  El listado usa filtros y paginación de PostgreSQL; el Excel usa idénticos filtros por
+  bloques. El folio/referencia es obligatorio; no se adjunta un archivo en esta etapa.
+- Docker compiló el módulo y pasó 298 pruebas. En PostgreSQL 17 temporal y vacío,
+  Flyway aplicó 33 migraciones, Hibernate validó 45 repositorios, la app respondió `UP`
+  y listado/formulario autenticados devolvieron HTML completo; el Excel filtrado tuvo
+  firma XLSX válida. Tras autorización explícita del propietario, la imagen nueva se
+  desplegó en la instancia habitual. Flyway validó 33 migraciones y reportó el esquema
+  en V33; PostgreSQL confirmó los dos permisos nuevos y cero filas en `retiro_fondo`.
+  `/actuator/health` respondió `UP`. No se generaron movimientos monetarios durante el
+  despliegue. Falta revisión funcional con una cuenta y retiro de prueba controlados.
+- Corrección del guardado: el formulario de retiro omitía el token CSRF al usar
+  `action` en vez de `th:action`; ahora el HTML autenticado lo genera y el `POST`
+  entra al controlador. La ayuda del autocompletado ya no aparece roja ni permanece
+  tras seleccionar una cuenta; también se limpia el error anterior de ese campo.
+  Maven pasó 299 pruebas. En una app y PostgreSQL descartables se registró un retiro
+  de 25 sobre saldo 100: un único movimiento dejó saldo 75; repetir la misma clave
+  no duplicó el egreso. Se desplegó la imagen corregida en la instancia habitual y
+  `/actuator/health` respondió `UP`. No se hicieron retiros de prueba en datos reales.
+
+## Corrección del formulario de nuevo pago
+
+- El log de la aplicación habitual identificó una excepción de Thymeleaf en
+  `admin/pago-form.html`, línea 16: `errorOperacion` era nulo al entrar a Nuevo pago
+  y la expresión `or` intentaba convertirlo a booleano. Se cambió a una comprobación
+  explícita de nulidad. El formulario también pasó a usar `th:action`, para que el
+  envío multipart genere el campo CSRF.
+- Docker compiló y ejecutó 300 pruebas sin fallos. Una instancia temporal con
+  PostgreSQL vacío y credenciales ficticias abrió `/admin/pagos/nuevo` autenticada
+  con HTTP 200; el HTML contenía el formulario y su token CSRF. No se registraron
+  pagos de prueba ni se tocaron saldos reales.

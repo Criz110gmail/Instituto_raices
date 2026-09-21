@@ -84,7 +84,7 @@ public class AlcanceDatosService {
         return (root, query, cb) -> {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
-                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, REPORTES_FINANCIEROS, EVENTOS_ESCOLARES, AVISOS, ROLES, USUARIOS, AUDITORIA -> root.get("institucion").get("id");
+                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS, EVENTOS_ESCOLARES, AVISOS, ROLES, USUARIOS, AUDITORIA -> root.get("institucion").get("id");
                 case POLITICAS_RECARGO -> root.get("conceptoCobro").get("institucion").get("id");
                 case VINCULOS_TUTOR, INSCRIPCIONES -> root.get("alumno").get("institucion").get("id");
                 case CUOTAS_ALUMNO, CARGOS, BECAS_ALUMNO -> root.get("inscripcion").get("alumno").get("institucion").get("id");
@@ -109,7 +109,7 @@ public class AlcanceDatosService {
                 return cb.and(mismaInstitucion, cb.or(cb.isNull(root.get("plantel")),
                         root.get("plantel").get("id").in(principal.plantelIds())));
             }
-            if (modulo == ModuloCatalogo.MOVIMIENTOS_FINANCIEROS) {
+            if (modulo == ModuloCatalogo.MOVIMIENTOS_FINANCIEROS || modulo == ModuloCatalogo.RETIROS_FONDO) {
                 return cb.and(mismaInstitucion,
                         root.get("plantelOperacion").get("id").in(principal.plantelIds()));
             }
@@ -124,7 +124,7 @@ public class AlcanceDatosService {
                 case PLANTELES -> root.get("id");
                 case OFERTA, GRUPOS, INSCRIPCIONES -> root.get("plantel").get("id");
                 case PAGOS -> root.get("plantelRegistro").get("id");
-                case MOVIMIENTOS_FINANCIEROS -> root.get("plantelOperacion").get("id");
+                case MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO -> root.get("plantelOperacion").get("id");
                 case CUOTAS_ALUMNO, CARGOS, BECAS_ALUMNO -> root.get("inscripcion").get("plantel").get("id");
                 case AJUSTES_CARGO -> root.get("cargo").get("inscripcion").get("plantel").get("id");
                 default -> null;
@@ -214,7 +214,7 @@ public class AlcanceDatosService {
             }
             case PAGOS -> validarPlantel(pagoRepository.findById(id)
                     .orElseThrow(this::denegado).getPlantelRegistro().getId());
-            case MOVIMIENTOS_FINANCIEROS -> throw denegado();
+            case MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO -> throw denegado();
             case REPORTES_FINANCIEROS -> throw denegado();
             case AUDITORIA -> throw denegado();
             case EVENTOS_ESCOLARES -> {

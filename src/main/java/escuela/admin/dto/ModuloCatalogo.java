@@ -28,6 +28,7 @@ public enum ModuloCatalogo {
     CUENTAS_FINANCIERAS("cuentas-financieras", "Cuentas financieras", List.of("Código", "Cuenta", "Alcance", "Tipo", "Institución financiera", "Identificador", "Saldo inicial", "Fecha inicial")),
     PAGOS("pagos", "Pagos", List.of("Folio", "Tutor", "Plantel de registro", "Fecha", "Método", "Monto", "Distribución", "Comprobantes")),
     MOVIMIENTOS_FINANCIEROS("movimientos-financieros", "Movimientos financieros", List.of()),
+    RETIROS_FONDO("retiros-fondo", "Retiros de fondos", List.of()),
     REPORTES_FINANCIEROS("reportes-financieros", "Reportes financieros", List.of()),
     EVENTOS_ESCOLARES("eventos-escolares", "Eventos escolares", List.of()),
     AVISOS("avisos", "Avisos escolares", List.of()),
@@ -55,7 +56,7 @@ public enum ModuloCatalogo {
             case ALUMNOS, TUTORES, VINCULOS_TUTOR -> "Personas";
             case INSCRIPCIONES -> "Trayectoria";
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
-            case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, REPORTES_FINANCIEROS -> "Finanzas";
+            case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Finanzas";
             case EVENTOS_ESCOLARES, AVISOS -> "Comunicación";
             case ROLES, USUARIOS, AUDITORIA -> "Seguridad";
         };
@@ -86,6 +87,7 @@ public enum ModuloCatalogo {
             case CUENTAS_FINANCIERAS -> "CUENTA_FINANCIERA";
             case PAGOS -> "PAGO";
             case MOVIMIENTOS_FINANCIEROS -> "MOVIMIENTO_FINANCIERO";
+            case RETIROS_FONDO -> "RETIRO_FONDO";
             case REPORTES_FINANCIEROS -> "REPORTE_FINANCIERO";
             case EVENTOS_ESCOLARES -> "EVENTO_ESCOLAR";
             case AVISOS -> "AVISO";
@@ -101,6 +103,8 @@ public enum ModuloCatalogo {
                 || permisos.contains("TRANSFERENCIA_CUENTA_REGISTRAR")
                 || permisos.contains("MOVIMIENTO_FINANCIERO_REVERTIR")
                 || permisos.contains("CORTE_CAJA_LEER") || permisos.contains("CORTE_CAJA_ADMINISTRAR");
+        if (this == RETIROS_FONDO) return permisos.contains("RETIRO_FONDO_LEER")
+                || permisos.contains("RETIRO_FONDO_REGISTRAR");
         if (this == REPORTES_FINANCIEROS) return permisos.contains("REPORTE_FINANCIERO_CONSULTAR");
         if (this == EVENTOS_ESCOLARES) return permisos.contains("EVENTO_ESCOLAR_LEER")
                 || permisos.contains("EVENTO_ESCOLAR_ADMINISTRAR");
@@ -150,6 +154,7 @@ public enum ModuloCatalogo {
             case CUENTAS_FINANCIERAS -> "/admin/cuentas-financieras";
             case PAGOS -> "/admin/pagos";
             case MOVIMIENTOS_FINANCIEROS -> "/admin/movimientos-financieros";
+            case RETIROS_FONDO -> "/admin/retiros-fondo";
             case REPORTES_FINANCIEROS -> "/admin/reportes-financieros/tesoreria";
             case EVENTOS_ESCOLARES -> "/admin/eventos-escolares";
             case AVISOS -> "/admin/avisos";
@@ -161,7 +166,7 @@ public enum ModuloCatalogo {
     }
 
     public String rutaListado() {
-        return this == MOVIMIENTOS_FINANCIEROS || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA
+        return this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA
                 ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }

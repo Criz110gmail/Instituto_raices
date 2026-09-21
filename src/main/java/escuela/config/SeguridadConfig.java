@@ -69,7 +69,8 @@ public class SeguridadConfig {
                         .hasAnyAuthority("PAGO_REGISTRAR", "PAGO_VALIDAR")
                         .requestMatchers("/admin/autocompletado/cuentas-movimiento")
                         .hasAnyAuthority("MOVIMIENTO_FINANCIERO_LEER", "MOVIMIENTO_FINANCIERO_REGISTRAR",
-                                "TRANSFERENCIA_CUENTA_REGISTRAR", "PAGO_DEVOLVER")
+                                "TRANSFERENCIA_CUENTA_REGISTRAR", "PAGO_DEVOLVER",
+                                "RETIRO_FONDO_LEER", "RETIRO_FONDO_REGISTRAR")
                         .requestMatchers("/admin/autocompletado/cuentas-caja")
                         .hasAnyAuthority("CORTE_CAJA_LEER", "CORTE_CAJA_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/alumnos-reporte", "/admin/autocompletado/cuentas-reporte")
@@ -114,6 +115,12 @@ public class SeguridadConfig {
                         .hasAuthority("MOVIMIENTO_FINANCIERO_REGISTRAR")
                         .requestMatchers("/admin/transferencias/**")
                         .hasAuthority("TRANSFERENCIA_CUENTA_REGISTRAR")
+                        .requestMatchers(HttpMethod.GET, "/admin/retiros-fondo/nuevo")
+                        .hasAuthority("RETIRO_FONDO_REGISTRAR")
+                        .requestMatchers(HttpMethod.POST, "/admin/retiros-fondo")
+                        .hasAuthority("RETIRO_FONDO_REGISTRAR")
+                        .requestMatchers(HttpMethod.GET, "/admin/retiros-fondo", "/admin/retiros-fondo/**")
+                        .hasAnyAuthority("RETIRO_FONDO_LEER", "RETIRO_FONDO_REGISTRAR")
                         .requestMatchers("/admin/reversiones/**")
                         .hasAuthority("MOVIMIENTO_FINANCIERO_REVERTIR")
                         .requestMatchers(HttpMethod.GET, "/admin/cortes-caja/nuevo")
