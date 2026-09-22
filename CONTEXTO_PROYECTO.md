@@ -1510,3 +1510,14 @@
 - La sintaxis de los tres JavaScript se verificó con Node. Docker compiló y ejecutó
   302 pruebas sin fallos; la imagen se desplegó en la instancia habitual y salud
   respondió `UP`. La verificación no generó pagos ni movimientos financieros.
+
+## Corrección del guardado de movimientos manuales
+
+- El formulario de `/admin/movimientos-financieros/nuevo` enviaba el `POST` con un
+  atributo `action` HTML, por lo que Thymeleaf no incorporaba el token CSRF y Spring
+  Security rechazaba el envío antes de llegar al controlador. Ahora usa `th:action`.
+- Se añadió una prueba de regresión sobre la plantilla. Docker compiló y pasó 303
+  pruebas; se desplegó la imagen en la instancia habitual y `/actuator/health`
+  respondió `UP`. No se registraron movimientos ni se alteraron saldos para verificar.
+- La prueba manual pendiente debe hacerse con una cuenta e importe controlados. Tras
+  actualizar, es necesario abrir nuevamente el formulario para cargar el token.

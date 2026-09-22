@@ -253,6 +253,8 @@ egresos sin fondos; no pueden editarse ni eliminarse. Se requieren
 `MOTIVO_FINANCIERO_LEER`/`MOTIVO_FINANCIERO_ADMINISTRAR` para el catálogo y
 `MOVIMIENTO_FINANCIERO_REGISTRAR` para publicar. V20 no concede estos permisos a roles
 existentes: deben asignarse desde Roles y permisos.
+El formulario de registro usa una acción Thymeleaf para incorporar el token CSRF en
+el envío; se debe abrir de nuevo tras actualizar la aplicación antes de guardar.
 
 Transferencias entre cuentas publica en una sola transacción un egreso en la cuenta de
 origen y un ingreso en la cuenta de destino. Ambas cuentas deben ser activas, distintas,

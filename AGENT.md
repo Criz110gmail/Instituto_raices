@@ -749,6 +749,10 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   cancelan búsquedas pendientes en los flujos propios de Pagos. Docker pasó 302 pruebas,
   los JavaScript superaron la comprobación de sintaxis y la instancia habitual respondió
   `UP` después de desplegar. No se alteraron datos financieros.
+- El formulario de alta manual en Movimientos financieros no incluía el token CSRF al
+  usar `action` HTML. Se cambió a `th:action` y se añadió una prueba de regresión.
+  Docker pasó 303 pruebas y la imagen quedó desplegada con salud `UP`; no se generaron
+  movimientos reales. Queda pendiente un guardado manual con cuenta controlada.
 
 ## Siguiente paso acordado
 
