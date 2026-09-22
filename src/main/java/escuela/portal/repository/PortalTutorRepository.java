@@ -59,6 +59,33 @@ public class PortalTutorRepository {
                 (rs, n) -> rs.getString(1)).stream().findFirst().orElse(null);
     }
 
+    public List<PortalPlantelPago> plantelesPago(Long usuarioId, Long institucionId, LocalDate hoy) {
+        return jdbc.query("""
+                SELECT DISTINCT p.id,p.nombre FROM plantel p JOIN inscripcion i ON i.plantel_id=p.id
+                JOIN alumno_tutor v ON v.alumno_id=i.alumno_id JOIN tutor t ON t.id=v.tutor_id
+                JOIN cargo c ON c.inscripcion_id=i.id
+                WHERE t.usuario_id=:usuarioId AND p.institucion_id=:institucionId AND p.activo=true
+                  AND v.activo=true AND v.es_responsable_financiero=true AND v.puede_ver_finanzas=true
+                  AND i.estado IN ('PREINSCRITA','ACTIVA') AND c.estado_registro='EMITIDO'
+                ORDER BY p.nombre,p.id
+                """, new MapSqlParameterSource().addValue("usuarioId",usuarioId).addValue("institucionId",institucionId),
+                (rs,n)->new PortalPlantelPago(rs.getLong("id"),rs.getString("nombre")));
+    }
+
+    public Page<PortalPagoFila> pagos(Long usuarioId, Long institucionId, String zona, int pagina, int tamanio) {
+        var p = new MapSqlParameterSource().addValue("usuarioId",usuarioId).addValue("institucionId",institucionId)
+                .addValue("zona",zona).addValue("limite",tamanio).addValue("offset",(long)pagina*tamanio);
+        String desde=" FROM pago pa JOIN tutor t ON t.id=pa.tutor_id WHERE t.usuario_id=:usuarioId AND pa.institucion_id=:institucionId ";
+        Long total=jdbc.queryForObject("SELECT count(*)"+desde,p,Long.class);
+        List<PortalPagoFila> filas=jdbc.query("""
+                SELECT pa.id,pa.folio,timezone(:zona,pa.fecha_pago) fecha_local,pa.monto,pa.moneda,pa.estado,pa.referencia,
+                       (SELECT count(*) FROM comprobante_pago cp WHERE cp.pago_id=pa.id) comprobantes
+                """+desde+" ORDER BY pa.fecha_pago DESC,pa.id DESC LIMIT :limite OFFSET :offset",p,
+                (rs,n)->new PortalPagoFila(rs.getLong("id"),rs.getString("folio"),rs.getObject("fecha_local",LocalDateTime.class),
+                        rs.getBigDecimal("monto"),rs.getString("moneda"),rs.getString("estado"),rs.getString("referencia"),rs.getInt("comprobantes")));
+        return new PageImpl<>(filas,PageRequest.of(pagina,tamanio),total==null?0:total);
+    }
+
     public List<PortalHijoResumen> hijos(Long usuarioId, Long institucionId, LocalDate hoy) {
         return jdbc.query("""
                 SELECT a.id, a.matricula,

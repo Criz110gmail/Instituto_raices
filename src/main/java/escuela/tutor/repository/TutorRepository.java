@@ -7,8 +7,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import java.util.Optional;
 
 public interface TutorRepository extends JpaRepository<Tutor, Long>, JpaSpecificationExecutor<Tutor> {
+    Optional<Tutor> findByUsuarioIdAndInstitucionIdAndActivoTrue(Long usuarioId, Long institucionId);
     boolean existsByUsuarioIdAndIdNot(Long usuarioId, Long id);
 
     @Query(value = """

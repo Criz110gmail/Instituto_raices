@@ -57,6 +57,14 @@ public class Pago extends EntidadAuditable {
     @Column(nullable = false, length = 30)
     private EstadoPago estado = EstadoPago.PENDIENTE_VALIDACION;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "origen_registro", nullable = false, length = 25)
+    private OrigenRegistroPago origenRegistro = OrigenRegistroPago.ADMINISTRACION;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reportado_por_id")
+    private Usuario reportadoPor;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cuenta_declarada_id")
     private CuentaFinanciera cuentaDeclarada;

@@ -262,6 +262,11 @@ de la misma institución y moneda; el origen necesita fondos suficientes. Los bl
 se solicitan por identificador ascendente, los dos lados conservan secuencia y saldo, y
 la idempotencia impide duplicarlos. Requiere `TRANSFERENCIA_CUENTA_REGISTRAR`, permiso
 que V21 tampoco asigna automáticamente a roles existentes.
+El formulario procesa su acción con Thymeleaf para incluir el token CSRF requerido en
+el envío. Después de una actualización debe abrirse nuevamente antes de transferir.
+
+Los cortes de caja usan formularios protegidos con CSRF tanto al abrir como al cerrar.
+Después de actualizar la aplicación debe abrirse nuevamente la pantalla antes de enviar.
 
 Devoluciones de pagos permite regresar total o parcialmente dinero de un pago validado.
 Calcula el disponible descontando aplicaciones y devoluciones anteriores; si hace falta,
@@ -386,3 +391,10 @@ prueba no modificó los datos de la instalación habitual.
 Historial de ajustes permite consultar y exportar becas, descuentos, recargos y
 reversas. Los ajustes manuales se registran desde el detalle del cargo en Cargos;
 el cambio de nombre no modifica rutas ni permisos.
+
+### V34 · Reporte de transferencias del portal familiar
+
+El tutor con acceso financiero puede reportar una transferencia desde `/portal`, adjuntar
+comprobantes y distribuir el importe entre cargos autorizados. El pago queda pendiente
+de validación administrativa; el origen y usuario reportante se conservan y el historial
+se muestra paginado.

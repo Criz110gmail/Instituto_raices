@@ -27,7 +27,7 @@ public class PortalTutorService {
 
     public PortalTutorResultado consultar(UsuarioPrincipal principal, Long alumnoId,
                                            int paginaEventos, int paginaCargos, int paginaAvisos,
-                                           int paginaNotificaciones) {
+                                           int paginaNotificaciones, int paginaPagos) {
         validarPrincipal(principal);
         var institucion = institucionService.obtener(principal.institucionId());
         ZoneId zona = ZoneId.of(institucion.zonaHoraria());
@@ -40,7 +40,8 @@ public class PortalTutorService {
         PortalHijoResumen hijo = seleccionar(hijos, alumnoId);
         var bandeja = notificaciones.sincronizarYConsultar(principal, paginaNotificaciones);
         if (hijo == null) return new PortalTutorResultado(tutor, institucion.nombre(), hijos, null, null,
-                org.springframework.data.domain.Page.empty(), org.springframework.data.domain.Page.empty(), bandeja);
+                org.springframework.data.domain.Page.empty(), org.springframework.data.domain.Page.empty(), bandeja,
+                org.springframework.data.domain.Page.empty());
         int eventosPagina = Math.max(0, paginaEventos);
         int cargosPagina = Math.max(0, paginaCargos);
         Instant desdeEventos = hoy.minusDays(30).atStartOfDay(zona).toInstant();
@@ -51,7 +52,8 @@ public class PortalTutorService {
         ResultadoEstadoCuentaAlumno estadoCuenta = hijo.accesoFinanciero()
                 ? estadoCuenta(hijo, principal.institucionId(), hoy, zona, institucion.monedaPredeterminada(), cargosPagina)
                 : null;
-        return new PortalTutorResultado(tutor, institucion.nombre(), hijos, hijo, estadoCuenta, eventos, avisos, bandeja);
+        var pagos = hijo.accesoFinanciero() ? Optional.ofNullable(portalRepository.pagos(principal.usuarioId(), principal.institucionId(), institucion.zonaHoraria(), Math.max(0,paginaPagos), TAMANIO)).orElseGet(org.springframework.data.domain.Page::empty) : org.springframework.data.domain.Page.empty();
+        return new PortalTutorResultado(tutor, institucion.nombre(), hijos, hijo, estadoCuenta, eventos, avisos, bandeja, pagos);
     }
 
     public PortalHijoResumen validarHijo(UsuarioPrincipal principal, Long alumnoId) {

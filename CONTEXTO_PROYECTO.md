@@ -1521,3 +1521,31 @@
   respondió `UP`. No se registraron movimientos ni se alteraron saldos para verificar.
 - La prueba manual pendiente debe hacerse con una cuenta e importe controlados. Tras
   actualizar, es necesario abrir nuevamente el formulario para cargar el token.
+
+## Corrección del guardado de transferencias
+
+- El formulario de `/admin/transferencias/nueva` también usaba un atributo `action`
+  HTML y no generaba el token CSRF. El servidor rechazaba el `POST` antes de ejecutar
+  el servicio atómico; los registros mostraron el rechazo y ninguna cuenta cambió.
+- Se cambió a `th:action` y se añadió una prueba de regresión específica. Docker pasó
+  304 pruebas, la imagen se desplegó en la instancia habitual y salud respondió `UP`.
+  No se hizo una transferencia de prueba ni se modificaron saldos existentes.
+- Para comprobarlo manualmente se debe volver a abrir el formulario actualizado y usar
+  dos cuentas e importe controlados; ambas cuentas deben tener la misma moneda.
+
+## Corrección de la apertura de cortes de caja
+
+- El formulario de `/admin/cortes-caja/nuevo` usaba `action` HTML y no generaba el
+  token CSRF. El `POST` era rechazado antes de ejecutar el servicio, por lo que no se
+  llegó a abrir ningún corte. El formulario de cierre ya utilizaba `th:action`.
+- La apertura ahora usa `th:action` y una prueba de regresión protege tanto apertura
+  como cierre. Docker pasó 305 pruebas, la imagen se desplegó en la instancia habitual
+  y salud respondió `UP`; no se abrieron ni cerraron cortes durante la verificación.
+
+## V34 — reporte de transferencias desde el portal familiar
+
+El tutor con acceso financiero puede reportar una transferencia desde `/portal`, adjuntar
+comprobantes y distribuir el importe entre cargos autorizados. El pago queda pendiente
+de validación administrativa; se conserva el origen portal, el usuario reportante y un
+historial paginado. La migración y el flujo están en trabajo local; falta compilar y
+verificar con datos controlados.

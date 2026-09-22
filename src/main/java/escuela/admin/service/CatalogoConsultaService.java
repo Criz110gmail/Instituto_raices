@@ -478,6 +478,8 @@ public class CatalogoConsultaService {
                 .withZone(java.time.ZoneId.of(pago.getInstitucion().getZonaHoraria())).format(pago.getFechaPago());
         return new FilaCatalogo(pago.getId(), List.of(pago.getFolio(), nombreTutor(pago.getTutor()),
                 pago.getPlantelRegistro().getNombre(), fecha, etiqueta(pago.getMetodo().name()),
+                pago.getOrigenRegistro() == escuela.finanzas.entity.OrigenRegistroPago.PORTAL_FAMILIAR
+                        ? "Portal familiar" : "Administración",
                 pago.getMonto().toPlainString() + " " + pago.getMoneda(), distribucion,
                 String.valueOf(pago.getComprobantes().size())), estado, tono);
     }

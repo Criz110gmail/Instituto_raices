@@ -14,6 +14,7 @@ public record PagoResponse(
         Long tutorId, String tutorNombre, String nombrePagador,
         String folio, Instant fechaPago, BigDecimal monto, String moneda,
         MetodoPago metodo, EstadoPago estado,
+        escuela.finanzas.entity.OrigenRegistroPago origenRegistro, String reportadoPor,
         Long cuentaDeclaradaId, String cuentaDeclaradaNombre,
         Long cuentaDestinoId, String cuentaDestinoNombre,
         String referencia, String observaciones, Instant validadoEn,

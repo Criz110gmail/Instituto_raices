@@ -48,7 +48,7 @@ class PortalTutorServiceTest {
         var recuperacion = new UsuarioPrincipal(null, null, Set.of(), true, true,
                 "bootstrap", "x", List.of());
 
-        assertThatThrownBy(() -> service.consultar(recuperacion, null, 0, 0, 0, 0))
+        assertThatThrownBy(() -> service.consultar(recuperacion, null, 0, 0, 0, 0, 0))
                 .isInstanceOf(AccessDeniedException.class).hasMessageContaining("cuenta de tutor");
         verifyNoInteractions(portal);
     }
@@ -57,7 +57,7 @@ class PortalTutorServiceTest {
     void exigeTutorActivoVinculadoConLaCuenta() {
         when(portal.nombreTutor(7L, 1L)).thenReturn(null);
 
-        assertThatThrownBy(() -> service.consultar(principal, null, 0, 0, 0, 0))
+        assertThatThrownBy(() -> service.consultar(principal, null, 0, 0, 0, 0, 0))
                 .isInstanceOf(AccessDeniedException.class).hasMessageContaining("tutor activo");
         verify(portal, never()).hijos(anyLong(), anyLong(), any());
     }
@@ -66,7 +66,7 @@ class PortalTutorServiceTest {
     void cuentaSinVinculosVigentesMuestraEstadoVacio() {
         when(portal.hijos(eq(7L), eq(1L), any())).thenReturn(List.of());
 
-        PortalTutorResultado resultado = service.consultar(principal, null, 0, 0, 0, 0);
+        PortalTutorResultado resultado = service.consultar(principal, null, 0, 0, 0, 0, 0);
 
         assertThat(resultado.hijo()).isNull();
         assertThat(resultado.hijos()).isEmpty();
@@ -78,7 +78,7 @@ class PortalTutorServiceTest {
         PortalHijoResumen hijo = hijo(false, true);
         when(portal.hijos(eq(7L), eq(1L), any())).thenReturn(List.of(hijo));
 
-        PortalTutorResultado resultado = service.consultar(principal, 20L, 0, 0, 0, 0);
+        PortalTutorResultado resultado = service.consultar(principal, 20L, 0, 0, 0, 0, 0);
 
         assertThat(resultado.hijo()).isEqualTo(hijo);
         assertThat(resultado.estadoCuenta()).isNull();
@@ -95,7 +95,7 @@ class PortalTutorServiceTest {
                 .thenReturn(new ResumenEstadoCuenta(2, new BigDecimal("1500"),
                         new BigDecimal("500"), new BigDecimal("1000"), BigDecimal.ZERO, "MXN"));
 
-        PortalTutorResultado resultado = service.consultar(principal, 20L, -4, -3, -2, -1);
+        PortalTutorResultado resultado = service.consultar(principal, 20L, -4, -3, -2, -1, -1);
 
         assertThat(resultado.estadoCuenta().resumen().saldo()).isEqualByComparingTo("1000");
         verify(reportes).estadoCuenta(argThat(f -> f.alumnoId().equals(20L) && f.pagina() == 0),
@@ -107,7 +107,7 @@ class PortalTutorServiceTest {
     void impideSeleccionarAlumnoFueraDeLosVinculosVigentes() {
         when(portal.hijos(eq(7L), eq(1L), any())).thenReturn(List.of(hijo(true, true)));
 
-        assertThatThrownBy(() -> service.consultar(principal, 999L, 0, 0, 0, 0))
+        assertThatThrownBy(() -> service.consultar(principal, 999L, 0, 0, 0, 0, 0))
                 .hasMessageContaining("ya no tiene un vínculo vigente");
         verifyNoInteractions(reportes);
     }

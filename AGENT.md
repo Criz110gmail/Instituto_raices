@@ -753,6 +753,14 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   usar `action` HTML. Se cambió a `th:action` y se añadió una prueba de regresión.
   Docker pasó 303 pruebas y la imagen quedó desplegada con salud `UP`; no se generaron
   movimientos reales. Queda pendiente un guardado manual con cuenta controlada.
+- El formulario de transferencias tenía el mismo defecto: el `POST` no incluía CSRF y
+  era rechazado antes de tocar las cuentas. Ahora usa `th:action` y cuenta con prueba de
+  regresión. Docker pasó 304 pruebas y la instancia quedó `UP`; no se ejecutaron
+  transferencias ni se alteraron saldos durante la verificación.
+- La apertura de corte de caja también omitía CSRF por usar `action` HTML; el cierre ya
+  era correcto. La apertura usa ahora `th:action` y una prueba protege ambos envíos.
+  Docker pasó 305 pruebas y la imagen quedó desplegada con salud `UP`; no se abrió ni
+  cerró ningún corte real.
 
 ## Siguiente paso acordado
 
@@ -800,6 +808,11 @@ pero no bloquea el siguiente módulo funcional.
    validar la interfaz, el propietario debe usar importes y cuentas controlados.
 
 ## Disciplina de cambios y entrega
+
+V34 (en trabajo local) habilita reportes de transferencias desde el portal familiar:
+comprobante privado, distribución por cargos autorizados, estado pendiente y origen
+identificable. Falta compilar en Docker y verificar con datos controlados antes de cerrar
+la etapa.
 
 - Inspecciona `git status` antes de editar y preserva cambios ajenos.
 - Usa migraciones Flyway nuevas para cambios de esquema; nunca edites una migración ya

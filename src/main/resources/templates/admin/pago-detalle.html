@@ -24,6 +24,7 @@
         <article><small>Estado</small><strong class="pending-badge" th:classappend="${pago.estado.name() == 'VALIDADO'} ? ' success' : (${pago.estado.name() == 'RECHAZADO' or pago.estado.name() == 'CANCELADO'} ? ' rejected' : '')" th:text="${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? 'Pendiente de validación' : (${pago.estado.name() == 'VALIDADO'} ? 'Validado' : (${pago.estado.name() == 'CANCELADO'} ? 'Cancelado' : 'Rechazado'))">Estado</strong></article>
         <article><small>Fecha del pago</small><strong th:text="${fechaPagoLocal}">Fecha</strong></article>
         <article><small>Método</small><strong th:text="${pago.metodo.name() == 'EFECTIVO' ? 'Efectivo' : 'Transferencia'}">Método</strong></article>
+        <article><small>Origen del registro</small><strong th:text="${pago.origenRegistro.name() == 'PORTAL_FAMILIAR' ? 'Reportado por la familia' : 'Capturado en administración'}">Origen</strong></article>
         <article><small>Cuenta declarada</small><strong th:text="${pago.cuentaDeclaradaNombre ?: 'Sin cuenta declarada'}">Cuenta</strong></article>
         <article><small>Pagador</small><strong th:text="${pago.nombrePagador ?: pago.tutorNombre}">Pagador</strong></article>
         <article><small>Referencia</small><strong th:text="${pago.referencia ?: 'Sin referencia'}">Referencia</strong></article>

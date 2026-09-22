@@ -28,6 +28,7 @@ public class PagoMapper {
                 pago.getTutor().getId(), nombreTutor(pago.getTutor()), pago.getNombrePagador(),
                 pago.getFolio(), pago.getFechaPago(), pago.getMonto(), pago.getMoneda(),
                 pago.getMetodo(), pago.getEstado(),
+                pago.getOrigenRegistro(), pago.getReportadoPor() == null ? null : pago.getReportadoPor().getUsername(),
                 pago.getCuentaDeclarada() == null ? null : pago.getCuentaDeclarada().getId(),
                 pago.getCuentaDeclarada() == null ? null : pago.getCuentaDeclarada().getNombre(),
                 pago.getCuentaDestino() == null ? null : pago.getCuentaDestino().getId(),

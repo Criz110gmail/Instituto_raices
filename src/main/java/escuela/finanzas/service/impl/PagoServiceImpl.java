@@ -19,6 +19,7 @@ import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
 import escuela.tutor.entity.Tutor;
 import escuela.tutor.repository.TutorRepository;
+import escuela.seguridad.service.UsuarioPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +57,30 @@ public class PagoServiceImpl implements PagoService {
 
     @Override
     public PagoResponse registrar(PagoRequest request, List<MultipartFile> archivosRecibidos) {
+        return registrar(request, archivosRecibidos, OrigenRegistroPago.ADMINISTRACION, null);
+    }
+
+    @Override
+    public PagoResponse registrarDesdePortal(PagoRequest request, List<MultipartFile> archivosRecibidos,
+                                              UsuarioPrincipal principal) {
+        if (principal == null || principal.usuarioId() == null || principal.institucionId() == null
+                || principal.accesoRecuperacion()) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "El reporte requiere una cuenta familiar activa");
+        }
+        Tutor tutor = tutorRepository.findById(request.tutorId())
+                .orElseThrow(() -> new RecursoNoEncontradoException("el tutor", request.tutorId()));
+        if (tutor.getUsuario() == null || !principal.usuarioId().equals(tutor.getUsuario().getId())
+                || !principal.institucionId().equals(tutor.getInstitucion().getId())) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "El tutor del pago no corresponde a la cuenta familiar");
+        }
+        return registrar(request, archivosRecibidos, OrigenRegistroPago.PORTAL_FAMILIAR,
+                tutor.getUsuario());
+    }
+
+    private PagoResponse registrar(PagoRequest request, List<MultipartFile> archivosRecibidos,
+                                   OrigenRegistroPago origen, escuela.seguridad.entity.Usuario reportante) {
         List<MultipartFile> comprobantes = archivosRecibidos == null ? List.of()
                 : archivosRecibidos.stream().filter(a -> a != null && !a.isEmpty()).toList();
         if (comprobantes.size() > MAXIMO_COMPROBANTES) {
@@ -98,6 +123,8 @@ public class PagoServiceImpl implements PagoService {
         pago.setMoneda(codigo(request.moneda()));
         pago.setMetodo(request.metodo());
         pago.setEstado(EstadoPago.PENDIENTE_VALIDACION);
+        pago.setOrigenRegistro(origen);
+        pago.setReportadoPor(reportante);
         pago.setCuentaDeclarada(cuenta);
         pago.setReferencia(limpiar(request.referencia()));
         pago.setObservaciones(limpiar(request.observaciones()));
