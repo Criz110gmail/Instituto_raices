@@ -123,14 +123,21 @@
         let timer;
         let controlador;
         let etiqueta = entrada.value;
+        const mostrarEstado = mensaje => { estado.textContent = mensaje; estado.hidden = !mensaje; };
+        const reiniciarBusqueda = () => {
+            clearTimeout(timer);
+            controlador?.abort();
+            resultados.hidden = true;
+            resultados.replaceChildren();
+        };
 
         entrada.addEventListener('input', () => {
             if (entrada.value !== etiqueta) { valor.value = ''; valor.dispatchEvent(new Event('change', {bubbles: true})); etiqueta = ''; }
-            clearTimeout(timer); controlador?.abort(); resultados.hidden = true;
+            reiniciarBusqueda();
             const requisito = requisitos(tipo);
-            if (requisito) { estado.textContent = requisito; return; }
-            if (entrada.value.trim().length < 3) { estado.textContent = 'Escribe al menos 3 caracteres.'; return; }
-            estado.textContent = 'Buscando…';
+            if (requisito) { mostrarEstado(requisito); return; }
+            if (entrada.value.trim().length < 3) { mostrarEstado('Escribe al menos 3 caracteres.'); return; }
+            mostrarEstado('Buscando…');
             timer = setTimeout(async () => {
                 controlador = new AbortController();
                 try {
@@ -146,15 +153,26 @@
                         boton.append(titulo, detalle); boton.addEventListener('click', () => {
                             entrada.value = opcion.titulo; etiqueta = opcion.titulo; valor.value = opcion.id;
                             valor.dispatchEvent(new Event('change', {bubbles: true})); resultados.hidden = true;
-                            estado.textContent = `Seleccionado: ${opcion.titulo}`;
+                            mostrarEstado('');
                         }); resultados.append(boton);
                     });
                     resultados.hidden = !resultados.children.length;
-                    estado.textContent = resultados.children.length ? `${resultados.children.length} coincidencia(s).` : 'No encontramos coincidencias disponibles.';
-                } catch (e) { if (e.name !== 'AbortError') estado.textContent = 'No fue posible completar la búsqueda.'; }
+                    mostrarEstado(resultados.children.length ? `${resultados.children.length} coincidencia(s).` : 'No encontramos coincidencias disponibles.');
+                } catch (e) { if (e.name !== 'AbortError') mostrarEstado('No fue posible completar la búsqueda.'); }
             }, 280);
         });
-        limpiar.addEventListener('click', () => { entrada.value = ''; etiqueta = ''; valor.value = ''; valor.dispatchEvent(new Event('change', {bubbles: true})); resultados.hidden = true; entrada.focus(); });
+        limpiar.addEventListener('click', () => {
+            entrada.value = ''; etiqueta = ''; valor.value = '';
+            valor.dispatchEvent(new Event('change', {bubbles: true}));
+            reiniciarBusqueda();
+            mostrarEstado(requisitos(tipo) || 'Escribe al menos 3 caracteres.');
+            entrada.focus();
+        });
+        contenedor.addEventListener('payment-autocomplete-reset', () => {
+            etiqueta = '';
+            reiniciarBusqueda();
+            mostrarEstado(requisitos(tipo) || 'Escribe al menos 3 caracteres.');
+        });
         document.addEventListener('click', e => { if (!contenedor.contains(e.target)) resultados.hidden = true; });
     }
 
@@ -178,7 +196,7 @@
         const tipo = contenedor.dataset.paymentAutocomplete;
         const valor = tipo === 'tutor' ? tutorId : tipo === 'cuenta' ? cuentaId : contenedor.querySelector('.cargo-id');
         valor.value = ''; valor.dispatchEvent(new Event('change', {bubbles: true}));
-        contenedor.querySelector('.autocomplete-results').hidden = true;
+        contenedor.dispatchEvent(new Event('payment-autocomplete-reset'));
     }
 
     actualizarAlcance(true);

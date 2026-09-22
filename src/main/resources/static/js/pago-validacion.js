@@ -8,15 +8,21 @@
     const limpiar = contenedor.querySelector('.autocomplete-clear');
     const formulario = document.querySelector('#validation-form');
     let timer; let controlador; let etiqueta = '';
+    const mostrarEstado = mensaje => { estado.textContent = mensaje; estado.hidden = !mensaje; };
     entrada.addEventListener('input', () => {
         if (entrada.value !== etiqueta) valor.value = '';
         clearTimeout(timer); controlador?.abort(); resultados.hidden = true;
         const consulta = entrada.value.trim();
-        if (consulta.length < 3) { estado.textContent = 'Escribe al menos 3 caracteres para buscar.'; return; }
-        estado.textContent = 'Buscando cuentas compatibles…'; timer = setTimeout(() => buscar(consulta), 280);
+        if (consulta.length < 3) { mostrarEstado('Escribe al menos 3 caracteres para buscar.'); return; }
+        mostrarEstado('Buscando cuentas compatibles…'); timer = setTimeout(() => buscar(consulta), 280);
     });
-    limpiar.addEventListener('click', () => { entrada.value = ''; etiqueta = ''; valor.value = ''; resultados.hidden = true; entrada.focus(); });
-    formulario.addEventListener('submit', evento => { if (!valor.value) { evento.preventDefault(); estado.textContent = 'Selecciona una cuenta destino de la lista.'; entrada.focus(); } });
+    limpiar.addEventListener('click', () => {
+        clearTimeout(timer); controlador?.abort();
+        entrada.value = ''; etiqueta = ''; valor.value = ''; resultados.hidden = true;
+        mostrarEstado('Escribe al menos 3 caracteres para buscar.');
+        entrada.focus();
+    });
+    formulario.addEventListener('submit', evento => { if (!valor.value) { evento.preventDefault(); mostrarEstado('Selecciona una cuenta destino de la lista.'); entrada.focus(); } });
     document.addEventListener('click', evento => { if (!contenedor.contains(evento.target)) resultados.hidden = true; });
     async function buscar(consulta) {
         controlador = new AbortController();
@@ -29,9 +35,9 @@
             (datos.resultados || []).forEach(opcion => {
                 const boton = document.createElement('button'); boton.type = 'button'; boton.className = 'autocomplete-option';
                 const titulo = document.createElement('strong'); titulo.textContent = opcion.titulo; const detalle = document.createElement('small'); detalle.textContent = opcion.detalle || '';
-                boton.append(titulo, detalle); boton.addEventListener('click', () => { entrada.value = opcion.titulo; etiqueta = opcion.titulo; valor.value = opcion.id; resultados.hidden = true; estado.textContent = `Cuenta seleccionada: ${opcion.titulo}`; }); resultados.append(boton);
+                boton.append(titulo, detalle); boton.addEventListener('click', () => { entrada.value = opcion.titulo; etiqueta = opcion.titulo; valor.value = opcion.id; resultados.hidden = true; mostrarEstado(''); }); resultados.append(boton);
             });
-            resultados.hidden = !resultados.children.length; estado.textContent = resultados.children.length ? `${resultados.children.length} cuenta(s) compatible(s).` : 'No encontramos cuentas compatibles.';
-        } catch (error) { if (error.name !== 'AbortError') estado.textContent = 'No fue posible consultar las cuentas.'; }
+            resultados.hidden = !resultados.children.length; mostrarEstado(resultados.children.length ? `${resultados.children.length} cuenta(s) compatible(s).` : 'No encontramos cuentas compatibles.');
+        } catch (error) { if (error.name !== 'AbortError') mostrarEstado('No fue posible consultar las cuentas.'); }
     }
 })();

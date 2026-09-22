@@ -743,6 +743,12 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   comportamiento de registro/reversa al continuar. Docker pasó 302 pruebas, una
   instancia aislada renderizó título y ayudas completos y la imagen se desplegó en
   la instancia habitual con salud `UP`.
+- Los autocompletados de cuentas/movimientos y de Pagos ocultan la ayuda al elegir una
+  sugerencia; el componente compartido también limpia el error anterior del campo.
+  Al borrar o cambiar el alcance se restablece sólo la indicación pertinente y se
+  cancelan búsquedas pendientes en los flujos propios de Pagos. Docker pasó 302 pruebas,
+  los JavaScript superaron la comprobación de sintaxis y la instancia habitual respondió
+  `UP` después de desplegar. No se alteraron datos financieros.
 
 ## Siguiente paso acordado
 

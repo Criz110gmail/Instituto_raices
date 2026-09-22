@@ -1498,3 +1498,15 @@
   historial autenticado renderizó el nuevo título, “Movimientos registrados” y la
   guía del estado vacío. Se desplegó la imagen en la instancia habitual y salud
   respondió `UP`; no se modificaron cargos ni ajustes operativos para verificarlo.
+
+## Corrección de ayudas de autocompletado financiero
+
+- En los selectores de cuentas usados por movimientos y otros formularios, al elegir
+  una sugerencia se ocultan la ayuda y un error de validación previo del mismo campo.
+  Las indicaciones vuelven únicamente cuando se escribe, limpia o cambia el alcance.
+- Los autocompletados propios de Pagos (tutor, cuenta y cargo) y de validación de pago
+  ya no dejan el texto “Seleccionado” después de elegir. Al limpiar, cancelan búsquedas
+  pendientes y restablecen una indicación contextual.
+- La sintaxis de los tres JavaScript se verificó con Node. Docker compiló y ejecutó
+  302 pruebas sin fallos; la imagen se desplegó en la instancia habitual y salud
+  respondió `UP`. La verificación no generó pagos ni movimientos financieros.

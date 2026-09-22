@@ -148,7 +148,7 @@
             etiquetaSeleccionada = opcion.titulo;
             cerrarLista();
             mostrarEstado('');
-            contenedor.querySelectorAll('[data-autocomplete-error]').forEach(error => {
+            contenedor.querySelectorAll('[data-autocomplete-error], :scope > small:not(.autocomplete-status)').forEach(error => {
                 error.textContent = '';
             });
             actualizarLimpiar();
@@ -178,6 +178,7 @@
 
         function mostrarEstado(mensaje) {
             estado.textContent = mensaje;
+            estado.hidden = !mensaje;
         }
 
         function actualizarLimpiar() {

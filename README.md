@@ -83,6 +83,8 @@ Las relaciones con catálogos de alto volumen se resuelven mediante autocompleta
 remoto: la búsqueda inicia con tres caracteres, respeta el alcance institucional y
 devuelve un máximo de 20 coincidencias. Alumnos, tutores y usuarios cuentan con índices
 GIN `pg_trgm` desde Flyway V8; no se cargan tablas completas dentro de formularios.
+Al elegir una sugerencia, la ayuda de búsqueda y el error anterior de ese campo se
+ocultan; reaparecen instrucciones sólo si se vuelve a escribir o se limpia la selección.
 
 ## Consola administrativa
 
