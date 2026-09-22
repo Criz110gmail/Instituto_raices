@@ -46,7 +46,7 @@
     <section class="data-panel">
         <div class="flash" th:if="${mensaje}" th:text="${mensaje}">Operación completada</div>
         <div class="panel-heading">
-            <div><h2>Directorio</h2><p>Refina la consulta sin cargar el catálogo completo.</p></div>
+            <div><h2 th:text="${resultado.modulo.name() == 'AJUSTES_CARGO' ? 'Movimientos registrados' : 'Directorio'}">Directorio</h2><p th:text="${resultado.modulo.name() == 'AJUSTES_CARGO' ? 'Consulta el historial aquí. Para registrar un ajuste manual, abre el detalle del cargo correspondiente en Cargos.' : 'Refina la consulta sin cargar el catálogo completo.'}">Refina la consulta sin cargar el catálogo completo.</p></div>
             <div class="panel-actions"><a class="export-button" th:if="${resultado.modulo.name() == 'CARGOS'}" href="/admin/cargos/generar">Generar automáticos</a><a class="export-button" th:if="${resultado.modulo.name() == 'POLITICAS_RECARGO'}" href="/admin/politicas-recargo/generar">Generar recargos</a><a class="new-button" th:if="${resultado.modulo.mantenimientoDisponible() and resultado.modulo.name() != 'AJUSTES_CARGO' and (resultado.modulo.name() != 'PAGOS' or puedeRegistrarPago)}" th:href="${resultado.modulo.rutaMantenimiento() + resultado.modulo.segmentoNuevo()}">+ Nuevo registro</a><a class="export-button" th:href="@{/admin/catalogos/{slug}/excel(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado})}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
                 Exportar Excel
@@ -97,7 +97,7 @@
                 </tr></tbody>
             </table>
         </div>
-        <div class="empty" th:if="${resultado.pagina.empty}"><span>∅</span><h3>No encontramos registros</h3><p>Prueba con una búsqueda más amplia o limpia los filtros.</p></div>
+        <div class="empty" th:if="${resultado.pagina.empty}"><span>∅</span><h3 th:text="${resultado.modulo.name() == 'AJUSTES_CARGO' ? 'Todavía no hay ajustes con estos filtros' : 'No encontramos registros'}">No encontramos registros</h3><p th:text="${resultado.modulo.name() == 'AJUSTES_CARGO' ? 'Los ajustes se registran desde el detalle de cada cargo. También puedes ampliar o limpiar los filtros.' : 'Prueba con una búsqueda más amplia o limpia los filtros.'}">Prueba con una búsqueda más amplia o limpia los filtros.</p></div>
 
         <footer class="pagination" th:if="${resultado.pagina.totalPages > 0}">
             <p><strong th:text="${resultado.pagina.number * resultado.pagina.size + 1}">1</strong>–<strong th:text="${resultado.pagina.number * resultado.pagina.size + resultado.pagina.numberOfElements}">25</strong> de <strong th:text="${resultado.pagina.totalElements}">100</strong></p>

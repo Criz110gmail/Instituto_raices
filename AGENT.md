@@ -725,6 +725,24 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   formulario ahora comprueba explícitamente `errorOperacion != null` y usa
   `th:action` para incluir CSRF en el `POST`. Docker compiló y pasó 300 pruebas;
   una instancia aislada autenticada respondió HTTP 200 y mostró el token CSRF.
+- Corrección posterior de Cargos: emisión manual y generación programada usaban
+  `action` HTML y omitían el CSRF del `POST`; ambos usan `th:action`. La ayuda de
+  descripción histórica explica que se conserva aunque se renombre el concepto.
+  Docker pasó 301 pruebas; en una app y PostgreSQL temporales ambos formularios
+  abrieron y los envíos vacíos regresaron HTTP 200 con validaciones, sin crear cargos.
+  La imagen corregida se desplegó en la instancia habitual con salud `UP`.
+- Verificación posterior de guardado válido: en otra base PostgreSQL temporal se
+  prepararon institución, plantel, grado, ciclo, alumno, inscripción activa y concepto
+  ficticios. `POST /admin/cargos` respondió 302 al listado; quedó exactamente un cargo
+  `EMITIDO` de 250.00 MXN con la descripción capturada, visible en el listado. No hubo
+  excepciones ni se creó ningún cargo en los datos reales. No hizo falta otro cambio de
+  código ni un nuevo despliegue.
+- El listado antes llamado “Ajustes de cargos” se presenta como “Historial de ajustes”
+  en el menú y encabezado. Explica que los ajustes manuales se registran desde el
+  detalle de un cargo. No cambiar el slug `ajustes-cargo`, rutas, permisos ni el
+  comportamiento de registro/reversa al continuar. Docker pasó 302 pruebas, una
+  instancia aislada renderizó título y ayudas completos y la imagen se desplegó en
+  la instancia habitual con salud `UP`.
 
 ## Siguiente paso acordado
 

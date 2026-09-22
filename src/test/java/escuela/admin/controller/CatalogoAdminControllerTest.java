@@ -68,6 +68,16 @@ class CatalogoAdminControllerTest {
                 .isEqualTo("redirect:/acceso-denegado");
     }
 
+    @Test
+    void historialDeAjustesCambiaSoloElNombreVisible() {
+        assertThat(ModuloCatalogo.AJUSTES_CARGO.titulo()).isEqualTo("Historial de ajustes");
+        assertThat(ModuloCatalogo.AJUSTES_CARGO.slug()).isEqualTo("ajustes-cargo");
+        assertThat(ModuloCatalogo.AJUSTES_CARGO.rutaListado())
+                .isEqualTo("/admin/catalogos/ajustes-cargo");
+        assertThat(ModuloCatalogo.AJUSTES_CARGO.visibleCon(java.util.Set.of("AJUSTE_CARGO_LEER")))
+                .isTrue();
+    }
+
     private TestingAuthenticationToken autenticacion(String... permisos) {
         return new TestingAuthenticationToken("usuario", "password", permisos);
     }

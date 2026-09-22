@@ -11,7 +11,7 @@
     <div class="finance-principle"><span>Proceso idempotente</span><strong>Puedes ejecutarlo nuevamente con seguridad</strong><p>El sistema revisa las cuotas automáticas por bloques y crea sólo los periodos faltantes. Una ejecución repetida o simultánea no duplica cargos.</p></div>
     <section class="form-card">
         <div class="form-intro finance-intro"><span>Automatización de cobranza</span><h1>Generar cargos programados</h1><p>Selecciona el alcance y la fecha de corte. Cada resultado quedará asignado a la inscripción de un alumno.</p></div>
-        <form class="entity-form" th:object="${form}" method="post" action="/admin/cargos/generar">
+        <form class="entity-form" th:object="${form}" method="post" th:action="@{/admin/cargos/generar}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo completar la generación</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
             <fieldset class="form-section"><legend>Alcance de generación</legend><div class="form-grid">
                 <label><span>Institución *</span><select id="institucion" th:field="*{institucionId}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><small th:errors="*{institucionId}"></small></label>

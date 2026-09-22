@@ -88,7 +88,7 @@ GIN `pg_trgm` desde Flyway V8; no se cargan tablas completas dentro de formulari
 
 La ruta `/admin` contiene los ocho catálogos académicos, Alumnos, Tutores, Vínculos
 alumno–tutor, Inscripciones, Conceptos de cobro, Cuotas por alumno, Cargos, Tipos de
-beca, Becas por alumno, Ajustes de cargos y los módulos de
+beca, Becas por alumno, Historial de ajustes y los módulos de
 Roles y permisos y Usuarios.
 Todos los listados consultan la
 base de datos con filtros y paginación; el botón **Exportar Excel** aplica exactamente
@@ -372,3 +372,13 @@ asignarlos automáticamente a roles existentes.
 
 El formulario «Nuevo pago» renderiza incluso sin errores previos y envía su token
 CSRF en el registro multipart; las validaciones vuelven al mismo formulario.
+
+Los formularios de emisión manual y generación programada de Cargos también envían
+CSRF. La descripción histórica es el texto propio de cada cargo y se conserva aunque
+después cambie el nombre del concepto de cobro del catálogo.
+La emisión manual se comprobó con un cargo válido en una instalación aislada; la
+prueba no modificó los datos de la instalación habitual.
+
+Historial de ajustes permite consultar y exportar becas, descuentos, recargos y
+reversas. Los ajustes manuales se registran desde el detalle del cargo en Cargos;
+el cambio de nombre no modifica rutas ni permisos.

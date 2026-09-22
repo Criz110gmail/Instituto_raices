@@ -1465,3 +1465,36 @@
   PostgreSQL vacío y credenciales ficticias abrió `/admin/pagos/nuevo` autenticada
   con HTTP 200; el HTML contenía el formulario y su token CSRF. No se registraron
   pagos de prueba ni se tocaron saldos reales.
+
+## Corrección del guardado de Cargos
+
+- Los formularios de emisión manual y generación programada usaban `action` HTML,
+  por lo que Thymeleaf no agregaba el token CSRF a sus envíos. Ambos usan ahora
+  `th:action`. La ayuda de descripción histórica se redactó de forma explícita:
+  el texto del cargo no cambia aunque se renombre después el concepto del catálogo.
+- La compilación Docker pasó 301 pruebas. En una app autenticada y PostgreSQL
+  descartables, ambos formularios mostraron su token CSRF y los envíos vacíos
+  regresaron HTTP 200 con validaciones; `cargo` permaneció con cero filas. Se
+  desplegó la imagen en la instancia habitual, que respondió `UP`. No se emitieron
+  cargos ni se modificaron saldos reales para esta prueba.
+- A petición del propietario se completó después una prueba válida de punta a punta
+  en otra instalación descartable. Se prepararon institución, plantel, grado, ciclo,
+  alumno, inscripción activa y concepto de cobro ficticios. El formulario autenticado
+  envió un cargo de 250.00 MXN para septiembre de 2026; el servidor respondió 302 al
+  listado y PostgreSQL confirmó exactamente una fila `EMITIDO` con la descripción
+  histórica esperada. El listado mostró matrícula, descripción e importe y el log no
+  registró excepciones durante el envío. No se necesitaron cambios adicionales de
+  código; la instancia habitual no recibió ningún cargo de prueba.
+
+## Nombre visible del historial de ajustes
+
+- A petición del propietario, el listado “Ajustes de cargos” pasa a llamarse
+  “Historial de ajustes” en el menú y encabezado. La pantalla aclara que los ajustes
+  manuales se registran desde el detalle de Cargos; también distingue el estado
+  vacío. El enlace de regreso desde el detalle vuelve al historial.
+- Es un cambio de presentación: se conserva el slug `ajustes-cargo`, la ruta, los
+  permisos y la lógica de registro/reversa de ajustes.
+- Docker ejecutó 302 pruebas sin fallos. En una app con PostgreSQL descartables, el
+  historial autenticado renderizó el nuevo título, “Movimientos registrados” y la
+  guía del estado vacío. Se desplegó la imagen en la instancia habitual y salud
+  respondió `UP`; no se modificaron cargos ni ajustes operativos para verificarlo.
