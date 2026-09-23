@@ -131,6 +131,12 @@
             resultados.replaceChildren();
         };
 
+        entrada.addEventListener('focus', () => {
+            if (entrada.value.trim() || resultados.children.length || requisitos(tipo)) return;
+            mostrarEstado('Cargando opciones…');
+            consultar('');
+        });
+
         entrada.addEventListener('input', () => {
             if (entrada.value !== etiqueta) { valor.value = ''; valor.dispatchEvent(new Event('change', {bubbles: true})); etiqueta = ''; }
             reiniciarBusqueda();
@@ -138,10 +144,12 @@
             if (requisito) { mostrarEstado(requisito); return; }
             if (entrada.value.trim().length < 3) { mostrarEstado('Escribe al menos 3 caracteres.'); return; }
             mostrarEstado('Buscando…');
-            timer = setTimeout(async () => {
+            timer = setTimeout(() => consultar(entrada.value.trim()), 280);
+        });
+        async function consultar(consulta) {
                 controlador = new AbortController();
                 try {
-                    const respuesta = await fetch(endpoint(tipo, entrada.value.trim()), {headers: {'Accept': 'application/json'}, signal: controlador.signal});
+                    const respuesta = await fetch(endpoint(tipo, consulta), {headers: {'Accept': 'application/json'}, signal: controlador.signal});
                     if (respuesta.redirected && new URL(respuesta.url).pathname === '/login') { location.assign('/login?sesionExpirada'); return; }
                     if (!respuesta.ok) throw new Error();
                     const datos = await respuesta.json();
@@ -159,8 +167,7 @@
                     resultados.hidden = !resultados.children.length;
                     mostrarEstado(resultados.children.length ? `${resultados.children.length} coincidencia(s).` : 'No encontramos coincidencias disponibles.');
                 } catch (e) { if (e.name !== 'AbortError') mostrarEstado('No fue posible completar la búsqueda.'); }
-            }, 280);
-        });
+        }
         limpiar.addEventListener('click', () => {
             entrada.value = ''; etiqueta = ''; valor.value = '';
             valor.dispatchEvent(new Event('change', {bubbles: true}));

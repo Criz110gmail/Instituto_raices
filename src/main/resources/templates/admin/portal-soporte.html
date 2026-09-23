@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1930"><title>Soporte del portal familiar · Nexo Escolar</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script></head>
+<body class="form-page">
+<main class="form-shell finance-shell">
+<header class="form-top"><a href="/admin">← Volver a administración</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+<div class="finance-principle"><span>Soporte seguro</span><strong>Consultar el portal familiar como lo ve un tutor</strong><p>Esta vista es de sólo lectura y no cambia la sesión, permisos ni datos de la familia.</p></div>
+<section class="form-card"><div class="form-intro finance-intro"><span>Reproducción de incidencias</span><h1>Portal familiar</h1><p>Busca un tutor con cuenta activa para revisar su experiencia y reproducir un problema reportado.</p></div>
+<form class="entity-form" method="get" action="/admin/portal-soporte"><div class="form-grid"><label class="wide"><span>Buscar tutor</span><input name="q" th:value="${q}" placeholder="Escribe nombre, teléfono o correo"><small>La consulta está limitada a 20 resultados y sólo muestra tutores con usuario activo vinculado.</small></label></div><footer class="form-actions"><a href="/admin/portal-soporte">Limpiar</a><button type="submit">Buscar</button></footer></form>
+<div class="support-tutor-list" th:if="${!tutores.empty}"><a class="support-tutor-row" th:each="t:${tutores}" th:href="@{/admin/portal-soporte/{id}(id=${t.id})}"><span class="support-tutor-avatar">☺</span><span><strong th:text="${t.nombres+' '+t.primerApellido+(t.segundoApellido==null?'':' '+t.segundoApellido)}">Tutor</strong><small th:text="${t.usuario.username+' · '+t.email}">Usuario</small></span><b>Ver portal ↗</b></a></div>
+<div class="empty" th:if="${tutores.empty}"><span>∅</span><h3>No encontramos tutores disponibles</h3><p>Busca por nombre, teléfono o correo.</p></div>
+</section></main></body></html>

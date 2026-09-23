@@ -74,6 +74,19 @@ class BusquedaAutocompletadoServiceTest {
     }
 
     @Test
+    void muestraDiezOpcionesInicialesAlSolicitarElPrimerEnfoque() {
+        when(alumnoRepository.buscarParaAutocompletado(any(), any(), any()))
+                .thenReturn(new SliceImpl<>(List.of(alumno())));
+
+        ResultadoAutocompletado resultado = service.alumnos(1L, "__INICIALES__");
+
+        assertThat(resultado.resultados()).hasSize(1);
+        verify(alumnoRepository).buscarParaAutocompletado(
+                org.mockito.ArgumentMatchers.eq(1L), org.mockito.ArgumentMatchers.eq(""),
+                org.mockito.ArgumentMatchers.argThat(p -> p.getPageSize() == 10));
+    }
+
+    @Test
     void devuelveTutorPorNombreOTelefono() {
         Tutor tutor = new Tutor();
         tutor.setId(20L);

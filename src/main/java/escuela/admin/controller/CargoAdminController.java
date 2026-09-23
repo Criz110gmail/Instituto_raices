@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -73,9 +74,12 @@ public class CargoAdminController {
     }
 
     @GetMapping("/{id}/editar")
-    String detalle(@PathVariable Long id, Model model) {
+    String detalle(@PathVariable Long id, Model model, Authentication authentication) {
         alcance.validarRecurso(ModuloCatalogo.CARGOS, id);
         ajusteController.prepararCargo(model, id, new escuela.admin.dto.AjusteCargoForm());
+        model.addAttribute("puedeValidarPago", authentication.getAuthorities().stream().anyMatch(a ->
+                a.getAuthority().equals("PAGO_VALIDAR") || a.getAuthority().equals("PAGO_LEER")
+                        || a.getAuthority().equals("PAGO_REGISTRAR")));
         return "admin/cargo-detalle";
     }
 

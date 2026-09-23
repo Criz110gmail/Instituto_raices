@@ -34,7 +34,8 @@ public enum ModuloCatalogo {
     AVISOS("avisos", "Avisos escolares", List.of()),
     ROLES("roles", "Roles y permisos", List.of("Código", "Rol", "Institución", "Descripción")),
     USUARIOS("usuarios", "Usuarios", List.of("Usuario", "Correo", "Institución", "Credencial")),
-    AUDITORIA("auditoria", "Auditoría", List.of());
+    AUDITORIA("auditoria", "Auditoría", List.of()),
+    PORTAL_TUTOR("portal-tutor", "Portal tutor", List.of());
 
     private final String slug;
     private final String titulo;
@@ -58,7 +59,7 @@ public enum ModuloCatalogo {
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
             case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Finanzas";
             case EVENTOS_ESCOLARES, AVISOS -> "Comunicación";
-            case ROLES, USUARIOS, AUDITORIA -> "Seguridad";
+            case ROLES, USUARIOS, AUDITORIA, PORTAL_TUTOR -> "Seguridad";
         };
     }
 
@@ -94,7 +95,10 @@ public enum ModuloCatalogo {
             case ROLES -> "ROL";
             case USUARIOS -> "USUARIO";
             case AUDITORIA -> "AUDITORIA";
+            case PORTAL_TUTOR -> "PORTAL_TUTOR_SOPORTE";
         };
+        if (this == PORTAL_TUTOR) return permisos.contains("PORTAL_TUTOR_SOPORTE")
+                && permisos.contains("ROL_ADMINISTRAR");
         if (this == PAGOS) return permisos.contains("PAGO_LEER") || permisos.contains("PAGO_REGISTRAR")
                 || permisos.contains("PAGO_VALIDAR") || permisos.contains("PAGO_DEVOLVER")
                 || permisos.contains("PAGO_CANCELAR");
@@ -161,12 +165,13 @@ public enum ModuloCatalogo {
             case ROLES -> "/admin/roles";
             case USUARIOS -> "/admin/usuarios";
             case AUDITORIA -> "/admin/auditoria";
+            case PORTAL_TUTOR -> "/admin/portal-soporte";
             default -> "";
         };
     }
 
     public String rutaListado() {
-        return this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA
+        return this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
                 ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }

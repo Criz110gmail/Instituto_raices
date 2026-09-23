@@ -22,6 +22,11 @@
         let etiquetaSeleccionada = entrada.value;
 
         actualizarLimpiar();
+        entrada.addEventListener('focus', () => {
+            if (!alcance.value || entrada.value.trim() || opciones.length) return;
+            mostrarEstado('Cargando opciones…');
+            buscar('');
+        });
         entrada.addEventListener('input', () => {
             if (entrada.value !== etiquetaSeleccionada) {
                 valor.value = '';
@@ -137,7 +142,7 @@
             lista.hidden = false;
             entrada.setAttribute('aria-expanded', 'true');
             mostrarEstado(hayMas
-                ? 'Se muestran 20 coincidencias. Escribe más caracteres para precisar.'
+                ? `Se muestran ${resultados.length} coincidencias. Escribe más caracteres para precisar.`
                 : `${resultados.length} coincidencia${resultados.length === 1 ? '' : 's'}.`);
         }
 

@@ -28,6 +28,20 @@ public class PortalTutorService {
     public PortalTutorResultado consultar(UsuarioPrincipal principal, Long alumnoId,
                                            int paginaEventos, int paginaCargos, int paginaAvisos,
                                            int paginaNotificaciones, int paginaPagos) {
+        return consultar(principal, alumnoId, paginaEventos, paginaCargos, paginaAvisos,
+                paginaNotificaciones, paginaPagos, true);
+    }
+
+    public PortalTutorResultado consultarComoSoporte(UsuarioPrincipal principal, Long alumnoId,
+                                                       int paginaEventos, int paginaCargos, int paginaAvisos,
+                                                       int paginaPagos) {
+        return consultar(principal, alumnoId, paginaEventos, paginaCargos, paginaAvisos, 0, paginaPagos, false);
+    }
+
+    private PortalTutorResultado consultar(UsuarioPrincipal principal, Long alumnoId,
+                                           int paginaEventos, int paginaCargos, int paginaAvisos,
+                                           int paginaNotificaciones, int paginaPagos,
+                                           boolean sincronizarNotificaciones) {
         validarPrincipal(principal);
         var institucion = institucionService.obtener(principal.institucionId());
         ZoneId zona = ZoneId.of(institucion.zonaHoraria());
@@ -38,7 +52,9 @@ public class PortalTutorService {
         List<PortalHijoResumen> hijos = portalRepository.hijos(
                 principal.usuarioId(), principal.institucionId(), hoy);
         PortalHijoResumen hijo = seleccionar(hijos, alumnoId);
-        var bandeja = notificaciones.sincronizarYConsultar(principal, paginaNotificaciones);
+        var bandeja = sincronizarNotificaciones
+                ? notificaciones.sincronizarYConsultar(principal, paginaNotificaciones)
+                : new PortalNotificaciones(0, org.springframework.data.domain.Page.<PortalNotificacionFila>empty());
         if (hijo == null) return new PortalTutorResultado(tutor, institucion.nombre(), hijos, null, null,
                 org.springframework.data.domain.Page.empty(), org.springframework.data.domain.Page.empty(), bandeja,
                 org.springframework.data.domain.Page.empty());
@@ -52,7 +68,10 @@ public class PortalTutorService {
         ResultadoEstadoCuentaAlumno estadoCuenta = hijo.accesoFinanciero()
                 ? estadoCuenta(hijo, principal.institucionId(), hoy, zona, institucion.monedaPredeterminada(), cargosPagina)
                 : null;
-        var pagos = hijo.accesoFinanciero() ? Optional.ofNullable(portalRepository.pagos(principal.usuarioId(), principal.institucionId(), institucion.zonaHoraria(), Math.max(0,paginaPagos), TAMANIO)).orElseGet(org.springframework.data.domain.Page::empty) : org.springframework.data.domain.Page.empty();
+        org.springframework.data.domain.Page<PortalPagoFila> pagos = hijo.accesoFinanciero()
+                ? Optional.ofNullable(portalRepository.pagos(principal.usuarioId(), principal.institucionId(), institucion.zonaHoraria(), Math.max(0,paginaPagos), TAMANIO))
+                    .orElseGet(() -> org.springframework.data.domain.Page.<PortalPagoFila>empty())
+                : org.springframework.data.domain.Page.<PortalPagoFila>empty();
         return new PortalTutorResultado(tutor, institucion.nombre(), hijos, hijo, estadoCuenta, eventos, avisos, bandeja, pagos);
     }
 

@@ -213,7 +213,7 @@ public class PagoAdminController {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore())
                 .contentType(MediaType.parseMediaType(descarga.tipoMime()))
                 .contentLength(descarga.tamanoBytes())
-                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline()
                         .filename(descarga.nombreOriginal(), StandardCharsets.UTF_8).build().toString())
                 .body(descarga.recurso());
     }

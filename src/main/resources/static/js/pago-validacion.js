@@ -9,6 +9,7 @@
     const formulario = document.querySelector('#validation-form');
     let timer; let controlador; let etiqueta = '';
     const mostrarEstado = mensaje => { estado.textContent = mensaje; estado.hidden = !mensaje; };
+    entrada.addEventListener('focus', () => { if (!entrada.value.trim() && !resultados.children.length) buscar(''); });
     entrada.addEventListener('input', () => {
         if (entrada.value !== etiqueta) valor.value = '';
         clearTimeout(timer); controlador?.abort(); resultados.hidden = true;

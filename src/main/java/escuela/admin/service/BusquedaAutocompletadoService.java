@@ -72,7 +72,7 @@ public class BusquedaAutocompletadoService {
         String texto = normalizar(consulta);
         if (texto == null) return ResultadoAutocompletado.vacio();
         Slice<Alumno> resultado = alumnoRepository.buscarParaAutocompletado(
-                institucionId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+                institucionId, texto, PageRequest.of(0, tamano(consulta)));
         return new ResultadoAutocompletado(resultado.getContent().stream()
                 .map(alumno -> new OpcionAutocompletado(alumno.getId(),
                         alumno.getMatricula() + " · " + nombre(alumno.getNombres(),
@@ -86,7 +86,7 @@ public class BusquedaAutocompletadoService {
         String texto = normalizar(consulta);
         if (texto == null) return ResultadoAutocompletado.vacio();
         Slice<Tutor> resultado = tutorRepository.buscarParaAutocompletado(
-                institucionId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+                institucionId, texto, PageRequest.of(0, tamano(consulta)));
         return new ResultadoAutocompletado(resultado.getContent().stream()
                 .map(tutor -> new OpcionAutocompletado(tutor.getId(),
                         nombre(tutor.getNombres(), tutor.getPrimerApellido(),
@@ -100,7 +100,7 @@ public class BusquedaAutocompletadoService {
         String texto = normalizar(consulta);
         if (texto == null) return ResultadoAutocompletado.vacio();
         Slice<Tutor> resultado = tutorRepository.buscarParaAutocompletado(
-                institucionId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+                institucionId, texto, PageRequest.of(0, tamano(consulta)));
         return new ResultadoAutocompletado(resultado.getContent().stream()
                 .map(tutor -> new OpcionAutocompletado(tutor.getId(),
                         nombre(tutor.getNombres(), tutor.getPrimerApellido(), tutor.getSegundoApellido()),
@@ -113,7 +113,7 @@ public class BusquedaAutocompletadoService {
         String texto = normalizar(consulta);
         if (texto == null) return ResultadoAutocompletado.vacio();
         Slice<Usuario> resultado = usuarioRepository.buscarParaAutocompletado(
-                institucionId, texto, tutorId, PageRequest.of(0, MAXIMO_RESULTADOS));
+                institucionId, texto, tutorId, PageRequest.of(0, tamano(consulta)));
         return new ResultadoAutocompletado(resultado.getContent().stream()
                 .map(usuario -> new OpcionAutocompletado(usuario.getId(),
                         usuario.getUsername(), usuario.getEmail()))
@@ -125,7 +125,7 @@ public class BusquedaAutocompletadoService {
         String texto = normalizar(consulta);
         if (texto == null) return ResultadoAutocompletado.vacio();
         Slice<Inscripcion> resultado = inscripcionRepository.buscarParaAutocompletado(
-                plantelId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+                plantelId, texto, PageRequest.of(0, tamano(consulta)));
         return new ResultadoAutocompletado(resultado.getContent().stream()
                 .map(inscripcion -> new OpcionAutocompletado(inscripcion.getId(),
                         inscripcion.getNumeroInscripcion() + " · "
@@ -142,7 +142,7 @@ public class BusquedaAutocompletadoService {
         String texto = normalizar(consulta);
         if (texto == null) return ResultadoAutocompletado.vacio();
         Slice<ConceptoCobro> resultado = conceptoCobroRepository.buscarParaAutocompletado(
-                institucionId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+                institucionId, texto, PageRequest.of(0, tamano(consulta)));
         return new ResultadoAutocompletado(resultado.getContent().stream()
                 .map(concepto -> new OpcionAutocompletado(concepto.getId(),
                         concepto.getCodigo() + " · " + concepto.getNombre(),
@@ -155,7 +155,7 @@ public class BusquedaAutocompletadoService {
         String texto = normalizar(consulta);
         if (texto == null) return ResultadoAutocompletado.vacio();
         Slice<PeriodoAcademico> resultado = periodoAcademicoRepository.buscarParaCargo(
-                inscripcionId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+                inscripcionId, texto, PageRequest.of(0, tamano(consulta)));
         return new ResultadoAutocompletado(resultado.getContent().stream()
                 .map(periodo -> new OpcionAutocompletado(periodo.getId(),
                         periodo.getCodigo() + " · " + periodo.getNombre(),
@@ -168,7 +168,7 @@ public class BusquedaAutocompletadoService {
         String texto = normalizar(consulta);
         if (texto == null) return ResultadoAutocompletado.vacio();
         Slice<TipoBeca> resultado = tipoBecaRepository.buscarParaAutocompletado(
-                institucionId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+                institucionId, texto, PageRequest.of(0, tamano(consulta)));
         return new ResultadoAutocompletado(resultado.getContent().stream()
                 .map(tipo -> new OpcionAutocompletado(tipo.getId(),
                         tipo.getCodigo() + " · " + tipo.getNombre(),
@@ -183,7 +183,7 @@ public class BusquedaAutocompletadoService {
         if (texto == null) return ResultadoAutocompletado.vacio();
         Slice<CuentaFinanciera> resultado = cuentaFinancieraRepository.buscarParaPago(
                 institucionId, plantelId, metodo == MetodoPago.EFECTIVO, texto,
-                PageRequest.of(0, MAXIMO_RESULTADOS));
+                PageRequest.of(0, tamano(consulta)));
         return new ResultadoAutocompletado(resultado.getContent().stream()
                 .map(cuenta -> new OpcionAutocompletado(cuenta.getId(),
                         cuenta.getCodigo() + " · " + cuenta.getNombre(),
@@ -203,7 +203,7 @@ public class BusquedaAutocompletadoService {
                         cb.like(cb.lower(root.get("bancoNombre")), patron)));
         var resultado = cuentaFinancieraRepository.findAll(Specification.where(busqueda)
                         .and(alcance.especificacion(ModuloCatalogo.CUENTAS_FINANCIERAS)),
-                PageRequest.of(0, MAXIMO_RESULTADOS + 1));
+                PageRequest.of(0, tamano(consulta) + 1));
         boolean hayMas = resultado.getNumberOfElements() > MAXIMO_RESULTADOS;
         return new ResultadoAutocompletado(resultado.getContent().stream().limit(MAXIMO_RESULTADOS)
                 .map(cuenta -> new OpcionAutocompletado(cuenta.getId(),
@@ -226,7 +226,7 @@ public class BusquedaAutocompletadoService {
                         cb.like(cb.lower(root.get("nombre")), patron)));
         var resultado = cuentaFinancieraRepository.findAll(Specification.where(busqueda)
                         .and(alcance.especificacionCuentasParaCorte()),
-                PageRequest.of(0, MAXIMO_RESULTADOS + 1));
+                PageRequest.of(0, tamano(consulta) + 1));
         boolean hayMas = resultado.getNumberOfElements() > MAXIMO_RESULTADOS;
         return new ResultadoAutocompletado(resultado.getContent().stream().limit(MAXIMO_RESULTADOS)
                 .map(cuenta -> new OpcionAutocompletado(cuenta.getId(),
@@ -247,7 +247,7 @@ public class BusquedaAutocompletadoService {
                         cb.like(cb.lower(root.get("bancoNombre")), patron)));
         var resultado = cuentaFinancieraRepository.findAll(Specification.where(busqueda)
                         .and(alcance.especificacionCuentasReporte()),
-                PageRequest.of(0, MAXIMO_RESULTADOS + 1));
+                PageRequest.of(0, tamano(consulta) + 1));
         boolean hayMas = resultado.getNumberOfElements() > MAXIMO_RESULTADOS;
         return new ResultadoAutocompletado(resultado.getContent().stream().limit(MAXIMO_RESULTADOS)
                 .map(cuenta -> new OpcionAutocompletado(cuenta.getId(),
@@ -263,7 +263,7 @@ public class BusquedaAutocompletadoService {
         String texto = normalizar(consulta);
         if (texto == null) return ResultadoAutocompletado.vacio();
         Slice<Cargo> resultado = cargoRepository.buscarParaSolicitudPago(
-                institucionId, tutorId, texto, PageRequest.of(0, MAXIMO_RESULTADOS));
+                institucionId, tutorId, texto, PageRequest.of(0, tamano(consulta)));
         var permitidos = resultado.getContent().stream().filter(cargo -> {
             try {
                 alcance.validarRecurso(ModuloCatalogo.CARGOS, cargo.getId());
@@ -291,8 +291,13 @@ public class BusquedaAutocompletadoService {
     private String normalizar(String consulta) {
         if (consulta == null) return null;
         String texto = consulta.trim().replaceAll("\\s+", " ");
+        if (texto.isBlank() || "__INICIALES__".equalsIgnoreCase(texto)) return "";
         if (texto.length() < MINIMO_CARACTERES) return null;
         return texto.substring(0, Math.min(texto.length(), 100)).toLowerCase(Locale.ROOT);
+    }
+
+    private int tamano(String consulta) {
+        return consulta == null || consulta.isBlank() || "__INICIALES__".equalsIgnoreCase(consulta.trim()) ? 10 : MAXIMO_RESULTADOS;
     }
 
     private String nombre(String... partes) {

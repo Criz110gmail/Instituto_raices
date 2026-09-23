@@ -47,7 +47,7 @@ public class PortalPagoService {
 
     @Transactional(readOnly=true)
     public ResultadoAutocompletado buscarCuentas(UsuarioPrincipal p,Long plantelId,String q) {
-        validar(p); if(plantelId==null)return ResultadoAutocompletado.vacio(); String texto=q==null?"":q.trim(); if(texto.length()<3)return ResultadoAutocompletado.vacio();
+        validar(p); if(plantelId==null)return ResultadoAutocompletado.vacio(); String texto=q==null?"":q.trim();
         var r=cuentas.buscarParaPago(p.institucionId(),plantelId,false,texto,PageRequest.of(0,20));
         return new ResultadoAutocompletado(r.getContent().stream().map(c->new OpcionAutocompletado(c.getId(),c.getNombre(),
                 (c.getBancoNombre()==null?"":c.getBancoNombre()+" · ")+c.getMoneda())).toList(),r.hasNext());

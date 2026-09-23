@@ -85,6 +85,7 @@ public class AlcanceDatosService {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
                 case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS, EVENTOS_ESCOLARES, AVISOS, ROLES, USUARIOS, AUDITORIA -> root.get("institucion").get("id");
+                case PORTAL_TUTOR -> root.get("id");
                 case POLITICAS_RECARGO -> root.get("conceptoCobro").get("institucion").get("id");
                 case VINCULOS_TUTOR, INSCRIPCIONES -> root.get("alumno").get("institucion").get("id");
                 case CUOTAS_ALUMNO, CARGOS, BECAS_ALUMNO -> root.get("inscripcion").get("alumno").get("institucion").get("id");
@@ -216,7 +217,7 @@ public class AlcanceDatosService {
                     .orElseThrow(this::denegado).getPlantelRegistro().getId());
             case MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO -> throw denegado();
             case REPORTES_FINANCIEROS -> throw denegado();
-            case AUDITORIA -> throw denegado();
+            case AUDITORIA, PORTAL_TUTOR -> throw denegado();
             case EVENTOS_ESCOLARES -> {
                 var evento = eventoEscolarRepository.findById(id).orElseThrow(this::denegado);
                 if (evento.getPlantel() == null) validarInstitucion(evento.getInstitucion().getId());
