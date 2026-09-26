@@ -44,6 +44,28 @@
             </div></fieldset>
             <footer class="form-actions"><a href="/admin/catalogos/tutores">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Registrar tutor'}">Guardar</button></footer>
         </form>
+        <section th:if="${edicion}" class="access-actions tutor-identification-section">
+            <div class="section-heading"><div><span>Documento privado opcional</span><h2>Identificación oficial</h2></div><p>Guarda una INE, licencia, pasaporte u otra identificación oficial. Se aceptan PDF, JPG y PNG de hasta 10 MB.</p></div>
+            <div class="form-error" role="alert" th:if="${errorIdentificacion}"><strong>No se pudo actualizar la identificación</strong><p th:text="${errorIdentificacion}">Revisa el archivo.</p></div>
+            <div class="receipt-list" th:if="${identificacionActual != null}">
+                <a target="_blank" rel="noopener" th:href="@{/admin/tutores/{tutorId}/identificaciones/{identificacionId}(tutorId=${id},identificacionId=${identificacionActual.id})}"><span>↗</span><div><strong th:text="${identificacionActual.tipoEtiqueta}">INE</strong><small th:text="${identificacionActual.nombreOriginal + ' · ' + #numbers.formatDecimal(identificacionActual.tamanoBytes / 1024.0, 1, 0) + ' KB'}">archivo.pdf</small></div></a>
+            </div>
+            <div class="form-note" th:if="${identificacionActual == null}"><strong>Sin identificación cargada</strong><p>Este documento es opcional y no impide guardar o utilizar el expediente del tutor.</p></div>
+            <div class="profile-tool-actions">
+                <form method="post" enctype="multipart/form-data" th:action="@{/admin/tutores/{id}/identificacion(id=${id})}" class="photo-upload-form">
+                    <label><span>Tipo de identificación</span><select name="tipo" required><option value="">Selecciona el tipo</option><option th:each="tipo : ${tiposIdentificacion}" th:value="${tipo}" th:text="${tipo.etiqueta}">INE</option></select></label>
+                    <label for="archivo-identificacion"><span th:text="${identificacionActual == null ? 'Seleccionar archivo' : 'Reemplazar archivo'}">Seleccionar archivo</span><input id="archivo-identificacion" type="file" name="archivo" accept="application/pdf,image/jpeg,image/png" required></label>
+                    <button type="submit" th:text="${identificacionActual == null ? 'Guardar identificación' : 'Reemplazar identificación'}">Guardar identificación</button>
+                </form>
+                <form th:if="${identificacionActual != null}" method="post" th:action="@{/admin/tutores/{id}/identificacion/retirar(id=${id})}" onsubmit="return confirm('¿Retirar la identificación vigente? El historial privado se conservará.');"><button type="submit" class="photo-remove">Retirar vigente</button></form>
+            </div>
+            <details class="photo-history" th:if="${historialIdentificaciones != null and !historialIdentificaciones.isEmpty()}">
+                <summary th:text="${'Ver historial de identificaciones (' + historialIdentificaciones.size() + ')'}">Ver historial</summary>
+                <div class="receipt-list identification-history-list">
+                    <a th:each="documento : ${historialIdentificaciones}" target="_blank" rel="noopener" th:href="@{/admin/tutores/{tutorId}/identificaciones/{identificacionId}(tutorId=${id},identificacionId=${documento.id})}"><span>↗</span><div><strong th:text="${documento.tipoEtiqueta}">Pasaporte</strong><small th:text="${documento.nombreOriginal}">archivo.pdf</small></div></a>
+                </div>
+            </details>
+        </section>
         <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/tutores/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este tutor? Sus vínculos históricos se conservarán.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar tutor</strong><p>El registro y sus relaciones se conservarán.</p></div><button type="submit">Desactivar</button></form>
     </section>
 </main>

@@ -414,3 +414,11 @@ La pantalla de Roles presenta una sola opción con el nombre amigable de cada m�
 seleccionarla se conceden todas sus operaciones; al retirarla no queda acceso de lectura
 ni de escritura. Los permisos técnicos permanecen internos para proteger cada endpoint y
 los roles creados anteriormente se expanden al módulo completo al iniciar una sesión nueva.
+
+### V36 · Identificación oficial opcional del tutor
+
+Al editar un tutor puede guardarse opcionalmente una INE, licencia de conducir, pasaporte
+u otra identificación oficial en PDF, JPG o PNG de hasta 10 MB. El documento se almacena
+de forma privada, sólo existe uno vigente y cada reemplazo o retiro conserva el historial.
+La base guarda metadatos y checksum; el contenido permanece en el almacenamiento privado
+y su descarga requiere acceso completo al módulo Tutores.

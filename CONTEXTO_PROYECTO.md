@@ -1580,8 +1580,26 @@ historial paginado.
   por ello los roles existentes adoptan la regla todo o nada en su siguiente sesión.
 - Al guardar un rol se activan todas las relaciones técnicas de los módulos elegidos y se
   desactivan las de los módulos no elegidos, conservando el historial de `RolPermiso`.
-- No se creó V36 ni se modificó el esquema. Una validación impide omitir silenciosamente
-  permisos técnicos futuros que todavía no hayan sido clasificados en un módulo.
+- La simplificación de permisos no requirió una migración. Una validación impide omitir
+  silenciosamente permisos técnicos futuros que todavía no hayan sido clasificados en
+  un módulo. V36 se creó después y corresponde exclusivamente a la identificación del tutor.
 - `Soporte del portal familiar` es un módulo independiente de sólo lectura y ya no exige
   conceder también administración de Roles. Los cambios de acceso requieren cerrar sesión
   y volver a entrar.
+
+## V36 — identificación oficial opcional del tutor
+
+- El expediente editable del tutor permite cargar de forma opcional INE, licencia de
+  conducir, pasaporte u otra identificación oficial. Acepta PDF, JPEG y PNG válidos de
+  hasta 10 MB; no confía únicamente en el nombre o MIME declarado por el navegador.
+- Los bytes se guardan bajo `private_files` y PostgreSQL conserva metadatos, checksum,
+  tipo y relación. Sólo existe una identificación vigente por tutor; reemplazar o retirar
+  conserva el historial privado y no elimina físicamente documentos anteriores.
+- La consulta y descarga revalidan el tutor y el alcance institucional del módulo, usan
+  respuesta sin caché y no exponen rutas físicas. Un tutor inactivo no admite nuevas cargas.
+- Docker compiló 521 fuentes y ejecutó 324 pruebas sin fallos. Flyway aplicó V36, Hibernate
+  detectó 46 repositorios y salud respondió `UP`. `tutor_identificacion` quedó con cero
+  filas: no se cargó ningún documento real para verificar.
+- Prueba manual pendiente: editar un tutor controlado, cargar un archivo ficticio válido,
+  abrirlo, reemplazarlo, consultar el historial y retirar el vigente. Después confirmar
+  que un archivo falso o demasiado grande mantiene el error dentro del formulario.

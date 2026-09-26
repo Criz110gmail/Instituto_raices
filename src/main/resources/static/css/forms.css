@@ -302,6 +302,7 @@
 .photo-upload-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
 .photo-upload-form label { display: grid; gap: 7px; font-size: .75rem; font-weight: 700; }
 .photo-upload-form input { max-width: 100%; border: 1px solid #ccd8e5; border-radius: 10px; padding: 9px; background: #fff; color: var(--ink); }
+.photo-upload-form select { min-width: 220px; border: 1px solid #ccd8e5; border-radius: 10px; padding: 10px; background: #fff; color: var(--ink); }
 .photo-upload-form input::file-selector-button { margin-right: 10px; border: 0; border-radius: 7px; background: #e8f1fb; color: #174d79; padding: 7px 10px; font-weight: 700; cursor: pointer; }
 .photo-upload-form button,.photo-remove { min-height: 42px; border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
 .photo-upload-form button { background: var(--blue); color: #fff; }
@@ -330,6 +331,7 @@
 [data-theme=dark] .profile-facts { border-color: #344a63; background: #344a63; }
 [data-theme=dark] .profile-facts > div,[data-theme=dark] .profile-photo-tools { background: #0e1d31; border-color: #344a63; }
 [data-theme=dark] .photo-upload-form input { background: #0e1d31; color: #eef5fd; border-color: #344a63; }
+[data-theme=dark] .photo-upload-form select { background: #0e1d31; color: #eef5fd; border-color: #344a63; }
 [data-theme=dark] .photo-upload-form input::file-selector-button { background: #19324d; color: #cde6fa; }
 .autocomplete { position: relative; }
 .autocomplete-label { display: block; margin-bottom: 7px; font-size: .78rem; font-weight: 700; }

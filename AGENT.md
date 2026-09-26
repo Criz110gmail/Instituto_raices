@@ -22,10 +22,11 @@ no vuelvas a implementar componentes que ya existan.
 - Rama principal: `main`.
 - Último commit confirmado en `main` y `origin/main` al iniciar esta estabilización:
   `d026621` — `errores proyecto`. Confirma `git status` y `git log` antes de continuar.
-- Ese commit ya contiene V33, V34 y V35. El cambio local actual estabiliza V34/V35 y
-  simplifica la autorización a módulos completos; todavía debe ser revisado y confirmado
-  por el propietario. El volumen habitual ya tiene Flyway V1–V35 aplicado y la siguiente
-  migración disponible es V36.
+- Ese commit ya contiene V33, V34 y V35. El cambio local actual estabiliza V34/V35,
+  simplifica la autorización a módulos completos e implementa V36 para la identificación
+  oficial opcional del tutor; todavía debe ser revisado y confirmado por el propietario.
+  El volumen habitual ya tiene Flyway V1–V36 aplicado y la siguiente migración disponible
+  es V37.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -654,15 +655,20 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   los 65 permisos técnicos. Cada módulo es todo o nada: seleccionar cualquiera de sus
   permisos históricos concede internamente todas sus acciones; guardar el rol normaliza
   sus relaciones al paquete completo. Los permisos técnicos siguen protegiendo cada
-  endpoint y no se modifica el esquema V1–V35. Los cambios de sesión requieren salir y
+  endpoint y esa simplificación no requirió una migración. Los cambios de sesión requieren salir y
   volver a entrar.
+- V36 crea `TutorIdentificacion` como documento privado opcional del expediente. Admite
+  INE, licencia, pasaporte u otra identificación oficial en PDF, JPEG o PNG de hasta
+  10 MB. Sólo puede existir una vigente por tutor; reemplazar o retirar conserva el
+  historial y el archivo privado. La descarga revalida institución y acceso al módulo
+  Tutores, responde sin caché y los bytes permanecen en `private_files`, no en PostgreSQL.
 
 ## Verificación confirmada
 
-- Compilación correcta de 514 archivos Java de producción.
-- 317 pruebas Maven sin fallos, errores ni omisiones.
-- Flyway V1 a V35 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 45 repositorios.
+- Compilación correcta de 521 archivos Java de producción.
+- 324 pruebas Maven sin fallos, errores ni omisiones.
+- Flyway V1 a V36 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 46 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -800,27 +806,32 @@ Para V35 se debe asignar el módulo `Soporte del portal familiar` al rol adecuad
 una sesión nueva y comprobar que soporte ve exactamente el alcance del tutor, pero no
 muestra el botón para reportar transferencias ni dispone de acciones de escritura.
 
+Para V36 se debe editar un tutor controlado y probar opcionalmente un PDF o imagen sin
+datos personales reales: cargar, abrir, reemplazar, revisar el historial y retirar la
+identificación vigente. Confirmar que un archivo falso o mayor de 10 MB muestra el error
+en el mismo formulario. No cargar una identificación real sólo para verificar.
+
 Las pruebas manuales controladas de V32 y V33 continúan pendientes, pero no bloquean
 esta estabilización. La conciliación bancaria permanece descartada: no se importarán
 CSV bancarios. Correo y WhatsApp también siguen fuera de alcance hasta diseñar
 consentimiento, proveedor, reintentos y trazabilidad.
 
 Después de que el propietario revise estas correcciones y haga commit, acordar el
-siguiente módulo antes de crear V36. La estrategia definitiva de almacenamiento privado
+siguiente módulo antes de crear V37. La estrategia definitiva de almacenamiento privado
 sigue pendiente para producción, pero no bloquea las pruebas funcionales actuales.
 
 ### Punto exacto de reanudación en otra computadora
 
 1. `main` y `origin/main` estaban en `d026621` antes de esta estabilización. Preservar
-   los cambios locales de V34/V35 y no reconstruir V1–V35.
+   los cambios locales de V34–V36 y no reconstruir V1–V36.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V35 ya existen y están aplicadas al volumen habitual; nunca editarlas.
-   La siguiente migración disponible será V36.
-5. Ejecutar las pruebas manuales controladas descritas para V34 y V35. Mantener también
+4. Flyway V1–V36 ya existen y están aplicadas al volumen habitual; nunca editarlas.
+   La siguiente migración disponible será V37.
+5. Ejecutar las pruebas manuales controladas descritas para V34, V35 y V36. Mantener también
    en la lista las pruebas pendientes de cancelaciones V32 y retiros V33; no crear
    movimientos operativos reales sólo para verificar.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
@@ -831,7 +842,7 @@ sigue pendiente para producción, pero no bloquea las pruebas funcionales actual
 
 ## Disciplina de cambios y entrega
 
-V34/V35 están estabilizadas localmente y verificadas de forma automática. Falta la
+V34–V36 están estabilizadas localmente y verificadas de forma automática. Falta la
 prueba funcional controlada del propietario y su commit antes de iniciar otro módulo.
 
 - Inspecciona `git status` antes de editar y preserva cambios ajenos.

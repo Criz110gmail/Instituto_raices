@@ -9,6 +9,8 @@ import escuela.seguridad.service.AlcanceDatosService;
 import escuela.seguridad.service.UsuarioService;
 import escuela.tutor.dto.request.TutorRequest;
 import escuela.tutor.dto.response.TutorResponse;
+import escuela.tutor.entity.TipoIdentificacionTutor;
+import escuela.tutor.service.IdentificacionTutorService;
 import escuela.tutor.service.TutorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -34,6 +37,7 @@ import static org.mockito.Mockito.when;
 class TutorAdminControllerTest {
 
     @Mock private TutorService service;
+    @Mock private IdentificacionTutorService identificacionService;
     @Mock private InstitucionService institucionService;
     @Mock private UsuarioService usuarioService;
     @Mock private AlcanceDatosService alcance;
@@ -98,6 +102,19 @@ class TutorAdminControllerTest {
 
         verify(service).desactivar(10L, 4L);
         assertThat(vista).isEqualTo("redirect:/admin/catalogos/tutores");
+    }
+
+    @Test
+    void cargaIdentificacionOpcionalYRegresaAlExpediente() {
+        when(service.obtener(10L)).thenReturn(tutor());
+        MockMultipartFile archivo = new MockMultipartFile("archivo", "ine.pdf",
+                "application/pdf", "%PDF-1.4".getBytes());
+
+        String vista = controller.asignarIdentificacion(10L, TipoIdentificacionTutor.INE,
+                archivo, new ExtendedModelMap(), new RedirectAttributesModelMap());
+
+        verify(identificacionService).asignar(10L, TipoIdentificacionTutor.INE, archivo);
+        assertThat(vista).isEqualTo("redirect:/admin/tutores/10/editar");
     }
 
     private TutorForm formulario() {

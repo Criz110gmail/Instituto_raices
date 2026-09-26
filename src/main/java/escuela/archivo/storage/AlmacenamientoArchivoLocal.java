@@ -44,7 +44,7 @@ public class AlmacenamientoArchivoLocal implements AlmacenamientoArchivo {
             }
         } catch (IOException excepcion) {
             eliminarTemporal(temporal);
-            throw new ReglaNegocioException("No fue posible guardar la fotografía. Intenta nuevamente");
+            throw new ReglaNegocioException("No fue posible guardar el archivo privado. Intenta nuevamente");
         }
     }
 
@@ -52,7 +52,7 @@ public class AlmacenamientoArchivoLocal implements AlmacenamientoArchivo {
     public Resource abrir(String clave) {
         Path archivo = resolver(clave);
         if (!Files.isRegularFile(archivo, LinkOption.NOFOLLOW_LINKS)) {
-            throw new ReglaNegocioException("La fotografía no está disponible");
+            throw new ReglaNegocioException("El archivo privado no está disponible");
         }
         return new FileSystemResource(archivo);
     }
