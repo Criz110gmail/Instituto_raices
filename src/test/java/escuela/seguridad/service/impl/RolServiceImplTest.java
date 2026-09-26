@@ -43,8 +43,10 @@ class RolServiceImplTest {
         rol.setVersion(3L);
         rol.setInstitucion(institucion);
         rol.setActivo(true);
-        Permiso anterior = permiso(10L);
-        Permiso nuevo = permiso(11L);
+        Permiso anterior = permiso(10L, "ALUMNO_LEER");
+        Permiso alumnoAdministrar = permiso(11L, "ALUMNO_ADMINISTRAR");
+        Permiso nuevo = permiso(20L, "TUTOR_LEER");
+        Permiso tutorAdministrar = permiso(21L, "TUTOR_ADMINISTRAR");
         RolPermiso relacionAnterior = new RolPermiso();
         relacionAnterior.setRol(rol);
         relacionAnterior.setPermiso(anterior);
@@ -52,29 +54,57 @@ class RolServiceImplTest {
         List<RolPermiso> relaciones = new ArrayList<>(List.of(relacionAnterior));
         when(repository.findById(4L)).thenReturn(Optional.of(rol));
         when(repository.saveAndFlush(any(Rol.class))).thenAnswer(i -> i.getArgument(0));
-        when(permisoRepository.findAllById(Set.of(11L))).thenReturn(List.of(nuevo));
+        when(permisoRepository.findAllByOrderByCodigoAsc()).thenReturn(
+                List.of(anterior, alumnoAdministrar, nuevo, tutorAdministrar));
         when(rolPermisoRepository.findAllByRolIdOrderByPermisoCodigoAsc(4L)).thenReturn(relaciones);
 
-        service.actualizar(4L, new RolRequest(1L, "CAJERO", "Cajero", null, true, 3L), Set.of(11L));
+        service.actualizar(4L, new RolRequest(1L, "CAJERO", "Cajero", null, true, 3L), Set.of(20L));
 
         @SuppressWarnings("unchecked")
         ArgumentCaptor<List<RolPermiso>> captor = ArgumentCaptor.forClass(List.class);
         verify(rolPermisoRepository).saveAllAndFlush(captor.capture());
-        assertThat(captor.getValue()).hasSize(2);
+        assertThat(captor.getValue()).hasSize(3);
         assertThat(captor.getValue()).anySatisfy(r -> {
             assertThat(r.getPermiso().getId()).isEqualTo(10L);
             assertThat(r.isActivo()).isFalse();
         });
         assertThat(captor.getValue()).anySatisfy(r -> {
-            assertThat(r.getPermiso().getId()).isEqualTo(11L);
+            assertThat(r.getPermiso().getId()).isEqualTo(20L);
+            assertThat(r.isActivo()).isTrue();
+        });
+        assertThat(captor.getValue()).anySatisfy(r -> {
+            assertThat(r.getPermiso().getId()).isEqualTo(21L);
             assertThat(r.isActivo()).isTrue();
         });
     }
 
-    private Permiso permiso(Long id) {
+    @Test
+    void listaUnSoloAccesoAmigablePorModulo() {
+        when(permisoRepository.findAllByOrderByCodigoAsc()).thenReturn(List.of(
+                permiso(10L, "ALUMNO_LEER"), permiso(11L, "ALUMNO_ADMINISTRAR"),
+                permiso(20L, "PAGO_LEER"), permiso(21L, "PAGO_VALIDAR")));
+
+        assertThat(service.listarPermisos()).extracting(p -> p.codigo())
+                .containsExactly("Alumnos", "Pagos");
+        assertThat(service.listarPermisos()).extracting(p -> p.id())
+                .containsExactly(10L, 20L);
+    }
+
+    @Test
+    void detectaUnPermisoTecnicoSinModuloVisible() {
+        when(permisoRepository.findAllByOrderByCodigoAsc()).thenReturn(
+                List.of(permiso(99L, "PERMISO_NUEVO_SIN_CLASIFICAR")));
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(service::listarPermisos)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("sin módulo funcional")
+                .hasMessageContaining("PERMISO_NUEVO_SIN_CLASIFICAR");
+    }
+
+    private Permiso permiso(Long id, String codigo) {
         Permiso permiso = new Permiso();
         permiso.setId(id);
-        permiso.setCodigo("P" + id);
+        permiso.setCodigo(codigo);
         return permiso;
     }
 }

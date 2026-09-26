@@ -90,6 +90,25 @@ class UsuarioSistemaDetailsServiceTest {
     }
 
     @Test
+    void unPermisoAnteriorConcedeElModuloCompleto() {
+        Rol rol = new Rol(); rol.setId(3L); rol.setActivo(true);
+        UsuarioRol asignacion = new UsuarioRol(); asignacion.setRol(rol);
+        asignacion.setAlcance(AlcanceRol.INSTITUCION);
+        Permiso permiso = new Permiso(); permiso.setCodigo("ALUMNO_LEER");
+        RolPermiso relacion = new RolPermiso(); relacion.setPermiso(permiso);
+        when(usuarioRepository.findAllByUsernameIgnoreCase("criz110")).thenReturn(List.of(usuario));
+        when(usuarioRolRepository.findAllByUsuarioIdAndActivoTrueOrderByRolNombreAsc(2L))
+                .thenReturn(List.of(asignacion));
+        when(rolPermisoRepository.findAllByRolIdAndActivoTrueOrderByPermisoCodigoAsc(3L))
+                .thenReturn(List.of(relacion));
+
+        var detalles = service.loadUserByUsername("criz110");
+
+        assertThat(detalles.getAuthorities()).extracting("authority")
+                .containsExactlyInAnyOrder("ALUMNO_LEER", "ALUMNO_ADMINISTRAR");
+    }
+
+    @Test
     void exigeCodigoDeInstitucionCuandoElUsernameEstaDuplicado() {
         when(usuarioRepository.findAllByUsernameIgnoreCase("criz110"))
                 .thenReturn(List.of(usuario, new Usuario()));

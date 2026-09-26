@@ -41,8 +41,9 @@ public class PortalPagoService {
         validar(p); String texto=q==null?"":q.trim().toLowerCase(Locale.ROOT); if(texto.length()<3)return ResultadoAutocompletado.vacio();
         Tutor t=tutor(p); var r=cargos.buscarParaPortal(p.institucionId(),t.getId(),texto,PageRequest.of(0,20));
         return new ResultadoAutocompletado(r.getContent().stream().map(c->new OpcionAutocompletado(c.getId(),
-                c.getInscripcion().getAlumno().getMatricula()+" · "+c.getInscripcion().getAlumno().getNombres()+" "+c.getInscripcion().getAlumno().getPrimerApellido(),
-                c.getDescripcion()+" · vence "+c.getFechaVencimiento()+" · "+c.getImporteOriginal()+" "+c.getMoneda())).toList(),r.hasNext());
+                c.getInscripcion().getAlumno().getMatricula()+" · "+c.getInscripcion().getAlumno().getNombres()+" "+c.getInscripcion().getAlumno().getPrimerApellido()
+                        +" · "+c.getConceptoCobro().getNombre()+" · "+c.getDescripcion()+" · #"+c.getId(),
+                "Vence "+c.getFechaVencimiento()+" · "+c.getImporteOriginal()+" "+c.getMoneda())).toList(),r.hasNext());
     }
 
     @Transactional(readOnly=true)

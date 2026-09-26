@@ -14,6 +14,8 @@ import escuela.finanzas.repository.*;
 import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
 import escuela.inscripcion.entity.Inscripcion;
+import escuela.seguridad.entity.Usuario;
+import escuela.seguridad.service.UsuarioPrincipal;
 import escuela.tutor.entity.Tutor;
 import escuela.tutor.repository.TutorRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,6 +52,7 @@ class PagoServiceImplTest {
     private Tutor tutor;
     private Cargo cargoA;
     private Cargo cargoB;
+    private Cargo cargoC;
 
     @BeforeEach
     void preparar() {
@@ -60,13 +63,17 @@ class PagoServiceImplTest {
         plantel.setInstitucion(institucion); plantel.setActivo(true);
         tutor = new Tutor(); tutor.setId(3L); tutor.setNombres("María");
         tutor.setPrimerApellido("López"); tutor.setInstitucion(institucion); tutor.setActivo(true);
+        Usuario usuarioTutor = new Usuario(); usuarioTutor.setId(7L); usuarioTutor.setUsername("familia");
+        usuarioTutor.setInstitucion(institucion); tutor.setUsuario(usuarioTutor);
         cargoA = cargo(10L, "A-01", "Ana", "Colegiatura", "Septiembre", "1200.00");
         cargoB = cargo(11L, "B-01", "Bruno", "Material", "Libros", "800.00");
+        cargoC = cargo(12L, "C-01", "Carla", "Transporte", "Octubre", "400.00");
         when(institucionRepository.findById(1L)).thenReturn(Optional.of(institucion));
         when(plantelRepository.findById(2L)).thenReturn(Optional.of(plantel));
         when(tutorRepository.findById(3L)).thenReturn(Optional.of(tutor));
         when(cargoRepository.findById(10L)).thenReturn(Optional.of(cargoA));
         when(cargoRepository.findById(11L)).thenReturn(Optional.of(cargoB));
+        when(cargoRepository.findById(12L)).thenReturn(Optional.of(cargoC));
         when(vinculoRepository.tieneResponsabilidadFinancieraVigente(any(), eq(3L), any())).thenReturn(true);
         when(pagoRepository.saveAndFlush(any())).thenAnswer(inv -> { Pago p = inv.getArgument(0); p.setId(50L); return p; });
         when(archivoRepository.saveAndFlush(any())).thenAnswer(inv -> { var a = inv.getArgument(0, escuela.archivo.entity.Archivo.class); a.setId(60L); return a; });
@@ -82,6 +89,27 @@ class PagoServiceImplTest {
         assertThat(respuesta.montoSinAsignar()).isEqualByComparingTo("300.00");
         assertThat(respuesta.solicitudes()).hasSize(2);
         verify(solicitudRepository, times(2)).save(any());
+        verify(cargoRepository, never()).save(any());
+    }
+
+    @Test
+    void portalRegistraUnaTransferenciaDistribuidaEntreTresHijos() {
+        MockMultipartFile pdf = new MockMultipartFile("comprobantes", "transferencia.pdf",
+                "application/pdf", "%PDF-1.4\ncontenido".getBytes());
+        UsuarioPrincipal principal = new UsuarioPrincipal(7L, 1L, Set.of(), false, false,
+                "familia", "x", List.of());
+
+        var respuesta = service.registrarDesdePortal(request(MetodoPago.TRANSFERENCIA, "900.00", null,
+                List.of(solicitud(10L, "200.00"), solicitud(11L, "300.00"),
+                        solicitud(12L, "400.00"))), List.of(pdf), principal);
+
+        assertThat(respuesta.origenRegistro()).isEqualTo(OrigenRegistroPago.PORTAL_FAMILIAR);
+        assertThat(respuesta.reportadoPor()).isEqualTo("familia");
+        assertThat(respuesta.solicitudes()).extracting(s -> s.matricula())
+                .containsExactly("A-01", "B-01", "C-01");
+        assertThat(respuesta.montoSolicitado()).isEqualByComparingTo("900.00");
+        verify(vinculoRepository, times(3))
+                .tieneResponsabilidadFinancieraVigente(any(), eq(3L), any());
         verify(cargoRepository, never()).save(any());
     }
 

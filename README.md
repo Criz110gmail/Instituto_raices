@@ -397,4 +397,20 @@ el cambio de nombre no modifica rutas ni permisos.
 El tutor con acceso financiero puede reportar una transferencia desde `/portal`, adjuntar
 comprobantes y distribuir el importe entre cargos autorizados. El pago queda pendiente
 de validación administrativa; el origen y usuario reportante se conservan y el historial
-se muestra paginado.
+se muestra paginado. Una sola transferencia puede repartirse entre cargos de varios hijos;
+el importe distribuido debe coincidir exactamente con el total reportado. El selector
+distingue incluso varios cargos del mismo alumno mediante concepto, descripción e ID.
+
+### V35 · Soporte de portal en modo lectura
+
+El módulo `Soporte del portal familiar` permite localizar a un tutor y observar su portal
+con el mismo alcance real de alumnos, agenda y finanzas.
+Este modo es exclusivamente de consulta: no muestra la acción para reportar transferencias
+ni ofrece endpoints administrativos que registren pagos en nombre del tutor.
+
+### Accesos completos por módulo
+
+La pantalla de Roles presenta una sola opción con el nombre amigable de cada módulo. Al
+seleccionarla se conceden todas sus operaciones; al retirarla no queda acceso de lectura
+ni de escritura. Los permisos técnicos permanecen internos para proteger cada endpoint y
+los roles creados anteriormente se expanden al módulo completo al iniciar una sesión nueva.

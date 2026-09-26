@@ -97,8 +97,7 @@ public enum ModuloCatalogo {
             case AUDITORIA -> "AUDITORIA";
             case PORTAL_TUTOR -> "PORTAL_TUTOR_SOPORTE";
         };
-        if (this == PORTAL_TUTOR) return permisos.contains("PORTAL_TUTOR_SOPORTE")
-                && permisos.contains("ROL_ADMINISTRAR");
+        if (this == PORTAL_TUTOR) return permisos.contains("PORTAL_TUTOR_SOPORTE");
         if (this == PAGOS) return permisos.contains("PAGO_LEER") || permisos.contains("PAGO_REGISTRAR")
                 || permisos.contains("PAGO_VALIDAR") || permisos.contains("PAGO_DEVOLVER")
                 || permisos.contains("PAGO_CANCELAR");

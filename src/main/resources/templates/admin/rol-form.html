@@ -45,12 +45,12 @@
             </div>
 
             <fieldset class="permission-fieldset">
-                <legend>Permisos técnicos</legend>
-                <p>Selecciona únicamente las operaciones necesarias para este perfil.</p>
+                <legend>Acceso a módulos</legend>
+                <p>Cada opción concede acceso completo al módulo. Si no está seleccionada, el rol no podrá verlo ni utilizarlo.</p>
                 <div class="permission-grid">
                     <label class="permission-card" th:each="permiso : ${permisos}">
                         <input type="checkbox" th:field="*{permisoIds}" th:value="${permiso.id}">
-                        <span><strong th:text="${permiso.codigo}">PERMISO</strong><small th:text="${permiso.descripcion}">Descripción</small></span>
+                        <span><strong th:text="${permiso.codigo}">Módulo</strong><small th:text="${permiso.descripcion}">Acceso completo al módulo</small></span>
                     </label>
                 </div>
             </fieldset>

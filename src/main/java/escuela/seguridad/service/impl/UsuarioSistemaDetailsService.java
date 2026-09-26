@@ -7,6 +7,7 @@ import escuela.seguridad.repository.RolPermisoRepository;
 import escuela.seguridad.repository.UsuarioRepository;
 import escuela.seguridad.repository.UsuarioRolRepository;
 import escuela.seguridad.service.UsuarioPrincipal;
+import escuela.seguridad.service.ModuloPermiso;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.security.autoconfigure.SecurityProperties;
 import org.springframework.security.authentication.DisabledException;
@@ -97,7 +98,7 @@ public class UsuarioSistemaDetailsService implements UserDetailsService {
         asignaciones.forEach(asignacion -> rolPermisoRepository
                         .findAllByRolIdAndActivoTrueOrderByPermisoCodigoAsc(asignacion.getRol().getId())
                         .forEach(relacion -> codigos.add(relacion.getPermiso().getCodigo())));
-        return codigos;
+        return ModuloPermiso.expandir(codigos);
     }
 
     private UserDetails usuarioTemporal() {

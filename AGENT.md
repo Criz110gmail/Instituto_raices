@@ -20,11 +20,12 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` al iniciar esta etapa: `256986f` —
-  `update estados de cuenta`. Confirma `git status` y `git log` antes de continuar.
-- El cambio local actual implementa V33 para retiros externos de fondos. No se ha
-  confirmado ni subido desde este equipo; la imagen nueva ya está desplegada y el
-  esquema habitual está en V33.
+- Último commit confirmado en `main` y `origin/main` al iniciar esta estabilización:
+  `d026621` — `errores proyecto`. Confirma `git status` y `git log` antes de continuar.
+- Ese commit ya contiene V33, V34 y V35. El cambio local actual estabiliza V34/V35 y
+  simplifica la autorización a módulos completos; todavía debe ser revisado y confirmado
+  por el propietario. El volumen habitual ya tiene Flyway V1–V35 aplicado y la siguiente
+  migración disponible es V36.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -640,13 +641,28 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   auditoría inmutable; no sustituye traspasos entre cuentas ni devoluciones de pagos.
   Usa permisos propios, listado paginado y Excel con los mismos filtros. Una reversa del
   movimiento lo muestra como revertido, sin borrar su expediente.
+- V34 permite al tutor con acceso financiero reportar una transferencia desde el portal,
+  adjuntar comprobantes privados y distribuir el importe exacto entre varios cargos
+  autorizados, incluso de distintos hijos. El pago queda pendiente de validación; la
+  administración puede validarlo o rechazarlo con motivo y se conservan origen,
+  reportante e historial. Las etiquetas del autocompletado incluyen concepto,
+  descripción e ID para distinguir varios cargos del mismo alumno.
+- V35 agrega `PORTAL_TUTOR_SOPORTE` sin autoasignarlo. El soporte administrativo del
+  portal es estrictamente de sólo lectura: permite localizar al tutor y observar la
+  misma experiencia y alcance que él, pero no reportar pagos ni ejecutar mutaciones.
+- La administración de roles presenta 32 módulos funcionales con nombres amigables, no
+  los 65 permisos técnicos. Cada módulo es todo o nada: seleccionar cualquiera de sus
+  permisos históricos concede internamente todas sus acciones; guardar el rol normaliza
+  sus relaciones al paquete completo. Los permisos técnicos siguen protegiendo cada
+  endpoint y no se modifica el esquema V1–V35. Los cambios de sesión requieren salir y
+  volver a entrar.
 
 ## Verificación confirmada
 
-- Compilación correcta de 490 archivos Java de producción.
-- 288 pruebas Maven sin fallos ni errores.
-- Flyway V1 a V32 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 44 repositorios.
+- Compilación correcta de 514 archivos Java de producción.
+- 317 pruebas Maven sin fallos, errores ni omisiones.
+- Flyway V1 a V35 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 45 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -761,46 +777,52 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   era correcto. La apertura usa ahora `th:action` y una prueba protege ambos envíos.
   Docker pasó 305 pruebas y la imagen quedó desplegada con salud `UP`; no se abrió ni
   cerró ningún corte real.
+- La estabilización de V34/V35 pasó las 312 pruebas. Las pruebas nuevas cubren cargos
+  distinguibles del mismo alumno, reparto exacto de una transferencia entre tres hijos,
+  origen y reportante del portal, rechazo por suma incorrecta, rechazo de tutor sin
+  vínculo financiero y soporte sin ningún `POST` ni ruta administrativa para reportar
+  pagos. Flyway avanzó el volumen
+  habitual de V32 a V35 y `/actuator/health` respondió `UP`; no se crearon pagos ni se
+  modificaron saldos.
+- Docker Compose ya no publica PostgreSQL en el puerto 5432 del host; la aplicación se
+  conecta por la red interna a `postgres:5432`. Esto evita conflictos con otro
+  PostgreSQL local sin cambiar el volumen persistente ni las credenciales de `.env`.
 
 ## Siguiente paso acordado
 
-V32 está implementada localmente, compilada y aplicada en el volumen actual. El
-propietario debe conceder `PAGO_CANCELAR` a un rol administrativo e iniciar sesión de
-nuevo. Probar primero con un pago pendiente de prueba y después con uno validado y
-controlado en una cuenta con saldo suficiente, comprobando que el cargo recupera su
-saldo, que el libro financiero muestra la compensación y que `/admin/auditoria`
-contiene `PAGO_CANCELADO`. También confirmar la notificación en `/portal` con una
-cuenta de tutor autorizada. No cancelar un pago operativo real sólo para probar.
+V34 y V35 están implementadas, compiladas y aplicadas. La siguiente actividad es una
+prueba funcional controlada del portal: usar un tutor autorizado con varios hijos y
+varios cargos —incluidos dos del mismo alumno—, distribuir una sola transferencia,
+adjuntar comprobante y confirmar el historial. Después, desde administración, probar
+por separado rechazo con motivo y validación. No usar un pago operativo real.
 
-El estado de cuenta interno por cuenta quedó en el commit `256986f`. V33 se usa para
-retiros externos de fondos, no para conciliación bancaria. La implementación local pasó
-la suite y está desplegada en el entorno habitual con salud `UP`. Falta revisarla con
-un retiro controlado, permiso asignado y sesión nueva. Ningún retiro de prueba fue
-registrado en las cuentas actuales.
+Para V35 se debe asignar el módulo `Soporte del portal familiar` al rol adecuado, iniciar
+una sesión nueva y comprobar que soporte ve exactamente el alcance del tutor, pero no
+muestra el botón para reportar transferencias ni dispone de acciones de escritura.
 
-Correo y WhatsApp siguen fuera de alcance hasta diseñar consentimiento, proveedor,
-reintentos y trazabilidad. Los retiros externos especializados quedaron implementados
-en V33; banco a caja registrada sigue siendo traspaso, no retiro.
+Las pruebas manuales controladas de V32 y V33 continúan pendientes, pero no bloquean
+esta estabilización. La conciliación bancaria permanece descartada: no se importarán
+CSV bancarios. Correo y WhatsApp también siguen fuera de alcance hasta diseñar
+consentimiento, proveedor, reintentos y trazabilidad.
 
-La estrategia definitiva de almacenamiento privado sigue pendiente para producción,
-pero no bloquea el siguiente módulo funcional.
+Después de que el propietario revise estas correcciones y haga commit, acordar el
+siguiente módulo antes de crear V36. La estrategia definitiva de almacenamiento privado
+sigue pendiente para producción, pero no bloquea las pruebas funcionales actuales.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. El estado de cuenta interno está en `main` y `origin/main` en `256986f`; preservar
-   el cambio local V33 y no reconstruir V1–V32.
+1. `main` y `origin/main` estaban en `d026621` antes de esta estabilización. Preservar
+   los cambios locales de V34/V35 y no reconstruir V1–V35.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V33 ya existen y V33 está aplicada al volumen habitual; nunca editarlas.
-   La siguiente migración disponible será V34.
-5. Asignar `RETIRO_FONDO_LEER` y `RETIRO_FONDO_REGISTRAR` al rol adecuado e iniciar
-   una sesión nueva. Probar con una cuenta y destinatario controlados: un retiro válido,
-   saldo insuficiente, reintento sin doble egreso, filtros, Excel y reversa. No crear
-   movimientos operativos reales sólo para verificar. Revisar también el estado de
-   cuenta mensual/anual previo con Excel y PDF.
+4. Flyway V1–V35 ya existen y están aplicadas al volumen habitual; nunca editarlas.
+   La siguiente migración disponible será V36.
+5. Ejecutar las pruebas manuales controladas descritas para V34 y V35. Mantener también
+   en la lista las pruebas pendientes de cancelaciones V32 y retiros V33; no crear
+   movimientos operativos reales sólo para verificar.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.
@@ -809,10 +831,8 @@ pero no bloquea el siguiente módulo funcional.
 
 ## Disciplina de cambios y entrega
 
-V34 (en trabajo local) habilita reportes de transferencias desde el portal familiar:
-comprobante privado, distribución por cargos autorizados, estado pendiente y origen
-identificable. Falta compilar en Docker y verificar con datos controlados antes de cerrar
-la etapa.
+V34/V35 están estabilizadas localmente y verificadas de forma automática. Falta la
+prueba funcional controlada del propietario y su commit antes de iniciar otro módulo.
 
 - Inspecciona `git status` antes de editar y preserva cambios ajenos.
 - Usa migraciones Flyway nuevas para cambios de esquema; nunca edites una migración ya

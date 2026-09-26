@@ -1547,5 +1547,41 @@
 El tutor con acceso financiero puede reportar una transferencia desde `/portal`, adjuntar
 comprobantes y distribuir el importe entre cargos autorizados. El pago queda pendiente
 de validación administrativa; se conserva el origen portal, el usuario reportante y un
-historial paginado. La migración y el flujo están en trabajo local; falta compilar y
-verificar con datos controlados.
+historial paginado.
+
+## Estabilización confirmada de V34 y V35
+
+- V34 distingue de forma inequívoca los cargos del autocompletado con alumno, concepto,
+  descripción e ID. Esto evita seleccionar el primer resultado por error cuando un mismo
+  alumno tiene varios cargos.
+- La suite cubre una transferencia distribuida entre cargos de tres hijos autorizados,
+  además del rechazo cuando la suma no coincide o el tutor carece de vínculo financiero
+  activo.
+- V35 queda limitado a soporte visual de sólo lectura. El controlador administrativo no
+  contiene `POST` y la vista de soporte oculta el botón para reportar transferencias; el
+  personal no puede suplantar al tutor para registrar un pago.
+- Docker compiló 514 fuentes de producción y ejecutó 312 pruebas sin fallos. PostgreSQL
+  validó y aplicó V33, V34 y V35 sobre el volumen que estaba en V32; Hibernate detectó
+  45 repositorios y `/actuator/health` respondió `UP`.
+- Se retiró la publicación del puerto PostgreSQL 5432 hacia el host en `compose.yaml`.
+  La aplicación continúa conectándose internamente a `postgres:5432`, sin modificar ni
+  eliminar el volumen persistente.
+- Esta verificación no creó pagos, comprobantes ni movimientos y no alteró saldos. Falta
+  la prueba manual controlada con un tutor de varios hijos, distribución entre cargos,
+  validación/rechazo administrativo y revisión del soporte de sólo lectura.
+
+## Simplificación de derechos por módulo
+
+- La pantalla de Roles ya no expone por separado acciones como leer, registrar,
+  administrar, validar o cancelar. Presenta 32 módulos con el mismo nombre usado en la
+  interfaz, cada uno mediante una sola casilla de acceso completo.
+- Los 65 permisos técnicos continúan existiendo y protegiendo los endpoints. La capa de
+  autenticación expande cualquier permiso histórico al paquete completo de su módulo;
+  por ello los roles existentes adoptan la regla todo o nada en su siguiente sesión.
+- Al guardar un rol se activan todas las relaciones técnicas de los módulos elegidos y se
+  desactivan las de los módulos no elegidos, conservando el historial de `RolPermiso`.
+- No se creó V36 ni se modificó el esquema. Una validación impide omitir silenciosamente
+  permisos técnicos futuros que todavía no hayan sido clasificados en un módulo.
+- `Soporte del portal familiar` es un módulo independiente de sólo lectura y ya no exige
+  conceder también administración de Roles. Los cambios de acceso requieren cerrar sesión
+  y volver a entrar.

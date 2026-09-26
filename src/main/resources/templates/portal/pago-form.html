@@ -5,14 +5,14 @@
     <meta name="theme-color" content="#fff9f2"><title>Reportar transferencia · Nexo Escolar</title>
     <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/portal.css"><link rel="stylesheet" href="/css/forms.css"><link rel="stylesheet" href="/css/portal-pago.css"><script src="/js/theme.js"></script>
 </head>
-<body th:attr="data-pago-base=${soporte == true ? '/admin/portal-soporte/' + tutorSoporteId + '/pagos' : '/portal/pagos'}">
-<header class="family-bar"><a class="family-brand" th:href="${soporte == true ? '/admin/portal-soporte/' + tutorSoporteId : '/portal'}" aria-label="Volver al portal"><span class="brand-heart">♥</span><span><strong th:text="${soporte == true ? 'Portal tutor' : 'Mi familia'}">Mi familia</strong><small>Reportar transferencia</small></span></a><a class="sign-out" th:href="${soporte == true ? '/admin/portal-soporte/' + tutorSoporteId : '/portal'}">Volver <b>↩</b></a></header>
+<body>
+<header class="family-bar"><a class="family-brand" href="/portal" aria-label="Volver al portal"><span class="brand-heart">♥</span><span><strong>Mi familia</strong><small>Reportar transferencia</small></span></a><a class="sign-out" href="/portal">Volver <b>↩</b></a></header>
 <main class="family-shell portal-payment-shell">
     <section class="portal-payment-hero"><div><span>Pago por transferencia</span><h1>Comparte tu comprobante</h1><p>Envía la información de tu transferencia y la administración la revisará antes de aplicarla a tus cargos.</p></div><div class="portal-payment-hero-icon" aria-hidden="true">↗</div></section>
     <section class="portal-payment-card">
         <div class="portal-payment-intro"><div><span>Proceso seguro</span><h2>Datos de la transferencia</h2><p>Completa los datos tal como aparecen en tu comprobante. Los archivos se almacenan de forma privada.</p></div><div class="portal-step"><b>1</b><span>Captura y envía</span></div></div>
         <div class="portal-form-alert" role="alert" th:if="${error}" th:text="${error}"></div>
-        <form method="post" enctype="multipart/form-data" th:action="${soporte == true ? '/admin/portal-soporte/' + tutorSoporteId + '/pagos/reportar' : '/portal/pagos/reportar'}" th:object="${form}" class="portal-payment-form">
+        <form method="post" enctype="multipart/form-data" th:action="@{/portal/pagos/reportar}" th:object="${form}" class="portal-payment-form">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             <fieldset class="portal-payment-section"><legend>Información principal</legend><div class="portal-form-grid">
                 <label><span>Plantel que recibe el pago <b>*</b></span><select th:field="*{plantelRegistroId}" required><option value="">Selecciona un plantel</option><option th:each="p:${planteles}" th:value="${p.id}" th:text="${p.nombre}"></option></select><small>Elige dónde se registrará la transferencia.</small></label>
@@ -28,13 +28,13 @@
             </fieldset>
             <fieldset class="portal-payment-section portal-upload-section"><legend>Comprobante privado</legend><label class="portal-upload-zone"><span class="portal-upload-icon">↑</span><span><strong>Adjunta tu comprobante</strong><small>PDF, JPG o PNG · hasta 5 archivos · 10 MB por archivo</small></span><span class="portal-file-button">Seleccionar archivos<input type="file" name="comprobantes" accept="application/pdf,image/jpeg,image/png" multiple required></span></label><p class="portal-privacy-note">Tu comprobante sólo será visible para personal autorizado de la escuela.</p></fieldset>
             <div class="portal-review-note"><span>✓</span><div><strong>¿Qué sucede después?</strong><p>Tu reporte quedará <b>en revisión</b>. Cuando la administración lo valide, se aplicará a los cargos y podrás ver el resultado en tu historial.</p></div></div>
-            <footer class="portal-form-actions"><a th:href="${soporte == true ? '/admin/portal-soporte/' + tutorSoporteId : '/portal'}">Cancelar</a><button type="submit">Enviar a revisión <span>↗</span></button></footer>
+            <footer class="portal-form-actions"><a href="/portal">Cancelar</a><button type="submit">Enviar a revisión <span>↗</span></button></footer>
         </form>
     </section>
 </main>
 <script>
 const plantel=document.querySelector('[name="plantelRegistroId"]'),cuenta=document.getElementById('cuenta'),lista=document.getElementById('cargos-list');
-const pagoBase= document.body.dataset.pagoBase || '/portal/pagos';
+const pagoBase='/portal/pagos';
 plantel.addEventListener('change',()=>{cuenta.innerHTML='<option value="">Consultando cuentas…</option>';fetch(pagoBase+'/cuentas?plantelId='+encodeURIComponent(plantel.value)).then(r=>r.json()).then(x=>{cuenta.innerHTML='<option value="">Selecciona una cuenta</option>';x.resultados.forEach(o=>cuenta.add(new Option(o.titulo+' · '+o.detalle,o.id)));}).catch(()=>cuenta.innerHTML='<option value="">No fue posible consultar las cuentas</option>');});
 if (plantel.value) plantel.dispatchEvent(new Event('change'));
 document.getElementById('solicitudes').addEventListener('input',e=>{if(!e.target.name.endsWith('.cargoEtiqueta')||e.target.value.length<3)return;fetch(pagoBase+'/cargos?q='+encodeURIComponent(e.target.value)).then(r=>r.json()).then(x=>{lista.innerHTML='';x.resultados.forEach(o=>{const op=document.createElement('option');op.value=o.titulo;op.dataset.id=o.id;op.label=o.detalle;lista.appendChild(op);});});});

@@ -16,12 +16,15 @@ import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.repository.PermisoRepository;
 import escuela.seguridad.repository.RolPermisoRepository;
 import escuela.seguridad.service.RolService;
+import escuela.seguridad.service.ModuloPermiso;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static escuela.common.mapper.NormalizacionTexto.codigo;
@@ -70,8 +73,12 @@ public class RolServiceImpl implements RolService {
     @Override
     @Transactional(readOnly = true)
     public List<PermisoResponse> listarPermisos() {
-        return permisoRepository.findAllByOrderByCodigoAsc().stream()
-                .map(p -> new PermisoResponse(p.getId(), p.getCodigo(), p.getDescripcion()))
+        Map<String, Permiso> porCodigo = permisosPorCodigo();
+        return java.util.Arrays.stream(ModuloPermiso.values())
+                .filter(modulo -> modulo.disponibleEn(porCodigo.keySet()))
+                .map(modulo -> permisoRepresentante(modulo, porCodigo))
+                .map(par -> new PermisoResponse(par.permiso().getId(), par.modulo().nombre(),
+                        par.modulo().descripcion()))
                 .toList();
     }
 
@@ -85,8 +92,15 @@ public class RolServiceImpl implements RolService {
     @Transactional(readOnly = true)
     public Set<Long> permisosAsignados(Long rolId) {
         buscar(rolId);
-        return rolPermisoRepository.findAllByRolIdAndActivoTrueOrderByPermisoCodigoAsc(rolId)
-                .stream().map(rp -> rp.getPermiso().getId()).collect(java.util.stream.Collectors.toSet());
+        Set<String> activos = rolPermisoRepository.findAllByRolIdAndActivoTrueOrderByPermisoCodigoAsc(rolId)
+                .stream().map(rp -> rp.getPermiso().getCodigo())
+                .collect(java.util.stream.Collectors.toSet());
+        Map<String, Permiso> porCodigo = permisosPorCodigo();
+        return java.util.Arrays.stream(ModuloPermiso.values())
+                .filter(modulo -> activos.stream().anyMatch(modulo::contiene))
+                .filter(modulo -> modulo.disponibleEn(porCodigo.keySet()))
+                .map(modulo -> permisoRepresentante(modulo, porCodigo).permiso().getId())
+                .collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
     }
 
     @Override
@@ -107,13 +121,24 @@ public class RolServiceImpl implements RolService {
     }
 
     private void sincronizarPermisos(Rol rol, Set<Long> permisoIds) {
-        Set<Long> solicitados = permisoIds == null ? Set.of() : Set.copyOf(permisoIds);
-        List<Permiso> permisos = permisoRepository.findAllById(solicitados);
-        Set<Long> encontrados = permisos.stream().map(Permiso::getId)
-                .collect(java.util.stream.Collectors.toSet());
-        if (!encontrados.equals(solicitados)) {
+        Set<Long> seleccionados = permisoIds == null ? Set.of() : Set.copyOf(permisoIds);
+        List<Permiso> catalogo = permisoRepository.findAllByOrderByCodigoAsc();
+        Map<Long, Permiso> porId = catalogo.stream().collect(java.util.stream.Collectors.toMap(
+                Permiso::getId, permiso -> permiso));
+        if (!porId.keySet().containsAll(seleccionados)) {
             throw new ReglaNegocioException("Uno o más permisos seleccionados no existen");
         }
+        Set<ModuloPermiso> modulos = seleccionados.stream()
+                .map(porId::get)
+                .map(permiso -> ModuloPermiso.dePermiso(permiso.getCodigo()).orElseThrow(() ->
+                        new ReglaNegocioException("El permiso seleccionado no pertenece a un módulo disponible")))
+                .collect(java.util.stream.Collectors.toSet());
+        Set<String> codigosSolicitados = modulos.stream().flatMap(modulo -> modulo.permisos().stream())
+                .collect(java.util.stream.Collectors.toSet());
+        List<Permiso> permisos = catalogo.stream()
+                .filter(permiso -> codigosSolicitados.contains(permiso.getCodigo())).toList();
+        Set<Long> solicitados = permisos.stream().map(Permiso::getId)
+                .collect(java.util.stream.Collectors.toSet());
 
         List<RolPermiso> existentes = rolPermisoRepository.findAllByRolIdOrderByPermisoCodigoAsc(rol.getId());
         Set<Long> yaRegistrados = new HashSet<>();
@@ -135,6 +160,26 @@ public class RolServiceImpl implements RolService {
             rolPermisoRepository.saveAllAndFlush(existentes);
         }
     }
+
+    private Map<String, Permiso> permisosPorCodigo() {
+        Map<String, Permiso> resultado = new LinkedHashMap<>();
+        permisoRepository.findAllByOrderByCodigoAsc()
+                .forEach(permiso -> resultado.put(permiso.getCodigo(), permiso));
+        List<String> sinModulo = resultado.keySet().stream()
+                .filter(codigo -> ModuloPermiso.dePermiso(codigo).isEmpty()).toList();
+        if (!sinModulo.isEmpty()) {
+            throw new IllegalStateException("Existen permisos técnicos sin módulo funcional: "
+                    + String.join(", ", sinModulo));
+        }
+        return resultado;
+    }
+
+    private ModuloRepresentante permisoRepresentante(ModuloPermiso modulo, Map<String, Permiso> porCodigo) {
+        String codigo = modulo.permisoRepresentante(porCodigo.keySet()).orElseThrow();
+        return new ModuloRepresentante(modulo, porCodigo.get(codigo));
+    }
+
+    private record ModuloRepresentante(ModuloPermiso modulo, Permiso permiso) {}
 
     private Rol buscar(Long id) {
         return repository.findById(id)
