@@ -8,6 +8,8 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import escuela.institucion.dto.response.InstitucionResponse;
+import escuela.institucion.service.InstitucionService;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
@@ -23,6 +25,8 @@ import static org.mockito.Mockito.*;
 
 class EstadoCuentaCuentaExportacionTest {
     private final EstadoCuentaCuentaService consulta = mock(EstadoCuentaCuentaService.class);
+    private final ReporteFinancieroConsultaService reportes = mock(ReporteFinancieroConsultaService.class);
+    private final InstitucionService instituciones = mock(InstitucionService.class);
     private final FiltroEstadoCuentaCuenta filtro = new FiltroEstadoCuentaCuenta(1L, 2L,
             "CTA · Caja", "MENSUAL", 2026, 9, 0, 100);
 
@@ -41,6 +45,9 @@ class EstadoCuentaCuentaExportacionTest {
         var resultado = new ResultadoEstadoCuentaCuenta(cuenta, resumen, pagina);
         when(consulta.normalizar(any(FiltroEstadoCuentaCuenta.class))).thenReturn(filtro);
         when(consulta.consultar(any(FiltroEstadoCuentaCuenta.class))).thenReturn(resultado);
+        when(instituciones.obtener(1L)).thenReturn(new InstitucionResponse(1L,"RAICES","Instituto Raíces",
+                "Instituto Raíces","Instituto Raíces",null,null,null,null,null,null,null,null,"México",
+                null,"America/Mexico_City","MXN",true,null));
 
         ByteArrayOutputStream xlsx = new ByteArrayOutputStream();
         new ExcelEstadoCuentaCuentaService(consulta).exportar(filtro, xlsx);
@@ -52,14 +59,15 @@ class EstadoCuentaCuentaExportacionTest {
         }
 
         ByteArrayOutputStream pdf = new ByteArrayOutputStream();
-        new PdfEstadoCuentaCuentaService(consulta).exportar(filtro, pdf);
+        new JasperReporteFinancieroService(reportes, consulta, instituciones).estadoCuenta(filtro, pdf);
         assertThat(pdf.toByteArray()).startsWith((byte) '%', (byte) 'P', (byte) 'D', (byte) 'F');
         try (var documento = Loader.loadPDF(pdf.toByteArray())) {
             String texto = new PDFTextStripper().getText(documento);
-            assertThat(texto).contains("Estado de cuenta interno", "Colegiatura septiembre", "1,250.00");
-            Path destino = Path.of("target", "estado-cuenta-qa.png");
-            Files.createDirectories(destino.getParent());
-            ImageIO.write(new PDFRenderer(documento).renderImageWithDPI(0, 120), "png", destino.toFile());
+            assertThat(texto).contains("Estado de cuenta financiera", "Colegiatura septiembre", "$1,250.00");
+            Path carpeta=Path.of("target","jasper-qa");Files.createDirectories(carpeta);
+            Files.write(carpeta.resolve("estado-cuenta.pdf"),pdf.toByteArray());
+            ImageIO.write(new PDFRenderer(documento).renderImageWithDPI(0, 144), "png",
+                    carpeta.resolve("estado-cuenta-1.png").toFile());
         }
     }
 }

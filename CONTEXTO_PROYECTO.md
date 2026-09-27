@@ -1652,3 +1652,28 @@ historial paginado.
   conservada; por política no se consultó `.env`. Queda pendiente la prueba manual del
   propietario: listado de Usuarios, filtros de Tutores y ciclo crear–activar–ingresar–
   desactivar–reactivar con un tutor controlado.
+
+## Reportes financieros con JasperReports posteriores a V37
+
+- Se agregó JasperReports 7.0.8 para generar cuatro documentos PDF con una presentación
+  común: balanza de movimientos y saldos, estado de cuenta financiera, estado de cuenta
+  del alumno y concentrado de cobranza.
+- Los reportes no incorporan SQL interno de Jasper. Reciben un `JRDataSource` que solicita
+  bloques de 100 filas a los servicios, por lo que conservan permisos, alcance por
+  institución/plantel, filtros y paginación en PostgreSQL sin cargar el resultado completo.
+- El concentrado de cobranza es una nueva consulta por concepto, plantel o ciclo al corte;
+  resume cargos, importe exigible, aplicado, saldo y vencido. Un cargo cancelado sigue en
+  el conteo histórico, pero suma cero a los importes.
+- Tesorería se rotula como balanza financiera, no como balanza de comprobación contable:
+  aún no existen cuentas contables ni partida doble. La exportación se bloquea cuando hay
+  filtro de plantel operativo para no inventar saldos parciales de caja o banco.
+- La primera prueba Jasper falló correctamente en Alpine porque Helvetica no existía.
+  Se cambió a la fuente lógica portable `SansSerif`; después el PDF se generó, PDFBox
+  extrajo los textos esperados y renderizó la primera página a 144 DPI. La revisión visual
+  no encontró textos cortados, traslapes ni columnas ilegibles.
+- La compilación final pasó 333 pruebas. PostgreSQL aceptó y ejecutó en sólo lectura la
+  consulta agrupada (cero filas en los datos actuales), y la imagen final quedó desplegada
+  con salud `UP`.
+- Esta etapa no cambia el esquema: Flyway permanece en V37 y V38 sigue libre. La prueba
+  funcional con datos reales controlados y las cuatro rutas PDF queda a cargo del
+  propietario; no crear movimientos monetarios únicamente para probar un documento.

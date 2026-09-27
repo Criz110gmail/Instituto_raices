@@ -64,6 +64,33 @@ public class JdbcReporteFinancieroRepository implements ReporteFinancieroReposit
               AND (CAST(:plantelId AS bigint) IS NULL OR m.plantel_operacion_id = :plantelId)
             """;
 
+    private static final String CONCENTRADO_CTE = """
+            WITH importes AS (
+                SELECT c.id, c.estado_registro, c.fecha_vencimiento,
+                       p.nombre AS plantel, ce.nombre AS ciclo,
+                       cc.codigo || ' · ' || cc.nombre AS concepto,
+                       GREATEST(c.importe_original + COALESCE((
+                           SELECT SUM(CASE WHEN ac.efecto='AUMENTO' THEN ac.monto ELSE -ac.monto END)
+                           FROM ajuste_cargo ac WHERE ac.cargo_id=c.id AND ac.fecha_efectiva<=:fechaCorte),0),0) AS importe,
+                       COALESCE((SELECT SUM(CASE WHEN ap.operacion='APLICAR' THEN ap.monto ELSE -ap.monto END)
+                           FROM aplicacion_pago ap WHERE ap.cargo_id=c.id AND ap.fecha_aplicacion<:corteExclusivo),0) AS aplicado
+                FROM cargo c
+                JOIN inscripcion i ON i.id=c.inscripcion_id
+                JOIN alumno a ON a.id=i.alumno_id
+                JOIN plantel p ON p.id=i.plantel_id
+                JOIN ciclo_escolar ce ON ce.id=i.ciclo_escolar_id
+                JOIN concepto_cobro cc ON cc.id=c.concepto_cobro_id
+                WHERE a.institucion_id=:institucionId AND c.fecha_emision<=:fechaCorte
+                  AND (:institucional OR i.plantel_id IN (:plantelIds))
+                  AND (CAST(:plantelId AS bigint) IS NULL OR i.plantel_id=:plantelId)
+            ), estado AS (
+                SELECT *, CASE WHEN estado_registro='CANCELADO' THEN 0 ELSE importe END AS exigible,
+                       CASE WHEN estado_registro='CANCELADO' THEN 0 ELSE aplicado END AS pagado,
+                       CASE WHEN estado_registro='CANCELADO' THEN 0 ELSE GREATEST(importe-aplicado,0) END AS saldo
+                FROM importes
+            )
+            """;
+
     private final NamedParameterJdbcTemplate jdbc;
 
     @Override
@@ -191,6 +218,43 @@ public class JdbcReporteFinancieroRepository implements ReporteFinancieroReposit
                 flujo.traspasosSalida(), apertura, cierre, saldos, moneda);
     }
 
+    @Override
+    public Page<ConcentradoCobranzaFila> concentradoCobranza(FiltroConcentradoCobranza filtro,
+                                                             AlcanceReporteFinanciero alcance,
+                                                             Instant corteExclusivo, String moneda) {
+        MapSqlParameterSource p = parametrosConcentrado(filtro, alcance, corteExclusivo)
+                .addValue("limite", filtro.tamanio()).addValue("offset", (long) filtro.pagina()*filtro.tamanio());
+        String grupo = switch (filtro.agrupacion()) {
+            case "PLANTEL" -> "plantel"; case "CICLO" -> "ciclo"; default -> "concepto";
+        };
+        String agrupado = """
+                SELECT %s AS grupo, count(*) AS cargos, COALESCE(sum(exigible),0) AS importe,
+                       COALESCE(sum(pagado),0) AS aplicado, COALESCE(sum(saldo),0) AS saldo,
+                       COALESCE(sum(CASE WHEN fecha_vencimiento<:fechaCorte THEN saldo ELSE 0 END),0) AS vencido
+                FROM estado GROUP BY %s
+                """.formatted(grupo, grupo);
+        Long total = jdbc.queryForObject(CONCENTRADO_CTE + "SELECT count(*) FROM ("+agrupado+") x", p, Long.class);
+        var filas = jdbc.query(CONCENTRADO_CTE + agrupado + " ORDER BY grupo LIMIT :limite OFFSET :offset", p,
+                (rs,n)->new ConcentradoCobranzaFila(rs.getString("grupo"),rs.getLong("cargos"),
+                        rs.getBigDecimal("importe"),rs.getBigDecimal("aplicado"),rs.getBigDecimal("saldo"),
+                        rs.getBigDecimal("vencido"),moneda));
+        return new PageImpl<>(filas, PageRequest.of(filtro.pagina(),filtro.tamanio()),total==null?0:total);
+    }
+
+    @Override
+    public ResumenEstadoCuenta resumenConcentradoCobranza(FiltroConcentradoCobranza filtro,
+                                                           AlcanceReporteFinanciero alcance,
+                                                           Instant corteExclusivo, String moneda) {
+        return jdbc.queryForObject(CONCENTRADO_CTE + """
+                SELECT count(*) AS cargos, COALESCE(sum(exigible),0) AS importe,
+                       COALESCE(sum(pagado),0) AS aplicado, COALESCE(sum(saldo),0) AS saldo,
+                       COALESCE(sum(CASE WHEN fecha_vencimiento<:fechaCorte THEN saldo ELSE 0 END),0) AS vencido
+                FROM estado
+                """, parametrosConcentrado(filtro,alcance,corteExclusivo), (rs,n)->new ResumenEstadoCuenta(
+                rs.getLong("cargos"),rs.getBigDecimal("importe"),rs.getBigDecimal("aplicado"),
+                rs.getBigDecimal("saldo"),rs.getBigDecimal("vencido"),moneda));
+    }
+
     private MapSqlParameterSource parametrosEstado(FiltroEstadoCuentaAlumno f,
                                                     AlcanceReporteFinanciero a,
                                                     Instant corteExclusivo) {
@@ -208,6 +272,15 @@ public class JdbcReporteFinancieroRepository implements ReporteFinancieroReposit
                 .addValue("cuentaId", f.cuentaId()).addValue("plantelId", f.plantelId())
                 .addValue("fechaDesde", Timestamp.from(desde)).addValue("fechaHasta", Timestamp.from(hasta))
                 .addValue("institucional", a.institucional()).addValue("plantelIds", a.plantelIds());
+    }
+
+    private MapSqlParameterSource parametrosConcentrado(FiltroConcentradoCobranza f,
+                                                         AlcanceReporteFinanciero a,
+                                                         Instant corteExclusivo) {
+        return new MapSqlParameterSource().addValue("institucionId",f.institucionId())
+                .addValue("plantelId",f.plantelId()).addValue("fechaCorte",f.fechaCorte())
+                .addValue("corteExclusivo",Timestamp.from(corteExclusivo))
+                .addValue("institucional",a.institucional()).addValue("plantelIds",a.plantelIds());
     }
 
     private record Flujo(long movimientos, BigDecimal ingresos, BigDecimal egresos,

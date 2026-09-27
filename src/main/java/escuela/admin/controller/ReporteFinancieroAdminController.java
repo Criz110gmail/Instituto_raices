@@ -30,7 +30,7 @@ public class ReporteFinancieroAdminController {
     private final ExcelReporteFinancieroService excel;
     private final EstadoCuentaCuentaService estadoCuentaCuenta;
     private final ExcelEstadoCuentaCuentaService excelCuenta;
-    private final PdfEstadoCuentaCuentaService pdfCuenta;
+    private final JasperReporteFinancieroService jasper;
     private final InstitucionService institucionService;
     private final PlantelService plantelService;
     private final AlcanceDatosService alcance;
@@ -119,7 +119,7 @@ public class ReporteFinancieroAdminController {
         response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" +
                 URLEncoder.encode("estado-cuenta-" + filtro.periodo().toLowerCase() + "-" + filtro.anio() + ".pdf",
                         StandardCharsets.UTF_8));
-        pdfCuenta.exportar(filtro, response.getOutputStream());
+        jasper.estadoCuenta(filtro, response.getOutputStream());
     }
 
     @GetMapping("/tesoreria/excel")
@@ -132,6 +132,19 @@ public class ReporteFinancieroAdminController {
         var filtro = consulta.normalizar(new FiltroReporteTesoreria(institucionId, cuentaId, cuentaTexto,
                 plantelId, agrupacion, fechaDesde, fechaHasta, 0, 100));
         prepararExcel(response, "reporte-tesoreria.xlsx"); excel.tesoreria(filtro, response.getOutputStream());
+    }
+
+    @GetMapping("/tesoreria/pdf")
+    void tesoreriaPdf(@RequestParam Long institucionId, @RequestParam(required = false) Long cuentaId,
+                      @RequestParam(defaultValue = "") String cuentaTexto,
+                      @RequestParam(required = false) Long plantelId,
+                      @RequestParam(defaultValue = "DIARIA") String agrupacion,
+                      @RequestParam LocalDate fechaDesde, @RequestParam LocalDate fechaHasta,
+                      HttpServletResponse response) throws IOException {
+        var filtro = consulta.normalizar(new FiltroReporteTesoreria(institucionId, cuentaId, cuentaTexto,
+                plantelId, agrupacion, fechaDesde, fechaHasta, 0, 100));
+        prepararPdf(response, "balanza-movimientos-saldos.pdf");
+        jasper.tesoreria(filtro, response.getOutputStream());
     }
 
     @GetMapping("/estado-cuenta")
@@ -163,6 +176,35 @@ public class ReporteFinancieroAdminController {
         return "admin/estado-cuenta-alumno";
     }
 
+    @GetMapping("/concentrado-cobranza")
+    String concentradoCobranza(@RequestParam(required=false) Long institucionId,
+                               @RequestParam(required=false) Long plantelId,
+                               @RequestParam(defaultValue="CONCEPTO") String agrupacion,
+                               @RequestParam(required=false) LocalDate fechaCorte,
+                               @RequestParam(defaultValue="0") int pagina,
+                               @RequestParam(defaultValue="25") int tamanio,
+                               Authentication authentication, Model model) {
+        var instituciones=instituciones();
+        if(institucionId==null&&!instituciones.isEmpty()) institucionId=instituciones.getFirst().id();
+        FiltroConcentradoCobranza filtro=new FiltroConcentradoCobranza(institucionId,plantelId,agrupacion,fechaCorte,pagina,tamanio);
+        try { filtro=consulta.normalizar(filtro); model.addAttribute("resultadoConcentrado",consulta.concentradoCobranza(filtro)); }
+        catch(ReglaNegocioException|RecursoNoEncontradoException e) {
+            model.addAttribute("errorFiltro",e.getMessage());
+            model.addAttribute("resultadoConcentrado",new ResultadoConcentradoCobranza(Page.empty(),ResumenEstadoCuenta.vacio("MXN")));
+        }
+        comunes(model,authentication,instituciones);model.addAttribute("filtroConcentrado",filtro);
+        return "admin/concentrado-cobranza";
+    }
+
+    @GetMapping("/concentrado-cobranza/pdf")
+    void concentradoCobranzaPdf(@RequestParam Long institucionId,
+                                @RequestParam(required=false) Long plantelId,
+                                @RequestParam(defaultValue="CONCEPTO") String agrupacion,
+                                @RequestParam LocalDate fechaCorte,HttpServletResponse response) throws IOException {
+        var filtro=consulta.normalizar(new FiltroConcentradoCobranza(institucionId,plantelId,agrupacion,fechaCorte,0,100));
+        prepararPdf(response,"concentrado-cobranza.pdf");jasper.concentradoCobranza(filtro,response.getOutputStream());
+    }
+
     @GetMapping("/estado-cuenta/excel")
     void estadoCuentaExcel(@RequestParam Long institucionId, @RequestParam Long alumnoId,
                            @RequestParam(defaultValue = "") String alumnoTexto,
@@ -172,6 +214,18 @@ public class ReporteFinancieroAdminController {
         var filtro = consulta.normalizar(new FiltroEstadoCuentaAlumno(institucionId, alumnoId, alumnoTexto,
                 plantelId, situacion, fechaCorte, 0, 100));
         prepararExcel(response, "estado-cuenta-alumno.xlsx"); excel.estadoCuenta(filtro, response.getOutputStream());
+    }
+
+    @GetMapping("/estado-cuenta/pdf")
+    void estadoCuentaPdf(@RequestParam Long institucionId, @RequestParam Long alumnoId,
+                         @RequestParam(defaultValue = "") String alumnoTexto,
+                         @RequestParam(required = false) Long plantelId,
+                         @RequestParam(defaultValue = "TODOS") String situacion,
+                         @RequestParam LocalDate fechaCorte, HttpServletResponse response) throws IOException {
+        var filtro = consulta.normalizar(new FiltroEstadoCuentaAlumno(institucionId, alumnoId, alumnoTexto,
+                plantelId, situacion, fechaCorte, 0, 100));
+        prepararPdf(response, "estado-cuenta-alumno.pdf");
+        jasper.estadoAlumno(filtro, response.getOutputStream());
     }
 
     private void comunes(Model model, Authentication authentication, List<InstitucionResponse> instituciones) {
@@ -189,6 +243,12 @@ public class ReporteFinancieroAdminController {
 
     private void prepararExcel(HttpServletResponse response, String archivo) {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''"
+                + URLEncoder.encode(archivo, StandardCharsets.UTF_8));
+    }
+
+    private void prepararPdf(HttpServletResponse response, String archivo) {
+        response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''"
                 + URLEncoder.encode(archivo, StandardCharsets.UTF_8));
     }

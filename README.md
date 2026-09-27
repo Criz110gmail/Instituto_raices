@@ -449,3 +449,15 @@ sin borrar historial ni relaciones.
 El listado de Tutores muestra el estado de la cuenta y permite filtrar por sin cuenta,
 acceso activo, pendiente de activación y desactivado/bloqueado. Flyway V37 reclasifica
 automáticamente como `PORTAL_TUTOR` las cuentas que ya estaban vinculadas a un tutor.
+
+### Reportes financieros PDF con JasperReports
+
+Reportes financieros ofrece cuatro exportaciones PDF con JasperReports: balanza de
+movimientos y saldos, estado por cuenta, estado del alumno y concentrado de cobranza.
+El concentrado puede agruparse por concepto, plantel o ciclo escolar y muestra importe,
+cobrado, saldo y vencido al corte.
+
+Las filas se obtienen en bloques de 100 mediante los servicios del sistema; Jasper no
+ejecuta SQL ni omite las reglas de alcance. La balanza financiera se habilita únicamente
+para cuentas completas, sin filtro por plantel operativo, y no pretende sustituir una
+balanza contable de partida doble.

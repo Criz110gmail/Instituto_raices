@@ -842,8 +842,8 @@ esta estabilización. La conciliación bancaria permanece descartada: no se impo
 CSV bancarios. Correo y WhatsApp también siguen fuera de alcance hasta diseñar
 consentimiento, proveedor, reintentos y trazabilidad.
 
-V37 está implementada, compilada, aplicada y verificada automáticamente. Antes de crear
-V38, el propietario debe hacer una prueba funcional controlada: confirmar que el módulo
+V37 está implementada, compilada, aplicada y verificada automáticamente. El propietario debe hacer
+una prueba funcional controlada: confirmar que el módulo
 Usuarios sólo muestra personal administrativo; en Tutores probar los cuatro filtros de
 cuenta; elegir un tutor controlado sin acceso, aceptar o editar el username sugerido,
 crear la cuenta, copiar el enlace de activación, establecer contraseña e ingresar desde
@@ -851,9 +851,36 @@ crear la cuenta, copiar el enlace de activación, establecer contraseña e ingre
 confirmar que ya no inicia sesión y reactivarlo. No usar correos ni identificaciones
 reales sólo para probar.
 
-Después de esa revisión y del commit del propietario, acordar el siguiente módulo antes
-de crear V38. La estrategia definitiva de almacenamiento privado sigue pendiente para
-producción, pero no bloquea las pruebas funcionales actuales.
+Después se implementó la etapa de reportes Jasper descrita abajo. La estrategia definitiva
+de almacenamiento privado sigue pendiente para producción, pero no bloquea las pruebas
+funcionales actuales.
+
+### Reportes financieros Jasper posteriores a V37
+
+- Se incorporó JasperReports `7.0.8` mediante `jasperreports-pdf`; el controlador ya no
+  usa el generador PDFBox manual del estado por cuenta. PDFBox permanece como dependencia
+  de prueba para extraer texto y renderizar regresiones.
+- Tesorería exporta una **Balanza de movimientos y saldos** en PDF; no se presenta como
+  balanza contable porque el dominio todavía no tiene catálogo contable ni pólizas de
+  partida doble. El PDF sólo se habilita sin plantel operativo, pues un saldo de cuenta
+  no debe dividirse artificialmente por la atribución de un movimiento.
+- El estado por cuenta y el estado del alumno exportan PDF Jasper con el mismo periodo,
+  filtros, alcance y datos paginados de la pantalla. El estado por cuenta conserva
+  traspasos y reversas para cuadrar apertura y cierre.
+- Se agregó `Concentrado de cobranza`, consultable y paginado por concepto, plantel o
+  ciclo escolar, con importe exigible, cobrado, por cobrar y vencido al corte. Los cargos
+  cancelados conservan historia, pero aportan cero a los importes.
+- Jasper no ejecuta SQL ni recibe una conexión: usa los servicios existentes y un
+  `JRDataSource` paginado de 100 filas. Así mantiene validaciones, alcance de sesión y
+  evita cargar millones de registros en memoria. No se agregó migración; Flyway continúa
+  en V37 y la siguiente disponible sigue siendo V38.
+- La prueba Jasper genera un PDF real en Linux/Alpine, extrae su contenido y renderiza la
+  primera página. Se usa la fuente lógica `SansSerif`, ya que Helvetica no estaba
+  instalada en la imagen. La inspección visual confirmó encabezado, resúmenes, tabla,
+  moneda, pie y paginación sin recortes.
+- La compilación final ejecutó 333 pruebas sin fallos. La consulta agrupada se analizó y
+  ejecutó en PostgreSQL real en modo lectura (la instalación no tenía cargos que listar),
+  y la imagen final quedó desplegada con `/actuator/health` en `UP`.
 
 ### Punto exacto de reanudación en otra computadora
 
@@ -866,7 +893,9 @@ producción, pero no bloquea las pruebas funcionales actuales.
    probado. No improvisar una restauración sobre datos existentes.
 4. Flyway V1–V37 ya existen y están aplicadas al volumen habitual; nunca editarlas.
    La siguiente migración disponible será V38.
-5. Ejecutar la prueba manual de V37 y las pendientes descritas para V34, V35 y V36. Mantener también
+5. Probar las cuatro descargas Jasper con datos controlados y distintos tamaños de
+   resultado. Ejecutar también la prueba manual de V37 y las pendientes descritas para V34, V35 y V36. Mantener
+   además
    en la lista las pruebas pendientes de cancelaciones V32 y retiros V33; no crear
    movimientos operativos reales sólo para verificar.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
@@ -877,8 +906,9 @@ producción, pero no bloquea las pruebas funcionales actuales.
 
 ## Disciplina de cambios y entrega
 
-V34–V37 están estabilizadas localmente y verificadas de forma automática. Falta la
-prueba funcional controlada de V37 por el propietario y su commit antes de iniciar otro módulo.
+V34–V37 y los reportes financieros Jasper están implementados localmente. Falta la
+prueba funcional controlada de las cuatro descargas y de V37 por el propietario antes
+de iniciar otro módulo o crear V38.
 
 - Inspecciona `git status` antes de editar y preserva cambios ajenos.
 - Usa migraciones Flyway nuevas para cambios de esquema; nunca edites una migración ya

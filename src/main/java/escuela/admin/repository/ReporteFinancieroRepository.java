@@ -20,4 +20,10 @@ public interface ReporteFinancieroRepository {
                                        AlcanceReporteFinanciero alcance,
                                        Instant desde, Instant hastaExclusivo,
                                        String moneda);
+    Page<ConcentradoCobranzaFila> concentradoCobranza(FiltroConcentradoCobranza filtro,
+                                                      AlcanceReporteFinanciero alcance,
+                                                      Instant corteExclusivo, String moneda);
+    ResumenEstadoCuenta resumenConcentradoCobranza(FiltroConcentradoCobranza filtro,
+                                                    AlcanceReporteFinanciero alcance,
+                                                    Instant corteExclusivo, String moneda);
 }

@@ -14,6 +14,7 @@ class PlantillasPaginacionTest {
         for (String plantilla : new String[]{
                 "admin/reporte-tesoreria.html",
                 "admin/estado-cuenta-alumno.html",
+                "admin/concentrado-cobranza.html",
                 "admin/cortes-caja.html",
                 "admin/eventos-escolares.html",
                 "admin/auditoria.html"}) {

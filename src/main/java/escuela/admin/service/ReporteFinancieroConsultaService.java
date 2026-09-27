@@ -37,6 +37,11 @@ public class ReporteFinancieroConsultaService {
         return filtro.normalizado(LocalDate.now(ZoneId.of(institucion.zonaHoraria())));
     }
 
+    public FiltroConcentradoCobranza normalizar(FiltroConcentradoCobranza filtro) {
+        InstitucionResponse institucion = institucion(filtro.institucionId());
+        return filtro.normalizado(LocalDate.now(ZoneId.of(institucion.zonaHoraria())));
+    }
+
     public ResultadoEstadoCuentaAlumno estadoCuenta(FiltroEstadoCuentaAlumno original) {
         FiltroEstadoCuentaAlumno filtro = normalizar(original);
         InstitucionResponse institucion = institucion(filtro.institucionId());
@@ -75,6 +80,18 @@ public class ReporteFinancieroConsultaService {
                 repository.tesoreria(filtro, seguridad, desde, hasta, institucion.zonaHoraria()),
                 repository.resumenTesoreria(filtro, seguridad, desde, hasta,
                         institucion.monedaPredeterminada()));
+    }
+
+    public ResultadoConcentradoCobranza concentradoCobranza(FiltroConcentradoCobranza original) {
+        FiltroConcentradoCobranza filtro = normalizar(original);
+        InstitucionResponse institucion = institucion(filtro.institucionId());
+        validarPlantel(filtro.institucionId(),filtro.plantelId());
+        ZoneId zona=ZoneId.of(institucion.zonaHoraria());
+        Instant corte=filtro.fechaCorte().plusDays(1).atStartOfDay(zona).toInstant();
+        AlcanceReporteFinanciero seguridad=seguridad(filtro.institucionId());
+        return new ResultadoConcentradoCobranza(
+                repository.concentradoCobranza(filtro,seguridad,corte,institucion.monedaPredeterminada()),
+                repository.resumenConcentradoCobranza(filtro,seguridad,corte,institucion.monedaPredeterminada()));
     }
 
     private InstitucionResponse institucion(Long id) {
