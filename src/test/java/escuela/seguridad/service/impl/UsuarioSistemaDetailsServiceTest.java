@@ -7,6 +7,7 @@ import escuela.seguridad.entity.Rol;
 import escuela.seguridad.entity.RolPermiso;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.entity.UsuarioRol;
+import escuela.seguridad.entity.TipoCuentaUsuario;
 import escuela.seguridad.repository.PermisoRepository;
 import escuela.seguridad.repository.RolPermisoRepository;
 import escuela.seguridad.repository.UsuarioRepository;
@@ -145,5 +146,17 @@ class UsuarioSistemaDetailsServiceTest {
                 .thenReturn(List.of());
 
         assertThat(service.loadUserByUsername("criz110").getUsername()).isEqualTo("criz110");
+    }
+
+    @Test
+    void cuentaTutorRecibeSoloAccesoAlPortalSinRolesAdministrativos() {
+        usuario.setTipoCuenta(TipoCuentaUsuario.PORTAL_TUTOR);
+        when(usuarioRepository.findAllByUsernameIgnoreCase("criz110")).thenReturn(List.of(usuario));
+
+        var detalles = service.loadUserByUsername("criz110");
+
+        assertThat(detalles.getAuthorities()).extracting("authority")
+                .containsExactly("PORTAL_TUTOR_ACCEDER");
+        org.mockito.Mockito.verifyNoInteractions(usuarioRolRepository, rolPermisoRepository);
     }
 }

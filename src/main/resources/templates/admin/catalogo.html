@@ -61,6 +61,10 @@
                 <option value="INACTIVO" th:selected="${filtro.estado == 'INACTIVO'}">Inactivo</option>
                 <option value="INVITADO" th:selected="${filtro.estado == 'INVITADO'}">Invitado</option>
                 <option value="BLOQUEADO" th:selected="${filtro.estado == 'BLOQUEADO'}">Bloqueado</option>
+                <option th:if="${resultado.modulo.name() == 'TUTORES'}" value="SIN_CUENTA" th:selected="${filtro.estado == 'SIN_CUENTA'}">Sin cuenta de portal</option>
+                <option th:if="${resultado.modulo.name() == 'TUTORES'}" value="CUENTA_ACTIVA" th:selected="${filtro.estado == 'CUENTA_ACTIVA'}">Cuenta de portal activa</option>
+                <option th:if="${resultado.modulo.name() == 'TUTORES'}" value="CUENTA_PENDIENTE" th:selected="${filtro.estado == 'CUENTA_PENDIENTE'}">Pendiente de activación</option>
+                <option th:if="${resultado.modulo.name() == 'TUTORES'}" value="CUENTA_INACTIVA" th:selected="${filtro.estado == 'CUENTA_INACTIVA'}">Cuenta desactivada o bloqueada</option>
                 <option value="PLANIFICADO" th:selected="${filtro.estado == 'PLANIFICADO'}">Planificado</option>
                 <option value="ABIERTO" th:selected="${filtro.estado == 'ABIERTO'}">Abierto</option>
                 <option value="CERRADO" th:selected="${filtro.estado == 'CERRADO'}">Cerrado</option>

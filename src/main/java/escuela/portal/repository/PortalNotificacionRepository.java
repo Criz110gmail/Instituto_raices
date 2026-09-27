@@ -45,9 +45,9 @@ public class PortalNotificacionRepository {
                    CASE pago.estado WHEN 'VALIDADO' THEN 'Pago validado'
                      WHEN 'RECHAZADO' THEN 'Pago rechazado' ELSE 'Pago cancelado' END,
                    left(CASE pago.estado
-                     WHEN 'VALIDADO' THEN concat('El pago ',pago.folio,' por ',pago.monto,' ',pago.moneda,' fue validado correctamente.')
-                     WHEN 'RECHAZADO' THEN concat('El pago ',pago.folio,' por ',pago.monto,' ',pago.moneda,' fue rechazado. Motivo: ',pago.motivo_rechazo_cancelacion)
-                     ELSE concat('El pago ',pago.folio,' por ',pago.monto,' ',pago.moneda,' fue cancelado. Motivo: ',pago.motivo_rechazo_cancelacion)
+                     WHEN 'VALIDADO' THEN concat('El pago ',pago.folio,' por ',to_char(pago.monto,'FM$999,999,999,999,990.00'),' fue validado correctamente.')
+                     WHEN 'RECHAZADO' THEN concat('El pago ',pago.folio,' por ',to_char(pago.monto,'FM$999,999,999,999,990.00'),' fue rechazado. Motivo: ',pago.motivo_rechazo_cancelacion)
+                     ELSE concat('El pago ',pago.folio,' por ',to_char(pago.monto,'FM$999,999,999,999,990.00'),' fue cancelado. Motivo: ',pago.motivo_rechazo_cancelacion)
                    END,1000),pago.id,concat('PAGO_',pago.estado,':',pago.id)
             FROM pago JOIN tutor t ON t.id=pago.tutor_id
             WHERE pago.institucion_id=:institucionId AND pago.estado IN ('VALIDADO','RECHAZADO','CANCELADO')

@@ -3,19 +3,81 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title th:text="${edicion ? 'Editar tutor' : 'Nuevo tutor'} + ' · Nexo Escolar'">Tutor</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script><script src="/js/autocomplete.js" defer></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
 </head>
 <body class="form-page">
 <main class="form-shell student-shell">
     <header class="form-top"><a href="/admin/catalogos/tutores">← Volver a tutores</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <section class="form-card">
-        <div class="form-intro"><span th:text="${edicion ? 'Responsable del alumno' : 'Nuevo responsable'}">Nuevo responsable</span><h1 th:text="${edicion ? 'Editar tutor' : 'Registrar tutor'}">Registrar tutor</h1><p>Registra la identidad y los medios de contacto. Los alumnos y permisos concretos se asignarán en el siguiente módulo.</p></div>
-        <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/tutores/' + id : '/admin/tutores'}">
+        <div th:unless="${edicion}" class="form-intro"><span>Nuevo responsable</span><h1>Registrar tutor</h1><p>Registra la identidad y los medios de contacto. Los alumnos y permisos concretos se asignarán en el siguiente módulo.</p></div>
+        <section th:if="${edicion}" class="student-profile tutor-profile" aria-labelledby="perfil-tutor-titulo">
+            <div class="profile-photo-column tutor-document-column">
+                <a th:if="${identificacionActual != null}" class="tutor-document-frame" th:classappend="${#strings.startsWith(identificacionActual.tipoMime, 'image/') ? ' image' : ' file'}" target="_blank" rel="noopener" th:href="@{/admin/tutores/{tutorId}/identificaciones/{identificacionId}(tutorId=${id},identificacionId=${identificacionActual.id})}" aria-label="Abrir identificación oficial">
+                    <img th:if="${#strings.startsWith(identificacionActual.tipoMime, 'image/')}" th:src="@{/admin/tutores/{tutorId}/identificaciones/{identificacionId}(tutorId=${id},identificacionId=${identificacionActual.id})}" alt="Vista previa de la identificación oficial">
+                    <div th:unless="${#strings.startsWith(identificacionActual.tipoMime, 'image/')}"><span>Documento privado</span><strong>PDF</strong><small th:text="${identificacionActual.tipoEtiqueta}">Identificación</small></div>
+                    <b>Abrir documento ↗</b>
+                </a>
+                <div th:if="${identificacionActual == null}" class="tutor-document-frame empty"><div><span>Expediente privado</span><strong>ID</strong><small>Sin identificación</small></div></div>
+                <div th:if="${identificacionActual != null}" class="photo-current-meta"><strong th:text="${identificacionActual.tipoEtiqueta}">INE</strong><span th:text="${identificacionActual.nombreOriginal + ' · ' + #numbers.formatDecimal(identificacionActual.tamanoBytes / 1024.0, 1, 0) + ' KB'}">archivo.pdf</span></div>
+            </div>
+            <div class="profile-summary">
+                <div class="profile-heading">
+                    <div><span class="profile-eyebrow">Ficha del tutor</span><h1 id="perfil-tutor-titulo" th:text="${form.nombres + ' ' + form.primerApellido + (form.segundoApellido == null or form.segundoApellido.isBlank() ? '' : ' ' + form.segundoApellido)}">Nombre del tutor</h1><p><strong th:text="${cuentaPortal == null ? 'Sin acceso al portal' : cuentaPortal.username}">Usuario</strong><span aria-hidden="true">·</span><span th:text="${institucionSeleccionada}">Institución</span></p></div>
+                    <span class="profile-status" th:classappend="${form.activo ? ' active' : ' inactive'}" th:text="${form.activo ? 'Activo' : 'Inactivo'}">Activo</span>
+                </div>
+                <dl class="profile-facts">
+                    <div><dt>Fecha de nacimiento</dt><dd th:text="${form.fechaNacimiento == null ? 'No registrada' : #temporals.format(form.fechaNacimiento, 'dd/MM/yyyy')}">No registrada</dd></div>
+                    <div><dt>Teléfono principal</dt><dd th:text="${form.telefonoPrincipal}">Sin teléfono</dd></div>
+                    <div><dt>Correo</dt><dd th:text="${form.email == null or form.email.isBlank() ? 'No registrado' : form.email}">No registrado</dd></div>
+                    <div><dt>Ocupación</dt><dd th:text="${form.ocupacion == null or form.ocupacion.isBlank() ? 'No registrada' : form.ocupacion}">No registrada</dd></div>
+                </dl>
+                <div class="profile-photo-tools tutor-document-tools" aria-labelledby="identificacion-titulo">
+                    <div><strong id="identificacion-titulo" th:text="${identificacionActual == null ? 'Agregar identificación oficial' : 'Identificación oficial vigente'}">Identificación oficial</strong><span>INE, licencia, pasaporte u otra identificación. PDF, JPG o PNG, máximo 10 MB. Es opcional y su historial permanece privado.</span></div>
+                    <div class="form-error" role="alert" th:if="${errorIdentificacion}"><strong>No se pudo actualizar la identificación</strong><p th:text="${errorIdentificacion}">Revisa el archivo.</p></div>
+                    <div class="profile-tool-actions">
+                        <form method="post" enctype="multipart/form-data" th:action="@{/admin/tutores/{id}/identificacion(id=${id})}" class="photo-upload-form">
+                            <label><span>Tipo</span><select name="tipo" required><option value="">Selecciona el tipo</option><option th:each="tipo : ${tiposIdentificacion}" th:value="${tipo}" th:text="${tipo.etiqueta}">INE</option></select></label>
+                            <label for="archivo-identificacion"><span th:text="${identificacionActual == null ? 'Seleccionar archivo' : 'Reemplazar archivo'}">Seleccionar archivo</span><input id="archivo-identificacion" type="file" name="archivo" accept="application/pdf,image/jpeg,image/png" required></label>
+                            <button type="submit" th:text="${identificacionActual == null ? 'Guardar identificación' : 'Reemplazar identificación'}">Guardar identificación</button>
+                        </form>
+                        <form th:if="${identificacionActual != null}" method="post" th:action="@{/admin/tutores/{id}/identificacion/retirar(id=${id})}" onsubmit="return confirm('¿Retirar la identificación vigente? El historial privado se conservará.');"><button type="submit" class="photo-remove">Retirar vigente</button></form>
+                    </div>
+                    <details class="photo-history tutor-document-history" th:if="${historialIdentificaciones != null and !historialIdentificaciones.isEmpty()}">
+                        <summary th:text="${'Ver historial de identificaciones (' + historialIdentificaciones.size() + ')'}">Ver historial</summary>
+                        <div class="receipt-list identification-history-list"><a th:each="documento : ${historialIdentificaciones}" target="_blank" rel="noopener" th:href="@{/admin/tutores/{tutorId}/identificaciones/{identificacionId}(tutorId=${id},identificacionId=${documento.id})}"><span>↗</span><div><strong th:text="${documento.tipoEtiqueta}">Pasaporte</strong><small th:text="${documento.nombreOriginal}">archivo.pdf</small></div></a></div>
+                    </details>
+                </div>
+                <a class="profile-edit-link" href="#datos-expediente">Editar información completa ↓</a>
+            </div>
+        </section>
+        <section th:if="${edicion}" class="portal-access-card" aria-labelledby="portal-access-title">
+            <div class="portal-access-heading">
+                <div><span class="profile-eyebrow">Portal de familias</span><h2 id="portal-access-title">Acceso del tutor</h2><p th:text="${cuentaPortal == null ? 'Este tutor todavía no tiene credenciales. Crear la cuenta no le asigna permisos administrativos.' : 'Administra este acceso desde el expediente del tutor; nunca aparecerá en el módulo Usuarios.'}">Acceso del tutor.</p></div>
+                <span class="profile-status" th:classappend="${cuentaPortal != null and cuentaPortal.estado.name() == 'ACTIVO' ? ' active' : ' inactive'}" th:text="${cuentaPortal == null ? 'Sin cuenta' : (cuentaPortal.estado.name() == 'INVITADO' ? 'Pendiente de activación' : (cuentaPortal.estado.name() == 'ACTIVO' ? 'Acceso activo' : (cuentaPortal.estado.name() == 'BLOQUEADO' ? 'Bloqueado' : 'Desactivado')))}">Sin cuenta</span>
+            </div>
+            <div class="form-error" role="alert" th:if="${errorCuentaPortal}"><strong>No se pudo administrar el acceso</strong><p th:text="${errorCuentaPortal}">Revisa los datos.</p></div>
+            <div class="portal-link-box" th:if="${invitacionEnlace}"><strong>Enlace para crear contraseña</strong><p>Compártelo de forma privada con el tutor. Caduca en la fecha indicada y sólo puede usarse una vez.</p><input type="text" readonly th:value="${invitacionEnlace}" onclick="this.select()"><small th:text="${'Válido hasta ' + #temporals.format(invitacionExpira, 'dd/MM/yyyy HH:mm')}">Vigencia</small></div>
+            <div class="portal-link-box" th:if="${recuperacionEnlace}"><strong>Enlace para cambiar contraseña</strong><p>Compártelo de forma privada. Caduca en 30 minutos y sólo puede usarse una vez.</p><input type="text" readonly th:value="${recuperacionEnlace}" onclick="this.select()"><small th:text="${'Válido hasta ' + #temporals.format(recuperacionExpira, 'dd/MM/yyyy HH:mm')}">Vigencia</small></div>
+            <form th:if="${cuentaPortal == null}" class="portal-account-create" th:object="${portalForm}" method="post" th:action="@{/admin/tutores/{id}/cuenta-portal(id=${id})}">
+                <label><span>Usuario sugerido *</span><input th:field="*{username}" maxlength="80" autocomplete="off"><small th:errors="*{username}"></small><em>Puedes modificarlo si el sugerido ya existe.</em></label>
+                <label><span>Correo de acceso *</span><input type="email" th:field="*{email}" maxlength="254" autocomplete="email"><small th:errors="*{email}"></small></label>
+                <button type="submit">Crear acceso y generar enlace</button>
+            </form>
+            <div th:if="${cuentaPortal != null}" class="portal-account-details">
+                <dl><div><dt>Usuario</dt><dd th:text="${cuentaPortal.username}">usuario</dd></div><div><dt>Correo</dt><dd th:text="${cuentaPortal.email}">correo</dd></div><div><dt>Contraseña</dt><dd th:text="${cuentaPortal.credencialConfigurada ? 'Configurada' : 'Pendiente de configurar'}">Pendiente</dd></div></dl>
+                <div class="portal-account-actions">
+                    <form th:if="${cuentaPortal.estado.name() == 'INVITADO'}" method="post" th:action="@{/admin/tutores/{id}/cuenta-portal/invitacion(id=${id})}"><button type="submit">Generar nuevo enlace de activación</button></form>
+                    <form th:if="${cuentaPortal.estado.name() == 'ACTIVO'}" method="post" th:action="@{/admin/tutores/{id}/cuenta-portal/recuperacion(id=${id})}"><button type="submit">Generar enlace para cambiar contraseña</button></form>
+                    <form th:if="${cuentaPortal.estado.name() != 'INACTIVO'}" method="post" th:action="@{/admin/tutores/{id}/cuenta-portal/estado(id=${id})}" onsubmit="return confirm('¿Desactivar el acceso de este tutor al portal?');"><input type="hidden" name="version" th:value="${cuentaPortal.version}"><input type="hidden" name="activar" value="false"><button type="submit" class="photo-remove">Desactivar acceso</button></form>
+                    <form th:if="${cuentaPortal.estado.name() == 'INACTIVO'}" method="post" th:action="@{/admin/tutores/{id}/cuenta-portal/estado(id=${id})}"><input type="hidden" name="version" th:value="${cuentaPortal.version}"><input type="hidden" name="activar" value="true"><button type="submit">Reactivar acceso</button></form>
+                </div>
+            </div>
+        </section>
+        <form id="datos-expediente" class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/tutores/' + id : '/admin/tutores'}">
             <input type="hidden" th:field="*{version}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div>
-            <fieldset class="form-section"><legend>Identidad y acceso</legend><div class="form-grid">
+            <fieldset class="form-section"><legend>Identidad</legend><div class="form-grid">
                 <label class="wide"><span>Institución *</span><select id="institucion" th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
-                <div class="wide autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/usuarios" data-institution-input="institucion" th:attr="data-exclude-id=${id}"><label class="autocomplete-label" for="usuario-busqueda">Cuenta de usuario vinculada</label><div class="autocomplete-control"><input id="usuario-busqueda" class="autocomplete-input" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="usuario-resultados" placeholder="Escribe username o correo" th:value="${usuarioSeleccionado}"><button class="autocomplete-clear" type="button" aria-label="Quitar cuenta vinculada" hidden>×</button></div><input class="autocomplete-value" type="hidden" th:field="*{usuarioId}"><div id="usuario-resultados" class="autocomplete-results" role="listbox" hidden></div><span class="autocomplete-status" aria-live="polite">Escribe al menos 3 caracteres para buscar.</span><small th:errors="*{usuarioId}"></small><span class="field-help">La cuenta debe existir previamente en Seguridad → Usuarios, no estar inactiva y sólo puede pertenecer a un tutor.</span></div>
             </div></fieldset>
             <fieldset class="form-section"><legend>Datos personales</legend><div class="form-grid">
                 <label class="wide"><span>Nombre(s) *</span><input th:field="*{nombres}" maxlength="150" autocomplete="given-name"><small th:errors="*{nombres}"></small></label>
@@ -44,28 +106,6 @@
             </div></fieldset>
             <footer class="form-actions"><a href="/admin/catalogos/tutores">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Registrar tutor'}">Guardar</button></footer>
         </form>
-        <section th:if="${edicion}" class="access-actions tutor-identification-section">
-            <div class="section-heading"><div><span>Documento privado opcional</span><h2>Identificación oficial</h2></div><p>Guarda una INE, licencia, pasaporte u otra identificación oficial. Se aceptan PDF, JPG y PNG de hasta 10 MB.</p></div>
-            <div class="form-error" role="alert" th:if="${errorIdentificacion}"><strong>No se pudo actualizar la identificación</strong><p th:text="${errorIdentificacion}">Revisa el archivo.</p></div>
-            <div class="receipt-list" th:if="${identificacionActual != null}">
-                <a target="_blank" rel="noopener" th:href="@{/admin/tutores/{tutorId}/identificaciones/{identificacionId}(tutorId=${id},identificacionId=${identificacionActual.id})}"><span>↗</span><div><strong th:text="${identificacionActual.tipoEtiqueta}">INE</strong><small th:text="${identificacionActual.nombreOriginal + ' · ' + #numbers.formatDecimal(identificacionActual.tamanoBytes / 1024.0, 1, 0) + ' KB'}">archivo.pdf</small></div></a>
-            </div>
-            <div class="form-note" th:if="${identificacionActual == null}"><strong>Sin identificación cargada</strong><p>Este documento es opcional y no impide guardar o utilizar el expediente del tutor.</p></div>
-            <div class="profile-tool-actions">
-                <form method="post" enctype="multipart/form-data" th:action="@{/admin/tutores/{id}/identificacion(id=${id})}" class="photo-upload-form">
-                    <label><span>Tipo de identificación</span><select name="tipo" required><option value="">Selecciona el tipo</option><option th:each="tipo : ${tiposIdentificacion}" th:value="${tipo}" th:text="${tipo.etiqueta}">INE</option></select></label>
-                    <label for="archivo-identificacion"><span th:text="${identificacionActual == null ? 'Seleccionar archivo' : 'Reemplazar archivo'}">Seleccionar archivo</span><input id="archivo-identificacion" type="file" name="archivo" accept="application/pdf,image/jpeg,image/png" required></label>
-                    <button type="submit" th:text="${identificacionActual == null ? 'Guardar identificación' : 'Reemplazar identificación'}">Guardar identificación</button>
-                </form>
-                <form th:if="${identificacionActual != null}" method="post" th:action="@{/admin/tutores/{id}/identificacion/retirar(id=${id})}" onsubmit="return confirm('¿Retirar la identificación vigente? El historial privado se conservará.');"><button type="submit" class="photo-remove">Retirar vigente</button></form>
-            </div>
-            <details class="photo-history" th:if="${historialIdentificaciones != null and !historialIdentificaciones.isEmpty()}">
-                <summary th:text="${'Ver historial de identificaciones (' + historialIdentificaciones.size() + ')'}">Ver historial</summary>
-                <div class="receipt-list identification-history-list">
-                    <a th:each="documento : ${historialIdentificaciones}" target="_blank" rel="noopener" th:href="@{/admin/tutores/{tutorId}/identificaciones/{identificacionId}(tutorId=${id},identificacionId=${documento.id})}"><span>↗</span><div><strong th:text="${documento.tipoEtiqueta}">Pasaporte</strong><small th:text="${documento.nombreOriginal}">archivo.pdf</small></div></a>
-                </div>
-            </details>
-        </section>
         <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/tutores/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este tutor? Sus vínculos históricos se conservarán.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar tutor</strong><p>El registro y sus relaciones se conservarán.</p></div><button type="submit">Desactivar</button></form>
     </section>
 </main>

@@ -82,7 +82,8 @@ class RolServiceImplTest {
     void listaUnSoloAccesoAmigablePorModulo() {
         when(permisoRepository.findAllByOrderByCodigoAsc()).thenReturn(List.of(
                 permiso(10L, "ALUMNO_LEER"), permiso(11L, "ALUMNO_ADMINISTRAR"),
-                permiso(20L, "PAGO_LEER"), permiso(21L, "PAGO_VALIDAR")));
+                permiso(20L, "PAGO_LEER"), permiso(21L, "PAGO_VALIDAR"),
+                permiso(30L, "PORTAL_TUTOR_ACCEDER")));
 
         assertThat(service.listarPermisos()).extracting(p -> p.codigo())
                 .containsExactly("Alumnos", "Pagos");

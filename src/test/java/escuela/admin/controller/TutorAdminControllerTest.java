@@ -7,6 +7,9 @@ import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.service.InstitucionService;
 import escuela.seguridad.service.AlcanceDatosService;
 import escuela.seguridad.service.UsuarioService;
+import escuela.seguridad.service.InvitacionUsuarioService;
+import escuela.seguridad.service.RecuperacionPasswordService;
+import escuela.tutor.service.AccesoPortalTutorService;
 import escuela.tutor.dto.request.TutorRequest;
 import escuela.tutor.dto.response.TutorResponse;
 import escuela.tutor.entity.TipoIdentificacionTutor;
@@ -40,6 +43,9 @@ class TutorAdminControllerTest {
     @Mock private IdentificacionTutorService identificacionService;
     @Mock private InstitucionService institucionService;
     @Mock private UsuarioService usuarioService;
+    @Mock private AccesoPortalTutorService accesoPortalService;
+    @Mock private InvitacionUsuarioService invitacionUsuarioService;
+    @Mock private RecuperacionPasswordService recuperacionPasswordService;
     @Mock private AlcanceDatosService alcance;
     @InjectMocks private TutorAdminController controller;
 
@@ -59,8 +65,8 @@ class TutorAdminControllerTest {
 
         assertThat(vista).isEqualTo("admin/tutor-form");
         assertThat(((TutorForm) model.get("form")).getInstitucionId()).isEqualTo(1L);
-        assertThat(model).containsKeys("instituciones", "usuarioSeleccionado");
-        assertThat(model.get("usuarioSeleccionado")).isEqualTo("");
+        assertThat(model).containsKeys("instituciones", "institucionSeleccionada");
+        assertThat(model.get("institucionSeleccionada")).isEqualTo("RAICES · Instituto Raíces");
     }
 
     @Test

@@ -26,6 +26,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import static escuela.common.support.FormatoMoneda.formatear;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.Authentication;
@@ -132,8 +134,8 @@ public class PagoAdminController {
         }
         try {
             var devolucion = devolucionService.ejecutar(form.request(id));
-            flash.addFlashAttribute("mensaje", "Devolución por " + devolucion.monto().toPlainString()
-                    + " " + devolucion.moneda() + " ejecutada y publicada como egreso");
+            flash.addFlashAttribute("mensaje", "Devolución por " + formatear(devolucion.monto())
+                    + " ejecutada y publicada como egreso");
             return "redirect:/admin/pagos/" + id + "/editar";
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
             prepararDetalle(model, service.obtener(id), authentication, form);

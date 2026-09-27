@@ -34,6 +34,7 @@ import java.util.*;
 import static escuela.common.mapper.NormalizacionTexto.codigo;
 import static escuela.common.mapper.NormalizacionTexto.limpiar;
 import static escuela.cobranza.support.CalculoCargo.saldo;
+import static escuela.common.support.FormatoMoneda.formatear;
 
 @Service
 @RequiredArgsConstructor
@@ -253,7 +254,7 @@ public class PagoServiceImpl implements PagoService {
             BigDecimal saldoActual = saldo(cargo);
             if (monto.compareTo(saldoActual) > 0) {
                 throw new ReglaNegocioException("El monto solicitado para " + cargo.getDescripcion()
-                        + " supera su saldo actual de " + saldoActual.toPlainString() + " " + cargo.getMoneda());
+                        + " supera su saldo actual de " + formatear(saldoActual));
             }
             resultado.add(new CargoSolicitud(cargo, monto));
         }

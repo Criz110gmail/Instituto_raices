@@ -45,7 +45,7 @@
         <div class="balance-card" th:classappend="${resultado.cuenta == null} ? ' balance-empty'">
             <span>Saldo actual de la cuenta</span>
             <th:block th:if="${resultado.cuenta != null}">
-                <strong><span th:text="${#numbers.formatDecimal(resultado.cuenta.saldoActual, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+                <strong><span th:text="${@formatoMoneda.pesos(resultado.cuenta.saldoActual)}">$0.00</span>
                     <small th:text="${resultado.cuenta.moneda}">MXN</small></strong>
                 <p th:text="${resultado.cuenta.etiqueta}">Cuenta</p>
                 <div><span th:text="${resultado.cuenta.tipo}">BANCO</span><span th:text="${resultado.cuenta.alcance}">Institucional</span><span th:text="${resultado.cuenta.movimientos + ' movimientos'}">0 movimientos</span></div>
@@ -56,8 +56,8 @@
 
     <section class="ledger-metrics" aria-label="Métricas de la consulta">
         <div><span>Movimientos encontrados</span><strong th:text="${#numbers.formatInteger(resultado.pagina.totalElements, 1, 'COMMA')}">0</strong></div>
-        <div class="income"><span>Ingresos en esta página</span><strong><span th:text="${#numbers.formatDecimal(resultado.ingresosPagina, 1, 'COMMA', 2, 'POINT')}">0.00</span></strong></div>
-        <div class="expense"><span>Egresos en esta página</span><strong><span th:text="${#numbers.formatDecimal(resultado.egresosPagina, 1, 'COMMA', 2, 'POINT')}">0.00</span></strong></div>
+        <div class="income"><span>Ingresos en esta página</span><strong><span th:text="${@formatoMoneda.pesos(resultado.ingresosPagina)}">$0.00</span></strong></div>
+        <div class="expense"><span>Egresos en esta página</span><strong><span th:text="${@formatoMoneda.pesos(resultado.egresosPagina)}">$0.00</span></strong></div>
         <div><span>Página</span><strong th:text="${resultado.pagina.totalPages == 0 ? '0 / 0' : (resultado.pagina.number + 1) + ' / ' + resultado.pagina.totalPages}">1 / 1</strong></div>
     </section>
 
@@ -101,8 +101,8 @@
                     <td data-label="Cuenta / concepto"><strong th:text="${fila.cuenta}">Cuenta</strong><small th:text="${fila.concepto}">Concepto</small></td>
                     <td data-label="Plantel" th:text="${fila.plantel}">Plantel</td>
                     <td data-label="Movimiento"><span class="movement-badge" th:classappend="${fila.direccion == 'INGRESO'} ? ' income' : ' expense'" th:text="${fila.direccion}">INGRESO</span><small th:text="${fila.clase}">COBRO</small></td>
-                    <td data-label="Monto" class="money" th:classappend="${fila.direccion == 'INGRESO'} ? ' positive' : ' negative'"><strong th:text="${(fila.direccion == 'INGRESO' ? '+ ' : '− ') + #numbers.formatDecimal(fila.monto, 1, 'COMMA', 2, 'POINT')}">+ 0.00</strong><small th:text="${fila.moneda}">MXN</small></td>
-                    <td data-label="Saldos"><strong th:text="${#numbers.formatDecimal(fila.saldoPosterior, 1, 'COMMA', 2, 'POINT') + ' ' + fila.moneda}">0.00</strong><small th:text="${'Antes: ' + #numbers.formatDecimal(fila.saldoAnterior, 1, 'COMMA', 2, 'POINT')}">Antes</small></td>
+                    <td data-label="Monto" class="money" th:classappend="${fila.direccion == 'INGRESO'} ? ' positive' : ' negative'"><strong th:text="${(fila.direccion == 'INGRESO' ? '+ ' : '− ') + @formatoMoneda.pesos(fila.monto)}">+ $0.00</strong></td>
+                    <td data-label="Saldos"><strong th:text="${@formatoMoneda.pesos(fila.saldoPosterior)}">$0.00</strong><small th:text="${'Antes: ' + @formatoMoneda.pesos(fila.saldoAnterior)}">Antes</small></td>
                     <td data-label="Referencia"><strong th:text="${fila.folioPago != '—' ? fila.folioPago : fila.referencia}">Referencia</strong><small th:text="${fila.tercero}">Tercero</small></td>
                     <td data-label="Corrección" th:if="${puedeRevertir}" class="reversal-action-cell">
                         <a th:if="${fila.clase == 'OPERACION' and !fila.revertido}" th:href="@{/admin/reversiones/movimientos/{id}/nueva(id=${fila.id})}">Revertir operación</a>

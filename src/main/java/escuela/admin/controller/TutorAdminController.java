@@ -2,19 +2,24 @@ package escuela.admin.controller;
 
 import escuela.admin.dto.ModuloCatalogo;
 import escuela.admin.dto.TutorForm;
+import escuela.admin.dto.PortalTutorCuentaForm;
 import escuela.admin.support.MensajeErrorFormulario;
 import escuela.archivo.dto.ArchivoDescarga;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.service.InstitucionService;
-import escuela.seguridad.dto.response.UsuarioResponse;
+import escuela.seguridad.dto.response.InvitacionEmitidaResponse;
+import escuela.seguridad.dto.response.RecuperacionPasswordEmitidaResponse;
 import escuela.seguridad.service.AlcanceDatosService;
-import escuela.seguridad.service.UsuarioService;
+import escuela.seguridad.service.InvitacionUsuarioService;
+import escuela.seguridad.service.RecuperacionPasswordService;
 import escuela.tutor.dto.response.TutorResponse;
 import escuela.tutor.dto.response.IdentificacionTutorResponse;
 import escuela.tutor.entity.TipoIdentificacionTutor;
 import escuela.tutor.service.IdentificacionTutorService;
 import escuela.tutor.service.TutorService;
+import escuela.tutor.service.AccesoPortalTutorService;
+import escuela.tutor.dto.response.PortalTutorCuentaResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +47,10 @@ import org.springframework.http.ResponseEntity;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Controller
 @RequiredArgsConstructor
@@ -55,7 +62,9 @@ public class TutorAdminController {
     private final TutorService service;
     private final IdentificacionTutorService identificacionService;
     private final InstitucionService institucionService;
-    private final UsuarioService usuarioService;
+    private final AccesoPortalTutorService accesoPortalService;
+    private final InvitacionUsuarioService invitacionService;
+    private final RecuperacionPasswordService recuperacionPasswordService;
     private final AlcanceDatosService alcance;
 
     @GetMapping("/nuevo")
@@ -130,6 +139,86 @@ public class TutorAdminController {
         return "redirect:/admin/catalogos/tutores";
     }
 
+    @PostMapping("/{id}/cuenta-portal")
+    String crearCuentaPortal(@PathVariable Long id,
+                             @Valid @ModelAttribute("portalForm") PortalTutorCuentaForm portalForm,
+                             BindingResult errores, Model model, RedirectAttributes flash) {
+        TutorResponse tutor = tutorAdministrable(id);
+        if (errores.hasErrors()) {
+            preparar(model, TutorForm.desde(tutor), id);
+            model.addAttribute("portalForm", portalForm);
+            return "admin/tutor-form";
+        }
+        try {
+            PortalTutorCuentaResponse cuenta = accesoPortalService.crear(id, portalForm.request());
+            InvitacionEmitidaResponse invitacion = invitacionService.emitir(
+                    cuenta.usuarioId(), Duration.ofHours(48));
+            flash.addFlashAttribute("invitacionEnlace", enlaceActivacion(invitacion.token()));
+            flash.addFlashAttribute("invitacionExpira", invitacion.expiraEn());
+            flash.addFlashAttribute("mensaje", "Acceso al portal creado. Copia el enlace de activación antes de salir");
+            return "redirect:/admin/tutores/" + id + "/editar";
+        } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
+            preparar(model, TutorForm.desde(tutor), id);
+            model.addAttribute("portalForm", portalForm);
+            model.addAttribute("errorCuentaPortal", MensajeErrorFormulario.desde(excepcion));
+            return "admin/tutor-form";
+        }
+    }
+
+    @PostMapping("/{id}/cuenta-portal/invitacion")
+    String emitirInvitacionPortal(@PathVariable Long id, Model model, RedirectAttributes flash) {
+        TutorResponse tutor = tutorAdministrable(id);
+        try {
+            PortalTutorCuentaResponse cuenta = accesoPortalService.obtener(id)
+                    .orElseThrow(() -> new ReglaNegocioException("El tutor no tiene una cuenta de portal"));
+            InvitacionEmitidaResponse invitacion = invitacionService.emitir(
+                    cuenta.usuarioId(), Duration.ofHours(48));
+            flash.addFlashAttribute("invitacionEnlace", enlaceActivacion(invitacion.token()));
+            flash.addFlashAttribute("invitacionExpira", invitacion.expiraEn());
+            flash.addFlashAttribute("mensaje", "Enlace de activación generado. Cópialo antes de salir");
+            return "redirect:/admin/tutores/" + id + "/editar";
+        } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
+            return errorCuentaPortal(model, tutor, id, excepcion);
+        }
+    }
+
+    @PostMapping("/{id}/cuenta-portal/recuperacion")
+    String emitirRecuperacionPortal(@PathVariable Long id, Model model, RedirectAttributes flash) {
+        TutorResponse tutor = tutorAdministrable(id);
+        try {
+            PortalTutorCuentaResponse cuenta = accesoPortalService.obtener(id)
+                    .orElseThrow(() -> new ReglaNegocioException("El tutor no tiene una cuenta de portal"));
+            RecuperacionPasswordEmitidaResponse recuperacion = recuperacionPasswordService.emitir(
+                    cuenta.usuarioId(), Duration.ofMinutes(30));
+            String enlace = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/restablecer-password").queryParam("token", recuperacion.token())
+                    .build().toUriString();
+            flash.addFlashAttribute("recuperacionEnlace", enlace);
+            flash.addFlashAttribute("recuperacionExpira", recuperacion.expiraEn());
+            flash.addFlashAttribute("mensaje", "Enlace para cambiar contraseña generado. Cópialo antes de salir");
+            return "redirect:/admin/tutores/" + id + "/editar";
+        } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
+            return errorCuentaPortal(model, tutor, id, excepcion);
+        }
+    }
+
+    @PostMapping("/{id}/cuenta-portal/estado")
+    String cambiarEstadoCuentaPortal(@PathVariable Long id, @RequestParam Long version,
+                                     @RequestParam boolean activar, Model model,
+                                     RedirectAttributes flash) {
+        TutorResponse tutor = tutorAdministrable(id);
+        try {
+            PortalTutorCuentaResponse cuenta = accesoPortalService.cambiarDisponibilidad(id, version, activar);
+            flash.addFlashAttribute("mensaje", activar
+                    ? (cuenta.credencialConfigurada() ? "Acceso al portal reactivado" : "Acceso habilitado; genera un enlace de activación")
+                    : "Acceso al portal desactivado correctamente");
+            return "redirect:/admin/tutores/" + id + "/editar";
+        } catch (ReglaNegocioException | DataIntegrityViolationException |
+                 ObjectOptimisticLockingFailureException excepcion) {
+            return errorCuentaPortal(model, tutor, id, excepcion);
+        }
+    }
+
     @PostMapping("/{id}/identificacion")
     String asignarIdentificacion(@PathVariable Long id,
                                  @RequestParam TipoIdentificacionTutor tipo,
@@ -190,9 +279,6 @@ public class TutorAdminController {
         if (form.getInstitucionId() != null) {
             alcance.validarAdministracionInstitucional(form.getInstitucionId());
         }
-        if (form.getUsuarioId() != null) {
-            alcance.validarRecurso(ModuloCatalogo.USUARIOS, form.getUsuarioId());
-        }
     }
 
     private void preparar(Model model, TutorForm form, Long id) {
@@ -205,9 +291,20 @@ public class TutorAdminController {
         model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
         model.addAttribute("instituciones", instituciones);
-        model.addAttribute("usuarioSeleccionado", etiquetaUsuario(form.getUsuarioId()));
+        model.addAttribute("institucionSeleccionada", instituciones.stream()
+                .filter(institucion -> institucion.id().equals(form.getInstitucionId()))
+                .map(institucion -> institucion.codigo() + " · " + institucion.nombre())
+                .findFirst().orElse("Institución no disponible"));
         model.addAttribute("tiposIdentificacion", TipoIdentificacionTutor.values());
         if (id != null) {
+            PortalTutorCuentaResponse cuentaPortal = accesoPortalService.obtener(id).orElse(null);
+            model.addAttribute("cuentaPortal", cuentaPortal);
+            if (!model.containsAttribute("portalForm")) {
+                PortalTutorCuentaForm portalForm = new PortalTutorCuentaForm();
+                portalForm.setUsername(cuentaPortal == null ? accesoPortalService.sugerirUsername(id) : cuentaPortal.username());
+                portalForm.setEmail(cuentaPortal == null ? form.getEmail() : cuentaPortal.email());
+                model.addAttribute("portalForm", portalForm);
+            }
             List<IdentificacionTutorResponse> historial = identificacionService.historial(id);
             model.addAttribute("identificacionActual", historial.stream()
                     .filter(IdentificacionTutorResponse::actual).findFirst().orElse(null));
@@ -234,9 +331,15 @@ public class TutorAdminController {
         return tutor;
     }
 
-    private String etiquetaUsuario(Long usuarioId) {
-        if (usuarioId == null) return "";
-        UsuarioResponse usuario = usuarioService.obtener(usuarioId);
-        return usuario.username();
+    private String errorCuentaPortal(Model model, TutorResponse tutor, Long id, RuntimeException excepcion) {
+        preparar(model, TutorForm.desde(tutor), id);
+        model.addAttribute("errorCuentaPortal", MensajeErrorFormulario.desde(excepcion));
+        return "admin/tutor-form";
+    }
+
+    private String enlaceActivacion(String token) {
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/activar-cuenta").queryParam("token", token)
+                .build().toUriString();
     }
 }

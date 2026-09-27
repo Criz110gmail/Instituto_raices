@@ -1,5 +1,62 @@
 .sidebar {
     overflow: hidden;
+    background: #0b1628;
+    border-right: 1px solid #1f3652;
+    box-shadow: 16px 0 48px rgba(4, 12, 24, .16);
+}
+
+.sidebar::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: #43ddc7;
+}
+
+.sidebar .brand {
+    margin: 0 2px 20px;
+    padding: 0 8px 22px;
+    border-bottom: 1px solid #233750;
+}
+
+.sidebar .brand-mark {
+    background: #43ddc7;
+    color: #071421;
+    box-shadow: 0 8px 22px rgba(67, 221, 199, .22);
+}
+
+.sidebar .brand strong { color: #f7fbff; }
+.sidebar .brand small { color: #a8bbcf; }
+.sidebar .nav-label { color: #8299b2; }
+
+.sidebar nav a {
+    color: #c9d6e4;
+    border: 1px solid transparent;
+}
+
+.sidebar nav a:hover {
+    color: #fff;
+    background: #172a42;
+    border-color: #29415e;
+    transform: translateX(2px);
+}
+
+.sidebar nav a.active {
+    color: #0b1930;
+    background: #f7fbff;
+    border-color: #fff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
+}
+
+.sidebar .nav-dot { background: #657f9c; }
+.sidebar nav a.active .nav-dot {
+    background: #168f82;
+    box-shadow: 0 0 0 4px rgba(22, 143, 130, .14);
+}
+
+.sidebar .sidebar-foot {
+    color: #b4c4d4;
+    border-top-color: #233750;
 }
 
 .sidebar .brand,
@@ -14,7 +71,7 @@
     overflow-y: auto;
     overscroll-behavior-y: contain;
     padding: 2px 5px 18px 0;
-    scrollbar-color: #58708b transparent;
+    scrollbar-color: #526b87 transparent;
     scrollbar-width: thin;
     -webkit-overflow-scrolling: touch;
 }
@@ -29,7 +86,7 @@
 
 .sidebar nav::-webkit-scrollbar-thumb {
     border-radius: 999px;
-    background: #58708b;
+    background: #526b87;
 }
 
 .sidebar nav::-webkit-scrollbar-thumb:hover {

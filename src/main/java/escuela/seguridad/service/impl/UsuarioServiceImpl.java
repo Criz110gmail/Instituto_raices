@@ -9,6 +9,7 @@ import escuela.seguridad.dto.request.UsuarioRequest;
 import escuela.seguridad.dto.response.UsuarioResponse;
 import escuela.seguridad.entity.EstadoUsuario;
 import escuela.seguridad.entity.Usuario;
+import escuela.seguridad.entity.TipoCuentaUsuario;
 import escuela.seguridad.mapper.UsuarioMapper;
 import escuela.seguridad.repository.UsuarioRepository;
 import escuela.seguridad.service.UsuarioService;
@@ -36,6 +37,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         validar(request, institucion, 0L);
         Usuario usuario = mapper.nuevo(request, institucion);
         usuario.setEstado(EstadoUsuario.INVITADO);
+        usuario.setTipoCuenta(TipoCuentaUsuario.ADMINISTRATIVO);
         usuario.setIntentosFallidos(0);
         return mapper.respuesta(repository.saveAndFlush(usuario));
     }
@@ -93,8 +95,12 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     private Usuario buscar(Long id) {
-        return repository.findById(id)
+        Usuario usuario = repository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("el usuario", id));
+        if (usuario.getTipoCuenta() != TipoCuentaUsuario.ADMINISTRATIVO) {
+            throw new RecursoNoEncontradoException("el usuario administrativo", id);
+        }
+        return usuario;
     }
 
     private Institucion institucion(Long id) {

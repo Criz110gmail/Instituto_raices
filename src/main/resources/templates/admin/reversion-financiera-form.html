@@ -7,7 +7,7 @@
 <section class="form-card">
     <div class="form-error operation-error" th:if="${errorOperacion}" th:text="${errorOperacion}"></div>
     <div class="form-intro"><span>Operación original</span><h1 th:text="${objetivo.titulo}">Concepto</h1><p th:text="${objetivo.detalle}">Detalle</p></div>
-    <div class="reversal-summary"><div><small>Importe</small><strong th:text="${objetivo.monto.toPlainString() + ' ' + objetivo.moneda}">0 MXN</strong></div><div><small>Fecha original</small><strong th:text="${fechaOriginalLocal}">Fecha</strong></div><div><small>Resultado</small><strong th:text="${esTransferencia ? 'Dos movimientos inversos' : 'Un movimiento inverso'}">Resultado</strong></div></div>
+    <div class="reversal-summary"><div><small>Importe</small><strong th:text="${@formatoMoneda.pesos(objetivo.monto)}">$0.00</strong></div><div><small>Fecha original</small><strong th:text="${fechaOriginalLocal}">Fecha</strong></div><div><small>Resultado</small><strong th:text="${esTransferencia ? 'Dos movimientos inversos' : 'Un movimiento inverso'}">Resultado</strong></div></div>
     <div class="already-reversed" th:if="${objetivo.revertido}"><strong>Esta operación ya fue revertida</strong><p>No es posible publicar una segunda reversa.</p></div>
     <form class="entity-form" method="post" th:unless="${objetivo.revertido}" th:action="${esTransferencia ? '/admin/reversiones/transferencias/' + objetivo.id : '/admin/reversiones/movimientos/' + objetivo.id}" th:object="${form}">
         <input type="hidden" th:field="*{claveIdempotencia}"><input type="hidden" th:field="*{version}">

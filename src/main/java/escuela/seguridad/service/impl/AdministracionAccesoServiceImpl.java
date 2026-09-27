@@ -16,6 +16,7 @@ import escuela.seguridad.entity.Rol;
 import escuela.seguridad.entity.RolPermiso;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.entity.UsuarioRol;
+import escuela.seguridad.entity.TipoCuentaUsuario;
 import escuela.seguridad.repository.PermisoRepository;
 import escuela.seguridad.repository.RolPermisoRepository;
 import escuela.seguridad.repository.RolRepository;
@@ -77,6 +78,9 @@ public class AdministracionAccesoServiceImpl implements AdministracionAccesoServ
         Usuario usuario = usuarioRepository.findById(request.usuarioId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("el usuario", request.usuarioId()));
         Rol rol = rol(request.rolId());
+        if (usuario.getTipoCuenta() != TipoCuentaUsuario.ADMINISTRATIVO) {
+            throw new ReglaNegocioException("Las cuentas del portal familiar no pueden recibir roles administrativos");
+        }
         if (!usuario.getInstitucion().getId().equals(rol.getInstitucion().getId())) {
             throw new ReglaNegocioException("El usuario y el rol deben pertenecer a la misma institución");
         }

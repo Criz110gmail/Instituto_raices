@@ -31,6 +31,7 @@ import escuela.inscripcion.entity.Inscripcion;
 import escuela.inscripcion.repository.InscripcionRepository;
 import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.entity.Usuario;
+import escuela.seguridad.entity.TipoCuentaUsuario;
 import escuela.seguridad.repository.UsuarioRepository;
 import escuela.seguridad.service.AlcanceDatosService;
 import escuela.tutor.entity.Tutor;
@@ -52,6 +53,7 @@ import java.util.Locale;
 import java.util.function.Function;
 import static escuela.cobranza.support.CalculoCargo.saldo;
 import static escuela.cobranza.support.CalculoCargo.total;
+import static escuela.common.support.FormatoMoneda.formatear;
 
 @Service
 @RequiredArgsConstructor
@@ -112,9 +114,9 @@ public class CatalogoConsultaService {
                             FECHA.format(e.getFechaIngreso())));
             case TUTORES -> consultar(modulo, tutorRepository,
                     texto(f, "nombres", "primerApellido", "segundoApellido", "telefonoPrincipal", "email"),
-                    activo(f), pagina, e -> fila(e.getId(), e.isActivo(), nombreTutor(e),
+                    estadoTutor(f), pagina, e -> fila(e.getId(), e.isActivo(), nombreTutor(e),
                             e.getTelefonoPrincipal(), valor(e.getEmail()),
-                            e.getUsuario() == null ? "Sin cuenta" : e.getUsuario().getUsername(),
+                            cuentaTutor(e),
                             e.getInstitucion().getNombre()));
             case VINCULOS_TUTOR -> consultar(modulo, alumnoTutorRepository,
                     textoVinculo(f), activo(f), pagina,
@@ -137,7 +139,7 @@ public class CatalogoConsultaService {
                             e.getInscripcion().getAlumno().getMatricula() + " · "
                                     + nombreAlumno(e.getInscripcion().getAlumno()),
                             e.getConceptoCobro().getCodigo() + " · " + e.getConceptoCobro().getNombre(),
-                            e.getImporteBase().toPlainString() + " " + e.getMoneda(),
+                            formatear(e.getImporteBase()),
                             etiqueta(e.getFrecuencia().name()), vencimiento(e),
                             e.isGeneracionAutomatica() ? "Automática" : "Manual"));
             case CARGOS -> consultar(modulo, cargoRepository, textoCargo(f),
@@ -175,7 +177,8 @@ public class CatalogoConsultaService {
                     "El portal tutor usa su consulta especializada");
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
-            case USUARIOS -> consultar(modulo, usuarioRepository, textoUsuario(f), estado(f, "estado"), pagina,
+            case USUARIOS -> consultar(modulo, usuarioRepository, textoUsuario(f),
+                    estadoUsuarioAdministrativo(f), pagina,
                     e -> filaEstadoUsuario(e, e.getUsername(), e.getEmail(), e.getInstitucion().getNombre(),
                             e.getPasswordHash() == null ? "Pendiente" : "Configurada"));
         };
@@ -228,6 +231,38 @@ public class CatalogoConsultaService {
                     cb.like(cb.lower(root.get("email")), patron),
                     cb.like(cb.lower(root.get("institucion").get("nombre")), patron));
         };
+    }
+
+    private Specification<Usuario> tipoCuentaAdministrativa() {
+        return (root, query, cb) -> cb.equal(root.get("tipoCuenta"), TipoCuentaUsuario.ADMINISTRATIVO);
+    }
+
+    private Specification<Usuario> estadoUsuarioAdministrativo(FiltroCatalogo f) {
+        Specification<Usuario> porEstado = estado(f, "estado");
+        return porEstado.and(tipoCuentaAdministrativa());
+    }
+
+    private Specification<Tutor> estadoTutor(FiltroCatalogo f) {
+        return (root, query, cb) -> switch (f.estado()) {
+            case "ACTIVO" -> cb.isTrue(root.get("activo"));
+            case "INACTIVO" -> cb.isFalse(root.get("activo"));
+            case "SIN_CUENTA" -> cb.isNull(root.get("usuario"));
+            case "CUENTA_ACTIVA" -> cb.equal(root.get("usuario").get("estado").as(String.class), "ACTIVO");
+            case "CUENTA_PENDIENTE" -> cb.equal(root.get("usuario").get("estado").as(String.class), "INVITADO");
+            case "CUENTA_INACTIVA" -> root.get("usuario").get("estado").as(String.class).in("INACTIVO", "BLOQUEADO");
+            default -> cb.conjunction();
+        };
+    }
+
+    private String cuentaTutor(Tutor tutor) {
+        if (tutor.getUsuario() == null) return "Sin cuenta";
+        String estado = switch (tutor.getUsuario().getEstado()) {
+            case ACTIVO -> "Activa";
+            case INVITADO -> "Pendiente";
+            case INACTIVO -> "Desactivada";
+            case BLOQUEADO -> "Bloqueada";
+        };
+        return tutor.getUsuario().getUsername() + " · " + estado;
     }
 
     private Specification<Pago> textoPago(FiltroCatalogo f) {
@@ -403,10 +438,9 @@ public class CatalogoConsultaService {
         }
         String periodo = FECHA.format(cargo.getPeriodoCobroInicio()) + " — "
                 + FECHA.format(cargo.getPeriodoCobroFin());
-        String importe = cargo.getImporteOriginal().toPlainString() + " " + cargo.getMoneda();
-        String total = total(cargo).toPlainString() + " " + cargo.getMoneda();
+        String importe = formatear(cargo.getImporteOriginal());
         String saldoTexto = cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO
-                ? "0.00 " + cargo.getMoneda() : saldo(cargo).toPlainString() + " " + cargo.getMoneda();
+                ? formatear(java.math.BigDecimal.ZERO) : formatear(saldo(cargo));
         return new FilaCatalogo(cargo.getId(), List.of(
                 cargo.getInscripcion().getAlumno().getMatricula() + " · "
                         + nombreAlumno(cargo.getInscripcion().getAlumno()),
@@ -418,7 +452,7 @@ public class CatalogoConsultaService {
     private FilaCatalogo filaBeca(BecaAlumno b) {
         var a=b.getInscripcion().getAlumno(); String beneficio=b.getModalidad()==ModalidadBeca.PORCENTAJE
                 ? b.getPorcentaje().stripTrailingZeros().toPlainString()+" %"
-                : b.getMontoFijo().toPlainString()+" "+b.getMoneda();
+                : formatear(b.getMontoFijo());
         return new FilaCatalogo(b.getId(),List.of(a.getMatricula()+" · "+nombreAlumno(a),b.getTipoBeca().getNombre(),
                 b.getConceptoCobro().getNombre(),beneficio,FECHA.format(b.getFechaInicio())+" — "+FECHA.format(b.getFechaFin())),
                 b.getEstado().name(),b.getEstado()==EstadoBeca.ACTIVA?"positivo":b.getEstado()==EstadoBeca.SUSPENDIDA?"aviso":"neutro");
@@ -428,9 +462,9 @@ public class CatalogoConsultaService {
         var alumno=a.getCargo().getInscripcion().getAlumno(); String estado=a.getReversa()!=null?"Reversado":a.getReversaDe()!=null?"Reversa":"Aplicado";
         return new FilaCatalogo(a.getId(),List.of(alumno.getMatricula()+" · "+nombreAlumno(alumno),
                 a.getCargo().getConceptoCobro().getNombre(),etiqueta(a.getTipo().name()),etiqueta(a.getEfecto().name()),
-                a.getMonto().toPlainString()+" "+a.getCargo().getMoneda(),FECHA.format(a.getFechaEfectiva()),a.getMotivo()),estado,a.getReversa()!=null?"neutro":"positivo");
+                formatear(a.getMonto()),FECHA.format(a.getFechaEfectiva()),a.getMotivo()),estado,a.getReversa()!=null?"neutro":"positivo");
     }
-    private FilaCatalogo filaPoliticaRecargo(PoliticaRecargo p){String recargo=p.getModalidad()==ModalidadBeca.PORCENTAJE?p.getPorcentaje().stripTrailingZeros().toPlainString()+" %":p.getMontoFijo().toPlainString()+" "+p.getMoneda();String limite=switch(p.getTipoLimite()){case SIN_LIMITE->"Sin límite";case MONTO_FIJO->p.getValorLimite().setScale(2,java.math.RoundingMode.HALF_UP).toPlainString()+" "+p.getConceptoCobro().getInstitucion().getMonedaPredeterminada();case PORCENTAJE_ORIGINAL->p.getValorLimite().stripTrailingZeros().toPlainString()+" % del original";};return fila(p.getId(),p.isActivo(),p.getConceptoCobro().getCodigo()+" · "+p.getConceptoCobro().getNombre(),p.getConceptoCobro().getInstitucion().getNombre(),recargo,p.getDiasGracia()+" días",etiqueta(p.getPeriodicidad().name()),limite,p.isGeneracionAutomatica()?"Automática":"Manual");}
+    private FilaCatalogo filaPoliticaRecargo(PoliticaRecargo p){String recargo=p.getModalidad()==ModalidadBeca.PORCENTAJE?p.getPorcentaje().stripTrailingZeros().toPlainString()+" %":formatear(p.getMontoFijo());String limite=switch(p.getTipoLimite()){case SIN_LIMITE->"Sin límite";case MONTO_FIJO->formatear(p.getValorLimite());case PORCENTAJE_ORIGINAL->p.getValorLimite().stripTrailingZeros().toPlainString()+" % del original";};return fila(p.getId(),p.isActivo(),p.getConceptoCobro().getCodigo()+" · "+p.getConceptoCobro().getNombre(),p.getConceptoCobro().getInstitucion().getNombre(),recargo,p.getDiasGracia()+" días",etiqueta(p.getPeriodicidad().name()),limite,p.isGeneracionAutomatica()?"Automática":"Manual");}
 
     private FilaCatalogo filaCuentaFinanciera(CuentaFinanciera cuenta) {
         String alcance = cuenta.getPlantel() == null ? "Institucional" : cuenta.getPlantel().getNombre();
@@ -445,7 +479,7 @@ public class CatalogoConsultaService {
         };
         return fila(cuenta.getId(), cuenta.isActivo(), cuenta.getCodigo(), cuenta.getNombre(), alcance,
                 tipo, institucionFinanciera, identificador,
-                cuenta.getSaldoInicial().toPlainString() + " " + cuenta.getMoneda(),
+                formatear(cuenta.getSaldoInicial()),
                 FECHA.format(cuenta.getFechaSaldoInicial()));
     }
 
@@ -462,11 +496,11 @@ public class CatalogoConsultaService {
                 .map(escuela.finanzas.entity.DevolucionPago::getMonto)
                 .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
         String distribucion = pago.getEstado() == escuela.finanzas.entity.EstadoPago.VALIDADO
-                ? aplicado.toPlainString() + " aplicado · "
-                    + devuelto.toPlainString() + " devuelto · "
-                    + pago.getMonto().subtract(aplicado).subtract(devuelto).toPlainString() + " disponible"
+                ? formatear(aplicado) + " aplicado · "
+                    + formatear(devuelto) + " devuelto · "
+                    + formatear(pago.getMonto().subtract(aplicado).subtract(devuelto)) + " disponible"
                 : solicitado.signum() == 0 ? "Sin asignar"
-                    : solicitado.toPlainString() + " " + pago.getMoneda() + " · "
+                    : formatear(solicitado) + " · "
                     + pago.getSolicitudes().size() + " cargo(s)";
         String estado = switch (pago.getEstado()) {
             case PENDIENTE_VALIDACION -> "Pendiente de validación";
@@ -482,7 +516,7 @@ public class CatalogoConsultaService {
                 pago.getPlantelRegistro().getNombre(), fecha, etiqueta(pago.getMetodo().name()),
                 pago.getOrigenRegistro() == escuela.finanzas.entity.OrigenRegistroPago.PORTAL_FAMILIAR
                         ? "Portal familiar" : "Administración",
-                pago.getMonto().toPlainString() + " " + pago.getMoneda(), distribucion,
+                formatear(pago.getMonto()), distribucion,
                 String.valueOf(pago.getComprobantes().size())), estado, tono);
     }
 

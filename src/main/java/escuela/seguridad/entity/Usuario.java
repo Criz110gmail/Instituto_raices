@@ -39,6 +39,10 @@ public class Usuario extends EntidadAuditable {
     @Column(nullable = false, length = 20)
     private EstadoUsuario estado = EstadoUsuario.INVITADO;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_cuenta", nullable = false, length = 20)
+    private TipoCuentaUsuario tipoCuenta = TipoCuentaUsuario.ADMINISTRATIVO;
+
     @Column(name = "ultimo_acceso_en")
     private Instant ultimoAccesoEn;
 

@@ -24,6 +24,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>, JpaSpec
             SELECT u.* FROM usuario u
             WHERE u.institucion_id = :institucionId
               AND u.estado <> 'INACTIVO'
+              AND u.tipo_cuenta = 'ADMINISTRATIVO'
               AND u.busqueda_autocomplete LIKE ('%' || lower(:texto) || '%')
               AND NOT EXISTS (
                   SELECT 1 FROM tutor t

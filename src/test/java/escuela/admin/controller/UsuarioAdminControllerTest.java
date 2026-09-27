@@ -11,6 +11,7 @@ import escuela.seguridad.dto.response.RecuperacionPasswordEmitidaResponse;
 import escuela.seguridad.dto.response.UsuarioResponse;
 import escuela.seguridad.entity.AlcanceRol;
 import escuela.seguridad.entity.EstadoUsuario;
+import escuela.seguridad.entity.TipoCuentaUsuario;
 import escuela.seguridad.service.AdministracionAccesoService;
 import escuela.seguridad.service.InvitacionUsuarioService;
 import escuela.seguridad.service.FotografiaUsuarioService;
@@ -175,7 +176,7 @@ class UsuarioAdminControllerTest {
     private UsuarioResponse usuario() {
         Instant ahora = Instant.parse("2026-09-11T12:00:00Z");
         return new UsuarioResponse(7L, 1L, "admin.raices", "admin@raices.mx",
-                EstadoUsuario.INVITADO, false, false,
+                EstadoUsuario.INVITADO, TipoCuentaUsuario.ADMINISTRATIVO, false, false,
                 new AuditoriaResponse(ahora, null, ahora, null, 1L));
     }
 }

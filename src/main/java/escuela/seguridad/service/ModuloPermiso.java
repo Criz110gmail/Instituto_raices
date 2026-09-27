@@ -73,7 +73,7 @@ public enum ModuloPermiso {
             "USUARIO_ADMINISTRAR"),
     AUDITORIA("Auditoría", "Acceso completo de consulta y exportación de auditoría",
             "AUDITORIA_CONSULTAR"),
-    PORTAL_FAMILIAR("Portal familiar", "Permite a madres, padres y tutores entrar a su portal",
+    PORTAL_FAMILIAR("Portal familiar", "Acceso técnico derivado de la cuenta del tutor",
             "PORTAL_TUTOR_ACCEDER"),
     SOPORTE_PORTAL("Soporte del portal familiar", "Permite consultar el portal de un tutor en modo de sólo lectura",
             "PORTAL_TUTOR_SOPORTE");
@@ -93,6 +93,8 @@ public enum ModuloPermiso {
     public String nombre() { return nombre; }
     public String descripcion() { return descripcion; }
     public Set<String> permisos() { return permisos; }
+
+    public boolean asignableARol() { return this != PORTAL_FAMILIAR; }
 
     public boolean contiene(String permiso) {
         return permisos.contains(permiso);

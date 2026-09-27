@@ -20,13 +20,14 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` y `origin/main` al iniciar esta estabilización:
-  `d026621` — `errores proyecto`. Confirma `git status` y `git log` antes de continuar.
-- Ese commit ya contiene V33, V34 y V35. El cambio local actual estabiliza V34/V35,
-  simplifica la autorización a módulos completos e implementa V36 para la identificación
-  oficial opcional del tutor; todavía debe ser revisado y confirmado por el propietario.
-  El volumen habitual ya tiene Flyway V1–V36 aplicado y la siguiente migración disponible
-  es V37.
+- Último commit confirmado en `main` al iniciar V37: `7468e02` —
+  `se agrego al modulo tutor que se agrega un archivo para su identificacion oficial`.
+  Confirma `git status` y `git log` antes de continuar.
+- Ese commit ya contiene V36. El cambio local actual implementa V37 para separar cuentas
+  administrativas y cuentas del portal familiar, además de mejoras transversales de
+  formato monetario, navegación y ficha técnica del tutor; todavía debe ser revisado y
+  confirmado por el propietario. El volumen habitual ya tiene Flyway V1–V37 aplicado y
+  la siguiente migración disponible es V38.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -651,7 +652,7 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - V35 agrega `PORTAL_TUTOR_SOPORTE` sin autoasignarlo. El soporte administrativo del
   portal es estrictamente de sólo lectura: permite localizar al tutor y observar la
   misma experiencia y alcance que él, pero no reportar pagos ni ejecutar mutaciones.
-- La administración de roles presenta 32 módulos funcionales con nombres amigables, no
+- La administración de roles presenta 31 módulos asignables con nombres amigables, no
   los 65 permisos técnicos. Cada módulo es todo o nada: seleccionar cualquiera de sus
   permisos históricos concede internamente todas sus acciones; guardar el rol normaliza
   sus relaciones al paquete completo. Los permisos técnicos siguen protegiendo cada
@@ -662,12 +663,27 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   10 MB. Sólo puede existir una vigente por tutor; reemplazar o retirar conserva el
   historial y el archivo privado. La descarga revalida institución y acceso al módulo
   Tutores, responde sin caché y los bytes permanecen en `private_files`, no en PostgreSQL.
+- V37 agrega `Usuario.tipoCuenta` con valores `ADMINISTRATIVO` y `PORTAL_TUTOR`. La
+  migración reclasifica como portal las cuentas ya vinculadas desde `Tutor.usuario_id`.
+  El catálogo y las rutas de Usuarios sólo administran cuentas administrativas; las
+  cuentas familiares se crean, activan, recuperan, desactivan y reactivan exclusivamente
+  desde la ficha del tutor. No reciben roles: su única autoridad se deriva del tipo de
+  cuenta y es `PORTAL_TUTOR_ACCEDER`.
+- Al crear acceso desde Tutores se propone un username normalizado `nombre.apellido`, se
+  permite editarlo y se valida su unicidad. La cuenta nace `INVITADO` y se genera un enlace
+  de activación de 48 horas; al establecer contraseña pasa a `ACTIVO`. Una cuenta activa
+  puede recibir un enlace de recuperación de 30 minutos. Desactivar conserva credencial,
+  relaciones e historial; reactivar regresa a `ACTIVO` si ya tenía contraseña o a
+  `INVITADO` si nunca la configuró.
+- El listado de Tutores muestra username y situación del acceso, y permite filtrar por
+  `SIN_CUENTA`, `CUENTA_ACTIVA`, `CUENTA_PENDIENTE` o `CUENTA_INACTIVA`, además del estado
+  activo/inactivo del expediente.
 
 ## Verificación confirmada
 
-- Compilación correcta de 521 archivos Java de producción.
-- 324 pruebas Maven sin fallos, errores ni omisiones.
-- Flyway V1 a V36 validados y aplicados correctamente sobre el volumen existente.
+- Compilación correcta de 528 archivos Java de producción.
+- 333 pruebas Maven sin fallos, errores ni omisiones.
+- Flyway V1 a V37 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 46 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
@@ -811,27 +827,46 @@ datos personales reales: cargar, abrir, reemplazar, revisar el historial y retir
 identificación vigente. Confirmar que un archivo falso o mayor de 10 MB muestra el error
 en el mismo formulario. No cargar una identificación real sólo para verificar.
 
+Después de V36 se unificó la presentación monetaria de administración y portal familiar:
+todo importe visible usa `FormatoMoneda` y se muestra como `$150.52` o `$1,000,000.50`,
+con dos decimales y separadores. Los campos numéricos editables y porcentajes conservan
+su formato de captura. El menú administrativo usa ahora fondo sólido azul noche, contraste
+alto, acento turquesa y una tarjeta clara para el módulo activo; no cambió rutas ni permisos.
+La edición de Tutores también usa una ficha técnica equivalente a la de Alumnos: muestra
+primero la identificación oficial —con vista previa para imágenes o tarjeta para PDF—,
+nombre, estado y datos clave; la carga, reemplazo, retiro e historial permanecen en ese
+encabezado y el formulario completo continúa debajo.
+
 Las pruebas manuales controladas de V32 y V33 continúan pendientes, pero no bloquean
 esta estabilización. La conciliación bancaria permanece descartada: no se importarán
 CSV bancarios. Correo y WhatsApp también siguen fuera de alcance hasta diseñar
 consentimiento, proveedor, reintentos y trazabilidad.
 
-Después de que el propietario revise estas correcciones y haga commit, acordar el
-siguiente módulo antes de crear V37. La estrategia definitiva de almacenamiento privado
-sigue pendiente para producción, pero no bloquea las pruebas funcionales actuales.
+V37 está implementada, compilada, aplicada y verificada automáticamente. Antes de crear
+V38, el propietario debe hacer una prueba funcional controlada: confirmar que el módulo
+Usuarios sólo muestra personal administrativo; en Tutores probar los cuatro filtros de
+cuenta; elegir un tutor controlado sin acceso, aceptar o editar el username sugerido,
+crear la cuenta, copiar el enlace de activación, establecer contraseña e ingresar desde
+`/familias`. Después generar un enlace para cambiar contraseña, desactivar el acceso,
+confirmar que ya no inicia sesión y reactivarlo. No usar correos ni identificaciones
+reales sólo para probar.
+
+Después de esa revisión y del commit del propietario, acordar el siguiente módulo antes
+de crear V38. La estrategia definitiva de almacenamiento privado sigue pendiente para
+producción, pero no bloquea las pruebas funcionales actuales.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. `main` y `origin/main` estaban en `d026621` antes de esta estabilización. Preservar
-   los cambios locales de V34–V36 y no reconstruir V1–V36.
+1. `main` estaba en `7468e02` antes de V37. Preservar los cambios locales posteriores y
+   no reconstruir V1–V37.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V36 ya existen y están aplicadas al volumen habitual; nunca editarlas.
-   La siguiente migración disponible será V37.
-5. Ejecutar las pruebas manuales controladas descritas para V34, V35 y V36. Mantener también
+4. Flyway V1–V37 ya existen y están aplicadas al volumen habitual; nunca editarlas.
+   La siguiente migración disponible será V38.
+5. Ejecutar la prueba manual de V37 y las pendientes descritas para V34, V35 y V36. Mantener también
    en la lista las pruebas pendientes de cancelaciones V32 y retiros V33; no crear
    movimientos operativos reales sólo para verificar.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
@@ -842,8 +877,8 @@ sigue pendiente para producción, pero no bloquea las pruebas funcionales actual
 
 ## Disciplina de cambios y entrega
 
-V34–V36 están estabilizadas localmente y verificadas de forma automática. Falta la
-prueba funcional controlada del propietario y su commit antes de iniciar otro módulo.
+V34–V37 están estabilizadas localmente y verificadas de forma automática. Falta la
+prueba funcional controlada de V37 por el propietario y su commit antes de iniciar otro módulo.
 
 - Inspecciona `git status` antes de editar y preserva cambios ajenos.
 - Usa migraciones Flyway nuevas para cambios de esquema; nunca edites una migración ya

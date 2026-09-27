@@ -10,6 +10,7 @@ import escuela.seguridad.entity.AlcanceRol;
 import escuela.seguridad.entity.Rol;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.entity.UsuarioRol;
+import escuela.seguridad.entity.TipoCuentaUsuario;
 import escuela.seguridad.repository.PermisoRepository;
 import escuela.seguridad.repository.RolPermisoRepository;
 import escuela.seguridad.repository.RolRepository;
@@ -102,6 +103,16 @@ class AdministracionAccesoServiceImplTest {
         assertThatThrownBy(() -> service.desactivarAsignacion(10L, 40L, 1L))
                 .isInstanceOf(ReglaNegocioException.class)
                 .hasMessageContaining("no pertenece");
+    }
+
+    @Test
+    void rechazaRolesAdministrativosParaCuentaDelPortal() {
+        usuario.setTipoCuenta(TipoCuentaUsuario.PORTAL_TUTOR);
+
+        assertThatThrownBy(() -> service.asignarRol(new AsignacionRolRequest(
+                10L, 20L, AlcanceRol.INSTITUCION, null)))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessageContaining("portal familiar");
     }
 
     private Institucion institucion(Long id) {

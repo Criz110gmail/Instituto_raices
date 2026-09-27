@@ -32,7 +32,7 @@ class TutorServiceImplTest {
     private final InstitucionRepository institucionRepository = mock(InstitucionRepository.class);
     private final UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
     private final TutorServiceImpl service = new TutorServiceImpl(repository,
-            institucionRepository, usuarioRepository, new TutorMapper());
+            institucionRepository, new TutorMapper());
     private Institucion institucion;
     private Usuario usuario;
 
@@ -64,7 +64,7 @@ class TutorServiceImplTest {
         assertThat(tutor.getNombres()).isEqualTo("María");
         assertThat(tutor.getEmail()).isEqualTo("maria@raices.mx");
         assertThat(tutor.getPais()).isEqualTo("MX");
-        assertThat(tutor.getUsuario()).isSameAs(usuario);
+        assertThat(tutor.getUsuario()).isNull();
     }
 
     @Test
@@ -74,33 +74,6 @@ class TutorServiceImplTest {
         ArgumentCaptor<Tutor> captor = ArgumentCaptor.forClass(Tutor.class);
         verify(repository).saveAndFlush(captor.capture());
         assertThat(captor.getValue().getUsuario()).isNull();
-    }
-
-    @Test
-    void rechazaUsuarioDeOtraInstitucion() {
-        usuario.setInstitucion(institucion(2L));
-
-        assertThatThrownBy(() -> service.crear(request(1L, 20L, null)))
-                .isInstanceOf(ReglaNegocioException.class)
-                .hasMessageContaining("misma institución");
-    }
-
-    @Test
-    void rechazaCuentaYaVinculadaAOtroTutor() {
-        when(repository.existsByUsuarioIdAndIdNot(20L, 0L)).thenReturn(true);
-
-        assertThatThrownBy(() -> service.crear(request(1L, 20L, null)))
-                .isInstanceOf(RecursoDuplicadoException.class)
-                .hasMessageContaining("otro tutor");
-    }
-
-    @Test
-    void rechazaUsuarioInactivo() {
-        usuario.setEstado(EstadoUsuario.INACTIVO);
-
-        assertThatThrownBy(() -> service.crear(request(1L, 20L, null)))
-                .isInstanceOf(ReglaNegocioException.class)
-                .hasMessageContaining("usuario inactivo");
     }
 
     @Test

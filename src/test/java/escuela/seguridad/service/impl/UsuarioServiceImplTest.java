@@ -7,6 +7,7 @@ import escuela.institucion.repository.InstitucionRepository;
 import escuela.seguridad.dto.request.UsuarioRequest;
 import escuela.seguridad.entity.EstadoUsuario;
 import escuela.seguridad.entity.Usuario;
+import escuela.seguridad.entity.TipoCuentaUsuario;
 import escuela.seguridad.mapper.UsuarioMapper;
 import escuela.seguridad.repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,5 +58,17 @@ class UsuarioServiceImplTest {
         assertThatThrownBy(() -> service.cambiarEstado(8L, 2L, EstadoUsuario.ACTIVO))
                 .isInstanceOf(ReglaNegocioException.class)
                 .hasMessageContaining("aceptar su invitación");
+    }
+
+    @Test
+    void noExponeCuentaDelPortalComoUsuarioAdministrativo() {
+        Usuario usuario = new Usuario();
+        usuario.setId(8L);
+        usuario.setInstitucion(institucion);
+        usuario.setTipoCuenta(TipoCuentaUsuario.PORTAL_TUTOR);
+        when(repository.findById(8L)).thenReturn(Optional.of(usuario));
+
+        assertThatThrownBy(() -> service.obtener(8L))
+                .hasMessageContaining("usuario administrativo");
     }
 }

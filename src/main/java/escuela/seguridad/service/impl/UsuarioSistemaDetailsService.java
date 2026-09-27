@@ -2,6 +2,7 @@ package escuela.seguridad.service.impl;
 
 import escuela.seguridad.entity.EstadoUsuario;
 import escuela.seguridad.entity.Usuario;
+import escuela.seguridad.entity.TipoCuentaUsuario;
 import escuela.seguridad.repository.PermisoRepository;
 import escuela.seguridad.repository.RolPermisoRepository;
 import escuela.seguridad.repository.UsuarioRepository;
@@ -45,8 +46,14 @@ public class UsuarioSistemaDetailsService implements UserDetailsService {
         }
         Usuario usuario = localizar(identificador);
         validarEstado(usuario);
+        if (usuario.getTipoCuenta() == TipoCuentaUsuario.PORTAL_TUTOR) {
+            return new UsuarioPrincipal(usuario.getId(), usuario.getInstitucion().getId(), Set.of(),
+                    false, false, usuario.getUsername(), usuario.getPasswordHash(),
+                    List.of(new SimpleGrantedAuthority("PORTAL_TUTOR_ACCEDER")));
+        }
         List<escuela.seguridad.entity.UsuarioRol> asignaciones = asignacionesActivas(usuario);
         Set<String> permisos = permisos(asignaciones);
+        permisos.remove("PORTAL_TUTOR_ACCEDER");
         Set<Long> planteles = asignaciones.stream()
                 .filter(a -> a.getAlcance() == escuela.seguridad.entity.AlcanceRol.PLANTEL)
                 .map(a -> a.getPlantel().getId()).collect(java.util.stream.Collectors.toSet());

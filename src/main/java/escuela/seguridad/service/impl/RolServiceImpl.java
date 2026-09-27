@@ -75,6 +75,7 @@ public class RolServiceImpl implements RolService {
     public List<PermisoResponse> listarPermisos() {
         Map<String, Permiso> porCodigo = permisosPorCodigo();
         return java.util.Arrays.stream(ModuloPermiso.values())
+                .filter(ModuloPermiso::asignableARol)
                 .filter(modulo -> modulo.disponibleEn(porCodigo.keySet()))
                 .map(modulo -> permisoRepresentante(modulo, porCodigo))
                 .map(par -> new PermisoResponse(par.permiso().getId(), par.modulo().nombre(),
@@ -97,6 +98,7 @@ public class RolServiceImpl implements RolService {
                 .collect(java.util.stream.Collectors.toSet());
         Map<String, Permiso> porCodigo = permisosPorCodigo();
         return java.util.Arrays.stream(ModuloPermiso.values())
+                .filter(ModuloPermiso::asignableARol)
                 .filter(modulo -> activos.stream().anyMatch(modulo::contiene))
                 .filter(modulo -> modulo.disponibleEn(porCodigo.keySet()))
                 .map(modulo -> permisoRepresentante(modulo, porCodigo).permiso().getId())
@@ -132,6 +134,11 @@ public class RolServiceImpl implements RolService {
                 .map(porId::get)
                 .map(permiso -> ModuloPermiso.dePermiso(permiso.getCodigo()).orElseThrow(() ->
                         new ReglaNegocioException("El permiso seleccionado no pertenece a un módulo disponible")))
+                .peek(modulo -> {
+                    if (!modulo.asignableARol()) {
+                        throw new ReglaNegocioException("El acceso al portal familiar se administra desde el tutor");
+                    }
+                })
                 .collect(java.util.stream.Collectors.toSet());
         Set<String> codigosSolicitados = modulos.stream().flatMap(modulo -> modulo.permisos().stream())
                 .collect(java.util.stream.Collectors.toSet());

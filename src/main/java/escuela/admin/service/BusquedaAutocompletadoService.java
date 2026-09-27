@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Locale;
 import java.util.stream.Stream;
 import static escuela.cobranza.support.CalculoCargo.saldo;
+import static escuela.common.support.FormatoMoneda.formatear;
 
 @Service
 @RequiredArgsConstructor
@@ -277,8 +278,7 @@ public class BusquedaAutocompletadoService {
                         cargo.getInscripcion().getAlumno().getPrimerApellido(),
                         cargo.getInscripcion().getAlumno().getSegundoApellido()) + " · "
                         + cargo.getConceptoCobro().getNombre(),
-                cargo.getDescripcion() + " · Saldo actual " + saldo(cargo).toPlainString()
-                        + " " + cargo.getMoneda())).toList();
+                cargo.getDescripcion() + " · Saldo actual " + formatear(saldo(cargo)))).toList();
         return new ResultadoAutocompletado(permitidos, resultado.hasNext());
     }
 

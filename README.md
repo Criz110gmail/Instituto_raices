@@ -422,3 +422,30 @@ u otra identificación oficial en PDF, JPG o PNG de hasta 10 MB. El documento se
 de forma privada, sólo existe uno vigente y cada reemplazo o retiro conserva el historial.
 La base guarda metadatos y checksum; el contenido permanece en el almacenamiento privado
 y su descarga requiere acceso completo al módulo Tutores.
+
+### Formato monetario y menú administrativo
+
+Los importes visibles se presentan de manera uniforme como pesos, con símbolo, separadores
+de miles y dos decimales (`$150.52`, `$1,000,000.50`). La regla también se reutiliza en
+catálogos, autocompletados, mensajes y el portal familiar; los campos de captura continúan
+siendo numéricos. El menú administrativo emplea un fondo sólido azul noche, mayor contraste
+y una tarjeta clara para identificar el módulo activo, sin cambiar rutas ni permisos.
+Al editar un tutor se presenta primero una ficha técnica con su identificación oficial,
+datos esenciales y acciones documentales; el formulario detallado permanece debajo.
+
+### V37 · Cuentas separadas para el portal familiar
+
+Las cuentas del personal administrativo y las cuentas de tutores tienen tipos distintos.
+El módulo **Usuarios** sólo lista y administra personal del sistema; una cuenta familiar
+no aparece allí, no puede recibir roles administrativos y obtiene únicamente acceso al
+portal de familias.
+
+Desde la ficha de un tutor se puede crear opcionalmente su acceso con una sugerencia
+editable `nombre.apellido`. Al crearla se genera un enlace privado de activación válido
+por 48 horas para que establezca su contraseña. Una cuenta activa permite generar un
+enlace de cambio de contraseña de 30 minutos, así como desactivar o reactivar el acceso
+sin borrar historial ni relaciones.
+
+El listado de Tutores muestra el estado de la cuenta y permite filtrar por sin cuenta,
+acceso activo, pendiente de activación y desactivado/bloqueado. Flyway V37 reclasifica
+automáticamente como `PORTAL_TUTOR` las cuentas que ya estaban vinculadas a un tutor.

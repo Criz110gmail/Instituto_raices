@@ -1573,7 +1573,7 @@ historial paginado.
 ## Simplificación de derechos por módulo
 
 - La pantalla de Roles ya no expone por separado acciones como leer, registrar,
-  administrar, validar o cancelar. Presenta 32 módulos con el mismo nombre usado en la
+  administrar, validar o cancelar. Presenta 31 módulos asignables con el mismo nombre usado en la
   interfaz, cada uno mediante una sola casilla de acceso completo.
 - Los 65 permisos técnicos continúan existiendo y protegiendo los endpoints. La capa de
   autenticación expande cualquier permiso histórico al paquete completo de su módulo;
@@ -1603,3 +1603,52 @@ historial paginado.
 - Prueba manual pendiente: editar un tutor controlado, cargar un archivo ficticio válido,
   abrirlo, reemplazarlo, consultar el historial y retirar el vigente. Después confirmar
   que un archivo falso o demasiado grande mantiene el error dentro del formulario.
+
+## Mejora transversal posterior a V36 — formato monetario y navegación administrativa
+
+- Se creó `FormatoMoneda` como regla visual única para presentar pesos con símbolo, dos
+  decimales y separadores: `$150.52` y `$1,000,000.50`. Se aplica en catálogos,
+  autocompletados, mensajes, cargos, pagos, devoluciones, movimientos, tesorería, estados
+  de cuenta, cortes, retiros y portal familiar. Porcentajes y campos numéricos editables
+  no se transforman.
+- El menú administrativo dejó el degradado y ahora usa un fondo sólido azul noche,
+  textos de alto contraste, acento turquesa y una tarjeta clara para el módulo activo.
+  La mejora es únicamente visual: no altera módulos, permisos ni rutas.
+- Docker compiló 522 fuentes y ejecutó 327 pruebas sin fallos, incluida una prueba de
+  integración del formatter como bean dentro de una expresión Thymeleaf. No se requirió
+  migración; Flyway continúa en V36.
+- La pantalla de edición de Tutores se reorganizó como ficha técnica, siguiendo el patrón
+  visual de Alumnos. La identificación oficial aparece primero: muestra vista previa si es
+  imagen, una tarjeta documental si es PDF o el estado sin documento. Las acciones y el
+  historial se integraron en el encabezado; la lógica privada de archivos no cambió.
+
+## V37 — separación de usuarios administrativos y accesos de tutores
+
+- `usuario.tipo_cuenta` distingue `ADMINISTRATIVO` de `PORTAL_TUTOR`. La migración V37
+  conserva los datos y reclasifica como portal toda cuenta ya referenciada por un tutor.
+- Usuarios muestra, exporta y administra únicamente cuentas administrativas. Las rutas
+  directas del controlador también rechazan cuentas del portal, y la asignación de roles
+  impide conceder permisos administrativos a una cuenta familiar.
+- La autenticación de una cuenta `PORTAL_TUTOR` ignora cualquier rol histórico y concede
+  exclusivamente `PORTAL_TUTOR_ACCEDER`. Una cuenta administrativa no recibe ese acceso
+  aunque exista una relación histórica con el permiso técnico.
+- La ficha de Tutores reemplaza el selector de cuentas preexistentes por un bloque propio:
+  propone un username normalizado `nombre.apellido`, permite editarlo, crea y vincula la
+  cuenta de forma transaccional y genera un enlace de activación de 48 horas. Para cuentas
+  activas genera recuperación de 30 minutos; también permite desactivar y reactivar sin
+  eliminar la cuenta ni sus relaciones.
+- Una reactivación conserva la contraseña: regresa a `ACTIVO` si ya estaba configurada o
+  a `INVITADO` si seguía pendiente. La edición ordinaria del tutor ya no puede vincular,
+  sustituir ni retirar usuarios administrativos.
+- El catálogo de Tutores presenta username y estado de acceso. Agrega filtros en base de
+  datos para `SIN_CUENTA`, `CUENTA_ACTIVA`, `CUENTA_PENDIENTE` y `CUENTA_INACTIVA`, además
+  de los estados del expediente.
+- Docker compiló 528 fuentes y ejecutó 333 pruebas sin fallos. Flyway validó 37
+  migraciones y aplicó V37 sobre el volumen habitual; la aplicación respondió `UP`.
+  PostgreSQL confirmó una cuenta `ADMINISTRATIVO`, una `PORTAL_TUTOR` y cero tutores
+  vinculados a un tipo incorrecto. No se crearon cuentas ni se cambiaron contraseñas
+  durante la verificación.
+- La comprobación visual automatizada se detuvo en el login porque no había sesión
+  conservada; por política no se consultó `.env`. Queda pendiente la prueba manual del
+  propietario: listado de Usuarios, filtros de Tutores y ciclo crear–activar–ingresar–
+  desactivar–reactivar con un tutor controlado.
