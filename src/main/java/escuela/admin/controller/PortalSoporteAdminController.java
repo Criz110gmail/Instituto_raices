@@ -49,6 +49,33 @@ public class PortalSoporteAdminController {
                @RequestParam(defaultValue="0") int paginaAvisos,
                @RequestParam(defaultValue="0") int paginaPagos,
                    @AuthenticationPrincipal UsuarioPrincipal admin, Model model) {
+        return vista(tutorId, alumnoId, paginaEventos, paginaCargos, paginaAvisos, paginaPagos,
+                null, admin, model);
+    }
+
+    @GetMapping("/{tutorId}/{seccion}")
+    @Transactional
+    String verSeccion(@PathVariable Long tutorId, @PathVariable String seccion,
+                      @RequestParam(required=false) Long alumnoId,
+                      @RequestParam(defaultValue="0") int pagina,
+                      @RequestParam(defaultValue="0") int paginaCargos,
+                      @RequestParam(defaultValue="0") int paginaPagos,
+                      @AuthenticationPrincipal UsuarioPrincipal admin, Model model) {
+        String destino = seccion == null ? "" : seccion.toUpperCase(java.util.Locale.ROOT);
+        if (!Set.of("AVISOS", "AGENDA", "PAGOS").contains(destino)) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.NOT_FOUND);
+        }
+        return vista(tutorId, alumnoId, destino.equals("AGENDA") ? pagina : 0,
+                destino.equals("PAGOS") ? paginaCargos : 0,
+                destino.equals("AVISOS") ? pagina : 0,
+                destino.equals("PAGOS") ? paginaPagos : 0,
+                destino, admin, model);
+    }
+
+    private String vista(Long tutorId, Long alumnoId, int paginaEventos, int paginaCargos,
+                         int paginaAvisos, int paginaPagos, String seccion,
+                         UsuarioPrincipal admin, Model model) {
         validarAdministradorSoporte(admin);
         alcance.validarAdministracionInstitucional(admin.institucionId());
         Tutor tutor = tutores.findById(tutorId).orElseThrow(() -> new org.springframework.security.access.AccessDeniedException("El tutor no está disponible"));
@@ -61,9 +88,15 @@ public class PortalSoporteAdminController {
         model.addAttribute("portal", portal.consultarComoSoporte(vista, alumnoId, paginaEventos, paginaCargos, paginaAvisos, paginaPagos));
         model.addAttribute("soporte", true);
         model.addAttribute("tutorSoporteId", tutorId);
+        if (seccion != null) {
+            model.addAttribute("seccion", seccion);
+            model.addAttribute("rutaInicio", "/admin/portal-soporte/" + tutorId);
+            model.addAttribute("rutaSeccion", "/admin/portal-soporte/" + tutorId + "/"
+                    + seccion.toLowerCase(java.util.Locale.ROOT));
+        }
         auditoria.registrar(admin.institucionId(), AccionAuditoria.PORTAL_TUTOR_SOPORTE, "TUTOR", tutorId,
                 "Consulta de soporte del portal familiar", java.util.Map.of("tutorUsuario", tutor.getUsuario().getUsername()));
-        return "portal/inicio";
+        return seccion == null ? "portal/inicio" : "portal/seccion";
     }
 
     private UsuarioPrincipal principalTutor(Tutor tutor, Long institucionId) {

@@ -682,7 +682,7 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 ## Verificación confirmada
 
 - Compilación correcta de 528 archivos Java de producción.
-- 333 pruebas Maven sin fallos, errores ni omisiones.
+- 334 pruebas Maven sin fallos, errores ni omisiones.
 - Flyway V1 a V37 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 46 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
@@ -882,10 +882,35 @@ funcionales actuales.
   ejecutó en PostgreSQL real en modo lectura (la instalación no tenía cargos que listar),
   y la imagen final quedó desplegada con `/actuator/health` en `UP`.
 
+### Navegación separada del portal familiar posterior a Jasper
+
+- `/portal` quedó como inicio sencillo: saludo, hijo seleccionado, ficha breve y menú de
+  opciones. Ya no contiene avisos, agenda, pagos ni notificaciones desplegados uno debajo
+  de otro.
+- Cada opción abre una pantalla independiente: `/portal/notificaciones`,
+  `/portal/avisos`, `/portal/agenda` y `/portal/pagos`. Todas conservan el hijo mediante
+  `alumnoId`, tienen botón **Regresar**, paginación propia y navegación móvil entre
+  secciones. El formulario `/portal/pagos/reportar` continúa separado.
+- Abrir una notificación ahora lleva a la página correspondiente; las financieras usan
+  `pagos` en vez del antiguo ancla `cuenta`. Después de reportar una transferencia se
+  vuelve a `/portal/pagos`.
+- El soporte administrativo conserva la misma separación en
+  `/admin/portal-soporte/{tutorId}/avisos`, `/agenda` y `/pagos`, siempre en modo de sólo
+  lectura y sin la acción para reportar transferencias. La bandeja personal de
+  notificaciones no se simula desde soporte.
+- No hubo cambio de esquema: Flyway permanece en V37 y V38 sigue disponible. Docker
+  compiló y ejecutó 334 pruebas sin fallos; la imagen actual inició con 46 repositorios,
+  validó las 37 migraciones y `/actuator/health` respondió `UP`.
+- La comprobación visual automatizada alcanzó correctamente la pantalla de acceso porque
+  no había una sesión familiar conservada. No se leyó `.env`. El propietario debe entrar
+  con una cuenta familiar controlada y recorrer Inicio → Notificaciones, Avisos, Agenda y
+  Pagos, verificando Regresar, cambio de hijo, paginación y navegación móvil.
+
 ### Punto exacto de reanudación en otra computadora
 
-1. `main` estaba en `7468e02` antes de V37. Preservar los cambios locales posteriores y
-   no reconstruir V1–V37.
+1. `main` estaba en `fdbafc5` después de los reportes Jasper y antes de separar las
+   pantallas del portal familiar. Preservar los cambios locales posteriores y no
+   reconstruir V1–V37.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
@@ -906,9 +931,10 @@ funcionales actuales.
 
 ## Disciplina de cambios y entrega
 
-V34–V37 y los reportes financieros Jasper están implementados localmente. Falta la
-prueba funcional controlada de las cuatro descargas y de V37 por el propietario antes
-de iniciar otro módulo o crear V38.
+V34–V37, los reportes financieros Jasper y la navegación separada del portal familiar
+están implementados localmente. Falta la prueba funcional controlada de las cuatro
+descargas, de V37 y de las nuevas páginas del portal por el propietario antes de iniciar
+otro módulo o crear V38.
 
 - Inspecciona `git status` antes de editar y preserva cambios ajenos.
 - Usa migraciones Flyway nuevas para cambios de esquema; nunca edites una migración ya

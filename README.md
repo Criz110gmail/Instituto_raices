@@ -461,3 +461,16 @@ Las filas se obtienen en bloques de 100 mediante los servicios del sistema; Jasp
 ejecuta SQL ni omite las reglas de alcance. La balanza financiera se habilita únicamente
 para cuentas completas, sin filtro por plantel operativo, y no pretende sustituir una
 balanza contable de partida doble.
+
+### Navegación del portal familiar
+
+La portada `/portal` muestra únicamente la ficha del hijo y el menú principal. Cada
+opción abre una pantalla independiente para evitar una página extensa y confusa:
+`/portal/notificaciones`, `/portal/avisos`, `/portal/agenda` y `/portal/pagos`.
+Todas conservan el hijo seleccionado, cuentan con botón **Regresar** y mantienen su
+propia paginación. Al abrir una notificación se llega directamente a la sección
+correspondiente y, después de reportar una transferencia, se regresa a **Tus pagos**.
+
+El soporte administrativo dispone de la misma separación para Avisos, Agenda y Pagos,
+pero continúa siendo estrictamente de sólo lectura y no muestra acciones para registrar
+transferencias.

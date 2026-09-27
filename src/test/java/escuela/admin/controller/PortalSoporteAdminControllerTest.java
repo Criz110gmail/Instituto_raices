@@ -17,12 +17,23 @@ class PortalSoporteAdminControllerTest {
         assertThat(Arrays.stream(PortalSoporteAdminController.class.getDeclaredMethods())
                 .noneMatch(metodo -> metodo.isAnnotationPresent(PostMapping.class))).isTrue();
 
-        String portal = plantilla("portal/inicio.html");
-        assertThat(portal).contains("th:if=\"${soporte != true}\" href=\"/portal/pagos/reportar\"");
+        String portal = plantilla("portal/seccion.html");
+        assertThat(portal).contains("th:if=\"${soporte != true}\" href=\"/portal/pagos/reportar\"")
+                .contains("portal-back-button");
         assertThat(plantilla("portal/pago-form.html"))
                 .doesNotContain("/admin/portal-soporte/")
                 .contains("th:action=\"@{/portal/pagos/reportar}\"");
         assertThat(ModuloCatalogo.PORTAL_TUTOR.visibleCon(Set.of("PORTAL_TUTOR_SOPORTE"))).isTrue();
+    }
+
+    @Test
+    void cadaOpcionFamiliarTieneRutaPropiaYElInicioYaNoUsaAnclas() throws IOException {
+        String inicio = plantilla("portal/inicio.html");
+        assertThat(inicio).contains("/portal/notificaciones", "/portal/avisos", "/portal/agenda",
+                        "/portal/pagos")
+                .doesNotContain("href=\"#avisos\"", "href=\"#agenda\"", "href=\"#cuenta\"");
+        assertThat(plantilla("portal/seccion.html"))
+                .contains("Notificaciones", "Avisos importantes", "Agenda", "Tus pagos", "Regresar");
     }
 
     private String plantilla(String ruta) throws IOException {

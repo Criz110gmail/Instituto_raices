@@ -32,7 +32,7 @@ public class PortalPagoController {
                    @RequestParam(name="comprobantes",required=false) List<MultipartFile> files,
                    @AuthenticationPrincipal UsuarioPrincipal p, Model model, RedirectAttributes flash){
         if(errores.hasErrors()){preparar(p,model); return "portal/pago-form";}
-        try {service.reportar(p,form,files); flash.addFlashAttribute("mensajePortal","Transferencia enviada. Quedará en revisión por la escuela."); return "redirect:/portal#cuenta";}
+        try {service.reportar(p,form,files); flash.addFlashAttribute("mensajePortal","Transferencia enviada. Quedará en revisión por la escuela."); return "redirect:/portal/pagos";}
         catch(ReglaNegocioException ex){model.addAttribute("error",ex.getMessage()); preparar(p,model); return "portal/pago-form";}
     }
     @GetMapping("/cargos") @ResponseBody ResultadoAutocompletado cargos(@RequestParam(defaultValue="")String q,@AuthenticationPrincipal UsuarioPrincipal p){return service.buscarCargos(p,q);}

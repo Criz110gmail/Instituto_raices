@@ -1677,3 +1677,22 @@ historial paginado.
 - Esta etapa no cambia el esquema: Flyway permanece en V37 y V38 sigue libre. La prueba
   funcional con datos reales controlados y las cuatro rutas PDF queda a cargo del
   propietario; no crear movimientos monetarios únicamente para probar un documento.
+
+## Navegación separada del portal familiar posterior a JasperReports
+
+- La portada `/portal` dejó de ser una página larga con anclas. Ahora funciona como un
+  inicio breve con la ficha del hijo y accesos claros a cada función.
+- Notificaciones, avisos, agenda y pagos se consultan respectivamente en
+  `/portal/notificaciones`, `/portal/avisos`, `/portal/agenda` y `/portal/pagos`. Cada
+  pantalla conserva `alumnoId`, pagina sus propios resultados y ofrece **Regresar**.
+- Las notificaciones abiertas redirigen a la sección independiente que corresponde. Los
+  resultados de pago llevan a `/portal/pagos`, y una transferencia reportada con éxito
+  también regresa a esa pantalla.
+- El modo de soporte administrativo replica Avisos, Agenda y Pagos con rutas bajo
+  `/admin/portal-soporte/{tutorId}`, sin habilitar escrituras. Las notificaciones no se
+  muestran en soporte porque son una bandeja personal cuyo estado de lectura no debe
+  alterarse ni simularse.
+- No se agregó migración. La imagen Docker pasó 334 pruebas, arrancó con Flyway V37 y
+  salud `UP`. La revisión visual sin credenciales llegó al login esperado; queda la
+  prueba manual con una cuenta familiar controlada para validar contenido, regreso,
+  cambio de hijo, paginación y experiencia móvil.

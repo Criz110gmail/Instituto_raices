@@ -50,7 +50,7 @@ public class NotificacionPortalService {
         repository.saveAndFlush(n);return switch(n.getTipo()){
             case EVENTO -> "agenda";
             case AVISO -> "avisos";
-            case PAGO_VALIDADO,PAGO_RECHAZADO,PAGO_CANCELADO -> "cuenta";
+            case PAGO_VALIDADO,PAGO_RECHAZADO,PAGO_CANCELADO -> "pagos";
         };
     }
 

@@ -36,11 +36,51 @@ public class PortalTutorController {
         return "portal/inicio";
     }
 
+    @GetMapping("/notificaciones")
+    String notificaciones(@RequestParam(required = false) Long alumnoId,
+                          @RequestParam(defaultValue = "0") int pagina,
+                          @AuthenticationPrincipal UsuarioPrincipal principal, Model model) {
+        return seccion("NOTIFICACIONES", alumnoId, 0, 0, 0, pagina, 0, principal, model);
+    }
+
+    @GetMapping("/avisos")
+    String avisos(@RequestParam(required = false) Long alumnoId,
+                  @RequestParam(defaultValue = "0") int pagina,
+                  @AuthenticationPrincipal UsuarioPrincipal principal, Model model) {
+        return seccion("AVISOS", alumnoId, 0, 0, pagina, 0, 0, principal, model);
+    }
+
+    @GetMapping("/agenda")
+    String agenda(@RequestParam(required = false) Long alumnoId,
+                  @RequestParam(defaultValue = "0") int pagina,
+                  @AuthenticationPrincipal UsuarioPrincipal principal, Model model) {
+        return seccion("AGENDA", alumnoId, pagina, 0, 0, 0, 0, principal, model);
+    }
+
+    @GetMapping("/pagos")
+    String pagos(@RequestParam(required = false) Long alumnoId,
+                 @RequestParam(defaultValue = "0") int paginaCargos,
+                 @RequestParam(defaultValue = "0") int paginaPagos,
+                 @AuthenticationPrincipal UsuarioPrincipal principal, Model model) {
+        return seccion("PAGOS", alumnoId, 0, paginaCargos, 0, 0, paginaPagos, principal, model);
+    }
+
     @PostMapping("/notificaciones/{id}/leer")
     String leer(@PathVariable Long id,@RequestParam(required=false)Long alumnoId,
                 @AuthenticationPrincipal UsuarioPrincipal principal){
         String destino=notificaciones.marcarLeida(principal,id);
-        return "redirect:/portal"+(alumnoId==null?"":"?alumnoId="+alumnoId)+"#"+destino;
+        return "redirect:/portal/"+destino+(alumnoId==null?"":"?alumnoId="+alumnoId);
+    }
+
+    private String seccion(String seccion, Long alumnoId, int paginaEventos, int paginaCargos,
+                           int paginaAvisos, int paginaNotificaciones, int paginaPagos,
+                           UsuarioPrincipal principal, Model model) {
+        model.addAttribute("portal", service.consultar(principal, alumnoId, paginaEventos, paginaCargos,
+                paginaAvisos, paginaNotificaciones, paginaPagos));
+        model.addAttribute("seccion", seccion);
+        model.addAttribute("rutaInicio", "/portal");
+        model.addAttribute("rutaSeccion", "/portal/" + seccion.toLowerCase(java.util.Locale.ROOT));
+        return "portal/seccion";
     }
 
     @GetMapping("/alumnos/{alumnoId}/fotografia")

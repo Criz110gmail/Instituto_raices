@@ -83,7 +83,7 @@ class NotificacionPortalServiceTest {
 
         String destino = service.marcarLeida(principal, 90L);
 
-        assertThat(destino).isEqualTo("cuenta");
+        assertThat(destino).isEqualTo("pagos");
         assertThat(notificacion.getLeidaEn()).isNotNull();
         verify(repository).saveAndFlush(notificacion);
     }
@@ -109,7 +109,7 @@ class NotificacionPortalServiceTest {
         when(portal.pagoAccesible(eq(7L), eq(1L), eq(52L), eq("CANCELADO"), any(LocalDate.class)))
                 .thenReturn(true);
 
-        assertThat(service.marcarLeida(principal, 90L)).isEqualTo("cuenta");
+        assertThat(service.marcarLeida(principal, 90L)).isEqualTo("pagos");
         assertThat(notificacion.getLeidaEn()).isNotNull();
     }
 
