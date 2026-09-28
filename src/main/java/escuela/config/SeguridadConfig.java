@@ -98,6 +98,8 @@ public class SeguridadConfig {
                         .hasAuthority("MATERIA_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/grupos-calificacion")
                         .hasAnyAuthority("CALIFICACION_ADMINISTRAR", "ASISTENCIA_ADMINISTRAR")
+                        .requestMatchers("/admin/autocompletado/grupos-boleta")
+                        .hasAuthority("BOLETA_CONSULTAR")
                         .requestMatchers("/admin/autocompletado/periodos-calificacion",
                                 "/admin/autocompletado/materias-calificacion")
                         .hasAuthority("CALIFICACION_ADMINISTRAR")
@@ -150,6 +152,8 @@ public class SeguridadConfig {
                         .hasAnyAuthority("CORTE_CAJA_LEER", "CORTE_CAJA_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/reportes-financieros/**")
                         .hasAuthority("REPORTE_FINANCIERO_CONSULTAR")
+                        .requestMatchers(HttpMethod.GET, "/admin/boletas/**")
+                        .hasAuthority("BOLETA_CONSULTAR")
                         .requestMatchers(HttpMethod.GET, "/admin/eventos-escolares/nuevo",
                                 "/admin/eventos-escolares/*/editar")
                         .hasAuthority("EVENTO_ESCOLAR_ADMINISTRAR")

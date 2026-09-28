@@ -31,6 +31,8 @@ public enum ModuloPermiso {
             "MATERIA_LEER", "MATERIA_ADMINISTRAR"),
     CALIFICACIONES("Calificaciones", "Acceso completo para capturar, publicar y consultar calificaciones",
             "CALIFICACION_LEER", "CALIFICACION_ADMINISTRAR"),
+    BOLETAS("Boletas", "Consulta y exportación de boletas con calificaciones publicadas",
+            "BOLETA_CONSULTAR"),
     ALUMNOS("Alumnos", "Acceso completo al expediente de alumnos",
             "ALUMNO_LEER", "ALUMNO_ADMINISTRAR"),
     TUTORES("Tutores", "Acceso completo al expediente de tutores",

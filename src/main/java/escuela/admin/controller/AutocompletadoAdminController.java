@@ -80,6 +80,12 @@ public class AutocompletadoAdminController {
         return service.gruposCalificacion(institucionId, q);
     }
 
+    @GetMapping("/grupos-boleta")
+    ResultadoAutocompletado gruposBoleta(@RequestParam Long cicloId,
+                                         @RequestParam(defaultValue = "") String q) {
+        return service.gruposBoleta(cicloId, q);
+    }
+
     @GetMapping("/periodos-calificacion")
     ResultadoAutocompletado periodosCalificacion(@RequestParam Long grupoId,
                                                   @RequestParam(defaultValue = "") String q) {

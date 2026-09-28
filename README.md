@@ -538,3 +538,15 @@ la inscripción y del grupo, y las correcciones usan control de concurrencia.
 El historial se consulta con filtros y paginación en base de datos, y puede exportarse a
 Excel conservando exactamente los mismos criterios. Los permisos `ASISTENCIA_LEER` y
 `ASISTENCIA_ADMINISTRAR` deben asignarse explícitamente al rol que operará el módulo.
+
+### V42 · Boletas académicas
+
+El módulo **Boletas** consulta por institución, ciclo, plantel, grupo histórico y alumno,
+y muestra únicamente inscripciones con calificaciones publicadas en materias incluidas en
+boleta. Los borradores no aparecen y el sistema no guarda una segunda copia de resultados
+ni promedios.
+
+Cada alumno puede abrir su PDF en otra pestaña. También se puede generar un PDF colectivo
+o un Excel con Apache POI conservando exactamente los filtros visibles. Las exportaciones
+trabajan en bloques de 100 alumnos; Jasper recibe los datos de los servicios y no ejecuta
+SQL propio. El permiso `BOLETA_CONSULTAR` debe asignarse explícitamente al rol autorizado.

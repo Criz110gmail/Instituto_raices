@@ -16,6 +16,7 @@ public enum ModuloCatalogo {
     MATERIAS("materias", "Materias", List.of("Código", "Materia", "Institución", "Descripción")),
     CALIFICACIONES("calificaciones", "Calificaciones", List.of("Alumno", "Matrícula", "Materia", "Periodo", "Grado", "Resultado")),
     ASISTENCIA("asistencia", "Asistencia", List.of("Fecha", "Alumno", "Matrícula", "Grupo", "Plantel", "Observaciones")),
+    BOLETAS("boletas", "Boletas", List.of()),
     ALUMNOS("alumnos", "Alumnos", List.of("Matrícula", "Alumno", "CURP", "Nacimiento", "Ingreso")),
     TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),
     VINCULOS_TUTOR("vinculos-tutor", "Vínculos alumno–tutor", List.of("Alumno", "Tutor", "Parentesco", "Permisos", "Vigencia")),
@@ -58,7 +59,7 @@ public enum ModuloCatalogo {
         return switch (this) {
             case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS, GRUPOS, MATERIAS -> "Estructura";
             case ALUMNOS, TUTORES, VINCULOS_TUTOR -> "Personas";
-            case INSCRIPCIONES, CALIFICACIONES, ASISTENCIA -> "Trayectoria";
+            case INSCRIPCIONES, CALIFICACIONES, ASISTENCIA, BOLETAS -> "Trayectoria";
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
             case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Finanzas";
             case EVENTOS_ESCOLARES, AVISOS -> "Comunicación";
@@ -79,6 +80,7 @@ public enum ModuloCatalogo {
             case MATERIAS -> "MATERIA";
             case CALIFICACIONES -> "CALIFICACION";
             case ASISTENCIA -> "ASISTENCIA";
+            case BOLETAS -> "BOLETA";
             case ALUMNOS -> "ALUMNO";
             case TUTORES -> "TUTOR";
             case VINCULOS_TUTOR -> "VINCULO_TUTOR";
@@ -115,6 +117,7 @@ public enum ModuloCatalogo {
         if (this == RETIROS_FONDO) return permisos.contains("RETIRO_FONDO_LEER")
                 || permisos.contains("RETIRO_FONDO_REGISTRAR");
         if (this == REPORTES_FINANCIEROS) return permisos.contains("REPORTE_FINANCIERO_CONSULTAR");
+        if (this == BOLETAS) return permisos.contains("BOLETA_CONSULTAR");
         if (this == EVENTOS_ESCOLARES) return permisos.contains("EVENTO_ESCOLAR_LEER")
                 || permisos.contains("EVENTO_ESCOLAR_ADMINISTRAR");
         if (this == AVISOS) return permisos.contains("AVISO_LEER") || permisos.contains("AVISO_ADMINISTRAR");
@@ -151,6 +154,7 @@ public enum ModuloCatalogo {
             case MATERIAS -> "/admin/materias";
             case CALIFICACIONES -> "/admin/calificaciones";
             case ASISTENCIA -> "/admin/asistencia";
+            case BOLETAS -> "/admin/boletas";
             case ALUMNOS -> "/admin/alumnos";
             case TUTORES -> "/admin/tutores";
             case VINCULOS_TUTOR -> "/admin/vinculos-tutor";
@@ -179,7 +183,7 @@ public enum ModuloCatalogo {
     }
 
     public String rutaListado() {
-        return this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
+        return this == BOLETAS || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
                 ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }

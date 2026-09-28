@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Collection;
 
 public interface AsignacionGrupoRepository extends JpaRepository<AsignacionGrupo, Long> {
 
@@ -43,4 +44,13 @@ public interface AsignacionGrupoRepository extends JpaRepository<AsignacionGrupo
     List<AsignacionGrupo> buscarParaPeriodo(@Param("inscripcionId") Long inscripcionId,
                                             @Param("inicio") LocalDate inicio,
                                             @Param("fin") LocalDate fin);
+
+    @Query("""
+            select a from AsignacionGrupo a
+            join fetch a.grupo g
+            where a.inscripcion.id in :inscripcionIds
+            order by a.inscripcion.id, a.fechaInicio desc, a.id desc
+            """)
+    List<AsignacionGrupo> buscarHistorialParaBoleta(
+            @Param("inscripcionIds") Collection<Long> inscripcionIds);
 }

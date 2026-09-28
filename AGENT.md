@@ -845,10 +845,9 @@ editar la misma hoja y revisar filtros, paginación y exportación XLSX. Tambié
 confirmar el diseño responsivo y los temas claro/oscuro. No crear asistencias operativas
 sólo para verificar.
 
-Después de aprobar V41, el siguiente desarrollo acordado es V42: boletas Jasper derivadas
-exclusivamente de calificaciones publicadas, sin duplicar resultados ni totales. Debe
-respetar alcance, generar el documento por alumno/ciclo con datos obtenidos por servicios
-y conservar una estrategia paginada o por bloques para las emisiones colectivas.
+V42 quedó implementada y desplegada: boletas Jasper derivadas exclusivamente de
+calificaciones publicadas, sin duplicar resultados ni totales. Respeta alcance, genera
+documentos individuales o colectivos y procesa las emisiones en bloques.
 
 También sigue pendiente la prueba funcional controlada de V34/V35: usar un tutor
 autorizado con varios hijos y varios cargos —incluidos dos del mismo alumno—, distribuir
@@ -984,15 +983,15 @@ funcionales actuales.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. `main` estaba en `5e0a1b2` antes de iniciar V41. El cambio local implementa
-   Asistencia diaria. Preservarlo y no reconstruir V1–V41.
+1. `main` estaba en `84488e6` antes de iniciar V42. El cambio local implementa
+   Boletas. Preservarlo y no reconstruir V1–V42.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V41 ya existen y están aplicadas al volumen local; nunca editarlas.
-   La siguiente migración disponible será V42.
+4. Flyway V1–V42 ya existen y están aplicadas al volumen local; nunca editarlas.
+   La siguiente migración disponible será V43.
 5. Probar las cuatro descargas Jasper con datos controlados y distintos tamaños de
    resultado. Ejecutar también la prueba manual de V37 y las pendientes descritas para V34, V35 y V36. Mantener
    además
@@ -1006,11 +1005,11 @@ funcionales actuales.
 
 ## Disciplina de cambios y entrega
 
-V34–V41, los reportes financieros Jasper, la navegación separada del portal familiar y
-la ayuda contextual global están implementados localmente. V41 compiló, migró y arrancó;
-falta que el propietario asigne su permiso y pruebe Asistencia con datos controlados.
+V34–V42, los reportes financieros Jasper, la navegación separada del portal familiar y
+la ayuda contextual global están implementados localmente. V42 compiló, migró y arrancó;
+falta que el propietario asigne su permiso y pruebe Boletas con datos controlados.
 También siguen pendientes las pruebas funcionales enumeradas de etapas anteriores.
-Después de aprobar V41, continuar con V42 de boletas Jasper derivadas.
+Después de aprobar V42, definir V43 según la prioridad funcional del propietario.
 
 - Inspecciona `git status` antes de editar y preserva cambios ajenos.
 - Usa migraciones Flyway nuevas para cambios de esquema; nunca edites una migración ya
@@ -1022,3 +1021,24 @@ Después de aprobar V41, continuar con V42 de boletas Jasper derivadas.
 - No hagas `push` ni cambies credenciales remotas sin autorización del usuario.
 - La respuesta final debe indicar qué se implementó, cómo se verificó y cuál es el
   siguiente paso lógico.
+
+### V42 — boletas académicas derivadas
+
+- Se agregó el módulo `Boletas`, protegido por `BOLETA_CONSULTAR` y sin asignación
+  automática a roles. Sólo lista inscripciones que tienen resultados publicados en
+  materias configuradas con inclusión en boleta.
+- La consulta se filtra por institución, ciclo, plantel, grupo histórico y alumno; pagina
+  en PostgreSQL. El autocompletado muestra los primeros diez grupos al recibir foco y
+  busca desde tres caracteres, respetando ciclo y alcance.
+- El PDF individual y colectivo se genera con JasperReports desde servicios Java, sin SQL
+  dentro del reporte. Cada alumno inicia una página y conserva tipo de evaluación, escala
+  congelada y observaciones. No se guarda promedio ni copia de resultados.
+- Excel usa Apache POI en modo streaming y tanto Excel como el PDF colectivo procesan
+  bloques de 100 alumnos con exactamente los mismos filtros de la pantalla. Los PDF se
+  abren en otra pestaña para permitir decidir si se descargan.
+- Flyway V42 incorpora el permiso y un índice parcial para la consulta de inscripciones;
+  no crea una entidad de boleta. Docker compiló 593 fuentes y 93 fuentes de prueba,
+  ejecutó 363 pruebas sin fallos, aplicó V42 y respondió `UP`.
+- Falta la prueba visual y funcional autenticada del propietario con calificaciones
+  controladas, así como asignar `Boletas` al rol correspondiente. La siguiente migración
+  libre es V43 y su alcance debe decidirse después de aprobar esta etapa.

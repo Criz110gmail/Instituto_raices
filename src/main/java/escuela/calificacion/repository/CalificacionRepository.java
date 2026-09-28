@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -31,4 +32,8 @@ public interface CalificacionRepository extends JpaRepository<Calificacion, Long
     Page<Calificacion> buscarPortal(@Param("alumnoId") Long alumnoId,
                                     @Param("estado") EstadoCalificacion estado,
                                     Pageable pageable);
+
+    @EntityGraph(attributePaths = {"materiaGrado", "materiaGrado.materia", "periodoAcademico"})
+    List<Calificacion> findAllByInscripcionIdInAndEstadoAndMateriaGradoIncluirBoletaTrueOrderByInscripcionIdAscPeriodoAcademicoOrdenAscMateriaGradoOrdenAscIdAsc(
+            Collection<Long> inscripcionIds, EstadoCalificacion estado);
 }

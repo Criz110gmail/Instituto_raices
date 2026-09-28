@@ -208,6 +208,28 @@ public class BusquedaAutocompletadoService {
                 .toList(), hayMas);
     }
 
+    public ResultadoAutocompletado gruposBoleta(Long cicloId, String consulta) {
+        alcance.validarRecurso(ModuloCatalogo.CICLOS, cicloId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        String patron = "%" + texto + "%";
+        Specification<Grupo> busqueda = (root, query, cb) -> cb.and(
+                cb.equal(root.get("cicloEscolar").get("id"), cicloId),
+                cb.or(cb.like(cb.lower(root.get("nombre")), patron),
+                        cb.like(cb.lower(root.get("codigo")), patron),
+                        cb.like(cb.lower(root.get("plantel").get("nombre")), patron),
+                        cb.like(cb.lower(root.get("grado").get("nombre")), patron)));
+        var resultado = grupoRepository.findAll(Specification.where(busqueda)
+                        .and(alcance.especificacion(ModuloCatalogo.GRUPOS)),
+                PageRequest.of(0, tamano(consulta) + 1));
+        boolean hayMas = resultado.getNumberOfElements() > MAXIMO_RESULTADOS;
+        return new ResultadoAutocompletado(resultado.getContent().stream().limit(MAXIMO_RESULTADOS)
+                .map(grupo -> new OpcionAutocompletado(grupo.getId(),
+                        grupo.getNombre() + " · " + grupo.getGrado().getNombre(),
+                        grupo.getPlantel().getNombre() + " · " + grupo.getCicloEscolar().getNombre()))
+                .toList(), hayMas);
+    }
+
     public ResultadoAutocompletado periodosCalificacion(Long grupoId, String consulta) {
         alcance.validarRecurso(ModuloCatalogo.GRUPOS, grupoId);
         String texto = normalizar(consulta);

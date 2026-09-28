@@ -1837,3 +1837,30 @@ historial paginado.
 - Falta la prueba funcional autenticada del propietario y asignar el módulo al rol
   correspondiente. Al aprobar V41 continúa V42 con boletas Jasper derivadas únicamente
   de calificaciones publicadas.
+
+## V42 — boletas académicas derivadas (2026-09-28)
+
+- Se implementó `/admin/boletas` con filtros por institución, ciclo, plantel, grupo
+  histórico y alumno, además de paginación de base de datos y alcance institucional o de
+  plantel.
+- La fuente única son filas `calificacion` en estado `PUBLICADA` cuyo plan
+  `materia_grado.incluir_boleta` está activo. No se creó tabla de boleta ni se persistieron
+  promedios, totales o copias de resultados.
+- Se agregó PDF Jasper individual y colectivo. Cada alumno inicia página, el documento se
+  abre en otra pestaña y conserva periodo, materia, resultado, escala congelada y
+  observaciones. Jasper usa un `JRDataSource` de servicios sin SQL propio.
+- Se agregó Excel streaming con Apache POI. PDF colectivo y Excel reutilizan exactamente
+  los filtros de pantalla y obtienen alumnos en bloques de 100.
+- El autocompletado de grupos acepta históricos del ciclo seleccionado, muestra diez al
+  enfocar y busca desde tres caracteres. El permiso nuevo `BOLETA_CONSULTAR` no se asigna
+  automáticamente.
+- `V42__boletas_academicas.sql` agregó el permiso y un índice parcial de apoyo, sin nueva
+  entidad operativa. Docker compiló 593 fuentes y 93 fuentes de prueba; 363 pruebas
+  pasaron. La prueba V42 generó y leyó el XLSX con POI, creó el PDF real, extrajo sus
+  textos y renderizó la primera página.
+- La imagen se desplegó; Flyway validó 42 migraciones, avanzó de V41 a V42 y
+  `/actuator/health` respondió `UP`. No se crearon datos académicos de prueba ni se leyó
+  `.env`.
+- Pendiente del propietario: asignar Boletas al rol elegido y probar con calificaciones
+  controladas los filtros, PDF individual, PDF colectivo y Excel. V43 queda libre y debe
+  definirse después de aprobar esta etapa.
