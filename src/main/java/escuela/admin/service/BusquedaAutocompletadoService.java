@@ -14,6 +14,7 @@ import escuela.cobranza.repository.CargoRepository;
 import escuela.cobranza.entity.TipoBeca;
 import escuela.academico.entity.PeriodoAcademico;
 import escuela.academico.repository.PeriodoAcademicoRepository;
+import escuela.academico.repository.GradoRepository;
 import escuela.admin.dto.ModuloCatalogo;
 import escuela.inscripcion.entity.Inscripcion;
 import escuela.inscripcion.repository.InscripcionRepository;
@@ -54,6 +55,7 @@ public class BusquedaAutocompletadoService {
     private final InscripcionRepository inscripcionRepository;
     private final ConceptoCobroRepository conceptoCobroRepository;
     private final PeriodoAcademicoRepository periodoAcademicoRepository;
+    private final GradoRepository gradoRepository;
     private final TipoBecaRepository tipoBecaRepository;
     private final CargoRepository cargoRepository;
     private final CuentaFinancieraRepository cuentaFinancieraRepository;
@@ -161,6 +163,20 @@ public class BusquedaAutocompletadoService {
                 .map(periodo -> new OpcionAutocompletado(periodo.getId(),
                         periodo.getCodigo() + " · " + periodo.getNombre(),
                         periodo.getFechaInicio() + " — " + periodo.getFechaFin()))
+                .toList(), resultado.hasNext());
+    }
+
+    public ResultadoAutocompletado gradosMateria(Long institucionId, String consulta) {
+        alcance.validarAdministracionInstitucional(institucionId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        var resultado = gradoRepository.buscarParaMateria(
+                institucionId, texto, PageRequest.of(0, tamano(consulta)));
+        return new ResultadoAutocompletado(resultado.getContent().stream()
+                .map(grado -> new OpcionAutocompletado(grado.getId(),
+                        grado.getNivelEducativo().getNombre() + " · " + grado.getCodigo()
+                                + " · " + grado.getNombre(),
+                        "Orden " + grado.getOrden()))
                 .toList(), resultado.hasNext());
     }
 

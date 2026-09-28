@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+    <title>Plan de materia · Nexo Escolar</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
+</head>
+<body class="form-page">
+<main class="form-shell finance-shell">
+    <header class="form-top"><a th:href="@{/admin/materias/{id}/editar(id=${materia.id})}">← Volver a la materia</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <section class="form-card">
+        <div class="form-intro"><span th:text="${materia.codigo}">MAT</span><h1 th:text="${edicion ? 'Configurar evaluación de ' + materia.nombre : 'Agregar ' + materia.nombre + ' a un grado'}">Plan por grado</h1><p>Esta configuración será la referencia de captura, aprobación y presentación en boletas.</p></div>
+        <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/materias/' + materia.id + '/planes/' + planId : '/admin/materias/' + materia.id + '/planes'}">
+            <input type="hidden" th:field="*{version}"><input id="institucion-plan" type="hidden" th:value="${materia.institucionId}">
+            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
+            <fieldset class="form-section"><legend>Grado y presentación</legend><div class="form-grid">
+                <div class="autocomplete wide" data-autocomplete data-endpoint="/admin/autocompletado/grados-materia" data-institution-input="institucion-plan" data-scope-label="la institución">
+                    <label for="grado-busqueda"><span>Grado *</span></label>
+                    <div class="autocomplete-control"><input id="grado-busqueda" class="autocomplete-input" type="text" th:field="*{gradoTexto}" th:disabled="${edicion}" autocomplete="off" placeholder="Escribe nivel, código o nombre del grado" role="combobox" aria-expanded="false" aria-controls="grado-resultados"><button th:unless="${edicion}" class="autocomplete-clear" type="button" aria-label="Limpiar grado" hidden>×</button></div>
+                    <input class="autocomplete-value" type="hidden" th:field="*{gradoId}"><div id="grado-resultados" class="autocomplete-results" role="listbox" hidden></div><small class="autocomplete-status" aria-live="polite"></small><small data-autocomplete-error th:errors="*{gradoId}"></small>
+                </div>
+                <label><span>Orden en boleta *</span><input type="number" min="1" th:field="*{orden}"><small th:errors="*{orden}"></small></label>
+                <label><span>Horas semanales</span><input type="number" min="0.01" step="0.25" th:field="*{horasSemanales}" placeholder="5"><small th:errors="*{horasSemanales}"></small></label>
+                <label class="switch-row wide"><input type="checkbox" th:field="*{incluirBoleta}"><span>Incluir esta materia en la boleta del grado</span></label>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Forma de evaluación</legend><div class="form-grid">
+                <label class="wide"><span>Tipo de evaluación *</span><select id="tipo-evaluacion" th:field="*{tipoEvaluacion}"><option th:each="tipo : ${tiposEvaluacion}" th:value="${tipo}" th:text="${tipo.etiqueta}">Numérica</option></select><small th:errors="*{tipoEvaluacion}"></small></label>
+                <label class="numeric-scale"><span>Valor mínimo *</span><input type="number" step="0.01" th:field="*{escalaMinima}"><small th:errors="*{escalaMinima}"></small></label>
+                <label class="numeric-scale"><span>Valor máximo *</span><input type="number" step="0.01" th:field="*{escalaMaxima}"><small th:errors="*{escalaMaxima}"></small></label>
+                <label class="numeric-scale"><span>Mínima aprobatoria *</span><input type="number" step="0.01" th:field="*{minimaAprobatoria}"><small th:errors="*{minimaAprobatoria}"></small></label>
+                <label class="numeric-scale"><span>Decimales *</span><select th:field="*{decimales}"><option value="0">Sin decimales</option><option value="1">1 decimal</option><option value="2">2 decimales</option></select><small th:errors="*{decimales}"></small></label>
+                <p id="qualitative-note" class="field-help wide" hidden>La captura cualitativa admitirá una descripción breve y no participará en promedios numéricos.</p>
+            </div></fieldset>
+            <footer class="form-actions"><a th:href="@{/admin/materias/{id}/editar(id=${materia.id})}">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar configuración' : 'Agregar al plan'}">Guardar</button></footer>
+        </form>
+    </section>
+</main>
+<script src="/js/autocomplete.js"></script>
+<script>
+(() => {
+  const tipo = document.querySelector('#tipo-evaluacion');
+  const campos = [...document.querySelectorAll('.numeric-scale')];
+  const nota = document.querySelector('#qualitative-note');
+  const actualizar = () => {
+    const numerica = tipo.value === 'NUMERICA';
+    campos.forEach(campo => { campo.hidden = !numerica; campo.querySelector('input,select').disabled = !numerica; });
+    nota.hidden = numerica;
+  };
+  tipo.addEventListener('change', actualizar); actualizar();
+})();
+</script>
+</body>
+</html>
+

@@ -21,8 +21,9 @@ Requisitos recuperados:
 Este documento es una propuesta de diseño, no una implementación ni una
 transcripción literal. Completa campos no definidos y corrige ambigüedades del
 análisis anterior. Las entidades auxiliares se proponen para cerrar los flujos.
-Materias, calificaciones, asistencia, nómina, inventarios y facturación fiscal
-quedan fuera del alcance inicial; no son necesarios para administrar cobros.
+Materias, calificaciones y asistencia quedaron fuera del alcance inicial de cobros, pero
+se incorporan como ampliación académica desde V39. Nómina, inventarios y facturación
+fiscal continúan fuera del alcance actual.
 El registro de tesorería descrito no equivale a contabilidad de partida doble.
 
 2. CONVENCIONES COMUNES
@@ -725,6 +726,11 @@ implementar las reglas respectivas.
    completos; hoy solo se registra el movimiento financiero correspondiente.
 10) Datos de tutores: confirmar canal de activación y si se permite alta sin
     correo. Evitar crear usuarios duplicados cuando ya existe el tutor.
+11) Ampliación académica: V39 resolvió Materia y MateriaGrado con evaluación numérica o
+    cualitativa. V40 debe registrar calificaciones por inscripción, materia y periodo con
+    borrador/publicación; V41 agregará asistencia diaria por inscripción y V42 generará
+    boletas derivadas, sin almacenar un total duplicado. El portal sólo verá resultados
+    publicados. Horarios, clases y docentes quedan fuera hasta diseñar ese dominio.
 
 15. ORDEN SUGERIDO DE IMPLEMENTACIÓN
 ==================================

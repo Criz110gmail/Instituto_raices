@@ -7,6 +7,7 @@
         [/^\/admin\/(catalogos\/)?niveles/, 'Niveles educativos', 'Organiza los niveles académicos disponibles, por ejemplo preescolar, primaria o secundaria.', 'Registrar Primaria con orden 2 para mostrarla después de Preescolar.'],
         [/^\/admin\/(catalogos\/)?oferta/, 'Oferta educativa', 'Indica qué niveles educativos ofrece cada plantel y conserva su clave oficial cuando aplica.', 'Habilitar Primaria en el plantel Centro con su clave CCT.'],
         [/^\/admin\/(catalogos\/)?grados/, 'Grados', 'Define los grados que pertenecen a cada nivel educativo y el orden en que se presentan.', 'Crear 1.º de primaria con orden 1.'],
+        [/^\/admin\/(catalogos\/)?materias/, 'Materias', 'Administra las materias institucionales y configura cómo se evalúan en cada grado.', 'Crear Matemáticas y asignarla a 1.º de primaria con escala de 0 a 10.'],
         [/^\/admin\/(catalogos\/)?ciclos/, 'Ciclos escolares', 'Controla los periodos anuales de operación académica y cuál se utiliza de forma predeterminada.', 'Crear el ciclo 2026–2027 con sus fechas de inicio y fin.'],
         [/^\/admin\/(catalogos\/)?periodos/, 'Periodos académicos', 'Divide un ciclo escolar en bloques de evaluación o trabajo sin sustituir los periodos de cobro.', 'Crear el primer trimestre dentro del ciclo 2026–2027.'],
         [/^\/admin\/(catalogos\/)?grupos/, 'Grupos', 'Crea los grupos disponibles por plantel, ciclo, grado, turno y capacidad.', 'Registrar el grupo 1.º A matutino con capacidad para 30 alumnos.'],

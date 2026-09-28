@@ -63,7 +63,8 @@ comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME
 ## Estructura inicial
 
 - `escuela.institucion`: institución, planteles y oferta educativa.
-- `escuela.academico`: niveles, grados, ciclos, periodos y grupos.
+- `escuela.academico`: niveles, grados, ciclos, periodos, grupos y materias con plan de
+  evaluación por grado.
 - `escuela.seguridad`: usuarios, roles, permisos, alcances e invitaciones de acceso.
 - `escuela.alumno`: expediente de alumnos y vínculos históricos con tutores.
 - `escuela.tutor`: expediente institucional de tutores y cuenta de acceso opcional.
@@ -88,13 +89,19 @@ ocultan; reaparecen instrucciones sólo si se vuelve a escribir o se limpia la s
 
 ## Consola administrativa
 
-La ruta `/admin` contiene los ocho catálogos académicos, Alumnos, Tutores, Vínculos
+La ruta `/admin` contiene los catálogos académicos, incluido Materias, Alumnos, Tutores, Vínculos
 alumno–tutor, Inscripciones, Conceptos de cobro, Cuotas por alumno, Cargos, Tipos de
 beca, Becas por alumno, Historial de ajustes y los módulos de
 Roles y permisos y Usuarios.
 Todos los listados consultan la
 base de datos con filtros y paginación; el botón **Exportar Excel** aplica exactamente
 los mismos filtros y genera el archivo con Apache POI en modo streaming.
+
+Materias permite definir código y nombre institucionales y, por cada grado, evaluación
+numérica o cualitativa, escala, mínima aprobatoria, decimales, orden, horas semanales e
+inclusión en boleta. El grado se selecciona mediante autocompletado remoto. Sus permisos
+no se conceden automáticamente: el administrador debe asignar el módulo al rol deseado y
+volver a iniciar sesión.
 
 Para recuperación administrativa, configura `ADMIN_BOOTSTRAP_USERNAME` y
 `ADMIN_BOOTSTRAP_PASSWORD` en `.env`.

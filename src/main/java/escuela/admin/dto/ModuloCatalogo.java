@@ -13,6 +13,7 @@ public enum ModuloCatalogo {
     CICLOS("ciclos", "Ciclos escolares", List.of("Código", "Ciclo", "Inicio", "Fin", "Predeterminado")),
     PERIODOS("periodos", "Periodos académicos", List.of("Código", "Periodo", "Nivel", "Tipo", "Fechas")),
     GRUPOS("grupos", "Grupos", List.of("Grupo", "Código", "Plantel", "Grado", "Turno", "Capacidad")),
+    MATERIAS("materias", "Materias", List.of("Código", "Materia", "Institución", "Descripción")),
     ALUMNOS("alumnos", "Alumnos", List.of("Matrícula", "Alumno", "CURP", "Nacimiento", "Ingreso")),
     TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),
     VINCULOS_TUTOR("vinculos-tutor", "Vínculos alumno–tutor", List.of("Alumno", "Tutor", "Parentesco", "Permisos", "Vigencia")),
@@ -53,7 +54,7 @@ public enum ModuloCatalogo {
 
     public String seccion() {
         return switch (this) {
-            case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS, GRUPOS -> "Estructura";
+            case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS, GRUPOS, MATERIAS -> "Estructura";
             case ALUMNOS, TUTORES, VINCULOS_TUTOR -> "Personas";
             case INSCRIPCIONES -> "Trayectoria";
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
@@ -73,6 +74,7 @@ public enum ModuloCatalogo {
             case CICLOS -> "CICLO";
             case PERIODOS -> "PERIODO";
             case GRUPOS -> "GRUPO";
+            case MATERIAS -> "MATERIA";
             case ALUMNOS -> "ALUMNO";
             case TUTORES -> "TUTOR";
             case VINCULOS_TUTOR -> "VINCULO_TUTOR";
@@ -121,7 +123,7 @@ public enum ModuloCatalogo {
     public boolean mantenimientoDisponible() {
         return this == INSTITUCIONES || this == PLANTELES || this == NIVELES
                 || this == OFERTA || this == GRADOS || this == CICLOS || this == PERIODOS
-                || this == GRUPOS || this == ALUMNOS || this == TUTORES
+                || this == GRUPOS || this == MATERIAS || this == ALUMNOS || this == TUTORES
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
                 || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == CARGOS
@@ -142,6 +144,7 @@ public enum ModuloCatalogo {
             case CICLOS -> "/admin/ciclos";
             case PERIODOS -> "/admin/periodos";
             case GRUPOS -> "/admin/grupos";
+            case MATERIAS -> "/admin/materias";
             case ALUMNOS -> "/admin/alumnos";
             case TUTORES -> "/admin/tutores";
             case VINCULOS_TUTOR -> "/admin/vinculos-tutor";

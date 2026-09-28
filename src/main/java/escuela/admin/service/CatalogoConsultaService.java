@@ -69,6 +69,7 @@ public class CatalogoConsultaService {
     private final CicloEscolarRepository cicloRepository;
     private final PeriodoAcademicoRepository periodoRepository;
     private final GrupoRepository grupoRepository;
+    private final MateriaRepository materiaRepository;
     private final AlumnoRepository alumnoRepository;
     private final TutorRepository tutorRepository;
     private final AlumnoTutorRepository alumnoTutorRepository;
@@ -107,6 +108,10 @@ public class CatalogoConsultaService {
                     e -> filaEstado(e.getId(), e.getEstado().name(), e.getCodigo(), e.getNombre(), e.getNivelEducativo().getNombre(), e.getTipo().name(), FECHA.format(e.getFechaInicio()) + " — " + FECHA.format(e.getFechaFin())));
             case GRUPOS -> consultar(modulo, grupoRepository, texto(f, "nombre", "codigo", "aula"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getNombre(), valor(e.getCodigo()), e.getPlantel().getNombre(), e.getGrado().getNombre(), e.getTurno().name(), e.getCapacidad() == null ? "Sin límite" : e.getCapacidad().toString()));
+            case MATERIAS -> consultar(modulo, materiaRepository,
+                    texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
+                    e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(),
+                            e.getInstitucion().getNombre(), valor(e.getDescripcion())));
             case ALUMNOS -> consultar(modulo, alumnoRepository,
                     texto(f, "matricula", "nombres", "primerApellido", "segundoApellido", "curp", "email"),
                     activo(f), pagina, e -> fila(e.getId(), e.isActivo(), e.getMatricula(),

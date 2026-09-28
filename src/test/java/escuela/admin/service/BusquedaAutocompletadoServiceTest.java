@@ -14,6 +14,7 @@ import escuela.cobranza.entity.ConceptoCobro;
 import escuela.inscripcion.entity.Inscripcion;
 import escuela.academico.entity.Grado;
 import escuela.academico.repository.PeriodoAcademicoRepository;
+import escuela.academico.repository.GradoRepository;
 import escuela.seguridad.entity.EstadoUsuario;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.repository.UsuarioRepository;
@@ -43,6 +44,7 @@ class BusquedaAutocompletadoServiceTest {
     private final BusquedaAutocompletadoService service = new BusquedaAutocompletadoService(
             alumnoRepository, tutorRepository, usuarioRepository, inscripcionRepository,
             conceptoCobroRepository, mock(PeriodoAcademicoRepository.class),
+            mock(GradoRepository.class),
             mock(TipoBecaRepository.class), mock(CargoRepository.class),
             mock(CuentaFinancieraRepository.class), alcance);
 

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+    <title th:text="${edicion ? 'Editar materia' : 'Nueva materia'} + ' · Nexo Escolar'">Materia</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
+</head>
+<body class="form-page">
+<main class="form-shell finance-shell">
+    <header class="form-top"><a href="/admin/catalogos/materias">← Volver a materias</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <p class="flash" th:if="${mensaje}" th:text="${mensaje}"></p>
+    <section class="form-card">
+        <div class="form-intro"><span>Plan académico</span><h1 th:text="${edicion ? 'Editar materia' : 'Crear materia'}">Crear materia</h1><p>Define la identidad institucional de la materia. Después configura en qué grados se imparte y cómo se evaluará.</p></div>
+        <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/materias/' + id : '/admin/materias'}">
+            <input type="hidden" th:field="*{version}">
+            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
+            <fieldset class="form-section"><legend>Identidad de la materia</legend><div class="form-grid">
+                <label class="wide"><span>Institución *</span><select id="institucion" th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
+                <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="MAT"><small th:errors="*{codigo}"></small></label>
+                <label><span>Nombre *</span><input th:field="*{nombre}" maxlength="150" placeholder="Matemáticas"><small th:errors="*{nombre}"></small></label>
+                <label class="wide"><span>Descripción</span><textarea th:field="*{descripcion}" maxlength="4000" rows="4" placeholder="Propósito general de la materia"></textarea><small th:errors="*{descripcion}"></small></label>
+                <label class="switch-row wide"><input type="checkbox" th:field="*{activo}"><span>Materia activa y disponible para planes nuevos</span></label>
+            </div></fieldset>
+            <footer class="form-actions"><a href="/admin/catalogos/materias">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear y configurar grados'}">Guardar</button></footer>
+        </form>
+
+        <section th:if="${edicion}" id="plan-grados" class="role-assignment subject-plan-section">
+            <div class="section-heading"><div><span>Configuración por grado</span><h2>Plan de evaluación</h2></div><p>La misma materia puede usar una escala distinta en cada grado. Las calificaciones futuras tomarán esta configuración sin duplicar la materia.</p></div>
+            <div class="account-buttons"><a class="primary-action subject-plan-add" th:href="@{/admin/materias/{id}/planes/nuevo(id=${id})}">+ Agregar grado</a></div>
+            <div class="assignment-list subject-plan-list" th:if="${!planes.isEmpty()}">
+                <article th:each="plan : ${planes}" th:classappend="${plan.activo ? '' : 'inactive'}">
+                    <div><span class="assignment-code" th:text="${plan.nivel}">Nivel</span><strong th:text="${plan.grado}">Grado</strong><small th:text="${plan.tipoEvaluacion.etiqueta + (plan.tipoEvaluacion.name() == 'NUMERICA' ? ' · ' + plan.escalaMinima + ' a ' + plan.escalaMaxima + ' · aprueba ' + plan.minimaAprobatoria : '')}">Evaluación</small></div>
+                    <span class="profile-status" th:classappend="${plan.activo ? ' active' : ' inactive'}" th:text="${plan.activo ? 'Activo' : 'Inactivo'}">Activo</span>
+                    <a class="edit-link" th:href="@{/admin/materias/{materiaId}/planes/{planId}/editar(materiaId=${id},planId=${plan.id})}">Configurar</a>
+                    <form th:if="${plan.activo}" method="post" th:action="@{/admin/materias/{materiaId}/planes/{planId}/desactivar(materiaId=${id},planId=${plan.id})}" onsubmit="return confirm('¿Desactivar esta materia para el grado? El historial académico se conservará.');"><input type="hidden" name="version" th:value="${plan.auditoria.version}"><button type="submit">Desactivar</button></form>
+                </article>
+            </div>
+            <p class="empty-assignment" th:if="${planes.isEmpty()}">Aún no se ha indicado en qué grados se imparte esta materia.</p>
+        </section>
+
+        <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/materias/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar esta materia? También se desactivarán sus planes vigentes y el historial permanecerá disponible.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar materia</strong><p>Dejará de estar disponible para nuevas capturas; no se eliminarán sus datos.</p></div><button type="submit">Desactivar</button></form>
+    </section>
+</main>
+</body>
+</html>
+

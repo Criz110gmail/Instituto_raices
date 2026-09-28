@@ -20,12 +20,12 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` antes de iniciar V38: `5770563` —
-  `ayudas de informacion para saber que hace cada input en el sistema`.
+- Último commit confirmado en `main` antes de iniciar V39: `6b26516` —
+  `Implementé la etapa V38: expediente documental y ficha médica del alumno.`.
   Confirma `git status` y `git log` antes de continuar.
-- El cambio local actual implementa V38 con expediente documental y ficha médica del
-  alumno; todavía debe ser revisado y confirmado por el propietario. El volumen habitual
-  ya tiene Flyway V1–V38 aplicado y la siguiente migración disponible es V39.
+- El cambio local actual implementa V39 con Materias y su plan de evaluación por grado;
+  todavía debe ser revisado y confirmado por el propietario. El volumen habitual ya
+  tiene Flyway V1–V39 aplicado y la siguiente migración disponible es V40.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -683,13 +683,19 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   médico y contacto/autorización de emergencia con auditoría y versión optimista.
 - V38 reutiliza los permisos y el alcance de Alumnos; no agrega permisos ni menú y no
   expone información médica al portal familiar. Los bytes permanecen en `private_files`.
+- V39 agrega el módulo `Materias` y configura por grado el tipo de evaluación numérica o
+  cualitativa, escala, mínima aprobatoria, decimales, orden, horas semanales e inclusión
+  en boleta. El grado usa autocompletado remoto y no se cargan catálogos completos.
+- `MATERIA_LEER` y `MATERIA_ADMINISTRAR` respetan el modelo de acceso completo por
+  módulo y no se asignan automáticamente a roles existentes. Los conflictos de código,
+  grado, orden o versión permanecen en el formulario con un mensaje comprensible.
 
 ## Verificación confirmada
 
-- Compilación correcta de 546 archivos Java de producción.
-- 344 pruebas Maven sin fallos, errores ni omisiones.
-- Flyway V1 a V38 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 48 repositorios.
+- Compilación correcta de 561 archivos Java de producción.
+- 350 pruebas Maven sin fallos, errores ni omisiones.
+- Flyway V1 a V39 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 50 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -817,12 +823,16 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-V38 está implementada, compilada, aplicada y verificada automáticamente. Antes de crear
-V39, el propietario debe editar un alumno controlado y probar con datos ficticios: cargar
-un PDF o imagen menor de 10 MB, descargarlo, retirarlo y confirmar que permanece en el
-historial; luego crear y actualizar la ficha médica, comprobar fechas/errores en la misma
-pantalla y revisar la vista móvil. No utilizar documentos ni datos médicos reales sólo
-para verificar. El siguiente bloque de dominio se decide después de aprobar esta prueba.
+V39 está implementada, compilada, aplicada y verificada automáticamente. El propietario
+debe asignar el nuevo módulo `Materias` al rol correspondiente, iniciar una sesión nueva
+y probar con datos controlados: crear una materia, asociarla mediante autocompletado a un
+grado, revisar evaluación numérica y cualitativa, editar, desactivar y confirmar errores
+en la misma pantalla. No crear materias operativas sólo para verificar.
+
+Después de aprobar V39, el siguiente desarrollo acordado es V40: calificaciones por
+`Inscripcion`, materia y `PeriodoAcademico`, con estados borrador/publicada, escala tomada
+del plan de grado, captura eficiente por grupo y visibilidad familiar sólo para resultados
+publicados. No iniciar boletas ni asistencia antes de estabilizar ese núcleo.
 
 También sigue pendiente la prueba funcional controlada de V34/V35: usar un tutor
 autorizado con varios hijos y varios cargos —incluidos dos del mismo alumno—, distribuir
@@ -958,16 +968,15 @@ funcionales actuales.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. `main` estaba en `5770563` antes de iniciar V38. El cambio local implementa el
-   expediente documental y la ficha médica del alumno. Preservarlo y no reconstruir
-   V1–V38.
+1. `main` estaba en `6b26516` antes de iniciar V39. El cambio local implementa Materias
+   y su plan de evaluación por grado. Preservarlo y no reconstruir V1–V39.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V38 ya existen y están aplicadas al volumen habitual; nunca editarlas.
-   La siguiente migración disponible será V39.
+4. Flyway V1–V39 ya existen y están aplicadas al volumen habitual; nunca editarlas.
+   La siguiente migración disponible será V40.
 5. Probar las cuatro descargas Jasper con datos controlados y distintos tamaños de
    resultado. Ejecutar también la prueba manual de V37 y las pendientes descritas para V34, V35 y V36. Mantener
    además
@@ -981,12 +990,11 @@ funcionales actuales.
 
 ## Disciplina de cambios y entrega
 
-V34–V38, los reportes financieros Jasper, la navegación separada del portal familiar y
-la ayuda contextual global están implementados localmente. V38 compiló, migró y arrancó;
-falta que el propietario pruebe con datos ficticios la carga, descarga y retiro de un
-documento, además de crear y actualizar una ficha médica. También siguen pendientes las
-pruebas funcionales controladas ya enumeradas de etapas anteriores. No iniciar V39 hasta
-que V38 sea revisada y confirmada.
+V34–V39, los reportes financieros Jasper, la navegación separada del portal familiar y
+la ayuda contextual global están implementados localmente. V39 compiló, migró y arrancó;
+falta que el propietario asigne su permiso y pruebe Materias con datos controlados. También
+siguen pendientes las pruebas funcionales enumeradas de etapas anteriores. Después de
+aprobar V39, continuar con V40 de calificaciones.
 
 - Inspecciona `git status` antes de editar y preserva cambios ajenos.
 - Usa migraciones Flyway nuevas para cambios de esquema; nunca edites una migración ya

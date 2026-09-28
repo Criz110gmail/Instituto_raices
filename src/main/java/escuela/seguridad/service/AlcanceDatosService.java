@@ -3,6 +3,7 @@ package escuela.seguridad.service;
 import escuela.academico.repository.CicloEscolarRepository;
 import escuela.academico.repository.GradoRepository;
 import escuela.academico.repository.GrupoRepository;
+import escuela.academico.repository.MateriaRepository;
 import escuela.academico.repository.NivelEducativoRepository;
 import escuela.academico.repository.PeriodoAcademicoRepository;
 import escuela.alumno.repository.AlumnoRepository;
@@ -59,6 +60,7 @@ public class AlcanceDatosService {
     private final CicloEscolarRepository cicloRepository;
     private final PeriodoAcademicoRepository periodoRepository;
     private final GrupoRepository grupoRepository;
+    private final MateriaRepository materiaRepository;
     private final AlumnoRepository alumnoRepository;
     private final TutorRepository tutorRepository;
     private final AlumnoTutorRepository alumnoTutorRepository;
@@ -84,7 +86,7 @@ public class AlcanceDatosService {
         return (root, query, cb) -> {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
-                case PLANTELES, NIVELES, CICLOS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS, EVENTOS_ESCOLARES, AVISOS, ROLES, USUARIOS, AUDITORIA -> root.get("institucion").get("id");
+                case PLANTELES, NIVELES, CICLOS, MATERIAS, ALUMNOS, TUTORES, CONCEPTOS_COBRO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS, EVENTOS_ESCOLARES, AVISOS, ROLES, USUARIOS, AUDITORIA -> root.get("institucion").get("id");
                 case PORTAL_TUTOR -> root.get("id");
                 case POLITICAS_RECARGO -> root.get("conceptoCobro").get("institucion").get("id");
                 case VINCULOS_TUTOR, INSCRIPCIONES -> root.get("alumno").get("institucion").get("id");
@@ -185,6 +187,8 @@ public class AlcanceDatosService {
                     .orElseThrow(this::denegado).getCicloEscolar().getInstitucion().getId());
             case GRUPOS -> validarPlantel(grupoRepository.findById(id)
                     .orElseThrow(this::denegado).getPlantel().getId());
+            case MATERIAS -> validarInstitucion(materiaRepository.findById(id)
+                    .orElseThrow(this::denegado).getInstitucion().getId());
             case ALUMNOS -> validarInstitucion(alumnoRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());
             case TUTORES -> validarInstitucion(tutorRepository.findById(id)

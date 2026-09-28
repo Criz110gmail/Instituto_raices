@@ -1760,3 +1760,25 @@ historial paginado.
 - Docker compiló 546 fuentes y ejecutó 344 pruebas sin fallos. Flyway validó 38
   migraciones, aplicó V38 sobre el volumen habitual y la aplicación respondió `UP`.
   Falta la prueba visual y funcional autenticada del propietario con datos ficticios.
+
+## V39 — materias y plan de evaluación por grado
+
+- Se agregó `materia` como catálogo institucional y `materia_grado` como configuración
+  académica por grado. Cada plan define evaluación numérica o cualitativa, escala y mínima
+  aprobatoria cuando corresponda, decimales, orden, horas semanales, inclusión en boleta,
+  estado, auditoría y versión optimista.
+- La base impide repetir código dentro de una institución, asociar dos veces una materia
+  al mismo grado y repetir el orden entre materias activas del grado. El servicio valida
+  además institución, nivel/grado activos, coherencia de escala y concurrencia.
+- El módulo administrativo `Materias` incluye alta, edición y desactivación lógica de la
+  materia y sus planes. La búsqueda de grado usa autocompletado PostgreSQL de tres
+  caracteres y máximo 20 resultados. Los errores de negocio, integridad y versión se
+  muestran en el mismo formulario.
+- Se agregaron `MATERIA_LEER` y `MATERIA_ADMINISTRAR` sin asignación automática. El
+  catálogo respeta alcance institucional, filtros, paginación y exportación XLSX global.
+- Docker compiló 561 fuentes y ejecutó 350 pruebas sin fallos. Flyway validó 39
+  migraciones y aplicó V39 sobre el volumen habitual; Hibernate detectó 50 repositorios
+  y `/actuator/health` respondió `UP`. No se crearon materias de prueba.
+- Falta la prueba funcional del propietario y asignar el nuevo módulo al rol deseado. Al
+  aprobarla, continúa V40 con calificaciones por inscripción, materia y periodo en estados
+  borrador/publicada; después V41 asistencia diaria y V42 boletas Jasper derivadas.

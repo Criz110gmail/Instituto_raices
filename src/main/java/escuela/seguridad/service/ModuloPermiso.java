@@ -27,6 +27,8 @@ public enum ModuloPermiso {
             "PERIODO_LEER", "PERIODO_ADMINISTRAR"),
     GRUPOS("Grupos", "Acceso completo a grupos",
             "GRUPO_LEER", "GRUPO_ADMINISTRAR"),
+    MATERIAS("Materias", "Acceso completo a materias y planes de evaluación por grado",
+            "MATERIA_LEER", "MATERIA_ADMINISTRAR"),
     ALUMNOS("Alumnos", "Acceso completo al expediente de alumnos",
             "ALUMNO_LEER", "ALUMNO_ADMINISTRAR"),
     TUTORES("Tutores", "Acceso completo al expediente de tutores",
