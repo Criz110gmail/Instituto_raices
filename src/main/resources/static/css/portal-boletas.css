@@ -1,0 +1,37 @@
+.portal-section-hero.boletas {
+    background: linear-gradient(130deg, color-mix(in srgb, var(--lavender) 22%, var(--card)), var(--card));
+}
+.family-report-section {
+    background: linear-gradient(155deg, var(--card), color-mix(in srgb, var(--lavender-soft) 48%, var(--card)));
+}
+.family-report-list { display: grid; gap: 13px; }
+.family-report-list article {
+    display: grid; grid-template-columns: 68px minmax(0, 1fr) auto; align-items: center;
+    gap: 17px; padding: 17px; border: 1px solid var(--line); border-radius: 20px;
+    background: var(--card); transition: transform .18s, box-shadow .18s;
+}
+.family-report-list article:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.family-report-icon {
+    width: 68px; height: 76px; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; border-radius: 18px;
+    background: linear-gradient(145deg, var(--lavender-soft), color-mix(in srgb, var(--lavender) 18%, var(--card)));
+    color: var(--lavender);
+}
+.family-report-icon span { font-size: 27px; }
+.family-report-icon small { margin-top: 3px; font-size: 9px; font-weight: 800; letter-spacing: .1em; }
+.family-report-copy > span { color: var(--coral); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.family-report-copy h3 { margin: 5px 0 3px; font: 800 18px Manrope; }
+.family-report-copy p { margin: 0; color: var(--muted); font-size: 12px; }
+.family-report-copy > div { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.family-report-copy > div small { padding: 5px 8px; border-radius: 99px; background: var(--soft); color: var(--muted); font-size: 10px; font-weight: 700; }
+.family-report-open { display: flex; align-items: center; gap: 9px; padding: 12px 15px; border-radius: 13px; background: var(--mint); color: #fff; font-weight: 800; text-decoration: none; }
+.family-report-open b { font-size: 17px; }
+.family-report-note { display: flex; justify-content: center; align-items: center; gap: 7px; margin: 18px 0 0; color: var(--muted); font-size: 11px; }
+.family-report-note span { color: var(--mint); font-weight: 800; }
+@media (max-width: 590px) {
+    .family-report-list article { grid-template-columns: 55px 1fr; padding: 13px; gap: 12px; }
+    .family-report-icon { width: 55px; height: 64px; border-radius: 15px; }
+    .family-report-copy h3 { font-size: 15px; }
+    .family-report-open { grid-column: 1 / -1; justify-content: center; }
+    .family-report-note { align-items: flex-start; }
+}

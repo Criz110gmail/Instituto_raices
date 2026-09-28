@@ -4,6 +4,8 @@ import escuela.alumno.service.FotografiaAlumnoService;
 import escuela.archivo.dto.ArchivoDescarga;
 import escuela.portal.service.PortalTutorService;
 import escuela.portal.service.NotificacionPortalService;
+import escuela.portal.service.PortalBoletaService;
+import escuela.admin.service.JasperBoletaService;
 import escuela.calificacion.service.CalificacionService;
 import escuela.portal.dto.PortalTutorResultado;
 import escuela.seguridad.service.UsuarioPrincipal;
@@ -16,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
+import java.net.URLEncoder;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,6 +28,8 @@ public class PortalTutorController {
     private final FotografiaAlumnoService fotografiaService;
     private final NotificacionPortalService notificaciones;
     private final CalificacionService calificaciones;
+    private final PortalBoletaService boletas;
+    private final JasperBoletaService jasperBoletas;
 
     @GetMapping
     String portal(@RequestParam(required = false) Long alumnoId,
@@ -78,6 +83,29 @@ public class PortalTutorController {
                 ? org.springframework.data.domain.Page.empty()
                 : calificaciones.publicadasAlumno(portal.hijo().alumnoId(), pagina, 10));
         return vista;
+    }
+
+    @GetMapping("/boletas")
+    String boletas(@RequestParam(required = false) Long alumnoId,
+                   @RequestParam(defaultValue = "0") int pagina,
+                   @AuthenticationPrincipal UsuarioPrincipal principal, Model model) {
+        String vista = seccion("BOLETAS", alumnoId, 0, 0, 0, 0, 0, principal, model);
+        PortalTutorResultado portal = (PortalTutorResultado) model.getAttribute("portal");
+        model.addAttribute("boletas", portal == null || portal.hijo() == null
+                ? org.springframework.data.domain.Page.empty()
+                : boletas.listar(principal, portal.hijo().alumnoId(), pagina));
+        return vista;
+    }
+
+    @GetMapping("/boletas/{inscripcionId}/pdf")
+    void boletaPdf(@PathVariable Long inscripcionId, @RequestParam Long alumnoId,
+                   @AuthenticationPrincipal UsuarioPrincipal principal,
+                   jakarta.servlet.http.HttpServletResponse response) throws java.io.IOException {
+        var detalle = boletas.detalle(principal, alumnoId, inscripcionId);
+        response.setContentType("application/pdf");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" +
+                URLEncoder.encode("boleta-" + detalle.ciclo() + ".pdf", StandardCharsets.UTF_8));
+        jasperBoletas.exportar(detalle, response.getOutputStream());
     }
 
     @PostMapping("/notificaciones/{id}/leer")

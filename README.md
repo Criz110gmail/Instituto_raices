@@ -550,3 +550,18 @@ Cada alumno puede abrir su PDF en otra pestaña. También se puede generar un PD
 o un Excel con Apache POI conservando exactamente los filtros visibles. Las exportaciones
 trabajan en bloques de 100 alumnos; Jasper recibe los datos de los servicios y no ejecuta
 SQL propio. El permiso `BOLETA_CONSULTAR` debe asignarse explícitamente al rol autorizado.
+
+### V43 · Boletas en el portal familiar
+
+El tutor consulta en `/portal/boletas` las boletas disponibles de cada hijo autorizado,
+organizadas por ciclo escolar y paginadas desde PostgreSQL. La pantalla mantiene el
+diseño, temas y navegación responsiva de **Mi familia**. Cada PDF oficial se abre en otra
+pestaña para revisarlo antes de decidir si se descarga.
+
+La vista de soporte administrativo reproduce esta sección con sus controles de permiso,
+alcance y auditoría. Sólo se consideran calificaciones publicadas de materias incluidas
+en boleta. Esta etapa no cambia el esquema: Flyway permanece en V42.
+
+Como etapa posterior queda acordado un portal propio para maestros, con cuentas separadas
+y carga semanal de planeaciones por grupo que la administración podrá consultar. El
+modelo y el flujo se definirán cuando el propietario entregue el formato de planeación.

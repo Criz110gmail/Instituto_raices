@@ -1,18 +1,15 @@
 package escuela.admin.service;
 
 import escuela.academico.entity.Grupo;
-import escuela.academico.entity.TipoEvaluacion;
 import escuela.academico.repository.CicloEscolarRepository;
 import escuela.academico.repository.GrupoRepository;
 import escuela.admin.dto.*;
 import escuela.calificacion.entity.Calificacion;
 import escuela.calificacion.entity.EstadoCalificacion;
-import escuela.calificacion.repository.CalificacionRepository;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.inscripcion.entity.AsignacionGrupo;
 import escuela.inscripcion.entity.EstadoInscripcion;
 import escuela.inscripcion.entity.Inscripcion;
-import escuela.inscripcion.repository.AsignacionGrupoRepository;
 import escuela.inscripcion.repository.InscripcionRepository;
 import escuela.institucion.repository.PlantelRepository;
 import escuela.seguridad.service.AlcanceDatosService;
@@ -26,18 +23,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BoletaConsultaService {
     private final InscripcionRepository inscripciones;
-    private final AsignacionGrupoRepository asignaciones;
-    private final CalificacionRepository calificaciones;
+    private final BoletaDetalleService detalles;
     private final CicloEscolarRepository ciclos;
     private final PlantelRepository planteles;
     private final GrupoRepository grupos;
@@ -94,15 +87,15 @@ public class BoletaConsultaService {
                 Sort.Order.asc("alumno.primerApellido"), Sort.Order.asc("alumno.segundoApellido"),
                 Sort.Order.asc("alumno.nombres"), Sort.Order.asc("id")));
         Page<Inscripcion> resultado = inscripciones.findAll(especificacion(filtro), pagina);
-        Map<Long, BoletaDetalle> detalles = detalles(resultado.getContent());
-        return resultado.map(i -> detalles.get(i.getId()));
+        Map<Long, BoletaDetalle> porInscripcion = detalles.crear(resultado.getContent());
+        return resultado.map(i -> porInscripcion.get(i.getId()));
     }
 
     public BoletaDetalle detalle(Long inscripcionId) {
         alcance.validarRecurso(ModuloCatalogo.INSCRIPCIONES, inscripcionId);
         Inscripcion inscripcion = inscripciones.findById(inscripcionId)
                 .orElseThrow(() -> new ReglaNegocioException("La inscripción solicitada no existe"));
-        BoletaDetalle detalle = detalles(List.of(inscripcion)).get(inscripcionId);
+        BoletaDetalle detalle = detalles.crear(List.of(inscripcion)).get(inscripcionId);
         if (detalle == null || detalle.calificaciones().isEmpty()) {
             throw new ReglaNegocioException("La inscripción todavía no tiene calificaciones publicadas incluidas en boleta");
         }
@@ -158,43 +151,6 @@ public class BoletaConsultaService {
         };
     }
 
-    private Map<Long, BoletaDetalle> detalles(List<Inscripcion> lista) {
-        if (lista.isEmpty()) return Map.of();
-        List<Long> ids = lista.stream().map(Inscripcion::getId).toList();
-        Map<Long, List<Calificacion>> porInscripcion = calificaciones
-                .findAllByInscripcionIdInAndEstadoAndMateriaGradoIncluirBoletaTrueOrderByInscripcionIdAscPeriodoAcademicoOrdenAscMateriaGradoOrdenAscIdAsc(
-                        ids, EstadoCalificacion.PUBLICADA).stream()
-                .collect(Collectors.groupingBy(c -> c.getInscripcion().getId(), LinkedHashMap::new, Collectors.toList()));
-        Map<Long, String> grupo = new HashMap<>();
-        for (AsignacionGrupo a : asignaciones.buscarHistorialParaBoleta(ids)) {
-            grupo.putIfAbsent(a.getInscripcion().getId(), a.getGrupo().getNombre() + " · " + a.getGrupo().getTurno().name());
-        }
-        Map<Long, BoletaDetalle> resultado = new LinkedHashMap<>();
-        for (Inscripcion i : lista) {
-            List<BoletaCalificacionFila> filas = porInscripcion.getOrDefault(i.getId(), List.of()).stream()
-                    .map(this::filaCalificacion).toList();
-            var alumno = i.getAlumno();
-            resultado.put(i.getId(), new BoletaDetalle(i.getId(), alumno.getInstitucion().getId(),
-                    alumno.getInstitucion().getNombre(), i.getNumeroInscripcion(), alumno.getMatricula(),
-                    nombre(alumno.getNombres(), alumno.getPrimerApellido(), alumno.getSegundoApellido()),
-                    i.getPlantel().getNombre(), i.getCicloEscolar().getNombre(), i.getGrado().getNombre(),
-                    grupo.getOrDefault(i.getId(), "Sin grupo registrado"), filas));
-        }
-        return resultado;
-    }
-
-    private BoletaCalificacionFila filaCalificacion(Calificacion c) {
-        String resultado = c.getTipoEvaluacion() == TipoEvaluacion.NUMERICA
-                ? numero(c.getValorNumerico(), c.getDecimales()) : c.getValorCualitativo();
-        String escala = c.getTipoEvaluacion() == TipoEvaluacion.NUMERICA
-                ? numero(c.getEscalaMinima(), c.getDecimales()) + "–" + numero(c.getEscalaMaxima(), c.getDecimales())
-                    + " · mínima " + numero(c.getMinimaAprobatoria(), c.getDecimales())
-                : "Evaluación cualitativa";
-        return new BoletaCalificacionFila(c.getPeriodoAcademico().getNombre(),
-                c.getMateriaGrado().getMateria().getNombre(), resultado, escala,
-                c.getObservaciones() == null ? "" : c.getObservaciones());
-    }
-
     private BoletaListadoFila filaListado(BoletaDetalle d) {
         long periodos = d.calificaciones().stream().map(BoletaCalificacionFila::periodo).distinct().count();
         long materias = d.calificaciones().stream().map(BoletaCalificacionFila::materia).distinct().count();
@@ -207,11 +163,4 @@ public class BoletaConsultaService {
         if (filtro.cicloId() == null) throw new ReglaNegocioException("Selecciona un ciclo escolar");
     }
 
-    private String numero(BigDecimal valor, int decimales) {
-        return valor == null ? "" : valor.setScale(decimales, RoundingMode.HALF_UP).toPlainString();
-    }
-
-    private String nombre(String... partes) {
-        return Arrays.stream(partes).filter(p -> p != null && !p.isBlank()).collect(Collectors.joining(" "));
-    }
 }

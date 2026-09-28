@@ -30,7 +30,10 @@ public class JasperBoletaService {
     private final BoletaConsultaService consulta;
 
     public void individual(Long inscripcionId, OutputStream salida) {
-        BoletaDetalle detalle = consulta.detalle(inscripcionId);
+        exportar(consulta.detalle(inscripcionId), salida);
+    }
+
+    public void exportar(BoletaDetalle detalle, OutputStream salida) {
         exportar(new BoletaDataSource(new PageImpl<>(List.of(detalle)), pagina -> Page.empty()), salida);
     }
 

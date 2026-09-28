@@ -20,13 +20,12 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` antes de iniciar V41: `5e0a1b2` —
-  `V40 quedó terminada y desplegada localmente.`.
-  Confirma `git status` y `git log` antes de continuar.
-- El cambio local actual implementa V41 con captura masiva, historial y exportación de
-  asistencia diaria; todavía debe ser revisado y confirmado por el propietario. El
-  volumen de esta computadora ya tiene Flyway V1–V41 aplicado y la siguiente migración
-  disponible es V42.
+- Confirma siempre `git status` y `git log` antes de continuar; el propietario realiza
+  manualmente los commits y el `push`.
+- El cambio local actual implementa V43 funcional: consulta paginada de boletas en el
+  portal familiar y soporte administrativo, con apertura del PDF en otra pestaña. No
+  requiere cambio de esquema: el volumen conserva Flyway V1–V42 y la siguiente
+  migración SQL disponible sigue siendo V43.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -837,17 +836,20 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-V41 está implementada, compilada, aplicada y verificada automáticamente. El propietario
-debe asignar el módulo `Asistencia` al rol correspondiente, iniciar una sesión nueva y
-probar con datos controlados: elegir grupo y fecha, confirmar que aparezcan sólo los
-alumnos asignados históricamente ese día, guardar presente/ausente/retardo/justificada,
-editar la misma hoja y revisar filtros, paginación y exportación XLSX. También debe
-confirmar el diseño responsivo y los temas claro/oscuro. No crear asistencias operativas
-sólo para verificar.
+V43 funcional quedó implementada y desplegada: el tutor consulta boletas paginadas por
+hijo y abre el PDF oficial en otra pestaña; soporte administrativo puede reproducir la
+misma experiencia. El propietario debe probarla con una cuenta familiar controlada,
+incluidos cambio de hijo, ciclos con y sin resultados, tema oscuro y dispositivo móvil.
 
-V42 quedó implementada y desplegada: boletas Jasper derivadas exclusivamente de
-calificaciones publicadas, sin duplicar resultados ni totales. Respeta alcance, genera
-documentos individuales o colectivos y procesa las emisiones en bloques.
+Después de aprobar V43, la siguiente etapa acordada es el portal propio de maestros y la
+entrega semanal de planeaciones por grupo. Antes de crear tablas o pantallas, solicitar y
+analizar el formato real que proporcionará el propietario, y acordar si se capturarán
+datos estructurados, se adjuntará el documento o se usarán ambas opciones.
+
+V41 y V42 también están implementadas y verificadas automáticamente. Permanecen sus
+pruebas funcionales controladas: Asistencia requiere revisar captura masiva, historial
+y Excel; Boletas administrativas requiere asignar `BOLETA_CONSULTAR` y comprobar filtros,
+PDF individual/colectivo y Excel. No crear datos operativos reales sólo para verificar.
 
 También sigue pendiente la prueba funcional controlada de V34/V35: usar un tutor
 autorizado con varios hijos y varios cargos —incluidos dos del mismo alumno—, distribuir
@@ -983,15 +985,15 @@ funcionales actuales.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. `main` estaba en `84488e6` antes de iniciar V42. El cambio local implementa
-   Boletas. Preservarlo y no reconstruir V1–V42.
+1. El cambio local posterior a V42 implementa V43 funcional: boletas PDF dentro del
+   portal familiar y de la vista de soporte. Preservarlo y no reconstruir V1–V43.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V42 ya existen y están aplicadas al volumen local; nunca editarlas.
-   La siguiente migración disponible será V43.
+4. Flyway V1–V42 ya existen y están aplicadas al volumen local; nunca editarlas. V43
+   funcional no agregó SQL, por lo que la siguiente migración disponible será V43.
 5. Probar las cuatro descargas Jasper con datos controlados y distintos tamaños de
    resultado. Ejecutar también la prueba manual de V37 y las pendientes descritas para V34, V35 y V36. Mantener
    además
@@ -1005,11 +1007,11 @@ funcionales actuales.
 
 ## Disciplina de cambios y entrega
 
-V34–V42, los reportes financieros Jasper, la navegación separada del portal familiar y
-la ayuda contextual global están implementados localmente. V42 compiló, migró y arrancó;
-falta que el propietario asigne su permiso y pruebe Boletas con datos controlados.
-También siguen pendientes las pruebas funcionales enumeradas de etapas anteriores.
-Después de aprobar V42, definir V43 según la prioridad funcional del propietario.
+V34–V43 funcional, los reportes financieros Jasper, la navegación separada del portal
+familiar y la ayuda contextual global están implementados localmente. V43 compiló,
+ejecutó sus pruebas y arrancó; falta que el propietario pruebe Boletas con una cuenta
+familiar y datos controlados. También siguen pendientes las pruebas funcionales
+enumeradas de etapas anteriores.
 
 - Inspecciona `git status` antes de editar y preserva cambios ajenos.
 - Usa migraciones Flyway nuevas para cambios de esquema; nunca edites una migración ya
@@ -1042,3 +1044,35 @@ Después de aprobar V42, definir V43 según la prioridad funcional del propietar
 - Falta la prueba visual y funcional autenticada del propietario con calificaciones
   controladas, así como asignar `Boletas` al rol correspondiente. La siguiente migración
   libre es V43 y su alcance debe decidirse después de aprobar esta etapa.
+
+### V43 funcional — boletas PDF en el portal familiar
+
+- El tutor puede abrir `/portal/boletas` para consultar, por cada hijo autorizado, las
+  inscripciones con calificaciones publicadas e incluidas en boleta. La consulta pagina
+  en PostgreSQL y nunca recupera el historial completo.
+- Cada tarjeta resume ciclo, plantel, grado, grupo, materias y periodos disponibles. El
+  PDF oficial se abre en otra pestaña mediante `Content-Disposition: inline`; el tutor
+  decide desde el navegador si desea descargarlo.
+- La autorización valida institución, tutor, vínculo vigente, hijo e inscripción. No se
+  aceptan identificadores de otro alumno y nunca se muestran borradores.
+- La vista de soporte administrativo ofrece exactamente la misma consulta y PDF para
+  reproducir la experiencia familiar, conservando su permiso propio y la auditoría.
+- El diseño reutiliza la identidad crema, coral y menta, temas claro/oscuro, tarjetas,
+  selector de hijos, navegación móvil y estados vacíos del portal familiar.
+- No hubo migración: Flyway permanece en V42 y el nombre V43 sigue libre para el próximo
+  cambio de esquema. Docker compiló 596 fuentes principales y 94 de prueba; ejecutó
+  365 pruebas sin fallos, desplegó la imagen y `/actuator/health` respondió `UP`.
+
+### Pendiente acordado — portal de maestros y planeaciones semanales
+
+- Después de cerrar V43 se desarrollará un acceso propio para maestros, separado del
+  portal familiar y de la consola administrativa. Cada maestro tendrá una cuenta y sólo
+  podrá trabajar con los grupos que tenga asignados.
+- El maestro podrá cargar su planeación por grupo cada semana y el administrador podrá
+  consultarla desde el sistema, con historial, seguridad y almacenamiento privado.
+- El propietario entregará el formato real de planeación cuando comience esa etapa. No
+  definir campos, migración, validaciones ni flujo de revisión antes de analizar dicho
+  formato; primero acordar si se llena dentro del sistema o se adjunta como documento.
+- Al diseñarla se deben resolver expresamente asignación maestro–grupo, semana/ciclo,
+  unicidad, reemplazos o versiones, estados de revisión, comentarios, permisos,
+  auditoría, tipos y tamaños de archivo, y experiencia responsiva del portal docente.

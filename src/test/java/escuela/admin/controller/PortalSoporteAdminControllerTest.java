@@ -30,10 +30,11 @@ class PortalSoporteAdminControllerTest {
     void cadaOpcionFamiliarTieneRutaPropiaYElInicioYaNoUsaAnclas() throws IOException {
         String inicio = plantilla("portal/inicio.html");
         assertThat(inicio).contains("/portal/notificaciones", "/portal/avisos", "/portal/agenda",
-                        "/portal/pagos")
+                        "/portal/pagos", "/portal/boletas")
                 .doesNotContain("href=\"#avisos\"", "href=\"#agenda\"", "href=\"#cuenta\"");
         assertThat(plantilla("portal/seccion.html"))
-                .contains("Notificaciones", "Avisos importantes", "Agenda", "Tus pagos", "Regresar");
+                .contains("Notificaciones", "Avisos importantes", "Agenda", "Tus pagos", "Boletas disponibles",
+                        "target=\"_blank\"", "Regresar");
     }
 
     private String plantilla(String ruta) throws IOException {

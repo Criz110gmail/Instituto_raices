@@ -1864,3 +1864,37 @@ historial paginado.
 - Pendiente del propietario: asignar Boletas al rol elegido y probar con calificaciones
   controladas los filtros, PDF individual, PDF colectivo y Excel. V43 queda libre y debe
   definirse después de aprobar esta etapa.
+
+## V43 funcional — boletas PDF en el portal familiar (2026-09-28)
+
+- Se incorporó `/portal/boletas`, accesible con el permiso ya existente
+  `PORTAL_TUTOR_ACCEDER`. La pantalla pagina en base de datos las inscripciones del hijo
+  seleccionado que tienen resultados `PUBLICADA` en materias incluidas en boleta.
+- La interfaz muestra tarjetas por ciclo con plantel, grado, grupo, cantidad de materias
+  y periodos. Respeta la identidad visual, los temas, el selector de hijos, estados
+  vacíos, paginación y navegación móvil del portal familiar.
+- El PDF reutiliza el generador Jasper oficial de V42 y se sirve en línea, en otra
+  pestaña. Antes de generarlo se valida que tutor, vínculo, alumno, institución e
+  inscripción correspondan a la sesión; no se exponen resultados en borrador.
+- Soporte administrativo puede recorrer la misma sección y abrir el mismo PDF bajo
+  `/admin/portal-soporte/{tutorId}`, con permiso y auditoría propios.
+- Se extrajo un servicio común de detalle de boleta para evitar reglas divergentes entre
+  administración y familia. No se crearon tablas ni copias de calificaciones.
+- Docker compiló 596 fuentes principales y 94 fuentes de prueba; las 365 pruebas pasaron.
+  La imagen se desplegó, Flyway validó V1–V42 y Actuator respondió `UP`. La prueba visual
+  autenticada queda a cargo del propietario porque no se leyeron credenciales de `.env`.
+- Aunque la etapa funcional se llama V43, no existe migración V43: ese número continúa
+  disponible para el siguiente cambio de esquema.
+
+## Pendiente acordado después de V43 — portal docente
+
+- Crear cuentas y un inicio de sesión propios para maestros, independientes del portal
+  familiar, con acceso limitado a sus grupos asignados.
+- Permitir que cada maestro entregue semanalmente la planeación de cada grupo y que la
+  administración pueda consultar su documento, historial y estado desde la consola.
+- El propietario proporcionará el formato de planeación al comenzar esa etapa. Antes de
+  crear dominio o migraciones se debe analizarlo y decidir si el flujo será captura
+  estructurada, archivo adjunto o ambos.
+- El diseño posterior debe contemplar periodo escolar, semana, asignación maestro–grupo,
+  versiones, revisión administrativa, comentarios, permisos, auditoría, almacenamiento
+  privado, validación de archivos y una interfaz docente 100 % responsiva.

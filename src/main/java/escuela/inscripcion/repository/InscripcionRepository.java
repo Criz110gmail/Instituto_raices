@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -89,4 +91,40 @@ public interface InscripcionRepository extends JpaRepository<Inscripcion, Long>,
             """)
     List<Inscripcion> buscarParaAsistencia(@Param("grupoId") Long grupoId,
                                            @Param("fecha") LocalDate fecha);
+
+    @EntityGraph(attributePaths = {"alumno", "alumno.institucion", "plantel", "cicloEscolar", "grado"})
+    @Query("""
+            select i from Inscripcion i
+            where i.alumno.id = :alumnoId
+              and i.alumno.institucion.id = :institucionId
+              and i.estado <> escuela.inscripcion.entity.EstadoInscripcion.CANCELADA
+              and exists (
+                  select c.id from Calificacion c
+                  where c.inscripcion.id = i.id
+                    and c.estado = escuela.calificacion.entity.EstadoCalificacion.PUBLICADA
+                    and c.materiaGrado.incluirBoleta = true
+              )
+            order by i.cicloEscolar.fechaInicio desc, i.id desc
+            """)
+    Page<Inscripcion> buscarBoletasPortal(@Param("alumnoId") Long alumnoId,
+                                          @Param("institucionId") Long institucionId,
+                                          Pageable pagina);
+
+    @EntityGraph(attributePaths = {"alumno", "alumno.institucion", "plantel", "cicloEscolar", "grado"})
+    @Query("""
+            select i from Inscripcion i
+            where i.id = :inscripcionId
+              and i.alumno.id = :alumnoId
+              and i.alumno.institucion.id = :institucionId
+              and i.estado <> escuela.inscripcion.entity.EstadoInscripcion.CANCELADA
+              and exists (
+                  select c.id from Calificacion c
+                  where c.inscripcion.id = i.id
+                    and c.estado = escuela.calificacion.entity.EstadoCalificacion.PUBLICADA
+                    and c.materiaGrado.incluirBoleta = true
+              )
+            """)
+    Optional<Inscripcion> buscarBoletaPortal(@Param("inscripcionId") Long inscripcionId,
+                                             @Param("alumnoId") Long alumnoId,
+                                             @Param("institucionId") Long institucionId);
 }
