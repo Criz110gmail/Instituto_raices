@@ -1696,3 +1696,41 @@ historial paginado.
   salud `UP`. La revisión visual sin credenciales llegó al login esperado; queda la
   prueba manual con una cuenta familiar controlada para validar contenido, regreso,
   cambio de hijo, paginación y experiencia móvil.
+
+## Ayuda contextual global posterior a la navegación familiar
+
+- Se agregó un componente único que coloca un icono de información junto al nombre de
+  todos los campos visibles de formularios y filtros. Los campos ocultos técnicos no se
+  presentan como ayuda de captura.
+- El modal explica el uso del campo y da un ejemplo. Un glosario común cubre relaciones,
+  fechas, importes, seguridad, finanzas, personas y comunicación, mientras que los casos
+  dependientes del módulo —como la nomenclatura de cada código— tienen textos propios.
+- Los controles agregados dinámicamente y las etiquetas externas enlazadas mediante
+  `for` también reciben ayuda. Los futuros campos cuentan con una explicación de respaldo
+  según su etiqueta y tipo hasta que se especialice el glosario.
+- En la parte superior de cada módulo se muestra **¿Qué hace este módulo?**, con una
+  descripción general y un caso de uso. Incluye consola administrativa, operaciones
+  especiales y portal familiar. Las pantallas de acceso y contraseña conservan su diseño
+  original y muestran únicamente ayuda junto a sus campos.
+- La ventana es accesible y responsiva: declara diálogo modal, conserva el foco, responde
+  a `Escape`, funciona en claro y oscuro y no altera valores ni envía formularios.
+- Después de la revisión visual se redujeron los iconos dentro de filtros, se mantuvieron
+  las etiquetas como bloques de ancho completo y se aisló la paleta: azul noche/cian en
+  administración y crema/menta en el portal familiar. Esto corrigió el grid del login.
+- No hay migración. Docker compiló 531 fuentes y ejecutó 336 pruebas sin fallos. La
+  validación en navegador comprobó dos ayudas de campo y el modal en la pantalla pública;
+  la comprobación autenticada completa queda para el propietario y no requiere capturar
+  datos reales.
+
+## Unificación visual de accesos y filtros
+
+- El login del portal familiar conserva sus colores crema, coral y menta, pero ahora usa
+  las mismas proporciones, radio exterior de 28 px y espaciado del acceso administrativo.
+- Los filtros generales, financieros y de eventos tienen contenedor propio con borde
+  redondeado, fondo sutil, sombra discreta, controles de 13 px e iconos informativos
+  circulares de 20 px. En móvil reducen márgenes y radio; en modo oscuro usan la superficie
+  azul noche del sistema.
+- Es un cambio exclusivamente visual: no modifica rutas, criterios, paginación ni esquema.
+- Docker ejecutó 337 pruebas sin fallos. La revisión en navegador confirmó el acceso
+  familiar en dos columnas, radio de 28 px e iconos de ayuda circulares de 22 px. Los
+  filtros autenticados conservan pendiente únicamente la aprobación visual del propietario.

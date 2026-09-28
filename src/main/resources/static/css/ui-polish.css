@@ -1,0 +1,116 @@
+/* Geometría compartida por los dos accesos, conservando la paleta de cada portal. */
+.family-login {
+    width: min(1080px, calc(100% - 40px));
+    min-height: 650px;
+    grid-template-columns: 1.05fr .95fr;
+    border-radius: 28px;
+}
+
+.family-welcome {
+    padding: 42px 48px;
+}
+
+.family-access {
+    padding: 70px 64px;
+}
+
+/* Evita que la ayuda de campo herede el tamaño del botón principal familiar. */
+.family-access form .context-help-trigger {
+    display: inline-grid;
+    width: 22px;
+    height: 22px;
+    margin: 0 0 0 7px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--mint) 55%, var(--line));
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--mint) 10%, var(--card));
+    color: var(--mint);
+    box-shadow: none;
+    font: 800 12px/1 Arial, sans-serif;
+}
+
+.family-access form .context-help-trigger:hover,
+.family-access form .context-help-trigger:focus-visible {
+    background: color-mix(in srgb, var(--mint) 18%, var(--card));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mint) 14%, transparent);
+}
+
+/* Los filtros se leen como una sola tarjeta y no como campos flotantes. */
+.filters,
+.ledger-filters,
+.event-filters {
+    margin: 0 26px 24px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: linear-gradient(145deg, #fff, color-mix(in srgb, var(--aqua, #36d6c3) 3%, #fff));
+    box-shadow: 0 10px 30px rgba(11, 25, 48, .055);
+}
+
+.filters input,
+.filters select,
+.filters .search-field > div,
+.ledger-filters input,
+.ledger-filters select,
+.event-filters input,
+.event-filters select {
+    border-radius: 13px;
+}
+
+.filters button,
+.ledger-filter-actions button,
+.ledger-filter-actions a {
+    border-radius: 13px;
+}
+
+[data-theme="dark"] .filters,
+[data-theme="dark"] .ledger-filters,
+[data-theme="dark"] .event-filters {
+    border-color: #263d57;
+    background: linear-gradient(145deg, #0e1d31, #10243a);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .18);
+}
+
+@media (max-width: 780px) {
+    .family-login {
+        width: min(520px, calc(100% - 36px));
+        max-width: 520px;
+        min-height: 0;
+        grid-template-columns: 1fr;
+    }
+
+    .family-access {
+        padding: 52px 42px;
+    }
+}
+
+@media (max-width: 720px) {
+    .filters,
+    .ledger-filters,
+    .event-filters {
+        margin: 0 18px 20px;
+        padding: 18px;
+        border-radius: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .family-login {
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+    }
+
+    .family-access {
+        padding: 36px 24px;
+    }
+
+    .filters,
+    .ledger-filters,
+    .event-filters {
+        margin: 0 12px 18px;
+        padding: 16px;
+        border-radius: 16px;
+    }
+}

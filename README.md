@@ -474,3 +474,30 @@ correspondiente y, después de reportar una transferencia, se regresa a **Tus pa
 El soporte administrativo dispone de la misma separación para Avisos, Agenda y Pagos,
 pero continúa siendo estrictamente de sólo lectura y no muestra acciones para registrar
 transferencias.
+
+### Ayuda contextual de módulos, formularios y filtros
+
+Las pantallas muestran la opción **¿Qué hace este módulo?** en la parte superior, con una
+explicación general y un ejemplo práctico. Además, cada campo visible de formularios y
+filtros incluye un icono de información junto a su nombre. Al abrirlo se explica para qué
+sirve el dato y se presenta un ejemplo de captura.
+
+La ayuda se genera mediante un componente común y un glosario semántico, por lo que
+también cubre controles agregados dinámicamente. Es responsiva, funciona con tema claro y
+oscuro, puede operarse con teclado y no modifica ni envía el formulario. Los campos
+ocultos de seguridad, concurrencia e identificadores internos no muestran icono porque
+no son entradas que capture el usuario.
+
+En filtros los iconos se presentan con menor tamaño y contraste para no competir con la
+consulta. Las pantallas de login, activación y recuperación no muestran la tarjeta general
+del módulo, evitando alterar su composición; mantienen únicamente la ayuda de campos. Los
+modales usan la paleta azul noche/cian de administración y una variante crema/menta dentro
+del portal familiar.
+
+### Diseño compartido de accesos y filtros
+
+El acceso familiar reutiliza las proporciones, el borde exterior redondeado y el espaciado
+del login administrativo, conservando su identidad crema, coral y menta. Los filtros de
+catálogos, finanzas y eventos se muestran como tarjetas redondeadas con fondo y sombra
+discretos, controles suavizados, iconos informativos circulares y variantes responsiva y
+oscura. El ajuste es sólo visual y no modifica criterios de consulta, paginación ni permisos.

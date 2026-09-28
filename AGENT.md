@@ -682,7 +682,7 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 ## Verificación confirmada
 
 - Compilación correcta de 528 archivos Java de producción.
-- 334 pruebas Maven sin fallos, errores ni omisiones.
+- 336 pruebas Maven sin fallos, errores ni omisiones.
 - Flyway V1 a V37 validados y aplicados correctamente sobre el volumen existente.
 - Hibernate validó el esquema y detectó 46 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
@@ -906,10 +906,48 @@ funcionales actuales.
   con una cuenta familiar controlada y recorrer Inicio → Notificaciones, Avisos, Agenda y
   Pagos, verificando Regresar, cambio de hijo, paginación y navegación móvil.
 
+### Ayuda contextual global posterior a la navegación familiar
+
+- `theme.js` carga el componente global `contextual-help.js` y su hoja de estilos en
+  todas las pantallas que ya utilizan los temas. No fue necesario duplicar modal ni
+  textos en cada plantilla.
+- Cada control visible dentro de una etiqueta —formularios y filtros incluidos— recibe
+  un botón de información junto al nombre. Se excluyen campos ocultos técnicos como
+  CSRF, versiones e identificadores que el usuario no captura.
+- El modal explica para qué sirve el campo y presenta un ejemplo. Existe un glosario
+  semántico para códigos, relaciones, fechas, importes, finanzas, seguridad, personas y
+  comunicación; las combinaciones especiales como el código de Institución tienen una
+  explicación propia. Un texto de respaldo basado en tipo y etiqueta cubre campos nuevos
+  hasta que se agregue una definición especializada.
+- Un observador incorpora también controles creados dinámicamente, como nuevas filas en
+  la distribución de transferencias. Las etiquetas externas vinculadas mediante `for`
+  reciben el mismo tratamiento.
+- Cada módulo muestra arriba la opción **¿Qué hace este módulo?**, con propósito general
+  y un ejemplo práctico. Se cubren los 31 módulos administrativos, sus operaciones
+  especiales y el portal familiar. Login, acceso de familias, activación y recuperación
+  conservan sólo la ayuda de sus campos para no alterar la composición de esas pantallas.
+- El componente es responsivo, compatible con tema claro y oscuro, no envía formularios,
+  no modifica valores y puede cerrarse con botón, clic exterior o `Escape`. Mantiene el
+  foco dentro del modal y lo devuelve al icono que lo abrió.
+- Los filtros usan iconos de 17 px, transparentes y de menor contraste hasta recibir foco
+  o puntero. Las etiquetas conservan su ancho completo para que el icono nunca suba el
+  control a la misma línea. Los modales administrativos usan azul noche y cian; el portal
+  familiar mantiene su variante crema y verde menta.
+- No hubo cambio de esquema: Flyway continúa en V37. Docker compiló 531 fuentes y ejecutó
+  336 pruebas sin fallos. La revisión en navegador confirmó los iconos, el contenido del
+  ejemplo, la semántica de diálogo y el contraste; no se usaron credenciales ni `.env`.
+- El acceso familiar reutiliza la geometría redondeada del login administrativo —ancho,
+  proporciones, radio y espaciado— sin abandonar su paleta crema, coral y menta. Los
+  formularios `.filters`, `.ledger-filters` y `.event-filters` se presentan como tarjetas
+  redondeadas responsivas, con iconos de ayuda circulares de 20 px y variante oscura, sin
+  cambiar sus filtros ni consultas.
+  Docker ejecutó 337 pruebas sin fallos y la revisión pública confirmó una tarjeta de
+  1080 px, dos columnas y radio de 28 px; la revisión autenticada de filtros queda manual.
+
 ### Punto exacto de reanudación en otra computadora
 
-1. `main` estaba en `fdbafc5` después de los reportes Jasper y antes de separar las
-   pantallas del portal familiar. Preservar los cambios locales posteriores y no
+1. `main` estaba en `386b2d1` después de separar las pantallas del portal familiar y
+   antes de la ayuda contextual global. Preservar los cambios locales posteriores y no
    reconstruir V1–V37.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
@@ -931,10 +969,11 @@ funcionales actuales.
 
 ## Disciplina de cambios y entrega
 
-V34–V37, los reportes financieros Jasper y la navegación separada del portal familiar
-están implementados localmente. Falta la prueba funcional controlada de las cuatro
-descargas, de V37 y de las nuevas páginas del portal por el propietario antes de iniciar
-otro módulo o crear V38.
+V34–V37, los reportes financieros Jasper, la navegación separada del portal familiar y
+la ayuda contextual global están implementados localmente. Falta la prueba funcional
+controlada de las cuatro descargas, de V37, de las nuevas páginas del portal y de las
+ayudas en módulos autenticados por el propietario antes de iniciar otro módulo o crear
+V38.
 
 - Inspecciona `git status` antes de editar y preserva cambios ajenos.
 - Usa migraciones Flyway nuevas para cambios de esquema; nunca edites una migración ya
