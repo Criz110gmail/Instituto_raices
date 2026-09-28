@@ -172,6 +172,16 @@ sistema valida el contenido real y sus dimensiones, calcula SHA-256, conserva ca
 reemplazo en el historial y sirve las imágenes mediante una ruta autenticada con control
 institucional y caché deshabilitada. PostgreSQL sólo contiene metadatos y relaciones.
 
+La misma ficha técnica incorpora el expediente documental y la ficha médica. Los
+documentos se clasifican como acta, CURP, comprobante, constancia/certificado,
+autorización, documento médico u otro; admiten descripción, fecha y vigencia. Los PDF,
+JPEG y PNG de hasta 10 MB se validan por su contenido, permanecen en el almacenamiento
+privado y al retirarse conservan archivo e historial. La ficha médica única por alumno
+registra tipo sanguíneo, alergias, padecimientos, medicamentos, apoyos, restricciones,
+servicio médico, contacto de emergencia y autorización de atención. Ambas funciones
+reutilizan los permisos y el alcance institucional de Alumnos; no se exponen al portal
+familiar en esta etapa.
+
 Tutores permite registrar datos personales, contacto, domicilio y ocupación, además de
 vincular opcionalmente una cuenta de usuario de la misma institución. Incluye filtros en
 base de datos, paginación, Excel y desactivación lógica. Requiere conceder

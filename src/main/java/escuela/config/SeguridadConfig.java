@@ -43,6 +43,8 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/grupos/**").hasAuthority("GRUPO_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/alumnos/*/fotografias/*")
                         .hasAnyAuthority("ALUMNO_LEER", "ALUMNO_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.GET, "/admin/alumnos/*/documentos/*")
+                        .hasAnyAuthority("ALUMNO_LEER", "ALUMNO_ADMINISTRAR")
                         .requestMatchers("/admin/alumnos/**").hasAuthority("ALUMNO_ADMINISTRAR")
                         .requestMatchers("/admin/tutores/**").hasAuthority("TUTOR_ADMINISTRAR")
                         .requestMatchers("/admin/vinculos-tutor/**").hasAuthority("VINCULO_TUTOR_ADMINISTRAR")

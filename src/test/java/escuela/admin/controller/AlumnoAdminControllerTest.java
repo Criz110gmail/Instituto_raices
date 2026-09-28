@@ -4,6 +4,8 @@ import escuela.admin.dto.AlumnoForm;
 import escuela.alumno.dto.request.AlumnoRequest;
 import escuela.alumno.dto.response.AlumnoResponse;
 import escuela.alumno.service.AlumnoService;
+import escuela.alumno.service.DocumentoAlumnoService;
+import escuela.alumno.service.FichaMedicaAlumnoService;
 import escuela.alumno.service.FotografiaAlumnoService;
 import escuela.common.dto.response.AuditoriaResponse;
 import escuela.common.exception.RecursoDuplicadoException;
@@ -38,6 +40,8 @@ class AlumnoAdminControllerTest {
 
     @Mock private AlumnoService service;
     @Mock private FotografiaAlumnoService fotografiaService;
+    @Mock private DocumentoAlumnoService documentoService;
+    @Mock private FichaMedicaAlumnoService fichaMedicaService;
     @Mock private InstitucionService institucionService;
     @Mock private AlcanceDatosService alcance;
     @InjectMocks private AlumnoAdminController controller;

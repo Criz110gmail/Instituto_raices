@@ -1,10 +1,17 @@
 package escuela.admin.controller;
 
 import escuela.admin.dto.AlumnoForm;
+import escuela.admin.dto.DocumentoAlumnoForm;
+import escuela.admin.dto.FichaMedicaAlumnoForm;
 import escuela.admin.dto.ModuloCatalogo;
 import escuela.admin.support.MensajeErrorFormulario;
 import escuela.alumno.dto.response.AlumnoResponse;
 import escuela.alumno.dto.response.FotografiaAlumnoResponse;
+import escuela.alumno.dto.response.DocumentoAlumnoResponse;
+import escuela.alumno.entity.TipoDocumentoAlumno;
+import escuela.alumno.entity.TipoSanguineo;
+import escuela.alumno.service.DocumentoAlumnoService;
+import escuela.alumno.service.FichaMedicaAlumnoService;
 import escuela.alumno.service.FotografiaAlumnoService;
 import escuela.alumno.service.AlumnoService;
 import escuela.archivo.dto.ArchivoDescarga;
@@ -48,9 +55,13 @@ public class AlumnoAdminController {
 
     private static final Pattern RUTA_FOTOGRAFIA =
             Pattern.compile("/admin/alumnos/(\\d+)/fotografia(?:/.*)?$");
+    private static final Pattern RUTA_DOCUMENTO =
+            Pattern.compile("/admin/alumnos/(\\d+)/documentos(?:/.*)?$");
 
     private final AlumnoService service;
     private final FotografiaAlumnoService fotografiaService;
+    private final DocumentoAlumnoService documentoService;
+    private final FichaMedicaAlumnoService fichaMedicaService;
     private final InstitucionService institucionService;
     private final AlcanceDatosService alcance;
 
@@ -175,18 +186,101 @@ public class AlumnoAdminController {
                 .body(descarga.recurso());
     }
 
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    String fotografiaDemasiadoGrande(HttpServletRequest request, Model model) {
-        Matcher coincidencia = RUTA_FOTOGRAFIA.matcher(request.getRequestURI());
-        if (!coincidencia.matches()) {
-            throw new ReglaNegocioException("El archivo supera el tamaño permitido");
-        }
-        Long id = Long.valueOf(coincidencia.group(1));
+    @PostMapping("/{id}/documentos")
+    String agregarDocumento(@PathVariable Long id,
+                            @Valid @ModelAttribute("documentoForm") DocumentoAlumnoForm form,
+                            BindingResult errores, Model model, RedirectAttributes flash) {
         alcance.validarRecurso(ModuloCatalogo.ALUMNOS, id);
         AlumnoResponse alumno = service.obtener(id);
         alcance.validarAdministracionInstitucional(alumno.institucionId());
-        prepararErrorFotografia(model, alumno, id,
-                new ReglaNegocioException("La fotografía no puede superar 5 MB"));
+        if (errores.hasErrors()) {
+            preparar(model, AlumnoForm.desde(alumno), id);
+            return "admin/alumno-form";
+        }
+        try {
+            documentoService.agregar(id, form.getTipo(), form.getDescripcion(),
+                    form.getFechaDocumento(), form.getVigenteHasta(), form.getArchivo());
+        } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
+            preparar(model, AlumnoForm.desde(alumno), id);
+            model.addAttribute("errorDocumento", MensajeErrorFormulario.desde(excepcion));
+            return "admin/alumno-form";
+        }
+        flash.addFlashAttribute("mensaje", "Documento agregado al expediente correctamente");
+        return "redirect:/admin/alumnos/" + id + "/editar#expediente-documental";
+    }
+
+    @PostMapping("/{id}/documentos/{documentoId}/retirar")
+    String retirarDocumento(@PathVariable Long id, @PathVariable Long documentoId,
+                            @RequestParam Long version, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.ALUMNOS, id);
+        AlumnoResponse alumno = service.obtener(id);
+        alcance.validarAdministracionInstitucional(alumno.institucionId());
+        try {
+            documentoService.retirar(id, documentoId, version);
+        } catch (ReglaNegocioException | DataIntegrityViolationException |
+                 ObjectOptimisticLockingFailureException excepcion) {
+            preparar(model, AlumnoForm.desde(alumno), id);
+            model.addAttribute("errorDocumento", MensajeErrorFormulario.desde(excepcion));
+            return "admin/alumno-form";
+        }
+        flash.addFlashAttribute("mensaje", "Documento retirado del expediente vigente");
+        return "redirect:/admin/alumnos/" + id + "/editar#expediente-documental";
+    }
+
+    @GetMapping("/{alumnoId}/documentos/{documentoId}")
+    ResponseEntity<Resource> descargarDocumento(@PathVariable Long alumnoId,
+                                                @PathVariable Long documentoId) {
+        alcance.validarRecurso(ModuloCatalogo.ALUMNOS, alumnoId);
+        ArchivoDescarga descarga = documentoService.descargar(alumnoId, documentoId);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                .contentType(MediaType.parseMediaType(descarga.tipoMime()))
+                .contentLength(descarga.tamanoBytes())
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                        .filename(descarga.nombreOriginal(), StandardCharsets.UTF_8).build().toString())
+                .body(descarga.recurso());
+    }
+
+    @PostMapping("/{id}/ficha-medica")
+    String guardarFichaMedica(@PathVariable Long id,
+                              @Valid @ModelAttribute("fichaMedicaForm") FichaMedicaAlumnoForm form,
+                              BindingResult errores, Model model, RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.ALUMNOS, id);
+        AlumnoResponse alumno = service.obtener(id);
+        alcance.validarAdministracionInstitucional(alumno.institucionId());
+        if (errores.hasErrors()) {
+            preparar(model, AlumnoForm.desde(alumno), id);
+            return "admin/alumno-form";
+        }
+        try {
+            fichaMedicaService.guardar(id, form.request());
+        } catch (ReglaNegocioException | DataIntegrityViolationException |
+                 ObjectOptimisticLockingFailureException excepcion) {
+            preparar(model, AlumnoForm.desde(alumno), id);
+            model.addAttribute("errorFichaMedica", MensajeErrorFormulario.desde(excepcion));
+            return "admin/alumno-form";
+        }
+        flash.addFlashAttribute("mensaje", "Ficha médica actualizada correctamente");
+        return "redirect:/admin/alumnos/" + id + "/editar#ficha-medica";
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    String fotografiaDemasiadoGrande(HttpServletRequest request, Model model) {
+        Matcher fotografia = RUTA_FOTOGRAFIA.matcher(request.getRequestURI());
+        Matcher documento = RUTA_DOCUMENTO.matcher(request.getRequestURI());
+        boolean esFotografia = fotografia.matches();
+        boolean esDocumento = documento.matches();
+        if (!esFotografia && !esDocumento) {
+            throw new ReglaNegocioException("El archivo supera el tamaño permitido");
+        }
+        Long id = Long.valueOf(esFotografia ? fotografia.group(1) : documento.group(1));
+        alcance.validarRecurso(ModuloCatalogo.ALUMNOS, id);
+        AlumnoResponse alumno = service.obtener(id);
+        alcance.validarAdministracionInstitucional(alumno.institucionId());
+        preparar(model, AlumnoForm.desde(alumno), id);
+        model.addAttribute(esFotografia ? "errorFotografia" : "errorDocumento",
+                esFotografia ? "La fotografía no puede superar 5 MB"
+                        : "El documento no puede superar 10 MB");
         return "admin/alumno-form";
     }
 
@@ -206,6 +300,20 @@ public class AlumnoAdminController {
                     .filter(FotografiaAlumnoResponse::actual).findFirst().orElse(null));
             model.addAttribute("historialFotografias", historial.stream()
                     .filter(fotografia -> !fotografia.actual()).toList());
+            List<DocumentoAlumnoResponse> documentos = documentoService.historial(id);
+            model.addAttribute("documentosVigentes", documentos.stream()
+                    .filter(DocumentoAlumnoResponse::vigente).toList());
+            model.addAttribute("historialDocumentos", documentos.stream()
+                    .filter(documento -> !documento.vigente()).toList());
+            if (!model.containsAttribute("documentoForm")) {
+                model.addAttribute("documentoForm", new DocumentoAlumnoForm());
+            }
+            if (!model.containsAttribute("fichaMedicaForm")) {
+                model.addAttribute("fichaMedicaForm",
+                        FichaMedicaAlumnoForm.desde(fichaMedicaService.obtener(id)));
+            }
+            model.addAttribute("tiposDocumentoAlumno", TipoDocumentoAlumno.values());
+            model.addAttribute("tiposSanguineos", TipoSanguineo.values());
         }
     }
 

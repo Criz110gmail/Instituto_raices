@@ -20,14 +20,12 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` al iniciar V37: `7468e02` —
-  `se agrego al modulo tutor que se agrega un archivo para su identificacion oficial`.
+- Último commit confirmado en `main` antes de iniciar V38: `5770563` —
+  `ayudas de informacion para saber que hace cada input en el sistema`.
   Confirma `git status` y `git log` antes de continuar.
-- Ese commit ya contiene V36. El cambio local actual implementa V37 para separar cuentas
-  administrativas y cuentas del portal familiar, además de mejoras transversales de
-  formato monetario, navegación y ficha técnica del tutor; todavía debe ser revisado y
-  confirmado por el propietario. El volumen habitual ya tiene Flyway V1–V37 aplicado y
-  la siguiente migración disponible es V38.
+- El cambio local actual implementa V38 con expediente documental y ficha médica del
+  alumno; todavía debe ser revisado y confirmado por el propietario. El volumen habitual
+  ya tiene Flyway V1–V38 aplicado y la siguiente migración disponible es V39.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -678,13 +676,20 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - El listado de Tutores muestra username y situación del acceso, y permite filtrar por
   `SIN_CUENTA`, `CUENTA_ACTIVA`, `CUENTA_PENDIENTE` o `CUENTA_INACTIVA`, además del estado
   activo/inactivo del expediente.
+- V38 crea `AlumnoDocumento` y `FichaMedicaAlumno` dentro de la ficha técnica del alumno.
+  Los documentos admiten PDF/JPEG/PNG de hasta 10 MB, categoría, descripción, fecha y
+  vigencia; retirar conserva el historial y el archivo privado. La ficha médica única
+  registra sangre, alergias, condiciones, medicamentos, apoyos, restricciones, servicio
+  médico y contacto/autorización de emergencia con auditoría y versión optimista.
+- V38 reutiliza los permisos y el alcance de Alumnos; no agrega permisos ni menú y no
+  expone información médica al portal familiar. Los bytes permanecen en `private_files`.
 
 ## Verificación confirmada
 
-- Compilación correcta de 528 archivos Java de producción.
-- 336 pruebas Maven sin fallos, errores ni omisiones.
-- Flyway V1 a V37 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 46 repositorios.
+- Compilación correcta de 546 archivos Java de producción.
+- 344 pruebas Maven sin fallos, errores ni omisiones.
+- Flyway V1 a V38 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 48 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -812,11 +817,18 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-V34 y V35 están implementadas, compiladas y aplicadas. La siguiente actividad es una
-prueba funcional controlada del portal: usar un tutor autorizado con varios hijos y
-varios cargos —incluidos dos del mismo alumno—, distribuir una sola transferencia,
-adjuntar comprobante y confirmar el historial. Después, desde administración, probar
-por separado rechazo con motivo y validación. No usar un pago operativo real.
+V38 está implementada, compilada, aplicada y verificada automáticamente. Antes de crear
+V39, el propietario debe editar un alumno controlado y probar con datos ficticios: cargar
+un PDF o imagen menor de 10 MB, descargarlo, retirarlo y confirmar que permanece en el
+historial; luego crear y actualizar la ficha médica, comprobar fechas/errores en la misma
+pantalla y revisar la vista móvil. No utilizar documentos ni datos médicos reales sólo
+para verificar. El siguiente bloque de dominio se decide después de aprobar esta prueba.
+
+También sigue pendiente la prueba funcional controlada de V34/V35: usar un tutor
+autorizado con varios hijos y varios cargos —incluidos dos del mismo alumno—, distribuir
+una sola transferencia, adjuntar comprobante y confirmar el historial. Después, desde
+administración, probar por separado rechazo con motivo y validación. No usar un pago
+operativo real.
 
 Para V35 se debe asignar el módulo `Soporte del portal familiar` al rol adecuado, iniciar
 una sesión nueva y comprobar que soporte ve exactamente el alcance del tutor, pero no
@@ -946,16 +958,16 @@ funcionales actuales.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. `main` estaba en `386b2d1` después de separar las pantallas del portal familiar y
-   antes de la ayuda contextual global. Preservar los cambios locales posteriores y no
-   reconstruir V1–V37.
+1. `main` estaba en `5770563` antes de iniciar V38. El cambio local implementa el
+   expediente documental y la ficha médica del alumno. Preservarlo y no reconstruir
+   V1–V38.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V37 ya existen y están aplicadas al volumen habitual; nunca editarlas.
-   La siguiente migración disponible será V38.
+4. Flyway V1–V38 ya existen y están aplicadas al volumen habitual; nunca editarlas.
+   La siguiente migración disponible será V39.
 5. Probar las cuatro descargas Jasper con datos controlados y distintos tamaños de
    resultado. Ejecutar también la prueba manual de V37 y las pendientes descritas para V34, V35 y V36. Mantener
    además
@@ -969,11 +981,12 @@ funcionales actuales.
 
 ## Disciplina de cambios y entrega
 
-V34–V37, los reportes financieros Jasper, la navegación separada del portal familiar y
-la ayuda contextual global están implementados localmente. Falta la prueba funcional
-controlada de las cuatro descargas, de V37, de las nuevas páginas del portal y de las
-ayudas en módulos autenticados por el propietario antes de iniciar otro módulo o crear
-V38.
+V34–V38, los reportes financieros Jasper, la navegación separada del portal familiar y
+la ayuda contextual global están implementados localmente. V38 compiló, migró y arrancó;
+falta que el propietario pruebe con datos ficticios la carga, descarga y retiro de un
+documento, además de crear y actualizar una ficha médica. También siguen pendientes las
+pruebas funcionales controladas ya enumeradas de etapas anteriores. No iniciar V39 hasta
+que V38 sea revisada y confirmada.
 
 - Inspecciona `git status` antes de editar y preserva cambios ajenos.
 - Usa migraciones Flyway nuevas para cambios de esquema; nunca edites una migración ya

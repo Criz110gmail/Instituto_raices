@@ -715,8 +715,12 @@ implementar las reglas respectivas.
 6) Cajas: necesidad de apertura/cierre por cajero y arqueo. Si se requiere,
    añadir SesionCaja y ArqueoCaja; la cuenta CAJA por sí sola no los sustituye.
 7) Saldo negativo: permitir o bloquear egresos según política de cada cuenta.
-8) Documentación de alumnos: confirmar qué documentos y datos adicionales se
-   requieren antes de crear expediente documental o ficha médica.
+8) Documentación de alumnos: resuelta inicialmente en V38. El expediente admite acta,
+   CURP, comprobante de domicilio, constancia/certificado, autorización, documento
+   médico y otros archivos privados con fecha y vigencia. La ficha médica única registra
+   tipo sanguíneo, alergias, padecimientos, medicamentos, apoyos, restricciones,
+   servicio médico y contacto/autorización de emergencia. El portal familiar no captura
+   estos datos hasta definir consentimiento y revisión administrativa.
 9) Proveedores, compras, nómina y facturación: definir si se necesitan módulos
    completos; hoy solo se registra el movimiento financiero correspondiente.
 10) Datos de tutores: confirmar canal de activación y si se permite alta sin

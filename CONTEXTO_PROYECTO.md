@@ -1734,3 +1734,29 @@ historial paginado.
 - Docker ejecutó 337 pruebas sin fallos. La revisión en navegador confirmó el acceso
   familiar en dos columnas, radio de 28 px e iconos de ayuda circulares de 22 px. Los
   filtros autenticados conservan pendiente únicamente la aprobación visual del propietario.
+
+## V38 — expediente documental y ficha médica del alumno
+
+- La edición del alumno integra dos secciones privadas dentro de su ficha técnica; no se
+  crearon módulos de menú ni permisos nuevos. Todas las operaciones reutilizan
+  `ALUMNO_ADMINISTRAR`, el alcance institucional y la validación de recurso existente.
+- `alumno_documento` clasifica acta, CURP, comprobante de domicilio, constancia o
+  certificado, autorización, documento médico y otros. Conserva descripción, fecha del
+  documento, vigencia opcional, auditoría y retiro lógico individual.
+- Los documentos aceptan PDF, JPEG o PNG de hasta 10 MB y se validan mediante su firma
+  real. Los bytes se guardan bajo `private_files` en la ruta privada de la institución y
+  PostgreSQL conserva sólo metadatos, checksum y relaciones. Descargar revalida el
+  alumno y responde sin caché; retirar no borra el archivo y lo deja en el historial.
+- `ficha_medica_alumno` mantiene una sola ficha actual por alumno con tipo sanguíneo,
+  alergias, padecimientos, medicamentos, discapacidad o apoyos, restricciones físicas y
+  alimentarias, servicio médico, afiliación, médico tratante, contacto de emergencia,
+  observaciones y constancia de autorización para atención de emergencia.
+- La ficha médica usa bloqueo del alumno y versión optimista. Los alumnos inactivos se
+  pueden consultar con su historia, pero no reciben documentos nuevos ni modificaciones
+  médicas. Las validaciones permanecen en la misma pantalla.
+- La información no se expone al portal familiar en esta etapa. Un eventual flujo para
+  que el tutor entregue o corrija datos requerirá consentimiento, revisión administrativa
+  y reglas de privacidad antes de habilitarse.
+- Docker compiló 546 fuentes y ejecutó 344 pruebas sin fallos. Flyway validó 38
+  migraciones, aplicó V38 sobre el volumen habitual y la aplicación respondió `UP`.
+  Falta la prueba visual y funcional autenticada del propietario con datos ficticios.
