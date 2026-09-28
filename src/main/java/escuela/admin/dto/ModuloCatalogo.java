@@ -15,6 +15,7 @@ public enum ModuloCatalogo {
     GRUPOS("grupos", "Grupos", List.of("Grupo", "Código", "Plantel", "Grado", "Turno", "Capacidad")),
     MATERIAS("materias", "Materias", List.of("Código", "Materia", "Institución", "Descripción")),
     CALIFICACIONES("calificaciones", "Calificaciones", List.of("Alumno", "Matrícula", "Materia", "Periodo", "Grado", "Resultado")),
+    ASISTENCIA("asistencia", "Asistencia", List.of("Fecha", "Alumno", "Matrícula", "Grupo", "Plantel", "Observaciones")),
     ALUMNOS("alumnos", "Alumnos", List.of("Matrícula", "Alumno", "CURP", "Nacimiento", "Ingreso")),
     TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),
     VINCULOS_TUTOR("vinculos-tutor", "Vínculos alumno–tutor", List.of("Alumno", "Tutor", "Parentesco", "Permisos", "Vigencia")),
@@ -57,7 +58,7 @@ public enum ModuloCatalogo {
         return switch (this) {
             case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS, GRUPOS, MATERIAS -> "Estructura";
             case ALUMNOS, TUTORES, VINCULOS_TUTOR -> "Personas";
-            case INSCRIPCIONES, CALIFICACIONES -> "Trayectoria";
+            case INSCRIPCIONES, CALIFICACIONES, ASISTENCIA -> "Trayectoria";
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
             case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Finanzas";
             case EVENTOS_ESCOLARES, AVISOS -> "Comunicación";
@@ -77,6 +78,7 @@ public enum ModuloCatalogo {
             case GRUPOS -> "GRUPO";
             case MATERIAS -> "MATERIA";
             case CALIFICACIONES -> "CALIFICACION";
+            case ASISTENCIA -> "ASISTENCIA";
             case ALUMNOS -> "ALUMNO";
             case TUTORES -> "TUTOR";
             case VINCULOS_TUTOR -> "VINCULO_TUTOR";
@@ -125,7 +127,7 @@ public enum ModuloCatalogo {
     public boolean mantenimientoDisponible() {
         return this == INSTITUCIONES || this == PLANTELES || this == NIVELES
                 || this == OFERTA || this == GRADOS || this == CICLOS || this == PERIODOS
-                || this == GRUPOS || this == MATERIAS || this == CALIFICACIONES || this == ALUMNOS || this == TUTORES
+                || this == GRUPOS || this == MATERIAS || this == CALIFICACIONES || this == ASISTENCIA || this == ALUMNOS || this == TUTORES
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
                 || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == CARGOS
@@ -148,6 +150,7 @@ public enum ModuloCatalogo {
             case GRUPOS -> "/admin/grupos";
             case MATERIAS -> "/admin/materias";
             case CALIFICACIONES -> "/admin/calificaciones";
+            case ASISTENCIA -> "/admin/asistencia";
             case ALUMNOS -> "/admin/alumnos";
             case TUTORES -> "/admin/tutores";
             case VINCULOS_TUTOR -> "/admin/vinculos-tutor";
@@ -183,7 +186,7 @@ public enum ModuloCatalogo {
 
     public String segmentoNuevo() {
         return this == PLANTELES || this == NIVELES || this == GRADOS || this == CICLOS
-                || this == PERIODOS || this == GRUPOS || this == CALIFICACIONES || this == ALUMNOS || this == TUTORES
+                || this == PERIODOS || this == GRUPOS || this == CALIFICACIONES || this == ASISTENCIA || this == ALUMNOS || this == TUTORES
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
                 || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == CARGOS
@@ -192,7 +195,7 @@ public enum ModuloCatalogo {
                 || this == CUENTAS_FINANCIERAS
                 || this == PAGOS
                 || this == ROLES || this == USUARIOS
-                ? (this == CALIFICACIONES ? "/captura" : "/nuevo") : "/nueva";
+                ? (this == CALIFICACIONES || this == ASISTENCIA ? "/captura" : "/nuevo") : "/nueva";
     }
 
     public static ModuloCatalogo desde(String slug) {

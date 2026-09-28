@@ -20,12 +20,13 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` antes de iniciar V40: `ab60404` —
-  `etapa: V39 — Materias y plan de evaluación por grado.`.
+- Último commit confirmado en `main` antes de iniciar V41: `5e0a1b2` —
+  `V40 quedó terminada y desplegada localmente.`.
   Confirma `git status` y `git log` antes de continuar.
-- El cambio local actual implementa V40 con captura, publicación y consulta familiar de
-  calificaciones; todavía debe ser revisado y confirmado por el propietario. El volumen
-  habitual ya tiene Flyway V1–V40 aplicado y la siguiente migración disponible es V41.
+- El cambio local actual implementa V41 con captura masiva, historial y exportación de
+  asistencia diaria; todavía debe ser revisado y confirmado por el propietario. El
+  volumen de esta computadora ya tiene Flyway V1–V41 aplicado y la siguiente migración
+  disponible es V42.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -836,19 +837,18 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-V40 está implementada, compilada, aplicada y verificada automáticamente. El propietario
-debe asignar el módulo `Calificaciones` al rol correspondiente, iniciar una sesión nueva
-y probar con datos controlados: elegir grupo, periodo y materia; guardar un borrador
-parcial; confirmar que publicar exige a todos los alumnos; publicar; revisar el resultado
-desde el portal familiar; reabrir y comprobar que desaparece del portal hasta volver a
-publicarlo. Probar tanto una materia numérica como una cualitativa y confirmar los filtros
-y la exportación XLSX. No crear calificaciones operativas sólo para verificar.
+V41 está implementada, compilada, aplicada y verificada automáticamente. El propietario
+debe asignar el módulo `Asistencia` al rol correspondiente, iniciar una sesión nueva y
+probar con datos controlados: elegir grupo y fecha, confirmar que aparezcan sólo los
+alumnos asignados históricamente ese día, guardar presente/ausente/retardo/justificada,
+editar la misma hoja y revisar filtros, paginación y exportación XLSX. También debe
+confirmar el diseño responsivo y los temas claro/oscuro. No crear asistencias operativas
+sólo para verificar.
 
-Después de aprobar V40, el siguiente desarrollo acordado es V41: asistencia diaria por
-`Inscripcion`, fecha y grupo, con captura masiva, estados presente/ausente/retardo/
-justificada, observación opcional e historial. Debe reutilizar alcance, autocompletado y
-asignación histórica; no diseñar todavía horarios, clases o docentes. V42 queda reservada
-para boletas Jasper derivadas de calificaciones publicadas, sin duplicar totales.
+Después de aprobar V41, el siguiente desarrollo acordado es V42: boletas Jasper derivadas
+exclusivamente de calificaciones publicadas, sin duplicar resultados ni totales. Debe
+respetar alcance, generar el documento por alumno/ciclo con datos obtenidos por servicios
+y conservar una estrategia paginada o por bloques para las emisiones colectivas.
 
 También sigue pendiente la prueba funcional controlada de V34/V35: usar un tutor
 autorizado con varios hijos y varios cargos —incluidos dos del mismo alumno—, distribuir
@@ -984,15 +984,15 @@ funcionales actuales.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. `main` estaba en `ab60404` antes de iniciar V40. El cambio local implementa
-   Calificaciones por periodo. Preservarlo y no reconstruir V1–V40.
+1. `main` estaba en `5e0a1b2` antes de iniciar V41. El cambio local implementa
+   Asistencia diaria. Preservarlo y no reconstruir V1–V41.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V40 ya existen y están aplicadas al volumen habitual; nunca editarlas.
-   La siguiente migración disponible será V41.
+4. Flyway V1–V41 ya existen y están aplicadas al volumen local; nunca editarlas.
+   La siguiente migración disponible será V42.
 5. Probar las cuatro descargas Jasper con datos controlados y distintos tamaños de
    resultado. Ejecutar también la prueba manual de V37 y las pendientes descritas para V34, V35 y V36. Mantener
    además
@@ -1006,11 +1006,11 @@ funcionales actuales.
 
 ## Disciplina de cambios y entrega
 
-V34–V40, los reportes financieros Jasper, la navegación separada del portal familiar y
-la ayuda contextual global están implementados localmente. V40 compiló, migró y arrancó;
-falta que el propietario asigne su permiso y pruebe Calificaciones con datos controlados.
+V34–V41, los reportes financieros Jasper, la navegación separada del portal familiar y
+la ayuda contextual global están implementados localmente. V41 compiló, migró y arrancó;
+falta que el propietario asigne su permiso y pruebe Asistencia con datos controlados.
 También siguen pendientes las pruebas funcionales enumeradas de etapas anteriores.
-Después de aprobar V40, continuar con V41 de asistencia diaria.
+Después de aprobar V41, continuar con V42 de boletas Jasper derivadas.
 
 - Inspecciona `git status` antes de editar y preserva cambios ajenos.
 - Usa migraciones Flyway nuevas para cambios de esquema; nunca edites una migración ya

@@ -7,6 +7,7 @@ import escuela.academico.repository.NivelEducativoRepository;
 import escuela.academico.repository.PeriodoAcademicoRepository;
 import escuela.academico.repository.MateriaRepository;
 import escuela.calificacion.repository.CalificacionRepository;
+import escuela.asistencia.repository.AsistenciaRepository;
 import escuela.alumno.repository.AlumnoRepository;
 import escuela.alumno.repository.AlumnoTutorRepository;
 import escuela.alumno.entity.AlumnoTutor;
@@ -72,6 +73,7 @@ class AlcanceDatosServiceTest {
             mock(PeriodoAcademicoRepository.class), mock(GrupoRepository.class),
             mock(MateriaRepository.class),
             mock(CalificacionRepository.class),
+            mock(AsistenciaRepository.class),
             alumnoRepository,
             tutorRepository,
             alumnoTutorRepository,

@@ -1811,3 +1811,29 @@ historial paginado.
 - Falta la prueba funcional autenticada del propietario y asignar el módulo al rol
   correspondiente. Al aprobar V40 continúa V41 con asistencia diaria por inscripción;
   V42 generará boletas Jasper derivadas de resultados publicados.
+
+## V41 — asistencia diaria por grupo
+
+- Se agregó `asistencia` con una fila por inscripción y fecha, vinculada también al grupo
+  histórico. Admite los estados Presente, Ausente, Retardo y Justificada, observación
+  opcional, auditoría y versión optimista; la base impide duplicar al alumno en el día.
+- La captura administrativa trabaja por grupo y fecha. Obtiene únicamente inscripciones
+  cuya asignación al grupo y vigencia académica incluyen ese día, propone Presente para
+  registros nuevos y guarda la hoja completa dentro de una sola transacción.
+- El servicio rechaza grupos inactivos, fechas fuera del ciclo, listas incompletas o
+  desactualizadas, alumnos ajenos y estados faltantes. Una corrección posterior reutiliza
+  la misma fila y verifica su versión para evitar sobrescrituras concurrentes.
+- El módulo `Asistencia` incluye historial paginado, búsqueda y filtros por estado,
+  alcance institucional o de plantel y exportación XLSX con exactamente los mismos
+  criterios. La ayuda contextual, el menú, los temas y el diseño responsivo siguen los
+  componentes comunes del sistema.
+- Se agregaron `ASISTENCIA_LEER` y `ASISTENCIA_ADMINISTRAR` sin asignación automática.
+  El autocompletado de grupos queda disponible para el permiso de administración y no se
+  incorporaron horarios, clases ni docentes fuera del alcance acordado.
+- Docker compiló 584 fuentes y 91 fuentes de prueba; ejecutó 361 pruebas sin fallos.
+  Flyway validó 41 migraciones y avanzó el volumen local de V35 a V41; Hibernate inició
+  con 52 repositorios y `/actuator/health` respondió `UP`. No se crearon asistencias de
+  prueba.
+- Falta la prueba funcional autenticada del propietario y asignar el módulo al rol
+  correspondiente. Al aprobar V41 continúa V42 con boletas Jasper derivadas únicamente
+  de calificaciones publicadas.

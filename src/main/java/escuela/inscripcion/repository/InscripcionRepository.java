@@ -76,4 +76,17 @@ public interface InscripcionRepository extends JpaRepository<Inscripcion, Long>,
     List<Inscripcion> buscarParaCalificaciones(@Param("grupoId") Long grupoId,
                                                @Param("inicioPeriodo") LocalDate inicioPeriodo,
                                                @Param("finPeriodo") LocalDate finPeriodo);
+
+    @Query("""
+            select distinct i from AsignacionGrupo a join a.inscripcion i
+            where a.grupo.id = :grupoId
+              and a.fechaInicio <= :fecha
+              and (a.fechaFin is null or a.fechaFin >= :fecha)
+              and i.fechaInicio <= :fecha
+              and (i.fechaFin is null or i.fechaFin >= :fecha)
+              and i.estado <> escuela.inscripcion.entity.EstadoInscripcion.CANCELADA
+            order by i.alumno.primerApellido, i.alumno.segundoApellido, i.alumno.nombres, i.id
+            """)
+    List<Inscripcion> buscarParaAsistencia(@Param("grupoId") Long grupoId,
+                                           @Param("fecha") LocalDate fecha);
 }

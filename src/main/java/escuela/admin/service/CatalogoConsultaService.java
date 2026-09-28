@@ -31,6 +31,8 @@ import escuela.inscripcion.entity.Inscripcion;
 import escuela.inscripcion.repository.InscripcionRepository;
 import escuela.calificacion.entity.Calificacion;
 import escuela.calificacion.repository.CalificacionRepository;
+import escuela.asistencia.entity.Asistencia;
+import escuela.asistencia.repository.AsistenciaRepository;
 import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.entity.TipoCuentaUsuario;
@@ -73,6 +75,7 @@ public class CatalogoConsultaService {
     private final GrupoRepository grupoRepository;
     private final MateriaRepository materiaRepository;
     private final CalificacionRepository calificacionRepository;
+    private final AsistenciaRepository asistenciaRepository;
     private final AlumnoRepository alumnoRepository;
     private final TutorRepository tutorRepository;
     private final AlumnoTutorRepository alumnoTutorRepository;
@@ -117,6 +120,8 @@ public class CatalogoConsultaService {
                             e.getInstitucion().getNombre(), valor(e.getDescripcion())));
             case CALIFICACIONES -> consultar(modulo, calificacionRepository,
                     textoCalificacion(f), estado(f, "estado"), pagina, this::filaCalificacion);
+            case ASISTENCIA -> consultar(modulo, asistenciaRepository,
+                    textoAsistencia(f), estado(f, "estado"), pagina, this::filaAsistencia);
             case ALUMNOS -> consultar(modulo, alumnoRepository,
                     texto(f, "matricula", "nombres", "primerApellido", "segundoApellido", "curp", "email"),
                     activo(f), pagina, e -> fila(e.getId(), e.isActivo(), e.getMatricula(),
@@ -339,6 +344,21 @@ public class CatalogoConsultaService {
         };
     }
 
+    private Specification<Asistencia> textoAsistencia(FiltroCatalogo f) {
+        return (root, query, cb) -> {
+            if (f.q().isBlank()) return cb.conjunction();
+            String patron = "%" + f.q().toLowerCase(Locale.ROOT) + "%";
+            var alumno = root.get("inscripcion").get("alumno");
+            return cb.or(cb.like(cb.lower(alumno.get("matricula")), patron),
+                    cb.like(cb.lower(alumno.get("nombres")), patron),
+                    cb.like(cb.lower(alumno.get("primerApellido")), patron),
+                    cb.like(cb.lower(alumno.get("segundoApellido")), patron),
+                    cb.like(cb.lower(root.get("grupo").get("nombre")), patron),
+                    cb.like(cb.lower(root.get("grupo").get("plantel").get("nombre")), patron),
+                    cb.like(cb.lower(root.get("observaciones")), patron));
+        };
+    }
+
     private Specification<ConceptoCobro> textoConcepto(FiltroCatalogo f) {
         return (root, query, cb) -> {
             if (f.q().isBlank()) return cb.conjunction();
@@ -489,6 +509,17 @@ public class CatalogoConsultaService {
                 c.getMateriaGrado().getMateria().getNombre(), c.getPeriodoAcademico().getNombre(),
                 c.getInscripcion().getGrado().getNombre(), resultado), estado,
                 estado.equals("PUBLICADA") ? "positivo" : "aviso");
+    }
+
+    private FilaCatalogo filaAsistencia(Asistencia a) {
+        var alumno = a.getInscripcion().getAlumno();
+        String nombre = String.join(" ", alumno.getNombres(), alumno.getPrimerApellido(),
+                alumno.getSegundoApellido() == null ? "" : alumno.getSegundoApellido()).trim();
+        String estado = a.getEstado().name();
+        String tono = estado.equals("PRESENTE") ? "positivo" : estado.equals("AUSENTE") ? "cancelado" : "aviso";
+        return new FilaCatalogo(a.getId(), List.of(FECHA.format(a.getFecha()), nombre, alumno.getMatricula(),
+                a.getGrupo().getNombre() + " · " + a.getGrupo().getGrado().getNombre(),
+                a.getGrupo().getPlantel().getNombre(), valor(a.getObservaciones())), estado, tono);
     }
 
     private FilaCatalogo filaBeca(BecaAlumno b) {

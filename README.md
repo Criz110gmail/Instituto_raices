@@ -527,3 +527,14 @@ del login administrativo, conservando su identidad crema, coral y menta. Los fil
 catálogos, finanzas y eventos se muestran como tarjetas redondeadas con fondo y sombra
 discretos, controles suavizados, iconos informativos circulares y variantes responsiva y
 oscura. El ajuste es sólo visual y no modifica criterios de consulta, paginación ni permisos.
+
+### V41 · Asistencia diaria
+
+El módulo **Asistencia** permite seleccionar un grupo y una fecha para registrar en una
+sola hoja el estado de todos los alumnos asignados ese día: presente, ausente, retardo o
+justificada, con una observación opcional. La selección respeta la vigencia histórica de
+la inscripción y del grupo, y las correcciones usan control de concurrencia.
+
+El historial se consulta con filtros y paginación en base de datos, y puede exportarse a
+Excel conservando exactamente los mismos criterios. Los permisos `ASISTENCIA_LEER` y
+`ASISTENCIA_ADMINISTRAR` deben asignarse explícitamente al rol que operará el módulo.
