@@ -1,6 +1,7 @@
 package escuela.admin.service;
 
 import escuela.admin.dto.ResultadoAutocompletado;
+import escuela.admin.dto.ModuloCatalogo;
 import escuela.alumno.entity.Alumno;
 import escuela.alumno.repository.AlumnoRepository;
 import escuela.institucion.entity.Institucion;
@@ -13,8 +14,13 @@ import escuela.cobranza.entity.CategoriaConceptoCobro;
 import escuela.cobranza.entity.ConceptoCobro;
 import escuela.inscripcion.entity.Inscripcion;
 import escuela.academico.entity.Grado;
+import escuela.academico.entity.Grupo;
+import escuela.academico.entity.CicloEscolar;
+import escuela.institucion.entity.Plantel;
 import escuela.academico.repository.PeriodoAcademicoRepository;
 import escuela.academico.repository.GradoRepository;
+import escuela.academico.repository.GrupoRepository;
+import escuela.academico.repository.MateriaGradoRepository;
 import escuela.seguridad.entity.EstadoUsuario;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.repository.UsuarioRepository;
@@ -23,6 +29,7 @@ import escuela.tutor.entity.Tutor;
 import escuela.tutor.repository.TutorRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.List;
 
@@ -40,11 +47,13 @@ class BusquedaAutocompletadoServiceTest {
     private final UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
     private final InscripcionRepository inscripcionRepository = mock(InscripcionRepository.class);
     private final ConceptoCobroRepository conceptoCobroRepository = mock(ConceptoCobroRepository.class);
+    private final GrupoRepository grupoRepository = mock(GrupoRepository.class);
     private final AlcanceDatosService alcance = mock(AlcanceDatosService.class);
     private final BusquedaAutocompletadoService service = new BusquedaAutocompletadoService(
             alumnoRepository, tutorRepository, usuarioRepository, inscripcionRepository,
             conceptoCobroRepository, mock(PeriodoAcademicoRepository.class),
             mock(GradoRepository.class),
+            grupoRepository, mock(MateriaGradoRepository.class),
             mock(TipoBecaRepository.class), mock(CargoRepository.class),
             mock(CuentaFinancieraRepository.class), alcance);
 
@@ -155,6 +164,28 @@ class BusquedaAutocompletadoServiceTest {
         ResultadoAutocompletado resultado = service.conceptosCobro(1L, "material");
 
         assertThat(resultado.resultados().getFirst().titulo()).isEqualTo("MAT · Material escolar");
+        verify(alcance).validarInstitucion(1L);
+    }
+
+    @Test
+    void buscaGruposDeCalificacionSinCargarElCatalogoCompleto() {
+        Institucion institucion = new Institucion(); institucion.setId(1L);
+        Plantel plantel = new Plantel(); plantel.setNombre("Centro"); plantel.setInstitucion(institucion);
+        Grado grado = new Grado(); grado.setNombre("Primero");
+        CicloEscolar ciclo = new CicloEscolar(); ciclo.setNombre("2026-2027");
+        Grupo grupo = new Grupo(); grupo.setId(60L); grupo.setNombre("1 A");
+        grupo.setPlantel(plantel); grupo.setGrado(grado); grupo.setCicloEscolar(ciclo);
+        when(alcance.<Grupo>especificacion(ModuloCatalogo.GRUPOS))
+                .thenReturn((root, query, cb) -> cb.conjunction());
+        when(grupoRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class), any(org.springframework.data.domain.Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(grupo)));
+
+        ResultadoAutocompletado resultado = service.gruposCalificacion(1L, "primero");
+
+        assertThat(resultado.resultados()).singleElement().satisfies(opcion -> {
+            assertThat(opcion.id()).isEqualTo(60L);
+            assertThat(opcion.titulo()).isEqualTo("1 A · Primero");
+        });
         verify(alcance).validarInstitucion(1L);
     }
 

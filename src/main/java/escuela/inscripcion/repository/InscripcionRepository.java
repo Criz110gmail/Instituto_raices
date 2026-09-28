@@ -62,4 +62,18 @@ public interface InscripcionRepository extends JpaRepository<Inscripcion, Long>,
     boolean existeAlumnoEnCicloYPlantel(@Param("alumnoId") Long alumnoId,
                                          @Param("cicloId") Long cicloId,
                                          @Param("plantelId") Long plantelId);
+
+    @Query("""
+            select distinct i from AsignacionGrupo a join a.inscripcion i
+            where a.grupo.id = :grupoId
+              and a.fechaInicio <= :finPeriodo
+              and (a.fechaFin is null or a.fechaFin >= :inicioPeriodo)
+              and i.fechaInicio <= :finPeriodo
+              and (i.fechaFin is null or i.fechaFin >= :inicioPeriodo)
+              and i.estado <> escuela.inscripcion.entity.EstadoInscripcion.CANCELADA
+            order by i.alumno.primerApellido, i.alumno.segundoApellido, i.alumno.nombres, i.id
+            """)
+    List<Inscripcion> buscarParaCalificaciones(@Param("grupoId") Long grupoId,
+                                               @Param("inicioPeriodo") LocalDate inicioPeriodo,
+                                               @Param("finPeriodo") LocalDate finPeriodo);
 }

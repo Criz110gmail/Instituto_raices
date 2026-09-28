@@ -74,6 +74,24 @@ public class AutocompletadoAdminController {
         return service.gradosMateria(institucionId, q);
     }
 
+    @GetMapping("/grupos-calificacion")
+    ResultadoAutocompletado gruposCalificacion(@RequestParam Long institucionId,
+                                                @RequestParam(defaultValue = "") String q) {
+        return service.gruposCalificacion(institucionId, q);
+    }
+
+    @GetMapping("/periodos-calificacion")
+    ResultadoAutocompletado periodosCalificacion(@RequestParam Long grupoId,
+                                                  @RequestParam(defaultValue = "") String q) {
+        return service.periodosCalificacion(grupoId, q);
+    }
+
+    @GetMapping("/materias-calificacion")
+    ResultadoAutocompletado materiasCalificacion(@RequestParam Long grupoId,
+                                                  @RequestParam(defaultValue = "") String q) {
+        return service.materiasCalificacion(grupoId, q);
+    }
+
     @GetMapping("/tipos-beca")
     ResultadoAutocompletado tiposBeca(@RequestParam Long institucionId,
                                       @RequestParam(defaultValue = "") String q) {

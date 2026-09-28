@@ -4,6 +4,8 @@ import escuela.alumno.service.FotografiaAlumnoService;
 import escuela.archivo.dto.ArchivoDescarga;
 import escuela.portal.service.PortalTutorService;
 import escuela.portal.service.NotificacionPortalService;
+import escuela.calificacion.service.CalificacionService;
+import escuela.portal.dto.PortalTutorResultado;
 import escuela.seguridad.service.UsuarioPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.*;
@@ -22,6 +24,7 @@ public class PortalTutorController {
     private final PortalTutorService service;
     private final FotografiaAlumnoService fotografiaService;
     private final NotificacionPortalService notificaciones;
+    private final CalificacionService calificaciones;
 
     @GetMapping
     String portal(@RequestParam(required = false) Long alumnoId,
@@ -63,6 +66,18 @@ public class PortalTutorController {
                  @RequestParam(defaultValue = "0") int paginaPagos,
                  @AuthenticationPrincipal UsuarioPrincipal principal, Model model) {
         return seccion("PAGOS", alumnoId, 0, paginaCargos, 0, 0, paginaPagos, principal, model);
+    }
+
+    @GetMapping("/calificaciones")
+    String calificaciones(@RequestParam(required = false) Long alumnoId,
+                          @RequestParam(defaultValue = "0") int pagina,
+                          @AuthenticationPrincipal UsuarioPrincipal principal, Model model) {
+        String vista = seccion("CALIFICACIONES", alumnoId, 0, 0, 0, 0, 0, principal, model);
+        PortalTutorResultado portal = (PortalTutorResultado) model.getAttribute("portal");
+        model.addAttribute("calificaciones", portal == null || portal.hijo() == null
+                ? org.springframework.data.domain.Page.empty()
+                : calificaciones.publicadasAlumno(portal.hijo().alumnoId(), pagina, 10));
+        return vista;
     }
 
     @PostMapping("/notificaciones/{id}/leer")

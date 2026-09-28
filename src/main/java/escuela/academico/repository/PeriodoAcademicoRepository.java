@@ -55,4 +55,16 @@ public interface PeriodoAcademicoRepository extends JpaRepository<PeriodoAcademi
     Slice<PeriodoAcademico> buscarParaCargo(@Param("inscripcionId") Long inscripcionId,
                                              @Param("texto") String texto,
                                              Pageable limite);
+
+    @Query(value = """
+            SELECT p.* FROM periodo_academico p
+            JOIN grupo gru ON gru.ciclo_escolar_id = p.ciclo_escolar_id
+            JOIN grado g ON g.id = gru.grado_id AND g.nivel_educativo_id = p.nivel_educativo_id
+            WHERE gru.id = :grupoId
+              AND lower(p.codigo || ' ' || p.nombre) LIKE ('%' || lower(:texto) || '%')
+            ORDER BY p.orden, p.id
+            """, nativeQuery = true)
+    Slice<PeriodoAcademico> buscarParaCalificaciones(@Param("grupoId") Long grupoId,
+                                                      @Param("texto") String texto,
+                                                      Pageable limite);
 }

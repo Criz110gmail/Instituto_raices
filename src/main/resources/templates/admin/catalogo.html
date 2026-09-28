@@ -61,6 +61,8 @@
                 <option value="INACTIVO" th:selected="${filtro.estado == 'INACTIVO'}">Inactivo</option>
                 <option value="INVITADO" th:selected="${filtro.estado == 'INVITADO'}">Invitado</option>
                 <option value="BLOQUEADO" th:selected="${filtro.estado == 'BLOQUEADO'}">Bloqueado</option>
+                <option th:if="${resultado.modulo.name() == 'CALIFICACIONES'}" value="BORRADOR" th:selected="${filtro.estado == 'BORRADOR'}">Borrador</option>
+                <option th:if="${resultado.modulo.name() == 'CALIFICACIONES'}" value="PUBLICADA" th:selected="${filtro.estado == 'PUBLICADA'}">Publicada</option>
                 <option th:if="${resultado.modulo.name() == 'TUTORES'}" value="SIN_CUENTA" th:selected="${filtro.estado == 'SIN_CUENTA'}">Sin cuenta de portal</option>
                 <option th:if="${resultado.modulo.name() == 'TUTORES'}" value="CUENTA_ACTIVA" th:selected="${filtro.estado == 'CUENTA_ACTIVA'}">Cuenta de portal activa</option>
                 <option th:if="${resultado.modulo.name() == 'TUTORES'}" value="CUENTA_PENDIENTE" th:selected="${filtro.estado == 'CUENTA_PENDIENTE'}">Pendiente de activación</option>

@@ -29,6 +29,8 @@ public enum ModuloPermiso {
             "GRUPO_LEER", "GRUPO_ADMINISTRAR"),
     MATERIAS("Materias", "Acceso completo a materias y planes de evaluación por grado",
             "MATERIA_LEER", "MATERIA_ADMINISTRAR"),
+    CALIFICACIONES("Calificaciones", "Acceso completo para capturar, publicar y consultar calificaciones",
+            "CALIFICACION_LEER", "CALIFICACION_ADMINISTRAR"),
     ALUMNOS("Alumnos", "Acceso completo al expediente de alumnos",
             "ALUMNO_LEER", "ALUMNO_ADMINISTRAR"),
     TUTORES("Tutores", "Acceso completo al expediente de tutores",

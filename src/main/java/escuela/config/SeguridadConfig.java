@@ -42,6 +42,7 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/periodos/**").hasAuthority("PERIODO_ADMINISTRAR")
                         .requestMatchers("/admin/grupos/**").hasAuthority("GRUPO_ADMINISTRAR")
                         .requestMatchers("/admin/materias/**").hasAuthority("MATERIA_ADMINISTRAR")
+                        .requestMatchers("/admin/calificaciones/**").hasAuthority("CALIFICACION_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/alumnos/*/fotografias/*")
                         .hasAnyAuthority("ALUMNO_LEER", "ALUMNO_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/alumnos/*/documentos/*")
@@ -94,6 +95,10 @@ public class SeguridadConfig {
                         .hasAuthority("CARGO_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/grados-materia")
                         .hasAuthority("MATERIA_ADMINISTRAR")
+                        .requestMatchers("/admin/autocompletado/grupos-calificacion",
+                                "/admin/autocompletado/periodos-calificacion",
+                                "/admin/autocompletado/materias-calificacion")
+                        .hasAuthority("CALIFICACION_ADMINISTRAR")
                         .requestMatchers("/admin/roles/**", "/admin/catalogos/roles/**").hasAuthority("ROL_ADMINISTRAR")
                         .requestMatchers("/admin/usuarios/**", "/admin/catalogos/usuarios/**").hasAuthority("USUARIO_ADMINISTRAR")
                         .requestMatchers("/admin/catalogos/instituciones/**").hasAnyAuthority("INSTITUCION_LEER", "INSTITUCION_ADMINISTRAR")
@@ -105,6 +110,7 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/catalogos/periodos/**").hasAnyAuthority("PERIODO_LEER", "PERIODO_ADMINISTRAR")
                         .requestMatchers("/admin/catalogos/grupos/**").hasAnyAuthority("GRUPO_LEER", "GRUPO_ADMINISTRAR")
                         .requestMatchers("/admin/catalogos/materias/**").hasAnyAuthority("MATERIA_LEER", "MATERIA_ADMINISTRAR")
+                        .requestMatchers("/admin/catalogos/calificaciones/**").hasAnyAuthority("CALIFICACION_LEER", "CALIFICACION_ADMINISTRAR")
                         .requestMatchers("/admin/catalogos/alumnos/**").hasAnyAuthority("ALUMNO_LEER", "ALUMNO_ADMINISTRAR")
                         .requestMatchers("/admin/catalogos/tutores/**").hasAnyAuthority("TUTOR_LEER", "TUTOR_ADMINISTRAR")
                         .requestMatchers("/admin/catalogos/vinculos-tutor/**").hasAnyAuthority("VINCULO_TUTOR_LEER", "VINCULO_TUTOR_ADMINISTRAR")

@@ -1782,3 +1782,32 @@ historial paginado.
 - Falta la prueba funcional del propietario y asignar el nuevo módulo al rol deseado. Al
   aprobarla, continúa V40 con calificaciones por inscripción, materia y periodo en estados
   borrador/publicada; después V41 asistencia diaria y V42 boletas Jasper derivadas.
+
+## V40 — calificaciones por periodo
+
+- Se agregó `calificacion` con unicidad por inscripción, plan de materia y periodo. Cada
+  fila conserva el tipo de evaluación, escala, mínima aprobatoria y decimales vigentes al
+  crearla, además de estado, actor/fecha de publicación, auditoría y versión optimista.
+- La captura administrativa trabaja por grupo, periodo y materia mediante tres
+  autocompletados remotos. Obtiene sólo inscripciones con asignación al grupo durante las
+  fechas del periodo; permite borradores parciales y valida escala numérica, decimales y
+  longitudes cualitativas sin cargar catálogos completos.
+- Publicar exige una calificación para todos los alumnos visibles y se ejecuta en una sola
+  transacción. Un bloque publicado no admite cambios hasta reabrirlo; la reapertura vuelve
+  todas sus filas a borrador y las oculta del portal hasta una nueva publicación.
+- El módulo `Calificaciones` incorpora consulta paginada, filtros Borrador/Publicada,
+  alcance institucional o de plantel y exportación XLSX. Sus permisos
+  `CALIFICACION_LEER` y `CALIFICACION_ADMINISTRAR` no se asignan automáticamente.
+- El portal familiar tiene una pantalla independiente de Calificaciones y el soporte
+  administrativo reutiliza la misma consulta de sólo lectura. Ambos muestran únicamente
+  resultados publicados del alumno autorizado.
+- Los formularios POST usan acciones Thymeleaf para incluir CSRF; reglas de negocio,
+  integridad y concurrencia regresan a la misma captura. Una prueba de regresión protege
+  las acciones de guardar/publicar y reabrir.
+- Docker compiló 573 fuentes y 89 fuentes de prueba; ejecutó 357 pruebas sin fallos.
+  Flyway validó 40 migraciones y aplicó V40 sobre el volumen habitual; Hibernate inició
+  con 51 repositorios y `/actuator/health` respondió `UP`. No se crearon calificaciones
+  de prueba.
+- Falta la prueba funcional autenticada del propietario y asignar el módulo al rol
+  correspondiente. Al aprobar V40 continúa V41 con asistencia diaria por inscripción;
+  V42 generará boletas Jasper derivadas de resultados publicados.

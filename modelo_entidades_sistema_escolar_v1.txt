@@ -727,10 +727,11 @@ implementar las reglas respectivas.
 10) Datos de tutores: confirmar canal de activación y si se permite alta sin
     correo. Evitar crear usuarios duplicados cuando ya existe el tutor.
 11) Ampliación académica: V39 resolvió Materia y MateriaGrado con evaluación numérica o
-    cualitativa. V40 debe registrar calificaciones por inscripción, materia y periodo con
-    borrador/publicación; V41 agregará asistencia diaria por inscripción y V42 generará
-    boletas derivadas, sin almacenar un total duplicado. El portal sólo verá resultados
-    publicados. Horarios, clases y docentes quedan fuera hasta diseñar ese dominio.
+    cualitativa. V40 resolvió una Calificacion por inscripción, plan de materia y periodo,
+    con copia histórica de escala, borrador/publicación atómica por grupo y reapertura
+    explícita. El portal sólo ve resultados publicados. V41 agregará asistencia diaria por
+    inscripción y V42 generará boletas derivadas, sin almacenar un total duplicado.
+    Horarios, clases y docentes quedan fuera hasta diseñar ese dominio.
 
 15. ORDEN SUGERIDO DE IMPLEMENTACIÓN
 ==================================

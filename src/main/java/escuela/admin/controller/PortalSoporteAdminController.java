@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import escuela.calificacion.service.CalificacionService;
 
 @Controller @RequiredArgsConstructor @RequestMapping("/admin/portal-soporte")
 public class PortalSoporteAdminController {
@@ -23,6 +24,7 @@ public class PortalSoporteAdminController {
     private final AlcanceDatosService alcance;
     private final PortalTutorService portal;
     private final RegistroAuditoriaService auditoria;
+    private final CalificacionService calificaciones;
 
     @GetMapping
     @Transactional(readOnly = true)
@@ -62,11 +64,11 @@ public class PortalSoporteAdminController {
                       @RequestParam(defaultValue="0") int paginaPagos,
                       @AuthenticationPrincipal UsuarioPrincipal admin, Model model) {
         String destino = seccion == null ? "" : seccion.toUpperCase(java.util.Locale.ROOT);
-        if (!Set.of("AVISOS", "AGENDA", "PAGOS").contains(destino)) {
+        if (!Set.of("AVISOS", "AGENDA", "PAGOS", "CALIFICACIONES").contains(destino)) {
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.NOT_FOUND);
         }
-        return vista(tutorId, alumnoId, destino.equals("AGENDA") ? pagina : 0,
+        return vista(tutorId, alumnoId, Set.of("AGENDA", "CALIFICACIONES").contains(destino) ? pagina : 0,
                 destino.equals("PAGOS") ? paginaCargos : 0,
                 destino.equals("AVISOS") ? pagina : 0,
                 destino.equals("PAGOS") ? paginaPagos : 0,
@@ -85,7 +87,8 @@ public class PortalSoporteAdminController {
             throw new org.springframework.security.access.AccessDeniedException("El tutor no tiene una cuenta familiar activa");
         }
         UsuarioPrincipal vista = principalTutor(tutor, admin.institucionId());
-        model.addAttribute("portal", portal.consultarComoSoporte(vista, alumnoId, paginaEventos, paginaCargos, paginaAvisos, paginaPagos));
+        var resultadoPortal = portal.consultarComoSoporte(vista, alumnoId, paginaEventos, paginaCargos, paginaAvisos, paginaPagos);
+        model.addAttribute("portal", resultadoPortal);
         model.addAttribute("soporte", true);
         model.addAttribute("tutorSoporteId", tutorId);
         if (seccion != null) {
@@ -93,6 +96,12 @@ public class PortalSoporteAdminController {
             model.addAttribute("rutaInicio", "/admin/portal-soporte/" + tutorId);
             model.addAttribute("rutaSeccion", "/admin/portal-soporte/" + tutorId + "/"
                     + seccion.toLowerCase(java.util.Locale.ROOT));
+            if (seccion.equals("CALIFICACIONES")) {
+                model.addAttribute("calificaciones", resultadoPortal.hijo() == null
+                        ? org.springframework.data.domain.Page.empty()
+                        : calificaciones.publicadasAlumno(resultadoPortal.hijo().alumnoId(),
+                        Math.max(0, paginaEventos), 10));
+            }
         }
         auditoria.registrar(admin.institucionId(), AccionAuditoria.PORTAL_TUTOR_SOPORTE, "TUTOR", tutorId,
                 "Consulta de soporte del portal familiar", java.util.Map.of("tutorUsuario", tutor.getUsuario().getUsername()));

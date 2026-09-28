@@ -69,6 +69,7 @@ comprueban los permisos de sus roles. Las credenciales `ADMIN_BOOTSTRAP_USERNAME
 - `escuela.alumno`: expediente de alumnos y vínculos históricos con tutores.
 - `escuela.tutor`: expediente institucional de tutores y cuenta de acceso opcional.
 - `escuela.inscripcion`: trayectoria académica e historial de asignaciones de grupo.
+- `escuela.calificacion`: captura por periodo, borradores y publicación de resultados.
 - `escuela.cobranza`: conceptos, cuotas, cargos, becas y ajustes por inscripción/alumno.
 - `escuela.finanzas`: cuentas financieras, pagos pendientes, comprobantes privados y distribución solicitada.
 - `escuela.auditoria`: bitácora inmutable de operaciones sensibles y correlación.
@@ -89,7 +90,8 @@ ocultan; reaparecen instrucciones sólo si se vuelve a escribir o se limpia la s
 
 ## Consola administrativa
 
-La ruta `/admin` contiene los catálogos académicos, incluido Materias, Alumnos, Tutores, Vínculos
+La ruta `/admin` contiene los catálogos académicos, incluidos Materias, Calificaciones,
+Alumnos, Tutores, Vínculos
 alumno–tutor, Inscripciones, Conceptos de cobro, Cuotas por alumno, Cargos, Tipos de
 beca, Becas por alumno, Historial de ajustes y los módulos de
 Roles y permisos y Usuarios.
@@ -102,6 +104,13 @@ numérica o cualitativa, escala, mínima aprobatoria, decimales, orden, horas se
 inclusión en boleta. El grado se selecciona mediante autocompletado remoto. Sus permisos
 no se conceden automáticamente: el administrador debe asignar el módulo al rol deseado y
 volver a iniciar sesión.
+
+Calificaciones permite elegir grupo, periodo y materia mediante autocompletado remoto,
+guardar avances parciales y publicar el bloque sólo cuando todos los alumnos tienen un
+resultado. Los resultados publicados quedan bloqueados hasta reabrir el bloque y son los
+únicos visibles en el portal familiar. Cada calificación conserva una copia de la escala
+vigente al capturarla para que el historial no cambie si después se modifica la materia.
+Sus permisos tampoco se conceden automáticamente a roles existentes.
 
 Para recuperación administrativa, configura `ADMIN_BOOTSTRAP_USERNAME` y
 `ADMIN_BOOTSTRAP_PASSWORD` en `.env`.

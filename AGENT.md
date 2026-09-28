@@ -20,12 +20,12 @@ no vuelvas a implementar componentes que ya existan.
 - Repositorio privado: `Criz110gmail/Instituto_raices`.
 - Remoto esperado: `https://Criz110gmail@github.com/Criz110gmail/Instituto_raices.git`.
 - Rama principal: `main`.
-- Último commit confirmado en `main` antes de iniciar V39: `6b26516` —
-  `Implementé la etapa V38: expediente documental y ficha médica del alumno.`.
+- Último commit confirmado en `main` antes de iniciar V40: `ab60404` —
+  `etapa: V39 — Materias y plan de evaluación por grado.`.
   Confirma `git status` y `git log` antes de continuar.
-- El cambio local actual implementa V39 con Materias y su plan de evaluación por grado;
-  todavía debe ser revisado y confirmado por el propietario. El volumen habitual ya
-  tiene Flyway V1–V39 aplicado y la siguiente migración disponible es V40.
+- El cambio local actual implementa V40 con captura, publicación y consulta familiar de
+  calificaciones; todavía debe ser revisado y confirmado por el propietario. El volumen
+  habitual ya tiene Flyway V1–V40 aplicado y la siguiente migración disponible es V41.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -48,7 +48,7 @@ no vuelvas a implementar componentes que ya existan.
   memoria.
 - Paquete base: `escuela`.
 - Módulos principales: `escuela.institucion`, `escuela.academico`, `escuela.seguridad`,
-  `escuela.alumno`, `escuela.tutor`, `escuela.inscripcion`, `escuela.cobranza`,
+  `escuela.alumno`, `escuela.tutor`, `escuela.inscripcion`, `escuela.calificacion`, `escuela.cobranza`,
   `escuela.finanzas`, `escuela.comunicacion`, `escuela.auditoria`, `escuela.admin`,
   `escuela.config` y `escuela.common`.
 - Cada entidad usa identificador `Long`, auditoría y versión para concurrencia optimista.
@@ -689,13 +689,26 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 - `MATERIA_LEER` y `MATERIA_ADMINISTRAR` respetan el modelo de acceso completo por
   módulo y no se asignan automáticamente a roles existentes. Los conflictos de código,
   grado, orden o versión permanecen en el formulario con un mensaje comprensible.
+- V40 agrega una calificación por `Inscripcion`, `MateriaGrado` y `PeriodoAcademico`. La
+  pantalla selecciona grupo, periodo y materia mediante autocompletados remotos y carga
+  sólo los alumnos asignados al grupo durante las fechas del periodo.
+- La captura admite borradores parciales. Publicar exige resultado para todos los alumnos
+  mostrados, fija el estado y los datos del actor, y vuelve el bloque inmutable hasta que
+  un administrador lo reabra explícitamente. Al reabrir, todo el bloque vuelve a borrador
+  y deja de ser visible para la familia hasta una nueva publicación.
+- Cada registro conserva una copia de tipo de evaluación, escala, mínima aprobatoria y
+  decimales del plan vigente; cambios posteriores en Materias no reescriben el historial.
+  El portal familiar y el soporte de portal sólo consultan resultados publicados.
+- `CALIFICACION_LEER` y `CALIFICACION_ADMINISTRAR` no se asignan automáticamente a roles
+  existentes. El módulo respeta alcance institucional/plantel, filtros, paginación y XLSX;
+  errores de regla, integridad o concurrencia permanecen dentro de la captura.
 
 ## Verificación confirmada
 
-- Compilación correcta de 561 archivos Java de producción.
-- 350 pruebas Maven sin fallos, errores ni omisiones.
-- Flyway V1 a V39 validados y aplicados correctamente sobre el volumen existente.
-- Hibernate validó el esquema y detectó 50 repositorios.
+- Compilación correcta de 573 archivos Java de producción.
+- 357 pruebas Maven sin fallos, errores ni omisiones.
+- Flyway V1 a V40 validados y aplicados correctamente sobre el volumen existente.
+- Hibernate validó el esquema y detectó 51 repositorios.
 - PostgreSQL y la aplicación iniciaron correctamente con credenciales tomadas de `.env`.
 - `/actuator/health` respondió `UP`.
 - Los formularios autenticados de instituciones, planteles, niveles, oferta educativa y
@@ -823,16 +836,19 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-V39 está implementada, compilada, aplicada y verificada automáticamente. El propietario
-debe asignar el nuevo módulo `Materias` al rol correspondiente, iniciar una sesión nueva
-y probar con datos controlados: crear una materia, asociarla mediante autocompletado a un
-grado, revisar evaluación numérica y cualitativa, editar, desactivar y confirmar errores
-en la misma pantalla. No crear materias operativas sólo para verificar.
+V40 está implementada, compilada, aplicada y verificada automáticamente. El propietario
+debe asignar el módulo `Calificaciones` al rol correspondiente, iniciar una sesión nueva
+y probar con datos controlados: elegir grupo, periodo y materia; guardar un borrador
+parcial; confirmar que publicar exige a todos los alumnos; publicar; revisar el resultado
+desde el portal familiar; reabrir y comprobar que desaparece del portal hasta volver a
+publicarlo. Probar tanto una materia numérica como una cualitativa y confirmar los filtros
+y la exportación XLSX. No crear calificaciones operativas sólo para verificar.
 
-Después de aprobar V39, el siguiente desarrollo acordado es V40: calificaciones por
-`Inscripcion`, materia y `PeriodoAcademico`, con estados borrador/publicada, escala tomada
-del plan de grado, captura eficiente por grupo y visibilidad familiar sólo para resultados
-publicados. No iniciar boletas ni asistencia antes de estabilizar ese núcleo.
+Después de aprobar V40, el siguiente desarrollo acordado es V41: asistencia diaria por
+`Inscripcion`, fecha y grupo, con captura masiva, estados presente/ausente/retardo/
+justificada, observación opcional e historial. Debe reutilizar alcance, autocompletado y
+asignación histórica; no diseñar todavía horarios, clases o docentes. V42 queda reservada
+para boletas Jasper derivadas de calificaciones publicadas, sin duplicar totales.
 
 También sigue pendiente la prueba funcional controlada de V34/V35: usar un tutor
 autorizado con varios hijos y varios cargos —incluidos dos del mismo alumno—, distribuir
@@ -968,15 +984,15 @@ funcionales actuales.
 
 ### Punto exacto de reanudación en otra computadora
 
-1. `main` estaba en `6b26516` antes de iniciar V39. El cambio local implementa Materias
-   y su plan de evaluación por grado. Preservarlo y no reconstruir V1–V39.
+1. `main` estaba en `ab60404` antes de iniciar V40. El cambio local implementa
+   Calificaciones por periodo. Preservarlo y no reconstruir V1–V40.
 2. Crear el `.env` local desde `.env.example`; nunca pedir, leer ni copiar el contenido
    real del otro equipo. Levantar con `docker compose up --build -d` y comprobar salud.
 3. Si se necesita conservar alumnos y fotografías del equipo anterior, Git no basta:
    restaurar base y archivos como una pareja sólo con autorización y con un procedimiento
    probado. No improvisar una restauración sobre datos existentes.
-4. Flyway V1–V39 ya existen y están aplicadas al volumen habitual; nunca editarlas.
-   La siguiente migración disponible será V40.
+4. Flyway V1–V40 ya existen y están aplicadas al volumen habitual; nunca editarlas.
+   La siguiente migración disponible será V41.
 5. Probar las cuatro descargas Jasper con datos controlados y distintos tamaños de
    resultado. Ejecutar también la prueba manual de V37 y las pendientes descritas para V34, V35 y V36. Mantener
    además
@@ -990,11 +1006,11 @@ funcionales actuales.
 
 ## Disciplina de cambios y entrega
 
-V34–V39, los reportes financieros Jasper, la navegación separada del portal familiar y
-la ayuda contextual global están implementados localmente. V39 compiló, migró y arrancó;
-falta que el propietario asigne su permiso y pruebe Materias con datos controlados. También
-siguen pendientes las pruebas funcionales enumeradas de etapas anteriores. Después de
-aprobar V39, continuar con V40 de calificaciones.
+V34–V40, los reportes financieros Jasper, la navegación separada del portal familiar y
+la ayuda contextual global están implementados localmente. V40 compiló, migró y arrancó;
+falta que el propietario asigne su permiso y pruebe Calificaciones con datos controlados.
+También siguen pendientes las pruebas funcionales enumeradas de etapas anteriores.
+Después de aprobar V40, continuar con V41 de asistencia diaria.
 
 - Inspecciona `git status` antes de editar y preserva cambios ajenos.
 - Usa migraciones Flyway nuevas para cambios de esquema; nunca edites una migración ya

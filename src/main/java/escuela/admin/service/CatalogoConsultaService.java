@@ -29,6 +29,8 @@ import escuela.institucion.entity.*;
 import escuela.institucion.repository.*;
 import escuela.inscripcion.entity.Inscripcion;
 import escuela.inscripcion.repository.InscripcionRepository;
+import escuela.calificacion.entity.Calificacion;
+import escuela.calificacion.repository.CalificacionRepository;
 import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.entity.TipoCuentaUsuario;
@@ -70,6 +72,7 @@ public class CatalogoConsultaService {
     private final PeriodoAcademicoRepository periodoRepository;
     private final GrupoRepository grupoRepository;
     private final MateriaRepository materiaRepository;
+    private final CalificacionRepository calificacionRepository;
     private final AlumnoRepository alumnoRepository;
     private final TutorRepository tutorRepository;
     private final AlumnoTutorRepository alumnoTutorRepository;
@@ -112,6 +115,8 @@ public class CatalogoConsultaService {
                     texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(),
                             e.getInstitucion().getNombre(), valor(e.getDescripcion())));
+            case CALIFICACIONES -> consultar(modulo, calificacionRepository,
+                    textoCalificacion(f), estado(f, "estado"), pagina, this::filaCalificacion);
             case ALUMNOS -> consultar(modulo, alumnoRepository,
                     texto(f, "matricula", "nombres", "primerApellido", "segundoApellido", "curp", "email"),
                     activo(f), pagina, e -> fila(e.getId(), e.isActivo(), e.getMatricula(),
@@ -316,6 +321,24 @@ public class CatalogoConsultaService {
         };
     }
 
+    private Specification<Calificacion> textoCalificacion(FiltroCatalogo f) {
+        return (root, query, cb) -> {
+            if (f.q().isBlank()) return cb.conjunction();
+            String patron = "%" + f.q().toLowerCase(Locale.ROOT) + "%";
+            var alumno = root.get("inscripcion").get("alumno");
+            var materia = root.get("materiaGrado").get("materia");
+            var periodo = root.get("periodoAcademico");
+            return cb.or(cb.like(cb.lower(alumno.get("matricula")), patron),
+                    cb.like(cb.lower(alumno.get("nombres")), patron),
+                    cb.like(cb.lower(alumno.get("primerApellido")), patron),
+                    cb.like(cb.lower(alumno.get("segundoApellido")), patron),
+                    cb.like(cb.lower(materia.get("codigo")), patron),
+                    cb.like(cb.lower(materia.get("nombre")), patron),
+                    cb.like(cb.lower(periodo.get("codigo")), patron),
+                    cb.like(cb.lower(periodo.get("nombre")), patron));
+        };
+    }
+
     private Specification<ConceptoCobro> textoConcepto(FiltroCatalogo f) {
         return (root, query, cb) -> {
             if (f.q().isBlank()) return cb.conjunction();
@@ -452,6 +475,20 @@ public class CatalogoConsultaService {
                 cargo.getConceptoCobro().getCodigo() + " · " + cargo.getConceptoCobro().getNombre(),
                 cargo.getDescripcion(), periodo, FECHA.format(cargo.getFechaVencimiento()),
                 importe, saldoTexto), estado, tono);
+    }
+
+    private FilaCatalogo filaCalificacion(Calificacion c) {
+        String resultado = c.getTipoEvaluacion() == TipoEvaluacion.NUMERICA
+                ? (c.getValorNumerico() == null ? "Pendiente" : c.getValorNumerico().toPlainString())
+                : valor(c.getValorCualitativo());
+        var alumno = c.getInscripcion().getAlumno();
+        String nombre = String.join(" ", alumno.getNombres(), alumno.getPrimerApellido(),
+                alumno.getSegundoApellido() == null ? "" : alumno.getSegundoApellido()).trim();
+        String estado = c.getEstado().name();
+        return new FilaCatalogo(c.getId(), List.of(nombre, alumno.getMatricula(),
+                c.getMateriaGrado().getMateria().getNombre(), c.getPeriodoAcademico().getNombre(),
+                c.getInscripcion().getGrado().getNombre(), resultado), estado,
+                estado.equals("PUBLICADA") ? "positivo" : "aviso");
     }
 
     private FilaCatalogo filaBeca(BecaAlumno b) {

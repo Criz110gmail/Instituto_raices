@@ -15,6 +15,9 @@ import escuela.cobranza.entity.TipoBeca;
 import escuela.academico.entity.PeriodoAcademico;
 import escuela.academico.repository.PeriodoAcademicoRepository;
 import escuela.academico.repository.GradoRepository;
+import escuela.academico.repository.GrupoRepository;
+import escuela.academico.repository.MateriaGradoRepository;
+import escuela.academico.entity.Grupo;
 import escuela.admin.dto.ModuloCatalogo;
 import escuela.inscripcion.entity.Inscripcion;
 import escuela.inscripcion.repository.InscripcionRepository;
@@ -56,6 +59,8 @@ public class BusquedaAutocompletadoService {
     private final ConceptoCobroRepository conceptoCobroRepository;
     private final PeriodoAcademicoRepository periodoAcademicoRepository;
     private final GradoRepository gradoRepository;
+    private final GrupoRepository grupoRepository;
+    private final MateriaGradoRepository materiaGradoRepository;
     private final TipoBecaRepository tipoBecaRepository;
     private final CargoRepository cargoRepository;
     private final CuentaFinancieraRepository cuentaFinancieraRepository;
@@ -177,6 +182,55 @@ public class BusquedaAutocompletadoService {
                         grado.getNivelEducativo().getNombre() + " · " + grado.getCodigo()
                                 + " · " + grado.getNombre(),
                         "Orden " + grado.getOrden()))
+                .toList(), resultado.hasNext());
+    }
+
+    public ResultadoAutocompletado gruposCalificacion(Long institucionId, String consulta) {
+        alcance.validarInstitucion(institucionId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        String patron = "%" + texto + "%";
+        Specification<Grupo> busqueda = (root, query, cb) -> cb.and(
+                cb.isTrue(root.get("activo")),
+                cb.equal(root.get("plantel").get("institucion").get("id"), institucionId),
+                cb.or(cb.like(cb.lower(root.get("nombre")), patron),
+                        cb.like(cb.lower(root.get("codigo")), patron),
+                        cb.like(cb.lower(root.get("plantel").get("nombre")), patron),
+                        cb.like(cb.lower(root.get("grado").get("nombre")), patron)));
+        var resultado = grupoRepository.findAll(Specification.where(busqueda)
+                        .and(alcance.especificacion(ModuloCatalogo.GRUPOS)),
+                PageRequest.of(0, tamano(consulta) + 1));
+        boolean hayMas = resultado.getNumberOfElements() > MAXIMO_RESULTADOS;
+        return new ResultadoAutocompletado(resultado.getContent().stream().limit(MAXIMO_RESULTADOS)
+                .map(grupo -> new OpcionAutocompletado(grupo.getId(),
+                        grupo.getNombre() + " · " + grupo.getGrado().getNombre(),
+                        grupo.getPlantel().getNombre() + " · " + grupo.getCicloEscolar().getNombre()))
+                .toList(), hayMas);
+    }
+
+    public ResultadoAutocompletado periodosCalificacion(Long grupoId, String consulta) {
+        alcance.validarRecurso(ModuloCatalogo.GRUPOS, grupoId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        var resultado = periodoAcademicoRepository.buscarParaCalificaciones(
+                grupoId, texto, PageRequest.of(0, tamano(consulta)));
+        return new ResultadoAutocompletado(resultado.getContent().stream()
+                .map(periodo -> new OpcionAutocompletado(periodo.getId(),
+                        periodo.getCodigo() + " · " + periodo.getNombre(),
+                        periodo.getFechaInicio() + " — " + periodo.getFechaFin()))
+                .toList(), resultado.hasNext());
+    }
+
+    public ResultadoAutocompletado materiasCalificacion(Long grupoId, String consulta) {
+        alcance.validarRecurso(ModuloCatalogo.GRUPOS, grupoId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        var resultado = materiaGradoRepository.buscarParaCalificaciones(
+                grupoId, texto, PageRequest.of(0, tamano(consulta)));
+        return new ResultadoAutocompletado(resultado.getContent().stream()
+                .map(plan -> new OpcionAutocompletado(plan.getId(),
+                        plan.getMateria().getCodigo() + " · " + plan.getMateria().getNombre(),
+                        plan.getTipoEvaluacion().getEtiqueta() + " · Orden " + plan.getOrden()))
                 .toList(), resultado.hasNext());
     }
 

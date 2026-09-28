@@ -32,4 +32,15 @@ public interface AsignacionGrupoRepository extends JpaRepository<AsignacionGrupo
     long contarSuperpuestas(@Param("grupoId") Long grupoId,
                             @Param("inicio") LocalDate inicio,
                             @Param("fin") LocalDate fin);
+
+    @Query("""
+            select a from AsignacionGrupo a
+            where a.inscripcion.id = :inscripcionId
+              and a.fechaInicio <= :fin
+              and (a.fechaFin is null or a.fechaFin >= :inicio)
+            order by a.fechaInicio desc, a.id desc
+            """)
+    List<AsignacionGrupo> buscarParaPeriodo(@Param("inscripcionId") Long inscripcionId,
+                                            @Param("inicio") LocalDate inicio,
+                                            @Param("fin") LocalDate fin);
 }
