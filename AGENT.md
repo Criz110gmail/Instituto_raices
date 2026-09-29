@@ -1113,3 +1113,34 @@ enumeradas de etapas anteriores.
 - La transformación es común para las 14 pantallas administrativas que ya cargan
   `navigation.js`; no duplica reglas en cada HTML ni altera la seguridad del servidor.
   Docker ejecutó 374 pruebas sin fallos y la interacción se revisó visualmente.
+
+### Ajuste visual del formulario administrativo de maestros — 2026-09-29
+
+- Las secciones **Portal de maestros** y **Grupos y materias asignadas** ya no heredan el
+  diseño compacto anterior. Ahora usan encabezados, tarjetas de resumen, estados, acciones,
+  formulario, listado y estado vacío coherentes con el resto de formularios administrativos.
+- El ajuste incluye temas claro y oscuro y adaptación específica para móvil. Se revisó en
+  navegador a tamaño escritorio y 390×844, Docker ejecutó 374 pruebas sin fallos y la
+  aplicación desplegada respondió `UP`.
+
+### Estabilización de capturas, boletas y ayudas — 2026-09-29
+
+- Calificaciones y Asistencia ya consultan directamente el identificador de institución
+  del grupo; no navegan relaciones JPA perezosas fuera de sesión al abrir una hoja.
+- El PDF colectivo de boletas fallaba aun con registros porque `javac` no veía las
+  dependencias anidadas del JAR de Spring Boot. Se incorporó `jasperreports-jdt` 7.0.8 y
+  ECJ para compilar expresiones mediante el classloader de la aplicación.
+- El acceso familiar del tutor tiene un panel administrativo profesional y responsivo. Los
+  filtros de Planeaciones usan la geometría común y los iconos de ayuda tienen una regla
+  global protegida contra estilos particulares de Inscripciones, Maestros y otros módulos.
+- La revisión visual cubrió escritorio y 390×844. Docker ejecutó 377 pruebas sin fallos,
+  validó V1–V43 y la aplicación desplegada respondió `UP` sin errores de arranque.
+- Los autocompletados tienen un contrato visual global que prevalece sobre estilos de
+  formularios especializados. Sus resultados, opciones y botón para limpiar no pueden
+  convertirse en botones blancos, heredar el rojo de validación ni perder el tema oscuro;
+  tampoco producen desplazamiento horizontal en móvil. Aplica también a **Nueva
+  asignación** dentro del expediente administrativo de Maestros.
+- **Abrir captura** de Calificaciones y **Abrir lista** de Asistencia comparten un espacio
+  académico profesional: encabezado, selector, resumen contextual, tabla, campos y acciones
+  consistentes. La misma regla cubre temas claro/oscuro y convierte cada alumno en una
+  tarjeta legible en móvil, sin depender del desplazamiento horizontal.

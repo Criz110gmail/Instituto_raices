@@ -38,7 +38,9 @@ class AyudaContextualInterfazTest {
         assertThat(estilos).contains(".context-help-trigger", ".context-module-help",
                 ".context-help-overlay", ".filters .context-help-trigger",
                 "aspect-ratio:1/1", "border-radius:999px!important",
-                "@media(max-width:650px)", "[data-theme=dark]");
+                "@media(max-width:650px)", "[data-theme=dark]",
+                "ningún formulario puede deformar los controles de ayuda",
+                "width: 22px !important", "background: var(--accent,#16a9c7) !important");
     }
 
     @Test
@@ -51,6 +53,24 @@ class AyudaContextualInterfazTest {
                 ".filters", ".ledger-filters", ".event-filters",
                 "border-radius: 20px", ".family-access form .context-help-trigger",
                 "[data-theme=\"dark\"]", "@media (max-width: 480px)");
+    }
+
+    @Test
+    void autocompletadosConservanSuDisenoDentroDeFormulariosEspecializados() throws IOException {
+        String estilos = leer(Path.of("src/main/resources/static/css/forms.css"));
+
+        assertThat(estilos).contains(
+                "Contrato visual global del autocompletado",
+                ".autocomplete .autocomplete-clear",
+                ".autocomplete .autocomplete-results",
+                ".autocomplete .autocomplete-option",
+                ".autocomplete .autocomplete-status",
+                "overflow-x: hidden !important",
+                "box-sizing: border-box !important",
+                "background: transparent !important",
+                "background: #f8fbfe !important",
+                "color: var(--muted) !important",
+                "[data-theme=dark] .autocomplete .autocomplete-results");
     }
 
     private boolean contieneCamposVisibles(Path ruta) {

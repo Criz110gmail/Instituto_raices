@@ -1951,3 +1951,37 @@ historial paginado.
 - La prueba automatizada nueva elevó el total a 374. La revisión en navegador confirmó una
   sola etiqueta Trayectoria, apertura por clic, módulo activo visible y persistencia tras
   recargar.
+
+## Diseño de cuenta y asignaciones del maestro (2026-09-29)
+
+- Al editar un maestro, **Portal de maestros** presenta la cuenta en tarjetas legibles,
+  distingue el estado y jerarquiza activación, recuperación y desactivación.
+- **Grupos y materias asignadas** usa el mismo patrón visual: formulario separado, contador,
+  estados vigente/finalizada, acciones y estado vacío compacto. Ambos bloques responden en
+  móvil y tienen variantes para tema oscuro.
+- Se añadió cobertura estructural a `PlaneacionInterfazTest`; las 374 pruebas pasaron, la
+  vista se comprobó en escritorio y 390×844, y la imagen final quedó desplegada con salud
+  `UP`.
+
+## Correcciones transversales administrativas (2026-09-29)
+
+- Los errores al abrir Calificaciones y Asistencia eran `LazyInitializationException` al
+  recorrer grupo → plantel → institución fuera de sesión. `GrupoRepository` devuelve ahora
+  el ID de institución mediante una proyección directa y ambos controladores tienen pruebas
+  de regresión.
+- El PDF colectivo no fallaba por ausencia de registros: los logs mostraron compilación de
+  expresiones Jasper sin acceso a las librerías anidadas. `jasperreports-jdt` y ECJ quedaron
+  incluidos en el JAR ejecutable; la prueba genera, lee y renderiza el PDF.
+- El acceso del tutor al Portal de familias fue rediseñado con tarjetas, estados, acciones,
+  modo oscuro y móvil. Planeaciones alineó sus acciones de filtro y la ayuda contextual
+  impone globalmente su geometría y colores sobre cualquier formulario especializado.
+- La validación final ejecutó 377 pruebas sin fallos, revisó la interfaz en escritorio y
+  390×844 y desplegó la imagen con salud `UP`.
+- El autocompletado de **Nueva asignación** en Maestros dejó de heredar el fondo blanco y
+  los bordes de los botones del formulario. La protección quedó definida como regla global
+  para resultados, opciones, texto informativo y control de limpieza, con variantes clara
+  y oscura; el rojo queda reservado para errores reales y la lista no desborda en móvil.
+- Las pantallas operativas de Calificaciones y Asistencia usan ahora el mismo lenguaje
+  visual administrativo al seleccionar y al abrir una hoja: hero, panel de parámetros,
+  resumen en tarjetas, tabla de captura, acciones, modo oscuro y tarjetas por alumno en
+  móvil. No se modificaron sus rutas, validaciones ni flujo de publicación/guardado.

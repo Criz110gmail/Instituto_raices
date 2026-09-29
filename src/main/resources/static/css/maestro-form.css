@@ -6,14 +6,145 @@
     overflow: visible;
 }
 
-.teacher-admin-shell .assignment-form {
+.teacher-management-card {
+    margin-top: 20px;
+    border: 1px solid #d8e4ee;
+    background: linear-gradient(150deg, #ffffff, #fbfdff);
+    box-shadow: 0 18px 45px rgba(22, 47, 76, .08);
+}
+
+.teacher-card-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 27px 30px 24px;
+    border-bottom: 1px solid var(--line);
+    background: radial-gradient(circle at 92% 0, rgba(41, 121, 255, .09), transparent 34%);
+}
+
+.teacher-card-title {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    min-width: 0;
+}
+
+.teacher-card-icon {
+    display: grid;
+    flex: 0 0 auto;
+    width: 46px;
+    height: 46px;
+    place-items: center;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #1478f2, #2356c9);
+    box-shadow: 0 10px 22px rgba(28, 101, 219, .24);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .06em;
+}
+
+.teacher-card-icon.assignment-icon {
+    background: linear-gradient(145deg, #13a996, #08796f);
+    box-shadow: 0 10px 22px rgba(8, 121, 111, .23);
+}
+
+.teacher-card-eyebrow {
+    display: block;
+    color: #148f82;
+    font-size: .68rem;
+    font-weight: 900;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+}
+
+.teacher-card-heading h2 {
+    margin: 5px 0 5px;
+    color: var(--ink);
+    font: 800 1.22rem Manrope, sans-serif;
+}
+
+.teacher-card-heading p {
+    max-width: 650px;
+    margin: 0;
+    color: var(--muted);
+    font-size: .79rem;
+    line-height: 1.55;
+}
+
+.teacher-account-state,
+.teacher-assignment-count {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 8px 12px;
+    border: 1px solid #bed3e7;
+    border-radius: 999px;
+    background: #edf5fc;
+    color: #245c83;
+    font-size: .7rem;
+    font-weight: 900;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+
+.teacher-account-state.state-active {
+    border-color: #a4d9cc;
+    background: #eaf8f4;
+    color: #087864;
+}
+
+.teacher-account-state.state-inactive {
+    border-color: #e3bcc1;
+    background: #fff1f2;
+    color: #9b2c39;
+}
+
+.teacher-assignment-count b {
+    font-size: .9rem;
+}
+
+.teacher-assignment-count small {
+    font-size: .66rem;
+}
+
+.teacher-card-content {
+    padding: 26px 30px 30px;
+}
+
+.teacher-card-content > .form-error:first-child {
+    margin-top: 0;
+}
+
+.teacher-admin-shell .teacher-account-form,
+.teacher-admin-shell .teacher-assignment-form {
+    display: block;
     padding: 0;
     border: 0;
     background: transparent;
 }
 
-.teacher-admin-shell .assignment-form .form-section {
+.teacher-admin-shell .teacher-account-form .form-section,
+.teacher-admin-shell .teacher-assignment-form .form-section {
     margin-bottom: 0;
+    background: #fbfdff;
+}
+
+.teacher-admin-shell .teacher-account-form .form-actions,
+.teacher-admin-shell .teacher-assignment-form .form-actions {
+    margin: 0;
+    padding: 18px 0 0;
+    border: 0;
+}
+
+.teacher-admin-shell .teacher-account-form .form-actions button,
+.teacher-admin-shell .teacher-assignment-form .form-actions button {
+    border-color: #1478f2;
+    background: #1478f2;
+    color: #fff;
 }
 
 .teacher-admin-shell .secure-link {
@@ -23,6 +154,10 @@
     border: 1px solid #9fd8c0;
     border-radius: 14px;
     background: #effbf6;
+}
+
+.teacher-admin-shell .secure-link + .secure-link {
+    margin-top: 12px;
 }
 
 .teacher-admin-shell .secure-link input {
@@ -39,6 +174,250 @@
     color: var(--muted);
 }
 
+.teacher-admin-shell .account-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.teacher-admin-shell .account-summary > div {
+    display: grid;
+    align-content: start;
+    gap: 7px;
+    min-width: 0;
+    padding: 17px 18px;
+    border: 1px solid #dce6ef;
+    border-radius: 14px;
+    background: #fbfdff;
+}
+
+.teacher-admin-shell .account-summary span {
+    color: var(--muted);
+    font-size: .66rem;
+    font-weight: 800;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.teacher-admin-shell .account-summary strong {
+    overflow-wrap: anywhere;
+    color: var(--ink);
+    font-size: .86rem;
+}
+
+.teacher-account-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+}
+
+.teacher-account-actions form {
+    margin: 0;
+}
+
+.teacher-button,
+.teacher-admin-shell .teacher-assignment-list button {
+    min-height: 40px;
+    border: 1px solid #b9c9d9;
+    border-radius: 10px;
+    background: #fff;
+    color: #245c83;
+    padding: 9px 14px;
+    font: inherit;
+    font-size: .75rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.teacher-button.primary {
+    border-color: #1478f2;
+    background: #1478f2;
+    color: #fff;
+}
+
+.teacher-button.danger {
+    border-color: #e0aab0;
+    background: #fff8f8;
+    color: #a42634;
+}
+
+.teacher-admin-shell .teacher-assignment-list {
+    gap: 11px;
+    margin: 22px 0 0;
+}
+
+.teacher-admin-shell .teacher-assignment-list article {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 17px;
+    border: 1px solid #dce6ef;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 7px 18px rgba(24, 53, 83, .04);
+}
+
+.teacher-admin-shell .teacher-assignment-list article.inactive {
+    opacity: .72;
+    background: #f7f9fb;
+}
+
+.teacher-admin-shell .assignment-main {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+.teacher-admin-shell .assignment-main > span {
+    color: #148f82;
+    font-size: .65rem;
+    font-weight: 900;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.teacher-admin-shell .assignment-main h3 {
+    margin: 0;
+    color: var(--ink);
+    font-size: .92rem;
+}
+
+.teacher-admin-shell .assignment-main p {
+    margin: 0;
+    color: var(--muted);
+    font-size: .72rem;
+}
+
+.assignment-status {
+    display: inline-flex;
+    padding: 6px 9px;
+    border-radius: 999px;
+    font-size: .66rem;
+    font-weight: 900;
+}
+
+.assignment-status.active {
+    background: #e8f7f2;
+    color: #087864;
+}
+
+.assignment-status.inactive {
+    background: #edf0f3;
+    color: #65717b;
+}
+
+.teacher-empty-assignment {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 22px;
+    padding: 18px;
+    border: 1px dashed #bdcedd;
+    border-radius: 14px;
+    background: #fbfdff;
+}
+
+.teacher-empty-assignment > span {
+    display: grid;
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 12px;
+    background: #e8f6f3;
+    color: #08796f;
+    font-size: .68rem;
+    font-weight: 900;
+}
+
+.teacher-empty-assignment h3 {
+    margin: 0 0 4px;
+    font-size: .86rem;
+}
+
+.teacher-empty-assignment p {
+    margin: 0;
+    color: var(--muted);
+    font-size: .74rem;
+}
+
+[data-theme=dark] .teacher-management-card {
+    border-color: #344a63;
+    background: linear-gradient(150deg, #0e1d31, #0b192a);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, .28);
+}
+
+[data-theme=dark] .teacher-card-heading {
+    border-color: #344a63;
+    background: radial-gradient(circle at 92% 0, rgba(41, 121, 255, .14), transparent 36%);
+}
+
+[data-theme=dark] .teacher-account-state,
+[data-theme=dark] .teacher-assignment-count {
+    border-color: #344a63;
+    background: #19324d;
+    color: #cde6fa;
+}
+
+[data-theme=dark] .teacher-account-state.state-active {
+    border-color: #28665d;
+    background: #123d36;
+    color: #9de6d5;
+}
+
+[data-theme=dark] .teacher-account-state.state-inactive {
+    border-color: #70404a;
+    background: #3c2027;
+    color: #f0adb6;
+}
+
+[data-theme=dark] .teacher-admin-shell .teacher-account-form .form-section,
+[data-theme=dark] .teacher-admin-shell .teacher-assignment-form .form-section,
+[data-theme=dark] .teacher-admin-shell .account-summary > div,
+[data-theme=dark] .teacher-admin-shell .teacher-assignment-list article,
+[data-theme=dark] .teacher-empty-assignment {
+    border-color: #344a63;
+    background: #0e1d31;
+}
+
+[data-theme=dark] .teacher-admin-shell .teacher-assignment-list article.inactive {
+    background: #0a1728;
+}
+
+[data-theme=dark] .teacher-button,
+[data-theme=dark] .teacher-admin-shell .teacher-assignment-list button {
+    border-color: #415a74;
+    background: #0a1728;
+    color: #cde6fa;
+}
+
+[data-theme=dark] .teacher-button.primary {
+    border-color: #2979ff;
+    background: #2979ff;
+    color: #fff;
+}
+
+[data-theme=dark] .teacher-button.danger {
+    border-color: #70404a;
+    background: #3c2027;
+    color: #f0adb6;
+}
+
+[data-theme=dark] .assignment-status.active,
+[data-theme=dark] .teacher-empty-assignment > span {
+    background: #123d36;
+    color: #9de6d5;
+}
+
+[data-theme=dark] .assignment-status.inactive {
+    background: #263547;
+    color: #b7c7d8;
+}
+
 @media (max-width: 700px) {
     .teacher-admin-shell {
         width: min(100% - 20px, 1080px);
@@ -48,5 +427,57 @@
     .teacher-admin-shell .inline-actions form,
     .teacher-admin-shell .inline-actions button {
         width: 100%;
+    }
+
+    .teacher-card-heading,
+    .teacher-card-content {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .teacher-card-heading {
+        display: grid;
+        gap: 16px;
+    }
+
+    .teacher-card-title {
+        gap: 12px;
+    }
+
+    .teacher-card-icon {
+        width: 42px;
+        height: 42px;
+    }
+
+    .teacher-account-state,
+    .teacher-assignment-count {
+        justify-self: start;
+    }
+
+    .teacher-admin-shell .account-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .teacher-admin-shell .teacher-assignment-list article {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .teacher-admin-shell .teacher-assignment-list article form {
+        grid-column: 1 / -1;
+    }
+
+    .teacher-admin-shell .teacher-assignment-list article form,
+    .teacher-admin-shell .teacher-assignment-list button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 460px) {
+    .teacher-card-title {
+        display: grid;
+    }
+
+    .teacher-empty-assignment {
+        align-items: flex-start;
     }
 }

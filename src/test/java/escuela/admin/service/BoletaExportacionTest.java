@@ -26,6 +26,7 @@ class BoletaExportacionTest {
 
     @Test
     void excelYpdfUsanLosMismosResultadosPublicados() throws Exception {
+        assertThat(Class.forName("net.sf.jasperreports.jdt.JRJdtCompiler")).isNotNull();
         BoletaDetalle boleta = new BoletaDetalle(9L, 1L, "Instituto Raíces", "INS-2026-01",
                 "IRA-001", "María García López", "Plantel Centro", "2026-2027", "Primero",
                 "1 A · MATUTINO", List.of(

@@ -15,6 +15,8 @@ public interface GrupoRepository extends JpaRepository<Grupo, Long>, JpaSpecific
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select g from Grupo g where g.id = :id")
     Optional<Grupo> findByIdForUpdate(@Param("id") Long id);
+    @Query("select g.plantel.institucion.id from Grupo g where g.id = :id")
+    Optional<Long> findInstitucionIdById(@Param("id") Long id);
     List<Grupo> findAllByPlantelIdAndCicloEscolarIdOrderByNombreAsc(Long plantelId, Long cicloEscolarId);
     boolean existsByPlantelIdAndCicloEscolarIdAndGradoIdAndTurnoAndNombreIgnoreCaseAndIdNot(
             Long plantelId, Long cicloEscolarId, Long gradoId, escuela.academico.entity.Turno turno,

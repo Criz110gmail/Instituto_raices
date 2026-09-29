@@ -105,5 +105,5 @@ public class AsistenciaAdminController {
             return enviada;
         }).toList());
     }
-    private Long institucionGrupo(Long id){return grupos.findById(id).orElseThrow(()->new ReglaNegocioException("El grupo no existe")).getPlantel().getInstitucion().getId();}
+    private Long institucionGrupo(Long id){return grupos.findInstitucionIdById(id).orElseThrow(()->new ReglaNegocioException("El grupo no existe"));}
 }

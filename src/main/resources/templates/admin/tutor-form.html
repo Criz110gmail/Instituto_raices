@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title th:text="${edicion ? 'Editar tutor' : 'Nuevo tutor'} + ' · Nexo Escolar'">Tutor</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><link rel="stylesheet" href="/css/tutor-access.css"><script src="/js/theme.js"></script>
 </head>
 <body class="form-page">
 <main class="form-shell student-shell">
@@ -50,9 +50,9 @@
                 <a class="profile-edit-link" href="#datos-expediente">Editar información completa ↓</a>
             </div>
         </section>
-        <section th:if="${edicion}" class="portal-access-card" aria-labelledby="portal-access-title">
+        <section th:if="${edicion}" class="portal-access-card tutor-access-card" aria-labelledby="portal-access-title">
             <div class="portal-access-heading">
-                <div><span class="profile-eyebrow">Portal de familias</span><h2 id="portal-access-title">Acceso del tutor</h2><p th:text="${cuentaPortal == null ? 'Este tutor todavía no tiene credenciales. Crear la cuenta no le asigna permisos administrativos.' : 'Administra este acceso desde el expediente del tutor; nunca aparecerá en el módulo Usuarios.'}">Acceso del tutor.</p></div>
+                <div class="tutor-access-title"><span class="tutor-access-icon" aria-hidden="true">PF</span><div><span class="profile-eyebrow">Portal de familias</span><h2 id="portal-access-title">Acceso del tutor</h2><p th:text="${cuentaPortal == null ? 'Este tutor todavía no tiene credenciales. Crear la cuenta no le asigna permisos administrativos.' : 'Administra este acceso desde el expediente del tutor; nunca aparecerá en el módulo Usuarios.'}">Acceso del tutor.</p></div></div>
                 <span class="profile-status" th:classappend="${cuentaPortal != null and cuentaPortal.estado.name() == 'ACTIVO' ? ' active' : ' inactive'}" th:text="${cuentaPortal == null ? 'Sin cuenta' : (cuentaPortal.estado.name() == 'INVITADO' ? 'Pendiente de activación' : (cuentaPortal.estado.name() == 'ACTIVO' ? 'Acceso activo' : (cuentaPortal.estado.name() == 'BLOQUEADO' ? 'Bloqueado' : 'Desactivado')))}">Sin cuenta</span>
             </div>
             <div class="form-error" role="alert" th:if="${errorCuentaPortal}"><strong>No se pudo administrar el acceso</strong><p th:text="${errorCuentaPortal}">Revisa los datos.</p></div>
@@ -66,10 +66,10 @@
             <div th:if="${cuentaPortal != null}" class="portal-account-details">
                 <dl><div><dt>Usuario</dt><dd th:text="${cuentaPortal.username}">usuario</dd></div><div><dt>Correo</dt><dd th:text="${cuentaPortal.email}">correo</dd></div><div><dt>Contraseña</dt><dd th:text="${cuentaPortal.credencialConfigurada ? 'Configurada' : 'Pendiente de configurar'}">Pendiente</dd></div></dl>
                 <div class="portal-account-actions">
-                    <form th:if="${cuentaPortal.estado.name() == 'INVITADO'}" method="post" th:action="@{/admin/tutores/{id}/cuenta-portal/invitacion(id=${id})}"><button type="submit">Generar nuevo enlace de activación</button></form>
-                    <form th:if="${cuentaPortal.estado.name() == 'ACTIVO'}" method="post" th:action="@{/admin/tutores/{id}/cuenta-portal/recuperacion(id=${id})}"><button type="submit">Generar enlace para cambiar contraseña</button></form>
-                    <form th:if="${cuentaPortal.estado.name() != 'INACTIVO'}" method="post" th:action="@{/admin/tutores/{id}/cuenta-portal/estado(id=${id})}" onsubmit="return confirm('¿Desactivar el acceso de este tutor al portal?');"><input type="hidden" name="version" th:value="${cuentaPortal.version}"><input type="hidden" name="activar" value="false"><button type="submit" class="photo-remove">Desactivar acceso</button></form>
-                    <form th:if="${cuentaPortal.estado.name() == 'INACTIVO'}" method="post" th:action="@{/admin/tutores/{id}/cuenta-portal/estado(id=${id})}"><input type="hidden" name="version" th:value="${cuentaPortal.version}"><input type="hidden" name="activar" value="true"><button type="submit">Reactivar acceso</button></form>
+                    <form th:if="${cuentaPortal.estado.name() == 'INVITADO'}" method="post" th:action="@{/admin/tutores/{id}/cuenta-portal/invitacion(id=${id})}"><button type="submit" class="tutor-access-button secondary">Generar nuevo enlace de activación</button></form>
+                    <form th:if="${cuentaPortal.estado.name() == 'ACTIVO'}" method="post" th:action="@{/admin/tutores/{id}/cuenta-portal/recuperacion(id=${id})}"><button type="submit" class="tutor-access-button primary">Generar enlace para cambiar contraseña</button></form>
+                    <form th:if="${cuentaPortal.estado.name() != 'INACTIVO'}" method="post" th:action="@{/admin/tutores/{id}/cuenta-portal/estado(id=${id})}" onsubmit="return confirm('¿Desactivar el acceso de este tutor al portal?');"><input type="hidden" name="version" th:value="${cuentaPortal.version}"><input type="hidden" name="activar" value="false"><button type="submit" class="tutor-access-button danger">Desactivar acceso</button></form>
+                    <form th:if="${cuentaPortal.estado.name() == 'INACTIVO'}" method="post" th:action="@{/admin/tutores/{id}/cuenta-portal/estado(id=${id})}"><input type="hidden" name="version" th:value="${cuentaPortal.version}"><input type="hidden" name="activar" value="true"><button type="submit" class="tutor-access-button primary">Reactivar acceso</button></form>
                 </div>
             </div>
         </section>

@@ -151,9 +151,8 @@ public class CalificacionAdminController {
 
     private Long institucionGrupo(Long grupoId) {
         alcance.validarRecurso(ModuloCatalogo.GRUPOS, grupoId);
-        return grupoRepository.findById(grupoId)
-                .orElseThrow(() -> new ReglaNegocioException("El grupo solicitado no existe"))
-                .getPlantel().getInstitucion().getId();
+        return grupoRepository.findInstitucionIdById(grupoId)
+                .orElseThrow(() -> new ReglaNegocioException("El grupo solicitado no existe"));
     }
 
     private String redireccion(CapturaCalificacionesForm form) {

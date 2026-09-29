@@ -604,3 +604,21 @@ Trayectoria, Cobranza, Finanzas, Comunicación y Seguridad. Cada categoría pued
 cerrarse, la sección del módulo actual permanece visible y el navegador recuerda las
 preferencias. Trayectoria se muestra una sola vez con Inscripciones, Calificaciones,
 Asistencia, Boletas y Planeaciones según los permisos del usuario.
+
+Al editar un maestro, la cuenta del portal docente y sus asignaciones de grupos y materias
+usan tarjetas administrativas responsivas, estados visibles, acciones jerarquizadas y tema
+claro/oscuro coherente con el resto del sistema.
+
+El acceso familiar dentro del expediente del tutor usa el mismo patrón. Los controles de
+ayuda mantienen una geometría global uniforme en formularios y filtros. Calificaciones y
+Asistencia abren sus hojas sin depender de relaciones JPA perezosas, y Jasper usa JDT para
+generar boletas PDF correctamente desde el JAR ejecutable.
+
+Los autocompletados también están protegidos por una regla visual transversal: aun dentro
+de formularios con botones propios, la lista de ayuda, sus opciones y el control para
+limpiar conservan el diseño común, el texto informativo neutral, la adaptación móvil y los
+temas claro/oscuro, sin desplazamiento horizontal dentro de sus resultados.
+
+Las hojas de Calificaciones y Asistencia comparten una experiencia de captura académica
+responsiva: selección guiada, resumen del bloque o jornada, tabla legible y acciones
+jerarquizadas. En móvil cada alumno se presenta como tarjeta con sus campos etiquetados.

@@ -1,0 +1,249 @@
+.tutor-access-card {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #d8e4ee;
+    border-radius: 20px;
+    background: linear-gradient(150deg, #fff, #fbfdff);
+    box-shadow: 0 16px 40px rgba(22, 47, 76, .08);
+}
+
+.tutor-access-card .portal-access-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin: 0;
+    padding: 25px 28px 22px;
+    border-bottom: 1px solid var(--line);
+    background: radial-gradient(circle at 92% 0, rgba(71, 189, 165, .13), transparent 36%);
+}
+
+.tutor-access-title {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    min-width: 0;
+}
+
+.tutor-access-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    place-items: center;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #13a996, #08796f);
+    box-shadow: 0 10px 22px rgba(8, 121, 111, .23);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .06em;
+}
+
+.tutor-access-card .portal-access-heading h2 {
+    margin: 5px 0;
+    color: var(--ink);
+    font: 800 1.2rem Manrope, sans-serif;
+}
+
+.tutor-access-card .portal-access-heading p {
+    max-width: 650px;
+    margin: 0;
+    color: var(--muted);
+    font-size: .79rem;
+    line-height: 1.55;
+}
+
+.tutor-access-card > :not(.portal-access-heading) {
+    margin-right: 28px;
+    margin-left: 28px;
+}
+
+.tutor-access-card > :last-child {
+    margin-bottom: 28px;
+}
+
+.tutor-access-card .form-error {
+    margin-top: 24px;
+}
+
+.tutor-access-card .portal-link-box {
+    margin-top: 22px;
+    border-color: #9fd8c0;
+    background: #effbf6;
+}
+
+.tutor-access-card .portal-link-box input {
+    min-height: 42px;
+    border: 1px solid #bdd6ce;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+    padding: 10px 12px;
+}
+
+.tutor-access-card .portal-account-create {
+    margin-top: 24px;
+    padding: 20px;
+    border: 1px solid #dce6ef;
+    border-radius: 15px;
+    background: #fbfdff;
+}
+
+.tutor-access-card .portal-account-create label > span {
+    color: var(--ink);
+    font-size: .75rem;
+    font-weight: 800;
+}
+
+.tutor-access-card .portal-account-create input {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #ccd8e5;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+    padding: 10px 12px;
+}
+
+.tutor-access-card .portal-account-create button {
+    border: 0;
+    border-radius: 10px;
+    background: var(--blue);
+    color: #fff;
+    padding: 0 16px;
+    font-weight: 800;
+}
+
+.tutor-access-card .portal-account-details {
+    margin-top: 24px;
+}
+
+.tutor-access-card .portal-account-details dl {
+    gap: 12px;
+}
+
+.tutor-access-card .portal-account-details dl div {
+    padding: 17px 18px;
+    border-color: #dce6ef;
+    background: #fbfdff;
+}
+
+.tutor-access-card .portal-account-details dt {
+    color: var(--muted);
+    font-size: .66rem;
+    font-weight: 800;
+    letter-spacing: .07em;
+}
+
+.tutor-access-card .portal-account-details dd {
+    color: var(--ink);
+    font-size: .86rem;
+}
+
+.tutor-access-card .portal-account-actions {
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+}
+
+.tutor-access-button {
+    min-height: 40px;
+    border: 1px solid #b9c9d9;
+    border-radius: 10px;
+    background: #fff;
+    color: #245c83;
+    padding: 9px 14px;
+    font: inherit;
+    font-size: .75rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.tutor-access-button.primary {
+    border-color: var(--blue);
+    background: var(--blue);
+    color: #fff;
+}
+
+.tutor-access-button.danger {
+    border-color: #e0aab0;
+    background: #fff8f8;
+    color: #a42634;
+}
+
+[data-theme=dark] .tutor-access-card {
+    border-color: #344a63;
+    background: linear-gradient(150deg, #0e1d31, #0b192a);
+}
+
+[data-theme=dark] .tutor-access-card .portal-access-heading {
+    border-color: #344a63;
+    background: radial-gradient(circle at 92% 0, rgba(54, 214, 195, .12), transparent 36%);
+}
+
+[data-theme=dark] .tutor-access-card .portal-account-create,
+[data-theme=dark] .tutor-access-card .portal-account-details dl div {
+    border-color: #344a63;
+    background: #0e1d31;
+}
+
+[data-theme=dark] .tutor-access-card .portal-account-create input,
+[data-theme=dark] .tutor-access-card .portal-link-box input,
+[data-theme=dark] .tutor-access-button {
+    border-color: #415a74;
+    background: #0a1728;
+    color: #eef5fd;
+}
+
+[data-theme=dark] .tutor-access-card .portal-link-box {
+    border-color: #28665d;
+    background: #123d36;
+}
+
+[data-theme=dark] .tutor-access-button.primary {
+    border-color: var(--blue);
+    background: var(--blue);
+    color: #fff;
+}
+
+[data-theme=dark] .tutor-access-button.danger {
+    border-color: #70404a;
+    background: #3c2027;
+    color: #f0adb6;
+}
+
+@media (max-width: 720px) {
+    .tutor-access-card .portal-access-heading {
+        display: grid;
+        gap: 15px;
+        padding: 22px 20px;
+    }
+
+    .tutor-access-card > :not(.portal-access-heading) {
+        margin-right: 20px;
+        margin-left: 20px;
+    }
+
+    .tutor-access-card .portal-access-heading > .profile-status {
+        grid-row: auto;
+        justify-self: start;
+    }
+
+    .tutor-access-card .portal-account-create {
+        padding: 16px;
+    }
+
+    .tutor-access-card .portal-account-actions,
+    .tutor-access-card .portal-account-actions form,
+    .tutor-access-card .portal-account-actions button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 460px) {
+    .tutor-access-title {
+        display: grid;
+    }
+}

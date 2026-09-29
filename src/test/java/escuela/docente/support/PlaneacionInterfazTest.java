@@ -10,9 +10,15 @@ class PlaneacionInterfazTest {
                 .contains("/css/login.css", "/css/login-portals.css", "th:action=\"@{/login}\"", "name=\"origen\" value=\"maestros\"");
         assertThat(recurso("templates/admin/maestro-form.html"))
                 .contains("class=\"entity-form\"", "<fieldset class=\"form-section\"><legend>Identidad institucional</legend>",
-                        "/css/maestro-form.css");
+                        "/css/maestro-form.css", "teacher-management-card teacher-access-card",
+                        "teacher-management-card teacher-assignment-card", "teacher-account-actions",
+                        "teacher-assignment-list", "teacher-empty-assignment");
+        assertThat(recurso("static/css/maestro-form.css"))
+                .contains(".teacher-card-heading", ".teacher-card-content", ".teacher-account-state.state-active",
+                        "[data-theme=dark] .teacher-management-card", "@media (max-width: 700px)");
         assertThat(recurso("templates/maestros/planeacion-form.html")).contains("th:action=","data-plan-subjects","data-add-activity","actividades[");
-        assertThat(recurso("templates/admin/planeaciones.html")).contains("/admin/planeaciones/excel","estado=${filtro.estado}","desde=${filtro.desde}","hasta=${filtro.hasta}");
+        assertThat(recurso("templates/admin/planeaciones.html")).contains("/admin/planeaciones/excel","estado=${filtro.estado}","desde=${filtro.desde}","hasta=${filtro.hasta}", "class=\"filter-actions\"");
+        assertThat(recurso("static/css/forms.css")).contains(".planning-filters .filter-actions", ".planning-filters .filter-actions button");
         assertThat(recurso("templates/admin/planeacion-detalle.html")).contains("target=\"_blank\"","/publicar","/reabrir","name=\"motivo\"");
     }
     private String recurso(String ruta)throws Exception{try(var in=getClass().getClassLoader().getResourceAsStream(ruta)){assertThat(in).isNotNull();return new String(in.readAllBytes(),StandardCharsets.UTF_8);}}
