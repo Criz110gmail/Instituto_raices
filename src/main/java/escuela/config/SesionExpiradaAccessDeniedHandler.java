@@ -1,6 +1,7 @@
 package escuela.config;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.AccessDeniedException;
@@ -27,10 +28,23 @@ public class SesionExpiradaAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException excepcion) throws IOException, ServletException {
         if (esTokenDeSesionCaducada(request, excepcion)) {
-            response.sendRedirect(request.getContextPath() + "/login?sesionExpirada");
+            redirigir(request, response);
             return;
         }
         accesoDenegado.handle(request, response, excepcion);
+    }
+
+    void redirigir(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String ruta = request.getRequestURI().substring(request.getContextPath().length());
+        String acceso = ruta.startsWith("/maestros") ? "/login?origen=maestros&sesionExpirada"
+                : ruta.startsWith("/portal") || ruta.startsWith("/familias")
+                ? "/login?origen=familias&sesionExpirada" : "/login?sesionExpirada";
+        Cookie sesionCaducada = new Cookie("JSESSIONID", "");
+        sesionCaducada.setPath(request.getContextPath().isBlank() ? "/" : request.getContextPath());
+        sesionCaducada.setHttpOnly(true);
+        sesionCaducada.setMaxAge(0);
+        response.addCookie(sesionCaducada);
+        response.sendRedirect(request.getContextPath() + acceso);
     }
 
     private boolean esTokenDeSesionCaducada(HttpServletRequest request,

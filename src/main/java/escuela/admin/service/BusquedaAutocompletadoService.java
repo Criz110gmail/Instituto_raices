@@ -256,6 +256,19 @@ public class BusquedaAutocompletadoService {
                 .toList(), resultado.hasNext());
     }
 
+    public ResultadoAutocompletado materiasMaestro(Long grupoId, String consulta) {
+        alcance.validarRecurso(ModuloCatalogo.GRUPOS, grupoId);
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        var resultado = materiaGradoRepository.buscarParaCalificaciones(
+                grupoId, texto, PageRequest.of(0, tamano(consulta)));
+        return new ResultadoAutocompletado(resultado.getContent().stream()
+                .map(plan -> new OpcionAutocompletado(plan.getMateria().getId(),
+                        plan.getMateria().getCodigo() + " · " + plan.getMateria().getNombre(),
+                        plan.getGrado().getNombre() + " · " + plan.getTipoEvaluacion().getEtiqueta()))
+                .toList(), resultado.hasNext());
+    }
+
     public ResultadoAutocompletado tiposBeca(Long institucionId, String consulta) {
         alcance.validarInstitucion(institucionId);
         String texto = normalizar(consulta);

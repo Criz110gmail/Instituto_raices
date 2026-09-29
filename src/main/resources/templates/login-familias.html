@@ -18,6 +18,7 @@
         <div class="mobile-family-brand"><span>♥</span><strong>Mi familia</strong></div>
         <div class="access-heading"><span>Qué gusto verte</span><h2>Entra a tu espacio familiar</h2><p>Usa el usuario y la contraseña que te proporcionó la escuela.</p></div>
         <div class="family-alert error" role="alert" th:if="${param.error}"><strong>No pudimos ingresar</strong><span>Revisa tu usuario y contraseña e inténtalo nuevamente.</span></div>
+        <div class="family-alert error" role="alert" th:if="${param.sesionExpirada}"><strong>Tu sesión caducó</strong><span>Por seguridad, inicia sesión nuevamente para continuar.</span></div>
         <div class="family-alert success" role="status" th:if="${param.logout}"><strong>Sesión cerrada</strong><span>Tu información quedó protegida. Vuelve cuando quieras.</span></div>
         <form method="post" th:action="@{/login}">
             <input type="hidden" name="origen" value="familias">

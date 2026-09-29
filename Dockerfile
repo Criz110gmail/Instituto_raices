@@ -5,7 +5,7 @@ RUN mvn -B -ntp dependency:go-offline
 COPY src ./src
 RUN mvn -B -ntp clean package
 
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21-jdk-alpine
 WORKDIR /app
 RUN addgroup -S escuela && adduser -S escuela -G escuela \
     && mkdir -p /data/nexo-escolar && chown -R escuela:escuela /data/nexo-escolar

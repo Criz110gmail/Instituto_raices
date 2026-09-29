@@ -17,6 +17,8 @@ public enum ModuloCatalogo {
     CALIFICACIONES("calificaciones", "Calificaciones", List.of("Alumno", "Matrícula", "Materia", "Periodo", "Grado", "Resultado")),
     ASISTENCIA("asistencia", "Asistencia", List.of("Fecha", "Alumno", "Matrícula", "Grupo", "Plantel", "Observaciones")),
     BOLETAS("boletas", "Boletas", List.of()),
+    MAESTROS("maestros", "Maestros", List.of("Número", "Maestro", "Correo", "Cuenta de acceso", "Institución")),
+    PLANEACIONES("planeaciones", "Planeaciones", List.of()),
     ALUMNOS("alumnos", "Alumnos", List.of("Matrícula", "Alumno", "CURP", "Nacimiento", "Ingreso")),
     TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),
     VINCULOS_TUTOR("vinculos-tutor", "Vínculos alumno–tutor", List.of("Alumno", "Tutor", "Parentesco", "Permisos", "Vigencia")),
@@ -58,8 +60,8 @@ public enum ModuloCatalogo {
     public String seccion() {
         return switch (this) {
             case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS, GRUPOS, MATERIAS -> "Estructura";
-            case ALUMNOS, TUTORES, VINCULOS_TUTOR -> "Personas";
-            case INSCRIPCIONES, CALIFICACIONES, ASISTENCIA, BOLETAS -> "Trayectoria";
+            case ALUMNOS, TUTORES, VINCULOS_TUTOR, MAESTROS -> "Personas";
+            case INSCRIPCIONES, CALIFICACIONES, ASISTENCIA, BOLETAS, PLANEACIONES -> "Trayectoria";
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
             case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Finanzas";
             case EVENTOS_ESCOLARES, AVISOS -> "Comunicación";
@@ -81,6 +83,8 @@ public enum ModuloCatalogo {
             case CALIFICACIONES -> "CALIFICACION";
             case ASISTENCIA -> "ASISTENCIA";
             case BOLETAS -> "BOLETA";
+            case MAESTROS -> "MAESTRO";
+            case PLANEACIONES -> "PLANEACION";
             case ALUMNOS -> "ALUMNO";
             case TUTORES -> "TUTOR";
             case VINCULOS_TUTOR -> "VINCULO_TUTOR";
@@ -118,6 +122,7 @@ public enum ModuloCatalogo {
                 || permisos.contains("RETIRO_FONDO_REGISTRAR");
         if (this == REPORTES_FINANCIEROS) return permisos.contains("REPORTE_FINANCIERO_CONSULTAR");
         if (this == BOLETAS) return permisos.contains("BOLETA_CONSULTAR");
+        if (this == PLANEACIONES) return permisos.contains("PLANEACION_LEER") || permisos.contains("PLANEACION_ADMINISTRAR");
         if (this == EVENTOS_ESCOLARES) return permisos.contains("EVENTO_ESCOLAR_LEER")
                 || permisos.contains("EVENTO_ESCOLAR_ADMINISTRAR");
         if (this == AVISOS) return permisos.contains("AVISO_LEER") || permisos.contains("AVISO_ADMINISTRAR");
@@ -130,7 +135,7 @@ public enum ModuloCatalogo {
     public boolean mantenimientoDisponible() {
         return this == INSTITUCIONES || this == PLANTELES || this == NIVELES
                 || this == OFERTA || this == GRADOS || this == CICLOS || this == PERIODOS
-                || this == GRUPOS || this == MATERIAS || this == CALIFICACIONES || this == ASISTENCIA || this == ALUMNOS || this == TUTORES
+                || this == GRUPOS || this == MATERIAS || this == CALIFICACIONES || this == ASISTENCIA || this == ALUMNOS || this == TUTORES || this == MAESTROS
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
                 || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == CARGOS
@@ -155,6 +160,8 @@ public enum ModuloCatalogo {
             case CALIFICACIONES -> "/admin/calificaciones";
             case ASISTENCIA -> "/admin/asistencia";
             case BOLETAS -> "/admin/boletas";
+            case MAESTROS -> "/admin/maestros";
+            case PLANEACIONES -> "/admin/planeaciones";
             case ALUMNOS -> "/admin/alumnos";
             case TUTORES -> "/admin/tutores";
             case VINCULOS_TUTOR -> "/admin/vinculos-tutor";
@@ -183,14 +190,14 @@ public enum ModuloCatalogo {
     }
 
     public String rutaListado() {
-        return this == BOLETAS || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
+        return this == BOLETAS || this == PLANEACIONES || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
                 ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }
 
     public String segmentoNuevo() {
         return this == PLANTELES || this == NIVELES || this == GRADOS || this == CICLOS
-                || this == PERIODOS || this == GRUPOS || this == CALIFICACIONES || this == ASISTENCIA || this == ALUMNOS || this == TUTORES
+                || this == PERIODOS || this == GRUPOS || this == CALIFICACIONES || this == ASISTENCIA || this == ALUMNOS || this == TUTORES || this == MAESTROS
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
                 || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == CARGOS

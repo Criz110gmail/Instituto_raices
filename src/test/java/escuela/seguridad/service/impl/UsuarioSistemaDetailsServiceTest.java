@@ -159,4 +159,16 @@ class UsuarioSistemaDetailsServiceTest {
                 .containsExactly("PORTAL_TUTOR_ACCEDER");
         org.mockito.Mockito.verifyNoInteractions(usuarioRolRepository, rolPermisoRepository);
     }
+
+    @Test
+    void cuentaMaestroRecibeSoloAccesoAlPortalDocente() {
+        usuario.setTipoCuenta(TipoCuentaUsuario.PORTAL_MAESTRO);
+        when(usuarioRepository.findAllByUsernameIgnoreCase("criz110")).thenReturn(List.of(usuario));
+
+        var detalles = service.loadUserByUsername("criz110");
+
+        assertThat(detalles.getAuthorities()).extracting("authority")
+                .containsExactly("PORTAL_MAESTRO_ACCEDER");
+        org.mockito.Mockito.verifyNoInteractions(usuarioRolRepository, rolPermisoRepository);
+    }
 }

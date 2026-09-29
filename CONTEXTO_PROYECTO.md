@@ -1886,15 +1886,68 @@ historial paginado.
 - Aunque la etapa funcional se llama V43, no existe migración V43: ese número continúa
   disponible para el siguiente cambio de esquema.
 
-## Pendiente acordado después de V43 — portal docente
+## V43 — portal docente y planeaciones semanales (2026-09-28)
 
-- Crear cuentas y un inicio de sesión propios para maestros, independientes del portal
-  familiar, con acceso limitado a sus grupos asignados.
-- Permitir que cada maestro entregue semanalmente la planeación de cada grupo y que la
-  administración pueda consultar su documento, historial y estado desde la consola.
-- El propietario proporcionará el formato de planeación al comenzar esa etapa. Antes de
-  crear dominio o migraciones se debe analizarlo y decidir si el flujo será captura
-  estructurada, archivo adjunto o ambos.
-- El diseño posterior debe contemplar periodo escolar, semana, asignación maestro–grupo,
-  versiones, revisión administrativa, comentarios, permisos, auditoría, almacenamiento
-  privado, validación de archivos y una interfaz docente 100 % responsiva.
+- Se agregó el expediente de maestro, una cuenta `PORTAL_MAESTRO` separada y asignaciones
+  vigentes por maestro, grupo y materia. Administración las mantiene desde
+  `/admin/maestros`; una materia sólo puede asignarse si está activa y configurada para
+  el grado del grupo.
+- El acceso propio `/maestros/acceso` conduce a un portal responsivo con temas claro y
+  oscuro. Cada maestro sólo lista y modifica sus propias planeaciones y únicamente puede
+  elegir grupos y materias asignados durante todo el rango capturado.
+- La planeación es una captura estructurada basada en los formatos de preescolar y
+  primaria: propósito, situación didáctica, ejes, conocimientos, habilidades, actitudes,
+  alineación curricular, actividades por fecha/materia, recursos, evaluación, ajustes y
+  observaciones. Admite un rango flexible máximo de siete días.
+- La base evita traslapes para un mismo maestro y grupo mientras la planeación no esté
+  descartada. Una misma semana puede tener planeaciones distintas por grupo y combinar
+  sólo el subconjunto de materias que realmente se trabajará.
+- El flujo es Borrador → Enviada → En revisión → Publicada. Administración puede marcar
+  Requiere ajustes; sólo entonces vuelve a ser editable. Una publicación queda bloqueada
+  y sólo se reabre con motivo obligatorio, actor y auditoría. Cada nueva publicación
+  conserva una instantánea JSON inmutable para consultar el PDF histórico.
+- `/admin/planeaciones` pagina y filtra en PostgreSQL. Su Excel streaming con Apache POI
+  reutiliza los mismos filtros; los PDF actual e históricos se abren en otra pestaña.
+  Los permisos nuevos no se asignan automáticamente a roles existentes.
+- `V43__portal_maestros_planeaciones.sql` agregó el dominio, restricciones e índices.
+  Docker ejecutó 372 pruebas sin fallos; Flyway validó 43 migraciones, Hibernate inició
+  con 57 repositorios y `/actuator/health` respondió `UP`. El acceso público docente
+  respondió HTTP 200 con token CSRF. No se crearon maestros ni planeaciones de prueba y
+  no se leyó `.env`.
+- Pendiente del propietario: asignar permisos a un rol y recorrer con datos controlados
+  alta, cuenta, asignaciones, borrador, envío, revisión, ajustes, publicación, reapertura,
+  segunda publicación, versiones PDF, filtros, Excel, tema oscuro y móvil. La siguiente
+  migración disponible es V44; su alcance todavía no está acordado.
+
+## Estabilización académica y visual posterior a V43 (2026-09-29)
+
+- Se diagnosticó en los registros reales PostgreSQL `42P10` al cargar Calificaciones:
+  `select distinct` ordenaba por apellidos que no estaban en la selección. Calificaciones
+  y Asistencia comparten ahora una consulta correlacionada con `exists`, sin duplicados y
+  compatible con PostgreSQL.
+- El control **Horas semanales** cambió de paso `0.25` a `0.01`; acepta `5`, `4.5` y
+  otras cantidades positivas representables por la columna decimal.
+- El PDF colectivo fallaba únicamente en la imagen de producción porque Jasper invocaba
+  un compilador inexistente en el JRE. La etapa final de Docker usa JDK 21 y se comprobó
+  `javac 21.0.12.1` dentro del contenedor.
+- El formulario de Maestros quedó dividido en identidad institucional, datos personales,
+  credenciales y asignaciones usando el patrón visual común. El acceso docente reutiliza
+  el login principal y se corrigió la interferencia de la ayuda contextual con su rejilla.
+- Las 373 pruebas pasaron. La prueba del PDF usa la ruta colectiva, valida contenido,
+  renderiza la primera página y su revisión visual confirmó encabezado, alumno, materias,
+  resultados, observaciones y pie. La imagen se desplegó, V1–V43 quedó validado y salud
+  respondió `UP`.
+
+## Menú administrativo por categorías (2026-09-29)
+
+- `navigation.js` convierte las etiquetas y enlaces ya autorizados por el servidor en
+  secciones plegables. Las categorías repetidas se fusionan sin mostrar módulos para los
+  que el usuario no tiene permiso.
+- La categoría del módulo activo se abre automáticamente. El usuario puede abrir o cerrar
+  cualquier categoría y la selección se conserva entre pantallas mediante almacenamiento
+  local; si éste está bloqueado, el acordeón continúa funcionando sin persistencia.
+- Trayectoria quedó unificada y ordenada como Inscripciones, Calificaciones, Asistencia,
+  Boletas y Planeaciones. Personas se ordena como Alumnos, Tutores, Vínculos y Maestros.
+- La prueba automatizada nueva elevó el total a 374. La revisión en navegador confirmó una
+  sola etiqueta Trayectoria, apertura por clic, módulo activo visible y persistencia tras
+  recargar.

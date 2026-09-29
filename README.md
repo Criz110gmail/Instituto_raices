@@ -565,3 +565,42 @@ en boleta. Esta etapa no cambia el esquema: Flyway permanece en V42.
 Como etapa posterior queda acordado un portal propio para maestros, con cuentas separadas
 y carga semanal de planeaciones por grupo que la administración podrá consultar. El
 modelo y el flujo se definirán cuando el propietario entregue el formato de planeación.
+
+### V43 · Portal docente y planeaciones semanales
+
+La administración mantiene maestros en `/admin/maestros`, crea su cuenta independiente
+y asigna cada materia que puede impartir por grupo y vigencia. Los accesos no se heredan
+de usuarios administrativos ni del portal familiar. Los permisos `MAESTRO_LEER`,
+`MAESTRO_ADMINISTRAR`, `PLANEACION_LEER`, `PLANEACION_ADMINISTRAR` y
+`PORTAL_MAESTRO_ACCEDER` deben asignarse explícitamente.
+
+El maestro entra por `/maestros/acceso` y captura una planeación estructurada por grupo y
+rango flexible de hasta siete días. Puede escoger sólo las materias que trabajará,
+registrar alineación curricular, secuencia de actividades, recursos, evaluación y apoyos.
+El sistema impide rangos traslapados para el mismo maestro y grupo. La planeación se puede
+editar en Borrador, Requiere ajustes o Reabierta; Enviada, En revisión y Publicada quedan
+bloqueadas.
+
+Administración revisa en `/admin/planeaciones`, solicita ajustes, publica o reabre con
+motivo obligatorio. Cada publicación conserva una versión histórica inmutable y genera
+un PDF en línea. El listado pagina en PostgreSQL y su Excel Apache POI usa exactamente los
+mismos filtros. Flyway V43 contiene el nuevo dominio; la siguiente migración es V44.
+
+### Correcciones posteriores a V43
+
+Calificaciones y Asistencia consultan las inscripciones vigentes mediante una subconsulta
+`exists`, compatible con PostgreSQL y sin duplicar alumnos. Materias acepta horas semanales
+enteras o con hasta dos decimales, incluido `5`.
+
+La exportación colectiva de boletas Jasper requiere el compilador incluido en la imagen
+JDK 21 de ejecución. El formulario administrativo de maestros usa las mismas secciones y
+acciones responsivas de los demás catálogos, y su login comparte la identidad visual del
+acceso principal de Nexo Escolar.
+
+### Menú lateral por categorías
+
+La navegación administrativa agrupa los módulos autorizados en Estructura, Personas,
+Trayectoria, Cobranza, Finanzas, Comunicación y Seguridad. Cada categoría puede abrirse o
+cerrarse, la sección del módulo actual permanece visible y el navegador recuerda las
+preferencias. Trayectoria se muestra una sola vez con Inscripciones, Calificaciones,
+Asistencia, Boletas y Planeaciones según los permisos del usuario.

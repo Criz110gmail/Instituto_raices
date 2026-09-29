@@ -1,0 +1,15 @@
+.login-shell > .context-module-help {
+    display: none;
+}
+
+.support a {
+    display: inline-block;
+    margin-bottom: 8px;
+    color: #148f82;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.support a:hover {
+    text-decoration: underline;
+}

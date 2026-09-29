@@ -33,6 +33,10 @@ public enum ModuloPermiso {
             "CALIFICACION_LEER", "CALIFICACION_ADMINISTRAR"),
     BOLETAS("Boletas", "Consulta y exportación de boletas con calificaciones publicadas",
             "BOLETA_CONSULTAR"),
+    MAESTROS("Maestros", "Acceso completo a expedientes, cuentas y asignaciones docentes",
+            "MAESTRO_LEER", "MAESTRO_ADMINISTRAR"),
+    PLANEACIONES("Planeaciones", "Consulta, revisión, publicación y reapertura de planeaciones",
+            "PLANEACION_LEER", "PLANEACION_ADMINISTRAR"),
     ALUMNOS("Alumnos", "Acceso completo al expediente de alumnos",
             "ALUMNO_LEER", "ALUMNO_ADMINISTRAR"),
     TUTORES("Tutores", "Acceso completo al expediente de tutores",
@@ -81,6 +85,8 @@ public enum ModuloPermiso {
             "AUDITORIA_CONSULTAR"),
     PORTAL_FAMILIAR("Portal familiar", "Acceso técnico derivado de la cuenta del tutor",
             "PORTAL_TUTOR_ACCEDER"),
+    PORTAL_MAESTROS("Portal de maestros", "Acceso técnico derivado de la cuenta del maestro",
+            "PORTAL_MAESTRO_ACCEDER"),
     SOPORTE_PORTAL("Soporte del portal familiar", "Permite consultar el portal de un tutor en modo de sólo lectura",
             "PORTAL_TUTOR_SOPORTE");
 
@@ -100,7 +106,7 @@ public enum ModuloPermiso {
     public String descripcion() { return descripcion; }
     public Set<String> permisos() { return permisos; }
 
-    public boolean asignableARol() { return this != PORTAL_FAMILIAR; }
+    public boolean asignableARol() { return this != PORTAL_FAMILIAR && this != PORTAL_MAESTROS; }
 
     public boolean contiene(String permiso) {
         return permisos.contains(permiso);

@@ -40,6 +40,8 @@ import escuela.seguridad.repository.UsuarioRepository;
 import escuela.seguridad.service.AlcanceDatosService;
 import escuela.tutor.entity.Tutor;
 import escuela.tutor.repository.TutorRepository;
+import escuela.docente.entity.Maestro;
+import escuela.docente.repository.MaestroRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -78,6 +80,7 @@ public class CatalogoConsultaService {
     private final AsistenciaRepository asistenciaRepository;
     private final AlumnoRepository alumnoRepository;
     private final TutorRepository tutorRepository;
+    private final MaestroRepository maestroRepository;
     private final AlumnoTutorRepository alumnoTutorRepository;
     private final InscripcionRepository inscripcionRepository;
     private final ConceptoCobroRepository conceptoCobroRepository;
@@ -133,6 +136,10 @@ public class CatalogoConsultaService {
                             e.getTelefonoPrincipal(), valor(e.getEmail()),
                             cuentaTutor(e),
                             e.getInstitucion().getNombre()));
+            case MAESTROS -> consultar(modulo, maestroRepository,
+                    texto(f, "numeroEmpleado", "nombres", "primerApellido", "segundoApellido", "email"),
+                    estadoMaestro(f), pagina, e -> fila(e.getId(), e.isActivo(), e.getNumeroEmpleado(),
+                            nombreMaestro(e), e.getEmail(), cuentaMaestro(e), e.getInstitucion().getNombre()));
             case VINCULOS_TUTOR -> consultar(modulo, alumnoTutorRepository,
                     textoVinculo(f), activo(f), pagina,
                     e -> filaVinculo(e, e.getAlumno().getMatricula() + " · " + nombreAlumno(e.getAlumno()),
@@ -184,6 +191,8 @@ public class CatalogoConsultaService {
                     "Los reportes financieros usan su consulta especializada");
             case BOLETAS -> throw new IllegalArgumentException(
                     "Las boletas usan su consulta especializada");
+            case PLANEACIONES -> throw new IllegalArgumentException(
+                    "Las planeaciones usan su consulta especializada");
             case EVENTOS_ESCOLARES -> throw new IllegalArgumentException(
                     "Los eventos escolares usan su consulta especializada");
             case AVISOS -> throw new IllegalArgumentException(
@@ -269,6 +278,34 @@ public class CatalogoConsultaService {
             case "CUENTA_INACTIVA" -> root.get("usuario").get("estado").as(String.class).in("INACTIVO", "BLOQUEADO");
             default -> cb.conjunction();
         };
+    }
+
+    private Specification<Maestro> estadoMaestro(FiltroCatalogo f) {
+        return (root, query, cb) -> switch (f.estado()) {
+            case "ACTIVO" -> cb.isTrue(root.get("activo"));
+            case "INACTIVO" -> cb.isFalse(root.get("activo"));
+            case "SIN_CUENTA" -> cb.isNull(root.get("usuario"));
+            case "CUENTA_ACTIVA" -> cb.equal(root.get("usuario").get("estado").as(String.class), "ACTIVO");
+            case "CUENTA_PENDIENTE" -> cb.equal(root.get("usuario").get("estado").as(String.class), "INVITADO");
+            case "CUENTA_INACTIVA" -> root.get("usuario").get("estado").as(String.class).in("INACTIVO", "BLOQUEADO");
+            default -> cb.conjunction();
+        };
+    }
+
+    private String cuentaMaestro(Maestro maestro) {
+        if (maestro.getUsuario() == null) return "Sin cuenta";
+        String estado = switch (maestro.getUsuario().getEstado()) {
+            case ACTIVO -> "Activa";
+            case INVITADO -> "Pendiente";
+            case INACTIVO -> "Desactivada";
+            case BLOQUEADO -> "Bloqueada";
+        };
+        return maestro.getUsuario().getUsername() + " · " + estado;
+    }
+
+    private String nombreMaestro(Maestro maestro) {
+        return java.util.stream.Stream.of(maestro.getNombres(), maestro.getPrimerApellido(), maestro.getSegundoApellido())
+                .filter(v -> v != null && !v.isBlank()).collect(java.util.stream.Collectors.joining(" "));
     }
 
     private String cuentaTutor(Tutor tutor) {

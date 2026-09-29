@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#0b1930">
+    <title th:text="${edicion ? 'Maestro · Nexo Escolar' : 'Nuevo maestro · Nexo Escolar'}">Maestro · Nexo Escolar</title>
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><link rel="stylesheet" href="/css/maestros.css"><link rel="stylesheet" href="/css/maestro-form.css">
+    <script src="/js/theme.js"></script>
+</head>
+<body class="form-page">
+<main class="form-shell teacher-admin-shell">
+    <header class="form-top"><a href="/admin/catalogos/maestros">← Volver a maestros</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <p class="flash" th:if="${mensaje}" th:text="${mensaje}"></p>
+    <section class="form-card">
+        <div class="form-intro"><span>Personas · Equipo docente</span><h1 th:text="${edicion ? 'Ficha del maestro' : 'Registrar maestro'}">Registrar maestro</h1><p>Administra el expediente con la misma estructura visual del resto del sistema. La cuenta de acceso y las asignaciones se conservan por separado.</p></div>
+        <form class="entity-form" method="post" th:action="${edicion ? '/admin/maestros/' + id : '/admin/maestros'}" th:object="${form}">
+            <input type="hidden" th:field="*{version}">
+            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}"></p></div>
+            <fieldset class="form-section"><legend>Identidad institucional</legend><div class="form-grid">
+                <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="i : ${instituciones}" th:value="${i.id}" th:text="${i.codigo + ' · ' + i.nombre}"></option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
+                <label><span>Número de empleado *</span><input th:field="*{numeroEmpleado}" maxlength="50" autocomplete="off" placeholder="DOC-2026-001"><small th:errors="*{numeroEmpleado}"></small></label>
+                <label><span>Correo institucional *</span><input type="email" th:field="*{email}" maxlength="254" autocomplete="email" placeholder="maestro@escuela.mx"><small th:errors="*{email}"></small></label>
+            </div></fieldset>
+            <fieldset class="form-section"><legend>Datos personales</legend><div class="form-grid">
+                <label class="wide"><span>Nombre(s) *</span><input th:field="*{nombres}" maxlength="150" autocomplete="given-name"><small th:errors="*{nombres}"></small></label>
+                <label><span>Primer apellido *</span><input th:field="*{primerApellido}" maxlength="100" autocomplete="family-name"><small th:errors="*{primerApellido}"></small></label>
+                <label><span>Segundo apellido</span><input th:field="*{segundoApellido}" maxlength="100"></label>
+                <label><span>Teléfono</span><input type="tel" th:field="*{telefono}" maxlength="30" autocomplete="tel"><small th:errors="*{telefono}"></small></label>
+            </div></fieldset>
+            <footer class="form-actions"><a href="/admin/catalogos/maestros">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Registrar maestro'}">Guardar</button></footer>
+        </form>
+        <form th:if="${edicion and maestro.activo}" method="post" th:action="@{/admin/maestros/{id}/desactivar(id=${id})}" class="danger-zone" onsubmit="return confirm('¿Desactivar este maestro? Sus asignaciones vigentes finalizarán.');"><input type="hidden" name="version" th:value="${maestro.version}"><div><strong>Desactivar maestro</strong><p>Su expediente se conserva, pero se bloquean el acceso y las nuevas planeaciones.</p></div><button type="submit">Desactivar</button></form>
+    </section>
+
+    <section class="form-card teacher-access-card" th:if="${edicion}">
+        <div class="section-heading"><div><span>Acceso privado</span><h2>Portal de maestros</h2><p>Crea o administra la cuenta con invitaciones seguras, sin exponer contraseñas.</p></div><span class="teacher-account-state" th:text="${cuenta == null ? 'Sin cuenta' : cuenta.estado}">Sin cuenta</span></div>
+        <div class="form-error" role="alert" th:if="${errorCuenta}"><strong>No se pudo configurar la cuenta</strong><p th:text="${errorCuenta}"></p></div>
+        <div class="secure-link" th:if="${invitacionEnlace}"><strong>Enlace de activación</strong><input readonly th:value="${invitacionEnlace}"><small th:text="${'Vence: ' + invitacionExpira}"></small></div>
+        <div class="secure-link" th:if="${recuperacionEnlace}"><strong>Enlace para cambiar contraseña</strong><input readonly th:value="${recuperacionEnlace}"><small th:text="${'Vence: ' + recuperacionExpira}"></small></div>
+        <form class="entity-form" th:if="${cuenta == null}" method="post" th:action="@{/admin/maestros/{id}/cuenta(id=${id})}" th:object="${cuentaForm}">
+            <fieldset class="form-section"><legend>Credenciales de acceso</legend><div class="form-grid"><label><span>Usuario *</span><input th:field="*{username}" autocomplete="off"><small th:errors="*{username}"></small></label><label><span>Correo de acceso *</span><input type="email" th:field="*{email}"><small th:errors="*{email}"></small></label></div></fieldset>
+            <footer class="form-actions"><span></span><button type="submit">Crear cuenta y enlace</button></footer>
+        </form>
+        <div th:if="${cuenta != null}" class="account-summary"><div><span>Usuario</span><strong th:text="${cuenta.username}"></strong></div><div><span>Correo</span><strong th:text="${cuenta.email}"></strong></div><div><span>Estado</span><strong th:text="${cuenta.estado}"></strong></div></div>
+        <div th:if="${cuenta != null}" class="inline-actions"><form method="post" th:action="@{/admin/maestros/{id}/cuenta/invitacion(id=${id})}"><button type="submit">Generar activación</button></form><form th:if="${cuenta.credencialConfigurada}" method="post" th:action="@{/admin/maestros/{id}/cuenta/recuperacion(id=${id})}"><button type="submit">Cambiar contraseña</button></form><form method="post" th:action="@{/admin/maestros/{id}/cuenta/estado(id=${id})}"><input type="hidden" name="version" th:value="${cuenta.version}"><input type="hidden" name="activar" th:value="${cuenta.estado.name() == 'INACTIVO'}"><button type="submit" th:text="${cuenta.estado.name() == 'INACTIVO' ? 'Habilitar acceso' : 'Desactivar acceso'}"></button></form></div>
+    </section>
+
+    <section class="form-card" id="asignaciones" th:if="${edicion}">
+        <div class="section-heading"><div><span>Alcance docente</span><h2>Grupos y materias asignadas</h2><p>Las asignaciones determinan exactamente qué puede incluir el maestro en sus planeaciones.</p></div><b th:text="${asignaciones.size()}">0</b></div>
+        <div class="form-error" role="alert" th:if="${errorAsignacion}"><strong>No se pudo agregar la asignación</strong><p th:text="${errorAsignacion}"></p></div>
+        <form method="post" th:action="@{/admin/maestros/{id}/asignaciones(id=${id})}" th:object="${asignacionForm}" class="entity-form assignment-form">
+            <input type="hidden" id="asignacion-institucion" th:value="${maestro.institucionId}">
+            <fieldset class="form-section"><legend>Nueva asignación</legend><div class="form-grid">
+                <label class="wide"><span>Grupo *</span><div class="autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/grupos-maestro" data-scope-input="asignacion-institucion" data-scope-param="institucionId" data-scope-label="la institución"><div class="autocomplete-control"><input class="autocomplete-input" th:field="*{grupoTexto}" autocomplete="off" placeholder="Haz clic para ver grupos"><button type="button" class="autocomplete-clear" aria-label="Limpiar">×</button></div><input id="asignacion-grupo-id" class="autocomplete-value" type="hidden" th:field="*{grupoId}"><div class="autocomplete-results" role="listbox" hidden></div><small class="autocomplete-status">Haz clic para consultar los primeros grupos.</small></div><small th:errors="*{grupoId}"></small></label>
+                <label class="wide"><span>Materia *</span><div class="autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/materias-maestro" data-scope-input="asignacion-grupo-id" data-scope-param="grupoId" data-scope-label="el grupo"><div class="autocomplete-control"><input class="autocomplete-input" th:field="*{materiaTexto}" autocomplete="off" placeholder="Primero selecciona el grupo"><button type="button" class="autocomplete-clear" aria-label="Limpiar">×</button></div><input class="autocomplete-value" type="hidden" th:field="*{materiaId}"><div class="autocomplete-results" role="listbox" hidden></div><small class="autocomplete-status">Selecciona primero un grupo.</small></div><small th:errors="*{materiaId}"></small></label>
+                <label><span>Desde *</span><input type="date" th:field="*{fechaInicio}"><small th:errors="*{fechaInicio}"></small></label>
+                <label><span>Hasta</span><input type="date" th:field="*{fechaFin}"><small>Déjalo vacío para mantenerla vigente.</small><small th:errors="*{fechaFin}"></small></label>
+            </div></fieldset>
+            <footer class="form-actions"><span></span><button type="submit">Agregar asignación</button></footer>
+        </form>
+        <div class="assignment-list" th:if="${!asignaciones.empty}"><article th:each="a : ${asignaciones}" th:classappend="${a.activo} ? '' : ' inactive'"><div><span th:text="${a.plantel + ' · ' + a.ciclo}"></span><h3 th:text="${a.grupo + ' · ' + a.materia}"></h3><p th:text="${#temporals.format(a.fechaInicio,'dd/MM/yyyy') + ' – ' + (a.fechaFin == null ? 'vigente' : #temporals.format(a.fechaFin,'dd/MM/yyyy'))}"></p></div><form th:if="${a.activo}" method="post" th:action="@{/admin/maestros/{id}/asignaciones/{aid}/desactivar(id=${id},aid=${a.id})}"><input type="hidden" name="version" th:value="${a.version}"><button type="submit">Finalizar</button></form><span th:unless="${a.activo}">Finalizada</span></article></div>
+        <div class="empty" th:if="${asignaciones.empty}"><span>◇</span><h3>Aún no tiene grupos asignados</h3><p>Agrega el primer grupo y materia para habilitar sus planeaciones.</p></div>
+    </section>
+</main>
+<script src="/js/autocomplete.js"></script>
+</body>
+</html>

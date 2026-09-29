@@ -20,7 +20,7 @@
                     <input class="autocomplete-value" type="hidden" th:field="*{gradoId}"><div id="grado-resultados" class="autocomplete-results" role="listbox" hidden></div><small class="autocomplete-status" aria-live="polite"></small><small data-autocomplete-error th:errors="*{gradoId}"></small>
                 </div>
                 <label><span>Orden en boleta *</span><input type="number" min="1" th:field="*{orden}"><small th:errors="*{orden}"></small></label>
-                <label><span>Horas semanales</span><input type="number" min="0.01" step="0.25" th:field="*{horasSemanales}" placeholder="5"><small th:errors="*{horasSemanales}"></small></label>
+                <label><span>Horas semanales</span><input type="number" min="0.01" step="0.01" th:field="*{horasSemanales}" placeholder="5"><small>Admite horas completas o decimales, por ejemplo 5 o 4.5.</small><small th:errors="*{horasSemanales}"></small></label>
                 <label class="switch-row wide"><input type="checkbox" th:field="*{incluirBoleta}"><span>Incluir esta materia en la boleta del grado</span></label>
             </div></fieldset>
             <fieldset class="form-section"><legend>Forma de evaluación</legend><div class="form-grid">
@@ -51,4 +51,3 @@
 </script>
 </body>
 </html>
-

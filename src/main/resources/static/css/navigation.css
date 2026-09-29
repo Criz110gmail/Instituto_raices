@@ -29,6 +29,63 @@
 .sidebar .brand small { color: #a8bbcf; }
 .sidebar .nav-label { color: #8299b2; }
 
+.sidebar .nav-section {
+    margin: 3px 0 7px;
+}
+
+.sidebar .nav-section-toggle {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #8299b2;
+    font: 800 .7rem "DM Sans", system-ui, sans-serif;
+    letter-spacing: .11em;
+    text-align: left;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.sidebar .nav-section-toggle:hover,
+.sidebar .nav-section-toggle:focus-visible {
+    background: #ffffff0a;
+    color: #dce7f2;
+    outline: none;
+}
+
+.sidebar .nav-section-toggle i {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 auto;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg) translate(-2px, -2px);
+    transition: transform .18s ease;
+}
+
+.sidebar .nav-section-toggle[aria-expanded="true"] {
+    color: #43ddc7;
+}
+
+.sidebar .nav-section-toggle[aria-expanded="true"] i {
+    transform: rotate(225deg) translate(-1px, -1px);
+}
+
+.sidebar .nav-section-items {
+    display: grid;
+    gap: 1px;
+    padding: 1px 0 5px 7px;
+}
+
+.sidebar .nav-section-items[hidden] {
+    display: none;
+}
+
 .sidebar nav a {
     color: #c9d6e4;
     border: 1px solid transparent;

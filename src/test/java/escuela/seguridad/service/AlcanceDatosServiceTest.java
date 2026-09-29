@@ -38,6 +38,8 @@ import escuela.cobranza.entity.CuotaAlumno;
 import escuela.seguridad.repository.RolRepository;
 import escuela.seguridad.repository.UsuarioRepository;
 import escuela.tutor.repository.TutorRepository;
+import escuela.docente.repository.MaestroRepository;
+import escuela.docente.repository.PlaneacionSemanalRepository;
 import escuela.tutor.entity.Tutor;
 import escuela.seguridad.entity.Usuario;
 import org.junit.jupiter.api.AfterEach;
@@ -76,6 +78,8 @@ class AlcanceDatosServiceTest {
             mock(AsistenciaRepository.class),
             alumnoRepository,
             tutorRepository,
+            mock(MaestroRepository.class),
+            mock(PlaneacionSemanalRepository.class),
             alumnoTutorRepository,
             inscripcionRepository,
             conceptoCobroRepository, cuotaAlumnoRepository,

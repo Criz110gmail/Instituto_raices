@@ -24,7 +24,8 @@ public class SeguridadConfig {
             throws Exception {
         return http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/login", "/familias", "/activar-cuenta", "/restablecer-password", "/acceso-denegado", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
+                        .requestMatchers("/", "/login", "/familias", "/maestros/acceso", "/activar-cuenta", "/restablecer-password", "/acceso-denegado", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
+                        .requestMatchers("/maestros/**").hasAuthority("PORTAL_MAESTRO_ACCEDER")
                         .requestMatchers(HttpMethod.GET, "/portal/**")
                         .hasAuthority("PORTAL_TUTOR_ACCEDER")
                         .requestMatchers(HttpMethod.POST, "/portal/notificaciones/**")
@@ -33,6 +34,11 @@ public class SeguridadConfig {
                         .hasAuthority("PORTAL_TUTOR_ACCEDER")
                         .requestMatchers("/admin/portal-soporte/**")
                         .hasAuthority("PORTAL_TUTOR_SOPORTE")
+                        .requestMatchers("/admin/maestros/**").hasAuthority("MAESTRO_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.GET, "/admin/planeaciones/**")
+                        .hasAnyAuthority("PLANEACION_LEER", "PLANEACION_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.POST, "/admin/planeaciones/**")
+                        .hasAuthority("PLANEACION_ADMINISTRAR")
                         .requestMatchers("/admin/instituciones/**").hasAuthority("INSTITUCION_ADMINISTRAR")
                         .requestMatchers("/admin/planteles/**").hasAuthority("PLANTEL_ADMINISTRAR")
                         .requestMatchers("/admin/niveles/**").hasAuthority("NIVEL_ADMINISTRAR")
@@ -100,6 +106,8 @@ public class SeguridadConfig {
                         .hasAnyAuthority("CALIFICACION_ADMINISTRAR", "ASISTENCIA_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/grupos-boleta")
                         .hasAuthority("BOLETA_CONSULTAR")
+                        .requestMatchers("/admin/autocompletado/grupos-maestro", "/admin/autocompletado/materias-maestro")
+                        .hasAuthority("MAESTRO_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/periodos-calificacion",
                                 "/admin/autocompletado/materias-calificacion")
                         .hasAuthority("CALIFICACION_ADMINISTRAR")
@@ -179,26 +187,36 @@ public class SeguridadConfig {
                 .formLogin(form -> form.loginPage("/login")
                         .successHandler((request, response, authentication) -> {
                             boolean entradaFamiliar = "familias".equals(request.getParameter("origen"));
+                            boolean entradaMaestro = "maestros".equals(request.getParameter("origen"));
                             boolean tienePortal = authentication.getAuthorities().stream()
                                     .anyMatch(a -> a.getAuthority().equals("PORTAL_TUTOR_ACCEDER"));
+                            boolean tienePortalMaestro = authentication.getAuthorities().stream()
+                                    .anyMatch(a -> a.getAuthority().equals("PORTAL_MAESTRO_ACCEDER"));
                             response.sendRedirect(request.getContextPath()
-                                    + (entradaFamiliar && tienePortal ? "/portal" : "/admin"));
+                                    + (entradaFamiliar ? (tienePortal ? "/portal" : "/acceso-denegado")
+                                    : entradaMaestro ? (tienePortalMaestro ? "/maestros" : "/acceso-denegado") : "/admin"));
                         })
                         .failureHandler((request, response, exception) -> response.sendRedirect(
                                 request.getContextPath() + ("familias".equals(request.getParameter("origen"))
-                                        ? "/familias?error" : "/login?error")))
+                                        ? "/familias?error" : "maestros".equals(request.getParameter("origen"))
+                                        ? "/maestros/acceso?error" : "/login?error")))
                         .permitAll())
                 .httpBasic(Customizer.withDefaults())
-                .sessionManagement(sesion -> sesion.invalidSessionUrl("/login?sesionExpirada"))
+                .sessionManagement(sesion -> sesion.invalidSessionStrategy(
+                        accesoDenegadoHandler::redirigir))
                 .exceptionHandling(excepciones -> excepciones
                         .defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint("/familias"),
                                 request -> request.getRequestURI().startsWith(
                                         request.getContextPath() + "/portal"))
+                        .defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint("/maestros/acceso"),
+                                request -> request.getRequestURI().startsWith(
+                                        request.getContextPath() + "/maestros"))
                         .accessDeniedHandler(accesoDenegadoHandler))
                 .logout(logout -> logout
                         .logoutSuccessHandler((request, response, authentication) -> response.sendRedirect(
                                 request.getContextPath() + ("familias".equals(request.getParameter("origen"))
-                                        ? "/familias?logout" : "/")))
+                                        ? "/familias?logout" : "maestros".equals(request.getParameter("origen"))
+                                        ? "/maestros/acceso?logout" : "/")))
                         .deleteCookies("JSESSIONID"))
                 .build();
     }

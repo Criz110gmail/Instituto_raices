@@ -45,7 +45,7 @@ class BoletaExportacionTest {
         }
 
         ByteArrayOutputStream pdf = new ByteArrayOutputStream();
-        new JasperBoletaService(consulta).individual(9L, pdf);
+        new JasperBoletaService(consulta).colectivo(filtro, pdf);
         assertThat(pdf.toByteArray()).startsWith((byte) '%', (byte) 'P', (byte) 'D', (byte) 'F');
         try (var documento = Loader.loadPDF(pdf.toByteArray())) {
             String texto = new PDFTextStripper().getText(documento);

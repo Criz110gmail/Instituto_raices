@@ -66,10 +66,14 @@ public interface InscripcionRepository extends JpaRepository<Inscripcion, Long>,
                                          @Param("plantelId") Long plantelId);
 
     @Query("""
-            select distinct i from AsignacionGrupo a join a.inscripcion i
-            where a.grupo.id = :grupoId
-              and a.fechaInicio <= :finPeriodo
-              and (a.fechaFin is null or a.fechaFin >= :inicioPeriodo)
+            select i from Inscripcion i
+            where exists (
+                select a.id from AsignacionGrupo a
+                where a.inscripcion.id = i.id
+                  and a.grupo.id = :grupoId
+                  and a.fechaInicio <= :finPeriodo
+                  and (a.fechaFin is null or a.fechaFin >= :inicioPeriodo)
+              )
               and i.fechaInicio <= :finPeriodo
               and (i.fechaFin is null or i.fechaFin >= :inicioPeriodo)
               and i.estado <> escuela.inscripcion.entity.EstadoInscripcion.CANCELADA
@@ -80,10 +84,14 @@ public interface InscripcionRepository extends JpaRepository<Inscripcion, Long>,
                                                @Param("finPeriodo") LocalDate finPeriodo);
 
     @Query("""
-            select distinct i from AsignacionGrupo a join a.inscripcion i
-            where a.grupo.id = :grupoId
-              and a.fechaInicio <= :fecha
-              and (a.fechaFin is null or a.fechaFin >= :fecha)
+            select i from Inscripcion i
+            where exists (
+                select a.id from AsignacionGrupo a
+                where a.inscripcion.id = i.id
+                  and a.grupo.id = :grupoId
+                  and a.fechaInicio <= :fecha
+                  and (a.fechaFin is null or a.fechaFin >= :fecha)
+              )
               and i.fechaInicio <= :fecha
               and (i.fechaFin is null or i.fechaFin >= :fecha)
               and i.estado <> escuela.inscripcion.entity.EstadoInscripcion.CANCELADA

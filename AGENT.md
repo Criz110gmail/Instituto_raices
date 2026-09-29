@@ -22,10 +22,10 @@ no vuelvas a implementar componentes que ya existan.
 - Rama principal: `main`.
 - Confirma siempre `git status` y `git log` antes de continuar; el propietario realiza
   manualmente los commits y el `push`.
-- El cambio local actual implementa V43 funcional: consulta paginada de boletas en el
-  portal familiar y soporte administrativo, con apertura del PDF en otra pestaña. No
-  requiere cambio de esquema: el volumen conserva Flyway V1–V42 y la siguiente
-  migración SQL disponible sigue siendo V43.
+- El cambio local actual implementa V43 de portal docente y planeaciones semanales.
+  Flyway V43 ya existe y está aplicado; la siguiente migración disponible es V44.
+  Incluye cuentas de maestro separadas, asignaciones maestro–grupo–materia, captura
+  estructurada, revisión administrativa, versiones publicadas, PDF y Excel.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
 - En equipos con varias cuentas de GitHub, conserva la configuración de credenciales
   a nivel local del repositorio y usa `credential.useHttpPath=true`.
@@ -836,15 +836,18 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-V43 funcional quedó implementada y desplegada: el tutor consulta boletas paginadas por
-hijo y abre el PDF oficial en otra pestaña; soporte administrativo puede reproducir la
-misma experiencia. El propietario debe probarla con una cuenta familiar controlada,
-incluidos cambio de hijo, ciclos con y sin resultados, tema oscuro y dispositivo móvil.
+V43 de portal docente y planeaciones semanales quedó implementada, compilada y
+desplegada. El propietario debe hacer la prueba funcional con datos controlados:
+asignar los módulos `Maestros` y `Planeaciones` a un rol administrativo, crear un
+maestro y su cuenta, asignarle varias materias/grupos, iniciar en `/maestros/acceso`,
+guardar un borrador, enviarlo y completar el flujo administrativo de revisión, ajustes,
+publicación, reapertura con motivo, edición y nueva publicación. También debe comprobar
+PDF, Excel, tema oscuro y presentación móvil.
 
-Después de aprobar V43, la siguiente etapa acordada es el portal propio de maestros y la
-entrega semanal de planeaciones por grupo. Antes de crear tablas o pantallas, solicitar y
-analizar el formato real que proporcionará el propietario, y acordar si se capturarán
-datos estructurados, se adjuntará el documento o se usarán ambas opciones.
+No crear datos docentes operativos sólo para verificar. Después de aprobar V43, definir
+con el propietario el alcance de V44 antes de agregar dominio o migraciones. La primera
+mejora candidata es cerrar observaciones surgidas de la prueba del portal docente; no se
+ha acordado todavía un módulo nuevo.
 
 V41 y V42 también están implementadas y verificadas automáticamente. Permanecen sus
 pruebas funcionales controladas: Asistencia requiere revisar captura masiva, historial
@@ -1076,3 +1079,37 @@ enumeradas de etapas anteriores.
 - Al diseñarla se deben resolver expresamente asignación maestro–grupo, semana/ciclo,
   unicidad, reemplazos o versiones, estados de revisión, comentarios, permisos,
   auditoría, tipos y tamaños de archivo, y experiencia responsiva del portal docente.
+
+### Estabilización posterior a V43 — 2026-09-29
+
+- El portal docente y las planeaciones ya están implementados; el bloque anterior queda
+  como antecedente histórico, no como trabajo pendiente.
+- Se corrigieron las hojas de Calificaciones y Asistencia: la consulta de alumnos ahora
+  usa `exists` en lugar de `distinct` con orden por columnas asociadas, evitando el error
+  PostgreSQL `42P10` y manteniendo una sola inscripción por alumno.
+- Horas semanales de Materias admite centésimas y valores enteros como `5`; se eliminó la
+  combinación inválida `min=0.01` con `step=0.25` que hacía que el navegador sugiriera
+  únicamente `4.76` o `5.01`.
+- La imagen final usa JDK 21 porque los reportes Jasper construidos dinámicamente necesitan
+  `javac`. La prueba de boleta ahora recorre explícitamente la exportación colectiva.
+- El formulario administrativo de maestros se reorganizó con `entity-form`, secciones,
+  acciones y adaptación móvil comunes. El login docente reutiliza el diseño principal de
+  Nexo y fue revisado visualmente en escritorio y 390×844.
+- Docker ejecutó 373 pruebas sin fallos, la boleta se abrió, leyó y renderizó, Flyway
+  validó 43 migraciones y la aplicación desplegada respondió `UP`. No se leyó `.env` ni
+  se crearon datos académicos de prueba.
+- Pendiente del propietario: probar con datos controlados el guardado real de una hoja de
+  calificaciones, una de asistencia, el PDF colectivo y el recorrido completo de maestro.
+  La siguiente migración disponible continúa siendo V44.
+
+### Navegación administrativa agrupada — 2026-09-29
+
+- El menú lateral fusiona por nombre las categorías repetidas después de aplicar los
+  permisos. Cada categoría se presenta como un botón desplegable accesible; la del módulo
+  actual siempre queda abierta y las demás recuerdan su estado en el navegador.
+- El orden visible es Estructura, Personas, Trayectoria, Cobranza, Finanzas, Comunicación
+  y Seguridad. Trayectoria aparece una sola vez y reúne, cuando el usuario tiene permiso,
+  Inscripciones, Calificaciones, Asistencia, Boletas y Planeaciones.
+- La transformación es común para las 14 pantallas administrativas que ya cargan
+  `navigation.js`; no duplica reglas en cada HTML ni altera la seguridad del servidor.
+  Docker ejecutó 374 pruebas sin fallos y la interacción se revisó visualmente.

@@ -29,6 +29,36 @@ class SesionExpiradaAccessDeniedHandlerTest {
     }
 
     @Test
+    void conservaElAccesoDocenteCuandoCaducaLaSesion() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/maestros/planeaciones");
+        request.setRequestedSessionId("sesion-caducada");
+        request.setRequestedSessionIdValid(false);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        var tokenEsperado = new DefaultCsrfToken("X-CSRF-TOKEN", "_csrf", "token-nuevo");
+        handler.handle(request, response,
+                new InvalidCsrfTokenException(tokenEsperado, "token-anterior"));
+
+        assertThat(response.getRedirectedUrl()).isEqualTo("/login?origen=maestros&sesionExpirada");
+        assertThat(response.getCookie("JSESSIONID")).isNotNull();
+        assertThat(response.getCookie("JSESSIONID").getMaxAge()).isZero();
+    }
+
+    @Test
+    void conservaElAccesoFamiliarCuandoCaducaLaSesion() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/portal/notificaciones/1/leida");
+        request.setRequestedSessionId("sesion-caducada");
+        request.setRequestedSessionIdValid(false);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        var tokenEsperado = new DefaultCsrfToken("X-CSRF-TOKEN", "_csrf", "token-nuevo");
+        handler.handle(request, response,
+                new InvalidCsrfTokenException(tokenEsperado, "token-anterior"));
+
+        assertThat(response.getRedirectedUrl()).isEqualTo("/login?origen=familias&sesionExpirada");
+    }
+
+    @Test
     void conservaElAccesoDenegadoParaErroresDePermisos() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/admin/usuarios");
         MockHttpServletResponse response = new MockHttpServletResponse();

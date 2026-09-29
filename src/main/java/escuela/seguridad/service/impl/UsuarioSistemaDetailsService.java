@@ -51,9 +51,15 @@ public class UsuarioSistemaDetailsService implements UserDetailsService {
                     false, false, usuario.getUsername(), usuario.getPasswordHash(),
                     List.of(new SimpleGrantedAuthority("PORTAL_TUTOR_ACCEDER")));
         }
+        if (usuario.getTipoCuenta() == TipoCuentaUsuario.PORTAL_MAESTRO) {
+            return new UsuarioPrincipal(usuario.getId(), usuario.getInstitucion().getId(), Set.of(),
+                    false, false, usuario.getUsername(), usuario.getPasswordHash(),
+                    List.of(new SimpleGrantedAuthority("PORTAL_MAESTRO_ACCEDER")));
+        }
         List<escuela.seguridad.entity.UsuarioRol> asignaciones = asignacionesActivas(usuario);
         Set<String> permisos = permisos(asignaciones);
         permisos.remove("PORTAL_TUTOR_ACCEDER");
+        permisos.remove("PORTAL_MAESTRO_ACCEDER");
         Set<Long> planteles = asignaciones.stream()
                 .filter(a -> a.getAlcance() == escuela.seguridad.entity.AlcanceRol.PLANTEL)
                 .map(a -> a.getPlantel().getId()).collect(java.util.stream.Collectors.toSet());
