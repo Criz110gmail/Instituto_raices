@@ -3,6 +3,7 @@ package escuela.docente.entity;
 import escuela.config.audit.EntidadAuditable;
 import escuela.institucion.entity.Institucion;
 import escuela.seguridad.entity.Usuario;
+import escuela.archivo.entity.Archivo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ public class Maestro extends EntidadAuditable {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "institucion_id", nullable = false) private Institucion institucion;
     @OneToOne(fetch = FetchType.LAZY) @JoinColumn(name = "usuario_id") private Usuario usuario;
+    @OneToOne(fetch = FetchType.LAZY) @JoinColumn(name = "fotografia_archivo_id") private Archivo fotografiaArchivo;
     @Column(name = "numero_empleado", nullable = false, length = 50) private String numeroEmpleado;
     @Column(nullable = false, length = 150) private String nombres;
     @Column(name = "primer_apellido", nullable = false, length = 100) private String primerApellido;

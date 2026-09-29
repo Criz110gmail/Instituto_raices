@@ -22,8 +22,9 @@ no vuelvas a implementar componentes que ya existan.
 - Rama principal: `main`.
 - Confirma siempre `git status` y `git log` antes de continuar; el propietario realiza
   manualmente los commits y el `push`.
-- El cambio local actual implementa V43 de portal docente y planeaciones semanales.
-  Flyway V43 ya existe y está aplicado; la siguiente migración disponible es V44.
+- El cambio local actual amplía V43 con las correcciones V44 de ficha docente,
+  documentos inline, filtros y portal de alumnos del maestro.
+  Flyway V45 ya existe y está aplicado; la siguiente migración disponible es V46.
   Incluye cuentas de maestro separadas, asignaciones maestro–grupo–materia, captura
   estructurada, revisión administrativa, versiones publicadas, PDF y Excel.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
@@ -174,6 +175,30 @@ Todo módulo que se construya debe incluir desde su primera entrega:
 12. Toda relación con un catálogo de alto volumen debe usar autocompletado remoto con
     consulta indexada, alcance de seguridad, mínimo de tres caracteres y resultado
     acotado; nunca cargar la colección completa al abrir el formulario.
+13. Todo PDF, imagen o documento consultable debe contar con un endpoint privado con
+    autorización por alcance, `Content-Disposition: inline` y un enlace con
+    `target="_blank"`; sólo las exportaciones Excel se descargan automáticamente.
+
+## Correcciones y ampliaciones V44–V45
+
+- Los PDF financieros y los documentos del expediente se visualizan en otra pestaña;
+  ya no fuerzan una descarga al abrirlos.
+- Roles y permisos reconoce el módulo Asistencia, evitando el fallo producido por el
+  permiso técnico sin módulo funcional.
+- El reporte familiar de transferencias muestra al enfocar los primeros diez cargos
+  vigentes, excluye vencidos/cancelados/pagados y completa el saldo seleccionado.
+- La ayuda contextual ya no invade los controles de carga de archivos.
+- “Oferta educativa” se presenta al usuario como “Niveles por plantel” y los periodos
+  académicos admiten el tipo anual.
+- Los filtros de estado muestran exclusivamente los estados válidos de cada módulo;
+  Asistencia incorpora fecha y la conserva al paginar y exportar.
+- Boletas usa autocompletado de alumnos al enfocar y busca remotamente desde tres
+  caracteres.
+- Maestro admite fotografía privada en su ficha administrativa. El portal docente
+  muestra “Mis alumnos” con acceso acotado a grupos vigentes, fotografía, datos
+  generales y ficha médica.
+- La edición de planeaciones vacía primero las colecciones dependientes antes de
+  reconstruirlas, evitando falsos duplicados por restricciones únicas.
 
 ## Seguridad y variables de entorno
 

@@ -3,12 +3,13 @@ package escuela.admin.dto;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 public enum ModuloCatalogo {
     INSTITUCIONES("instituciones", "Instituciones", List.of("Código", "Nombre", "Zona horaria", "Moneda")),
     PLANTELES("planteles", "Planteles", List.of("Código", "Plantel", "Institución", "Ciudad")),
     NIVELES("niveles", "Niveles educativos", List.of("Código", "Nivel", "Institución", "Orden")),
-    OFERTA("oferta", "Oferta educativa", List.of("Plantel", "Nivel", "Clave CCT")),
+    OFERTA("oferta", "Niveles por plantel", List.of("Plantel", "Nivel", "Clave CCT")),
     GRADOS("grados", "Grados", List.of("Código", "Grado", "Nivel", "Orden")),
     CICLOS("ciclos", "Ciclos escolares", List.of("Código", "Ciclo", "Inicio", "Fin", "Predeterminado")),
     PERIODOS("periodos", "Periodos académicos", List.of("Código", "Periodo", "Nivel", "Tipo", "Fechas")),
@@ -56,6 +57,45 @@ public enum ModuloCatalogo {
     public String slug() { return slug; }
     public String titulo() { return titulo; }
     public List<String> columnas() { return columnas; }
+
+    /** Estados válidos para el filtro de este listado; evita mostrar opciones que el módulo no entiende. */
+    public List<Map.Entry<String, String>> estadosFiltro() {
+        var todos = Map.entry("TODOS", "Todos");
+        return switch (this) {
+            case CICLOS, PERIODOS -> List.of(todos, Map.entry("PLANIFICADO", "Planificado"),
+                    Map.entry("ABIERTO", "Abierto"), Map.entry("CERRADO", "Cerrado"));
+            case CALIFICACIONES -> List.of(todos, Map.entry("BORRADOR", "Borrador"),
+                    Map.entry("PUBLICADA", "Publicada"));
+            case ASISTENCIA -> List.of(todos, Map.entry("PRESENTE", "Presente"),
+                    Map.entry("AUSENTE", "Ausente"), Map.entry("RETARDO", "Retardo"),
+                    Map.entry("JUSTIFICADA", "Justificada"));
+            case TUTORES, MAESTROS -> List.of(todos, Map.entry("ACTIVO", "Activo"),
+                    Map.entry("INACTIVO", "Inactivo"), Map.entry("SIN_CUENTA", "Sin cuenta de portal"),
+                    Map.entry("CUENTA_ACTIVA", "Cuenta activa"),
+                    Map.entry("CUENTA_PENDIENTE", "Pendiente de activación"),
+                    Map.entry("CUENTA_INACTIVA", "Cuenta desactivada o bloqueada"));
+            case INSCRIPCIONES -> List.of(todos, Map.entry("PREINSCRITA", "Preinscrita"),
+                    Map.entry("ACTIVA", "Activa"), Map.entry("BAJA", "Baja"),
+                    Map.entry("FINALIZADA", "Finalizada"), Map.entry("CANCELADA", "Cancelada"));
+            case CUOTAS_ALUMNO -> List.of(todos, Map.entry("ACTIVA", "Activa"),
+                    Map.entry("SUSPENDIDA", "Suspendida"), Map.entry("FINALIZADA", "Finalizada"));
+            case BECAS_ALUMNO -> List.of(todos, Map.entry("ACTIVA", "Activa"),
+                    Map.entry("SUSPENDIDA", "Suspendida"), Map.entry("FINALIZADA", "Finalizada"),
+                    Map.entry("CANCELADA", "Cancelada"));
+            case CARGOS -> List.of(todos, Map.entry("EMITIDO", "Emitido"),
+                    Map.entry("CANCELADO", "Cancelado"));
+            case PAGOS -> List.of(todos, Map.entry("PENDIENTE_VALIDACION", "Pendiente de validación"),
+                    Map.entry("VALIDADO", "Validado"), Map.entry("RECHAZADO", "Rechazado"),
+                    Map.entry("CANCELADO", "Cancelado"));
+            case AJUSTES_CARGO -> List.of(todos, Map.entry("BECA", "Beca"),
+                    Map.entry("DESCUENTO", "Descuento"), Map.entry("RECARGO", "Recargo"),
+                    Map.entry("CORRECCION", "Corrección"));
+            case USUARIOS -> List.of(todos, Map.entry("ACTIVO", "Activo"),
+                    Map.entry("INACTIVO", "Inactivo"), Map.entry("INVITADO", "Invitado"),
+                    Map.entry("BLOQUEADO", "Bloqueado"));
+            default -> List.of(todos, Map.entry("ACTIVO", "Activo"), Map.entry("INACTIVO", "Inactivo"));
+        };
+    }
 
     public String seccion() {
         return switch (this) {

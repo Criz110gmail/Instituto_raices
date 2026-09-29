@@ -5,7 +5,7 @@
         [/^\/admin\/catalogos\/instituciones|^\/admin\/instituciones/, 'Instituciones', 'Define los datos legales y operativos de cada institución que utiliza el sistema. Es la raíz que separa planteles, personas, seguridad y finanzas.', 'Registrar Instituto Raíces con su código, zona horaria y moneda de trabajo.'],
         [/^\/admin\/(catalogos\/)?planteles/, 'Planteles', 'Administra las sedes físicas de una institución y sus datos de contacto, ubicación y operación.', 'Crear el plantel Centro y relacionarlo con Instituto Raíces.'],
         [/^\/admin\/(catalogos\/)?niveles/, 'Niveles educativos', 'Organiza los niveles académicos disponibles, por ejemplo preescolar, primaria o secundaria.', 'Registrar Primaria con orden 2 para mostrarla después de Preescolar.'],
-        [/^\/admin\/(catalogos\/)?oferta/, 'Oferta educativa', 'Indica qué niveles educativos ofrece cada plantel y conserva su clave oficial cuando aplica.', 'Habilitar Primaria en el plantel Centro con su clave CCT.'],
+        [/^\/admin\/(catalogos\/)?oferta/, 'Niveles por plantel', 'Indica qué niveles educativos ofrece cada plantel y conserva su clave oficial cuando aplica.', 'Habilitar Primaria en el plantel Centro con su clave CCT.'],
         [/^\/admin\/(catalogos\/)?grados/, 'Grados', 'Define los grados que pertenecen a cada nivel educativo y el orden en que se presentan.', 'Crear 1.º de primaria con orden 1.'],
         [/^\/admin\/(catalogos\/)?materias/, 'Materias', 'Administra las materias institucionales y configura cómo se evalúan en cada grado.', 'Crear Matemáticas y asignarla a 1.º de primaria con escala de 0 a 10.'],
         [/^\/admin\/(catalogos\/)?maestros/, 'Maestros', 'Administra el expediente docente, su cuenta independiente y las materias que puede impartir en cada grupo y vigencia.', 'Registrar a una maestra, crear su acceso y asignarle Matemáticas en 1.º A durante el ciclo vigente.'],
@@ -335,10 +335,12 @@
     };
 
     const enhanceLabel = (label, module, providedControl = null) => {
-        if (label.dataset.contextHelpReady === 'true' || label.classList.contains('nav-backdrop') || label.classList.contains('menu-button')) return;
+        if (label.dataset.contextHelpReady === 'true' || label.classList.contains('nav-backdrop') || label.classList.contains('menu-button')
+            || label.classList.contains('portal-upload-zone') || label.classList.contains('file-picker')) return;
         const controls = providedControl ? [providedControl] : [...label.querySelectorAll('input,select,textarea')].filter(visibleControl);
         if (!controls.length) return;
         const control = controls.find(item => item.type !== 'checkbox' && item.type !== 'radio') || controls[0];
+        if (control.type === 'file') return;
         const title = labelText(label);
         if (!title || title.length > 100) return;
         const key = fieldKey(control) || clean(title);

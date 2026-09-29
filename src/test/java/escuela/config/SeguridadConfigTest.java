@@ -16,4 +16,14 @@ class SeguridadConfigTest {
         assertThat(passwordCodificada).startsWith("$2");
         assertThat(encoder.matches("password-prueba", passwordCodificada)).isTrue();
     }
+
+    @Test
+    void dirigeCadaCierreDeSesionAlLoginCorrespondiente() {
+        assertThat(SeguridadConfig.rutaDespuesDeCerrarSesion("familias"))
+                .isEqualTo("/login?origen=familias&logout");
+        assertThat(SeguridadConfig.rutaDespuesDeCerrarSesion("maestros"))
+                .isEqualTo("/login?origen=maestros&logout");
+        assertThat(SeguridadConfig.rutaDespuesDeCerrarSesion(null))
+                .isEqualTo("/login?logout");
+    }
 }

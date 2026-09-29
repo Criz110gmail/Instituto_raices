@@ -52,6 +52,7 @@ public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecific
               AND v.activo=true AND v.es_responsable_financiero=true AND v.puede_ver_finanzas=true
               AND v.fecha_inicio<=CURRENT_DATE AND (v.fecha_fin IS NULL OR v.fecha_fin>=CURRENT_DATE)
               AND c.estado_registro='EMITIDO'
+              AND c.fecha_vencimiento >= CURRENT_DATE
               AND (a.busqueda_autocomplete LIKE ('%'||lower(:texto)||'%') OR cc.busqueda_autocomplete LIKE ('%'||lower(:texto)||'%'))
             ORDER BY c.fecha_vencimiento,c.id
             """, nativeQuery = true)

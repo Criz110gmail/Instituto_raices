@@ -109,6 +109,7 @@ class FotografiaAlumnoServiceImplTest {
         service.asignar(10L, png("nueva.png"));
 
         assertThat(anterior.getRetiradaEn()).isNotNull();
+        verify(fotografiaRepository).saveAndFlush(anterior);
         verify(almacenamiento, never()).eliminarSiExiste(any());
     }
 

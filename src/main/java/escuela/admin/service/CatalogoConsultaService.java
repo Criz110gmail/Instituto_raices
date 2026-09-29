@@ -385,16 +385,17 @@ public class CatalogoConsultaService {
 
     private Specification<Asistencia> textoAsistencia(FiltroCatalogo f) {
         return (root, query, cb) -> {
-            if (f.q().isBlank()) return cb.conjunction();
+            var porFecha = f.fecha() == null ? cb.conjunction() : cb.equal(root.get("fecha"), f.fecha());
+            if (f.q().isBlank()) return porFecha;
             String patron = "%" + f.q().toLowerCase(Locale.ROOT) + "%";
             var alumno = root.get("inscripcion").get("alumno");
-            return cb.or(cb.like(cb.lower(alumno.get("matricula")), patron),
+            return cb.and(porFecha, cb.or(cb.like(cb.lower(alumno.get("matricula")), patron),
                     cb.like(cb.lower(alumno.get("nombres")), patron),
                     cb.like(cb.lower(alumno.get("primerApellido")), patron),
                     cb.like(cb.lower(alumno.get("segundoApellido")), patron),
                     cb.like(cb.lower(root.get("grupo").get("nombre")), patron),
                     cb.like(cb.lower(root.get("grupo").get("plantel").get("nombre")), patron),
-                    cb.like(cb.lower(root.get("observaciones")), patron));
+                    cb.like(cb.lower(root.get("observaciones")), patron)));
         };
     }
 

@@ -1,4 +1,9 @@
 package escuela.admin.dto;
 
-public record OpcionAutocompletado(Long id, String titulo, String detalle) {
+import java.math.BigDecimal;
+
+public record OpcionAutocompletado(Long id, String titulo, String detalle, BigDecimal monto) {
+    public OpcionAutocompletado(Long id, String titulo, String detalle) {
+        this(id, titulo, detalle, null);
+    }
 }

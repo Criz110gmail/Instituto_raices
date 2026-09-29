@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface AsignacionGrupoRepository extends JpaRepository<AsignacionGrupo, Long> {
 
@@ -53,4 +55,38 @@ public interface AsignacionGrupoRepository extends JpaRepository<AsignacionGrupo
             """)
     List<AsignacionGrupo> buscarHistorialParaBoleta(
             @Param("inscripcionIds") Collection<Long> inscripcionIds);
+
+    @Query(value="""
+            select distinct ag from AsignacionGrupo ag
+            join fetch ag.inscripcion i join fetch i.alumno al join fetch ag.grupo g
+            join fetch g.plantel join fetch g.grado
+            where i.estado=escuela.inscripcion.entity.EstadoInscripcion.ACTIVA
+              and ag.fechaInicio<=:fecha and (ag.fechaFin is null or ag.fechaFin>=:fecha)
+              and exists (select am.id from AsignacionMaestro am where am.maestro.id=:maestroId
+                and am.grupo.id=g.id and am.activo=true and am.fechaInicio<=:fecha
+                and (am.fechaFin is null or am.fechaFin>=:fecha))
+              and (:q='' or lower(concat(al.matricula,' ',al.nombres,' ',al.primerApellido,' ',coalesce(al.segundoApellido,''))) like concat('%',:q,'%'))
+            """, countQuery="""
+            select count(distinct ag.id) from AsignacionGrupo ag join ag.inscripcion i join i.alumno al join ag.grupo g
+            where i.estado=escuela.inscripcion.entity.EstadoInscripcion.ACTIVA
+              and ag.fechaInicio<=:fecha and (ag.fechaFin is null or ag.fechaFin>=:fecha)
+              and exists (select am.id from AsignacionMaestro am where am.maestro.id=:maestroId
+                and am.grupo.id=g.id and am.activo=true and am.fechaInicio<=:fecha
+                and (am.fechaFin is null or am.fechaFin>=:fecha))
+              and (:q='' or lower(concat(al.matricula,' ',al.nombres,' ',al.primerApellido,' ',coalesce(al.segundoApellido,''))) like concat('%',:q,'%'))
+            """)
+    Page<AsignacionGrupo> alumnosDelMaestro(@Param("maestroId")Long maestroId,@Param("fecha")LocalDate fecha,
+                                             @Param("q")String q,Pageable pageable);
+
+    @Query("""
+            select ag from AsignacionGrupo ag join fetch ag.inscripcion i join fetch i.alumno al join fetch ag.grupo g
+            join fetch g.plantel join fetch g.grado
+            where al.id=:alumnoId and i.estado=escuela.inscripcion.entity.EstadoInscripcion.ACTIVA
+              and ag.fechaInicio<=:fecha and (ag.fechaFin is null or ag.fechaFin>=:fecha)
+              and exists (select am.id from AsignacionMaestro am where am.maestro.id=:maestroId
+                and am.grupo.id=g.id and am.activo=true and am.fechaInicio<=:fecha
+                and (am.fechaFin is null or am.fechaFin>=:fecha))
+            order by ag.fechaInicio desc
+            """)
+    List<AsignacionGrupo> alumnoDelMaestro(@Param("maestroId")Long maestroId,@Param("alumnoId")Long alumnoId,@Param("fecha")LocalDate fecha);
 }

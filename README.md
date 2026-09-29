@@ -1,5 +1,9 @@
 # Sistema administrativo escolar
 
+> Regla documental: los PDF, imágenes y documentos privados se abren en el visor del
+> navegador mediante endpoints autorizados (`inline`) y enlaces en una pestaña nueva.
+> Las exportaciones Excel sí se entregan como descarga.
+
 Base del sistema multi-plantel construida con Java 21, Spring Boot 4.1.1,
 Thymeleaf, PostgreSQL, Flyway y Maven.
 

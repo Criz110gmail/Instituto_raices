@@ -5,5 +5,6 @@ public enum TipoPeriodoAcademico {
     TRIMESTRE,
     CUATRIMESTRE,
     SEMESTRE,
+    ANUAL,
     OTRO
 }

@@ -24,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.*;
 import java.util.*;
 
+import static escuela.cobranza.support.CalculoCargo.saldo;
+
 @Service @RequiredArgsConstructor @Transactional
 public class PortalPagoService {
     private final InstitucionService instituciones;
@@ -38,12 +40,13 @@ public class PortalPagoService {
 
     @Transactional(readOnly=true)
     public ResultadoAutocompletado buscarCargos(UsuarioPrincipal p,String q) {
-        validar(p); String texto=q==null?"":q.trim().toLowerCase(Locale.ROOT); if(texto.length()<3)return ResultadoAutocompletado.vacio();
-        Tutor t=tutor(p); var r=cargos.buscarParaPortal(p.institucionId(),t.getId(),texto,PageRequest.of(0,20));
-        return new ResultadoAutocompletado(r.getContent().stream().map(c->new OpcionAutocompletado(c.getId(),
+        validar(p); String texto=q==null?"":q.trim().toLowerCase(Locale.ROOT); if(!texto.isEmpty()&&texto.length()<3)return ResultadoAutocompletado.vacio();
+        Tutor t=tutor(p); int limite=texto.isEmpty()?10:20; var r=cargos.buscarParaPortal(p.institucionId(),t.getId(),texto,PageRequest.of(0,limite));
+        var opciones=r.getContent().stream().filter(c->saldo(c).signum()>0).map(c->new OpcionAutocompletado(c.getId(),
                 c.getInscripcion().getAlumno().getMatricula()+" · "+c.getInscripcion().getAlumno().getNombres()+" "+c.getInscripcion().getAlumno().getPrimerApellido()
                         +" · "+c.getConceptoCobro().getNombre()+" · "+c.getDescripcion()+" · #"+c.getId(),
-                "Vence "+c.getFechaVencimiento()+" · "+c.getImporteOriginal()+" "+c.getMoneda())).toList(),r.hasNext());
+                "Vence "+c.getFechaVencimiento()+" · saldo "+saldo(c)+" "+c.getMoneda(), saldo(c))).toList();
+        return new ResultadoAutocompletado(opciones,r.hasNext());
     }
 
     @Transactional(readOnly=true)

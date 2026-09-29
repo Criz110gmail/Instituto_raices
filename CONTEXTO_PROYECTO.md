@@ -1,5 +1,19 @@
 # Contexto del proyecto
 
+## Verificación V44–V45 — correcciones transversales y ficha docente
+
+- Se agregó `V44__agregar_fotografia_maestro.sql` y se aplicó correctamente sobre la
+  instalación local, conservando los archivos en almacenamiento privado.
+- `V45__permitir_periodo_academico_anual.sql` amplía la restricción de PostgreSQL para
+  aceptar periodos de tipo `ANUAL`.
+- Roles, pagos del portal familiar, estados por módulo, fecha de asistencia,
+  autocompletado de boletas, visualización inline de documentos y edición de
+  planeaciones fueron corregidos.
+- El portal docente ahora expone solamente los alumnos de grupos asignados y vigentes,
+  con ficha general, fotografía y ficha médica en modo consulta.
+- Docker construyó la imagen y ejecutó 380 pruebas sin fallos. Flyway validó 45
+  migraciones, Hibernate validó el esquema y `/actuator/health` respondió `UP`.
+
 ## Decisiones confirmadas — primera etapa
 
 - Proyecto Maven `sistema-administrativo-escolar`, paquete base `escuela`.

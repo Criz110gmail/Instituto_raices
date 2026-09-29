@@ -7,6 +7,7 @@ import escuela.alumno.service.AlumnoService;
 import escuela.alumno.service.DocumentoAlumnoService;
 import escuela.alumno.service.FichaMedicaAlumnoService;
 import escuela.alumno.service.FotografiaAlumnoService;
+import escuela.archivo.dto.ArchivoDescarga;
 import escuela.common.dto.response.AuditoriaResponse;
 import escuela.common.exception.RecursoDuplicadoException;
 import escuela.institucion.dto.response.InstitucionResponse;
@@ -22,6 +23,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
@@ -154,6 +158,21 @@ class AlumnoAdminControllerTest {
 
         assertThat(vista).isEqualTo("admin/alumno-form");
         assertThat(model.get("errorFotografia")).asString().contains("5 MB");
+    }
+
+    @Test
+    void visualizaDocumentoEnElNavegadorSinForzarDescarga() {
+        byte[] contenido = "%PDF-archivo".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        when(documentoService.descargar(10L, 25L)).thenReturn(new ArchivoDescarga(
+                new ByteArrayResource(contenido), "acta.pdf", "application/pdf", contenido.length));
+
+        var respuesta = controller.visualizarDocumento(10L, 25L);
+
+        assertThat(respuesta.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_PDF);
+        assertThat(respuesta.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION))
+                .startsWith("inline;")
+                .contains("acta.pdf");
+        assertThat(respuesta.getBody()).isNotNull();
     }
 
     private AlumnoForm formulario() {

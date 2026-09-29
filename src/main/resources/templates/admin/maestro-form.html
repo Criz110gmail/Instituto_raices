@@ -14,6 +14,32 @@
     <p class="flash" th:if="${mensaje}" th:text="${mensaje}"></p>
     <section class="form-card">
         <div class="form-intro"><span>Personas · Equipo docente</span><h1 th:text="${edicion ? 'Ficha del maestro' : 'Registrar maestro'}">Registrar maestro</h1><p>Administra el expediente con la misma estructura visual del resto del sistema. La cuenta de acceso y las asignaciones se conservan por separado.</p></div>
+        <section class="teacher-photo-profile" th:if="${edicion}" aria-labelledby="perfil-maestro-titulo">
+            <div class="teacher-photo-preview">
+                <div class="student-photo-frame profile-photo" th:classappend="${fotografiaActual == null ? ' empty' : ''}">
+                    <img th:if="${fotografiaActual != null}" th:src="@{/admin/maestros/{id}/fotografia(id=${id})}" th:alt="${'Fotografía de ' + form.nombres + ' ' + form.primerApellido}">
+                    <div th:unless="${fotografiaActual != null}" aria-hidden="true"><strong th:text="${#strings.substring(form.nombres,0,1)+#strings.substring(form.primerApellido,0,1)}">MD</strong><span>Sin fotografía</span></div>
+                </div>
+                <span class="teacher-photo-state" th:classappend="${fotografiaActual == null ? ' empty' : ''}" th:text="${fotografiaActual == null ? 'Foto pendiente' : 'Foto actual'}">Foto actual</span>
+            </div>
+            <div class="teacher-photo-identity">
+                <span class="teacher-card-eyebrow">Ficha docente</span>
+                <h2 id="perfil-maestro-titulo" th:text="${form.nombres+' '+form.primerApellido}">Maestro</h2>
+                <p><strong th:text="${form.numeroEmpleado}">DOC-001</strong><span aria-hidden="true">·</span><span th:text="${form.email}">maestro@escuela.mx</span></p>
+                <div class="teacher-photo-file-meta" th:if="${fotografiaActual != null}"><span>Archivo actual</span><strong th:text="${fotografiaActual.nombreOriginal}">fotografia.jpg</strong></div>
+            </div>
+            <div class="teacher-photo-tools">
+                <div class="teacher-photo-tools-heading"><span class="teacher-photo-tools-icon" aria-hidden="true">IMG</span><div><strong>Fotografía del maestro</strong><span>Selecciona una imagen nítida en formato JPEG o PNG, de hasta 5 MB.</span></div></div>
+                <div class="form-error" role="alert" th:if="${errorFotografia}"><strong>No se pudo actualizar la fotografía</strong><p th:text="${errorFotografia}"></p></div>
+                <div class="teacher-photo-actions">
+                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/maestros/{id}/fotografia(id=${id})}" class="photo-upload-form teacher-photo-upload">
+                        <label for="archivo-fotografia-maestro"><span th:text="${fotografiaActual==null?'Seleccionar fotografía':'Reemplazar fotografía'}">Seleccionar fotografía</span><input id="archivo-fotografia-maestro" type="file" name="archivo" accept="image/jpeg,image/png" required></label>
+                        <button type="submit">Guardar fotografía</button>
+                    </form>
+                    <form class="teacher-photo-remove-form" th:if="${fotografiaActual != null}" method="post" th:action="@{/admin/maestros/{id}/fotografia/retirar(id=${id})}" onsubmit="return confirm('¿Retirar la fotografía actual del maestro?');"><button type="submit" class="photo-remove">Retirar actual</button></form>
+                </div>
+            </div>
+        </section>
         <form class="entity-form" method="post" th:action="${edicion ? '/admin/maestros/' + id : '/admin/maestros'}" th:object="${form}">
             <input type="hidden" th:field="*{version}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}"></p></div>

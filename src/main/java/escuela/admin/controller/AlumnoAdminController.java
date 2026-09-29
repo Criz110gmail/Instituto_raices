@@ -195,6 +195,7 @@ public class AlumnoAdminController {
         alcance.validarAdministracionInstitucional(alumno.institucionId());
         if (errores.hasErrors()) {
             preparar(model, AlumnoForm.desde(alumno), id);
+            model.addAttribute("pestanaActiva", "documentos");
             return "admin/alumno-form";
         }
         try {
@@ -203,6 +204,7 @@ public class AlumnoAdminController {
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
             preparar(model, AlumnoForm.desde(alumno), id);
             model.addAttribute("errorDocumento", MensajeErrorFormulario.desde(excepcion));
+            model.addAttribute("pestanaActiva", "documentos");
             return "admin/alumno-form";
         }
         flash.addFlashAttribute("mensaje", "Documento agregado al expediente correctamente");
@@ -221,22 +223,24 @@ public class AlumnoAdminController {
                  ObjectOptimisticLockingFailureException excepcion) {
             preparar(model, AlumnoForm.desde(alumno), id);
             model.addAttribute("errorDocumento", MensajeErrorFormulario.desde(excepcion));
+            model.addAttribute("pestanaActiva", "documentos");
             return "admin/alumno-form";
         }
         flash.addFlashAttribute("mensaje", "Documento retirado del expediente vigente");
         return "redirect:/admin/alumnos/" + id + "/editar#expediente-documental";
     }
 
-    @GetMapping("/{alumnoId}/documentos/{documentoId}")
-    ResponseEntity<Resource> descargarDocumento(@PathVariable Long alumnoId,
-                                                @PathVariable Long documentoId) {
+    @GetMapping({"/{alumnoId}/documentos/{documentoId}",
+            "/{alumnoId}/documentos/{documentoId}/visualizar"})
+    ResponseEntity<Resource> visualizarDocumento(@PathVariable Long alumnoId,
+                                                 @PathVariable Long documentoId) {
         alcance.validarRecurso(ModuloCatalogo.ALUMNOS, alumnoId);
         ArchivoDescarga descarga = documentoService.descargar(alumnoId, documentoId);
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.noStore())
                 .contentType(MediaType.parseMediaType(descarga.tipoMime()))
                 .contentLength(descarga.tamanoBytes())
-                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline()
                         .filename(descarga.nombreOriginal(), StandardCharsets.UTF_8).build().toString())
                 .body(descarga.recurso());
     }
@@ -250,6 +254,7 @@ public class AlumnoAdminController {
         alcance.validarAdministracionInstitucional(alumno.institucionId());
         if (errores.hasErrors()) {
             preparar(model, AlumnoForm.desde(alumno), id);
+            model.addAttribute("pestanaActiva", "medica");
             return "admin/alumno-form";
         }
         try {
@@ -258,6 +263,7 @@ public class AlumnoAdminController {
                  ObjectOptimisticLockingFailureException excepcion) {
             preparar(model, AlumnoForm.desde(alumno), id);
             model.addAttribute("errorFichaMedica", MensajeErrorFormulario.desde(excepcion));
+            model.addAttribute("pestanaActiva", "medica");
             return "admin/alumno-form";
         }
         flash.addFlashAttribute("mensaje", "Ficha médica actualizada correctamente");
@@ -281,6 +287,7 @@ public class AlumnoAdminController {
         model.addAttribute(esFotografia ? "errorFotografia" : "errorDocumento",
                 esFotografia ? "La fotografía no puede superar 5 MB"
                         : "El documento no puede superar 10 MB");
+        model.addAttribute("pestanaActiva", esFotografia ? "ficha" : "documentos");
         return "admin/alumno-form";
     }
 
@@ -326,5 +333,6 @@ public class AlumnoAdminController {
                                          RuntimeException excepcion) {
         preparar(model, AlumnoForm.desde(alumno), id);
         model.addAttribute("errorFotografia", MensajeErrorFormulario.desde(excepcion));
+        model.addAttribute("pestanaActiva", "ficha");
     }
 }

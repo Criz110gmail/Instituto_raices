@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title th:text="${edicion ? 'Editar alumno' : 'Nuevo alumno'} + ' · Nexo Escolar'">Alumno</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script><script src="/js/student-tabs.js" defer></script>
 </head>
 <body class="form-page">
 <main class="form-shell student-shell">
     <header class="form-top"><a href="/admin/catalogos/alumnos">← Volver a alumnos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <section class="form-card">
         <div th:unless="${edicion}" class="form-intro"><span>Nuevo expediente</span><h1>Registrar alumno</h1><p>La trayectoria académica se administrará mediante inscripciones; aquí se conserva únicamente la identidad institucional.</p></div>
-        <section th:if="${edicion}" class="student-profile" aria-labelledby="perfil-alumno-titulo">
+        <nav th:if="${edicion}" class="student-tablist" role="tablist" aria-label="Secciones del expediente del alumno" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'ficha' : pestanaActiva}">
+            <button type="button" role="tab" id="tab-ficha" aria-controls="panel-ficha-resumen" data-student-tab="ficha"><span aria-hidden="true">01</span><strong>Ficha del alumno</strong><small>Identidad y fotografía</small></button>
+            <button type="button" role="tab" id="tab-documentos" aria-controls="expediente-documental" data-student-tab="documentos"><span aria-hidden="true">02</span><strong>Expediente documental</strong><small>Archivos e historial</small></button>
+            <button type="button" role="tab" id="tab-medica" aria-controls="ficha-medica" data-student-tab="medica"><span aria-hidden="true">03</span><strong>Ficha médica</strong><small>Salud y emergencias</small></button>
+        </nav>
+        <section th:if="${edicion}" id="panel-ficha-resumen" class="student-profile student-tab-panel" data-student-panel="ficha" role="tabpanel" aria-labelledby="tab-ficha">
             <div class="profile-photo-column">
                 <div class="student-photo-frame profile-photo" th:classappend="${fotografiaActual == null ? ' empty' : ''}">
                     <img th:if="${fotografiaActual != null}" th:src="@{/admin/alumnos/{alumnoId}/fotografias/{fotoId}(alumnoId=${id},fotoId=${fotografiaActual.id})}" th:alt="${'Fotografía de ' + form.nombres + ' ' + form.primerApellido}">
@@ -49,7 +54,7 @@
                 <a class="profile-edit-link" href="#datos-expediente">Editar información completa ↓</a>
             </div>
         </section>
-        <section th:if="${edicion}" id="expediente-documental" class="student-record-section" aria-labelledby="documentos-alumno-titulo">
+        <section th:if="${edicion}" id="expediente-documental" class="student-record-section student-tab-panel" data-student-panel="documentos" role="tabpanel" aria-labelledby="tab-documentos documentos-alumno-titulo">
             <div class="record-section-heading">
                 <div><span>Archivo privado</span><h2 id="documentos-alumno-titulo">Expediente documental</h2><p>Conserva documentos administrativos del alumno con fecha, vigencia e historial. Retirar un documento no elimina el archivo físico.</p></div>
                 <strong th:text="${documentosVigentes.size() + ' vigente' + (documentosVigentes.size() == 1 ? '' : 's')}">0 vigentes</strong>
@@ -67,13 +72,13 @@
                 <article th:each="documento : ${documentosVigentes}" class="record-document-card">
                     <div class="document-icon" aria-hidden="true" th:text="${documento.tipoMime == 'application/pdf' ? 'PDF' : 'IMG'}">PDF</div>
                     <div><span th:text="${documento.tipoEtiqueta}">Tipo</span><strong th:text="${documento.descripcion == null ? documento.nombreOriginal : documento.descripcion}">Documento</strong><small><b th:text="${documento.nombreOriginal}">archivo.pdf</b><i th:if="${documento.fechaDocumento != null}" th:text="${' · Fecha: ' + #temporals.format(documento.fechaDocumento, 'dd/MM/yyyy')}">Fecha</i><i th:if="${documento.vigenteHasta != null}" th:text="${' · Vigente hasta: ' + #temporals.format(documento.vigenteHasta, 'dd/MM/yyyy')}">Vigencia</i></small></div>
-                    <div class="record-document-actions"><a th:href="@{/admin/alumnos/{alumnoId}/documentos/{documentoId}(alumnoId=${id},documentoId=${documento.id})}">Descargar</a><form method="post" th:action="@{/admin/alumnos/{alumnoId}/documentos/{documentoId}/retirar(alumnoId=${id},documentoId=${documento.id})}" onsubmit="return confirm('¿Retirar este documento del expediente vigente? El archivo seguirá en el historial privado.');"><input type="hidden" name="version" th:value="${documento.version}"><button type="submit">Retirar</button></form></div>
+                    <div class="record-document-actions"><a target="_blank" rel="noopener" th:href="@{/admin/alumnos/{alumnoId}/documentos/{documentoId}/visualizar(alumnoId=${id},documentoId=${documento.id})}">Abrir documento</a><form method="post" th:action="@{/admin/alumnos/{alumnoId}/documentos/{documentoId}/retirar(alumnoId=${id},documentoId=${documento.id})}" onsubmit="return confirm('¿Retirar este documento del expediente vigente? El archivo seguirá en el historial privado.');"><input type="hidden" name="version" th:value="${documento.version}"><button type="submit">Retirar</button></form></div>
                 </article>
             </div>
             <p class="record-empty" th:if="${documentosVigentes.isEmpty()}">Todavía no hay documentos vigentes en este expediente.</p>
-            <details class="record-history" th:if="${!historialDocumentos.isEmpty()}"><summary th:text="${'Ver documentos retirados (' + historialDocumentos.size() + ')'}">Ver documentos retirados</summary><div><a th:each="documento : ${historialDocumentos}" th:href="@{/admin/alumnos/{alumnoId}/documentos/{documentoId}(alumnoId=${id},documentoId=${documento.id})}"><strong th:text="${documento.tipoEtiqueta}">Tipo</strong><span th:text="${documento.nombreOriginal}">archivo.pdf</span><small th:text="${'Retirado ' + #temporals.format(documento.retiradoEn, 'dd/MM/yyyy HH:mm')}">Retirado</small></a></div></details>
+            <details class="record-history" th:if="${!historialDocumentos.isEmpty()}"><summary th:text="${'Ver documentos retirados (' + historialDocumentos.size() + ')'}">Ver documentos retirados</summary><div><a th:each="documento : ${historialDocumentos}" target="_blank" rel="noopener" th:href="@{/admin/alumnos/{alumnoId}/documentos/{documentoId}/visualizar(alumnoId=${id},documentoId=${documento.id})}"><strong th:text="${documento.tipoEtiqueta}">Tipo</strong><span th:text="${documento.nombreOriginal}">archivo.pdf</span><small th:text="${'Retirado ' + #temporals.format(documento.retiradoEn, 'dd/MM/yyyy HH:mm')}">Retirado</small></a></div></details>
         </section>
-        <section th:if="${edicion}" id="ficha-medica" class="student-record-section medical-record-section" aria-labelledby="ficha-medica-titulo">
+        <section th:if="${edicion}" id="ficha-medica" class="student-record-section medical-record-section student-tab-panel" data-student-panel="medica" role="tabpanel" aria-labelledby="tab-medica ficha-medica-titulo">
             <div class="record-section-heading"><div><span>Información sensible</span><h2 id="ficha-medica-titulo">Ficha médica</h2><p>Registra información útil para la atención y seguridad del alumno. Debe mantenerse actualizada y consultarse sólo cuando sea necesario.</p></div><strong>Privada</strong></div>
             <div class="form-error" role="alert" th:if="${errorFichaMedica}"><strong>No se pudo guardar la ficha médica</strong><p th:text="${errorFichaMedica}">Revisa los datos e intenta nuevamente.</p></div>
             <form class="medical-record-form" method="post" th:action="@{/admin/alumnos/{id}/ficha-medica(id=${id})}" th:object="${fichaMedicaForm}">
@@ -101,7 +106,7 @@
                 <footer class="record-form-actions"><button type="submit">Guardar ficha médica</button></footer>
             </form>
         </section>
-        <form id="datos-expediente" class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/alumnos/' + id : '/admin/alumnos'}">
+        <form id="datos-expediente" class="entity-form student-tab-panel" data-student-panel="ficha" th:object="${form}" method="post" th:action="${edicion ? '/admin/alumnos/' + id : '/admin/alumnos'}" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-ficha' : null}">
             <input type="hidden" th:field="*{version}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div>
             <fieldset class="form-section"><legend>Identidad escolar</legend><div class="form-grid">

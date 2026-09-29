@@ -213,11 +213,19 @@ public class SeguridadConfig {
                                         request.getContextPath() + "/maestros"))
                         .accessDeniedHandler(accesoDenegadoHandler))
                 .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
                         .logoutSuccessHandler((request, response, authentication) -> response.sendRedirect(
-                                request.getContextPath() + ("familias".equals(request.getParameter("origen"))
-                                        ? "/familias?logout" : "maestros".equals(request.getParameter("origen"))
-                                        ? "/maestros/acceso?logout" : "/")))
-                        .deleteCookies("JSESSIONID"))
+                                request.getContextPath() + rutaDespuesDeCerrarSesion(request.getParameter("origen"))))
+                        .deleteCookies("JSESSIONID", "SESSION")
+                        .permitAll())
                 .build();
+    }
+
+    static String rutaDespuesDeCerrarSesion(String origen) {
+        if ("familias".equals(origen)) return "/login?origen=familias&logout";
+        if ("maestros".equals(origen)) return "/login?origen=maestros&logout";
+        return "/login?logout";
     }
 }

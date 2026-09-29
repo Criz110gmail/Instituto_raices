@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +42,7 @@ public class CatalogoAdminController {
     String catalogo(@PathVariable String slug,
                     @RequestParam(defaultValue = "") String q,
                     @RequestParam(defaultValue = "TODOS") String estado,
+                    @RequestParam(required = false) LocalDate fecha,
                     @RequestParam(defaultValue = "0") int pagina,
                     @RequestParam(defaultValue = "25") int tamanio,
                     Authentication authentication,
@@ -54,7 +56,7 @@ public class CatalogoAdminController {
         }
         List<ModuloCatalogo> modulos = modulosVisibles(authentication);
         validarPermiso(modulo, modulos);
-        FiltroCatalogo filtro = new FiltroCatalogo(q, estado, pagina, tamanio).normalizado();
+        FiltroCatalogo filtro = new FiltroCatalogo(q, estado, fecha, pagina, tamanio).normalizado();
         model.addAttribute("resultado", consultaService.consultar(modulo, filtro));
         model.addAttribute("filtro", filtro);
         model.addAttribute("modulos", modulos);
@@ -63,10 +65,16 @@ public class CatalogoAdminController {
         return "admin/catalogo";
     }
 
+    String catalogo(String slug, String q, String estado, int pagina, int tamanio,
+                    Authentication authentication, Model model) {
+        return catalogo(slug, q, estado, null, pagina, tamanio, authentication, model);
+    }
+
     @GetMapping("/admin/catalogos/{slug}/excel")
     void excel(@PathVariable String slug,
                @RequestParam(defaultValue = "") String q,
                @RequestParam(defaultValue = "TODOS") String estado,
+               @RequestParam(required = false) LocalDate fecha,
                Authentication authentication,
                HttpServletResponse response) throws IOException {
         ModuloCatalogo modulo = ModuloCatalogo.desde(slug);
@@ -74,7 +82,7 @@ public class CatalogoAdminController {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         String nombre = URLEncoder.encode(modulo.slug() + "-filtrado.xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + nombre);
-        excelService.exportar(modulo, new FiltroCatalogo(q, estado, 0, 100), response.getOutputStream());
+        excelService.exportar(modulo, new FiltroCatalogo(q, estado, fecha, 0, 100), response.getOutputStream());
     }
 
     private List<ModuloCatalogo> modulosVisibles(Authentication authentication) {

@@ -71,7 +71,10 @@ public class FotografiaAlumnoServiceImpl implements FotografiaAlumnoService {
             archivo = archivoRepository.saveAndFlush(archivo);
 
             fotografiaRepository.findFirstByAlumnoIdAndRetiradaEnIsNull(alumnoId)
-                    .ifPresent(anterior -> anterior.setRetiradaEn(Instant.now()));
+                    .ifPresent(anterior -> {
+                        anterior.setRetiradaEn(Instant.now());
+                        fotografiaRepository.saveAndFlush(anterior);
+                    });
 
             AlumnoFotografia relacion = new AlumnoFotografia();
             relacion.setAlumno(alumno);

@@ -116,7 +116,7 @@ public class ReporteFinancieroAdminController {
         var filtro = estadoCuentaCuenta.normalizar(new FiltroEstadoCuentaCuenta(institucionId, cuentaId,
                 cuentaTexto, periodo, anio, mes, 0, 100));
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" +
+        response.setHeader("Content-Disposition", "inline; filename*=UTF-8''" +
                 URLEncoder.encode("estado-cuenta-" + filtro.periodo().toLowerCase() + "-" + filtro.anio() + ".pdf",
                         StandardCharsets.UTF_8));
         jasper.estadoCuenta(filtro, response.getOutputStream());
@@ -249,7 +249,7 @@ public class ReporteFinancieroAdminController {
 
     private void prepararPdf(HttpServletResponse response, String archivo) {
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''"
+        response.setHeader("Content-Disposition", "inline; filename*=UTF-8''"
                 + URLEncoder.encode(archivo, StandardCharsets.UTF_8));
     }
 }
