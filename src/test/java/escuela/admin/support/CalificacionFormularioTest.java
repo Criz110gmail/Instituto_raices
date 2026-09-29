@@ -30,6 +30,26 @@ class CalificacionFormularioTest {
                         "@media (max-width: 560px)");
     }
 
+    @Test
+    void publicarYReabrirUsanModalPropioAccesible() throws IOException {
+        String html = plantilla("admin/calificacion-captura.html");
+        String javascript = recurso("static/js/gradebook-confirm.js");
+        String estilos = recurso("static/css/forms.css");
+
+        assertThat(html)
+                .doesNotContain("return confirm(")
+                .contains("data-gradebook-confirm=\"publicar\"",
+                        "data-gradebook-confirm=\"reabrir\"",
+                        "data-gradebook-confirm-modal", "aria-modal=\"true\"",
+                        "/js/gradebook-confirm.js");
+        assertThat(javascript).contains("formulario.requestSubmit(boton)",
+                "evento.key === 'Escape'", "evento.key === 'Tab'",
+                "¿Publicar resultados?", "¿Reabrir este bloque?");
+        assertThat(estilos).contains(".gradebook-confirm-overlay",
+                ".gradebook-confirm-dialog", "body.gradebook-modal-open",
+                "[data-theme=dark] .gradebook-confirm-dialog");
+    }
+
     private String plantilla(String ruta) throws IOException {
         return recurso("templates/" + ruta);
     }

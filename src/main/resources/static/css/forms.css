@@ -931,3 +931,75 @@
     [data-theme=dark] .capture-workspace .gradebook-table td { border-color: #2c4158; }
     [data-theme=dark] .capture-workspace .gradebook-table td:first-child { background: #13273d; }
 }
+
+.gradebook-confirm-overlay[hidden] { display: none; }
+.gradebook-confirm-overlay {
+    position: fixed;
+    z-index: 10000;
+    inset: 0;
+    display: grid;
+    padding: 22px;
+    place-items: center;
+    background: #07111ed1;
+    backdrop-filter: blur(7px);
+}
+.gradebook-confirm-dialog {
+    width: min(520px,100%);
+    overflow: hidden;
+    border: 1px solid #cbdce8;
+    border-radius: 24px;
+    background: linear-gradient(150deg,#fff,#f7fbfe);
+    color: var(--ink);
+    box-shadow: 0 32px 100px #0007;
+    animation: gradebook-modal-enter .2s ease-out;
+}
+.gradebook-confirm-dialog > header { display: flex; align-items: center; justify-content: space-between; padding: 24px 25px 0; }
+.gradebook-confirm-icon { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 15px; background: linear-gradient(145deg,#0f9c8b,#08796f); box-shadow: 0 10px 24px #08796f38; color: #fff; font-size: 1.4rem; font-weight: 900; }
+.gradebook-confirm-close { display: grid; width: 36px; height: 36px; padding: 0; place-items: center; border: 1px solid #d5e1ea; border-radius: 11px; background: #f1f6f9; color: #52697c; font-size: 1.25rem; cursor: pointer; }
+.gradebook-confirm-close:hover,.gradebook-confirm-close:focus-visible { border-color: #9dbbd1; background: #e6f0f6; color: var(--ink); outline: 0; }
+.gradebook-confirm-content { padding: 18px 25px 22px; }
+.gradebook-confirm-eyebrow { color: #08796f; font-size: .66rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.gradebook-confirm-content h2 { margin: 7px 0 9px; font: 800 1.42rem/1.25 Manrope,sans-serif; }
+.gradebook-confirm-content > p { margin: 0; color: #5d7183; font-size: .86rem; line-height: 1.6; }
+.gradebook-confirm-note { display: grid; grid-template-columns: 30px minmax(0,1fr); gap: 11px; margin-top: 18px; padding: 14px; border: 1px solid #cde4df; border-radius: 13px; background: #eef9f6; }
+.gradebook-confirm-note > span { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 9px; background: #d9f1eb; color: #08796f; font-weight: 900; }
+.gradebook-confirm-note p { margin: 0; color: #426a63; font-size: .74rem; line-height: 1.5; }
+.gradebook-confirm-dialog > footer { display: flex; justify-content: flex-end; gap: 10px; padding: 18px 25px 24px; border-top: 1px solid #dce6ed; background: #f8fbfd; }
+.gradebook-confirm-dialog > footer button { min-height: 42px; border-radius: 11px; padding: 10px 16px; font-weight: 800; cursor: pointer; }
+.gradebook-confirm-cancel { border: 1px solid #c8d7e3; background: #fff; color: #52697c; }
+.gradebook-confirm-accept { border: 0; background: linear-gradient(135deg,#087f71,#18a995); color: #fff; box-shadow: 0 9px 22px #087f7130; }
+.gradebook-confirm-accept:disabled { cursor: wait; opacity: .7; }
+.gradebook-confirm-overlay[data-action=reabrir] .gradebook-confirm-icon { background: linear-gradient(145deg,#e59126,#b96513); box-shadow: 0 10px 24px #b9651338; }
+.gradebook-confirm-overlay[data-action=reabrir] .gradebook-confirm-eyebrow { color: #ae5c13; }
+.gradebook-confirm-overlay[data-action=reabrir] .gradebook-confirm-note { border-color: #ead5bd; background: #fff7ed; }
+.gradebook-confirm-overlay[data-action=reabrir] .gradebook-confirm-note > span { background: #f7e5cd; color: #a9550c; }
+.gradebook-confirm-overlay[data-action=reabrir] .gradebook-confirm-note p { color: #795638; }
+.gradebook-confirm-overlay[data-action=reabrir] .gradebook-confirm-accept { background: linear-gradient(135deg,#bd6819,#e49128); box-shadow: 0 9px 22px #bd681930; }
+body.gradebook-modal-open { overflow: hidden; }
+
+[data-theme=dark] .gradebook-confirm-overlay { background: #000b; }
+[data-theme=dark] .gradebook-confirm-dialog { border-color: #344a63; background: linear-gradient(150deg,#0e1d31,#0a1728); color: #eef5fd; }
+[data-theme=dark] .gradebook-confirm-close { border-color: #415a74; background: #19324d; color: #cde6fa; }
+[data-theme=dark] .gradebook-confirm-content > p { color: #a9bbce; }
+[data-theme=dark] .gradebook-confirm-note { border-color: #28665d; background: #123d36; }
+[data-theme=dark] .gradebook-confirm-note > span { background: #174c43; color: #9de6d5; }
+[data-theme=dark] .gradebook-confirm-note p { color: #b7dbd3; }
+[data-theme=dark] .gradebook-confirm-dialog > footer { border-color: #344a63; background: #0a1728; }
+[data-theme=dark] .gradebook-confirm-cancel { border-color: #415a74; background: #13273d; color: #cde6fa; }
+[data-theme=dark] .gradebook-confirm-overlay[data-action=reabrir] .gradebook-confirm-note { border-color: #66482c; background: #302416; }
+[data-theme=dark] .gradebook-confirm-overlay[data-action=reabrir] .gradebook-confirm-note > span { background: #4b351e; color: #f3c58f; }
+[data-theme=dark] .gradebook-confirm-overlay[data-action=reabrir] .gradebook-confirm-note p { color: #dec2a3; }
+
+@keyframes gradebook-modal-enter {
+    from { opacity: 0; transform: translateY(12px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 560px) {
+    .gradebook-confirm-overlay { align-items: end; padding: 10px; }
+    .gradebook-confirm-dialog { max-height: 90vh; overflow-y: auto; border-radius: 22px 22px 14px 14px; }
+    .gradebook-confirm-dialog > header { padding: 21px 19px 0; }
+    .gradebook-confirm-content { padding: 16px 19px 20px; }
+    .gradebook-confirm-dialog > footer { display: grid; padding: 16px 19px 19px; }
+    .gradebook-confirm-accept { grid-row: 1; }
+}

@@ -1144,3 +1144,6 @@ enumeradas de etapas anteriores.
   académico profesional: encabezado, selector, resumen contextual, tabla, campos y acciones
   consistentes. La misma regla cubre temas claro/oscuro y convierte cada alumno en una
   tarjeta legible en móvil, sin depender del desplazamiento horizontal.
+- Publicar resultados y reabrir un bloque ya no usan alertas nativas del navegador. Ambas
+  acciones muestran un modal propio, accesible y responsivo, con explicación específica,
+  tema oscuro, cierre por Escape, control de foco y confirmación antes del mismo POST.

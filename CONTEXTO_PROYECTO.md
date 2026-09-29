@@ -1985,3 +1985,6 @@ historial paginado.
   visual administrativo al seleccionar y al abrir una hoja: hero, panel de parámetros,
   resumen en tarjetas, tabla de captura, acciones, modo oscuro y tarjetas por alumno en
   móvil. No se modificaron sus rutas, validaciones ni flujo de publicación/guardado.
+- Las confirmaciones de publicación y reapertura de Calificaciones son modales del sistema,
+  no `confirm()` de JavaScript. Conservan el envío original con CSRF, explican el efecto
+  sobre el portal familiar y admiten teclado, foco contenido, tema oscuro y móvil.

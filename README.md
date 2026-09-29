@@ -622,3 +622,5 @@ temas claro/oscuro, sin desplazamiento horizontal dentro de sus resultados.
 Las hojas de Calificaciones y Asistencia comparten una experiencia de captura académica
 responsiva: selección guiada, resumen del bloque o jornada, tabla legible y acciones
 jerarquizadas. En móvil cada alumno se presenta como tarjeta con sus campos etiquetados.
+Publicar o reabrir calificaciones requiere confirmación mediante un modal propio accesible,
+en lugar del aviso nativo del navegador.
