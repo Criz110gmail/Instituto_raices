@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 
 class BoletaExportacionTest {
     private final BoletaConsultaService consulta = mock(BoletaConsultaService.class);
-    private final FiltroBoleta filtro = new FiltroBoleta(1L, 2L, null, null, "", "", 0, 100);
+    private final FiltroBoleta filtro = new FiltroBoleta(1L, 2L, null, null, "", "", null, 0, 100);
 
     @Test
     void excelYpdfUsanLosMismosResultadosPublicados() throws Exception {

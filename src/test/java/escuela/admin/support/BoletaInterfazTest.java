@@ -15,6 +15,7 @@ class BoletaInterfazTest {
             String html = new String(entrada.readAllBytes(), StandardCharsets.UTF_8);
             assertThat(html).contains("/admin/boletas/excel", "/admin/boletas/pdf",
                     "plantelId=${filtro.plantelId}", "grupoId=${filtro.grupoId}", "q=${filtro.q}",
+                    "alumnoId=${filtro.alumnoId}", "name=\"alumnoId\"",
                     "target=\"_blank\"", "data-endpoint=\"/admin/autocompletado/grupos-boleta\"");
         }
     }

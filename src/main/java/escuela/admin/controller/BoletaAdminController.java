@@ -45,6 +45,7 @@ public class BoletaAdminController {
                    @RequestParam(required = false) Long grupoId,
                    @RequestParam(defaultValue = "") String grupoTexto,
                    @RequestParam(defaultValue = "") String q,
+                   @RequestParam(required = false) Long alumnoId,
                    @RequestParam(defaultValue = "0") int pagina,
                    @RequestParam(defaultValue = "25") int tamanio,
                    Authentication authentication, Model model) {
@@ -54,7 +55,7 @@ public class BoletaAdminController {
         if (cicloId == null && !ciclos.isEmpty()) cicloId = ciclos.stream().filter(CicloEscolarResponse::predeterminado)
                 .map(CicloEscolarResponse::id).findFirst().orElse(ciclos.getFirst().id());
         FiltroBoleta filtro = new FiltroBoleta(institucionId, cicloId, plantelId, grupoId,
-                grupoTexto, q, pagina, tamanio);
+                grupoTexto, q, alumnoId, pagina, tamanio);
         try {
             filtro = consulta.normalizar(filtro);
             model.addAttribute("resultado", consulta.consultar(filtro));
@@ -79,9 +80,10 @@ public class BoletaAdminController {
                @RequestParam(required = false) Long grupoId,
                @RequestParam(defaultValue = "") String grupoTexto,
                @RequestParam(defaultValue = "") String q,
+               @RequestParam(required = false) Long alumnoId,
                HttpServletResponse response) throws IOException {
         FiltroBoleta filtro = new FiltroBoleta(institucionId, cicloId, plantelId, grupoId,
-                grupoTexto, q, 0, 100);
+                grupoTexto, q, alumnoId, 0, 100);
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", disposicion("attachment", "boletas.xlsx"));
         excel.exportar(filtro, response.getOutputStream());
@@ -93,9 +95,10 @@ public class BoletaAdminController {
              @RequestParam(required = false) Long grupoId,
              @RequestParam(defaultValue = "") String grupoTexto,
              @RequestParam(defaultValue = "") String q,
+             @RequestParam(required = false) Long alumnoId,
              HttpServletResponse response) throws IOException {
         FiltroBoleta filtro = new FiltroBoleta(institucionId, cicloId, plantelId, grupoId,
-                grupoTexto, q, 0, 100);
+                grupoTexto, q, alumnoId, 0, 100);
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", disposicion("inline", "boletas.pdf"));
         jasper.colectivo(filtro, response.getOutputStream());

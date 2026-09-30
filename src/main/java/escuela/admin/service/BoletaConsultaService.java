@@ -68,6 +68,9 @@ public class BoletaConsultaService {
                 throw new ReglaNegocioException("El grupo no pertenece al plantel seleccionado");
             }
         }
+        if (filtro.alumnoId() != null) {
+            alcance.validarRecurso(ModuloCatalogo.ALUMNOS, filtro.alumnoId());
+        }
         return filtro;
     }
 
@@ -114,7 +117,9 @@ public class BoletaConsultaService {
                 cb.equal(root.get("cicloEscolar").get("id"), f.cicloId()),
                 cb.notEqual(root.get("estado"), EstadoInscripcion.CANCELADA));
         if (f.plantelId() != null) filtro = filtro.and((r, q, cb) -> cb.equal(r.get("plantel").get("id"), f.plantelId()));
-        if (!f.q().isBlank()) {
+        if (f.alumnoId() != null) {
+            filtro = filtro.and((r, q, cb) -> cb.equal(r.get("alumno").get("id"), f.alumnoId()));
+        } else if (!f.q().isBlank()) {
             String patron = "%" + f.q().toLowerCase(Locale.ROOT) + "%";
             filtro = filtro.and((r, q, cb) -> cb.or(
                     cb.like(cb.lower(r.get("alumno").get("matricula")), patron),
