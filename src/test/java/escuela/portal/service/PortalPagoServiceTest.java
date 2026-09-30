@@ -6,6 +6,7 @@ import escuela.cobranza.entity.ConceptoCobro;
 import escuela.cobranza.repository.CargoRepository;
 import escuela.finanzas.dto.request.PagoRequest;
 import escuela.finanzas.dto.response.PagoResponse;
+import escuela.finanzas.entity.EstadoPago;
 import escuela.finanzas.repository.CuentaFinancieraRepository;
 import escuela.finanzas.service.PagoService;
 import escuela.institucion.dto.response.InstitucionResponse;
@@ -132,6 +133,36 @@ class PortalPagoServiceTest {
         assertThatThrownBy(() -> service.buscarCargos(principal, "ana"))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessageContaining("tutor activo");
+    }
+
+    @Test
+    void entregaElComprobanteValidadoUnicamenteAlTutorPropietario() {
+        PagoResponse pago = mock(PagoResponse.class);
+        when(pago.institucionId()).thenReturn(1L);
+        when(pago.tutorId()).thenReturn(3L);
+        when(pago.estado()).thenReturn(EstadoPago.VALIDADO);
+        when(pagos.obtener(42L)).thenReturn(pago);
+
+        assertThat(service.comprobante(principal, 42L)).isSameAs(pago);
+    }
+
+    @Test
+    void impideConsultarComprobantesDeOtroTutorOAunNoValidados() {
+        PagoResponse ajeno = mock(PagoResponse.class);
+        when(ajeno.institucionId()).thenReturn(1L);
+        when(ajeno.tutorId()).thenReturn(99L);
+        when(pagos.obtener(42L)).thenReturn(ajeno);
+        assertThatThrownBy(() -> service.comprobante(principal, 42L))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("no pertenece");
+
+        PagoResponse pendiente = mock(PagoResponse.class);
+        when(pendiente.institucionId()).thenReturn(1L);
+        when(pendiente.tutorId()).thenReturn(3L);
+        when(pendiente.estado()).thenReturn(EstadoPago.PENDIENTE_VALIDACION);
+        when(pagos.obtener(43L)).thenReturn(pendiente);
+        assertThatThrownBy(() -> service.comprobante(principal, 43L))
+                .hasMessageContaining("pagos validados");
     }
 
     private PortalSolicitudPagoForm solicitud(Long cargoId, String monto) {

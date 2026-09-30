@@ -12,7 +12,8 @@ class CargoFormularioTest {
     void formulariosDeCargoProcesanLaAccionParaIncluirCsrf() throws IOException {
         assertThat(plantilla("admin/cargo-form.html"))
                 .contains("method=\"post\" th:action=\"@{/admin/cargos}\"")
-                .contains("Esta descripción se conservará en el cargo");
+                .contains("Esta descripción se conservará en el registro")
+                .contains("Registrar pago por cobrar");
         assertThat(plantilla("admin/cargo-generar.html"))
                 .contains("method=\"post\" th:action=\"@{/admin/cargos/generar}\"");
     }

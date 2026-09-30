@@ -652,3 +652,12 @@ técnico automático: no se captura en los formularios. Al crear un registro tom
 al editar se conserva, de modo que una excepción ajustada directamente en PostgreSQL no se
 sobrescribe desde la aplicación. Flyway V46 aplicó esta regla a los registros existentes y
 a las altas futuras.
+
+En la administración, el catálogo técnico de cargos se presenta al usuario como **Pagos de
+alumnos**. El cambio es sólo de lenguaje visual: se conservan `/admin/cargos`, las entidades
+y los permisos `CARGO_*`. Cuando un pago queda validado, Administración y la familia pueden
+abrir su comprobante oficial Jasper PDF en otra pestaña. El documento incluye el detalle por
+alumno, folio, totales, método, referencia, cuenta y validación; usa el logo de la institución
+o uno provisional incluido. El PDF se sirve `inline`, por lo que sólo se descarga si el
+usuario lo decide desde el visor. El tutor únicamente puede consultar pagos validados de su
+propia cuenta y Portal tú respeta la misma restricción con auditoría.

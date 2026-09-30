@@ -69,7 +69,7 @@ public class CargoAdminController {
             model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
             return "admin/cargo-form";
         }
-        flash.addFlashAttribute("mensaje", "Cargo individual emitido correctamente");
+        flash.addFlashAttribute("mensaje", "Pago del alumno registrado correctamente");
         return "redirect:/admin/catalogos/cargos";
     }
 
@@ -96,7 +96,7 @@ public class CargoAdminController {
             model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
             return "admin/cargo-detalle";
         }
-        flash.addFlashAttribute("mensaje", "Cargo cancelado; el historial permanece disponible");
+        flash.addFlashAttribute("mensaje", "Pago del alumno cancelado; el historial permanece disponible");
         return "redirect:/admin/catalogos/cargos";
     }
 
@@ -117,7 +117,7 @@ public class CargoAdminController {
         try {
             var resultado = service.generar(form.request());
             flash.addFlashAttribute("mensaje", "Generación terminada: "
-                    + resultado.cargosGenerados() + " cargos nuevos, "
+                    + resultado.cargosGenerados() + " pagos de alumnos nuevos, "
                     + resultado.cargosYaExistentes() + " ya existían; "
                     + resultado.cuotasRevisadas() + " cuotas revisadas");
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {

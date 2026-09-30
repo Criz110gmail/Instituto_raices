@@ -1229,3 +1229,23 @@ enumeradas de etapas anteriores.
 - La verificación de datos devolvió cero diferencias en las cuatro tablas y confirmó los
   cuatro triggers. Docker ejecutó 393 pruebas sin fallos y desplegó la imagen. La siguiente
   migración disponible es V47.
+
+### Comprobante oficial de pago y nombre claro de cobranza — 2026-09-30
+
+- Al validar un pago, Administración y el Portal de familias pueden abrir un comprobante
+  oficial Jasper PDF en una pestaña nueva. La respuesta usa disposición `inline`; la
+  descarga queda como una decisión posterior del usuario desde el visor del navegador.
+- El comprobante incluye institución, identidad fiscal, plantel, folio, importe, tutor,
+  pagador, método, referencia, cuenta receptora, fecha y usuario de validación, movimiento,
+  distribución por alumno y resumen aplicado/devuelto/disponible.
+- Se intenta usar el logotipo configurado de la institución y, si no existe o no puede
+  leerse, se usa `reports/assets/logo-institucion-ejemplo.png` como respaldo provisional.
+- El tutor sólo puede consultar comprobantes validados que pertenezcan a su propia cuenta.
+  El modo Portal tú aplica la misma regla simulando al tutor seleccionado y registra la
+  consulta en auditoría. Administración conserva el control por alcance y permisos de pago.
+- El módulo administrativo antes presentado como **Cargos** ahora se llama **Pagos de
+  alumnos** en navegación, permisos, ayuda y formularios. Las rutas, permisos técnicos,
+  tablas y entidades conservan sus nombres internos para evitar cambios incompatibles.
+- La muestra Jasper fue leída y renderizada en A4: una página, sin recortes ni traslapes.
+  Docker ejecutó 399 pruebas sin fallos. No hubo migración ni despliegue de contenedores;
+  la siguiente migración disponible continúa siendo V47.

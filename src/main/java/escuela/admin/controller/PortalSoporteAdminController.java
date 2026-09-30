@@ -19,6 +19,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import escuela.calificacion.service.CalificacionService;
 import escuela.portal.service.PortalBoletaService;
 import escuela.admin.service.JasperBoletaService;
+import escuela.admin.service.JasperComprobantePagoService;
+import escuela.portal.service.PortalPagoService;
 import org.springframework.http.HttpHeaders;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +34,8 @@ public class PortalSoporteAdminController {
     private final CalificacionService calificaciones;
     private final PortalBoletaService boletas;
     private final JasperBoletaService jasperBoletas;
+    private final PortalPagoService pagosPortal;
+    private final JasperComprobantePagoService jasperComprobante;
 
     @GetMapping
     @Transactional(readOnly = true)
@@ -135,6 +139,24 @@ public class PortalSoporteAdminController {
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" +
                 URLEncoder.encode("boleta-" + detalle.ciclo() + ".pdf", StandardCharsets.UTF_8));
         jasperBoletas.exportar(detalle, response.getOutputStream());
+    }
+
+    @GetMapping("/{tutorId}/pagos/{pagoId}/comprobante-pago")
+    @Transactional(readOnly = true)
+    void comprobantePago(@PathVariable Long tutorId, @PathVariable Long pagoId,
+                         @AuthenticationPrincipal UsuarioPrincipal admin,
+                         jakarta.servlet.http.HttpServletResponse response) throws java.io.IOException {
+        validarAdministradorSoporte(admin);
+        alcance.validarAdministracionInstitucional(admin.institucionId());
+        Tutor tutor = tutorActivo(tutorId, admin.institucionId());
+        var pago = pagosPortal.comprobante(principalTutor(tutor, admin.institucionId()), pagoId);
+        auditoria.registrar(admin.institucionId(), AccionAuditoria.PORTAL_TUTOR_SOPORTE, "PAGO", pagoId,
+                "Consulta de comprobante de pago desde soporte", java.util.Map.of("tutorId", tutorId));
+        response.setContentType("application/pdf");
+        response.setHeader(HttpHeaders.CACHE_CONTROL, "no-store");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" +
+                URLEncoder.encode("comprobante-" + pago.folio() + ".pdf", StandardCharsets.UTF_8));
+        jasperComprobante.exportar(pago, response.getOutputStream());
     }
 
     private Tutor tutorActivo(Long tutorId, Long institucionId) {

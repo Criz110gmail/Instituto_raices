@@ -2057,3 +2057,23 @@ historial paginado.
   formularios y la migración.
 - V46 quedó aplicada, la comprobación devolvió `0|0|0|0` diferencias y confirmó los cuatro
   triggers. Docker aprobó 393 pruebas y la siguiente migración disponible es V47.
+
+## Comprobante oficial de pago y Pagos de alumnos (2026-09-30)
+
+- Los pagos `VALIDADO` exponen un comprobante Jasper en Administración, Portal familiar y
+  Portal tú. Todos los enlaces abren una pestaña nueva y los endpoints responden PDF
+  `inline` con `no-store`; no provocan una descarga automática.
+- El documento usa datos reales del pago y de su institución, detalla cada aplicación por
+  alumno y conserva totales, cuenta, referencia, validación y movimiento financiero. El
+  logo institucional configurado tiene prioridad y existe un recurso gráfico provisional
+  para instituciones que todavía no tengan logo.
+- La autorización familiar exige coincidencia de institución y tutor propietario, además
+  del estado validado. Soporte administrativo reutiliza esa verificación y audita la
+  consulta. El endpoint administrativo conserva alcance institucional y autoridades de
+  Pagos.
+- El nombre visible **Cargos** se sustituyó por **Pagos de alumnos** en el catálogo de
+  administración, permisos, textos de ayuda y pantallas de alta, detalle y generación. Se
+  conservaron el slug `cargos`, URLs, entidades y permisos `CARGO_*` como contrato interno.
+- La prueba de exportación genera, lee y renderiza una página A4; la inspección visual no
+  mostró textos cortados, superposiciones ni problemas de jerarquía. Docker aprobó 399
+  pruebas. No se creó migración y V47 sigue disponible.

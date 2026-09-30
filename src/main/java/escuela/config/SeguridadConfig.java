@@ -67,7 +67,8 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/politicas-recargo/**").hasAuthority("POLITICA_RECARGO_ADMINISTRAR")
                         .requestMatchers("/admin/motivos-financieros/**").hasAuthority("MOTIVO_FINANCIERO_ADMINISTRAR")
                         .requestMatchers("/admin/cuentas-financieras/**").hasAuthority("CUENTA_FINANCIERA_ADMINISTRAR")
-                        .requestMatchers(HttpMethod.GET, "/admin/pagos/*/editar", "/admin/pagos/*/comprobantes/*")
+                        .requestMatchers(HttpMethod.GET, "/admin/pagos/*/editar", "/admin/pagos/*/comprobantes/*",
+                                "/admin/pagos/*/comprobante-pago")
                         .hasAnyAuthority("PAGO_LEER", "PAGO_REGISTRAR", "PAGO_VALIDAR", "PAGO_DEVOLVER", "PAGO_CANCELAR")
                         .requestMatchers(HttpMethod.POST, "/admin/pagos/*/validar", "/admin/pagos/*/rechazar")
                         .hasAuthority("PAGO_VALIDAR")

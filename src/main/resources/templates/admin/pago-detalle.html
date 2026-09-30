@@ -20,6 +20,7 @@
     <div class="flash" th:if="${mensaje}" th:text="${mensaje}"></div>
     <div class="form-error operation-error" th:if="${errorOperacion}" th:text="${errorOperacion}"></div>
     <div class="form-intro finance-intro"><span>Expediente financiero</span><h1 th:text="${@formatoMoneda.pesos(pago.monto)}">Monto</h1><p th:text="${pago.tutorNombre + ' · ' + pago.plantelRegistroNombre}">Tutor</p></div>
+    <div class="receipt-list" th:if="${pago.estado.name() == 'VALIDADO'}"><a target="_blank" rel="noopener" th:href="@{/admin/pagos/{id}/comprobante-pago(id=${pago.id})}"><span>PDF</span><div><strong>Comprobante oficial de pago</strong><small>Abrir en otra pestaña · Desde el visor puedes descargarlo</small></div></a></div>
     <div class="payment-detail-grid">
         <article><small>Estado</small><strong class="pending-badge" th:classappend="${pago.estado.name() == 'VALIDADO'} ? ' success' : (${pago.estado.name() == 'RECHAZADO' or pago.estado.name() == 'CANCELADO'} ? ' rejected' : '')" th:text="${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? 'Pendiente de validación' : (${pago.estado.name() == 'VALIDADO'} ? 'Validado' : (${pago.estado.name() == 'CANCELADO'} ? 'Cancelado' : 'Rechazado'))">Estado</strong></article>
         <article><small>Fecha del pago</small><strong th:text="${fechaPagoLocal}">Fecha</strong></article>

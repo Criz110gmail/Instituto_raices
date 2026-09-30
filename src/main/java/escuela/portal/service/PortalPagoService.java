@@ -65,6 +65,19 @@ public class PortalPagoService {
         if(files==null||files.stream().noneMatch(f->f!=null&&!f.isEmpty()))throw new ReglaNegocioException("Adjunta el comprobante de la transferencia");
         return pagos.registrarDesdePortal(form.request(i.id(),t.getId(),i.monedaPredeterminada(),z),files,p);
     }
+    @Transactional(readOnly=true)
+    public PagoResponse comprobante(UsuarioPrincipal p, Long pagoId) {
+        validar(p);
+        Tutor tutor = tutor(p);
+        PagoResponse pago = pagos.obtener(pagoId);
+        if (!p.institucionId().equals(pago.institucionId()) || !tutor.getId().equals(pago.tutorId())) {
+            throw new AccessDeniedException("El pago no pertenece a la cuenta familiar");
+        }
+        if (pago.estado() != escuela.finanzas.entity.EstadoPago.VALIDADO) {
+            throw new ReglaNegocioException("El comprobante oficial sólo está disponible para pagos validados");
+        }
+        return pago;
+    }
     private Tutor tutor(UsuarioPrincipal p){return tutores.findByUsuarioIdAndInstitucionIdAndActivoTrue(p.usuarioId(),p.institucionId()).orElseThrow(()->new AccessDeniedException("La cuenta no está vinculada a un tutor activo"));}
     private ZoneId zona(UsuarioPrincipal p){return ZoneId.of(instituciones.obtener(p.institucionId()).zonaHoraria());}
     private void validar(UsuarioPrincipal p){if(p==null||p.usuarioId()==null||p.institucionId()==null||p.accesoRecuperacion())throw new AccessDeniedException("El portal familiar requiere una cuenta activa");}

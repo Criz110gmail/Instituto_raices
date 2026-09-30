@@ -2,6 +2,7 @@ package escuela.admin.controller;
 
 import escuela.admin.dto.*;
 import escuela.admin.support.MensajeErrorFormulario;
+import escuela.admin.service.JasperComprobantePagoService;
 import escuela.archivo.dto.ArchivoDescarga;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.finanzas.dto.response.PagoResponse;
@@ -35,6 +36,7 @@ import org.springframework.security.core.Authentication;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.net.URLEncoder;
 import java.util.*;
 
 @Controller
@@ -48,6 +50,7 @@ public class PagoAdminController {
     private final InstitucionService institucionService;
     private final PlantelService plantelService;
     private final AlcanceDatosService alcance;
+    private final JasperComprobantePagoService jasperComprobante;
 
     @GetMapping("/nuevo")
     String nuevo(Model model) {
@@ -218,6 +221,18 @@ public class PagoAdminController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline()
                         .filename(descarga.nombreOriginal(), StandardCharsets.UTF_8).build().toString())
                 .body(descarga.recurso());
+    }
+
+    @GetMapping("/{id}/comprobante-pago")
+    void comprobantePago(@PathVariable Long id, jakarta.servlet.http.HttpServletResponse response)
+            throws java.io.IOException {
+        alcance.validarRecurso(ModuloCatalogo.PAGOS, id);
+        PagoResponse pago = service.obtener(id);
+        response.setContentType(MediaType.APPLICATION_PDF_VALUE);
+        response.setHeader(HttpHeaders.CACHE_CONTROL, "no-store");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" +
+                URLEncoder.encode("comprobante-" + pago.folio() + ".pdf", StandardCharsets.UTF_8));
+        jasperComprobante.exportar(pago, response.getOutputStream());
     }
 
     private void preparar(Model model, PagoForm form) {
