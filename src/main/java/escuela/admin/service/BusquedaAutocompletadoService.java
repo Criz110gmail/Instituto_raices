@@ -17,6 +17,8 @@ import escuela.academico.repository.PeriodoAcademicoRepository;
 import escuela.academico.repository.GradoRepository;
 import escuela.academico.repository.GrupoRepository;
 import escuela.academico.repository.MateriaGradoRepository;
+import escuela.docente.entity.Maestro;
+import escuela.docente.repository.MaestroRepository;
 import escuela.academico.entity.Grupo;
 import escuela.admin.dto.ModuloCatalogo;
 import escuela.inscripcion.entity.Inscripcion;
@@ -60,11 +62,55 @@ public class BusquedaAutocompletadoService {
     private final PeriodoAcademicoRepository periodoAcademicoRepository;
     private final GradoRepository gradoRepository;
     private final GrupoRepository grupoRepository;
+    private final MaestroRepository maestroRepository;
     private final MateriaGradoRepository materiaGradoRepository;
     private final TipoBecaRepository tipoBecaRepository;
     private final CargoRepository cargoRepository;
     private final CuentaFinancieraRepository cuentaFinancieraRepository;
     private final AlcanceDatosService alcance;
+
+    public ResultadoAutocompletado maestrosPlaneacion(String consulta) {
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        String patron = "%" + texto + "%";
+        Specification<Maestro> busqueda = (root, query, cb) -> cb.or(
+                cb.like(cb.lower(root.get("numeroEmpleado")), patron),
+                cb.like(cb.lower(root.get("nombres")), patron),
+                cb.like(cb.lower(root.get("primerApellido")), patron),
+                cb.like(cb.lower(root.get("segundoApellido")), patron));
+        int limite = tamano(consulta);
+        var resultado = maestroRepository.findAll(Specification.where(busqueda)
+                        .and(alcance.especificacion(ModuloCatalogo.MAESTROS)),
+                PageRequest.of(0, limite + 1));
+        boolean hayMas = resultado.getNumberOfElements() > limite;
+        return new ResultadoAutocompletado(resultado.getContent().stream().limit(limite)
+                .map(maestro -> new OpcionAutocompletado(maestro.getId(),
+                        maestro.getNumeroEmpleado() + " · " + nombre(maestro.getNombres(),
+                                maestro.getPrimerApellido(), maestro.getSegundoApellido()),
+                        maestro.getInstitucion().getNombre() + (maestro.isActivo() ? "" : " · Inactivo")))
+                .toList(), hayMas);
+    }
+
+    public ResultadoAutocompletado gruposPlaneacion(String consulta) {
+        String texto = normalizar(consulta);
+        if (texto == null) return ResultadoAutocompletado.vacio();
+        String patron = "%" + texto + "%";
+        Specification<Grupo> busqueda = (root, query, cb) -> cb.or(
+                cb.like(cb.lower(root.get("nombre")), patron),
+                cb.like(cb.lower(root.get("codigo")), patron),
+                cb.like(cb.lower(root.get("plantel").get("nombre")), patron),
+                cb.like(cb.lower(root.get("grado").get("nombre")), patron));
+        int limite = tamano(consulta);
+        var resultado = grupoRepository.findAll(Specification.where(busqueda)
+                        .and(alcance.especificacion(ModuloCatalogo.GRUPOS)),
+                PageRequest.of(0, limite + 1));
+        boolean hayMas = resultado.getNumberOfElements() > limite;
+        return new ResultadoAutocompletado(resultado.getContent().stream().limit(limite)
+                .map(grupo -> new OpcionAutocompletado(grupo.getId(),
+                        grupo.getNombre() + " · " + grupo.getGrado().getNombre(),
+                        grupo.getPlantel().getNombre() + " · " + grupo.getCicloEscolar().getNombre()))
+                .toList(), hayMas);
+    }
 
     public ResultadoAutocompletado alumnos(Long institucionId, String consulta) {
         alcance.validarAdministracionInstitucional(institucionId);

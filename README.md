@@ -640,3 +640,9 @@ del login administrativo. Dentro del portal, el historial semanal se muestra com
 paginada de 20 registros, con filtros de fecha inicial, fecha final y estado aplicados en
 base de datos. Las planeaciones editables abren directamente su formulario; las bloqueadas
 o publicadas conservan la acción de consulta. En móvil cada fila se transforma en una tarjeta.
+
+En la administración, Planeaciones dispone de filtros independientes por Maestro, Grupo y
+Propósito. Maestro y Grupo muestran 10 sugerencias al recibir foco y buscan desde tres
+caracteres, respetando el alcance de datos. Los identificadores seleccionados, el propósito,
+estado, fechas e institución/plantel se combinan en PostgreSQL y se preservan tanto al
+paginar como al exportar el mismo resultado a Excel.

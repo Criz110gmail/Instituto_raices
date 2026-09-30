@@ -92,6 +92,16 @@ public class AutocompletadoAdminController {
         return service.gruposCalificacion(institucionId, q);
     }
 
+    @GetMapping("/maestros-planeacion")
+    ResultadoAutocompletado maestrosPlaneacion(@RequestParam(defaultValue = "") String q) {
+        return service.maestrosPlaneacion(q);
+    }
+
+    @GetMapping("/grupos-planeacion")
+    ResultadoAutocompletado gruposPlaneacion(@RequestParam(defaultValue = "") String q) {
+        return service.gruposPlaneacion(q);
+    }
+
     @GetMapping("/materias-maestro")
     ResultadoAutocompletado materiasMaestro(@RequestParam Long grupoId,
                                              @RequestParam(defaultValue = "") String q) {

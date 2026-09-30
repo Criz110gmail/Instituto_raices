@@ -1199,3 +1199,19 @@ enumeradas de etapas anteriores.
   información fuera del maestro autenticado.
 - Docker ejecutó 390 pruebas sin fallos y desplegó la imagen. No hubo migración ni lectura
   de `.env`.
+
+### Filtros independientes de planeaciones administrativas — 2026-09-30
+
+- `/admin/planeaciones` separa la búsqueda en **Maestro**, **Grupo** y **Propósito**. Ya no
+  existe un texto ambiguo que busque simultáneamente en los tres campos.
+- Maestro y Grupo usan el autocompletado transversal: al recibir foco muestran los primeros
+  10 registros permitidos y, desde tres caracteres, consultan coincidencias en PostgreSQL.
+  La selección conserva el identificador exacto, aunque la etiqueta visible incluya número
+  de empleado, grado, plantel o ciclo escolar.
+- Propósito permanece como texto libre y sólo consulta el propósito de la planeación. Los
+  filtros se combinan entre sí y con estado, fechas, institución y plantel; se conservan en
+  paginación y la exportación Excel Apache POI usa exactamente los mismos criterios.
+- Las sugerencias de Maestro y Grupo respetan el alcance de datos del usuario. El diseño
+  tiene variantes clara/oscura y disposición responsiva de seis, dos o una columna.
+- Docker ejecutó 392 pruebas sin fallos, desplegó la imagen y `/actuator/health` respondió
+  `UP`. No hubo migración ni lectura de `.env`.

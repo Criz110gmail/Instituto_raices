@@ -1,0 +1,15 @@
+.planning-filters.planning-independent-filters { grid-template-columns: repeat(6,minmax(0,1fr)); }
+.planning-filter-lookup,.planning-filter-purpose { grid-column: span 2; }
+.planning-independent-filters .filter-actions { grid-column: span 2; }
+.planning-purpose-control { display: flex; height: 42px; align-items: center; padding: 0 12px; border: 1px solid #ccd8e5; border-radius: 10px; background: #fff; }
+.planning-purpose-control input { height: 38px !important; padding: 0 !important; }
+.planning-independent-filters .autocomplete-status { min-height: 16px; }
+[data-theme=dark] .planning-purpose-control { border-color: #344a63; background: #0e1d31; }
+@media(max-width:980px) {
+    .planning-filters.planning-independent-filters { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .planning-filter-lookup,.planning-filter-purpose,.planning-independent-filters .filter-actions { grid-column: span 1; }
+}
+@media(max-width:700px) {
+    .planning-filters.planning-independent-filters { grid-template-columns: 1fr; }
+    .planning-filter-lookup,.planning-filter-purpose,.planning-independent-filters .filter-actions { grid-column: 1; }
+}

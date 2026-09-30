@@ -21,6 +21,8 @@ import escuela.academico.repository.PeriodoAcademicoRepository;
 import escuela.academico.repository.GradoRepository;
 import escuela.academico.repository.GrupoRepository;
 import escuela.academico.repository.MateriaGradoRepository;
+import escuela.docente.entity.Maestro;
+import escuela.docente.repository.MaestroRepository;
 import escuela.seguridad.entity.EstadoUsuario;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.repository.UsuarioRepository;
@@ -48,12 +50,13 @@ class BusquedaAutocompletadoServiceTest {
     private final InscripcionRepository inscripcionRepository = mock(InscripcionRepository.class);
     private final ConceptoCobroRepository conceptoCobroRepository = mock(ConceptoCobroRepository.class);
     private final GrupoRepository grupoRepository = mock(GrupoRepository.class);
+    private final MaestroRepository maestroRepository = mock(MaestroRepository.class);
     private final AlcanceDatosService alcance = mock(AlcanceDatosService.class);
     private final BusquedaAutocompletadoService service = new BusquedaAutocompletadoService(
             alumnoRepository, tutorRepository, usuarioRepository, inscripcionRepository,
             conceptoCobroRepository, mock(PeriodoAcademicoRepository.class),
             mock(GradoRepository.class),
-            grupoRepository, mock(MateriaGradoRepository.class),
+            grupoRepository, maestroRepository, mock(MateriaGradoRepository.class),
             mock(TipoBecaRepository.class), mock(CargoRepository.class),
             mock(CuentaFinancieraRepository.class), alcance);
 
@@ -187,6 +190,46 @@ class BusquedaAutocompletadoServiceTest {
             assertThat(opcion.titulo()).isEqualTo("1 A · Primero");
         });
         verify(alcance).validarInstitucion(1L);
+    }
+
+    @Test
+    void sugiereMaestrosDePlaneacionRespetandoAlcance() {
+        Institucion institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Instituto Raíces");
+        Maestro maestro = new Maestro(); maestro.setId(70L); maestro.setInstitucion(institucion);
+        maestro.setNumeroEmpleado("DOC-007"); maestro.setNombres("Laura"); maestro.setPrimerApellido("Pérez"); maestro.setActivo(true);
+        when(alcance.<Maestro>especificacion(ModuloCatalogo.MAESTROS))
+                .thenReturn((root, query, cb) -> cb.conjunction());
+        when(maestroRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class),
+                any(org.springframework.data.domain.Pageable.class))).thenReturn(new PageImpl<>(List.of(maestro)));
+
+        ResultadoAutocompletado resultado = service.maestrosPlaneacion("lau");
+
+        assertThat(resultado.resultados()).singleElement().satisfies(opcion -> {
+            assertThat(opcion.id()).isEqualTo(70L);
+            assertThat(opcion.titulo()).isEqualTo("DOC-007 · Laura Pérez");
+        });
+    }
+
+    @Test
+    void sugierePrimerosDiezGruposHistoricosParaPlaneacion() {
+        Institucion institucion = new Institucion(); institucion.setId(1L);
+        Plantel plantel = new Plantel(); plantel.setNombre("Centro"); plantel.setInstitucion(institucion);
+        Grado grado = new Grado(); grado.setNombre("Primero");
+        CicloEscolar ciclo = new CicloEscolar(); ciclo.setNombre("2026-2027");
+        Grupo grupo = new Grupo(); grupo.setId(80L); grupo.setNombre("1 A"); grupo.setPlantel(plantel);
+        grupo.setGrado(grado); grupo.setCicloEscolar(ciclo);
+        when(alcance.<Grupo>especificacion(ModuloCatalogo.GRUPOS))
+                .thenReturn((root, query, cb) -> cb.conjunction());
+        when(grupoRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class),
+                any(org.springframework.data.domain.Pageable.class))).thenReturn(new PageImpl<>(List.of(grupo)));
+
+        ResultadoAutocompletado resultado = service.gruposPlaneacion("__INICIALES__");
+
+        assertThat(resultado.resultados()).singleElement().satisfies(opcion ->
+                assertThat(opcion.titulo()).isEqualTo("1 A · Primero"));
+        verify(grupoRepository).findAll(any(org.springframework.data.jpa.domain.Specification.class),
+                org.mockito.ArgumentMatchers.<org.springframework.data.domain.Pageable>argThat(
+                        pagina -> pagina.getPageSize() == 11));
     }
 
     private Alumno alumno() {

@@ -29,7 +29,9 @@ class PlaneacionInterfazTest {
                 .contains(".teacher-plan-filters", ".teacher-plan-table", ".teacher-plan-action",
                         ".teacher-plan-table td::before");
         assertThat(recurso("templates/maestros/planeacion-form.html")).contains("th:action=","data-plan-subjects","data-add-activity","actividades[");
-        assertThat(recurso("templates/admin/planeaciones.html")).contains("/admin/planeaciones/excel","estado=${filtro.estado}","desde=${filtro.desde}","hasta=${filtro.hasta}", "class=\"filter-actions\"");
+        assertThat(recurso("templates/admin/planeaciones.html")).contains("/admin/planeaciones/excel","estado=${filtro.estado}","desde=${filtro.desde}","hasta=${filtro.hasta}", "class=\"filter-actions\"",
+                "/admin/autocompletado/maestros-planeacion", "/admin/autocompletado/grupos-planeacion",
+                "name=\"proposito\"", "name=\"maestroId\"", "name=\"grupoId\"", "/js/autocomplete.js");
         assertThat(recurso("static/css/forms.css")).contains(".planning-filters .filter-actions", ".planning-filters .filter-actions button");
         assertThat(recurso("templates/admin/planeacion-detalle.html")).contains("target=\"_blank\"","/publicar","/reabrir","name=\"motivo\"");
     }

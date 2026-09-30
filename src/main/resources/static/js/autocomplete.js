@@ -11,9 +11,10 @@
         const estado = contenedor.querySelector('.autocomplete-status');
         const limpiar = contenedor.querySelector('.autocomplete-clear');
         const alcance = document.getElementById(contenedor.dataset.scopeInput || contenedor.dataset.institutionInput);
+        const sinAlcance = contenedor.hasAttribute('data-no-scope');
         const parametroAlcance = contenedor.dataset.scopeParam || 'institucionId';
         const etiquetaAlcance = contenedor.dataset.scopeLabel || 'una institución';
-        if (!entrada || !valor || !lista || !estado || !alcance || entrada.disabled) return;
+        if (!entrada || !valor || !lista || !estado || (!sinAlcance && !alcance) || entrada.disabled) return;
 
         let temporizador;
         let solicitud;
@@ -23,7 +24,7 @@
 
         actualizarLimpiar();
         entrada.addEventListener('focus', () => {
-            if (!alcance.value || entrada.value.trim() || opciones.length) return;
+            if ((!sinAlcance && !alcance.value) || entrada.value.trim() || opciones.length) return;
             mostrarEstado('Cargando opciones…');
             buscar('');
         });
@@ -38,7 +39,7 @@
             solicitud?.abort();
             cerrarLista();
             const consulta = entrada.value.trim();
-            if (!alcance.value) {
+            if (!sinAlcance && !alcance.value) {
                 mostrarEstado(`Selecciona primero ${etiquetaAlcance}.`);
                 return;
             }
@@ -77,7 +78,7 @@
             entrada.focus();
         });
 
-        alcance.addEventListener('change', () => {
+        alcance?.addEventListener('change', () => {
             entrada.value = '';
             valor.value = '';
             valor.dispatchEvent(new Event('change', {bubbles: true}));
@@ -96,7 +97,7 @@
         async function buscar(consulta) {
             solicitud = new AbortController();
             const parametros = new URLSearchParams({q: consulta});
-            parametros.set(parametroAlcance, alcance.value);
+            if (!sinAlcance) parametros.set(parametroAlcance, alcance.value);
             if (contenedor.dataset.excludeId) parametros.set('tutorId', contenedor.dataset.excludeId);
             try {
                 const respuesta = await fetch(`${contenedor.dataset.endpoint}?${parametros}`, {

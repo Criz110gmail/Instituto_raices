@@ -2029,3 +2029,17 @@ historial paginado.
   detalle. Se agregaron pruebas del controlador, rango inválido y contrato visual.
 - Docker ejecutó 390 pruebas sin fallos y desplegó la imagen. No se requirió migración ni
   se leyó `.env`.
+
+## Filtros independientes de planeaciones administrativas (2026-09-30)
+
+- El filtro general de `/admin/planeaciones` se reemplazó por tres criterios independientes:
+  Maestro, Grupo y Propósito. Maestro y Grupo seleccionan IDs exactos mediante el componente
+  común de autocompletado; Propósito es una búsqueda textual exclusiva sobre ese campo.
+- Al enfocar Maestro o Grupo se consultan 10 opciones iniciales. A partir de tres caracteres
+  se realiza la búsqueda paginada en base de datos, conservando el alcance institucional del
+  usuario y permitiendo consultar planeaciones históricas de registros inactivos.
+- Todos los criterios se pueden combinar con institución, plantel, estado y fechas. Se
+  mantienen al cambiar de página y la exportación Excel recibe el mismo filtro exacto.
+- La plantilla cuenta con diseño responsivo y temas claro/oscuro. Se añadieron pruebas para
+  las sugerencias y el contrato de la interfaz; Docker aprobó 392 pruebas, desplegó la imagen
+  y el servicio respondió `UP`. No se modificó el esquema ni se leyó `.env`.
