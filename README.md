@@ -647,6 +647,13 @@ caracteres, respetando el alcance de datos. Los identificadores seleccionados, e
 estado, fechas e institución/plantel se combinan en PostgreSQL y se preservan tanto al
 paginar como al exportar el mismo resultado a Excel.
 
+**Horarios y clases (V47)** administra bloques semanales vinculados con una asignación
+maestro–grupo–materia. Cada bloque define día, horas, vigencia, aula, observaciones y
+estado. La aplicación y PostgreSQL rechazan empalmes del mismo maestro, grupo o aula.
+El listado pagina y filtra en base de datos; Excel recorre por bloques y reutiliza los
+mismos filtros. Los maestros consultan «Mi horario» y las familias el horario vigente del
+grupo de cada hijo, incluida la vista administrativa de soporte.
+
 El orden de Niveles educativos, Grados, Periodos académicos y Materias por grado es un dato
 técnico automático: no se captura en los formularios. Al crear un registro toma su mismo ID;
 al editar se conserva, de modo que una excepción ajustada directamente en PostgreSQL no se

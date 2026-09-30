@@ -24,6 +24,7 @@ import escuela.portal.service.PortalPagoService;
 import org.springframework.http.HttpHeaders;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import escuela.horario.service.HorarioClaseService;
 
 @Controller @RequiredArgsConstructor @RequestMapping("/admin/portal-soporte")
 public class PortalSoporteAdminController {
@@ -36,6 +37,7 @@ public class PortalSoporteAdminController {
     private final JasperBoletaService jasperBoletas;
     private final PortalPagoService pagosPortal;
     private final JasperComprobantePagoService jasperComprobante;
+    private final HorarioClaseService horarios;
 
     @GetMapping
     @Transactional(readOnly = true)
@@ -75,7 +77,7 @@ public class PortalSoporteAdminController {
                       @RequestParam(defaultValue="0") int paginaPagos,
                       @AuthenticationPrincipal UsuarioPrincipal admin, Model model) {
         String destino = seccion == null ? "" : seccion.toUpperCase(java.util.Locale.ROOT);
-        if (!Set.of("AVISOS", "AGENDA", "PAGOS", "CALIFICACIONES", "BOLETAS").contains(destino)) {
+        if (!Set.of("AVISOS", "AGENDA", "PAGOS", "CALIFICACIONES", "BOLETAS", "HORARIO").contains(destino)) {
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.NOT_FOUND);
         }
@@ -117,6 +119,10 @@ public class PortalSoporteAdminController {
                 model.addAttribute("boletas", resultadoPortal.hijo() == null
                         ? org.springframework.data.domain.Page.empty()
                         : boletas.listar(vista, resultadoPortal.hijo().alumnoId(), Math.max(0, paginaEventos)));
+            }
+            if (seccion.equals("HORARIO")) {
+                java.time.LocalDate fecha=java.time.LocalDate.now();model.addAttribute("fechaHorario",fecha);
+                model.addAttribute("horario",resultadoPortal.hijo()==null?java.util.List.of():horarios.horarioAlumno(resultadoPortal.hijo().alumnoId(),fecha));
             }
         }
         auditoria.registrar(admin.institucionId(), AccionAuditoria.PORTAL_TUTOR_SOPORTE, "TUTOR", tutorId,

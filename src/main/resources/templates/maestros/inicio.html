@@ -11,7 +11,7 @@
     <div class="teacher-user"><img class="teacher-avatar" th:if="${fotoPerfil}" src="/maestros/fotografia" alt="Mi fotografía"><div><strong th:text="${perfil.nombreCompleto}"></strong><small th:text="${perfil.numeroEmpleado}"></small></div><button type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button><form method="post" th:action="@{/logout}"><input type="hidden" name="origen" value="maestros"><button type="submit" class="teacher-logout">Cerrar sesión</button></form></div>
 </header>
 <main class="teacher-shell">
-    <section class="teacher-hero"><div><span>Tu semana, bien organizada</span><h1>Mis planeaciones</h1><p>Consulta tu historial por fecha, abre cada planeación y edita directamente las que continúan disponibles.</p></div><div class="teacher-hero-actions"><a href="/maestros/alumnos">Ver mis alumnos</a><a href="/maestros/planeaciones/nueva">＋ Nueva planeación</a></div></section>
+    <section class="teacher-hero"><div><span>Tu semana, bien organizada</span><h1>Mis planeaciones</h1><p>Consulta tu historial por fecha, abre cada planeación y edita directamente las que continúan disponibles.</p></div><div class="teacher-hero-actions"><a href="/maestros/horario">Mi horario</a><a href="/maestros/alumnos">Ver mis alumnos</a><a href="/maestros/planeaciones/nueva">＋ Nueva planeación</a></div></section>
     <p class="teacher-flash" th:if="${mensaje}" th:text="${mensaje}"></p>
     <section class="teacher-board teacher-planning-board">
         <header><div><span>Historial personal</span><h2>Planeaciones semanales</h2><p>Los resultados se consultan por bloques de 20 registros.</p></div><b th:text="${planeaciones.totalElements}">0</b></header>

@@ -1,5 +1,16 @@
 # Contexto del proyecto
 
+## Verificación V47 — horarios y clases
+
+- Se agregó `horario_clase`, vinculado con la asignación maestro–grupo–materia y con
+  vigencia, día, horas, aula, estado y auditoría.
+- PostgreSQL y la capa de servicio impiden empalmes para maestro, grupo o aula.
+- Administración cuenta con formulario, filtros independientes, paginación y Excel
+  por bloques usando los mismos criterios de la pantalla.
+- El portal docente incorpora «Mi horario» y el portal familiar muestra el horario
+  vigente del grupo del alumno, incluyendo la vista de soporte administrativo.
+- Los permisos nuevos son `HORARIO_CLASE_LEER` y `HORARIO_CLASE_ADMINISTRAR`.
+
 ## Verificación V44–V45 — correcciones transversales y ficha docente
 
 - Se agregó `V44__agregar_fotografia_maestro.sql` y se aplicó correctamente sobre la

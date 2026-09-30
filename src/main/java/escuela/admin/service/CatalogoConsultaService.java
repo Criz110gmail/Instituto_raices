@@ -191,8 +191,8 @@ public class CatalogoConsultaService {
                     "Los reportes financieros usan su consulta especializada");
             case BOLETAS -> throw new IllegalArgumentException(
                     "Las boletas usan su consulta especializada");
-            case PLANEACIONES -> throw new IllegalArgumentException(
-                    "Las planeaciones usan su consulta especializada");
+            case PLANEACIONES, HORARIOS_CLASE -> throw new IllegalArgumentException(
+                    "El módulo académico usa su consulta especializada");
             case EVENTOS_ESCOLARES -> throw new IllegalArgumentException(
                     "Los eventos escolares usan su consulta especializada");
             case AVISOS -> throw new IllegalArgumentException(

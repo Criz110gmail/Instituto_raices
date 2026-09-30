@@ -9,6 +9,7 @@ import escuela.admin.service.JasperBoletaService;
 import escuela.calificacion.service.CalificacionService;
 import escuela.portal.dto.PortalTutorResultado;
 import escuela.seguridad.service.UsuarioPrincipal;
+import escuela.horario.service.HorarioClaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.*;
 import org.springframework.http.*;
@@ -30,6 +31,7 @@ public class PortalTutorController {
     private final CalificacionService calificaciones;
     private final PortalBoletaService boletas;
     private final JasperBoletaService jasperBoletas;
+    private final HorarioClaseService horarios;
 
     @GetMapping
     String portal(@RequestParam(required = false) Long alumnoId,
@@ -96,6 +98,10 @@ public class PortalTutorController {
                 : boletas.listar(principal, portal.hijo().alumnoId(), pagina));
         return vista;
     }
+
+    @GetMapping("/horario")
+    String horario(@RequestParam(required=false)Long alumnoId,@RequestParam(required=false)java.time.LocalDate fecha,
+                   @AuthenticationPrincipal UsuarioPrincipal principal,Model model){String vista=seccion("HORARIO",alumnoId,0,0,0,0,0,principal,model);PortalTutorResultado p=(PortalTutorResultado)model.getAttribute("portal");java.time.LocalDate f=fecha==null?java.time.LocalDate.now():fecha;model.addAttribute("fechaHorario",f);model.addAttribute("horario",p==null||p.hijo()==null?java.util.List.of():horarios.horarioAlumno(p.hijo().alumnoId(),f));return vista;}
 
     @GetMapping("/boletas/{inscripcionId}/pdf")
     void boletaPdf(@PathVariable Long inscripcionId, @RequestParam Long alumnoId,

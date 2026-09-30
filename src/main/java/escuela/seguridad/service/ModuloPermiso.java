@@ -39,6 +39,8 @@ public enum ModuloPermiso {
             "MAESTRO_LEER", "MAESTRO_ADMINISTRAR"),
     PLANEACIONES("Planeaciones", "Consulta, revisión, publicación y reapertura de planeaciones",
             "PLANEACION_LEER", "PLANEACION_ADMINISTRAR"),
+    HORARIOS_CLASE("Horarios y clases", "Consulta, exportación y administración de bloques de clase",
+            "HORARIO_CLASE_LEER", "HORARIO_CLASE_ADMINISTRAR"),
     ALUMNOS("Alumnos", "Acceso completo al expediente de alumnos",
             "ALUMNO_LEER", "ALUMNO_ADMINISTRAR"),
     TUTORES("Tutores", "Acceso completo al expediente de tutores",

@@ -39,6 +39,13 @@ public class SeguridadConfig {
                         .hasAnyAuthority("PLANEACION_LEER", "PLANEACION_ADMINISTRAR")
                         .requestMatchers(HttpMethod.POST, "/admin/planeaciones/**")
                         .hasAuthority("PLANEACION_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.GET, "/admin/horarios-clases/nuevo", "/admin/horarios-clases/*/editar",
+                                "/admin/horarios-clases/asignaciones")
+                        .hasAuthority("HORARIO_CLASE_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.POST, "/admin/horarios-clases/**")
+                        .hasAuthority("HORARIO_CLASE_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.GET, "/admin/horarios-clases/**")
+                        .hasAnyAuthority("HORARIO_CLASE_LEER", "HORARIO_CLASE_ADMINISTRAR")
                         .requestMatchers("/admin/instituciones/**").hasAuthority("INSTITUCION_ADMINISTRAR")
                         .requestMatchers("/admin/planteles/**").hasAuthority("PLANTEL_ADMINISTRAR")
                         .requestMatchers("/admin/niveles/**").hasAuthority("NIVEL_ADMINISTRAR")

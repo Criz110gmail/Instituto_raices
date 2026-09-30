@@ -22,9 +22,10 @@ no vuelvas a implementar componentes que ya existan.
 - Rama principal: `main`.
 - Confirma siempre `git status` y `git log` antes de continuar; el propietario realiza
   manualmente los commits y el `push`.
-- El cambio local actual amplía V43 con las correcciones V44 de ficha docente,
-  documentos inline, filtros y portal de alumnos del maestro.
-  Flyway V46 ya existe y está aplicado; la siguiente migración disponible es V47.
+- V47 implementa Horarios y clases con bloques recurrentes por asignación docente,
+  validación de cruces de maestro, grupo y aula, vigencia, permisos, listado paginado,
+  filtros y Excel. El maestro consulta «Mi horario» y la familia consulta el horario
+  vigente del alumno. La siguiente migración disponible es V48.
   Incluye cuentas de maestro separadas, asignaciones maestro–grupo–materia, captura
   estructurada, revisión administrativa, versiones publicadas, PDF y Excel.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.

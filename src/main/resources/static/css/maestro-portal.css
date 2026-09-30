@@ -58,6 +58,7 @@ button,input,select,textarea{font:inherit}
 .teacher-empty p{margin:0 0 18px;color:var(--muted)}
 .teacher-pager{display:flex;justify-content:center;gap:20px;margin-top:20px}
 .teacher-pager a,.teacher-back{color:var(--teal);font-weight:800;text-decoration:none}
+.teacher-date-filter{display:flex;align-items:end;gap:9px;padding:13px;border:1px solid #ffffff30;border-radius:16px;background:#ffffff10}.teacher-date-filter label{display:grid;gap:5px}.teacher-date-filter span{color:#bde6e3;font-size:.7rem;font-weight:800}.teacher-date-filter input{min-height:42px;padding:8px 10px;border:1px solid #ffffff32;border-radius:10px;background:#fff;color:#0b1930}.teacher-date-filter button{min-height:42px;padding:8px 13px;border:0;border-radius:10px;background:#fff;color:#0b1930;font-weight:800}.teacher-schedule{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.teacher-schedule>section{overflow:hidden;border:1px solid var(--line);border-radius:17px;background:var(--soft)}.teacher-schedule>section>header{display:flex;justify-content:space-between;padding:13px 16px;background:var(--mint);color:var(--teal)}.teacher-schedule>section>header span{font-size:.72rem}.teacher-schedule article{display:grid;grid-template-columns:105px 1fr;gap:13px;padding:15px;border-top:1px solid var(--line)}.teacher-schedule time{color:var(--teal);font-weight:800}.teacher-schedule h3{margin:0 0 3px;font:800 1rem Manrope}.teacher-schedule p,.teacher-schedule small{display:block;margin:0;color:var(--muted)}
 .teacher-flash,.teacher-alert{display:flex;gap:8px;margin:17px 0;padding:13px 15px;border-radius:12px;background:var(--mint);color:#177568}
 .teacher-alert{background:#fff0e9;color:#a84825}
 .teacher-form-shell{max-width:1030px}
@@ -140,6 +141,7 @@ button,input,select,textarea{font:inherit}
 .teacher-user .teacher-logout:after{content:'↗';color:var(--teal);font-size:17px}
 .teacher-shell{width:calc(100% - 20px);margin:16px auto 45px}
 .teacher-hero,.plan-detail-hero{align-items:stretch;flex-direction:column;padding:23px}
+.teacher-date-filter{align-items:stretch;flex-direction:column}.teacher-schedule{grid-template-columns:1fr}.teacher-schedule article{grid-template-columns:1fr}
 .teacher-plan-grid,.teacher-fields,.teacher-fields.three,.plan-preview{grid-template-columns:1fr}
 .teacher-board,.teacher-form-section{padding:18px}
 .teacher-form-section>header{flex-wrap:wrap}

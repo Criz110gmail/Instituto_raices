@@ -6,7 +6,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.*;
 
-public interface AsignacionMaestroRepository extends JpaRepository<AsignacionMaestro, Long> {
+public interface AsignacionMaestroRepository extends JpaRepository<AsignacionMaestro, Long>, JpaSpecificationExecutor<AsignacionMaestro> {
     List<AsignacionMaestro> findAllByMaestroIdOrderByActivoDescFechaInicioDescIdDesc(Long maestroId);
     Optional<AsignacionMaestro> findByIdAndMaestroId(Long id, Long maestroId);
     @Query("""
