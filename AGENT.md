@@ -1184,3 +1184,18 @@ enumeradas de etapas anteriores.
   asignaciones se conserva la pestaña correspondiente.
 - Docker ejecutó 388 pruebas sin fallos, desplegó la imagen y `/actuator/health` respondió
   `UP`. La revisión autenticada queda para el propietario porque no se leyó `.env`.
+
+### Login docente e historial tabular de planeaciones — 2026-09-30
+
+- `/maestros/acceso` usa una identidad exclusiva violeta, coral y dorada con marca **Nexo
+  Docente**, distinta del azul administrativo. Conserva temas, accesibilidad, ayudas y
+  respuesta móvil; se revisó visualmente en escritorio y 390×844.
+- `/maestros` reemplazó las tarjetas semanales por una tabla ordenada con semana, grupo,
+  plantel, materias, estado y acción. En móvil cada fila se convierte en tarjeta etiquetada.
+- Los filtros por fecha inicial, fecha final y estado se aplican mediante `Specification`
+  sobre PostgreSQL. La consulta pagina 20 registros y conserva los filtros al navegar.
+- **Editar** aparece sólo para Borrador, Requiere ajustes o Reabierta; los demás estados
+  conducen a **Ver detalle**. Un rango invertido muestra una validación clara y no consulta
+  información fuera del maestro autenticado.
+- Docker ejecutó 390 pruebas sin fallos y desplegó la imagen. No hubo migración ni lectura
+  de `.env`.

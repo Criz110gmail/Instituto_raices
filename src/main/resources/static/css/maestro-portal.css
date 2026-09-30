@@ -39,6 +39,15 @@ button,input,select,textarea{font:inherit}
 .teacher-plan-card h3{margin:25px 0 5px;font:800 19px Manrope}
 .teacher-plan-card footer{margin-top:auto;padding-top:20px}
 .teacher-plan-card footer b{color:var(--teal)}
+.teacher-planning-board>header p{margin:4px 0 0;color:var(--muted);font-size:.75rem}
+.teacher-plan-filters{display:grid;grid-template-columns:minmax(190px,1.25fr) repeat(2,minmax(145px,.72fr)) minmax(170px,.85fr) auto;align-items:end;gap:12px;margin-bottom:20px;padding:18px;border:1px solid var(--line);border-radius:17px;background:var(--soft)}
+.teacher-filter-heading{display:grid;align-self:center;gap:4px}.teacher-filter-heading strong{font:800 .9rem Manrope}.teacher-filter-heading span{color:var(--muted);font-size:.7rem;line-height:1.4}
+.teacher-plan-filters label{display:grid;gap:7px}.teacher-plan-filters label>span{font-size:.72rem;font-weight:800}.teacher-plan-filters input,.teacher-plan-filters select{width:100%;min-height:43px;padding:9px 11px;border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--ink);outline:none}.teacher-plan-filters input:focus,.teacher-plan-filters select:focus{border-color:var(--teal);box-shadow:0 0 0 3px color-mix(in srgb,var(--teal) 15%,transparent)}
+.teacher-filter-actions{display:flex;gap:8px}.teacher-filter-actions button,.teacher-filter-actions a{display:inline-flex;min-height:43px;align-items:center;justify-content:center;padding:9px 13px;border:1px solid var(--teal);border-radius:11px;background:var(--teal);color:#fff;font-size:.74rem;font-weight:800;text-decoration:none;white-space:nowrap;cursor:pointer}.teacher-filter-actions a{border-color:var(--line);background:var(--card);color:var(--teal)}
+.teacher-filter-error{margin:-7px 0 18px;padding:11px 13px;border:1px solid #e5a39a;border-radius:11px;background:#fff1ee;color:#9c3e32;font-size:.76rem;font-weight:700}
+.teacher-table-wrap{overflow:hidden;border:1px solid var(--line);border-radius:16px}.teacher-plan-table{width:100%;border-collapse:collapse}.teacher-plan-table th{padding:12px 14px;background:var(--soft);color:var(--muted);font-size:.66rem;letter-spacing:.06em;text-align:left;text-transform:uppercase}.teacher-plan-table td{padding:15px 14px;border-top:1px solid var(--line);vertical-align:middle}.teacher-plan-table tbody tr{transition:background .18s}.teacher-plan-table tbody tr:hover{background:color-mix(in srgb,var(--mint) 40%,transparent)}.teacher-plan-table td strong,.teacher-plan-table td small{display:block}.teacher-plan-table td strong{font-size:.79rem}.teacher-plan-table td small{margin-top:3px;color:var(--muted);font-size:.66rem}.teacher-plan-table td>span:not(.status){color:var(--muted);font-size:.75rem}.teacher-plan-action{text-align:right}.teacher-plan-action a{display:inline-flex;min-width:92px;justify-content:center;padding:9px 11px;border-radius:10px;background:var(--teal);color:#fff;font-size:.7rem;font-weight:800;text-decoration:none}.teacher-plan-action a.secondary{border:1px solid var(--line);background:var(--card);color:var(--teal)}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+[data-theme=dark] .teacher-filter-error{border-color:#6d403b;background:#2f1b1d;color:#f2b1a8}
 .status{padding:6px 9px;border-radius:9px;background:var(--mint);color:var(--teal);font-size:.68rem;font-weight:800}
 .s-requiere_ajustes{background:#fff0e3;color:#c06122}
 .s-publicada{background:#e8f6e9;color:#337a42}
@@ -119,6 +128,7 @@ button,input,select,textarea{font:inherit}
 .teacher-login-form input{padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--soft);color:var(--ink)}
 .teacher-login-form form>button{display:flex;justify-content:space-between;margin:7px 0;padding:14px 16px;border:0;border-radius:12px;background:var(--teal);color:#fff;font-weight:800}
 
+@media(max-width:1000px){.teacher-plan-filters{grid-template-columns:repeat(3,minmax(0,1fr))}.teacher-filter-heading{grid-column:1/-1}.teacher-filter-actions{justify-self:end}}
 @media(max-width:900px){.teacher-plan-grid{grid-template-columns:repeat(2,1fr)}
 .teacher-fields.three{grid-template-columns:repeat(2,1fr)}
 .teacher-login-card{grid-template-columns:1fr}
@@ -136,6 +146,7 @@ button,input,select,textarea{font:inherit}
 .teacher-submit,.discard-form{align-items:stretch;flex-direction:column}
 .teacher-submit button,.discard-form button{width:100%}
 .detail-actions{display:grid}
+.teacher-plan-filters{grid-template-columns:1fr}.teacher-filter-heading{grid-column:auto}.teacher-filter-actions{justify-self:stretch}.teacher-filter-actions>*{flex:1}.teacher-table-wrap{overflow:visible;border:0}.teacher-plan-table,.teacher-plan-table tbody,.teacher-plan-table tr,.teacher-plan-table td{display:block}.teacher-plan-table thead{display:none}.teacher-plan-table tbody{display:grid;gap:11px}.teacher-plan-table tr{padding:15px;border:1px solid var(--line);border-radius:15px;background:var(--soft)}.teacher-plan-table td{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;padding:8px 0;border:0}.teacher-plan-table td::before{content:attr(data-label);color:var(--muted);font-size:.65rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase}.teacher-plan-action{text-align:left}.teacher-plan-action a{width:100%}
 .teacher-login{padding:10px}
 .teacher-login-card{border-radius:22px}
 .teacher-login-art{min-height:230px;padding:28px}

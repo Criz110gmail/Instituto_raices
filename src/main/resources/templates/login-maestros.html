@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="#0b1930"><title>Portal docente · Nexo Escolar</title>
-    <link rel="icon" href="/favicon.svg">
-    <link rel="stylesheet" href="/css/login.css"><link rel="stylesheet" href="/css/session.css"><link rel="stylesheet" href="/css/login-portals.css">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#35205f">
+    <title>Portal docente · Nexo Escolar</title><link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/login.css"><link rel="stylesheet" href="/css/session.css"><link rel="stylesheet" href="/css/login-portals.css"><link rel="stylesheet" href="/css/maestros-login.css">
     <script src="/js/theme.js"></script>
 </head>
-<body>
+<body class="teacher-login-page">
 <button class="theme-toggle" type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button>
-<main class="login-shell">
-    <section class="login-story">
-        <div class="story-brand"><span>N</span><strong>Nexo Escolar</strong></div>
-        <div class="orbit" aria-hidden="true"><i></i><i></i><i></i><strong>NE</strong></div>
-        <div><p class="eyebrow">Portal docente</p><h1>Planea con claridad. Enseña con intención.</h1><p class="story-copy">Organiza cada semana por grupo, selecciona tus materias y entrega planeaciones con seguimiento de revisión.</p></div>
-        <div class="signal"><span></span>Acceso privado para maestros</div>
+<main class="login-shell teacher-login-shell">
+    <section class="login-story teacher-login-story">
+        <div class="story-brand"><span>ND</span><strong>Nexo Docente</strong></div>
+        <div class="teacher-constellation" aria-hidden="true"><i></i><i></i><i></i><i></i><strong>PLAN</strong></div>
+        <div><p class="eyebrow">Espacio de enseñanza</p><h1>Convierte cada semana en una experiencia que deja huella.</h1><p class="story-copy">Planea por grupo, organiza tus materias y acompaña cada entrega hasta su publicación.</p></div>
+        <div class="teacher-login-features"><span>Planeaciones semanales</span><span>Seguimiento de revisión</span><span>Acceso privado</span></div>
     </section>
-    <section class="login-panel">
-        <div class="mobile-brand"><span>N</span><strong>Nexo Escolar · Docentes</strong></div>
-        <div class="form-heading"><p>Bienvenido</p><h2>Portal de maestros</h2><span>Usa la cuenta que te proporcionó la administración.</span></div>
+    <section class="login-panel teacher-login-panel">
+        <div class="mobile-brand"><span>ND</span><strong>Nexo Docente</strong></div>
+        <div class="teacher-welcome-mark" aria-hidden="true"><span>01</span><i></i><span>SEMANA</span></div>
+        <div class="form-heading"><p>Hola, maestro</p><h2>Entra a tu espacio docente</h2><span>Usa la cuenta que te proporcionó la administración.</span></div>
         <div class="alert error" role="alert" th:if="${param.error}">El usuario o la contraseña no son correctos.</div>
         <div class="alert warning" role="alert" th:if="${param.sesionExpirada}"><strong>Tu sesión caducó</strong><span>Por seguridad, inicia sesión nuevamente para continuar.</span></div>
         <div class="alert success" role="status" th:if="${param.logout}">Tu sesión se cerró correctamente.</div>
         <form method="post" th:action="@{/login}">
             <input type="hidden" name="origen" value="maestros">
-            <label><span>Usuario</span><input name="username" autocomplete="username" required autofocus placeholder="tu.usuario"></label>
+            <label><span>Usuario docente</span><input name="username" autocomplete="username" required autofocus placeholder="tu.usuario"></label>
             <label><span>Contraseña</span><input type="password" name="password" autocomplete="current-password" required placeholder="••••••••••••"></label>
-            <div class="form-meta"><span>Tu cuenta muestra únicamente tus grupos y materias asignados.</span></div>
-            <button type="submit">Entrar a mis planeaciones <span>→</span></button>
+            <div class="form-meta"><span>Verás únicamente los grupos y materias que tienes asignados.</span></div>
+            <button type="submit">Entrar a Nexo Docente <span>→</span></button>
         </form>
         <p class="support"><a href="/">← Volver a los accesos</a><br>¿No puedes entrar? Contacta a la administración de tu institución.</p>
     </section>

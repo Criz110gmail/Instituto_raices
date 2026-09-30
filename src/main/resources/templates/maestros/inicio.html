@@ -1,1 +1,46 @@
-<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#102c3b"><title>Mis planeaciones · Nexo Escolar</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/maestro-portal.css"><script src="/js/theme.js"></script></head><body><header class="teacher-bar"><a href="/maestros" class="teacher-brand"><span>N</span><div><strong>Nexo Docente</strong><small th:text="${perfil.institucion}"></small></div></a><div class="teacher-user"><img class="teacher-avatar" th:if="${fotoPerfil}" src="/maestros/fotografia" alt="Mi fotografía"><div><strong th:text="${perfil.nombreCompleto}"></strong><small th:text="${perfil.numeroEmpleado}"></small></div><button type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button><form method="post" th:action="@{/logout}"><input type="hidden" name="origen" value="maestros"><button type="submit" class="teacher-logout">Cerrar sesión</button></form></div></header><main class="teacher-shell"><section class="teacher-hero"><div><span>Tu semana, bien organizada</span><h1>Mis planeaciones</h1><p>Crea una planeación por cada grupo, elige únicamente las materias que trabajarás y consulta el avance de revisión.</p></div><div class="teacher-hero-actions"><a href="/maestros/alumnos">Ver mis alumnos</a><a href="/maestros/planeaciones/nueva">＋ Nueva planeación</a></div></section><p class="teacher-flash" th:if="${mensaje}" th:text="${mensaje}"></p><section class="teacher-board"><header><div><span>Historial personal</span><h2>Semanas planeadas</h2></div><b th:text="${planeaciones.totalElements}"></b></header><div class="teacher-plan-grid" th:if="${!planeaciones.empty}"><a th:each="p:${planeaciones.content}" th:href="@{/maestros/planeaciones/{id}(id=${p.id})}" class="teacher-plan-card"><div><span class="status" th:classappend="${' s-'+p.estado.name().toLowerCase()}" th:text="${p.estado.etiqueta}"></span><small th:text="${p.plantel}"></small></div><h3 th:text="${p.grado+' · '+p.grupo}"></h3><p th:text="${#temporals.format(p.fechaInicio,'dd MMM')+' — '+#temporals.format(p.fechaFin,'dd MMM yyyy')}"></p><footer><span th:text="${p.materias+' materia(s)'}"></span><b>Ver detalle →</b></footer></a></div><div class="teacher-empty" th:if="${planeaciones.empty}"><span>✦</span><h3>Tu espacio está listo</h3><p>Cuando prepares la primera semana aparecerá aquí para darle seguimiento.</p><a href="/maestros/planeaciones/nueva">Crear mi primera planeación</a></div><nav class="teacher-pager" th:if="${planeaciones.totalPages>1}"><a th:if="${planeaciones.hasPrevious()}" th:href="@{/maestros(pagina=${planeaciones.number-1})}">← Anterior</a><span th:text="${(planeaciones.number+1)+' de '+planeaciones.totalPages}"></span><a th:if="${planeaciones.hasNext()}" th:href="@{/maestros(pagina=${planeaciones.number+1})}">Siguiente →</a></nav></section></main></body></html>
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#102c3b">
+    <title>Mis planeaciones · Nexo Escolar</title>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/maestro-portal.css"><script src="/js/theme.js"></script>
+</head>
+<body>
+<header class="teacher-bar">
+    <a href="/maestros" class="teacher-brand"><span>N</span><div><strong>Nexo Docente</strong><small th:text="${perfil.institucion}"></small></div></a>
+    <div class="teacher-user"><img class="teacher-avatar" th:if="${fotoPerfil}" src="/maestros/fotografia" alt="Mi fotografía"><div><strong th:text="${perfil.nombreCompleto}"></strong><small th:text="${perfil.numeroEmpleado}"></small></div><button type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button><form method="post" th:action="@{/logout}"><input type="hidden" name="origen" value="maestros"><button type="submit" class="teacher-logout">Cerrar sesión</button></form></div>
+</header>
+<main class="teacher-shell">
+    <section class="teacher-hero"><div><span>Tu semana, bien organizada</span><h1>Mis planeaciones</h1><p>Consulta tu historial por fecha, abre cada planeación y edita directamente las que continúan disponibles.</p></div><div class="teacher-hero-actions"><a href="/maestros/alumnos">Ver mis alumnos</a><a href="/maestros/planeaciones/nueva">＋ Nueva planeación</a></div></section>
+    <p class="teacher-flash" th:if="${mensaje}" th:text="${mensaje}"></p>
+    <section class="teacher-board teacher-planning-board">
+        <header><div><span>Historial personal</span><h2>Planeaciones semanales</h2><p>Los resultados se consultan por bloques de 20 registros.</p></div><b th:text="${planeaciones.totalElements}">0</b></header>
+        <form class="teacher-plan-filters" method="get" action="/maestros">
+            <div class="teacher-filter-heading"><strong>Filtrar planeaciones</strong><span>Busca semanas que coincidan con el periodo seleccionado.</span></div>
+            <label><span>Desde</span><input type="date" name="desde" th:value="${desde}"></label>
+            <label><span>Hasta</span><input type="date" name="hasta" th:value="${hasta}"></label>
+            <label><span>Estado</span><select name="estado"><option value="">Todos los estados</option><option th:each="item : ${estados}" th:value="${item}" th:text="${item.etiqueta}" th:selected="${estado == item}">Borrador</option></select></label>
+            <div class="teacher-filter-actions"><button type="submit">Aplicar filtros</button><a href="/maestros">Limpiar</a></div>
+        </form>
+        <div class="teacher-filter-error" role="alert" th:if="${errorFiltro}" th:text="${errorFiltro}"></div>
+        <div class="teacher-table-wrap" th:if="${!planeaciones.empty}">
+            <table class="teacher-plan-table">
+                <thead><tr><th>Semana</th><th>Grupo</th><th>Plantel</th><th>Materias</th><th>Estado</th><th><span class="sr-only">Acciones</span></th></tr></thead>
+                <tbody>
+                <tr th:each="p : ${planeaciones.content}">
+                    <td data-label="Semana"><strong th:text="${#temporals.format(p.fechaInicio,'dd MMM yyyy')}">01 sep 2026</strong><small th:text="${'al ' + #temporals.format(p.fechaFin,'dd MMM yyyy')}">al 05 sep 2026</small></td>
+                    <td data-label="Grupo"><strong th:text="${p.grado+' · '+p.grupo}">Primaria · 1 A</strong><small th:text="${'Revisión '+p.revision}">Revisión 0</small></td>
+                    <td data-label="Plantel"><span th:text="${p.plantel}">Plantel</span></td>
+                    <td data-label="Materias"><span th:text="${p.materias+' materia'+(p.materias==1?'':'s')}">3 materias</span></td>
+                    <td data-label="Estado"><span class="status" th:classappend="${' s-'+p.estado.name().toLowerCase()}" th:text="${p.estado.etiqueta}">Borrador</span></td>
+                    <td data-label="Acción" class="teacher-plan-action"><a th:if="${p.estado.name()=='BORRADOR' or p.estado.name()=='REQUIERE_AJUSTES' or p.estado.name()=='REABIERTA'}" th:href="@{/maestros/planeaciones/{id}/editar(id=${p.id})}">Editar</a><a th:unless="${p.estado.name()=='BORRADOR' or p.estado.name()=='REQUIERE_AJUSTES' or p.estado.name()=='REABIERTA'}" class="secondary" th:href="@{/maestros/planeaciones/{id}(id=${p.id})}">Ver detalle</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="teacher-empty" th:if="${planeaciones.empty}"><span>✦</span><h3 th:text="${desde != null or hasta != null or estado != null ? 'No hay planeaciones con esos filtros' : 'Tu espacio está listo'}">Tu espacio está listo</h3><p th:text="${desde != null or hasta != null or estado != null ? 'Cambia el periodo o limpia los filtros para consultar nuevamente.' : 'Cuando prepares la primera semana aparecerá aquí para darle seguimiento.'}">Cuando prepares la primera semana aparecerá aquí.</p><a th:if="${desde == null and hasta == null and estado == null}" href="/maestros/planeaciones/nueva">Crear mi primera planeación</a></div>
+        <nav class="teacher-pager" th:if="${planeaciones.totalPages>1}" aria-label="Paginación de planeaciones"><a th:if="${planeaciones.hasPrevious()}" th:href="@{/maestros(desde=${desde},hasta=${hasta},estado=${estado},pagina=${planeaciones.number-1})}">← Anterior</a><span th:text="${(planeaciones.number+1)+' de '+planeaciones.totalPages}">1 de 1</span><a th:if="${planeaciones.hasNext()}" th:href="@{/maestros(desde=${desde},hasta=${hasta},estado=${estado},pagina=${planeaciones.number+1})}">Siguiente →</a></nav>
+    </section>
+</main>
+</body>
+</html>

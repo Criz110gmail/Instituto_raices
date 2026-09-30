@@ -634,3 +634,9 @@ pestañas de navegador, siguiendo el patrón ya usado en Alumnos. Maestros separ
 cuenta del portal y grupos/materias; Tutores separa datos personales, identificación oficial
 y acceso familiar. Las pestañas son responsivas, admiten teclado, respetan los temas y
 conservan abierta la sección que generó una validación o una operación.
+
+El acceso de maestros tiene una identidad visual propia en violeta, coral y dorado, distinta
+del login administrativo. Dentro del portal, el historial semanal se muestra como tabla
+paginada de 20 registros, con filtros de fecha inicial, fecha final y estado aplicados en
+base de datos. Las planeaciones editables abren directamente su formulario; las bloqueadas
+o publicadas conservan la acción de consulta. En móvil cada fila se transforma en una tarjeta.

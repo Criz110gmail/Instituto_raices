@@ -2014,3 +2014,18 @@ historial paginado.
 - Se agregó cobertura estructural de las dos plantillas. Docker ejecutó 388 pruebas sin
   fallos, desplegó la imagen y salud respondió `UP`. La sesión del navegador de validación
   estaba expirada; no se leyeron credenciales ni `.env` para forzar una revisión visual.
+
+## Login docente e historial tabular de planeaciones (2026-09-30)
+
+- El login docente dejó de compartir la identidad azul del administrador. Una hoja propia
+  aplica violeta, coral y dorado, composición editorial y marca Nexo Docente en tema claro
+  y oscuro. Se revisó en escritorio y 390×844 sin desbordamientos.
+- El inicio del portal docente presenta las planeaciones en tabla, ordenadas por semana y
+  paginadas en bloques de 20. En pantallas pequeñas las filas se convierten en tarjetas.
+- El maestro puede filtrar por rango de fechas que se traslapa con la semana planeada y por
+  estado. Los criterios se ejecutan en PostgreSQL, se conservan en la paginación y siempre
+  incluyen el identificador del maestro autenticado.
+- La acción abre directamente la edición sólo en estados editables; en los demás abre el
+  detalle. Se agregaron pruebas del controlador, rango inválido y contrato visual.
+- Docker ejecutó 390 pruebas sin fallos y desplegó la imagen. No se requirió migración ni
+  se leyó `.env`.

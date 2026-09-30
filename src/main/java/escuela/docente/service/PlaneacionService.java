@@ -79,7 +79,16 @@ public class PlaneacionService {
     @Transactional(readOnly=true) public List<PlaneacionVersionPublicada> versiones(Long id){detalleAdmin(id);return versiones.findAllByPlaneacionIdOrderByNumeroRevisionDesc(id);}
     @Transactional(readOnly=true) public PlaneacionDocumento version(Long id,int revision,boolean docente,UsuarioPrincipal principal){if(docente)detalleMaestro(principal,id);else detalleAdmin(id);PlaneacionVersionPublicada v=versiones.findByPlaneacionIdAndNumeroRevision(id,revision).orElseThrow(()->new RecursoNoEncontradoException("la versión publicada",(long)revision));return deserializar(v.getContenidoJson());}
 
-    @Transactional(readOnly=true) public Page<PlaneacionFila> listarMaestro(UsuarioPrincipal principal,int pagina){Maestro m=maestro(principal);Specification<PlaneacionSemanal>s=(r,q,c)->c.equal(r.get("maestro").get("id"),m.getId());return planeaciones.findAll(s,PageRequest.of(Math.max(0,pagina),10,Sort.by(Sort.Direction.DESC,"fechaInicio","id"))).map(this::fila);}
+    @Transactional(readOnly=true) public Page<PlaneacionFila> listarMaestro(UsuarioPrincipal principal,int pagina){return listarMaestro(principal,null,null,null,pagina);}
+    @Transactional(readOnly=true) public Page<PlaneacionFila> listarMaestro(UsuarioPrincipal principal,LocalDate desde,LocalDate hasta,EstadoPlaneacion estado,int pagina){
+        Maestro m=maestro(principal);
+        Specification<PlaneacionSemanal>s=(r,q,c)->c.equal(r.get("maestro").get("id"),m.getId());
+        if(desde!=null)s=s.and((r,q,c)->c.greaterThanOrEqualTo(r.get("fechaFin"),desde));
+        if(hasta!=null)s=s.and((r,q,c)->c.lessThanOrEqualTo(r.get("fechaInicio"),hasta));
+        if(estado!=null)s=s.and((r,q,c)->c.equal(r.get("estado"),estado));
+        if(desde!=null&&hasta!=null&&hasta.isBefore(desde))s=s.and((r,q,c)->c.disjunction());
+        return planeaciones.findAll(s,PageRequest.of(Math.max(0,pagina),20,Sort.by(Sort.Direction.DESC,"fechaInicio","id"))).map(this::fila);
+    }
     @Transactional(readOnly=true) public Page<PlaneacionFila> listarAdmin(FiltroPlaneacion original){FiltroPlaneacion f=original.normalizado();Specification<PlaneacionSemanal>s=criterios(f).and(alcance.especificacion(escuela.admin.dto.ModuloCatalogo.PLANEACIONES));return planeaciones.findAll(s,PageRequest.of(f.pagina(),f.tamanio(),Sort.by(Sort.Direction.DESC,"fechaInicio","id"))).map(this::fila);}
     @Transactional(readOnly=true) public Page<PlaneacionFila> bloqueAdmin(FiltroPlaneacion original){return listarAdmin(original);}
     @Transactional(readOnly=true) public MaestroResponse perfil(UsuarioPrincipal principal){
