@@ -12,5 +12,4 @@ public interface NivelEducativoRepository extends JpaRepository<NivelEducativo, 
     List<NivelEducativo> findAllByInstitucionIdOrderByOrdenAsc(Long institucionId);
     Optional<NivelEducativo> findByInstitucionIdAndCodigoIgnoreCase(Long institucionId, String codigo);
     boolean existsByInstitucionIdAndCodigoIgnoreCaseAndIdNot(Long institucionId, String codigo, Long id);
-    boolean existsByInstitucionIdAndOrdenAndIdNot(Long institucionId, int orden, Long id);
 }

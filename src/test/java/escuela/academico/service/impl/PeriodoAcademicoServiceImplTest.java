@@ -11,6 +11,7 @@ import escuela.academico.repository.NivelEducativoRepository;
 import escuela.academico.repository.PeriodoAcademicoRepository;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.entity.Institucion;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,7 @@ class PeriodoAcademicoServiceImplTest {
     private final PeriodoAcademicoRepository repository = mock(PeriodoAcademicoRepository.class);
     private final CicloEscolarRepository cicloRepository = mock(CicloEscolarRepository.class);
     private final NivelEducativoRepository nivelRepository = mock(NivelEducativoRepository.class);
+    private final EntityManager entityManager = mock(EntityManager.class);
     private PeriodoAcademicoServiceImpl service;
     private CicloEscolar ciclo;
     private NivelEducativo nivel;
@@ -51,7 +53,7 @@ class PeriodoAcademicoServiceImplTest {
         when(cicloRepository.findById(10L)).thenReturn(Optional.of(ciclo));
         when(nivelRepository.findById(20L)).thenReturn(Optional.of(nivel));
         service = new PeriodoAcademicoServiceImpl(
-                repository, cicloRepository, nivelRepository, new PeriodoAcademicoMapper());
+                repository, cicloRepository, nivelRepository, new PeriodoAcademicoMapper(), entityManager);
     }
 
     @Test
@@ -88,7 +90,7 @@ class PeriodoAcademicoServiceImplTest {
 
     private PeriodoAcademicoRequest request(LocalDate inicio, LocalDate fin) {
         return new PeriodoAcademicoRequest(10L, 20L, "TRI1", "Primer trimestre",
-                TipoPeriodoAcademico.TRIMESTRE, 1, inicio, fin,
+                TipoPeriodoAcademico.TRIMESTRE, inicio, fin,
                 EstadoAcademico.ABIERTO, null, null);
     }
 }

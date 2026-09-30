@@ -15,7 +15,6 @@ public interface GradoRepository extends JpaRepository<Grado, Long>, JpaSpecific
     List<Grado> findAllByNivelEducativoIdOrderByOrdenAsc(Long nivelEducativoId);
     Optional<Grado> findByNivelEducativoIdAndCodigoIgnoreCase(Long nivelEducativoId, String codigo);
     boolean existsByNivelEducativoIdAndCodigoIgnoreCaseAndIdNot(Long nivelEducativoId, String codigo, Long id);
-    boolean existsByNivelEducativoIdAndOrdenAndIdNot(Long nivelEducativoId, int orden, Long id);
     @Query(value = """
             SELECT g.* FROM grado g
             JOIN nivel_educativo n ON n.id = g.nivel_educativo_id

@@ -27,7 +27,6 @@ public class PeriodoAcademicoMapper {
         entidad.setCodigo(codigo(dto.codigo()));
         entidad.setNombre(limpiar(dto.nombre()));
         entidad.setTipo(dto.tipo());
-        entidad.setOrden(dto.orden());
         entidad.setFechaInicio(dto.fechaInicio());
         entidad.setFechaFin(dto.fechaFin());
         entidad.setEstado(dto.estado());

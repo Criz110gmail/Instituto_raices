@@ -69,7 +69,6 @@ class PeriodoAcademicoAdminControllerTest {
         assertThat(request.getValue().cicloEscolarId()).isEqualTo(10L);
         assertThat(request.getValue().nivelEducativoId()).isEqualTo(20L);
         assertThat(request.getValue().tipo()).isEqualTo(TipoPeriodoAcademico.TRIMESTRE);
-        assertThat(request.getValue().orden()).isEqualTo(1);
         assertThat(vista).isEqualTo("redirect:/admin/catalogos/periodos");
     }
 
@@ -139,7 +138,6 @@ class PeriodoAcademicoAdminControllerTest {
         form.setCodigo("TRI1");
         form.setNombre("Primer trimestre");
         form.setTipo(TipoPeriodoAcademico.TRIMESTRE);
-        form.setOrden(1);
         form.setFechaInicio(LocalDate.of(2026, 8, 1));
         form.setFechaFin(LocalDate.of(2026, 10, 31));
         form.setEstado(EstadoAcademico.ABIERTO);

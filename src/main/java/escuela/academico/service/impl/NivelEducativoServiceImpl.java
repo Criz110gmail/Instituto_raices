@@ -11,6 +11,7 @@ import escuela.common.exception.RecursoNoEncontradoException;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.entity.Institucion;
 import escuela.institucion.repository.InstitucionRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +29,15 @@ public class NivelEducativoServiceImpl implements NivelEducativoService {
     private final NivelEducativoRepository repository;
     private final InstitucionRepository institucionRepository;
     private final NivelEducativoMapper mapper;
+    private final EntityManager entityManager;
 
     @Override
     public NivelEducativoResponse crear(NivelEducativoRequest request) {
         Institucion institucion = institucionActiva(request.institucionId());
         validarUnicos(request, 0L);
-        return mapper.respuesta(repository.saveAndFlush(mapper.nuevo(request, institucion)));
+        NivelEducativo entidad = repository.saveAndFlush(mapper.nuevo(request, institucion));
+        entityManager.refresh(entidad);
+        return mapper.respuesta(entidad);
     }
 
     @Override
@@ -92,10 +96,6 @@ public class NivelEducativoServiceImpl implements NivelEducativoService {
         if (repository.existsByInstitucionIdAndCodigoIgnoreCaseAndIdNot(
                 request.institucionId(), codigo(request.codigo()), idExcluido)) {
             throw new RecursoDuplicadoException("Ya existe un nivel con ese código en la institución");
-        }
-        if (repository.existsByInstitucionIdAndOrdenAndIdNot(
-                request.institucionId(), request.orden(), idExcluido)) {
-            throw new RecursoDuplicadoException("Ya existe un nivel con ese orden en la institución");
         }
     }
 }

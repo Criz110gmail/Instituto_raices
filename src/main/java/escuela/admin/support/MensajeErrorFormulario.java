@@ -28,7 +28,7 @@ public final class MensajeErrorFormulario {
         SQLException sql = buscarSql(excepcion);
         String estado = sql == null ? null : sql.getSQLState();
         if ("23505".equals(estado)) {
-            return "Ya existe un registro con la misma combinación de datos. Revisa el código, el orden y las relaciones seleccionadas.";
+            return "Ya existe un registro con la misma combinación de datos. Revisa el código y las relaciones seleccionadas.";
         }
         if ("23503".equals(estado)) {
             return "No fue posible guardar porque uno de los registros relacionados ya no está disponible.";

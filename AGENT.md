@@ -24,7 +24,7 @@ no vuelvas a implementar componentes que ya existan.
   manualmente los commits y el `push`.
 - El cambio local actual amplía V43 con las correcciones V44 de ficha docente,
   documentos inline, filtros y portal de alumnos del maestro.
-  Flyway V45 ya existe y está aplicado; la siguiente migración disponible es V46.
+  Flyway V46 ya existe y está aplicado; la siguiente migración disponible es V47.
   Incluye cuentas de maestro separadas, asignaciones maestro–grupo–materia, captura
   estructurada, revisión administrativa, versiones publicadas, PDF y Excel.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
@@ -1215,3 +1215,17 @@ enumeradas de etapas anteriores.
   tiene variantes clara/oscura y disposición responsiva de seis, dos o una columna.
 - Docker ejecutó 392 pruebas sin fallos, desplegó la imagen y `/actuator/health` respondió
   `UP`. No hubo migración ni lectura de `.env`.
+
+### Orden técnico automático en catálogos — 2026-09-30
+
+- Los formularios de Niveles educativos, Grados, Periodos académicos y Materias por grado
+  ya no muestran ni reciben el campo **Orden**. También dejó de presentarse en los listados
+  de Niveles/Grados y en las ayudas de materias.
+- V46 alineó el `orden` existente con el `id` en `nivel_educativo`, `grado`,
+  `periodo_academico` y `materia_grado`. Cuatro triggers asignan automáticamente el ID como
+  orden en cada alta nueva.
+- La columna se conserva y la aplicación no la sobrescribe al editar. Un ajuste excepcional
+  hecho directamente en BD permanece vigente y continúa determinando la ordenación.
+- La verificación de datos devolvió cero diferencias en las cuatro tablas y confirmó los
+  cuatro triggers. Docker ejecutó 393 pruebas sin fallos y desplegó la imagen. La siguiente
+  migración disponible es V47.

@@ -15,7 +15,6 @@ public interface MateriaGradoRepository extends JpaRepository<MateriaGrado, Long
     Optional<MateriaGrado> findByIdAndMateriaId(Long id, Long materiaId);
     boolean existsByMateriaIdAndGradoId(Long materiaId, Long gradoId);
     boolean existsByMateriaIdAndGradoIdAndActivoTrue(Long materiaId, Long gradoId);
-    boolean existsByGradoIdAndOrdenAndActivoTrueAndIdNot(Long gradoId, Integer orden, Long id);
     long countByMateriaIdAndActivoTrue(Long materiaId);
 
     @Query("""

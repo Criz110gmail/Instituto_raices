@@ -14,6 +14,7 @@ import escuela.academico.service.PeriodoAcademicoService;
 import escuela.common.exception.RecursoDuplicadoException;
 import escuela.common.exception.RecursoNoEncontradoException;
 import escuela.common.exception.ReglaNegocioException;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,13 +33,16 @@ public class PeriodoAcademicoServiceImpl implements PeriodoAcademicoService {
     private final CicloEscolarRepository cicloRepository;
     private final NivelEducativoRepository nivelRepository;
     private final PeriodoAcademicoMapper mapper;
+    private final EntityManager entityManager;
 
     @Override
     public PeriodoAcademicoResponse crear(PeriodoAcademicoRequest request) {
         CicloEscolar ciclo = ciclo(request.cicloEscolarId());
         NivelEducativo nivel = nivel(request.nivelEducativoId());
         validar(request, ciclo, nivel, 0L);
-        return mapper.respuesta(repository.saveAndFlush(mapper.nuevo(request, ciclo, nivel)));
+        PeriodoAcademico entidad = repository.saveAndFlush(mapper.nuevo(request, ciclo, nivel));
+        entityManager.refresh(entidad);
+        return mapper.respuesta(entidad);
     }
 
     @Override
@@ -85,10 +89,6 @@ public class PeriodoAcademicoServiceImpl implements PeriodoAcademicoService {
         if (repository.existsByCicloEscolarIdAndNivelEducativoIdAndCodigoIgnoreCaseAndIdNot(
                 request.cicloEscolarId(), request.nivelEducativoId(), codigo(request.codigo()), idExcluido)) {
             throw new RecursoDuplicadoException("Ya existe un periodo con ese código para el ciclo y nivel");
-        }
-        if (repository.existsByCicloEscolarIdAndNivelEducativoIdAndOrdenAndIdNot(
-                request.cicloEscolarId(), request.nivelEducativoId(), request.orden(), idExcluido)) {
-            throw new RecursoDuplicadoException("Ya existe un periodo con ese orden para el ciclo y nivel");
         }
         if (repository.existeSolapamiento(request.cicloEscolarId(), request.nivelEducativoId(),
                 request.fechaInicio(), request.fechaFin(), idExcluido)) {

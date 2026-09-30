@@ -2043,3 +2043,17 @@ historial paginado.
 - La plantilla cuenta con diseño responsivo y temas claro/oscuro. Se añadieron pruebas para
   las sugerencias y el contrato de la interfaz; Docker aprobó 392 pruebas, desplegó la imagen
   y el servicio respondió `UP`. No se modificó el esquema ni se leyó `.env`.
+
+## Orden técnico automático en catálogos (2026-09-30)
+
+- Se retiró la captura de orden de Niveles, Grados, Periodos académicos y la configuración
+  de Materias por grado. Los DTO de entrada tampoco aceptan el valor y las ediciones
+  preservan el dato que exista en base de datos.
+- Flyway V46 actualizó los registros existentes para usar `orden = id` y creó triggers
+  `BEFORE INSERT` en las cuatro tablas. La columna continúa disponible para ajustes
+  excepcionales directos en PostgreSQL, sin exponer complejidad técnica al usuario.
+- Niveles y Grados dejaron de mostrar la columna en pantalla y Excel; los autocompletados
+  académicos tampoco mencionan el orden. Una prueba estructural protege los cuatro
+  formularios y la migración.
+- V46 quedó aplicada, la comprobación devolvió `0|0|0|0` diferencias y confirmó los cuatro
+  triggers. Docker aprobó 393 pruebas y la siguiente migración disponible es V47.

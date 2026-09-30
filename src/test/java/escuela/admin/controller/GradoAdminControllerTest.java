@@ -160,7 +160,6 @@ class GradoAdminControllerTest {
         form.setNivelEducativoId(nivelId);
         form.setCodigo("PRIM-1");
         form.setNombre("Primer grado");
-        form.setOrden(1);
         form.setActivo(true);
         return form;
     }

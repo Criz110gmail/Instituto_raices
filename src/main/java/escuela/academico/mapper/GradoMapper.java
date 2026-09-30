@@ -23,7 +23,6 @@ public class GradoMapper {
         entidad.setNivelEducativo(nivel);
         entidad.setCodigo(codigo(dto.codigo()));
         entidad.setNombre(limpiar(dto.nombre()));
-        entidad.setOrden(dto.orden());
         entidad.setActivo(dto.activo());
     }
 

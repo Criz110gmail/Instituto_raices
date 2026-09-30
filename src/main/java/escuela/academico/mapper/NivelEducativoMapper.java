@@ -24,7 +24,6 @@ public class NivelEducativoMapper {
         entidad.setCodigo(codigo(dto.codigo()));
         entidad.setNombre(limpiar(dto.nombre()));
         entidad.setDescripcion(limpiar(dto.descripcion()));
-        entidad.setOrden(dto.orden());
         entidad.setActivo(dto.activo());
     }
 

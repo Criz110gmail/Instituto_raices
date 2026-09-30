@@ -18,6 +18,7 @@ import escuela.common.exception.RecursoNoEncontradoException;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.entity.Institucion;
 import escuela.institucion.repository.InstitucionRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,7 @@ public class MateriaServiceImpl implements MateriaService {
     private final InstitucionRepository institucionRepository;
     private final GradoRepository gradoRepository;
     private final MateriaMapper mapper;
+    private final EntityManager entityManager;
 
     @Override
     public MateriaResponse crear(MateriaRequest request) {
@@ -85,12 +87,13 @@ public class MateriaServiceImpl implements MateriaService {
             throw new RecursoDuplicadoException("La materia ya está configurada para ese grado");
         }
         validarEscala(request);
-        validarOrden(request.gradoId(), request.orden(), 0L);
         MateriaGrado plan = new MateriaGrado();
         plan.setMateria(materia);
         plan.setGrado(grado);
         copiar(plan, request);
-        return respuesta(planRepository.saveAndFlush(plan));
+        plan = planRepository.saveAndFlush(plan);
+        entityManager.refresh(plan);
+        return respuesta(plan);
     }
 
     @Override
@@ -103,7 +106,6 @@ public class MateriaServiceImpl implements MateriaService {
             throw new ReglaNegocioException("No se puede cambiar el grado de un plan existente");
         }
         validarEscala(request);
-        validarOrden(request.gradoId(), request.orden(), planId);
         copiar(plan, request);
         return respuesta(planRepository.saveAndFlush(plan));
     }
@@ -131,7 +133,6 @@ public class MateriaServiceImpl implements MateriaService {
         plan.setEscalaMaxima(numerica ? request.escalaMaxima() : null);
         plan.setMinimaAprobatoria(numerica ? request.minimaAprobatoria() : null);
         plan.setDecimales(numerica ? request.decimales() : 0);
-        plan.setOrden(request.orden());
         plan.setHorasSemanales(request.horasSemanales());
         plan.setIncluirBoleta(request.incluirBoleta());
         plan.setActivo(true);
@@ -171,15 +172,6 @@ public class MateriaServiceImpl implements MateriaService {
         if (repository.existsByInstitucionIdAndCodigoIgnoreCaseAndIdNot(
                 request.institucionId(), codigo(request.codigo()), excluido)) {
             throw new RecursoDuplicadoException("Ya existe una materia con ese código en la institución");
-        }
-    }
-
-    private void validarOrden(Long gradoId, Integer orden, Long excluido) {
-        if (gradoId != null && orden != null
-                && planRepository.existsByGradoIdAndOrdenAndActivoTrueAndIdNot(
-                gradoId, orden, excluido)) {
-            throw new RecursoDuplicadoException(
-                    "Ya existe otra materia activa con ese orden dentro del grado");
         }
     }
 

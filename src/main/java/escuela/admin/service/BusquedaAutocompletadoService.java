@@ -227,7 +227,7 @@ public class BusquedaAutocompletadoService {
                 .map(grado -> new OpcionAutocompletado(grado.getId(),
                         grado.getNivelEducativo().getNombre() + " · " + grado.getCodigo()
                                 + " · " + grado.getNombre(),
-                        "Orden " + grado.getOrden()))
+                        "Disponible para configurar la materia"))
                 .toList(), resultado.hasNext());
     }
 
@@ -298,7 +298,7 @@ public class BusquedaAutocompletadoService {
         return new ResultadoAutocompletado(resultado.getContent().stream()
                 .map(plan -> new OpcionAutocompletado(plan.getId(),
                         plan.getMateria().getCodigo() + " · " + plan.getMateria().getNombre(),
-                        plan.getTipoEvaluacion().getEtiqueta() + " · Orden " + plan.getOrden()))
+                        plan.getTipoEvaluacion().getEtiqueta()))
                 .toList(), resultado.hasNext());
     }
 

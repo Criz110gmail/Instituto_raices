@@ -646,3 +646,9 @@ Propósito. Maestro y Grupo muestran 10 sugerencias al recibir foco y buscan des
 caracteres, respetando el alcance de datos. Los identificadores seleccionados, el propósito,
 estado, fechas e institución/plantel se combinan en PostgreSQL y se preservan tanto al
 paginar como al exportar el mismo resultado a Excel.
+
+El orden de Niveles educativos, Grados, Periodos académicos y Materias por grado es un dato
+técnico automático: no se captura en los formularios. Al crear un registro toma su mismo ID;
+al editar se conserva, de modo que una excepción ajustada directamente en PostgreSQL no se
+sobrescribe desde la aplicación. Flyway V46 aplicó esta regla a los registros existentes y
+a las altas futuras.

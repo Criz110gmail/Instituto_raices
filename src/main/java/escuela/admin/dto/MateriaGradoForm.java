@@ -7,7 +7,6 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,14 +23,13 @@ public class MateriaGradoForm {
     private BigDecimal escalaMaxima = BigDecimal.TEN;
     private BigDecimal minimaAprobatoria = new BigDecimal("6");
     @Min(0) @Max(2) private int decimales = 1;
-    @Positive private int orden = 1;
     @DecimalMin(value = "0", inclusive = false) private BigDecimal horasSemanales;
     private boolean incluirBoleta = true;
     private Long version;
 
     public MateriaGradoRequest request() {
         return new MateriaGradoRequest(gradoId, tipoEvaluacion, escalaMinima,
-                escalaMaxima, minimaAprobatoria, decimales, orden, horasSemanales,
+                escalaMaxima, minimaAprobatoria, decimales, horasSemanales,
                 incluirBoleta, version);
     }
 
@@ -44,11 +42,9 @@ public class MateriaGradoForm {
         form.escalaMaxima = plan.escalaMaxima();
         form.minimaAprobatoria = plan.minimaAprobatoria();
         form.decimales = plan.decimales();
-        form.orden = plan.orden();
         form.horasSemanales = plan.horasSemanales();
         form.incluirBoleta = plan.incluirBoleta();
         form.version = plan.auditoria().version();
         return form;
     }
 }
-

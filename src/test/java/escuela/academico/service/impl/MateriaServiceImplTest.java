@@ -15,6 +15,7 @@ import escuela.common.exception.RecursoDuplicadoException;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.entity.Institucion;
 import escuela.institucion.repository.InstitucionRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,8 +33,9 @@ class MateriaServiceImplTest {
     private final MateriaGradoRepository planRepository = mock(MateriaGradoRepository.class);
     private final InstitucionRepository institucionRepository = mock(InstitucionRepository.class);
     private final GradoRepository gradoRepository = mock(GradoRepository.class);
+    private final EntityManager entityManager = mock(EntityManager.class);
     private final MateriaServiceImpl service = new MateriaServiceImpl(repository, planRepository,
-            institucionRepository, gradoRepository, new MateriaMapper());
+            institucionRepository, gradoRepository, new MateriaMapper(), entityManager);
     private Institucion institucion;
     private Materia materia;
 
@@ -87,7 +89,7 @@ class MateriaServiceImplTest {
         Grado grado = grado(institucion);
         when(gradoRepository.findById(5L)).thenReturn(Optional.of(grado));
         MateriaGradoRequest request = new MateriaGradoRequest(5L, TipoEvaluacion.NUMERICA,
-                BigDecimal.TEN, BigDecimal.ZERO, new BigDecimal("6"), 1, 1, null, true, null);
+                BigDecimal.TEN, BigDecimal.ZERO, new BigDecimal("6"), 1, null, true, null);
 
         assertThatThrownBy(() -> service.asignarGrado(10L, request))
                 .isInstanceOf(ReglaNegocioException.class).hasMessageContaining("escala");
@@ -102,17 +104,6 @@ class MateriaServiceImplTest {
                 .isInstanceOf(ReglaNegocioException.class).hasMessageContaining("misma institución");
     }
 
-    @Test
-    void impideRepetirOrdenActivoDentroDelGrado() {
-        when(gradoRepository.findById(5L)).thenReturn(Optional.of(grado(institucion)));
-        when(planRepository.existsByGradoIdAndOrdenAndActivoTrueAndIdNot(5L, 1, 0L))
-                .thenReturn(true);
-
-        assertThatThrownBy(() -> service.asignarGrado(10L, planNumerico()))
-                .isInstanceOf(RecursoDuplicadoException.class)
-                .hasMessageContaining("orden");
-    }
-
     private Grado grado(Institucion propietaria) {
         NivelEducativo nivel = new NivelEducativo(); nivel.setId(3L); nivel.setNombre("Primaria");
         nivel.setInstitucion(propietaria); nivel.setActivo(true);
@@ -122,6 +113,6 @@ class MateriaServiceImplTest {
 
     private MateriaGradoRequest planNumerico() {
         return new MateriaGradoRequest(5L, TipoEvaluacion.NUMERICA, BigDecimal.ZERO,
-                BigDecimal.TEN, new BigDecimal("6"), 1, 1, new BigDecimal("5"), true, null);
+                BigDecimal.TEN, new BigDecimal("6"), 1, new BigDecimal("5"), true, null);
     }
 }

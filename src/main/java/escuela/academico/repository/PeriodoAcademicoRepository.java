@@ -18,9 +18,6 @@ public interface PeriodoAcademicoRepository extends JpaRepository<PeriodoAcademi
     boolean existsByCicloEscolarIdAndNivelEducativoIdAndCodigoIgnoreCaseAndIdNot(
             Long cicloEscolarId, Long nivelEducativoId, String codigo, Long id);
 
-    boolean existsByCicloEscolarIdAndNivelEducativoIdAndOrdenAndIdNot(
-            Long cicloEscolarId, Long nivelEducativoId, int orden, Long id);
-
     @Query("""
             select (count(p) > 0) from PeriodoAcademico p
              where p.cicloEscolar.id = :cicloId

@@ -8,9 +8,9 @@ import java.util.Map;
 public enum ModuloCatalogo {
     INSTITUCIONES("instituciones", "Instituciones", List.of("Código", "Nombre", "Zona horaria", "Moneda")),
     PLANTELES("planteles", "Planteles", List.of("Código", "Plantel", "Institución", "Ciudad")),
-    NIVELES("niveles", "Niveles educativos", List.of("Código", "Nivel", "Institución", "Orden")),
+    NIVELES("niveles", "Niveles educativos", List.of("Código", "Nivel", "Institución")),
     OFERTA("oferta", "Niveles por plantel", List.of("Plantel", "Nivel", "Clave CCT")),
-    GRADOS("grados", "Grados", List.of("Código", "Grado", "Nivel", "Orden")),
+    GRADOS("grados", "Grados", List.of("Código", "Grado", "Nivel")),
     CICLOS("ciclos", "Ciclos escolares", List.of("Código", "Ciclo", "Inicio", "Fin", "Predeterminado")),
     PERIODOS("periodos", "Periodos académicos", List.of("Código", "Periodo", "Nivel", "Tipo", "Fechas")),
     GRUPOS("grupos", "Grupos", List.of("Grupo", "Código", "Plantel", "Grado", "Turno", "Capacidad")),

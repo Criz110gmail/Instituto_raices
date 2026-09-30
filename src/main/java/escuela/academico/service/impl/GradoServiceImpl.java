@@ -11,6 +11,7 @@ import escuela.academico.service.GradoService;
 import escuela.common.exception.RecursoDuplicadoException;
 import escuela.common.exception.RecursoNoEncontradoException;
 import escuela.common.exception.ReglaNegocioException;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +29,15 @@ public class GradoServiceImpl implements GradoService {
     private final GradoRepository repository;
     private final NivelEducativoRepository nivelRepository;
     private final GradoMapper mapper;
+    private final EntityManager entityManager;
 
     @Override
     public GradoResponse crear(GradoRequest request) {
         NivelEducativo nivel = nivelActivo(request.nivelEducativoId());
         validarUnicos(request, 0L);
-        return mapper.respuesta(repository.saveAndFlush(mapper.nuevo(request, nivel)));
+        Grado entidad = repository.saveAndFlush(mapper.nuevo(request, nivel));
+        entityManager.refresh(entidad);
+        return mapper.respuesta(entidad);
     }
 
     @Override
@@ -85,10 +89,6 @@ public class GradoServiceImpl implements GradoService {
         if (repository.existsByNivelEducativoIdAndCodigoIgnoreCaseAndIdNot(
                 request.nivelEducativoId(), codigo(request.codigo()), idExcluido)) {
             throw new RecursoDuplicadoException("Ya existe un grado con ese código en el nivel");
-        }
-        if (repository.existsByNivelEducativoIdAndOrdenAndIdNot(
-                request.nivelEducativoId(), request.orden(), idExcluido)) {
-            throw new RecursoDuplicadoException("Ya existe un grado con ese orden en el nivel");
         }
     }
 }

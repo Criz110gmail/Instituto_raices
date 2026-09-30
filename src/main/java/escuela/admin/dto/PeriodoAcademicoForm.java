@@ -6,7 +6,6 @@ import escuela.academico.entity.EstadoAcademico;
 import escuela.academico.entity.TipoPeriodoAcademico;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +22,6 @@ public class PeriodoAcademicoForm {
     @NotBlank @Size(max = 50) private String codigo;
     @NotBlank @Size(max = 150) private String nombre;
     @NotNull private TipoPeriodoAcademico tipo = TipoPeriodoAcademico.TRIMESTRE;
-    @Positive private int orden = 1;
     @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate fechaInicio;
     @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate fechaFin;
     @NotNull private EstadoAcademico estado = EstadoAcademico.PLANIFICADO;
@@ -32,7 +30,7 @@ public class PeriodoAcademicoForm {
 
     public PeriodoAcademicoRequest request() {
         return new PeriodoAcademicoRequest(cicloEscolarId, nivelEducativoId, codigo, nombre,
-                tipo, orden, fechaInicio, fechaFin, estado, observaciones, version);
+                tipo, fechaInicio, fechaFin, estado, observaciones, version);
     }
 
     public static PeriodoAcademicoForm desde(PeriodoAcademicoResponse periodo, Long institucionId) {
@@ -43,7 +41,6 @@ public class PeriodoAcademicoForm {
         form.codigo = periodo.codigo();
         form.nombre = periodo.nombre();
         form.tipo = periodo.tipo();
-        form.orden = periodo.orden();
         form.fechaInicio = periodo.fechaInicio();
         form.fechaFin = periodo.fechaFin();
         form.estado = periodo.estado();

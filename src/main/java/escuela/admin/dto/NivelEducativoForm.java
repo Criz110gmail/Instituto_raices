@@ -4,7 +4,6 @@ import escuela.academico.dto.request.NivelEducativoRequest;
 import escuela.academico.dto.response.NivelEducativoResponse;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,12 +15,11 @@ public class NivelEducativoForm {
     @NotBlank @Size(max = 50) private String codigo;
     @NotBlank @Size(max = 150) private String nombre;
     private String descripcion;
-    @Positive private int orden = 1;
     private boolean activo = true;
     private Long version;
 
     public NivelEducativoRequest request() {
-        return new NivelEducativoRequest(institucionId, codigo, nombre, descripcion, orden,
+        return new NivelEducativoRequest(institucionId, codigo, nombre, descripcion,
                 activo, version);
     }
 
@@ -31,7 +29,6 @@ public class NivelEducativoForm {
         f.codigo = r.codigo();
         f.nombre = r.nombre();
         f.descripcion = r.descripcion();
-        f.orden = r.orden();
         f.activo = r.activo();
         f.version = r.auditoria().version();
         return f;
