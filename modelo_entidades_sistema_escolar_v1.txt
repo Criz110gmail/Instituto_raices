@@ -704,7 +704,9 @@ ambos criterios en un mismo total sin explicarlos.
 =====================================
 Estas decisiones no impiden revisar las entidades; deben resolverse antes de
 implementar las reglas respectivas.
-1) Calendarios académicos: confirmar si varían por nivel o también por plantel.
+1) Calendarios académicos: resuelto en V48. Cada fecha o periodo pertenece a un ciclo
+   y puede aplicar a toda la institución, a un plantel, a un nivel educativo o a la
+   combinación plantel–nivel.
 2) Becas: acumulación, prioridad, redondeo, renovación y descuentos por hermanos.
    Propuesta inicial: una beca por concepto, redondeo monetario HALF_UP a 2
    decimales y descuentos especiales autorizados mediante AjusteCargo.

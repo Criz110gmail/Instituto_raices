@@ -13,6 +13,7 @@ public enum ModuloCatalogo {
     GRADOS("grados", "Grados", List.of("Código", "Grado", "Nivel")),
     CICLOS("ciclos", "Ciclos escolares", List.of("Código", "Ciclo", "Inicio", "Fin", "Predeterminado")),
     PERIODOS("periodos", "Periodos académicos", List.of("Código", "Periodo", "Nivel", "Tipo", "Fechas")),
+    CALENDARIO_ESCOLAR("calendario-escolar", "Calendario escolar", List.of()),
     GRUPOS("grupos", "Grupos", List.of("Grupo", "Código", "Plantel", "Grado", "Turno", "Capacidad")),
     MATERIAS("materias", "Materias", List.of("Código", "Materia", "Institución", "Descripción")),
     CALIFICACIONES("calificaciones", "Calificaciones", List.of("Alumno", "Matrícula", "Materia", "Periodo", "Grado", "Resultado")),
@@ -100,7 +101,7 @@ public enum ModuloCatalogo {
 
     public String seccion() {
         return switch (this) {
-            case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS, GRUPOS, MATERIAS -> "Estructura";
+            case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS, CALENDARIO_ESCOLAR, GRUPOS, MATERIAS -> "Estructura";
             case ALUMNOS, TUTORES, VINCULOS_TUTOR, MAESTROS -> "Personas";
             case INSCRIPCIONES, CALIFICACIONES, ASISTENCIA, BOLETAS, PLANEACIONES, HORARIOS_CLASE -> "Trayectoria";
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
@@ -119,6 +120,7 @@ public enum ModuloCatalogo {
             case GRADOS -> "GRADO";
             case CICLOS -> "CICLO";
             case PERIODOS -> "PERIODO";
+            case CALENDARIO_ESCOLAR -> "CALENDARIO_ESCOLAR";
             case GRUPOS -> "GRUPO";
             case MATERIAS -> "MATERIA";
             case CALIFICACIONES -> "CALIFICACION";
@@ -165,6 +167,7 @@ public enum ModuloCatalogo {
         if (this == REPORTES_FINANCIEROS) return permisos.contains("REPORTE_FINANCIERO_CONSULTAR");
         if (this == BOLETAS) return permisos.contains("BOLETA_CONSULTAR");
         if (this == PLANEACIONES) return permisos.contains("PLANEACION_LEER") || permisos.contains("PLANEACION_ADMINISTRAR");
+        if (this == CALENDARIO_ESCOLAR) return permisos.contains("CALENDARIO_ESCOLAR_LEER") || permisos.contains("CALENDARIO_ESCOLAR_ADMINISTRAR");
         if (this == HORARIOS_CLASE) return permisos.contains("HORARIO_CLASE_LEER") || permisos.contains("HORARIO_CLASE_ADMINISTRAR");
         if (this == EVENTOS_ESCOLARES) return permisos.contains("EVENTO_ESCOLAR_LEER")
                 || permisos.contains("EVENTO_ESCOLAR_ADMINISTRAR");
@@ -187,6 +190,7 @@ public enum ModuloCatalogo {
                 || this == CUENTAS_FINANCIERAS
                 || this == PAGOS
                 || this == HORARIOS_CLASE
+                || this == CALENDARIO_ESCOLAR
                 || this == ROLES || this == USUARIOS;
     }
 
@@ -199,6 +203,7 @@ public enum ModuloCatalogo {
             case GRADOS -> "/admin/grados";
             case CICLOS -> "/admin/ciclos";
             case PERIODOS -> "/admin/periodos";
+            case CALENDARIO_ESCOLAR -> "/admin/calendario-escolar";
             case GRUPOS -> "/admin/grupos";
             case MATERIAS -> "/admin/materias";
             case CALIFICACIONES -> "/admin/calificaciones";
@@ -235,7 +240,7 @@ public enum ModuloCatalogo {
     }
 
     public String rutaListado() {
-        return this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
+        return this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
                 ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }
@@ -251,6 +256,7 @@ public enum ModuloCatalogo {
                 || this == CUENTAS_FINANCIERAS
                 || this == PAGOS
                 || this == HORARIOS_CLASE
+                || this == CALENDARIO_ESCOLAR
                 || this == ROLES || this == USUARIOS
                 ? (this == CALIFICACIONES || this == ASISTENCIA ? "/captura" : "/nuevo") : "/nueva";
     }

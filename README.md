@@ -654,6 +654,15 @@ El listado pagina y filtra en base de datos; Excel recorre por bloques y reutili
 mismos filtros. Los maestros consultan «Mi horario» y las familias el horario vigente del
 grupo de cada hijo, incluida la vista administrativa de soporte.
 
+**Calendario escolar detallado (V48)** organiza por ciclo los días inhábiles, periodos
+vacacionales, eventos académicos y variaciones de horario. Una fecha puede ser general
+para la institución o aplicar específicamente a un plantel, un nivel educativo o a ambos.
+Las suspensiones obligatorias se identifican claramente y el sistema evita periodos
+superpuestos con el mismo alcance. La consulta es paginada, combina filtros de alcance,
+tipo, estado, fechas y texto, y exporta con Apache POI exactamente el mismo resultado.
+Los permisos separados de lectura y administración respetan el alcance institucional o
+por plantel de cada usuario.
+
 El orden de Niveles educativos, Grados, Periodos académicos y Materias por grado es un dato
 técnico automático: no se captura en los formularios. Al crear un registro toma su mismo ID;
 al editar se conserva, de modo que una excepción ajustada directamente en PostgreSQL no se

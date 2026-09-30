@@ -25,6 +25,8 @@ public enum ModuloPermiso {
             "CICLO_LEER", "CICLO_ADMINISTRAR"),
     PERIODOS("Periodos académicos", "Acceso completo a periodos académicos",
             "PERIODO_LEER", "PERIODO_ADMINISTRAR"),
+    CALENDARIO_ESCOLAR("Calendario escolar", "Consulta, exportación y administración del calendario académico detallado",
+            "CALENDARIO_ESCOLAR_LEER", "CALENDARIO_ESCOLAR_ADMINISTRAR"),
     GRUPOS("Grupos", "Acceso completo a grupos",
             "GRUPO_LEER", "GRUPO_ADMINISTRAR"),
     MATERIAS("Materias", "Acceso completo a materias y planes de evaluación por grado",

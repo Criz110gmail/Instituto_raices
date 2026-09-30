@@ -1,5 +1,22 @@
 # Contexto del proyecto
 
+## Verificación V48 — calendario escolar detallado
+
+- Se agregó `calendario_escolar_detalle`, asociado a institución y ciclo escolar, con
+  alcance opcional por plantel, nivel o ambos.
+- Los tipos disponibles son día inhábil, vacaciones, evento académico y variación de
+  horario. Días inhábiles y vacaciones suspenden clases automáticamente.
+- Las fechas se validan contra el ciclo, las variaciones exigen un rango horario y no
+  se permiten suspensiones activas superpuestas con el mismo alcance.
+- Administración cuenta con formulario adaptable a tema claro/oscuro, catálogos
+  dependientes de la institución, filtros en base de datos, paginación y exportación
+  Excel que reutiliza exactamente los criterios de la pantalla.
+- Se agregaron los permisos `CALENDARIO_ESCOLAR_LEER` y
+  `CALENDARIO_ESCOLAR_ADMINISTRAR`; los registros institucionales requieren alcance
+  institucional y los de plantel respetan el alcance asignado al usuario.
+- Flyway V48 fue aplicada en la instalación local y la aplicación inició validando el
+  esquema. La siguiente migración disponible es V49.
+
 ## Verificación V47 — horarios y clases
 
 - Se agregó `horario_clase`, vinculado con la asignación maestro–grupo–materia y con

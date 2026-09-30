@@ -22,10 +22,16 @@ no vuelvas a implementar componentes que ya existan.
 - Rama principal: `main`.
 - Confirma siempre `git status` y `git log` antes de continuar; el propietario realiza
   manualmente los commits y el `push`.
+- V48 implementa el Calendario escolar detallado por ciclo, con días inhábiles,
+  vacaciones, eventos académicos y variaciones de horario. Cada registro puede aplicar
+  a toda la institución, a un plantel, a un nivel o a la combinación plantel–nivel.
+  Incluye seguridad por alcance, validación de fechas y cruces de suspensiones,
+  listado paginado, filtros y Excel con los mismos criterios. La siguiente migración
+  disponible es V49.
 - V47 implementa Horarios y clases con bloques recurrentes por asignación docente,
   validación de cruces de maestro, grupo y aula, vigencia, permisos, listado paginado,
   filtros y Excel. El maestro consulta «Mi horario» y la familia consulta el horario
-  vigente del alumno. La siguiente migración disponible es V48.
+  vigente del alumno.
   Incluye cuentas de maestro separadas, asignaciones maestro–grupo–materia, captura
   estructurada, revisión administrativa, versiones publicadas, PDF y Excel.
 - Nunca guardes tokens de GitHub, contraseñas o el contenido real de `.env` en Git.
