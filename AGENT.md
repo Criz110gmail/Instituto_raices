@@ -1249,3 +1249,16 @@ enumeradas de etapas anteriores.
 - La muestra Jasper fue leída y renderizada en A4: una página, sin recortes ni traslapes.
   Docker ejecutó 399 pruebas sin fallos. No hubo migración ni despliegue de contenedores;
   la siguiente migración disponible continúa siendo V47.
+
+### Expediente de inscripción por pestañas — 2026-09-30
+
+- Al editar una inscripción, la pantalla usa el mismo navegador de pestañas accesible de
+  Alumnos, Maestros y Tutores. **Ficha de inscripción** reúne la fotografía, identidad del
+  alumno y datos académicos; **Grupo y trayectoria** reúne historial, nueva asignación y
+  traslado o promoción.
+- La pestaña puede seleccionarse con teclado, conserva su hash en la URL y se adapta a tema
+  claro, oscuro y móvil. Los errores de asignación mantienen abierta Grupo y trayectoria;
+  al asignar o finalizar un grupo se vuelve directamente a esa pestaña.
+- La creación inicial continúa como formulario directo, porque aún no existe historial que
+  separar. Docker ejecutó 400 pruebas sin fallos. No hubo migración ni despliegue; V47
+  continúa disponible.

@@ -661,3 +661,10 @@ alumno, folio, totales, método, referencia, cuenta y validación; usa el logo d
 o uno provisional incluido. El PDF se sirve `inline`, por lo que sólo se descarga si el
 usuario lo decide desde el visor. El tutor únicamente puede consultar pagos validados de su
 propia cuenta y Portal tú respeta la misma restricción con auditoría.
+
+La edición administrativa de una inscripción se organiza en pestañas. **Ficha de
+inscripción** contiene la fotografía del alumno y el formulario académico; **Grupo y
+trayectoria** contiene las asignaciones históricas, la asignación vigente y la continuidad
+por traslado o promoción. Las operaciones y validaciones regresan a la pestaña relacionada,
+y los hashes de la URL permiten conservarla al navegar. El alta inicial permanece como un
+formulario directo hasta que existe un expediente con historial.

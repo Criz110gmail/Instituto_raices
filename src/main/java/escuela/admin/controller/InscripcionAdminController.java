@@ -137,6 +137,7 @@ public class InscripcionAdminController {
         validarRelaciones(form, errores);
         if (errores.hasErrors()) {
             preparar(model, form, id);
+            model.addAttribute("pestanaActiva", "ficha");
             return "admin/inscripcion-form";
         }
         try {
@@ -144,6 +145,7 @@ public class InscripcionAdminController {
         } catch (ReglaNegocioException | DataIntegrityViolationException |
                  ObjectOptimisticLockingFailureException excepcion) {
             prepararError(model, form, id, excepcion);
+            model.addAttribute("pestanaActiva", "ficha");
             return "admin/inscripcion-form";
         }
         flash.addFlashAttribute("mensaje", "Inscripción actualizada correctamente");
@@ -161,6 +163,7 @@ public class InscripcionAdminController {
         InscripcionResponse inscripcion = service.obtener(id);
         if (errores.hasErrors()) {
             preparar(model, InscripcionForm.desde(inscripcion), id);
+            model.addAttribute("pestanaActiva", "grupos");
             return "admin/inscripcion-form";
         }
         try {
@@ -169,10 +172,11 @@ public class InscripcionAdminController {
                  ObjectOptimisticLockingFailureException excepcion) {
             preparar(model, InscripcionForm.desde(inscripcion), id);
             model.addAttribute("errorAsignacion", MensajeErrorFormulario.desde(excepcion));
+            model.addAttribute("pestanaActiva", "grupos");
             return "admin/inscripcion-form";
         }
         flash.addFlashAttribute("mensaje", "Asignación de grupo registrada correctamente");
-        return "redirect:/admin/inscripciones/" + id + "/editar";
+        return "redirect:/admin/inscripciones/" + id + "/editar#grupos-inscripcion";
     }
 
     @PostMapping("/{id}/asignaciones/{asignacionId}/finalizar")
@@ -188,10 +192,11 @@ public class InscripcionAdminController {
                  ObjectOptimisticLockingFailureException excepcion) {
             preparar(model, InscripcionForm.desde(inscripcion), id);
             model.addAttribute("errorAsignacion", MensajeErrorFormulario.desde(excepcion));
+            model.addAttribute("pestanaActiva", "grupos");
             return "admin/inscripcion-form";
         }
         flash.addFlashAttribute("mensaje", "Asignación finalizada correctamente");
-        return "redirect:/admin/inscripciones/" + id + "/editar";
+        return "redirect:/admin/inscripciones/" + id + "/editar#grupos-inscripcion";
     }
 
     private void preparar(Model model, InscripcionForm form, Long id) {

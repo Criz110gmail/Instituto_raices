@@ -2077,3 +2077,17 @@ historial paginado.
 - La prueba de exportación genera, lee y renderiza una página A4; la inspección visual no
   mostró textos cortados, superposiciones ni problemas de jerarquía. Docker aprobó 399
   pruebas. No se creó migración y V47 sigue disponible.
+
+## Expediente de inscripción por pestañas (2026-09-30)
+
+- La edición de Inscripciones comparte el navegador accesible de expedientes: una pestaña
+  presenta ficha del alumno y datos de inscripción, y otra concentra grupos, historial y
+  continuidad académica.
+- Los hashes `#datos-inscripcion` y `#grupos-inscripcion` permiten abrir directamente cada
+  bloque. Los errores de actualización seleccionan la ficha y los errores/operaciones de
+  grupo conservan la pestaña de trayectoria.
+- El estilo tiene bordes conectados al navegador, dos columnas en escritorio, desplazamiento
+  controlado en móvil y variantes de tema oscuro. El alta nueva no muestra pestañas porque
+  todavía carece de historial.
+- La prueba estructural protege el contrato común y Docker aprobó 400 pruebas. No se cambió
+  el esquema, no se desplegó la imagen y V47 permanece disponible.

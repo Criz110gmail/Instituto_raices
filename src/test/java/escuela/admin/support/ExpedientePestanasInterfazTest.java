@@ -27,6 +27,15 @@ class ExpedientePestanasInterfazTest {
     }
 
     @Test
+    void inscripcionOrganizaFichaYAsignacionesEnPestanas() throws Exception {
+        assertThat(recurso("templates/admin/inscripcion-form.html"))
+                .contains("/js/student-tabs.js", "data-student-tabs",
+                        "data-student-tab=\"ficha\"", "data-student-tab=\"grupos\"",
+                        "id=\"datos-inscripcion\"", "id=\"grupos-inscripcion\"",
+                        "data-student-panel=\"ficha\"", "data-student-panel=\"grupos\"");
+    }
+
+    @Test
     void navegadorDePestanasAdmiteHashesConfigurables() throws Exception {
         assertThat(recurso("static/js/student-tabs.js"))
                 .contains("dataset.tabHash", "data-open-student-tab", "history.replaceState");

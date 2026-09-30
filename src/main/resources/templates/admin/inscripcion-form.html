@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title th:text="${edicion ? 'Expediente de inscripción' : 'Nueva inscripción'} + ' · Nexo Escolar'">Inscripción</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script><script src="/js/autocomplete.js" defer></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script><script src="/js/student-tabs.js" defer></script><script src="/js/autocomplete.js" defer></script>
 </head>
 <body class="form-page">
 <main class="form-shell student-shell">
@@ -11,7 +11,11 @@
     <div class="continuity-banner" th:if="${form.inscripcionAnteriorId != null}"><span>Continuidad académica</span><strong th:text="${continuidadAnterior}">Inscripción anterior</strong><p>Al guardar, la trayectoria anterior y su asignación vigente se cerrarán el día previo al nuevo inicio.</p></div>
     <section class="form-card">
         <div class="form-intro"><span>Trayectoria escolar</span><h1 th:text="${edicion ? 'Expediente de inscripción' : (form.inscripcionAnteriorId != null ? 'Registrar traslado o promoción' : 'Crear inscripción')}">Crear inscripción</h1><p>La inscripción es la fuente de verdad del plantel, ciclo y grado del alumno. El historial nunca se sobrescribe.</p></div>
-        <section th:if="${edicion}" class="enrollment-student-profile" aria-labelledby="ficha-inscripcion-alumno">
+        <nav th:if="${edicion}" class="student-tablist enrollment-record-tabs" role="tablist" aria-label="Secciones del expediente de inscripción" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'ficha' : pestanaActiva}">
+            <button type="button" role="tab" id="tab-inscripcion-ficha" aria-controls="datos-inscripcion" data-student-tab="ficha" data-tab-hash="#datos-inscripcion"><span aria-hidden="true">01</span><strong>Ficha de inscripción</strong><small>Alumno y datos académicos</small></button>
+            <button type="button" role="tab" id="tab-inscripcion-grupos" aria-controls="grupos-inscripcion" data-student-tab="grupos" data-tab-hash="#grupos-inscripcion"><span aria-hidden="true">02</span><strong>Grupo y trayectoria</strong><small>Asignaciones y continuidad</small></button>
+        </nav>
+        <section th:if="${edicion}" class="enrollment-student-profile student-tab-panel" data-student-panel="ficha" role="tabpanel" aria-labelledby="tab-inscripcion-ficha ficha-inscripcion-alumno">
             <div class="enrollment-photo student-photo-frame" th:classappend="${fotografiaAlumno == null ? ' empty' : ''}">
                 <img th:if="${fotografiaAlumno != null}" th:src="@{/admin/inscripciones/{id}/fotografia(id=${id})}" th:alt="${'Fotografía de ' + alumnoFicha.nombres + ' ' + alumnoFicha.primerApellido}">
                 <div th:unless="${fotografiaAlumno != null}" aria-hidden="true"><strong th:text="${#strings.substring(alumnoFicha.nombres, 0, 1) + #strings.substring(alumnoFicha.primerApellido, 0, 1)}">AA</strong><span>Sin fotografía</span></div>
@@ -29,7 +33,7 @@
                 </dl>
             </div>
         </section>
-        <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/inscripciones/' + id : '/admin/inscripciones'}">
+        <form id="datos-inscripcion" class="entity-form student-tab-panel" data-student-panel="ficha" th:object="${form}" method="post" th:action="${edicion ? '/admin/inscripciones/' + id : '/admin/inscripciones'}" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-inscripcion-ficha' : null}">
             <input type="hidden" th:field="*{version}"><input type="hidden" th:field="*{inscripcionAnteriorId}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
             <fieldset class="form-section"><legend>Alumno e institución</legend><div class="form-grid">
@@ -55,7 +59,7 @@
             <footer class="form-actions"><a href="/admin/catalogos/inscripciones">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear inscripción'}">Guardar</button></footer>
         </form>
 
-        <section class="role-assignment" th:if="${edicion}">
+        <section id="grupos-inscripcion" class="role-assignment student-tab-panel" data-student-panel="grupos" role="tabpanel" aria-labelledby="tab-inscripcion-grupos" th:if="${edicion}">
             <div class="section-heading"><div><span>Historial protegido</span><h2>Asignaciones de grupo</h2></div><p>Al cambiar de grupo, la asignación anterior se cierra automáticamente y se conserva para consulta.</p></div>
             <div class="form-error" role="alert" th:if="${errorAsignacion}"><strong>No se pudo actualizar el grupo</strong><p th:text="${errorAsignacion}">Revisa los datos.</p></div>
             <div class="assignment-list" th:if="${!asignaciones.empty}"><article th:each="item : ${asignaciones}" th:classappend="${item.fechaFin != null} ? ' inactive'">
