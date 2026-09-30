@@ -120,7 +120,7 @@ class TutorAdminControllerTest {
                 archivo, new ExtendedModelMap(), new RedirectAttributesModelMap());
 
         verify(identificacionService).asignar(10L, TipoIdentificacionTutor.INE, archivo);
-        assertThat(vista).isEqualTo("redirect:/admin/tutores/10/editar");
+        assertThat(vista).isEqualTo("redirect:/admin/tutores/10/editar#identificacion-tutor");
     }
 
     private TutorForm formulario() {

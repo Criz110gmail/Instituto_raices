@@ -6,13 +6,18 @@
     <title th:text="${edicion ? 'Maestro · Nexo Escolar' : 'Nuevo maestro · Nexo Escolar'}">Maestro · Nexo Escolar</title>
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><link rel="stylesheet" href="/css/maestros.css"><link rel="stylesheet" href="/css/maestro-form.css">
-    <script src="/js/theme.js"></script>
+    <script src="/js/theme.js"></script><script src="/js/student-tabs.js" defer></script>
 </head>
 <body class="form-page">
 <main class="form-shell teacher-admin-shell">
     <header class="form-top"><a href="/admin/catalogos/maestros">← Volver a maestros</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <p class="flash" th:if="${mensaje}" th:text="${mensaje}"></p>
-    <section class="form-card">
+    <nav th:if="${edicion}" class="student-tablist standalone-record-tabs teacher-record-tabs" role="tablist" aria-label="Secciones del expediente del maestro" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'ficha' : pestanaActiva}">
+        <button type="button" role="tab" id="tab-maestro-ficha" aria-controls="ficha-maestro" data-student-tab="ficha" data-tab-hash="#ficha-maestro"><span aria-hidden="true">01</span><strong>Ficha del maestro</strong><small>Datos y fotografía</small></button>
+        <button type="button" role="tab" id="tab-maestro-acceso" aria-controls="portal-maestro" data-student-tab="acceso" data-tab-hash="#portal-maestro"><span aria-hidden="true">02</span><strong>Portal de maestros</strong><small>Cuenta y seguridad</small></button>
+        <button type="button" role="tab" id="tab-maestro-asignaciones" aria-controls="asignaciones" data-student-tab="asignaciones" data-tab-hash="#asignaciones"><span aria-hidden="true">03</span><strong>Grupos y materias</strong><small>Alcance docente</small></button>
+    </nav>
+    <section id="ficha-maestro" class="form-card teacher-tab-panel student-tab-panel" data-student-panel="ficha" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-maestro-ficha' : null}">
         <div class="form-intro"><span>Personas · Equipo docente</span><h1 th:text="${edicion ? 'Ficha del maestro' : 'Registrar maestro'}">Registrar maestro</h1><p>Administra el expediente con la misma estructura visual del resto del sistema. La cuenta de acceso y las asignaciones se conservan por separado.</p></div>
         <section class="teacher-photo-profile" th:if="${edicion}" aria-labelledby="perfil-maestro-titulo">
             <div class="teacher-photo-preview">
@@ -59,7 +64,7 @@
         <form th:if="${edicion and maestro.activo}" method="post" th:action="@{/admin/maestros/{id}/desactivar(id=${id})}" class="danger-zone" onsubmit="return confirm('¿Desactivar este maestro? Sus asignaciones vigentes finalizarán.');"><input type="hidden" name="version" th:value="${maestro.version}"><div><strong>Desactivar maestro</strong><p>Su expediente se conserva, pero se bloquean el acceso y las nuevas planeaciones.</p></div><button type="submit">Desactivar</button></form>
     </section>
 
-    <section class="form-card teacher-management-card teacher-access-card" th:if="${edicion}">
+    <section id="portal-maestro" class="form-card teacher-management-card teacher-access-card teacher-tab-panel student-tab-panel" data-student-panel="acceso" role="tabpanel" aria-labelledby="tab-maestro-acceso" th:if="${edicion}">
         <div class="teacher-card-heading"><div class="teacher-card-title"><span class="teacher-card-icon" aria-hidden="true">PM</span><div><span class="teacher-card-eyebrow">Acceso privado</span><h2>Portal de maestros</h2><p>Crea o administra la cuenta con invitaciones seguras, sin exponer contraseñas.</p></div></div><span class="teacher-account-state" th:classappend="${cuenta == null ? ' state-pending' : (cuenta.estado.name() == 'ACTIVO' ? ' state-active' : ' state-inactive')}" th:text="${cuenta == null ? 'Sin cuenta' : cuenta.estado}">Sin cuenta</span></div>
         <div class="teacher-card-content">
             <div class="form-error" role="alert" th:if="${errorCuenta}"><strong>No se pudo configurar la cuenta</strong><p th:text="${errorCuenta}"></p></div>
@@ -74,7 +79,7 @@
         </div>
     </section>
 
-    <section class="form-card teacher-management-card teacher-assignment-card" id="asignaciones" th:if="${edicion}">
+    <section class="form-card teacher-management-card teacher-assignment-card teacher-tab-panel student-tab-panel" data-student-panel="asignaciones" id="asignaciones" role="tabpanel" aria-labelledby="tab-maestro-asignaciones" th:if="${edicion}">
         <div class="teacher-card-heading"><div class="teacher-card-title"><span class="teacher-card-icon assignment-icon" aria-hidden="true">GM</span><div><span class="teacher-card-eyebrow">Alcance docente</span><h2>Grupos y materias asignadas</h2><p>Las asignaciones determinan exactamente qué puede incluir el maestro en sus planeaciones.</p></div></div><span class="teacher-assignment-count"><b th:text="${asignaciones.size()}">0</b><small>asignaciones</small></span></div>
         <div class="teacher-card-content">
         <div class="form-error" role="alert" th:if="${errorAsignacion}"><strong>No se pudo agregar la asignación</strong><p th:text="${errorAsignacion}"></p></div>

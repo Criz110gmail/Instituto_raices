@@ -147,6 +147,7 @@ public class TutorAdminController {
         if (errores.hasErrors()) {
             preparar(model, TutorForm.desde(tutor), id);
             model.addAttribute("portalForm", portalForm);
+            model.addAttribute("pestanaActiva", "acceso");
             return "admin/tutor-form";
         }
         try {
@@ -156,11 +157,12 @@ public class TutorAdminController {
             flash.addFlashAttribute("invitacionEnlace", enlaceActivacion(invitacion.token()));
             flash.addFlashAttribute("invitacionExpira", invitacion.expiraEn());
             flash.addFlashAttribute("mensaje", "Acceso al portal creado. Copia el enlace de activación antes de salir");
-            return "redirect:/admin/tutores/" + id + "/editar";
+            return "redirect:/admin/tutores/" + id + "/editar#portal-familias";
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
             preparar(model, TutorForm.desde(tutor), id);
             model.addAttribute("portalForm", portalForm);
             model.addAttribute("errorCuentaPortal", MensajeErrorFormulario.desde(excepcion));
+            model.addAttribute("pestanaActiva", "acceso");
             return "admin/tutor-form";
         }
     }
@@ -176,7 +178,7 @@ public class TutorAdminController {
             flash.addFlashAttribute("invitacionEnlace", enlaceActivacion(invitacion.token()));
             flash.addFlashAttribute("invitacionExpira", invitacion.expiraEn());
             flash.addFlashAttribute("mensaje", "Enlace de activación generado. Cópialo antes de salir");
-            return "redirect:/admin/tutores/" + id + "/editar";
+            return "redirect:/admin/tutores/" + id + "/editar#portal-familias";
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
             return errorCuentaPortal(model, tutor, id, excepcion);
         }
@@ -196,7 +198,7 @@ public class TutorAdminController {
             flash.addFlashAttribute("recuperacionEnlace", enlace);
             flash.addFlashAttribute("recuperacionExpira", recuperacion.expiraEn());
             flash.addFlashAttribute("mensaje", "Enlace para cambiar contraseña generado. Cópialo antes de salir");
-            return "redirect:/admin/tutores/" + id + "/editar";
+            return "redirect:/admin/tutores/" + id + "/editar#portal-familias";
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
             return errorCuentaPortal(model, tutor, id, excepcion);
         }
@@ -212,7 +214,7 @@ public class TutorAdminController {
             flash.addFlashAttribute("mensaje", activar
                     ? (cuenta.credencialConfigurada() ? "Acceso al portal reactivado" : "Acceso habilitado; genera un enlace de activación")
                     : "Acceso al portal desactivado correctamente");
-            return "redirect:/admin/tutores/" + id + "/editar";
+            return "redirect:/admin/tutores/" + id + "/editar#portal-familias";
         } catch (ReglaNegocioException | DataIntegrityViolationException |
                  ObjectOptimisticLockingFailureException excepcion) {
             return errorCuentaPortal(model, tutor, id, excepcion);
@@ -232,7 +234,7 @@ public class TutorAdminController {
             return "admin/tutor-form";
         }
         flash.addFlashAttribute("mensaje", "Identificación oficial actualizada correctamente");
-        return "redirect:/admin/tutores/" + id + "/editar";
+        return "redirect:/admin/tutores/" + id + "/editar#identificacion-tutor";
     }
 
     @PostMapping("/{id}/identificacion/retirar")
@@ -245,7 +247,7 @@ public class TutorAdminController {
             return "admin/tutor-form";
         }
         flash.addFlashAttribute("mensaje", "La identificación se retiró del expediente vigente");
-        return "redirect:/admin/tutores/" + id + "/editar";
+        return "redirect:/admin/tutores/" + id + "/editar#identificacion-tutor";
     }
 
     @GetMapping("/{tutorId}/identificaciones/{identificacionId}")
@@ -322,6 +324,7 @@ public class TutorAdminController {
                                               RuntimeException excepcion) {
         preparar(model, TutorForm.desde(tutor), id);
         model.addAttribute("errorIdentificacion", MensajeErrorFormulario.desde(excepcion));
+        model.addAttribute("pestanaActiva", "identificacion");
     }
 
     private TutorResponse tutorAdministrable(Long id) {
@@ -334,6 +337,7 @@ public class TutorAdminController {
     private String errorCuentaPortal(Model model, TutorResponse tutor, Long id, RuntimeException excepcion) {
         preparar(model, TutorForm.desde(tutor), id);
         model.addAttribute("errorCuentaPortal", MensajeErrorFormulario.desde(excepcion));
+        model.addAttribute("pestanaActiva", "acceso");
         return "admin/tutor-form";
     }
 

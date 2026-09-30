@@ -129,6 +129,12 @@
 .student-tablist button[aria-selected=true]::after { background: #1478f2; }
 .student-tablist button:focus-visible { z-index: 1; outline: 3px solid rgba(20,120,242,.25); outline-offset: -2px; }
 .student-tab-panel[hidden] { display: none !important; }
+.standalone-record-tabs { margin: 20px 0 0; }
+.standalone-record-tabs + .teacher-tab-panel { border-top-left-radius: 0; border-top-right-radius: 0; }
+.teacher-admin-shell .teacher-tab-panel { margin-top: 0; }
+.tutor-record-tabs ~ #datos-tutor,
+.tutor-record-tabs ~ .tutor-access-card { margin: 0 34px 28px; border: 1px solid #d7e3ed; border-radius: 0 0 18px 18px; }
+.tutor-record-tabs ~ #datos-tutor { padding: 24px; }
 .student-tablist + .student-profile { margin: 0 34px 24px; border: 1px solid #d7e3ed; border-radius: 0 0 18px 18px; }
 .student-tablist ~ .student-record-section { border-radius: 0 0 18px 18px; }
 .student-record-section { margin: 0 34px 28px; padding: 24px; border: 1px solid #d7e3ed; border-radius: 18px; background: linear-gradient(145deg,#f8fbfe,#fff); }
@@ -175,6 +181,8 @@
 [data-theme=dark] .student-tablist button > span { background: #19324d; color: #a9c7df; }
 [data-theme=dark] .student-tablist button[aria-selected=true] { background: #0e1d31; color: #cde6fa; box-shadow: 0 -6px 18px rgba(0,0,0,.18); }
 [data-theme=dark] .student-tablist + .student-profile { border-color: #344a63; }
+[data-theme=dark] .tutor-record-tabs ~ #datos-tutor,
+[data-theme=dark] .tutor-record-tabs ~ .tutor-access-card { border-color: #344a63; }
 [data-theme=dark] .record-section-heading > strong { background: #123d36; color: #9de6d5; }
 [data-theme=dark] .record-upload-form,[data-theme=dark] .record-document-card,[data-theme=dark] .medical-record-form .form-section { border-color: #344a63; background: #0e1d31; }
 [data-theme=dark] .record-upload-form input,[data-theme=dark] .record-upload-form select { border-color: #344a63; background: #0a1728; color: #eef5fd; }
@@ -187,6 +195,10 @@
 @media (max-width: 760px) {
     .student-tablist { display: flex; overflow-x: auto; margin: 18px 20px 0; padding-bottom: 0; scrollbar-width: thin; scroll-snap-type: x proximity; }
     .student-tablist button { flex: 0 0 min(230px,72vw); scroll-snap-align: start; }
+    .standalone-record-tabs { margin-right: 0; margin-left: 0; }
+    .tutor-record-tabs ~ #datos-tutor,
+    .tutor-record-tabs ~ .tutor-access-card { margin: 0 20px 22px; }
+    .tutor-record-tabs ~ #datos-tutor { padding: 20px 18px; }
     .student-tablist + .student-profile { margin: 0 20px 20px; padding: 22px 18px; }
     .student-record-section { margin: 0 20px 22px; padding: 20px; }
     .record-section-heading { display: grid; gap: 12px; }

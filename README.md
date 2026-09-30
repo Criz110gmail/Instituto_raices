@@ -628,3 +628,9 @@ responsiva: selección guiada, resumen del bloque o jornada, tabla legible y acc
 jerarquizadas. En móvil cada alumno se presenta como tarjeta con sus campos etiquetados.
 Publicar o reabrir calificaciones requiere confirmación mediante un modal propio accesible,
 en lugar del aviso nativo del navegador.
+
+Los expedientes administrativos de **Maestros** y **Tutores** organizan sus bloques como
+pestañas de navegador, siguiendo el patrón ya usado en Alumnos. Maestros separa ficha,
+cuenta del portal y grupos/materias; Tutores separa datos personales, identificación oficial
+y acceso familiar. Las pestañas son responsivas, admiten teclado, respetan los temas y
+conservan abierta la sección que generó una validación o una operación.

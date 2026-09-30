@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabs = [...navigation.querySelectorAll('[data-student-tab]')];
     const panels = [...document.querySelectorAll('[data-student-panel]')];
     const validTabs = new Set(tabs.map(tab => tab.dataset.studentTab));
-    const hashTabs = {
+    const legacyHashTabs = {
         '#expediente-documental': 'documentos',
         '#ficha-medica': 'medica',
         '#datos-expediente': 'ficha',
@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
             panel.hidden = panel.dataset.studentPanel !== selected;
         });
         if (updateUrl) {
-            const hash = selected === 'documentos' ? '#expediente-documental'
-                : selected === 'medica' ? '#ficha-medica' : '#panel-ficha-resumen';
+            const selectedTab = tabs.find(tab => tab.dataset.studentTab === selected);
+            const hash = selectedTab?.dataset.tabHash || '#panel-ficha-resumen';
             history.replaceState(null, '', hash);
         }
     };
@@ -41,6 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const requestedByHash = hashTabs[window.location.hash];
+    document.querySelectorAll('[data-open-student-tab]').forEach(link => {
+        link.addEventListener('click', () => activate(link.dataset.openStudentTab, false));
+    });
+
+    const requestedByHash = tabs.find(tab => tab.dataset.tabHash === window.location.hash)?.dataset.studentTab
+        || legacyHashTabs[window.location.hash];
     activate(requestedByHash || navigation.dataset.activeTab || 'ficha');
 });

@@ -2002,3 +2002,15 @@ historial paginado.
 - Las confirmaciones de publicación y reapertura de Calificaciones son modales del sistema,
   no `confirm()` de JavaScript. Conservan el envío original con CSRF, explican el efecto
   sobre el portal familiar y admiten teclado, foco contenido, tema oscuro y móvil.
+
+## Expedientes de maestros y tutores por pestañas (2026-09-30)
+
+- El formulario de edición de Maestros se dividió en Ficha, Portal docente y Grupos y
+  materias; el de Tutores en Ficha, Identificación oficial y Portal familiar.
+- Ambos reutilizan `student-tabs.js` y el lenguaje visual de Alumnos, con navegación por
+  teclado, hashes propios, diseño responsivo y variantes clara/oscura.
+- Los controladores abren la pestaña correcta después de crear o administrar una cuenta,
+  actualizar identificación, gestionar asignaciones o devolver errores de validación.
+- Se agregó cobertura estructural de las dos plantillas. Docker ejecutó 388 pruebas sin
+  fallos, desplegó la imagen y salud respondió `UP`. La sesión del navegador de validación
+  estaba expirada; no se leyeron credenciales ni `.env` para forzar una revisión visual.

@@ -1172,3 +1172,15 @@ enumeradas de etapas anteriores.
 - Publicar resultados y reabrir un bloque ya no usan alertas nativas del navegador. Ambas
   acciones muestran un modal propio, accesible y responsivo, con explicación específica,
   tema oscuro, cierre por Escape, control de foco y confirmación antes del mismo POST.
+
+### Expedientes de maestros y tutores por pestañas — 2026-09-30
+
+- La edición administrativa de Maestros reutiliza el navegador de pestañas de Alumnos:
+  separa **Ficha del maestro**, **Portal de maestros** y **Grupos y materias**.
+- La edición de Tutores separa **Ficha del tutor**, **Identificación oficial** y **Portal
+  de familias**, evitando una pantalla continua extensa.
+- El componente común admite hashes configurables, teclado, tema oscuro y desplazamiento
+  horizontal controlado en móvil. Tras errores o acciones de cuenta, identificación y
+  asignaciones se conserva la pestaña correspondiente.
+- Docker ejecutó 388 pruebas sin fallos, desplegó la imagen y `/actuator/health` respondió
+  `UP`. La revisión autenticada queda para el propietario porque no se leyó `.env`.

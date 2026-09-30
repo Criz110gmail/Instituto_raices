@@ -11,9 +11,9 @@
     <section class="form-card">
         <div th:unless="${edicion}" class="form-intro"><span>Nuevo expediente</span><h1>Registrar alumno</h1><p>La trayectoria académica se administrará mediante inscripciones; aquí se conserva únicamente la identidad institucional.</p></div>
         <nav th:if="${edicion}" class="student-tablist" role="tablist" aria-label="Secciones del expediente del alumno" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'ficha' : pestanaActiva}">
-            <button type="button" role="tab" id="tab-ficha" aria-controls="panel-ficha-resumen" data-student-tab="ficha"><span aria-hidden="true">01</span><strong>Ficha del alumno</strong><small>Identidad y fotografía</small></button>
-            <button type="button" role="tab" id="tab-documentos" aria-controls="expediente-documental" data-student-tab="documentos"><span aria-hidden="true">02</span><strong>Expediente documental</strong><small>Archivos e historial</small></button>
-            <button type="button" role="tab" id="tab-medica" aria-controls="ficha-medica" data-student-tab="medica"><span aria-hidden="true">03</span><strong>Ficha médica</strong><small>Salud y emergencias</small></button>
+            <button type="button" role="tab" id="tab-ficha" aria-controls="panel-ficha-resumen" data-student-tab="ficha" data-tab-hash="#panel-ficha-resumen"><span aria-hidden="true">01</span><strong>Ficha del alumno</strong><small>Identidad y fotografía</small></button>
+            <button type="button" role="tab" id="tab-documentos" aria-controls="expediente-documental" data-student-tab="documentos" data-tab-hash="#expediente-documental"><span aria-hidden="true">02</span><strong>Expediente documental</strong><small>Archivos e historial</small></button>
+            <button type="button" role="tab" id="tab-medica" aria-controls="ficha-medica" data-student-tab="medica" data-tab-hash="#ficha-medica"><span aria-hidden="true">03</span><strong>Ficha médica</strong><small>Salud y emergencias</small></button>
         </nav>
         <section th:if="${edicion}" id="panel-ficha-resumen" class="student-profile student-tab-panel" data-student-panel="ficha" role="tabpanel" aria-labelledby="tab-ficha">
             <div class="profile-photo-column">

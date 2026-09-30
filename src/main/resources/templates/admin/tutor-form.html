@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title th:text="${edicion ? 'Editar tutor' : 'Nuevo tutor'} + ' · Nexo Escolar'">Tutor</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><link rel="stylesheet" href="/css/tutor-access.css"><script src="/js/theme.js"></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><link rel="stylesheet" href="/css/tutor-access.css"><script src="/js/theme.js"></script><script src="/js/student-tabs.js" defer></script>
 </head>
 <body class="form-page">
 <main class="form-shell student-shell">
     <header class="form-top"><a href="/admin/catalogos/tutores">← Volver a tutores</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <section class="form-card">
         <div th:unless="${edicion}" class="form-intro"><span>Nuevo responsable</span><h1>Registrar tutor</h1><p>Registra la identidad y los medios de contacto. Los alumnos y permisos concretos se asignarán en el siguiente módulo.</p></div>
-        <section th:if="${edicion}" class="student-profile tutor-profile" aria-labelledby="perfil-tutor-titulo">
+        <nav th:if="${edicion}" class="student-tablist tutor-record-tabs" role="tablist" aria-label="Secciones del expediente del tutor" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'ficha' : pestanaActiva}">
+            <button type="button" role="tab" id="tab-tutor-ficha" aria-controls="datos-tutor" data-student-tab="ficha" data-tab-hash="#datos-tutor"><span aria-hidden="true">01</span><strong>Ficha del tutor</strong><small>Datos personales</small></button>
+            <button type="button" role="tab" id="tab-tutor-identificacion" aria-controls="identificacion-tutor" data-student-tab="identificacion" data-tab-hash="#identificacion-tutor"><span aria-hidden="true">02</span><strong>Identificación oficial</strong><small>Documento e historial</small></button>
+            <button type="button" role="tab" id="tab-tutor-acceso" aria-controls="portal-familias" data-student-tab="acceso" data-tab-hash="#portal-familias"><span aria-hidden="true">03</span><strong>Portal de familias</strong><small>Cuenta y seguridad</small></button>
+        </nav>
+        <section th:if="${edicion}" id="identificacion-tutor" class="student-profile tutor-profile student-tab-panel" data-student-panel="identificacion" role="tabpanel" aria-labelledby="tab-tutor-identificacion perfil-tutor-titulo">
             <div class="profile-photo-column tutor-document-column">
                 <a th:if="${identificacionActual != null}" class="tutor-document-frame" th:classappend="${#strings.startsWith(identificacionActual.tipoMime, 'image/') ? ' image' : ' file'}" target="_blank" rel="noopener" th:href="@{/admin/tutores/{tutorId}/identificaciones/{identificacionId}(tutorId=${id},identificacionId=${identificacionActual.id})}" aria-label="Abrir identificación oficial">
                     <img th:if="${#strings.startsWith(identificacionActual.tipoMime, 'image/')}" th:src="@{/admin/tutores/{tutorId}/identificaciones/{identificacionId}(tutorId=${id},identificacionId=${identificacionActual.id})}" alt="Vista previa de la identificación oficial">
@@ -22,7 +27,7 @@
             </div>
             <div class="profile-summary">
                 <div class="profile-heading">
-                    <div><span class="profile-eyebrow">Ficha del tutor</span><h1 id="perfil-tutor-titulo" th:text="${form.nombres + ' ' + form.primerApellido + (form.segundoApellido == null or form.segundoApellido.isBlank() ? '' : ' ' + form.segundoApellido)}">Nombre del tutor</h1><p><strong th:text="${cuentaPortal == null ? 'Sin acceso al portal' : cuentaPortal.username}">Usuario</strong><span aria-hidden="true">·</span><span th:text="${institucionSeleccionada}">Institución</span></p></div>
+                    <div><span class="profile-eyebrow">Identificación del tutor</span><h1 id="perfil-tutor-titulo" th:text="${form.nombres + ' ' + form.primerApellido + (form.segundoApellido == null or form.segundoApellido.isBlank() ? '' : ' ' + form.segundoApellido)}">Nombre del tutor</h1><p><strong th:text="${cuentaPortal == null ? 'Sin acceso al portal' : cuentaPortal.username}">Usuario</strong><span aria-hidden="true">·</span><span th:text="${institucionSeleccionada}">Institución</span></p></div>
                     <span class="profile-status" th:classappend="${form.activo ? ' active' : ' inactive'}" th:text="${form.activo ? 'Activo' : 'Inactivo'}">Activo</span>
                 </div>
                 <dl class="profile-facts">
@@ -47,10 +52,10 @@
                         <div class="receipt-list identification-history-list"><a th:each="documento : ${historialIdentificaciones}" target="_blank" rel="noopener" th:href="@{/admin/tutores/{tutorId}/identificaciones/{identificacionId}(tutorId=${id},identificacionId=${documento.id})}"><span>↗</span><div><strong th:text="${documento.tipoEtiqueta}">Pasaporte</strong><small th:text="${documento.nombreOriginal}">archivo.pdf</small></div></a></div>
                     </details>
                 </div>
-                <a class="profile-edit-link" href="#datos-expediente">Editar información completa ↓</a>
+                <a class="profile-edit-link" href="#datos-tutor" data-open-student-tab="ficha">Editar información completa →</a>
             </div>
         </section>
-        <section th:if="${edicion}" class="portal-access-card tutor-access-card" aria-labelledby="portal-access-title">
+        <section th:if="${edicion}" id="portal-familias" class="portal-access-card tutor-access-card student-tab-panel" data-student-panel="acceso" role="tabpanel" aria-labelledby="tab-tutor-acceso portal-access-title">
             <div class="portal-access-heading">
                 <div class="tutor-access-title"><span class="tutor-access-icon" aria-hidden="true">PF</span><div><span class="profile-eyebrow">Portal de familias</span><h2 id="portal-access-title">Acceso del tutor</h2><p th:text="${cuentaPortal == null ? 'Este tutor todavía no tiene credenciales. Crear la cuenta no le asigna permisos administrativos.' : 'Administra este acceso desde el expediente del tutor; nunca aparecerá en el módulo Usuarios.'}">Acceso del tutor.</p></div></div>
                 <span class="profile-status" th:classappend="${cuentaPortal != null and cuentaPortal.estado.name() == 'ACTIVO' ? ' active' : ' inactive'}" th:text="${cuentaPortal == null ? 'Sin cuenta' : (cuentaPortal.estado.name() == 'INVITADO' ? 'Pendiente de activación' : (cuentaPortal.estado.name() == 'ACTIVO' ? 'Acceso activo' : (cuentaPortal.estado.name() == 'BLOQUEADO' ? 'Bloqueado' : 'Desactivado')))}">Sin cuenta</span>
@@ -73,7 +78,7 @@
                 </div>
             </div>
         </section>
-        <form id="datos-expediente" class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/tutores/' + id : '/admin/tutores'}">
+        <form id="datos-tutor" class="entity-form student-tab-panel" data-student-panel="ficha" th:object="${form}" method="post" th:action="${edicion ? '/admin/tutores/' + id : '/admin/tutores'}" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-tutor-ficha' : null}">
             <input type="hidden" th:field="*{version}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div>
             <fieldset class="form-section"><legend>Identidad</legend><div class="form-grid">
@@ -106,7 +111,7 @@
             </div></fieldset>
             <footer class="form-actions"><a href="/admin/catalogos/tutores">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Registrar tutor'}">Guardar</button></footer>
         </form>
-        <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/tutores/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este tutor? Sus vínculos históricos se conservarán.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar tutor</strong><p>El registro y sus relaciones se conservarán.</p></div><button type="submit">Desactivar</button></form>
+        <form th:if="${edicion and form.activo}" class="danger-zone student-tab-panel" data-student-panel="ficha" role="tabpanel" aria-labelledby="tab-tutor-ficha" method="post" th:action="@{/admin/tutores/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este tutor? Sus vínculos históricos se conservarán.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar tutor</strong><p>El registro y sus relaciones se conservarán.</p></div><button type="submit">Desactivar</button></form>
     </section>
 </main>
 </body>
