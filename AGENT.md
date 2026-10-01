@@ -28,6 +28,10 @@ no vuelvas a implementar componentes que ya existan.
   Incluye seguridad por alcance, validación de fechas y cruces de suspensiones,
   listado paginado, filtros y Excel con los mismos criterios. La siguiente migración
   disponible es V49.
+- Las fotografías nuevas de alumnos, maestros y usuarios aceptan JPEG, PNG, HEIC y
+  HEIF hasta 20 MB. ImageMagick/libheif corrige orientación, elimina metadatos,
+  redimensiona a un máximo de 1920 px y guarda JPEG calidad 85; esta optimización no
+  modifica retroactivamente fotografías históricas.
 - V47 implementa Horarios y clases con bloques recurrentes por asignación docente,
   validación de cruces de maestro, grupo y aula, vigencia, permisos, listado paginado,
   filtros y Excel. El maestro consulta «Mi horario» y la familia consulta el horario

@@ -1,5 +1,18 @@
 # Contexto del proyecto
 
+## Verificación posterior a V48 — optimización de fotografías móviles
+
+- Se centralizó el procesamiento de fotografías de alumnos, maestros y usuarios.
+- Las cargas nuevas aceptan JPEG, PNG, HEIC y HEIF hasta 20 MB; la firma real se valida
+  sin confiar en el nombre o MIME enviados por el navegador.
+- ImageMagick con libheif aplica orientación, elimina metadatos, limita el lado mayor a
+  1920 píxeles y genera JPEG calidad 85 para reducir el almacenamiento sin afectar la
+  presentación normal de la ficha.
+- El proceso tiene límites de memoria, disco, dimensiones, tiempo y concurrencia. Sólo
+  la versión optimizada se entrega al almacenamiento privado y su tamaño/checksum son
+  los registrados en PostgreSQL.
+- El cambio no necesita migración y no procesa retroactivamente fotografías históricas.
+
 ## Verificación V48 — calendario escolar detallado
 
 - Se agregó `calendario_escolar_detalle`, asociado a institución y ciclo escolar, con

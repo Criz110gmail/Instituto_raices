@@ -34,11 +34,11 @@
                 <div class="teacher-photo-file-meta" th:if="${fotografiaActual != null}"><span>Archivo actual</span><strong th:text="${fotografiaActual.nombreOriginal}">fotografia.jpg</strong></div>
             </div>
             <div class="teacher-photo-tools">
-                <div class="teacher-photo-tools-heading"><span class="teacher-photo-tools-icon" aria-hidden="true">IMG</span><div><strong>Fotografía del maestro</strong><span>Selecciona una imagen nítida en formato JPEG o PNG, de hasta 5 MB.</span></div></div>
+                <div class="teacher-photo-tools-heading"><span class="teacher-photo-tools-icon" aria-hidden="true">IMG</span><div><strong>Fotografía del maestro</strong><span>JPEG, PNG, HEIC o HEIF, hasta 20 MB. La imagen se orienta y optimiza automáticamente.</span></div></div>
                 <div class="form-error" role="alert" th:if="${errorFotografia}"><strong>No se pudo actualizar la fotografía</strong><p th:text="${errorFotografia}"></p></div>
                 <div class="teacher-photo-actions">
                     <form method="post" enctype="multipart/form-data" th:action="@{/admin/maestros/{id}/fotografia(id=${id})}" class="photo-upload-form teacher-photo-upload">
-                        <label for="archivo-fotografia-maestro"><span th:text="${fotografiaActual==null?'Seleccionar fotografía':'Reemplazar fotografía'}">Seleccionar fotografía</span><input id="archivo-fotografia-maestro" type="file" name="archivo" accept="image/jpeg,image/png" required></label>
+                        <label for="archivo-fotografia-maestro"><span th:text="${fotografiaActual==null?'Seleccionar fotografía':'Reemplazar fotografía'}">Seleccionar fotografía</span><input id="archivo-fotografia-maestro" type="file" name="archivo" accept=".jpg,.jpeg,.png,.heic,.heif,image/jpeg,image/png,image/heic,image/heif" required></label>
                         <button type="submit">Guardar fotografía</button>
                     </form>
                     <form class="teacher-photo-remove-form" th:if="${fotografiaActual != null}" method="post" th:action="@{/admin/maestros/{id}/fotografia/retirar(id=${id})}" onsubmit="return confirm('¿Retirar la fotografía actual del maestro?');"><button type="submit" class="photo-remove">Retirar actual</button></form>

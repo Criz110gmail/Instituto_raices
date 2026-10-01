@@ -9,6 +9,7 @@ import escuela.alumno.service.FotografiaAlumnoService;
 import escuela.archivo.dto.ArchivoDescarga;
 import escuela.archivo.entity.Archivo;
 import escuela.archivo.entity.EstadoArchivo;
+import escuela.archivo.imagen.ProcesadorFotografia;
 import escuela.archivo.repository.ArchivoRepository;
 import escuela.archivo.storage.AlmacenamientoArchivo;
 import escuela.common.exception.RecursoNoEncontradoException;
@@ -18,18 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.HexFormat;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -37,23 +31,22 @@ import java.util.UUID;
 @Transactional
 public class FotografiaAlumnoServiceImpl implements FotografiaAlumnoService {
 
-    static final long TAMANO_MAXIMO = 5L * 1024 * 1024;
-    private static final long PIXELES_MAXIMOS = 25_000_000L;
     private final AlumnoRepository alumnoRepository;
     private final AlumnoFotografiaRepository fotografiaRepository;
     private final ArchivoRepository archivoRepository;
     private final AlmacenamientoArchivo almacenamiento;
+    private final ProcesadorFotografia procesadorFotografia;
 
     @Override
     public FotografiaAlumnoResponse asignar(Long alumnoId, MultipartFile fotografia) {
-        ImagenValidada imagen = validar(fotografia);
+        var imagen = procesadorFotografia.procesar(fotografia);
         Alumno alumno = buscarConBloqueo(alumnoId);
         if (!alumno.isActivo()) {
             throw new ReglaNegocioException("No se puede cambiar la fotografía de un alumno inactivo");
         }
         String clave = alumno.getInstitucion().getId() + "/alumnos/" + alumnoId + "/"
                 + UUID.randomUUID() + ".bin";
-        try (InputStream contenido = fotografia.getInputStream()) {
+        try (InputStream contenido = new ByteArrayInputStream(imagen.contenido())) {
             almacenamiento.guardar(clave, contenido);
         } catch (IOException excepcion) {
             throw new ReglaNegocioException("No fue posible leer la fotografía seleccionada");
@@ -63,10 +56,10 @@ public class FotografiaAlumnoServiceImpl implements FotografiaAlumnoService {
             Archivo archivo = new Archivo();
             archivo.setInstitucion(alumno.getInstitucion());
             archivo.setClaveAlmacenamiento(clave);
-            archivo.setNombreOriginal(nombreSeguro(fotografia.getOriginalFilename(), imagen.extension()));
+            archivo.setNombreOriginal(imagen.nombreArchivo());
             archivo.setTipoMime(imagen.tipoMime());
-            archivo.setTamanoBytes(fotografia.getSize());
-            archivo.setChecksumSha256(checksum(fotografia));
+            archivo.setTamanoBytes(imagen.tamanoBytes());
+            archivo.setChecksumSha256(imagen.checksumSha256());
             archivo.setEstado(EstadoArchivo.DISPONIBLE);
             archivo = archivoRepository.saveAndFlush(archivo);
 
@@ -131,81 +124,6 @@ public class FotografiaAlumnoServiceImpl implements FotografiaAlumnoService {
                 archivo.getNombreOriginal(), archivo.getTipoMime(), archivo.getTamanoBytes());
     }
 
-    private ImagenValidada validar(MultipartFile fotografia) {
-        if (fotografia == null || fotografia.isEmpty() || fotografia.getSize() <= 0) {
-            throw new ReglaNegocioException("Selecciona una fotografía");
-        }
-        if (fotografia.getSize() > TAMANO_MAXIMO) {
-            throw new ReglaNegocioException("La fotografía no puede superar 5 MB");
-        }
-        ImagenValidada tipo = detectarTipo(fotografia);
-        validarDimensiones(fotografia, tipo);
-        return tipo;
-    }
-
-    private ImagenValidada detectarTipo(MultipartFile fotografia) {
-        try (InputStream entrada = fotografia.getInputStream()) {
-            byte[] cabecera = entrada.readNBytes(8);
-            if (cabecera.length >= 3 && (cabecera[0] & 0xff) == 0xff
-                    && (cabecera[1] & 0xff) == 0xd8 && (cabecera[2] & 0xff) == 0xff) {
-                return new ImagenValidada("image/jpeg", "jpg");
-            }
-            byte[] png = {(byte) 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a};
-            if (java.util.Arrays.equals(cabecera, png)) {
-                return new ImagenValidada("image/png", "png");
-            }
-        } catch (IOException excepcion) {
-            throw new ReglaNegocioException("No fue posible leer la fotografía seleccionada");
-        }
-        throw new ReglaNegocioException("La fotografía debe ser un archivo JPEG o PNG válido");
-    }
-
-    private void validarDimensiones(MultipartFile fotografia, ImagenValidada tipo) {
-        try (InputStream entrada = fotografia.getInputStream();
-             ImageInputStream imagen = ImageIO.createImageInputStream(entrada)) {
-            if (imagen == null) throw imagenInvalida();
-            Iterator<ImageReader> lectores = ImageIO.getImageReaders(imagen);
-            if (!lectores.hasNext()) throw imagenInvalida();
-            ImageReader lector = lectores.next();
-            try {
-                lector.setInput(imagen, true, true);
-                int ancho = lector.getWidth(0);
-                int alto = lector.getHeight(0);
-                String formato = lector.getFormatName().toLowerCase(Locale.ROOT);
-                boolean formatoCorrecto = tipo.tipoMime().equals("image/png")
-                        ? formato.contains("png") : formato.contains("jpeg") || formato.contains("jpg");
-                if (!formatoCorrecto || ancho <= 0 || alto <= 0
-                        || (long) ancho * alto > PIXELES_MAXIMOS) throw imagenInvalida();
-            } finally {
-                lector.dispose();
-            }
-        } catch (IOException excepcion) {
-            throw imagenInvalida();
-        }
-    }
-
-    private String checksum(MultipartFile fotografia) {
-        try (InputStream entrada = fotografia.getInputStream()) {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] bloque = new byte[8192];
-            int leidos;
-            while ((leidos = entrada.read(bloque)) >= 0) {
-                if (leidos > 0) digest.update(bloque, 0, leidos);
-            }
-            return HexFormat.of().formatHex(digest.digest());
-        } catch (IOException | NoSuchAlgorithmException excepcion) {
-            throw new ReglaNegocioException("No fue posible verificar la fotografía seleccionada");
-        }
-    }
-
-    private String nombreSeguro(String original, String extension) {
-        String nombre = original == null ? "fotografia." + extension
-                : original.replace('\\', '/').substring(original.replace('\\', '/').lastIndexOf('/') + 1)
-                .replaceAll("[\\p{Cntrl}]", "").trim();
-        if (nombre.isBlank()) nombre = "fotografia." + extension;
-        return nombre.length() > 255 ? nombre.substring(nombre.length() - 255) : nombre;
-    }
-
     private Alumno buscar(Long id) {
         return alumnoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("el alumno", id));
@@ -223,10 +141,4 @@ public class FotografiaAlumnoServiceImpl implements FotografiaAlumnoService {
                 fotografia.getRetiradaEn(), fotografia.getRetiradaEn() == null);
     }
 
-    private ReglaNegocioException imagenInvalida() {
-        return new ReglaNegocioException("La fotografía está dañada o sus dimensiones no son seguras");
-    }
-
-    private record ImagenValidada(String tipoMime, String extension) {
-    }
 }

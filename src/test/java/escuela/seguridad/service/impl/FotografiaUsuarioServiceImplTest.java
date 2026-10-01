@@ -2,9 +2,10 @@ package escuela.seguridad.service.impl;
 
 import escuela.archivo.entity.Archivo;
 import escuela.archivo.entity.EstadoArchivo;
+import escuela.archivo.imagen.ImagenOptimizada;
+import escuela.archivo.imagen.ProcesadorFotografia;
 import escuela.archivo.repository.ArchivoRepository;
 import escuela.archivo.storage.AlmacenamientoArchivo;
-import escuela.common.exception.ReglaNegocioException;
 import escuela.institucion.entity.Institucion;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.repository.UsuarioRepository;
@@ -12,13 +13,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -30,8 +27,9 @@ class FotografiaUsuarioServiceImplTest {
     private final UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
     private final ArchivoRepository archivoRepository = mock(ArchivoRepository.class);
     private final AlmacenamientoArchivo almacenamiento = mock(AlmacenamientoArchivo.class);
+    private final ProcesadorFotografia procesadorFotografia = mock(ProcesadorFotografia.class);
     private final FotografiaUsuarioServiceImpl service = new FotografiaUsuarioServiceImpl(
-            usuarioRepository, archivoRepository, almacenamiento);
+            usuarioRepository, archivoRepository, almacenamiento, procesadorFotografia);
     private Usuario usuario;
 
     @BeforeEach
@@ -47,6 +45,8 @@ class FotografiaUsuarioServiceImplTest {
             archivo.setId(20L);
             return archivo;
         });
+        when(procesadorFotografia.procesar(any())).thenReturn(new ImagenOptimizada(
+                new byte[]{1, 2, 3}, "perfil.jpg", "image/jpeg", "b".repeat(64), 1_500_000));
     }
 
     @Test
@@ -55,7 +55,8 @@ class FotografiaUsuarioServiceImplTest {
 
         var captor = org.mockito.ArgumentCaptor.forClass(Archivo.class);
         verify(archivoRepository).saveAndFlush(captor.capture());
-        assertThat(captor.getValue().getTipoMime()).isEqualTo("image/png");
+        assertThat(captor.getValue().getTipoMime()).isEqualTo("image/jpeg");
+        assertThat(captor.getValue().getTamanoBytes()).isEqualTo(3L);
         assertThat(captor.getValue().getChecksumSha256()).hasSize(64);
         assertThat(usuario.getFotografiaArchivo()).isSameAs(captor.getValue());
         verify(almacenamiento).guardar(any(), any());
@@ -87,21 +88,7 @@ class FotografiaUsuarioServiceImplTest {
         verify(almacenamiento, never()).eliminarSiExiste(any());
     }
 
-    @Test
-    void rechazaUnArchivoQueNoEsImagenReal() {
-        MockMultipartFile falsa = new MockMultipartFile("archivo", "perfil.png", "image/png",
-                "contenido inválido".getBytes(java.nio.charset.StandardCharsets.UTF_8));
-
-        assertThatThrownBy(() -> service.asignar(7L, falsa))
-                .isInstanceOf(ReglaNegocioException.class)
-                .hasMessageContaining("JPEG o PNG");
-        verify(almacenamiento, never()).guardar(any(), any());
-    }
-
-    private MockMultipartFile png(String nombre) throws Exception {
-        BufferedImage imagen = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB);
-        ByteArrayOutputStream salida = new ByteArrayOutputStream();
-        ImageIO.write(imagen, "png", salida);
-        return new MockMultipartFile("archivo", nombre, "image/png", salida.toByteArray());
+    private MockMultipartFile png(String nombre) {
+        return new MockMultipartFile("archivo", nombre, "image/png", new byte[]{1, 2});
     }
 }

@@ -167,10 +167,11 @@ vínculos de tutor. La invitación genera un enlace de 48 horas que se muestra u
 vez; la pantalla pública permite establecer una contraseña protegida sin exponer el
 token ni la contraseña en la base de datos.
 
-La edición de usuario permite cargar una fotografía JPEG o PNG de hasta 5 MB. La imagen
-se valida y se conserva en el almacenamiento privado; si no existe, la interfaz utiliza
-un avatar genérico. Todas las pantallas administrativas muestran la foto y el nombre de
-usuario de la sesión activa, incluidos los diseños para móvil y los temas claro/oscuro.
+La edición de usuario permite cargar fotografías JPEG, PNG, HEIC o HEIF de hasta 20 MB.
+Antes de almacenarlas, el servidor corrige su orientación, elimina metadatos, limita su
+lado mayor a 1920 píxeles y las convierte a JPEG con calidad 85. Si no existe una foto,
+la interfaz utiliza un avatar genérico. Todas las pantallas administrativas muestran la
+foto y el nombre de usuario de la sesión activa, incluidos móvil y tema claro/oscuro.
 
 Para usuarios activos, la administración también puede generar un enlace independiente
 de recuperación que vence en 30 minutos. El token sólo se guarda como SHA-256, se
@@ -187,10 +188,11 @@ expediente: se derivarán de las inscripciones para conservar el historial corre
 Los formularios de alumnos, ciclos y periodos usan fechas ISO compatibles con los
 controles nativos del navegador tanto al crear como al editar.
 
-En la edición del alumno puede cargarse una fotografía JPEG o PNG de hasta 5 MB. El
-sistema valida el contenido real y sus dimensiones, calcula SHA-256, conserva cada
-reemplazo en el historial y sirve las imágenes mediante una ruta autenticada con control
-institucional y caché deshabilitada. PostgreSQL sólo contiene metadatos y relaciones.
+En la edición del alumno puede cargarse una fotografía JPEG, PNG, HEIC o HEIF de hasta
+20 MB. El sistema valida el contenido real, la orienta, elimina metadatos, redimensiona
+y comprime antes de calcular SHA-256. Cada reemplazo permanece en el historial y las
+imágenes se sirven mediante una ruta autenticada con control institucional y caché
+deshabilitada. PostgreSQL sólo contiene metadatos y relaciones.
 
 La misma ficha técnica incorpora el expediente documental y la ficha médica. Los
 documentos se clasifican como acta, CURP, comprobante, constancia/certificado,
