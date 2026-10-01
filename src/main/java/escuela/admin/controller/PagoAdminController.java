@@ -5,6 +5,9 @@ import escuela.admin.support.MensajeErrorFormulario;
 import escuela.admin.service.JasperComprobantePagoService;
 import escuela.archivo.dto.ArchivoDescarga;
 import escuela.common.exception.ReglaNegocioException;
+import escuela.cobranza.entity.SituacionCobro;
+import escuela.cobranza.service.CargoService;
+import escuela.cobranza.service.CobranzaInscripcionService;
 import escuela.finanzas.dto.response.PagoResponse;
 import escuela.finanzas.entity.MetodoPago;
 import escuela.finanzas.service.DevolucionPagoService;
@@ -47,18 +50,27 @@ public class PagoAdminController {
     private final ValidacionPagoService validacionService;
     private final DevolucionPagoService devolucionService;
     private final CancelacionPagoService cancelacionService;
+    private final CargoService cargoService;
+    private final CobranzaInscripcionService cobranzaInscripcionService;
     private final InstitucionService institucionService;
     private final PlantelService plantelService;
     private final AlcanceDatosService alcance;
     private final JasperComprobantePagoService jasperComprobante;
 
     @GetMapping("/nuevo")
-    String nuevo(Model model) {
+    String nuevo(@RequestParam(required = false) Long cargoId,
+                 @RequestParam(required = false) Long retornoInscripcionId,
+                 Model model) {
         PagoForm form = new PagoForm();
         form.setFolio("PAG-" + LocalDate.now().toString().replace("-", "") + "-"
                 + UUID.randomUUID().toString().substring(0, 6).toUpperCase(Locale.ROOT));
+        if (cargoId != null) prepararDesdeCargo(form, cargoId, retornoInscripcionId, model);
         preparar(model, form);
         return "admin/pago-form";
+    }
+
+    String nuevo(Model model) {
+        return nuevo(null, null, model);
     }
 
     @PostMapping
@@ -261,5 +273,42 @@ public class PagoAdminController {
         if (form.getSolicitudes() != null) form.getSolicitudes().stream()
                 .filter(s -> s.getCargoId() != null)
                 .forEach(s -> alcance.validarRecurso(ModuloCatalogo.CARGOS, s.getCargoId()));
+    }
+
+    private void prepararDesdeCargo(PagoForm form, Long cargoId, Long retornoInscripcionId,
+                                    Model model) {
+        alcance.validarRecurso(ModuloCatalogo.CARGOS, cargoId);
+        var cargo = cargoService.obtener(cargoId);
+        if (cargo.estadoRegistro() != escuela.cobranza.entity.EstadoRegistroCargo.EMITIDO
+                || cargo.situacionCobro() == SituacionCobro.PAGADO
+                || cargo.situacionCobro() == SituacionCobro.CANCELADO) {
+            throw new ReglaNegocioException("Este pago por cobrar ya no tiene saldo disponible");
+        }
+        form.setInstitucionId(cargo.institucionId());
+        form.setPlantelRegistroId(cargo.plantelId());
+        form.setMonto(cargo.saldoPendiente());
+        form.setMoneda(cargo.moneda());
+        form.setMetodo(MetodoPago.EFECTIVO);
+        form.setRetornoInscripcionId(retornoInscripcionId == null
+                ? cargo.inscripcionId() : retornoInscripcionId);
+        SolicitudAplicacionPagoForm solicitud = new SolicitudAplicacionPagoForm();
+        solicitud.setCargoId(cargo.id());
+        solicitud.setCargoEtiqueta(cargo.alumnoMatricula() + " · " + cargo.alumnoNombre()
+                + " · " + cargo.conceptoNombre());
+        solicitud.setMontoSolicitado(cargo.saldoPendiente());
+        form.getSolicitudes().add(solicitud);
+        var tutor = cobranzaInscripcionService.tutorParaCargo(cargoId);
+        if (tutor == null) {
+            model.addAttribute("advertenciaPagoRapido",
+                    "El alumno no tiene un tutor responsable financiero vigente. Vincúlalo antes de registrar el pago.");
+        } else {
+            form.setTutorId(tutor.id());
+            form.setTutorEtiqueta(tutor.etiqueta());
+            if (tutor.responsablesDisponibles() > 1) {
+                model.addAttribute("advertenciaPagoRapido",
+                        "Se seleccionó el responsable financiero principal. Puedes cambiarlo si otro tutor realizó el pago.");
+            }
+        }
+        model.addAttribute("cargoPrecargado", cargo);
     }
 }

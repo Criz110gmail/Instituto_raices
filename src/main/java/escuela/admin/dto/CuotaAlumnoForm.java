@@ -35,6 +35,8 @@ public class CuotaAlumnoForm {
     @Size(max = 2000) private String motivoImportePersonalizado;
     @NotNull private EstadoCuota estado = EstadoCuota.ACTIVA;
     private Long version;
+    private boolean generarCargoAhora;
+    private Long retornoInscripcionId;
 
     public CuotaAlumnoRequest request() {
         Integer diaMensual = frecuencia == FrecuenciaCuota.MENSUAL ? diaVencimiento : null;

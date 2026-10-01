@@ -419,7 +419,7 @@ public class BusquedaAutocompletadoService {
         var permitidos = resultado.getContent().stream().filter(cargo -> {
             try {
                 alcance.validarRecurso(ModuloCatalogo.CARGOS, cargo.getId());
-                return true;
+                return saldo(cargo).signum() > 0;
             } catch (AccessDeniedException excepcion) {
                 return false;
             }
@@ -429,7 +429,8 @@ public class BusquedaAutocompletadoService {
                         cargo.getInscripcion().getAlumno().getPrimerApellido(),
                         cargo.getInscripcion().getAlumno().getSegundoApellido()) + " · "
                         + cargo.getConceptoCobro().getNombre(),
-                cargo.getDescripcion() + " · Saldo actual " + formatear(saldo(cargo)))).toList();
+                cargo.getDescripcion() + " · Saldo actual " + formatear(saldo(cargo)),
+                saldo(cargo))).toList();
         return new ResultadoAutocompletado(permitidos, resultado.hasNext());
     }
 

@@ -7,9 +7,11 @@ import escuela.cobranza.dto.response.CuotaAlumnoResponse;
 import escuela.cobranza.entity.EstadoCuota;
 import escuela.cobranza.entity.FrecuenciaCuota;
 import escuela.cobranza.service.ConceptoCobroService;
+import escuela.cobranza.service.CobranzaInscripcionService;
 import escuela.cobranza.service.CuotaAlumnoService;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.inscripcion.service.InscripcionService;
+import escuela.academico.service.CicloEscolarService;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.dto.response.PlantelResponse;
 import escuela.institucion.service.InstitucionService;
@@ -27,7 +29,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
@@ -37,30 +42,45 @@ import java.util.List;
 public class CuotaAlumnoAdminController {
     private final CuotaAlumnoService service;
     private final ConceptoCobroService conceptoService;
+    private final CobranzaInscripcionService cobranzaService;
     private final InscripcionService inscripcionService;
+    private final CicloEscolarService cicloService;
     private final InstitucionService institucionService;
     private final PlantelService plantelService;
     private final AlcanceDatosService alcance;
 
     @GetMapping("/nuevo")
-    String nuevo(Model model) {
+    String nuevo(@RequestParam(required = false) Long inscripcionId, Model model) {
         CuotaAlumnoForm form = new CuotaAlumnoForm();
         form.setDiaVencimiento(10);
+        if (inscripcionId != null) prepararDesdeInscripcion(form, inscripcionId);
         preparar(model, form, null);
         return "admin/cuota-alumno-form";
     }
 
     @PostMapping
     String crear(@Valid @ModelAttribute("form") CuotaAlumnoForm form,
-                 BindingResult errores, Model model, RedirectAttributes flash) {
+                 BindingResult errores, Authentication authentication,
+                 Model model, RedirectAttributes flash) {
         validarAlcance(form);
         validarRelaciones(form, errores);
+        if (form.isGenerarCargoAhora() && !tienePermiso(authentication, "CARGO_ADMINISTRAR")) {
+            errores.reject("cuota.generar.permiso",
+                    "No tienes permiso para generar el pago del alumno inmediatamente");
+        }
         if (errores.hasErrors()) {
             preparar(model, form, null);
             return "admin/cuota-alumno-form";
         }
         try {
-            service.crear(form.request());
+            var resultado = cobranzaService.crearCuota(form.request(), form.isGenerarCargoAhora());
+            if (form.getRetornoInscripcionId() != null) {
+                flash.addFlashAttribute("mensaje", resultado.cargo() == null
+                        ? "Cuota preparada correctamente"
+                        : "Cuota y pago por cobrar generados correctamente");
+                return "redirect:/admin/inscripciones/" + form.getRetornoInscripcionId()
+                        + "/editar#cobranza-inscripcion";
+            }
         } catch (ReglaNegocioException | DataIntegrityViolationException |
                  ObjectOptimisticLockingFailureException excepcion) {
             prepararError(model, form, null, excepcion);
@@ -123,6 +143,9 @@ public class CuotaAlumnoAdminController {
         model.addAttribute("estados", EstadoCuota.values());
         model.addAttribute("inscripcionSeleccionada", etiquetaInscripcion(form.getInscripcionId()));
         model.addAttribute("conceptoSeleccionado", etiquetaConcepto(form.getConceptoCobroId()));
+        model.addAttribute("modoAsistido", form.getRetornoInscripcionId() != null);
+        model.addAttribute("puedeGenerarCargo", tienePermiso(
+                SecurityContextHolder.getContext().getAuthentication(), "CARGO_ADMINISTRAR"));
     }
 
     private void validarAlcance(CuotaAlumnoForm form) {
@@ -153,6 +176,11 @@ public class CuotaAlumnoAdminController {
             errores.rejectValue("conceptoCobroId", "cuota.concepto.institucion",
                     "El concepto no pertenece a la institución indicada");
         }
+        if (form.getRetornoInscripcionId() != null
+                && !form.getRetornoInscripcionId().equals(form.getInscripcionId())) {
+            errores.rejectValue("inscripcionId", "cuota.inscripcion.retorno",
+                    "La inscripción del asistente no puede cambiarse");
+        }
     }
 
     private String etiquetaInscripcion(Long id) {
@@ -171,5 +199,28 @@ public class CuotaAlumnoAdminController {
                                RuntimeException excepcion) {
         preparar(model, form, id);
         model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
+    }
+
+    private void prepararDesdeInscripcion(CuotaAlumnoForm form, Long inscripcionId) {
+        alcance.validarRecurso(ModuloCatalogo.INSCRIPCIONES, inscripcionId);
+        var inscripcion = inscripcionService.obtener(inscripcionId);
+        var ciclo = cicloService.obtener(inscripcion.cicloEscolarId());
+        form.setInstitucionId(inscripcion.institucionId());
+        form.setPlantelId(inscripcion.plantelId());
+        form.setInscripcionId(inscripcion.id());
+        form.setMoneda(institucionService.obtener(inscripcion.institucionId()).monedaPredeterminada());
+        form.setFrecuencia(FrecuenciaCuota.UNICA);
+        form.setFechaInicio(inscripcion.fechaInicio());
+        form.setFechaFin(inscripcion.fechaFin() == null ? ciclo.fechaFin() : inscripcion.fechaFin());
+        form.setFechaVencimientoUnico(inscripcion.fechaInicio());
+        form.setDiaVencimiento(null);
+        form.setGeneracionAutomatica(true);
+        form.setGenerarCargoAhora(true);
+        form.setRetornoInscripcionId(inscripcion.id());
+    }
+
+    private boolean tienePermiso(Authentication authentication, String permiso) {
+        return authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals(permiso));
     }
 }

@@ -7,6 +7,7 @@ import escuela.admin.dto.ModuloCatalogo;
 import escuela.admin.support.MensajeErrorFormulario;
 import escuela.cobranza.service.CargoService;
 import escuela.cobranza.service.ConceptoCobroService;
+import escuela.cobranza.service.CuotaAlumnoService;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.inscripcion.service.InscripcionService;
 import escuela.institucion.dto.response.InstitucionResponse;
@@ -38,6 +39,7 @@ import java.util.List;
 public class CargoAdminController {
 
     private final CargoService service;
+    private final CuotaAlumnoService cuotaAlumnoService;
     private final ConceptoCobroService conceptoService;
     private final InscripcionService inscripcionService;
     private final PeriodoAcademicoService periodoService;
@@ -80,6 +82,8 @@ public class CargoAdminController {
         model.addAttribute("puedeValidarPago", authentication.getAuthorities().stream().anyMatch(a ->
                 a.getAuthority().equals("PAGO_VALIDAR") || a.getAuthority().equals("PAGO_LEER")
                         || a.getAuthority().equals("PAGO_REGISTRAR")));
+        model.addAttribute("puedeRegistrarPago", authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("PAGO_REGISTRAR")));
         return "admin/cargo-detalle";
     }
 
@@ -126,6 +130,25 @@ public class CargoAdminController {
             return "admin/cargo-generar";
         }
         return "redirect:/admin/catalogos/cargos";
+    }
+
+    @PostMapping("/cuotas/{cuotaId}/generar-unico")
+    String generarCargoUnico(@PathVariable Long cuotaId,
+                             @RequestParam Long inscripcionId,
+                             RedirectAttributes flash) {
+        alcance.validarRecurso(ModuloCatalogo.CUOTAS_ALUMNO, cuotaId);
+        alcance.validarRecurso(ModuloCatalogo.INSCRIPCIONES, inscripcionId);
+        try {
+            var cuota = cuotaAlumnoService.obtener(cuotaId);
+            if (!cuota.inscripcionId().equals(inscripcionId)) {
+                throw new ReglaNegocioException("La cuota no pertenece a esta inscripción");
+            }
+            var cargo = service.generarCargoUnico(cuotaId);
+            flash.addFlashAttribute("mensaje", "Pago por cobrar disponible: " + cargo.descripcion());
+        } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
+            flash.addFlashAttribute("errorCobranza", MensajeErrorFormulario.desde(excepcion));
+        }
+        return "redirect:/admin/inscripciones/" + inscripcionId + "/editar#cobranza-inscripcion";
     }
 
     private void prepararManual(Model model, CargoForm form) {

@@ -1,5 +1,22 @@
 # Contexto del proyecto
 
+## Verificación posterior a V50 — cobranza asistida desde la inscripción
+
+- Se conservaron desacoplados Cuotas individuales, Pagos de alumnos y Pagos, pero la
+  inscripción ahora los enlaza mediante una tercera pestaña **Cobranza**. La pantalla
+  resume cuotas, cargos y estado del proceso sin recuperar catálogos completos.
+- El alta asistida precarga el contexto de la inscripción y permite crear una cuota única
+  y, si el usuario tiene permiso, emitir inmediatamente su cargo. La generación reutiliza
+  la clave idempotente `AUTO` de la cuota; repetirla no produce duplicados.
+- Un cargo pendiente o parcial puede abrir el formulario de pago precargado. Se trasladan
+  cargo, saldo, institución, plantel, moneda y responsable financiero vigente. Seleccionar
+  un cargo desde el autocompletado común también rellena importe solicitado y total.
+- Cada operación conserva permisos y alcance independientes. La relación cuota–inscripción
+  se comprueba antes de emitir el cargo y la creación conjunta es transaccional.
+- No se cambió el esquema; V51 sigue disponible. Docker compiló el paquete y ejecutó 422
+  pruebas sin fallos. Falta únicamente la prueba funcional controlada del propietario con
+  una inscripción y un importe de prueba.
+
 ## Decisiones pendientes posteriores a V50
 
 - La consistencia visual pasa a ser un requisito de aceptación: todo módulo debe reutilizar

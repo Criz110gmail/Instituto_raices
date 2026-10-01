@@ -722,3 +722,11 @@ trayectoria** contiene las asignaciones históricas, la asignación vigente y la
 por traslado o promoción. Las operaciones y validaciones regresan a la pestaña relacionada,
 y los hashes de la URL permiten conservarla al navegar. El alta inicial permanece como un
 formulario directo hasta que existe un expediente con historial.
+
+La tercera pestaña, **Cobranza**, reduce la captura repetida sin mezclar los módulos
+financieros. Desde una inscripción se prepara una cuota individual única con su contexto
+precargado y se puede emitir inmediatamente el pago por cobrar. La emisión es idempotente:
+volver a solicitarla no duplica el cargo. Después, **Registrar pago** abre el formulario
+con el cargo, saldo pendiente, institución, plantel, moneda y tutor responsable financiero
+ya seleccionados. Los permisos de Cuotas, Pagos de alumnos y Pagos continúan separados y
+se validan en cada paso.

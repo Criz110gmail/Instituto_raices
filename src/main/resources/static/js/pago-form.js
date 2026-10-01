@@ -160,6 +160,14 @@
                         const detalle = document.createElement('small'); detalle.textContent = opcion.detalle || '';
                         boton.append(titulo, detalle); boton.addEventListener('click', () => {
                             entrada.value = opcion.titulo; etiqueta = opcion.titulo; valor.value = opcion.id;
+                            if (tipo === 'cargo' && opcion.monto != null) {
+                                const importe = contenedor.closest('.distribution-row')?.querySelector('.monto-solicitado');
+                                if (importe) importe.value = Number(opcion.monto).toFixed(2);
+                                const solicitado = [...lista.querySelectorAll('.monto-solicitado')]
+                                    .reduce((suma, input) => suma + numero(input.value), 0);
+                                monto.value = solicitado.toFixed(2);
+                                actualizarTotales();
+                            }
                             valor.dispatchEvent(new Event('change', {bubbles: true})); resultados.hidden = true;
                             mostrarEstado('');
                         }); resultados.append(boton);

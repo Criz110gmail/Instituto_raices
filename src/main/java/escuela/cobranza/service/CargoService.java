@@ -8,6 +8,7 @@ import escuela.cobranza.dto.response.GeneracionCargosResponse;
 public interface CargoService {
     CargoResponse crearManual(CargoManualRequest request);
     GeneracionCargosResponse generar(GeneracionCargosRequest request);
+    CargoResponse generarCargoUnico(Long cuotaId);
     CargoResponse obtener(Long id);
     CargoResponse cancelar(Long id, Long version, String motivo);
 }

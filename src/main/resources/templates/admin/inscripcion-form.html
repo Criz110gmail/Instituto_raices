@@ -11,9 +11,11 @@
     <div class="continuity-banner" th:if="${form.inscripcionAnteriorId != null}"><span>Continuidad académica</span><strong th:text="${continuidadAnterior}">Inscripción anterior</strong><p>Al guardar, la trayectoria anterior y su asignación vigente se cerrarán el día previo al nuevo inicio.</p></div>
     <section class="form-card">
         <div class="form-intro"><span>Trayectoria escolar</span><h1 th:text="${edicion ? 'Expediente de inscripción' : (form.inscripcionAnteriorId != null ? 'Registrar traslado o promoción' : 'Crear inscripción')}">Crear inscripción</h1><p>La inscripción es la fuente de verdad del plantel, ciclo y grado del alumno. El historial nunca se sobrescribe.</p></div>
+        <div class="flash" th:if="${mensaje}" th:text="${mensaje}">Operación completada</div>
         <nav th:if="${edicion}" class="student-tablist enrollment-record-tabs" role="tablist" aria-label="Secciones del expediente de inscripción" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'ficha' : pestanaActiva}">
             <button type="button" role="tab" id="tab-inscripcion-ficha" aria-controls="datos-inscripcion" data-student-tab="ficha" data-tab-hash="#datos-inscripcion"><span aria-hidden="true">01</span><strong>Ficha de inscripción</strong><small>Alumno y datos académicos</small></button>
             <button type="button" role="tab" id="tab-inscripcion-grupos" aria-controls="grupos-inscripcion" data-student-tab="grupos" data-tab-hash="#grupos-inscripcion"><span aria-hidden="true">02</span><strong>Grupo y trayectoria</strong><small>Asignaciones y continuidad</small></button>
+            <button th:if="${puedeVerCobranza}" type="button" role="tab" id="tab-inscripcion-cobranza" aria-controls="cobranza-inscripcion" data-student-tab="cobranza" data-tab-hash="#cobranza-inscripcion"><span aria-hidden="true">03</span><strong>Cobranza</strong><small>Cuotas, cargos y pagos</small></button>
         </nav>
         <section th:if="${edicion}" class="enrollment-student-profile student-tab-panel" data-student-panel="ficha" role="tabpanel" aria-labelledby="tab-inscripcion-ficha ficha-inscripcion-alumno">
             <div class="enrollment-photo student-photo-frame" th:classappend="${fotografiaAlumno == null ? ' empty' : ''}">
@@ -74,6 +76,29 @@
                 <button type="submit">Asignar grupo</button>
             </form>
             <div class="account-buttons enrollment-actions" th:if="${permiteContinuidad}"><a class="primary-action" th:href="@{/admin/inscripciones/{id}/continuar(id=${id})}">Crear traslado o promoción</a></div>
+        </section>
+
+        <section id="cobranza-inscripcion" class="student-tab-panel enrollment-billing" data-student-panel="cobranza" role="tabpanel" aria-labelledby="tab-inscripcion-cobranza" th:if="${edicion and puedeVerCobranza}">
+            <div class="section-heading"><div><span>Flujo asistido</span><h2>Cobranza de esta inscripción</h2></div><p>Prepara la cuota, genera el pago por cobrar y registra el pago sin volver a capturar alumno, plantel o ciclo.</p></div>
+            <div class="form-error" role="alert" th:if="${errorCobranza}"><strong>No se pudo completar la cobranza</strong><p th:text="${errorCobranza}">Revisa la operación.</p></div>
+            <div class="billing-progress" aria-label="Etapas de cobranza">
+                <div th:classappend="${!cobranza.cuotas.empty ? ' complete' : ' current'}"><span>1</span><strong>Cuota</strong><small th:text="${cobranza.cuotas.empty ? 'Pendiente de preparar' : 'Configurada'}">Estado</small></div>
+                <div th:classappend="${!cobranza.cargos.empty ? ' complete' : (!cobranza.cuotas.empty ? ' current' : '')}"><span>2</span><strong>Cargo</strong><small th:text="${cobranza.cargos.empty ? 'Pendiente de generar' : 'Generado'}">Estado</small></div>
+                <div th:classappend="${cobranza.cargoPagado ? ' complete' : (!cobranza.cargos.empty ? ' current' : '')}"><span>3</span><strong>Pago</strong><small th:text="${cobranza.cargoPagado ? 'Con pago aplicado' : 'Pendiente'}">Estado</small></div>
+            </div>
+            <div class="billing-primary-action" th:if="${puedeConfigurarCuota}"><div><span>Siguiente acción sugerida</span><strong th:text="${cobranza.cuotas.empty ? 'Preparar cobro de inscripción' : 'Agregar otra cuota o concepto'}">Preparar cobro</strong><p>La inscripción, el plantel, la moneda y la vigencia se completarán automáticamente.</p></div><a th:href="@{/admin/cuotas-alumno/nuevo(inscripcionId=${id})}">Preparar cobro</a></div>
+
+            <div class="billing-columns">
+                <section class="billing-block"><div class="billing-block-heading"><div><span>Configuración</span><h3>Cuotas del alumno</h3></div><strong th:text="${cobranza.cuotas.size()}">0</strong></div>
+                    <div class="billing-empty" th:if="${cobranza.cuotas.empty}"><strong>Aún no hay una cuota configurada</strong><p>Usa “Preparar cobro” para evitar capturar nuevamente los datos de la inscripción.</p></div>
+                    <article class="billing-row" th:each="cuota : ${cobranza.cuotas}"><div><span class="billing-status" th:classappend="${' '+#strings.toLowerCase(cuota.estado.name())}" th:text="${cuota.estado}">Activa</span><strong th:text="${cuota.conceptoCodigo+' · '+cuota.conceptoNombre}">Concepto</strong><small th:text="${(cuota.frecuencia.name() == 'UNICA' ? 'Cobro único · vence ' + cuota.fechaVencimientoUnico : 'Mensual · vence el día ' + cuota.diaVencimiento) + ' · ' + @formatoMoneda.pesos(cuota.importeBase)}">Detalle</small></div><div class="billing-row-actions"><a th:if="${puedeConfigurarCuota}" th:href="@{/admin/cuotas-alumno/{id}/editar(id=${cuota.id})}">Editar</a><form th:if="${puedeGenerarCargo and cuota.frecuencia.name() == 'UNICA' and cuota.estado.name() == 'ACTIVA' and !cobranza.cuotasConCargo.contains(cuota.id)}" method="post" th:action="@{/admin/cargos/cuotas/{cuotaId}/generar-unico(cuotaId=${cuota.id})}"><input type="hidden" name="inscripcionId" th:value="${id}"><button type="submit">Generar cargo</button></form><span th:if="${cobranza.cuotasConCargo.contains(cuota.id)}">Cargo generado</span></div></article>
+                </section>
+                <section class="billing-block"><div class="billing-block-heading"><div><span>Deuda e historial</span><h3>Pagos por cobrar</h3></div><strong th:text="${cobranza.cargos.size()}">0</strong></div>
+                    <div class="billing-empty" th:if="${cobranza.cargos.empty}"><strong>Aún no hay cargos</strong><p>Una cuota única puede generar su cargo inmediatamente o mediante el generador general.</p></div>
+                    <article class="billing-row charge" th:each="cargo : ${cobranza.cargos}"><div><span class="billing-status" th:classappend="${' '+#strings.toLowerCase(cargo.situacionCobro.name())}" th:text="${cargo.vencido ? 'Vencido' : cargo.situacionCobro}">Pendiente</span><strong th:text="${cargo.descripcion}">Descripción</strong><small th:text="${'Vence '+cargo.fechaVencimiento+' · Saldo '+@formatoMoneda.pesos(cargo.saldoPendiente)}">Saldo</small></div><div class="billing-row-actions"><a th:href="@{/admin/cargos/{id}/editar(id=${cargo.id})}">Ver detalle</a><a class="primary" th:if="${puedeRegistrarPago and cobranza.tutorSugerido != null and (cargo.situacionCobro.name() == 'PENDIENTE' or cargo.situacionCobro.name() == 'PARCIAL')}" th:href="@{/admin/pagos/nuevo(cargoId=${cargo.id},retornoInscripcionId=${id})}">Registrar pago</a></div></article>
+                    <div class="form-notice" th:if="${puedeRegistrarPago and cobranza.tutorSugerido == null and !cobranza.cargos.empty}"><strong>Falta responsable financiero</strong><p>Vincula un tutor responsable financiero vigente antes de usar el pago rápido.</p></div>
+                </section>
+            </div>
         </section>
     </section>
 </main>

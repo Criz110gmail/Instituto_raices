@@ -10,9 +10,12 @@
 <main class="form-shell payment-shell">
     <header class="form-top"><a href="/admin/catalogos/pagos">← Volver a pagos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <div class="finance-principle payment-principle"><span>Recepción protegida</span><strong>Un solo pago, distribución clara por cada alumno</strong><p>El registro queda pendiente de validación. Las cantidades sugeridas no reducen todavía el saldo de ningún cargo ni incrementan una cuenta.</p></div>
+    <div class="finance-principle" th:if="${cargoPrecargado}"><span>Pago rápido desde cobranza</span><strong th:text="${cargoPrecargado.alumnoMatricula+' · '+cargoPrecargado.alumnoNombre}">Alumno</strong><p th:text="${cargoPrecargado.conceptoNombre+' · Saldo precargado '+@formatoMoneda.pesos(cargoPrecargado.saldoPendiente)}">Cargo seleccionado</p></div>
     <section class="form-card payment-card">
         <div class="form-intro finance-intro"><span>Control de ingresos</span><h1>Registrar pago pendiente</h1><p>Captura quién pagó, dónde se reportó y cómo desea distribuirse. La validación administrativa confirmará todo en la siguiente etapa.</p></div>
         <form id="pago-form" class="entity-form" th:object="${form}" method="post" th:action="@{/admin/pagos}" enctype="multipart/form-data">
+            <input type="hidden" th:field="*{retornoInscripcionId}">
+            <div class="form-notice" th:if="${advertenciaPagoRapido}"><strong>Revisa el responsable</strong><p th:text="${advertenciaPagoRapido}">Aviso</p></div>
             <div class="form-error" role="alert" th:if="${errorOperacion != null or #fields.hasErrors('*')}">
                 <strong>No se pudo registrar el pago</strong><p th:if="${errorOperacion}" th:text="${errorOperacion}"></p>
                 <ul th:if="${#fields.hasErrors('*')}"><li th:each="e : ${#fields.errors('*')}" th:text="${e}"></li></ul>
@@ -55,7 +58,7 @@
             </fieldset>
 
             <div class="form-notice"><strong>Importante</strong><p>“Pendiente de validación” significa que el comprobante aún no confirma la recepción. Este paso no crea aplicaciones, movimientos financieros ni cambios de saldo.</p></div>
-            <footer class="form-actions"><a href="/admin/catalogos/pagos">Cancelar</a><button type="submit">Registrar como pendiente</button></footer>
+            <footer class="form-actions"><a th:href="${form.retornoInscripcionId == null ? '/admin/catalogos/pagos' : '/admin/inscripciones/' + form.retornoInscripcionId + '/editar#cobranza-inscripcion'}">Cancelar</a><button type="submit">Registrar como pendiente</button></footer>
         </form>
     </section>
 </main>

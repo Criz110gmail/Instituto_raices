@@ -96,6 +96,29 @@ class CargoServiceImplTest {
     }
 
     @Test
+    void generaCargoUnicoInmediatoConLaMismaClaveIdempotente() {
+        CuotaAlumno cuota = cuotaMensual();
+        cuota.setFrecuencia(FrecuenciaCuota.UNICA);
+        cuota.setFechaFin(LocalDate.of(2026, 12, 31));
+        cuota.setFechaVencimientoUnico(LocalDate.of(2026, 8, 15));
+        Cargo cargo = cargo();
+        cargo.setCuotaAlumno(cuota);
+        cargo.setClaveGeneracion("AUTO:1:90:UNICA");
+        when(cuotaRepository.findByIdForUpdate(90L)).thenReturn(Optional.of(cuota));
+        when(repository.insertarAutomaticoSiAusente(any(), any(), any(), any(), any(),
+                any(), any(), any(), any(), any(), any(), isNull())).thenReturn(0);
+        when(repository.findByClaveGeneracion("AUTO:1:90:UNICA")).thenReturn(Optional.of(cargo));
+
+        var respuesta = service.generarCargoUnico(90L);
+
+        assertThat(respuesta.claveGeneracion()).isEqualTo("AUTO:1:90:UNICA");
+        verify(repository).insertarAutomaticoSiAusente(eq(50L), eq(70L), eq(90L),
+                eq("AUTO:1:90:UNICA"), any(), eq(LocalDate.of(2026, 1, 20)),
+                eq(LocalDate.of(2026, 12, 31)), any(), eq(LocalDate.of(2026, 8, 15)),
+                eq(new BigDecimal("3000.00")), eq("MXN"), isNull());
+    }
+
+    @Test
     void rechazaCargoManualDeOtraInstitucion() {
         Inscripcion inscripcion = inscripcion();
         ConceptoCobro concepto = concepto(2L);

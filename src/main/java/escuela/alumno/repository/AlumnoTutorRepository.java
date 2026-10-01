@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.time.LocalDate;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 public interface AlumnoTutorRepository extends JpaRepository<AlumnoTutor, Long>,
         JpaSpecificationExecutor<AlumnoTutor> {
@@ -39,4 +40,16 @@ public interface AlumnoTutorRepository extends JpaRepository<AlumnoTutor, Long>,
     Optional<AlumnoTutor> vinculoAutorizadorVigente(@Param("alumnoId") Long alumnoId,
                                                      @Param("tutorId") Long tutorId,
                                                      @Param("fecha") LocalDate fecha);
+
+    @EntityGraph(attributePaths = "tutor")
+    @Query("""
+            select v from AlumnoTutor v
+            where v.alumno.id = :alumnoId and v.activo = true
+              and v.responsableFinanciero = true
+              and v.fechaInicio <= :fecha
+              and (v.fechaFin is null or v.fechaFin >= :fecha)
+            order by v.contactoPrincipal desc, v.id asc
+            """)
+    List<AlumnoTutor> responsablesFinancierosVigentes(@Param("alumnoId") Long alumnoId,
+                                                       @Param("fecha") LocalDate fecha);
 }

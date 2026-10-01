@@ -33,6 +33,7 @@ public class PagoForm {
     @Size(max = 150) private String referencia;
     @Size(max = 4000) private String observaciones;
     @Valid @Size(max = 100) private List<SolicitudAplicacionPagoForm> solicitudes = new ArrayList<>();
+    private Long retornoInscripcionId;
 
     public PagoRequest request(String zonaHoraria) {
         Instant instante = fechaPago.atZone(ZoneId.of(zonaHoraria)).toInstant();

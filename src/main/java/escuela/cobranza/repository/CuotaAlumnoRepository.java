@@ -37,6 +37,8 @@ public interface CuotaAlumnoRepository extends JpaRepository<CuotaAlumno, Long>,
 
     boolean existsByConceptoCobroIdAndEstado(Long conceptoId, EstadoCuota estado);
 
+    List<CuotaAlumno> findAllByInscripcionIdOrderByCreadoEnDescIdDesc(Long inscripcionId);
+
     @Query("""
             select c from CuotaAlumno c
             where c.id > :ultimoId

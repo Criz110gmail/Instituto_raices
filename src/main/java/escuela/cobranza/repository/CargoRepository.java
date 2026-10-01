@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -22,6 +23,8 @@ public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecific
     Optional<Cargo> findByIdForUpdate(@Param("id") Long id);
 
     Optional<Cargo> findByClaveGeneracion(String claveGeneracion);
+
+    List<Cargo> findAllByInscripcionIdOrderByFechaVencimientoDescIdDesc(Long inscripcionId);
 
     @Query(value = """
             SELECT DISTINCT c.* FROM cargo c

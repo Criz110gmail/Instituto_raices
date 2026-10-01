@@ -16,6 +16,7 @@ import escuela.alumno.service.AlumnoService;
 import escuela.alumno.service.FotografiaAlumnoService;
 import escuela.archivo.dto.ArchivoDescarga;
 import escuela.common.exception.ReglaNegocioException;
+import escuela.cobranza.service.CobranzaInscripcionService;
 import escuela.inscripcion.dto.response.InscripcionResponse;
 import escuela.inscripcion.entity.EstadoInscripcion;
 import escuela.inscripcion.service.InscripcionService;
@@ -47,6 +48,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
 import java.nio.charset.StandardCharsets;
@@ -67,6 +70,7 @@ public class InscripcionAdminController {
     private final NivelEducativoService nivelService;
     private final GradoService gradoService;
     private final GrupoService grupoService;
+    private final CobranzaInscripcionService cobranzaService;
     private final AlcanceDatosService alcance;
 
     @GetMapping("/nuevo")
@@ -244,7 +248,28 @@ public class InscripcionAdminController {
                         ? inscripcion.fechaInicio() : LocalDate.now());
                 model.addAttribute("asignacionForm", asignacion);
             }
+            prepararCobranza(model, id);
         }
+    }
+
+    private void prepararCobranza(Model model, Long inscripcionId) {
+        Authentication autenticacion = SecurityContextHolder.getContext().getAuthentication();
+        boolean puedeConfigurar = tienePermiso(autenticacion, "CUOTA_ALUMNO_ADMINISTRAR");
+        boolean puedeGenerar = tienePermiso(autenticacion, "CARGO_ADMINISTRAR");
+        boolean puedeRegistrarPago = tienePermiso(autenticacion, "PAGO_REGISTRAR");
+        boolean puedeVer = puedeConfigurar || puedeGenerar || puedeRegistrarPago
+                || tienePermiso(autenticacion, "CUOTA_ALUMNO_LEER")
+                || tienePermiso(autenticacion, "CARGO_LEER");
+        model.addAttribute("puedeVerCobranza", puedeVer);
+        model.addAttribute("puedeConfigurarCuota", puedeConfigurar);
+        model.addAttribute("puedeGenerarCargo", puedeGenerar);
+        model.addAttribute("puedeRegistrarPago", puedeRegistrarPago);
+        if (puedeVer) model.addAttribute("cobranza", cobranzaService.resumen(inscripcionId));
+    }
+
+    private boolean tienePermiso(Authentication autenticacion, String permiso) {
+        return autenticacion != null && autenticacion.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals(permiso));
     }
 
     private OpcionGrado opcion(GradoResponse grado, NivelEducativoResponse nivel) {

@@ -28,6 +28,11 @@ no vuelvas a implementar componentes que ya existan.
   el egreso en Movimientos financieros y cancelar conserva el egreso original y publica
   una reversa compensatoria. Ambos listados son paginados, filtrables y exportables a
   Excel con los mismos criterios. La siguiente migración disponible es V51.
+- La mejora posterior a V50 incorpora cobranza asistida sin acoplar los módulos: desde
+  la edición de una inscripción se consulta su cuota e historial de pagos por cobrar, se
+  prepara una cuota única con el contexto precargado, se puede emitir inmediatamente su
+  cargo idempotente y abrir Pagos con cargo, saldo y tutor financiero precargados. No
+  requirió migración; V51 continúa disponible.
 - V49 implementa la Actualización familiar de expedientes. Un tutor con vínculo activo
   y autorización puede proponer documentos o una ficha médica completa desde su portal;
   cada envío conserva el consentimiento y no modifica el expediente oficial hasta que
@@ -1330,3 +1335,23 @@ enumeradas de etapas anteriores.
 - La creación inicial continúa como formulario directo, porque aún no existe historial que
   separar. Docker ejecutó 400 pruebas sin fallos. No hubo migración ni despliegue; V47
   continúa disponible.
+
+### Cobranza asistida desde la inscripción — 2026-10-01
+
+- La edición de Inscripciones agrega la pestaña **Cobranza**, sin fusionar ni duplicar las
+  responsabilidades de Cuotas, Pagos de alumnos y Pagos. Presenta un resumen del avance,
+  cuotas configuradas y cargos emitidos para ese alumno.
+- **Preparar cobro** abre una cuota individual de frecuencia única con inscripción,
+  institución, plantel, moneda y vigencia precargados. El usuario sólo elige concepto,
+  importe y vencimiento; opcionalmente crea el cargo exigible en la misma operación.
+- La emisión inmediata usa la misma clave idempotente del generador automático. Repetir la
+  acción devuelve el cargo existente y nunca cobra dos veces la misma cuota única.
+- Desde la pestaña o desde el detalle de un cargo pendiente/parcial se abre **Registrar
+  pago**. El formulario precarga cargo, saldo pendiente, institución, plantel, moneda y el
+  tutor responsable financiero vigente; si hay varios o ninguno, lo informa sin ocultar
+  la posibilidad de corregir la selección.
+- El autocompletado ordinario de cargos también completa el importe solicitado y el total
+  del pago con el saldo vigente seleccionado. Las opciones pagadas se excluyen.
+- El flujo respeta por separado `CUOTA_ALUMNO_ADMINISTRAR`, `CARGO_ADMINISTRAR` y
+  `PAGO_REGISTRAR`, además del alcance institucional. No hubo migración: V51 sigue libre.
+  Docker compiló 697 fuentes principales y 121 de prueba y ejecutó 422 pruebas sin fallos.

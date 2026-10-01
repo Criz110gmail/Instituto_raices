@@ -9,6 +9,7 @@ import escuela.cobranza.dto.response.GeneracionCargosResponse;
 import escuela.cobranza.entity.Cargo;
 import escuela.cobranza.entity.ConceptoCobro;
 import escuela.cobranza.entity.CuotaAlumno;
+import escuela.cobranza.entity.EstadoCuota;
 import escuela.cobranza.entity.EstadoRegistroCargo;
 import escuela.cobranza.entity.FrecuenciaCuota;
 import escuela.cobranza.mapper.CargoMapper;
@@ -104,6 +105,23 @@ public class CargoServiceImpl implements CargoService {
     }
 
     @Override
+    public CargoResponse generarCargoUnico(Long cuotaId) {
+        CuotaAlumno cuota = cuotaRepository.findByIdForUpdate(cuotaId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("la cuota del alumno", cuotaId));
+        if (cuota.getFrecuencia() != FrecuenciaCuota.UNICA) {
+            throw new ReglaNegocioException("La generación inmediata sólo está disponible para cobros únicos");
+        }
+        if (cuota.getEstado() != EstadoCuota.ACTIVA || !cuota.getConceptoCobro().isActivo()
+                || !INSCRIPCIONES_VIGENTES.contains(cuota.getInscripcion().getEstado())) {
+            throw new ReglaNegocioException("El cargo requiere una cuota, concepto e inscripción vigentes");
+        }
+        insertar(cuota, cuota.getFechaInicio(), cuota.getFechaFin(),
+                cuota.getFechaVencimientoUnico(), "UNICA", cuota.getConceptoCobro().getNombre());
+        return mapper.respuesta(repository.findByClaveGeneracion(clave(cuota, "UNICA"))
+                .orElseThrow(() -> new ReglaNegocioException("No fue posible localizar el cargo generado")));
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public CargoResponse obtener(Long id) {
         return mapper.respuesta(repository.findById(id)
@@ -161,8 +179,7 @@ public class CargoServiceImpl implements CargoService {
     private ResultadoGeneracion insertar(CuotaAlumno cuota, LocalDate inicio, LocalDate fin,
                                          LocalDate vencimiento, String periodoClave,
                                          String descripcion) {
-        Long institucionId = cuota.getInscripcion().getAlumno().getInstitucion().getId();
-        String clave = "AUTO:" + institucionId + ":" + cuota.getId() + ":" + periodoClave;
+        String clave = clave(cuota, periodoClave);
         int insertados = repository.insertarAutomaticoSiAusente(cuota.getInscripcion().getId(),
                 cuota.getConceptoCobro().getId(), cuota.getId(), clave, descripcion,
                 inicio, fin, LocalDate.now(), vencimiento,
@@ -172,6 +189,11 @@ public class CargoServiceImpl implements CargoService {
             repository.findByClaveGeneracion(clave).ifPresent(aplicacionBecaService::aplicar);
         }
         return insertados == 1 ? new ResultadoGeneracion(1, 0) : new ResultadoGeneracion(0, 1);
+    }
+
+    private String clave(CuotaAlumno cuota, String periodoClave) {
+        Long institucionId = cuota.getInscripcion().getAlumno().getInstitucion().getId();
+        return "AUTO:" + institucionId + ":" + cuota.getId() + ":" + periodoClave;
     }
 
     private void validarManual(CargoManualRequest request, Inscripcion inscripcion,
