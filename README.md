@@ -665,6 +665,16 @@ tipo, estado, fechas y texto, y exporta con Apache POI exactamente el mismo resu
 Los permisos separados de lectura y administración respetan el alcance institucional o
 por plantel de cada usuario.
 
+**Actualización familiar de expedientes (V49)** permite que un tutor autorizado proponga
+documentos o una actualización completa de la ficha médica de cada hijo. El envío exige
+consentimiento explícito y conserva texto, versión y fecha; nunca cambia inmediatamente el
+expediente oficial. Administración revisa una bandeja paginada, aplica filtros en PostgreSQL,
+abre los archivos en otra pestaña y aprueba o rechaza con una respuesta obligatoria. Al
+aprobar, el documento o ficha médica se incorpora en la misma transacción; al rechazar, el
+expediente permanece intacto. La familia consulta el estado y la respuesta desde su portal.
+El Excel administrativo reutiliza exactamente los filtros de pantalla. Los documentos
+admiten PDF y fotografías JPEG, PNG, HEIC o HEIF optimizadas en el servidor.
+
 El orden de Niveles educativos, Grados, Periodos académicos y Materias por grado es un dato
 técnico automático: no se captura en los formularios. Al crear un registro toma su mismo ID;
 al editar se conserva, de modo que una excepción ajustada directamente en PostgreSQL no se

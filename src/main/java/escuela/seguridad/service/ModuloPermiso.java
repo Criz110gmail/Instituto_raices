@@ -45,6 +45,8 @@ public enum ModuloPermiso {
             "HORARIO_CLASE_LEER", "HORARIO_CLASE_ADMINISTRAR"),
     ALUMNOS("Alumnos", "Acceso completo al expediente de alumnos",
             "ALUMNO_LEER", "ALUMNO_ADMINISTRAR"),
+    ACTUALIZACIONES_EXPEDIENTE("Actualizaciones familiares", "Consulta y revisión de documentos e información médica enviados por tutores",
+            "ACTUALIZACION_EXPEDIENTE_LEER", "ACTUALIZACION_EXPEDIENTE_REVISAR"),
     TUTORES("Tutores", "Acceso completo al expediente de tutores",
             "TUTOR_LEER", "TUTOR_ADMINISTRAR"),
     VINCULOS_TUTOR("Vínculos alumno–tutor", "Acceso completo a vínculos entre alumnos y tutores",

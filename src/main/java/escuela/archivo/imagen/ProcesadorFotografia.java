@@ -37,6 +37,14 @@ public class ProcesadorFotografia {
     }
 
     public ImagenOptimizada procesar(MultipartFile archivo) {
+        return procesar(archivo, 1920, 85, TAMANO_MAXIMO_SALIDA);
+    }
+
+    public ImagenOptimizada procesarDocumento(MultipartFile archivo) {
+        return procesar(archivo, 2400, 88, 8L * 1024 * 1024);
+    }
+
+    private ImagenOptimizada procesar(MultipartFile archivo, int ladoMaximo, int calidad, long salidaMaxima) {
         byte[] original = leerYValidar(archivo);
         String formato = detectarFormato(original);
         Path directorio = null;
@@ -50,9 +58,9 @@ public class ProcesadorFotografia {
             Path entrada = directorio.resolve("entrada." + formato);
             Path salida = directorio.resolve("salida.jpg");
             Files.write(entrada, original);
-            convertir(entrada, salida);
+            convertir(entrada, salida, ladoMaximo, calidad);
             byte[] optimizada = Files.readAllBytes(salida);
-            validarSalida(optimizada);
+            validarSalida(optimizada, ladoMaximo, salidaMaxima);
             return new ImagenOptimizada(optimizada, nombreJpeg(archivo.getOriginalFilename()),
                     "image/jpeg", checksum(optimizada), original.length);
         } catch (InterruptedException excepcion) {
@@ -109,7 +117,8 @@ public class ProcesadorFotografia {
         return false;
     }
 
-    private void convertir(Path entrada, Path salida) throws IOException, InterruptedException {
+    private void convertir(Path entrada, Path salida, int ladoMaximo, int calidad)
+            throws IOException, InterruptedException {
         Process proceso;
         try {
             proceso = new ProcessBuilder(comando,
@@ -128,12 +137,12 @@ public class ProcesadorFotografia {
                     "-auto-orient",
                     "-strip",
                     "-colorspace", "sRGB",
-                    "-resize", "1920x1920>",
+                    "-resize", ladoMaximo + "x" + ladoMaximo + ">",
                     "-background", "white",
                     "-alpha", "remove",
                     "-alpha", "off",
                     "-sampling-factor", "4:2:0",
-                    "-quality", "85",
+                    "-quality", Integer.toString(calidad),
                     "jpeg:" + salida)
                     .redirectErrorStream(true)
                     .redirectOutput(ProcessBuilder.Redirect.DISCARD)
@@ -150,14 +159,14 @@ public class ProcesadorFotografia {
         }
     }
 
-    private void validarSalida(byte[] contenido) {
-        if (contenido.length == 0 || contenido.length > TAMANO_MAXIMO_SALIDA) {
+    private void validarSalida(byte[] contenido, int ladoMaximo, long salidaMaxima) {
+        if (contenido.length == 0 || contenido.length > salidaMaxima) {
             throw new ReglaNegocioException("No fue posible reducir la fotografía a un tamaño seguro");
         }
         try {
             var imagen = ImageIO.read(new ByteArrayInputStream(contenido));
             if (imagen == null || imagen.getWidth() <= 0 || imagen.getHeight() <= 0
-                    || imagen.getWidth() > 1920 || imagen.getHeight() > 1920) {
+                    || imagen.getWidth() > ladoMaximo || imagen.getHeight() > ladoMaximo) {
                 throw new ReglaNegocioException("No fue posible verificar la fotografía optimizada");
             }
         } catch (IOException excepcion) {

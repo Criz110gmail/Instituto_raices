@@ -22,12 +22,16 @@ no vuelvas a implementar componentes que ya existan.
 - Rama principal: `main`.
 - Confirma siempre `git status` y `git log` antes de continuar; el propietario realiza
   manualmente los commits y el `push`.
+- V49 implementa la Actualización familiar de expedientes. Un tutor con vínculo activo
+  y autorización puede proponer documentos o una ficha médica completa desde su portal;
+  cada envío conserva el consentimiento y no modifica el expediente oficial hasta que
+  administración lo aprueba. La bandeja administrativa es paginada, filtrable y exportable
+  a Excel. La siguiente migración disponible es V50.
 - V48 implementa el Calendario escolar detallado por ciclo, con días inhábiles,
   vacaciones, eventos académicos y variaciones de horario. Cada registro puede aplicar
   a toda la institución, a un plantel, a un nivel o a la combinación plantel–nivel.
   Incluye seguridad por alcance, validación de fechas y cruces de suspensiones,
-  listado paginado, filtros y Excel con los mismos criterios. La siguiente migración
-  disponible es V49.
+  listado paginado, filtros y Excel con los mismos criterios.
 - Las fotografías nuevas de alumnos, maestros y usuarios aceptan JPEG, PNG, HEIC y
   HEIF hasta 20 MB. ImageMagick/libheif corrige orientación, elimina metadatos,
   redimensiona a un máximo de 1920 px y guarda JPEG calidad 85; esta optimización no
@@ -871,6 +875,15 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   PostgreSQL local sin cambiar el volumen persistente ni las credenciales de `.env`.
 
 ## Siguiente paso acordado
+
+V49 de Actualización familiar de expedientes quedó implementada, compilada y desplegada;
+Docker ejecutó 412 pruebas sin fallos y salud respondió `UP`. Antes de
+ampliar el dominio, el propietario debe asignar `ACTUALIZACION_EXPEDIENTE_LEER` y/o
+`ACTUALIZACION_EXPEDIENTE_REVISAR` a un rol administrativo, cerrar sesión e ingresar de
+nuevo. Con datos controlados debe verificar: tutor autorizado, propuesta de PDF e imagen
+HEIC/JPEG/PNG, propuesta médica, rechazo con respuesta, aprobación y reflejo en el
+expediente oficial, Excel filtrado, tema oscuro y presentación móvil. Un tutor cuyo vínculo
+no tenga `puedeAutorizar` no debe poder enviar propuestas. La siguiente migración es V50.
 
 V43 de portal docente y planeaciones semanales quedó implementada, compilada y
 desplegada. El propietario debe hacer la prueba funcional con datos controlados:

@@ -23,6 +23,7 @@ public enum ModuloCatalogo {
     PLANEACIONES("planeaciones", "Planeaciones", List.of()),
     HORARIOS_CLASE("horarios-clases", "Horarios y clases", List.of()),
     ALUMNOS("alumnos", "Alumnos", List.of("Matrícula", "Alumno", "CURP", "Nacimiento", "Ingreso")),
+    ACTUALIZACIONES_EXPEDIENTE("actualizaciones-expediente", "Actualizaciones familiares", List.of()),
     TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),
     VINCULOS_TUTOR("vinculos-tutor", "Vínculos alumno–tutor", List.of("Alumno", "Tutor", "Parentesco", "Permisos", "Vigencia")),
     INSCRIPCIONES("inscripciones", "Inscripciones", List.of("Inscripción", "Alumno", "Plantel", "Ciclo", "Grado", "Vigencia")),
@@ -71,6 +72,8 @@ public enum ModuloCatalogo {
             case ASISTENCIA -> List.of(todos, Map.entry("PRESENTE", "Presente"),
                     Map.entry("AUSENTE", "Ausente"), Map.entry("RETARDO", "Retardo"),
                     Map.entry("JUSTIFICADA", "Justificada"));
+            case ACTUALIZACIONES_EXPEDIENTE -> List.of(todos, Map.entry("ENVIADA", "Pendiente de revisión"),
+                    Map.entry("APROBADA", "Aprobada"), Map.entry("RECHAZADA", "Rechazada"));
             case TUTORES, MAESTROS -> List.of(todos, Map.entry("ACTIVO", "Activo"),
                     Map.entry("INACTIVO", "Inactivo"), Map.entry("SIN_CUENTA", "Sin cuenta de portal"),
                     Map.entry("CUENTA_ACTIVA", "Cuenta activa"),
@@ -102,7 +105,7 @@ public enum ModuloCatalogo {
     public String seccion() {
         return switch (this) {
             case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS, CALENDARIO_ESCOLAR, GRUPOS, MATERIAS -> "Estructura";
-            case ALUMNOS, TUTORES, VINCULOS_TUTOR, MAESTROS -> "Personas";
+            case ALUMNOS, ACTUALIZACIONES_EXPEDIENTE, TUTORES, VINCULOS_TUTOR, MAESTROS -> "Personas";
             case INSCRIPCIONES, CALIFICACIONES, ASISTENCIA, BOLETAS, PLANEACIONES, HORARIOS_CLASE -> "Trayectoria";
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
             case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Finanzas";
@@ -130,6 +133,7 @@ public enum ModuloCatalogo {
             case PLANEACIONES -> "PLANEACION";
             case HORARIOS_CLASE -> "HORARIO_CLASE";
             case ALUMNOS -> "ALUMNO";
+            case ACTUALIZACIONES_EXPEDIENTE -> "ACTUALIZACION_EXPEDIENTE";
             case TUTORES -> "TUTOR";
             case VINCULOS_TUTOR -> "VINCULO_TUTOR";
             case INSCRIPCIONES -> "INSCRIPCION";
@@ -168,6 +172,7 @@ public enum ModuloCatalogo {
         if (this == BOLETAS) return permisos.contains("BOLETA_CONSULTAR");
         if (this == PLANEACIONES) return permisos.contains("PLANEACION_LEER") || permisos.contains("PLANEACION_ADMINISTRAR");
         if (this == CALENDARIO_ESCOLAR) return permisos.contains("CALENDARIO_ESCOLAR_LEER") || permisos.contains("CALENDARIO_ESCOLAR_ADMINISTRAR");
+        if (this == ACTUALIZACIONES_EXPEDIENTE) return permisos.contains("ACTUALIZACION_EXPEDIENTE_LEER") || permisos.contains("ACTUALIZACION_EXPEDIENTE_REVISAR");
         if (this == HORARIOS_CLASE) return permisos.contains("HORARIO_CLASE_LEER") || permisos.contains("HORARIO_CLASE_ADMINISTRAR");
         if (this == EVENTOS_ESCOLARES) return permisos.contains("EVENTO_ESCOLAR_LEER")
                 || permisos.contains("EVENTO_ESCOLAR_ADMINISTRAR");
@@ -191,6 +196,7 @@ public enum ModuloCatalogo {
                 || this == PAGOS
                 || this == HORARIOS_CLASE
                 || this == CALENDARIO_ESCOLAR
+                || this == ACTUALIZACIONES_EXPEDIENTE
                 || this == ROLES || this == USUARIOS;
     }
 
@@ -213,6 +219,7 @@ public enum ModuloCatalogo {
             case PLANEACIONES -> "/admin/planeaciones";
             case HORARIOS_CLASE -> "/admin/horarios-clases";
             case ALUMNOS -> "/admin/alumnos";
+            case ACTUALIZACIONES_EXPEDIENTE -> "/admin/actualizaciones-expediente";
             case TUTORES -> "/admin/tutores";
             case VINCULOS_TUTOR -> "/admin/vinculos-tutor";
             case INSCRIPCIONES -> "/admin/inscripciones";
@@ -240,7 +247,7 @@ public enum ModuloCatalogo {
     }
 
     public String rutaListado() {
-        return this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
+        return this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == ACTUALIZACIONES_EXPEDIENTE || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
                 ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }

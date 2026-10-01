@@ -1,5 +1,24 @@
 # Contexto del proyecto
 
+## Verificación V49 — actualización familiar de expedientes
+
+- El portal familiar incorpora **Expediente familiar** por alumno. Sólo un tutor activo con
+  vínculo vigente y `puedeAutorizar` puede proponer documentos o información médica.
+- Cada envío exige consentimiento explícito y conserva su versión, texto y fecha. La
+  propuesta permanece separada del expediente oficial en estado pendiente.
+- Administración dispone de bandeja con filtros en PostgreSQL, paginación real, detalle,
+  visualización inline de archivos y Excel con los mismos criterios. Aprobar o rechazar
+  exige una respuesta para la familia y registra usuario, fecha y resolución.
+- Aprobar un documento crea el registro oficial de `AlumnoDocumento`; aprobar información
+  médica sustituye la ficha oficial en una transacción. Rechazar no modifica el expediente.
+- Se admiten PDF de hasta 10 MB e imágenes JPEG, PNG, HEIC o HEIF de hasta 20 MB; las
+  imágenes se normalizan y optimizan antes del almacenamiento privado.
+- Los permisos son `ACTUALIZACION_EXPEDIENTE_LEER` y
+  `ACTUALIZACION_EXPEDIENTE_REVISAR`. Flyway V49 crea el dominio y sus restricciones; la
+  siguiente migración disponible es V50.
+- Docker ejecutó 412 pruebas sin fallos, Flyway aplicó V49, Hibernate validó el esquema y
+  `/actuator/health` respondió `UP` después del despliegue.
+
 ## Verificación posterior a V48 — optimización de fotografías móviles
 
 - Se centralizó el procesamiento de fotografías de alumnos, maestros y usuarios.
