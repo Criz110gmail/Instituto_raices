@@ -22,6 +22,12 @@ no vuelvas a implementar componentes que ya existan.
 - Rama principal: `main`.
 - Confirma siempre `git status` y `git log` antes de continuar; el propietario realiza
   manualmente los commits y el `push`.
+- V50 implementa Proveedores y Compras. El catálogo de proveedores es multiinstitución;
+  cada compra se captura con partidas, proveedor, plantel opcional, cuenta de caja/banco
+  y categoría financiera. Guardar conserva un borrador sin afectar saldos, confirmar crea
+  el egreso en Movimientos financieros y cancelar conserva el egreso original y publica
+  una reversa compensatoria. Ambos listados son paginados, filtrables y exportables a
+  Excel con los mismos criterios. La siguiente migración disponible es V51.
 - V49 implementa la Actualización familiar de expedientes. Un tutor con vínculo activo
   y autorización puede proponer documentos o una ficha médica completa desde su portal;
   cada envío conserva el consentimiento y no modifica el expediente oficial hasta que
@@ -876,14 +882,27 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-V49 de Actualización familiar de expedientes quedó implementada, compilada y desplegada;
-Docker ejecutó 412 pruebas sin fallos y salud respondió `UP`. Antes de
-ampliar el dominio, el propietario debe asignar `ACTUALIZACION_EXPEDIENTE_LEER` y/o
+V50 de Proveedores y Compras quedó implementada, compilada y desplegada; Docker ejecutó
+417 pruebas sin fallos, Flyway aplicó V50, Hibernate validó el esquema y salud respondió
+`UP`. Antes de probarla, el propietario debe asignar los módulos `Proveedores` y `Compras`
+al rol administrativo correspondiente, cerrar sesión e ingresar de nuevo. El paquete de
+Compras concede lectura, captura de borradores, confirmación y cancelación; si se requiere
+separación de funciones, ajustar directamente los permisos técnicos `COMPRA_*`.
+
+Con datos controlados se debe verificar: crear/editar proveedor; guardar y editar una compra
+con varias partidas sin cambio de saldo; confirmar y comprobar el egreso en Movimientos
+financieros y en el saldo de la cuenta; cancelar con motivo y comprobar la reversa; filtros,
+paginación, Excel, tema oscuro y presentación móvil. No confirmar una compra operativa real
+sólo para verificar. La siguiente migración disponible es V51 y el siguiente módulo aún debe
+acordarse con el propietario.
+
+V49 de Actualización familiar de expedientes también conserva pendiente su prueba funcional.
+El propietario debe asignar `ACTUALIZACION_EXPEDIENTE_LEER` y/o
 `ACTUALIZACION_EXPEDIENTE_REVISAR` a un rol administrativo, cerrar sesión e ingresar de
 nuevo. Con datos controlados debe verificar: tutor autorizado, propuesta de PDF e imagen
 HEIC/JPEG/PNG, propuesta médica, rechazo con respuesta, aprobación y reflejo en el
 expediente oficial, Excel filtrado, tema oscuro y presentación móvil. Un tutor cuyo vínculo
-no tenga `puedeAutorizar` no debe poder enviar propuestas. La siguiente migración es V50.
+no tenga `puedeAutorizar` no debe poder enviar propuestas.
 
 V43 de portal docente y planeaciones semanales quedó implementada, compilada y
 desplegada. El propietario debe hacer la prueba funcional con datos controlados:

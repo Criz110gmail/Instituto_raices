@@ -1,5 +1,25 @@
 # Contexto del proyecto
 
+## Verificación V50 — proveedores y compras
+
+- Se agregó el catálogo multiinstitución de proveedores, con RFC único cuando se captura,
+  datos de contacto, estado activo/inactivo, concurrencia optimista, filtros, paginación y
+  Excel con los mismos criterios de la pantalla.
+- Una compra conserva proveedor, plantel opcional, cuenta financiera, categoría de egreso,
+  fecha, referencia y hasta 100 partidas con cantidad, precio e impuesto. Los totales se
+  calculan en servidor y también se presentan dinámicamente en el formulario.
+- Guardar o editar mantiene estado `BORRADOR` y no cambia el saldo. Confirmar utiliza el
+  servicio financiero existente para publicar un `EGRESO` idempotente en la cuenta elegida;
+  por ello respeta fecha de apertura, saldo disponible, alcance y bloqueo de cuenta.
+- Cancelar una compra confirmada exige motivo y genera una reversa financiera en la misma
+  cuenta. El egreso original no se elimina; se conservan revisor, fecha y motivo.
+- Los permisos son `PROVEEDOR_LEER`, `PROVEEDOR_ADMINISTRAR`, `COMPRA_LEER`,
+  `COMPRA_ADMINISTRAR`, `COMPRA_CONFIRMAR` y `COMPRA_CANCELAR`. Flyway V50 protege estados,
+  totales y vínculos con movimiento/reversa mediante restricciones de PostgreSQL.
+- Docker ejecutó 417 pruebas sin fallos, Flyway aplicó V50, Hibernate validó el esquema y
+  `/actuator/health` respondió `UP` después del despliegue. La siguiente migración disponible
+  es V51.
+
 ## Verificación V49 — actualización familiar de expedientes
 
 - El portal familiar incorpora **Expediente familiar** por alumno. Sólo un tutor activo con

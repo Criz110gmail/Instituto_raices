@@ -727,8 +727,11 @@ implementar las reglas respectivas.
    conserva consentimiento explícito y sólo se incorpora al expediente cuando un usuario
    administrativo la aprueba. El rechazo conserva motivo, revisor y fecha sin modificar
    el registro oficial.
-9) Proveedores, compras, nómina y facturación: definir si se necesitan módulos
-   completos; hoy solo se registra el movimiento financiero correspondiente.
+9) Proveedores y compras: resueltos en V50. El proveedor pertenece a una institución y
+   conserva datos fiscales y de contacto. La compra contiene partidas, cuenta financiera
+   de origen, plantel opcional y categoría de egreso. El borrador no afecta saldos; la
+   confirmación crea un egreso y la cancelación crea una reversa sin eliminar el historial.
+   Nómina y facturación permanecen pendientes de definición.
 10) Datos de tutores: confirmar canal de activación y si se permite alta sin
     correo. Evitar crear usuarios duplicados cuando ya existe el tutor.
 11) Ampliación académica: V39 resolvió Materia y MateriaGrado con evaluación numérica o

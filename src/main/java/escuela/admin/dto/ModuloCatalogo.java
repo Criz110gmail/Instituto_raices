@@ -36,6 +36,8 @@ public enum ModuloCatalogo {
     POLITICAS_RECARGO("politicas-recargo", "Políticas de recargo", List.of("Concepto", "Institución", "Recargo", "Gracia", "Periodicidad", "Límite", "Generación")),
     MOTIVOS_FINANCIEROS("motivos-financieros", "Motivos financieros", List.of("Código", "Motivo", "Institución", "Naturaleza", "Categoría")),
     CUENTAS_FINANCIERAS("cuentas-financieras", "Cuentas financieras", List.of("Código", "Cuenta", "Alcance", "Tipo", "Institución financiera", "Identificador", "Saldo inicial", "Fecha inicial")),
+    PROVEEDORES("proveedores", "Proveedores", List.of()),
+    COMPRAS("compras", "Compras", List.of()),
     PAGOS("pagos", "Pagos", List.of("Folio", "Tutor", "Plantel de registro", "Fecha", "Método", "Origen", "Monto", "Distribución", "Comprobantes")),
     MOVIMIENTOS_FINANCIEROS("movimientos-financieros", "Movimientos financieros", List.of()),
     RETIROS_FONDO("retiros-fondo", "Retiros de fondos", List.of()),
@@ -92,6 +94,8 @@ public enum ModuloCatalogo {
             case PAGOS -> List.of(todos, Map.entry("PENDIENTE_VALIDACION", "Pendiente de validación"),
                     Map.entry("VALIDADO", "Validado"), Map.entry("RECHAZADO", "Rechazado"),
                     Map.entry("CANCELADO", "Cancelado"));
+            case COMPRAS -> List.of(todos, Map.entry("BORRADOR", "Borrador"),
+                    Map.entry("CONFIRMADA", "Confirmada"), Map.entry("CANCELADA", "Cancelada"));
             case AJUSTES_CARGO -> List.of(todos, Map.entry("BECA", "Beca"),
                     Map.entry("DESCUENTO", "Descuento"), Map.entry("RECARGO", "Recargo"),
                     Map.entry("CORRECCION", "Corrección"));
@@ -108,7 +112,7 @@ public enum ModuloCatalogo {
             case ALUMNOS, ACTUALIZACIONES_EXPEDIENTE, TUTORES, VINCULOS_TUTOR, MAESTROS -> "Personas";
             case INSCRIPCIONES, CALIFICACIONES, ASISTENCIA, BOLETAS, PLANEACIONES, HORARIOS_CLASE -> "Trayectoria";
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
-            case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Finanzas";
+            case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PROVEEDORES, COMPRAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Finanzas";
             case EVENTOS_ESCOLARES, AVISOS -> "Comunicación";
             case ROLES, USUARIOS, AUDITORIA, PORTAL_TUTOR -> "Seguridad";
         };
@@ -146,6 +150,8 @@ public enum ModuloCatalogo {
             case POLITICAS_RECARGO -> "POLITICA_RECARGO";
             case MOTIVOS_FINANCIEROS -> "MOTIVO_FINANCIERO";
             case CUENTAS_FINANCIERAS -> "CUENTA_FINANCIERA";
+            case PROVEEDORES -> "PROVEEDOR";
+            case COMPRAS -> "COMPRA";
             case PAGOS -> "PAGO";
             case MOVIMIENTOS_FINANCIEROS -> "MOVIMIENTO_FINANCIERO";
             case RETIROS_FONDO -> "RETIRO_FONDO";
@@ -161,6 +167,8 @@ public enum ModuloCatalogo {
         if (this == PAGOS) return permisos.contains("PAGO_LEER") || permisos.contains("PAGO_REGISTRAR")
                 || permisos.contains("PAGO_VALIDAR") || permisos.contains("PAGO_DEVOLVER")
                 || permisos.contains("PAGO_CANCELAR");
+        if (this == COMPRAS) return permisos.contains("COMPRA_LEER") || permisos.contains("COMPRA_ADMINISTRAR")
+                || permisos.contains("COMPRA_CONFIRMAR") || permisos.contains("COMPRA_CANCELAR");
         if (this == MOVIMIENTOS_FINANCIEROS) return permisos.contains("MOVIMIENTO_FINANCIERO_LEER")
                 || permisos.contains("MOVIMIENTO_FINANCIERO_REGISTRAR")
                 || permisos.contains("TRANSFERENCIA_CUENTA_REGISTRAR")
@@ -193,6 +201,7 @@ public enum ModuloCatalogo {
                 || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO || this == POLITICAS_RECARGO
                 || this == MOTIVOS_FINANCIEROS
                 || this == CUENTAS_FINANCIERAS
+                || this == PROVEEDORES || this == COMPRAS
                 || this == PAGOS
                 || this == HORARIOS_CLASE
                 || this == CALENDARIO_ESCOLAR
@@ -232,6 +241,8 @@ public enum ModuloCatalogo {
             case POLITICAS_RECARGO -> "/admin/politicas-recargo";
             case MOTIVOS_FINANCIEROS -> "/admin/motivos-financieros";
             case CUENTAS_FINANCIERAS -> "/admin/cuentas-financieras";
+            case PROVEEDORES -> "/admin/proveedores";
+            case COMPRAS -> "/admin/compras";
             case PAGOS -> "/admin/pagos";
             case MOVIMIENTOS_FINANCIEROS -> "/admin/movimientos-financieros";
             case RETIROS_FONDO -> "/admin/retiros-fondo";
@@ -247,7 +258,7 @@ public enum ModuloCatalogo {
     }
 
     public String rutaListado() {
-        return this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == ACTUALIZACIONES_EXPEDIENTE || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
+        return this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == ACTUALIZACIONES_EXPEDIENTE || this == PROVEEDORES || this == COMPRAS || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
                 ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }
@@ -261,6 +272,7 @@ public enum ModuloCatalogo {
                 || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO || this == POLITICAS_RECARGO
                 || this == MOTIVOS_FINANCIEROS
                 || this == CUENTAS_FINANCIERAS
+                || this == PROVEEDORES
                 || this == PAGOS
                 || this == HORARIOS_CLASE
                 || this == CALENDARIO_ESCOLAR

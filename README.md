@@ -675,6 +675,16 @@ expediente permanece intacto. La familia consulta el estado y la respuesta desde
 El Excel administrativo reutiliza exactamente los filtros de pantalla. Los documentos
 admiten PDF y fotografías JPEG, PNG, HEIC o HEIF optimizadas en el servidor.
 
+**Proveedores y compras (V50)** incorpora un catálogo multiinstitución de proveedores y
+un flujo de egresos con partidas detalladas. Cada compra selecciona proveedor, plantel
+opcional, cuenta financiera de origen —caja o banco—, categoría de egreso, fecha y
+referencia. Guardar crea un borrador editable y no altera saldos. Confirmar registra en la
+misma transacción un egreso visible en Movimientos financieros; si la cuenta no tiene saldo
+suficiente o no corresponde al alcance elegido, la operación se rechaza. Cancelar exige un
+motivo, conserva el movimiento original y genera una reversa compensatoria auditable.
+Proveedores y compras tienen permisos independientes, alcance por institución/plantel,
+paginación real y exportación Excel que reutiliza los filtros de pantalla.
+
 El orden de Niveles educativos, Grados, Periodos académicos y Materias por grado es un dato
 técnico automático: no se captura en los formularios. Al crear un registro toma su mismo ID;
 al editar se conserva, de modo que una excepción ajustada directamente en PostgreSQL no se
