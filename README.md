@@ -534,6 +534,13 @@ catálogos, finanzas y eventos se muestran como tarjetas redondeadas con fondo y
 discretos, controles suavizados, iconos informativos circulares y variantes responsiva y
 oscura. El ajuste es sólo visual y no modifica criterios de consulta, paginación ni permisos.
 
+La homogeneidad visual es una regla de aceptación para cualquier implementación nueva o
+corrección: listados, filtros, formularios, ayudas, botones, mensajes y estados deben
+reutilizar los componentes y proporciones ya consolidados. Cada pantalla se revisa en
+escritorio y móvil, con tema claro y oscuro; una función operativa no se considera terminada
+si su presentación rompe este patrón. Calendario escolar tiene pendiente una homologación
+visual de su listado, filtros y formulario.
+
 ### V41 · Asistencia diaria
 
 El módulo **Asistencia** permite seleccionar un grupo y una fecha para registrar en una
@@ -684,6 +691,15 @@ suficiente o no corresponde al alcance elegido, la operación se rechaza. Cancel
 motivo, conserva el movimiento original y genera una reversa compensatoria auditable.
 Proveedores y compras tienen permisos independientes, alcance por institución/plantel,
 paginación real y exportación Excel que reutiliza los filtros de pantalla.
+
+Como ampliación pendiente, cada compra tendrá un expediente documental opcional. Admitirá
+PDF, fotografías optimizadas y XML CFDI, siempre en almacenamiento privado y con apertura
+inline. Los gastos sin factura seguirán siendo válidos —por ejemplo, una compra menor pagada
+desde caja—, pero la clasificación “sin comprobante” exigirá justificación. Para CFDI se
+conservará el XML original y se normalizarán encabezado, conceptos, impuestos y relaciones
+en tablas consultables, con control de UUID duplicado y comparación contra proveedor,
+moneda y totales de la compra. La importación de conceptos requerirá vista previa y
+confirmación del usuario.
 
 El orden de Niveles educativos, Grados, Periodos académicos y Materias por grado es un dato
 técnico automático: no se captura en los formularios. Al crear un registro toma su mismo ID;

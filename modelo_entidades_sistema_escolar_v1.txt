@@ -731,7 +731,13 @@ implementar las reglas respectivas.
    conserva datos fiscales y de contacto. La compra contiene partidas, cuenta financiera
    de origen, plantel opcional y categoría de egreso. El borrador no afecta saldos; la
    confirmación crea un egreso y la cancelación crea una reversa sin eliminar el historial.
-   Nómina y facturación permanecen pendientes de definición.
+   Ampliación pendiente: expediente documental opcional con PDF, imagen y XML CFDI. El XML
+   original debe conservarse en almacenamiento privado y sus datos deben normalizarse en
+   tablas de encabezado, conceptos, impuestos y relaciones para consulta y auditoría. Una
+   compra sin factura sigue siendo válida, pero “sin comprobante” exige justificación. La
+   importación de conceptos fiscales necesita vista previa y confirmación; nunca sustituye
+   automáticamente las partidas administrativas. Nómina y facturación emitida permanecen
+   pendientes de definición.
 10) Datos de tutores: confirmar canal de activación y si se permite alta sin
     correo. Evitar crear usuarios duplicados cuando ya existe el tutor.
 11) Ampliación académica: V39 resolvió Materia y MateriaGrado con evaluación numérica o

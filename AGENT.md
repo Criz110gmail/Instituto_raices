@@ -199,6 +199,14 @@ Todo módulo que se construya debe incluir desde su primera entrega:
 13. Todo PDF, imagen o documento consultable debe contar con un endpoint privado con
     autorización por alcance, `Content-Disposition: inline` y un enlace con
     `target="_blank"`; sólo las exportaciones Excel se descargan automáticamente.
+14. La consistencia visual es obligatoria y forma parte de la definición de terminado:
+    cada módulo nuevo o modificado debe reutilizar la misma composición, espaciado,
+    tipografía, tarjetas, filtros, controles, botones, ayudas, estados vacíos, mensajes y
+    formularios de los módulos administrativos consolidados. Debe verificarse en escritorio
+    y móvil, con tema claro y oscuro. No se considera terminada una funcionalidad si sólo
+    funciona técnicamente pero sus filtros o formulario se ven distintos, sin estructura o
+    desalineados. Antes de crear CSS especializado, reutilizar `admin.css`, `forms.css`,
+    `navigation.css` y los patrones existentes; cualquier excepción visual debe justificarse.
 
 ## Correcciones y ampliaciones V44–V45
 
@@ -895,6 +903,23 @@ financieros y en el saldo de la cuenta; cancelar con motivo y comprobar la rever
 paginación, Excel, tema oscuro y presentación móvil. No confirmar una compra operativa real
 sólo para verificar. La siguiente migración disponible es V51 y el siguiente módulo aún debe
 acordarse con el propietario.
+
+Quedan documentados dos pendientes que no deben perderse al cambiar de etapa:
+
+- **Corrección visual de Calendario escolar:** homologar listado, panel de filtros y
+  formulario con el diseño profesional común. Revisar alineación, jerarquía, ayudas,
+  acciones, estados, tema claro/oscuro y respuesta móvil. La funcionalidad V48 existe,
+  pero esta deuda visual impide considerar completamente terminada su presentación.
+- **Expediente documental y fiscal de Compras:** permitir varios adjuntos opcionales por
+  compra: PDF, JPEG, PNG, HEIC/HEIF optimizados y XML CFDI. Los documentos se almacenan
+  de forma privada y se visualizan en otra pestaña. El XML original debe conservarse y
+  sus datos normalizarse en tablas de encabezado, conceptos, impuestos y relaciones CFDI,
+  incluyendo UUID, emisor, receptor, moneda, fechas y totales. Deben detectarse UUID
+  duplicados y diferencias contra proveedor/compra. La compra puede confirmarse sin CFDI:
+  `SIN_COMPROBANTE` exige justificación, ticket/recibo admite archivo opcional y CFDI usa
+  XML con PDF opcional. Las diferencias fiscales muestran advertencia y justificación;
+  un XML inválido o UUID duplicado bloquea su vinculación. No sustituir partidas de la
+  compra automáticamente: ofrecer importación con vista previa y confirmación humana.
 
 V49 de Actualización familiar de expedientes también conserva pendiente su prueba funcional.
 El propietario debe asignar `ACTUALIZACION_EXPEDIENTE_LEER` y/o

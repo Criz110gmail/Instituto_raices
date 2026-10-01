@@ -1,5 +1,21 @@
 # Contexto del proyecto
 
+## Decisiones pendientes posteriores a V50
+
+- La consistencia visual pasa a ser un requisito de aceptación: todo módulo debe reutilizar
+  los patrones consolidados de listados, filtros, formularios, ayudas, acciones y estados,
+  y revisarse en escritorio/móvil y en temas claro/oscuro. Calendario escolar conserva una
+  deuda visual específica en su listado, filtros y formulario; su funcionalidad V48 no se
+  modifica hasta que el propietario indique retomar esa corrección.
+- Compras tendrá posteriormente un expediente documental opcional con PDF, fotografías
+  optimizadas y XML CFDI. Un gasto de caja puede confirmarse sin documento fiscal; si se
+  marca sin comprobante exigirá justificación. Ticket/recibo y CFDI serán clasificaciones
+  separadas y no condicionarán indebidamente el movimiento financiero.
+- El CFDI conservará el XML original privado y además normalizará en PostgreSQL encabezado,
+  conceptos, impuestos y relaciones. Se validarán UUID duplicado, emisor/proveedor, receptor,
+  moneda y totales. La importación de conceptos tendrá vista previa y confirmación; nunca
+  reemplazará automáticamente las partidas administrativas.
+
 ## Verificación V50 — proveedores y compras
 
 - Se agregó el catálogo multiinstitución de proveedores, con RFC único cuando se captura,
