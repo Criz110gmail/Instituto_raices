@@ -37,6 +37,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.format.TextStyle;
 import java.util.EnumSet;
 import java.util.ArrayList;
@@ -291,6 +292,17 @@ public class CargoServiceImpl implements CargoService {
         }
         if (request.fechaVencimiento().isBefore(request.fechaEmision())) {
             throw new ReglaNegocioException("El vencimiento no puede ser anterior a la emisión");
+        }
+        LocalDate hoyInstitucion = LocalDate.now(ZoneId.of(
+                inscripcion.getAlumno().getInstitucion().getZonaHoraria()));
+        if (request.fechaEmision().isAfter(hoyInstitucion)) {
+            throw new ReglaNegocioException("La fecha de registro del cargo no puede estar en el futuro");
+        }
+        if (request.fechaEmision().isBefore(hoyInstitucion)
+                && (request.motivoFechaRegistroDiferente() == null
+                || request.motivoFechaRegistroDiferente().isBlank())) {
+            throw new ReglaNegocioException(
+                    "Explica por qué el cargo se registra con una fecha diferente a la actual");
         }
         if (request.importeOriginal().signum() < 0 || request.importeOriginal().scale() > 2) {
             throw new ReglaNegocioException("El importe debe ser positivo o cero y tener máximo dos decimales");

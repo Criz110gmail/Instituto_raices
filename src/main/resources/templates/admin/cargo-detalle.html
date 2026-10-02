@@ -18,8 +18,9 @@
                 <label><span>Origen</span><strong th:text="${cargo.cuotaAlumnoId == null ? 'Emisión manual' : 'Cuota automática #' + cargo.cuotaAlumnoId}">Origen</strong></label>
                 <label><span>Periodo de cobro</span><strong th:text="${cargo.periodoCobroInicio + ' — ' + cargo.periodoCobroFin}">Periodo</strong></label>
                 <label><span>Periodo académico</span><strong th:text="${cargo.periodoAcademicoNombre == null ? 'Sin asociación' : cargo.periodoAcademicoNombre}">Periodo</strong></label>
-                <label><span>Emisión</span><strong th:text="${cargo.fechaEmision}">Fecha</strong></label>
-                <label><span>Vencimiento</span><strong th:text="${cargo.fechaVencimiento}">Fecha</strong></label>
+                <label><span>Fecha de registro</span><strong th:text="${cargo.fechaEmision}">Fecha</strong></label>
+                <label><span>Fecha límite para pagar</span><strong th:text="${cargo.fechaVencimiento}">Fecha</strong></label>
+                <label class="wide" th:if="${cargo.motivoFechaRegistroDiferente != null}"><span>Motivo de fecha de registro diferente</span><strong th:text="${cargo.motivoFechaRegistroDiferente}">Motivo</strong></label>
                 <label><span>Importe original</span><strong th:text="${@formatoMoneda.pesos(cargo.importeOriginal)}">$0.00</strong></label>
                 <label><span>Descuentos y becas</span><strong th:text="${'- ' + @formatoMoneda.pesos(cargo.descuentoTotal)}">-$0.00</strong></label>
                 <label><span>Recargos y aumentos</span><strong th:text="${'+ ' + @formatoMoneda.pesos(cargo.recargoTotal)}">+$0.00</strong></label>

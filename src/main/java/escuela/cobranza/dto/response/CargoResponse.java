@@ -29,6 +29,7 @@ public record CargoResponse(
         Long periodoAcademicoId,
         String periodoAcademicoNombre,
         LocalDate fechaEmision,
+        String motivoFechaRegistroDiferente,
         LocalDate fechaVencimiento,
         BigDecimal importeOriginal,
         String moneda,

@@ -13,7 +13,15 @@ class CargoFormularioTest {
         assertThat(plantilla("admin/cargo-form.html"))
                 .contains("method=\"post\" th:action=\"@{/admin/cargos}\"")
                 .contains("Esta descripción se conservará en el registro")
+                .contains("Mes completo", "Fecha específica", "Rango personalizado")
+                .contains("Fecha límite para pagar", "Así quedará registrado")
+                .contains("Fecha de registro del cargo", "Registrar con una fecha diferente")
+                .contains("Motivo del cambio de fecha", "readonly aria-readonly=\"true\"")
+                .contains("/js/cargo-periodo.js")
+                .doesNotContain(">Inicio del periodo *<", ">Fin del periodo *<")
                 .contains("Registrar cargo");
+        assertThat(plantilla("admin/cargo-detalle.html"))
+                .contains("Motivo de fecha de registro diferente", "cargo.motivoFechaRegistroDiferente");
         assertThat(plantilla("admin/cargo-generar.html"))
                 .contains("Visualizar cuotas por aplicar")
                 .contains("th:action=\"@{/admin/cargos/generar/vista-previa}\"")

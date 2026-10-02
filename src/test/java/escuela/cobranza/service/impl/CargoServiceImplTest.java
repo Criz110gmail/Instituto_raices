@@ -152,7 +152,7 @@ class CargoServiceImplTest {
         when(conceptoRepository.findById(70L)).thenReturn(Optional.of(concepto));
         CargoManualRequest request = new CargoManualRequest(50L, 70L, "Material",
                 LocalDate.of(2026, 1, 20), LocalDate.of(2026, 1, 31), null,
-                LocalDate.of(2026, 1, 20), LocalDate.of(2026, 1, 31),
+                LocalDate.of(2026, 1, 20), null, LocalDate.of(2026, 1, 31),
                 new BigDecimal("500.00"), "MXN");
 
         assertThatThrownBy(() -> service.crearManual(request))

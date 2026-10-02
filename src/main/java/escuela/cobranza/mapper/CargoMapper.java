@@ -36,6 +36,7 @@ public class CargoMapper {
         cargo.setPeriodoCobroFin(request.periodoCobroFin());
         cargo.setPeriodoAcademico(periodo);
         cargo.setFechaEmision(request.fechaEmision());
+        cargo.setMotivoFechaRegistroDiferente(limpiar(request.motivoFechaRegistroDiferente()));
         cargo.setFechaVencimiento(request.fechaVencimiento());
         cargo.setImporteOriginal(request.importeOriginal());
         cargo.setMoneda(codigo(request.moneda()));
@@ -73,7 +74,8 @@ public class CargoMapper {
                 cargo.getPeriodoCobroFin(), cargo.getPeriodoAcademico() == null ? null
                         : cargo.getPeriodoAcademico().getId(),
                 cargo.getPeriodoAcademico() == null ? null : cargo.getPeriodoAcademico().getNombre(),
-                cargo.getFechaEmision(), cargo.getFechaVencimiento(), cargo.getImporteOriginal(),
+                cargo.getFechaEmision(), cargo.getMotivoFechaRegistroDiferente(),
+                cargo.getFechaVencimiento(), cargo.getImporteOriginal(),
                 cargo.getMoneda(), cargo.getEstadoRegistro(), cargo.getCanceladoEn(),
                 cargo.getMotivoCancelacion(), disminuciones, aumentos, total, pagado, saldo, situacion,
                 vencido, desde(cargo));

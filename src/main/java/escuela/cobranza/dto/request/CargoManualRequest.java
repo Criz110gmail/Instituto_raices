@@ -18,6 +18,7 @@ public record CargoManualRequest(
         @NotNull LocalDate periodoCobroFin,
         Long periodoAcademicoId,
         @NotNull LocalDate fechaEmision,
+        @Size(max = 1000) String motivoFechaRegistroDiferente,
         @NotNull LocalDate fechaVencimiento,
         @NotNull @DecimalMin("0.00") @Digits(integer = 12, fraction = 2) BigDecimal importeOriginal,
         @NotNull @Pattern(regexp = "[A-Za-z]{3}") String moneda

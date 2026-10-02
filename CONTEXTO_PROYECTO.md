@@ -2391,3 +2391,34 @@ historial paginado.
   añadieron pruebas de servicio e interfaz; `docker compose build app` compiló 701 fuentes
   principales y 123 de prueba y ejecutó 441 pruebas sin fallos. No hubo migración ni
   despliegue del contenedor.
+
+## Captura simplificada del periodo de un cargo (2026-10-02)
+
+- El formulario manual de cargos ofrece tres intenciones comprensibles: mes completo,
+  fecha específica y rango personalizado. Los campos técnicos de inicio y fin sólo se
+  muestran para el último caso.
+- `CargoForm` deriva autoritativamente `periodoCobroInicio` y `periodoCobroFin`: primer y
+  último día del mes, la misma fecha en ambos extremos, o el rango capturado. El controlador
+  valida los datos obligatorios de cada modalidad antes de construir la solicitud.
+- La fecha de vencimiento se presenta como **Fecha límite para pagar** y una tarjeta viva
+  resume cobertura y vencimiento. JavaScript sólo mejora la interacción; el cálculo de
+  negocio permanece en servidor.
+- Se agregó `CargoFormTest` con los tres modos y se amplió la prueba de interfaz. Docker
+  compiló 702 fuentes principales y 124 de prueba y aprobó 444 pruebas. La imagen fue
+  desplegada, salud respondió `UP` y no se requirió migración.
+
+## Fecha de registro protegida en cargos (2026-10-02)
+
+- La fecha de emisión se presenta al usuario como **Fecha de registro del cargo**, se
+  inicializa con el día actual de la institución y queda bloqueada de forma predeterminada.
+- Un control explícito permite registrar excepcionalmente una fecha anterior. Al activarlo,
+  la fecha se habilita y el motivo se vuelve obligatorio; las fechas futuras se rechazan.
+  Si el control permanece apagado, el servidor ignora cualquier fecha manipulada y usa su
+  propio día institucional.
+- V53 agrega a `cargo` la columna nullable `motivo_fecha_registro_diferente`, protegida
+  contra cadenas vacías. El mapper persiste el motivo normalizado y el detalle del cargo lo
+  muestra como trazabilidad administrativa.
+- El formulario conserva el resumen vivo, diseño responsivo y temas claro/oscuro. Se
+  amplió la cobertura del formulario y del servicio; Docker ejecutó 445 pruebas sin fallos,
+  Flyway aplicó V53 y `/actuator/health` respondió `UP`. La siguiente migración disponible
+  es V54.

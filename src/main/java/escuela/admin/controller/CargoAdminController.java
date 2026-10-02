@@ -32,6 +32,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 @Controller
 @RequiredArgsConstructor
@@ -58,6 +60,8 @@ public class CargoAdminController {
     String crear(@Valid @ModelAttribute("form") CargoForm form, BindingResult errores,
                  Model model, RedirectAttributes flash) {
         validarAlcance(form);
+        validarFechaRegistro(form, errores);
+        validarPeriodoCaptura(form, errores);
         validarRelaciones(form, errores);
         if (errores.hasErrors()) {
             prepararManual(model, form);
@@ -176,7 +180,13 @@ public class CargoAdminController {
         List<InstitucionResponse> instituciones = alcance.filtrarInstituciones(institucionService.listar());
         List<PlantelResponse> planteles = alcance.filtrarPlanteles(plantelService.listar());
         completarPredeterminados(form, instituciones, planteles);
+        LocalDate fechaRegistroPredeterminada = fechaActual(form, instituciones);
+        if (!form.isModificarFechaRegistro()) {
+            form.setFechaEmision(fechaRegistroPredeterminada);
+            form.setMotivoFechaRegistroDiferente(null);
+        }
         model.addAttribute("form", form);
+        model.addAttribute("fechaRegistroPredeterminada", fechaRegistroPredeterminada);
         model.addAttribute("instituciones", instituciones);
         model.addAttribute("planteles", planteles);
         model.addAttribute("inscripcionSeleccionada", etiquetaInscripcion(form.getInscripcionId()));
@@ -209,6 +219,35 @@ public class CargoAdminController {
         }
     }
 
+    private void validarFechaRegistro(CargoForm form, BindingResult errores) {
+        LocalDate hoy = form.getInstitucionId() == null ? LocalDate.now()
+                : LocalDate.now(ZoneId.of(institucionService.obtener(form.getInstitucionId()).zonaHoraria()));
+        if (!form.isModificarFechaRegistro()) {
+            form.setFechaEmision(hoy);
+            form.setMotivoFechaRegistroDiferente(null);
+            return;
+        }
+        if (form.getFechaEmision() == null) {
+            errores.rejectValue("fechaEmision", "cargo.fechaRegistro.requerida",
+                    "Selecciona la fecha histórica en que debe quedar registrado el cargo");
+        } else if (form.getFechaEmision().isAfter(hoy)) {
+            errores.rejectValue("fechaEmision", "cargo.fechaRegistro.futura",
+                    "La fecha de registro no puede estar en el futuro");
+        }
+        if (form.getMotivoFechaRegistroDiferente() == null
+                || form.getMotivoFechaRegistroDiferente().isBlank()) {
+            errores.rejectValue("motivoFechaRegistroDiferente", "cargo.fechaRegistro.motivo",
+                    "Explica por qué necesitas registrar el cargo con otra fecha");
+        }
+    }
+
+    private LocalDate fechaActual(CargoForm form, List<InstitucionResponse> instituciones) {
+        if (form.getInstitucionId() == null) return LocalDate.now();
+        return instituciones.stream().filter(i -> i.id().equals(form.getInstitucionId())).findFirst()
+                .map(i -> LocalDate.now(ZoneId.of(i.zonaHoraria())))
+                .orElseGet(LocalDate::now);
+    }
+
     private void validarAlcance(CargoForm form) {
         if (form.getInstitucionId() != null) alcance.validarInstitucion(form.getInstitucionId());
         if (form.getPlantelId() != null) alcance.validarPlantel(form.getPlantelId());
@@ -238,6 +277,38 @@ public class CargoAdminController {
                 .equals(form.getInstitucionId())) {
             errores.rejectValue("conceptoCobroId", "cargo.concepto.institucion",
                     "El concepto no pertenece a la institución indicada");
+        }
+    }
+
+    private void validarPeriodoCaptura(CargoForm form, BindingResult errores) {
+        if (form.getModoPeriodo() == null) return;
+        switch (form.getModoPeriodo()) {
+            case MES_COMPLETO -> {
+                if (form.getMesPeriodo() == null) {
+                    errores.rejectValue("mesPeriodo", "cargo.periodo.mes",
+                            "Selecciona el mes al que corresponde el cargo");
+                }
+            }
+            case FECHA_ESPECIFICA -> {
+                if (form.getFechaEspecifica() == null) {
+                    errores.rejectValue("fechaEspecifica", "cargo.periodo.fecha",
+                            "Selecciona la fecha a la que corresponde el cargo");
+                }
+            }
+            case RANGO_PERSONALIZADO -> {
+                if (form.getPeriodoCobroInicio() == null) {
+                    errores.rejectValue("periodoCobroInicio", "cargo.periodo.inicio",
+                            "Indica cuándo comienza el periodo que estás cobrando");
+                }
+                if (form.getPeriodoCobroFin() == null) {
+                    errores.rejectValue("periodoCobroFin", "cargo.periodo.fin",
+                            "Indica cuándo termina el periodo que estás cobrando");
+                } else if (form.getPeriodoCobroInicio() != null
+                        && form.getPeriodoCobroFin().isBefore(form.getPeriodoCobroInicio())) {
+                    errores.rejectValue("periodoCobroFin", "cargo.periodo.orden",
+                            "La fecha final no puede ser anterior a la fecha inicial");
+                }
+            }
         }
     }
 

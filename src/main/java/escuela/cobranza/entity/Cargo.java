@@ -58,6 +58,9 @@ public class Cargo extends EntidadAuditable {
     @Column(name = "fecha_emision", nullable = false)
     private LocalDate fechaEmision;
 
+    @Column(name = "motivo_fecha_registro_diferente", length = 1000)
+    private String motivoFechaRegistroDiferente;
+
     @Column(name = "fecha_vencimiento", nullable = false)
     private LocalDate fechaVencimiento;
 

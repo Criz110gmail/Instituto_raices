@@ -802,6 +802,33 @@
 .policy-card > span { display: grid; gap: 4px; }
 .policy-card strong { color: var(--ink); font-size: .8rem; }
 .policy-card small { color: var(--muted) !important; font-size: .74rem !important; line-height: 1.45; }
+.charge-period-question { display: grid; gap: 7px; }
+.charge-period-question > span { color: var(--ink); font-size: .77rem; font-weight: 800; }
+.charge-period-question > p { margin: 0; color: var(--muted); font-size: .74rem; line-height: 1.5; }
+.charge-period-modes { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.charge-period-panel { padding: 17px; border: 1px solid #d8e5ec; border-radius: 15px; background: linear-gradient(145deg,#f7fbfd,#fff); }
+.charge-period-panel[hidden] { display: none; }
+.charge-period-panel > label { max-width: 470px; }
+.charge-period-custom > .form-grid { margin: 0; }
+.charge-period-note { margin: 11px 0 0; padding: 10px 12px; border-left: 3px solid #1aab9a; border-radius: 0 9px 9px 0; background: #e8f8f5; color: #41645f; font-size: .72rem; line-height: 1.5; }
+.charge-period-summary { display: flex; align-items: flex-start; gap: 13px; margin-top: 19px; padding: 17px; border: 1px solid #bfe4db; border-radius: 16px; background: linear-gradient(135deg,#ebfaf6,#f8fdfc); }
+.charge-period-summary > span { display: grid; flex: 0 0 36px; width: 36px; height: 36px; place-items: center; border-radius: 11px; background: #159c8d; color: #fff; font-weight: 900; }
+.charge-period-summary > div { display: grid; gap: 3px; min-width: 0; }
+.charge-period-summary small { color: #12766c; font-size: .65rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.charge-period-summary strong { color: var(--ink); font-size: .88rem; overflow-wrap: anywhere; }
+.charge-period-summary p { margin: 2px 0 0; color: var(--muted); font-size: .74rem; line-height: 1.5; }
+.charge-period-summary p span { display: block; }
+.charge-registration-date { overflow: hidden; border: 1px solid #d8e5ec; border-radius: 16px; background: #f8fbfd; }
+.charge-registration-main { display: grid; grid-template-columns: minmax(220px,.8fr) minmax(280px,1.2fr); align-items: center; gap: 18px; padding: 17px; }
+.charge-date-toggle { display: flex !important; flex-direction: row !important; align-items: flex-start; gap: 11px; padding: 13px 14px; border: 1px solid #cbdce7; border-radius: 13px; background: #fff; cursor: pointer; }
+.charge-date-toggle:has(input:checked) { border-color: #35b6a6; background: #eaf8f5; box-shadow: inset 3px 0 #25aa9b; }
+.charge-date-toggle input { width: auto !important; margin-top: 3px; accent-color: #159c8d; }
+.charge-date-toggle > span { display: grid; gap: 4px; }
+.charge-date-toggle strong { color: var(--ink); font-size: .79rem; }
+.charge-date-toggle small { color: var(--muted) !important; font-size: .71rem !important; line-height: 1.45; }
+.charge-date-exception { padding: 17px; border-top: 1px solid #d8e5ec; background: #fffaf0; }
+.charge-date-exception[hidden] { display: none; }
+.charge-date-exception textarea { min-height: 86px; }
 .automatic-policy { margin-top: 4px; }
 .detail-grid label { padding: 14px 16px; border: 1px solid #dce6ef; border-radius: 12px; background: #f8fbfe; }
 .detail-grid label > span { margin-bottom: 5px; }
@@ -823,6 +850,14 @@
 [data-theme=dark] .finance-principle p { color: #9ac9c0; }
 [data-theme=dark] .policy-card { border-color: #344a63; background: #0e1d31; }
 [data-theme=dark] .policy-card:has(input:checked) { border-color: #277f74; background: #12322f; }
+[data-theme=dark] .charge-period-panel { border-color: #344a63; background: linear-gradient(145deg,#0a1728,#0e1d31); }
+[data-theme=dark] .charge-period-note { border-color: #4dc7b8; background: #12322f; color: #b4dcd5; }
+[data-theme=dark] .charge-period-summary { border-color: #28675f; background: linear-gradient(135deg,#102d2b,#0e2325); }
+[data-theme=dark] .charge-period-summary small { color: #77d8ca; }
+[data-theme=dark] .charge-registration-date { border-color: #344a63; background: #0e1d31; }
+[data-theme=dark] .charge-date-toggle { border-color: #344a63; background: #0a1728; }
+[data-theme=dark] .charge-date-toggle:has(input:checked) { border-color: #277f74; background: #12322f; }
+[data-theme=dark] .charge-date-exception { border-color: #51462d; background: #241f16; }
 [data-theme=dark] .detail-grid label { border-color: #344a63; background: #0e1d31; }
 [data-theme=dark] .cancel-panel textarea { border-color: #344a63; background: #0e1d31; color: #eef5fd; }
 [data-theme=dark] .context-help { border-color: #315d70; background: #102536; color: #b7cfde; }
@@ -832,6 +867,8 @@
 @media (max-width: 680px) {
     .finance-principle { padding: 18px 20px; }
     .policy-grid { grid-template-columns: 1fr; }
+    .charge-period-modes { grid-template-columns: 1fr; }
+    .charge-registration-main { grid-template-columns: 1fr; }
     .danger-button { width: 100%; justify-self: stretch; }
     .form-card > .detail-grid { grid-template-columns: 1fr; margin: 0 20px 22px; }
 }

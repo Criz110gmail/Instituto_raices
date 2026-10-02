@@ -1505,3 +1505,37 @@ enumeradas de etapas anteriores.
   tabla se convierte en tarjetas en móvil y respeta temas claro y oscuro. No hubo migración;
   Docker compiló 701 fuentes principales y 123 de prueba y aprobó 441 pruebas. La imagen se
   construyó, pero no se desplegó.
+
+### Captura simplificada del periodo de un cargo — 2026-10-02
+
+- **Cargos a alumnos → Nuevo registro** ya no obliga al usuario a interpretar siempre las
+  fechas técnicas de inicio y fin. Ahora permite elegir **Mes completo**, **Fecha
+  específica** o **Rango personalizado**.
+- Mes completo solicita únicamente mes y año y calcula el primer y último día. Fecha
+  específica usa el mismo día como inicio y fin. El rango conserva la flexibilidad anterior
+  dentro de una opción explícitamente avanzada.
+- **Fecha de vencimiento** se renombró visualmente a **Fecha límite para pagar** y explica
+  que después el cargo aparecerá vencido y podrá recibir recargos configurados.
+- Un resumen vivo presenta qué periodo cubre el cargo y hasta cuándo debe pagarse. La
+  derivación de fechas también se realiza en Java antes de crear el cargo, por lo que no
+  depende de que el navegador envíe campos técnicos calculados.
+- El diseño es responsivo y compatible con tema oscuro. Se añadieron pruebas para los tres
+  modos y el contrato visual. Docker compiló 702 fuentes principales y 124 de prueba,
+  aprobó 444 pruebas, desplegó la imagen y el servicio respondió `UP`. No hubo migración.
+  La revisión autenticada del navegador quedó limitada porque la sesión administrativa
+  disponible había caducado; no se consultaron credenciales ni `.env`.
+
+### Fecha de registro protegida en cargos — 2026-10-02
+
+- **Cargos a alumnos → Nuevo registro** muestra la fecha institucional actual como
+  **Fecha de registro del cargo**. El campo permanece bloqueado y el servidor vuelve a
+  imponer esa fecha aunque una petición intente alterarla.
+- La opción **Registrar con una fecha diferente** habilita una excepción explícita. En
+  ese caso son obligatorios tanto la nueva fecha como el motivo; no se permiten fechas
+  futuras. La fecha actual se calcula con la zona horaria configurada en la institución.
+- V53 agrega `motivo_fecha_registro_diferente` a `cargo`. El motivo queda trazable y se
+  muestra en el detalle administrativo cuando el cargo fue registrado con fecha anterior.
+- La tarjeta de captura, el interruptor, las ayudas y el resumen vivo conservan el diseño
+  responsivo y los temas claro/oscuro del sistema. Docker compiló 702 fuentes principales
+  y 124 de prueba, aprobó 445 pruebas, aplicó V53 y el servicio desplegado respondió `UP`.
+  La siguiente migración disponible es V54.
