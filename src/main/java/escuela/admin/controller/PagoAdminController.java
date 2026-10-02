@@ -116,6 +116,7 @@ public class PagoAdminController {
             prepararDetalle(model, service.obtener(id), authentication);
             model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
             model.addAttribute("motivoCambioCuentaCapturado", motivoCambioCuenta);
+            model.addAttribute("pestanaActiva", "gestion");
             return "admin/pago-detalle";
         }
     }
@@ -133,6 +134,7 @@ public class PagoAdminController {
             prepararDetalle(model, service.obtener(id), authentication);
             model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
             model.addAttribute("motivoCapturado", motivo);
+            model.addAttribute("pestanaActiva", "gestion");
             return "admin/pago-detalle";
         }
     }
@@ -145,6 +147,7 @@ public class PagoAdminController {
         alcance.validarRecurso(ModuloCatalogo.PAGOS, id);
         if (errores.hasErrors()) {
             prepararDetalle(model, service.obtener(id), authentication, form);
+            model.addAttribute("pestanaActiva", "devoluciones");
             return "admin/pago-detalle";
         }
         try {
@@ -155,6 +158,7 @@ public class PagoAdminController {
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
             prepararDetalle(model, service.obtener(id), authentication, form);
             model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
+            model.addAttribute("pestanaActiva", "devoluciones");
             return "admin/pago-detalle";
         }
     }
@@ -174,6 +178,7 @@ public class PagoAdminController {
             prepararDetalle(model, service.obtener(id), authentication);
             model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
             model.addAttribute("motivoCancelacionCapturado", motivo);
+            model.addAttribute("pestanaActiva", "gestion");
             return "admin/pago-detalle";
         }
     }

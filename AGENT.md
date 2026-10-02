@@ -914,6 +914,11 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
+El expediente administrativo de Pagos usa navegación por pestañas basada en `student-tabs.js`:
+Resumen, Distribución, Gestión, Devoluciones condicional y Comprobantes. Los errores de las
+operaciones deben conservar la pestaña activa y el botón de regreso debe mantener su diseño
+responsivo y compatible con tema oscuro. No volver a colocar todas las secciones en una sola vista.
+
 El acceso bootstrap/de recuperación no puede autorizar movimientos financieros porque carece de
 un `usuario_id` persistido al cual atribuirlos. En el detalle de un pago pendiente se ocultan las
 acciones de validación y rechazo para ese acceso y se explica que debe usarse una cuenta creada en

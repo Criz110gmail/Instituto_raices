@@ -48,6 +48,20 @@ class ComprobantePagoInterfazTest {
                 .contains("Seguridad → Usuarios");
     }
 
+    @Test
+    void expedienteDePagoNavegaPorPestanasYTieneRegresoDisenado() throws IOException {
+        assertThat(recurso("templates/admin/pago-detalle.html"))
+                .contains("data-student-tabs")
+                .contains("data-student-tab=\"resumen\"")
+                .contains("data-student-tab=\"distribucion\"")
+                .contains("data-student-tab=\"gestion\"")
+                .contains("data-student-tab=\"devoluciones\"")
+                .contains("data-student-tab=\"comprobantes\"")
+                .contains("payment-list-button", "Volver al listado de pagos")
+                .contains("/js/student-tabs.js")
+                .containsOnlyOnce("data-student-panel=\"gestion\"");
+    }
+
     private String recurso(String ruta) throws IOException {
         try (var entrada = getClass().getClassLoader().getResourceAsStream(ruta)) {
             assertThat(entrada).as("recurso %s", ruta).isNotNull();

@@ -1,5 +1,22 @@
 # Contexto del proyecto
 
+## Expediente de pago con navegación por pestañas
+
+- La acción **Ver** de Pagos presenta el expediente con la misma navegación tipo navegador
+  usada en Alumnos: **Resumen**, **Distribución**, **Gestión**, **Devoluciones** cuando aplica y
+  **Comprobantes**. Sólo permanece visible la sección elegida para evitar desplazamientos largos.
+- Resumen reúne los datos, movimiento financiero y observaciones; Distribución muestra solicitudes
+  o aplicaciones; Gestión concentra validación, rechazo y cancelación; Devoluciones separa su
+  historial y captura; Comprobantes agrupa el PDF oficial y los archivos privados.
+- Los errores reabren automáticamente Gestión o Devoluciones según la operación. Ambos accesos de
+  regreso al listado tienen diseño consistente, temas claro/oscuro y adaptación móvil.
+- Gestión usa una sola superficie continua: el encabezado de control, las decisiones, la resolución
+  y la corrección excepcional comparten alineación y separadores; no deben dividirse en paneles
+  superpuestos ni resolverse con márgenes negativos.
+- Docker compiló 701 fuentes y ejecutó 439 pruebas sin fallos. La imagen quedó desplegada y salud
+  respondió `UP`. La sesión del navegador había caducado, por lo que no se usaron credenciales ni
+  se leyó `.env` para forzar la revisión autenticada. No hubo migración.
+
 ## Claridad del acceso temporal en validación financiera
 
 - El usuario bootstrap configurado por entorno sigue siendo exclusivamente un acceso de

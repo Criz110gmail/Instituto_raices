@@ -57,6 +57,20 @@
 .payment-detail-grid article { display: grid; gap: 6px; padding: 15px; background: var(--surface); }
 .payment-detail-grid small { color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; }
 .payment-detail-grid strong { font-size: .82rem; overflow-wrap: anywhere; }
+.student-tablist.payment-record-tabs { grid-template-columns: repeat(auto-fit,minmax(155px,1fr)); margin: 24px 34px 0; }
+.payment-tab-panel { min-height: 210px; margin: 0 34px 28px; overflow: visible; border: 1px solid #d7e3ed; border-radius: 0 0 18px 18px; background: linear-gradient(145deg,#f8fbfe,#fff); }
+.payment-tab-panel .payment-detail-grid { margin: 0; border: 0; border-radius: 0 0 17px 17px; }
+.payment-tab-panel .detail-section:first-child,.payment-tab-panel > .validation-console:first-child { border-top: 0; }
+.payment-management-summary { display: flex; align-items: flex-start; gap: 13px; padding: 20px 34px; border-bottom: 1px solid var(--line); background: color-mix(in srgb,var(--surface) 91%,#dff6f0); }
+.payment-management-summary > span { display: grid; flex: 0 0 34px; width: 34px; height: 34px; place-items: center; border-radius: 11px; background: #dff7f0; color: #08785f; font-weight: 900; }
+.payment-management-summary > div { display: grid; gap: 4px; }
+.payment-management-summary strong { font-size: .85rem; }
+.payment-management-summary p { margin: 0; color: var(--muted); font-size: .74rem; line-height: 1.5; }
+.official-payment-receipt { margin: 24px 34px 0; }
+.payment-detail-footer { margin: 0; padding: 20px 34px 26px; }
+.form-top > .payment-back-link,.payment-list-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; border: 1px solid #b9cbdc; border-radius: 11px; background: var(--surface); color: #245f7c; padding: 9px 14px; font-weight: 800; text-decoration: none; box-shadow: 0 7px 18px rgba(24,59,90,.07); transition: transform .18s ease,border-color .18s ease,box-shadow .18s ease; }
+.form-top > .payment-back-link:hover,.payment-list-button:hover { transform: translateY(-1px); border-color: #6d9fbb; color: #174d79; box-shadow: 0 10px 22px rgba(24,59,90,.12); }
+.payment-list-button { min-height: 46px; background: linear-gradient(135deg,#174d79,#1478f2); color: #fff!important; box-shadow: 0 10px 22px rgba(20,120,242,.22); }
 .pending-badge { color: #8a5a00; }
 .detail-section { padding: 25px 34px; border-top: 1px solid var(--line); }
 .requested-list,.receipt-list { display: grid; gap: 9px; }
@@ -75,6 +89,10 @@
 .detail-notes { margin: 0; color: var(--muted); white-space: pre-wrap; line-height: 1.6; }
 [data-theme=dark] .upload-zone { border-color: #35698e; background: #0a1728; }
 [data-theme=dark] .payment-card .form-section{border-color:#344a63;background:linear-gradient(145deg,#0e1d31,#10282d)}[data-theme=dark] .protected-payment-field{border-color:#28665d;background:#12352f}[data-theme=dark] .protected-payment-field:after{background:#17483f;color:#a7eadb}[data-theme=dark] .protected-payment-field select:disabled,[data-theme=dark] .protected-payment-field input[readonly],[data-theme=dark] .protected-money-code[readonly]{background:#0c2630;color:#e7f4ff}[data-theme=dark] .payment-form-actions .payment-cancel-button,[data-theme=dark] .cargo-detail-actions .detail-close-button{background:#0e1d31}
+[data-theme=dark] .payment-tab-panel { border-color: #344a63; background: linear-gradient(145deg,#0a1728,#0e1d31); }
+[data-theme=dark] .payment-management-summary { border-color: #344a63; background: #10282d; }
+[data-theme=dark] .payment-management-summary > span { background: #17483f; color: #a7eadb; }
+[data-theme=dark] .form-top > .payment-back-link { border-color: #415a74; background: #0e1d31; color: #cde6fa; box-shadow: none; }
 [data-theme=dark] .distribution-row { border-color: #344a63; background: #0d2033; }
 [data-theme=dark] .row-number { background: #17483f; color: #9de6d5; }
 [data-theme=dark] .distribution-total .remaining { background: #123d36; }
@@ -89,6 +107,13 @@
     .remove-distribution { grid-column: 3; grid-row: 1; }
     .distribution-total,.payment-detail-grid { grid-template-columns: 1fr; }
     .payment-detail-grid { margin: 0 20px 22px; }
+    .student-tablist.payment-record-tabs { margin: 18px 20px 0; }
+    .payment-tab-panel { min-height: 0; margin: 0 20px 22px; }
+    .payment-tab-panel .payment-detail-grid { margin: 0; }
+    .payment-management-summary { padding: 18px 20px; }
+    .official-payment-receipt { margin: 20px 20px 0; }
+    .payment-detail-footer { padding: 18px 20px 22px; }
+    .payment-list-button { width: 100%; }
     .detail-section { padding: 22px 20px; }
     .requested-list article,.detail-totals { display: grid; }
     .payment-form-actions,.cargo-detail-actions{display:grid}.payment-form-actions a,.payment-form-actions button,.cargo-detail-actions a{width:100%}.adjustment-submit-button{justify-self:stretch}

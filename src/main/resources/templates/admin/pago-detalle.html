@@ -4,10 +4,10 @@
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#0b1930"><title th:text="${pago.folio + ' · Pago · Nexo Escolar'}">Pago</title>
     <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css">
-    <script src="/js/theme.js"></script>
+    <script src="/js/theme.js"></script><script src="/js/student-tabs.js" defer></script>
 </head>
 <body class="form-page"><main class="form-shell payment-shell">
-<header class="form-top"><a href="/admin/catalogos/pagos">← Volver a pagos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+<header class="form-top"><a class="payment-back-link" href="/admin/catalogos/pagos"><span aria-hidden="true">←</span> Volver al listado</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
 <div class="finance-principle payment-principle" th:classappend="${pago.estado.name() == 'VALIDADO'} ? ' resolved-success' : (${pago.estado.name() == 'RECHAZADO' or pago.estado.name() == 'CANCELADO'} ? ' resolved-rejected' : '')">
     <div class="payment-status-heading"><span class="payment-status-icon" aria-hidden="true" th:text="${pago.estado.name() == 'VALIDADO'} ? '✓' : (${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? '…' : '×')">…</span><div><span th:text="${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? 'Recepción pendiente' : (${pago.estado.name() == 'VALIDADO'} ? 'Ingreso confirmado' : (${pago.estado.name() == 'CANCELADO'} ? 'Pago cancelado' : 'Recepción rechazada'))">Estado</span><strong th:text="${pago.folio}">Folio</strong></div></div>
     <p th:if="${pago.estado.name() == 'PENDIENTE_VALIDACION'}">Revisa la cuenta destino y la distribución antes de confirmar. La operación se publicará completa o no se guardará.</p>
@@ -19,11 +19,14 @@
     <div class="flash" th:if="${mensaje}" th:text="${mensaje}"></div>
     <div class="form-error operation-error" th:if="${errorOperacion}" th:text="${errorOperacion}"></div>
     <div class="form-intro finance-intro"><span>Expediente financiero</span><h1 th:text="${@formatoMoneda.pesos(pago.monto)}">Monto</h1><p th:text="${pago.tutorNombre + ' · ' + pago.plantelRegistroNombre}">Tutor</p></div>
-    <div class="receipt-list" th:if="${pago.estado.name() == 'VALIDADO'}"><a target="_blank" rel="noopener" th:href="@{/admin/pagos/{id}/comprobante-pago(id=${pago.id})}"><span>PDF</span><div><strong>Comprobante oficial de pago</strong><small>Abrir en otra pestaña · Desde el visor puedes descargarlo</small></div></a></div>
-    <aside class="recovery-finance-notice" th:if="${pago.estado.name() == 'PENDIENTE_VALIDACION' and accesoRecuperacion}">
-        <span class="recovery-finance-icon" aria-hidden="true">!</span>
-        <div><strong>Este acceso no puede autorizar movimientos financieros</strong><p>Estás usando la cuenta temporal de recuperación. Cierra sesión e ingresa con un usuario administrativo creado en <b>Seguridad → Usuarios</b> para validar o rechazar el pago y dejar identificado al responsable.</p></div>
-    </aside>
+    <nav class="student-tablist standalone-record-tabs payment-record-tabs" role="tablist" aria-label="Secciones del expediente del pago" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'resumen' : pestanaActiva}">
+        <button type="button" role="tab" id="tab-pago-resumen" aria-controls="panel-pago-resumen" data-student-tab="resumen" data-tab-hash="#resumen-pago"><span aria-hidden="true">01</span><strong>Resumen</strong><small>Datos y movimiento</small></button>
+        <button type="button" role="tab" id="tab-pago-distribucion" aria-controls="panel-pago-distribucion" data-student-tab="distribucion" data-tab-hash="#distribucion-pago"><span aria-hidden="true">02</span><strong>Distribución</strong><small>Cargos y alumnos</small></button>
+        <button type="button" role="tab" id="tab-pago-gestion" aria-controls="panel-pago-gestion" data-student-tab="gestion" data-tab-hash="#gestion-pago"><span aria-hidden="true">03</span><strong>Gestión</strong><small>Validar o corregir</small></button>
+        <button th:if="${pago.estado.name() == 'VALIDADO'}" type="button" role="tab" id="tab-pago-devoluciones" aria-controls="panel-pago-devoluciones" data-student-tab="devoluciones" data-tab-hash="#devoluciones-pago"><span aria-hidden="true">04</span><strong>Devoluciones</strong><small>Historial y registro</small></button>
+        <button type="button" role="tab" id="tab-pago-comprobantes" aria-controls="panel-pago-comprobantes" data-student-tab="comprobantes" data-tab-hash="#comprobantes-pago"><span aria-hidden="true" th:text="${pago.estado.name() == 'VALIDADO' ? '05' : '04'}">05</span><strong>Comprobantes</strong><small>Archivos y PDF</small></button>
+    </nav>
+    <div id="panel-pago-resumen" class="payment-tab-panel student-tab-panel" data-student-panel="resumen" role="tabpanel" aria-labelledby="tab-pago-resumen">
     <div class="payment-detail-grid">
         <article><small>Estado</small><strong class="pending-badge" th:classappend="${pago.estado.name() == 'VALIDADO'} ? ' success' : (${pago.estado.name() == 'RECHAZADO' or pago.estado.name() == 'CANCELADO'} ? ' rejected' : '')" th:text="${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? 'Pendiente de validación' : (${pago.estado.name() == 'VALIDADO'} ? 'Validado' : (${pago.estado.name() == 'CANCELADO'} ? 'Cancelado' : 'Rechazado'))">Estado</strong></article>
         <article><small>Fecha del pago</small><strong th:text="${fechaPagoLocal}">Fecha</strong></article>
@@ -33,6 +36,18 @@
         <article><small>Pagador</small><strong th:text="${pago.nombrePagador ?: pago.tutorNombre}">Pagador</strong></article>
         <article><small>Referencia</small><strong th:text="${pago.referencia ?: 'Sin referencia'}">Referencia</strong></article>
     </div>
+    <section class="detail-section movement-section" th:if="${pago.movimiento != null}">
+        <div class="section-heading"><div><span>Tesorería</span><h2>Movimiento único de ingreso</h2></div><p th:text="${'Validado por ' + pago.validadoPor + ' · ' + fechaValidacionLocal}">Validación</p></div>
+        <div class="movement-card"><div><small>Cuenta destino</small><strong th:text="${pago.movimiento.cuentaNombre}">Cuenta</strong></div><div><small>Secuencia</small><strong th:text="${'#' + pago.movimiento.secuenciaCuenta}">#1</strong></div><div><small>Ingreso</small><strong th:text="${@formatoMoneda.pesos(pago.movimiento.monto)}">Monto</strong></div><div><small>Saldo posterior</small><strong th:text="${@formatoMoneda.pesos(pago.movimiento.saldoPosterior)}">Saldo</strong></div></div>
+    </section>
+    <section class="detail-section" th:if="${pago.observaciones}"><div class="section-heading"><div><span>Notas</span><h2>Observaciones</h2></div></div><p class="detail-notes" th:text="${pago.observaciones}"></p></section>
+    </div>
+    <div id="panel-pago-gestion" class="payment-tab-panel student-tab-panel" data-student-panel="gestion" role="tabpanel" aria-labelledby="tab-pago-gestion">
+    <div class="payment-management-summary"><span aria-hidden="true">✓</span><div><strong>Control administrativo del pago</strong><p th:text="${pago.estado.name() == 'PENDIENTE_VALIDACION' ? 'Confirma la recepción, rechaza el reporte o cancela un registro incorrecto según tus permisos.' : (pago.estado.name() == 'VALIDADO' ? 'El ingreso está publicado. Las devoluciones se administran desde su pestaña independiente.' : 'La resolución quedó cerrada y se conserva para trazabilidad.')}">Estado de la gestión</p></div></div>
+    <aside class="recovery-finance-notice" th:if="${pago.estado.name() == 'PENDIENTE_VALIDACION' and accesoRecuperacion}">
+        <span class="recovery-finance-icon" aria-hidden="true">!</span>
+        <div><strong>Este acceso no puede autorizar movimientos financieros</strong><p>Estás usando la cuenta temporal de recuperación. Cierra sesión e ingresa con un usuario administrativo creado en <b>Seguridad → Usuarios</b> para validar o rechazar el pago y dejar identificado al responsable.</p></div>
+    </aside>
     <section class="validation-console" th:if="${pago.estado.name() == 'PENDIENTE_VALIDACION' and puedeValidar}">
         <div class="section-heading"><div><span>Decisión administrativa</span><h2>Validar o rechazar</h2></div><p>La validación bloquea pago, cuenta y cargos, vuelve a calcular los saldos y registra un solo ingreso.</p></div>
         <div class="validation-columns">
@@ -49,6 +64,19 @@
             </form>
         </div>
     </section>
+    <section class="detail-section rejection-section" th:if="${pago.estado.name() == 'RECHAZADO'}"><div class="section-heading"><div><span>Resolución administrativa</span><h2>Pago rechazado</h2></div></div><div class="resolution-note"><span aria-hidden="true">×</span><div><strong>Motivo registrado</strong><p class="detail-notes" th:text="${pago.motivoRechazoCancelacion}"></p></div></div></section>
+    <section class="detail-section rejection-section" th:if="${pago.estado.name() == 'CANCELADO'}"><div class="section-heading"><div><span>Resolución administrativa</span><h2>Pago cancelado</h2></div></div><div class="resolution-note"><span aria-hidden="true">!</span><div><strong>Motivo registrado</strong><p class="detail-notes" th:text="${pago.motivoRechazoCancelacion}"></p></div></div></section>
+    <section class="validation-console cancellation-console" th:if="${puedeCancelar and (pago.estado.name() == 'PENDIENTE_VALIDACION' or (pago.estado.name() == 'VALIDADO' and resumenDevolucion.devoluciones.empty))}">
+        <div class="section-heading"><div><span>Corrección excepcional</span><h2>Cancelar pago registrado por error</h2></div><p>Es distinto de devolver dinero al tutor. Si el pago está validado, se liberarán todos sus abonos y se publicará un egreso compensatorio; no se borrará el historial.</p></div>
+        <form method="post" th:action="@{/admin/pagos/{id}/cancelar(id=${pago.id})}" class="cancellation-form">
+            <input type="hidden" name="version" th:value="${pago.auditoria.version}">
+            <label class="cancellation-reason"><span>Motivo obligatorio *</span><textarea name="motivo" maxlength="2000" required rows="4" th:text="${motivoCancelacionCapturado}" placeholder="Describe con claridad por qué este pago fue registrado por error"></textarea><small>Esta explicación permanecerá en el historial administrativo.</small></label>
+            <div class="refund-warning"><strong>Confirma la causa antes de continuar.</strong><span>Si el dinero sí se recibió y debe entregarse al tutor, usa Devolución en lugar de cancelar. Con devoluciones ejecutadas, la cancelación está bloqueada.</span></div>
+            <button type="submit" class="reject-button refund-button">Cancelar y conservar trazabilidad</button>
+        </form>
+    </section>
+    </div>
+    <div id="panel-pago-distribucion" class="payment-tab-panel student-tab-panel" data-student-panel="distribucion" role="tabpanel" aria-labelledby="tab-pago-distribucion">
     <section class="detail-section" th:if="${pago.estado.name() == 'PENDIENTE_VALIDACION'}">
         <div class="section-heading"><div><span>Distribución solicitada</span><h2>Separación por alumno</h2></div><p>Al validar se aplicará hasta el saldo vigente; cualquier diferencia quedará disponible.</p></div>
         <div class="requested-list" th:if="${!pago.solicitudes.empty}"><article th:each="s : ${pago.solicitudes}"><div><strong th:text="${s.matricula + ' · ' + s.alumno}">Alumno</strong><small th:text="${s.concepto + ' · ' + s.descripcionCargo}">Cargo</small></div><b th:text="${@formatoMoneda.pesos(s.montoSolicitado)}">Monto</b></article></div>
@@ -59,6 +87,8 @@
         <div class="requested-list applied-list" th:if="${!pago.aplicaciones.empty}"><article th:each="a : ${pago.aplicaciones}"><div><strong th:text="${a.matricula + ' · ' + a.alumno}">Alumno</strong><small th:text="${a.concepto + ' · ' + a.descripcionCargo}">Cargo</small></div><b th:text="${@formatoMoneda.pesos(a.monto)}">Monto</b></article></div>
         <div class="distribution-empty" th:if="${pago.aplicaciones.empty}"><strong>Ingreso conservado como anticipo</strong><p>No hay aplicaciones vigentes para este pago.</p></div><div class="detail-totals"><span>Aplicado <strong th:text="${@formatoMoneda.pesos(pago.montoAplicado)}"></strong></span><span>Devuelto <strong th:text="${@formatoMoneda.pesos(pago.montoDevuelto)}"></strong></span><span>Disponible <strong th:text="${@formatoMoneda.pesos(pago.montoDisponible)}"></strong></span></div>
     </section>
+    </div>
+    <div id="panel-pago-devoluciones" class="payment-tab-panel student-tab-panel" data-student-panel="devoluciones" role="tabpanel" aria-labelledby="tab-pago-devoluciones" th:if="${pago.estado.name() == 'VALIDADO'}">
     <section class="detail-section refund-history" th:if="${pago.estado.name() == 'VALIDADO'}">
         <div class="section-heading"><div><span>Devoluciones</span><h2>Historial de dinero devuelto</h2></div><p>Cada devolución conserva cuenta, autorización y movimiento de egreso.</p></div>
         <div class="requested-list" th:if="${!resumenDevolucion.devoluciones.empty}">
@@ -90,22 +120,10 @@
             <button type="submit" class="reject-button refund-button">Ejecutar devolución y publicar egreso</button>
         </form>
     </section>
-    <section class="detail-section movement-section" th:if="${pago.movimiento != null}">
-        <div class="section-heading"><div><span>Tesorería</span><h2>Movimiento único de ingreso</h2></div><p th:text="${'Validado por ' + pago.validadoPor + ' · ' + fechaValidacionLocal}">Validación</p></div>
-        <div class="movement-card"><div><small>Cuenta destino</small><strong th:text="${pago.movimiento.cuentaNombre}">Cuenta</strong></div><div><small>Secuencia</small><strong th:text="${'#' + pago.movimiento.secuenciaCuenta}">#1</strong></div><div><small>Ingreso</small><strong th:text="${@formatoMoneda.pesos(pago.movimiento.monto)}">Monto</strong></div><div><small>Saldo posterior</small><strong th:text="${@formatoMoneda.pesos(pago.movimiento.saldoPosterior)}">Saldo</strong></div></div>
-    </section>
-    <section class="detail-section rejection-section" th:if="${pago.estado.name() == 'RECHAZADO'}"><div class="section-heading"><div><span>Resolución administrativa</span><h2>Pago rechazado</h2></div></div><div class="resolution-note"><span aria-hidden="true">×</span><div><strong>Motivo registrado</strong><p class="detail-notes" th:text="${pago.motivoRechazoCancelacion}"></p></div></div></section>
-    <section class="detail-section rejection-section" th:if="${pago.estado.name() == 'CANCELADO'}"><div class="section-heading"><div><span>Resolución administrativa</span><h2>Pago cancelado</h2></div></div><div class="resolution-note"><span aria-hidden="true">!</span><div><strong>Motivo registrado</strong><p class="detail-notes" th:text="${pago.motivoRechazoCancelacion}"></p></div></div></section>
-    <section class="validation-console cancellation-console" th:if="${puedeCancelar and (pago.estado.name() == 'PENDIENTE_VALIDACION' or (pago.estado.name() == 'VALIDADO' and resumenDevolucion.devoluciones.empty))}">
-        <div class="section-heading"><div><span>Corrección excepcional</span><h2>Cancelar pago registrado por error</h2></div><p>Es distinto de devolver dinero al tutor. Si el pago está validado, se liberarán todos sus abonos y se publicará un egreso compensatorio; no se borrará el historial.</p></div>
-        <form method="post" th:action="@{/admin/pagos/{id}/cancelar(id=${pago.id})}" class="cancellation-form">
-            <input type="hidden" name="version" th:value="${pago.auditoria.version}">
-            <label class="cancellation-reason"><span>Motivo obligatorio *</span><textarea name="motivo" maxlength="2000" required rows="4" th:text="${motivoCancelacionCapturado}" placeholder="Describe con claridad por qué este pago fue registrado por error"></textarea><small>Esta explicación permanecerá en el historial administrativo.</small></label>
-            <div class="refund-warning"><strong>Confirma la causa antes de continuar.</strong><span>Si el dinero sí se recibió y debe entregarse al tutor, usa Devolución en lugar de cancelar. Con devoluciones ejecutadas, la cancelación está bloqueada.</span></div>
-            <button type="submit" class="reject-button refund-button">Cancelar y conservar trazabilidad</button>
-        </form>
-    </section>
+    </div>
+    <div id="panel-pago-comprobantes" class="payment-tab-panel student-tab-panel" data-student-panel="comprobantes" role="tabpanel" aria-labelledby="tab-pago-comprobantes">
+    <div class="receipt-list official-payment-receipt" th:if="${pago.estado.name() == 'VALIDADO'}"><a target="_blank" rel="noopener" th:href="@{/admin/pagos/{id}/comprobante-pago(id=${pago.id})}"><span>PDF</span><div><strong>Comprobante oficial de pago</strong><small>Abrir en otra pestaña · Desde el visor puedes descargarlo</small></div></a></div>
     <section class="detail-section"><div class="section-heading"><div><span>Archivos privados</span><h2>Comprobantes</h2></div><p>Se abrirán en una pestaña nueva para revisarlos sin descargar archivos automáticamente.</p></div><div class="receipt-list" th:if="${!pago.comprobantes.empty}"><a th:each="c : ${pago.comprobantes}" target="_blank" rel="noopener" th:href="@{/admin/pagos/{p}/comprobantes/{c}(p=${pago.id},c=${c.id})}"><span>↗</span><div><strong th:text="${c.nombreOriginal}">Archivo</strong><small th:text="${c.tipoMime + ' · ' + c.tamanoBytes + ' bytes · Abrir visor'}">Tipo</small></div></a></div><div class="distribution-empty" th:if="${pago.comprobantes.empty}"><strong>Sin comprobantes</strong><p>Los pagos en efectivo pueden registrarse sin archivo.</p></div></section>
-    <section class="detail-section" th:if="${pago.observaciones}"><div class="section-heading"><div><span>Notas</span><h2>Observaciones</h2></div></div><p class="detail-notes" th:text="${pago.observaciones}"></p></section>
-    <footer class="form-actions"><a href="/admin/catalogos/pagos">Volver al listado</a></footer>
+    </div>
+    <footer class="form-actions payment-detail-footer"><a class="payment-list-button" href="/admin/catalogos/pagos"><span aria-hidden="true">←</span> Volver al listado de pagos</a></footer>
 </section></main><script src="/js/autocomplete.js"></script><script src="/js/pago-validacion.js"></script></body></html>
