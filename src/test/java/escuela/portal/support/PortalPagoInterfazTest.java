@@ -23,4 +23,13 @@ class PortalPagoInterfazTest {
                 .contains("importe.value = Number(opcion.monto).toFixed(2)")
                 .contains("montoTotal.value = total > 0 ? total.toFixed(2) : ''");
     }
+
+    @Test
+    void historialFamiliarUsaTablaFiltrosYComprobantesEnOtraPestana() throws Exception {
+        String html = Files.readString(Path.of("src/main/resources/templates/portal/seccion.html"));
+
+        assertThat(html).contains("family-payment-table", "name=\"mes\"", "name=\"anio\"",
+                        "Historial por alumno", "Ver comprobante PDF", "target=\"_blank\"")
+                .contains("portal.hijo.nombre", "paginaPagos");
+    }
 }

@@ -71,8 +71,17 @@ public class PortalTutorController {
     String pagos(@RequestParam(required = false) Long alumnoId,
                  @RequestParam(defaultValue = "0") int paginaCargos,
                  @RequestParam(defaultValue = "0") int paginaPagos,
+                 @RequestParam(required = false) Integer mes,
+                 @RequestParam(required = false) Integer anio,
                  @AuthenticationPrincipal UsuarioPrincipal principal, Model model) {
-        return seccion("PAGOS", alumnoId, 0, paginaCargos, 0, 0, paginaPagos, principal, model);
+        PortalTutorResultado resultado = service.consultarPagos(principal, alumnoId, paginaCargos,
+                paginaPagos, mes, anio);
+        model.addAttribute("portal", resultado);
+        model.addAttribute("seccion", "PAGOS");
+        model.addAttribute("rutaInicio", "/portal");
+        model.addAttribute("rutaSeccion", "/portal/pagos");
+        agregarFiltrosPagos(model, principal, resultado, mes, anio);
+        return "portal/seccion";
     }
 
     @GetMapping("/calificaciones")
@@ -130,6 +139,22 @@ public class PortalTutorController {
         model.addAttribute("rutaInicio", "/portal");
         model.addAttribute("rutaSeccion", "/portal/" + seccion.toLowerCase(java.util.Locale.ROOT));
         return "portal/seccion";
+    }
+
+    private void agregarFiltrosPagos(Model model, UsuarioPrincipal principal,
+                                     PortalTutorResultado resultado, Integer mes, Integer anio) {
+        model.addAttribute("mesPago", mes);
+        model.addAttribute("anioPago", anio);
+        model.addAttribute("nombreMesPago", nombreMes(mes));
+        model.addAttribute("aniosPago", resultado.hijo() == null
+                ? java.util.List.of()
+                : service.aniosPagos(principal, resultado.hijo().alumnoId()));
+    }
+
+    private String nombreMes(Integer mes) {
+        if (mes == null) return "Todos los meses";
+        return java.time.Month.of(mes).getDisplayName(java.time.format.TextStyle.FULL,
+                java.util.Locale.forLanguageTag("es-MX"));
     }
 
     @GetMapping("/alumnos/{alumnoId}/fotografia")

@@ -104,6 +104,22 @@ class PortalTutorServiceTest {
     }
 
     @Test
+    void historialDePagosFiltraPorHijoMesYAnio() {
+        PortalHijoResumen hijo = hijo(true, true);
+        when(portal.hijos(eq(7L), eq(1L), any())).thenReturn(List.of(hijo));
+        when(reportes.estadoCuenta(any(), any(), any())).thenReturn(Page.empty());
+        when(reportes.resumenEstadoCuenta(any(), any(), any(), eq("MXN")))
+                .thenReturn(new ResumenEstadoCuenta(0, BigDecimal.ZERO, BigDecimal.ZERO,
+                        BigDecimal.ZERO, BigDecimal.ZERO, "MXN"));
+        when(portal.pagos(7L, 1L, 20L, "America/Mexico_City", 9, 2026, 0, 10))
+                .thenReturn(Page.empty());
+
+        service.consultarPagos(principal, 20L, 0, 0, 9, 2026);
+
+        verify(portal).pagos(7L, 1L, 20L, "America/Mexico_City", 9, 2026, 0, 10);
+    }
+
+    @Test
     void impideSeleccionarAlumnoFueraDeLosVinculosVigentes() {
         when(portal.hijos(eq(7L), eq(1L), any())).thenReturn(List.of(hijo(true, true)));
 

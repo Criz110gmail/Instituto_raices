@@ -2374,3 +2374,20 @@ historial paginado.
   todavía carece de historial.
 - La prueba estructural protege el contrato común y Docker aprobó 400 pruebas. No se cambió
   el esquema, no se desplegó la imagen y V47 permanece disponible.
+
+## Historial familiar de pagos por alumno (2026-10-02)
+
+- La sección **Tus pagos** del portal familiar dejó de presentar transferencias como una
+  lista de tarjetas y ahora usa una tabla paginada y responsiva con filtros de mes y año.
+- Cada fila incluye fecha, folio/referencia, método, importe aplicado al hijo seleccionado,
+  estado y acceso al comprobante PDF cuando el pago ya fue validado.
+- El repositorio limita los resultados por usuario tutor, institución y alumno a través de
+  `solicitud_aplicacion_pago → cargo → inscripcion`. Esto evita mezclar pagos entre hermanos
+  y conserva correctamente la distribución por alumno de un pago familiar conjunto.
+- Los filtros se resuelven en base de datos usando la zona horaria institucional. Los años
+  disponibles también se consultan para el alumno autorizado y los criterios se mantienen
+  durante la paginación.
+- El Portal tú administrativo reutiliza exactamente la misma consulta y presentación. Se
+  añadieron pruebas de servicio e interfaz; `docker compose build app` compiló 701 fuentes
+  principales y 123 de prueba y ejecutó 441 pruebas sin fallos. No hubo migración ni
+  despliegue del contenedor.

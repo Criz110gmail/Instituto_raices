@@ -1488,3 +1488,20 @@ enumeradas de etapas anteriores.
   a calcular cada saldo. Un importe alterado en la petición es reemplazado por el vigente.
 - No requiere migración. Se agregó una prueba de interfaz y las pruebas del servicio cubren
   la normalización autoritativa de importes.
+
+### Historial familiar de pagos por alumno — 2026-10-02
+
+- **Portal familiar → Tus pagos** presenta los pagos en una tabla paginada con fecha,
+  folio y referencia, método, importe aplicado al alumno, estado y comprobante oficial.
+- Los filtros de mes y año se ejecutan en PostgreSQL y se conservan al cambiar de página.
+  El selector de año sólo ofrece años que realmente tienen pagos para el hijo consultado.
+- La consulta exige simultáneamente el tutor autenticado, su institución y una aplicación
+  de pago ligada a la inscripción del hijo seleccionado. Un tutor con varios hijos no ve
+  mezclados sus historiales; en pagos compartidos se muestra sólo el importe distribuido al
+  alumno actual.
+- Los comprobantes validados continúan abriéndose como PDF en otra pestaña. Los estados en
+  revisión, rechazados o cancelados explican claramente por qué no hay comprobante oficial.
+- La misma experiencia quedó disponible en **Portal tú** para soporte administrativo. La
+  tabla se convierte en tarjetas en móvil y respeta temas claro y oscuro. No hubo migración;
+  Docker compiló 701 fuentes principales y 123 de prueba y aprobó 441 pruebas. La imagen se
+  construyó, pero no se desplegó.

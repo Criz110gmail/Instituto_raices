@@ -65,7 +65,7 @@ public class PortalSoporteAdminController {
                @RequestParam(defaultValue="0") int paginaPagos,
                    @AuthenticationPrincipal UsuarioPrincipal admin, Model model) {
         return vista(tutorId, alumnoId, paginaEventos, paginaCargos, paginaAvisos, paginaPagos,
-                null, admin, model);
+                null, null, null, admin, model);
     }
 
     @GetMapping("/{tutorId}/{seccion}")
@@ -75,6 +75,8 @@ public class PortalSoporteAdminController {
                       @RequestParam(defaultValue="0") int pagina,
                       @RequestParam(defaultValue="0") int paginaCargos,
                       @RequestParam(defaultValue="0") int paginaPagos,
+                      @RequestParam(required=false) Integer mes,
+                      @RequestParam(required=false) Integer anio,
                       @AuthenticationPrincipal UsuarioPrincipal admin, Model model) {
         String destino = seccion == null ? "" : seccion.toUpperCase(java.util.Locale.ROOT);
         if (!Set.of("AVISOS", "AGENDA", "PAGOS", "CALIFICACIONES", "BOLETAS", "HORARIO").contains(destino)) {
@@ -85,11 +87,14 @@ public class PortalSoporteAdminController {
                 destino.equals("PAGOS") ? paginaCargos : 0,
                 destino.equals("AVISOS") ? pagina : 0,
                 destino.equals("PAGOS") ? paginaPagos : 0,
+                destino.equals("PAGOS") ? mes : null,
+                destino.equals("PAGOS") ? anio : null,
                 destino, admin, model);
     }
 
     private String vista(Long tutorId, Long alumnoId, int paginaEventos, int paginaCargos,
-                         int paginaAvisos, int paginaPagos, String seccion,
+                         int paginaAvisos, int paginaPagos, Integer mesPago, Integer anioPago,
+                         String seccion,
                          UsuarioPrincipal admin, Model model) {
         validarAdministradorSoporte(admin);
         alcance.validarAdministracionInstitucional(admin.institucionId());
@@ -100,7 +105,11 @@ public class PortalSoporteAdminController {
             throw new org.springframework.security.access.AccessDeniedException("El tutor no tiene una cuenta familiar activa");
         }
         UsuarioPrincipal vista = principalTutor(tutor, admin.institucionId());
-        var resultadoPortal = portal.consultarComoSoporte(vista, alumnoId, paginaEventos, paginaCargos, paginaAvisos, paginaPagos);
+        var resultadoPortal = "PAGOS".equals(seccion)
+                ? portal.consultarPagosComoSoporte(vista, alumnoId, paginaCargos, paginaPagos,
+                        mesPago, anioPago)
+                : portal.consultarComoSoporte(vista, alumnoId, paginaEventos, paginaCargos,
+                        paginaAvisos, paginaPagos);
         model.addAttribute("portal", resultadoPortal);
         model.addAttribute("soporte", true);
         model.addAttribute("tutorSoporteId", tutorId);
@@ -109,6 +118,16 @@ public class PortalSoporteAdminController {
             model.addAttribute("rutaInicio", "/admin/portal-soporte/" + tutorId);
             model.addAttribute("rutaSeccion", "/admin/portal-soporte/" + tutorId + "/"
                     + seccion.toLowerCase(java.util.Locale.ROOT));
+            if (seccion.equals("PAGOS")) {
+                model.addAttribute("mesPago", mesPago);
+                model.addAttribute("anioPago", anioPago);
+                model.addAttribute("nombreMesPago", mesPago == null ? "Todos los meses"
+                        : java.time.Month.of(mesPago).getDisplayName(java.time.format.TextStyle.FULL,
+                        java.util.Locale.forLanguageTag("es-MX")));
+                model.addAttribute("aniosPago", resultadoPortal.hijo() == null
+                        ? java.util.List.of()
+                        : portal.aniosPagos(vista, resultadoPortal.hijo().alumnoId()));
+            }
             if (seccion.equals("CALIFICACIONES")) {
                 model.addAttribute("calificaciones", resultadoPortal.hijo() == null
                         ? org.springframework.data.domain.Page.empty()

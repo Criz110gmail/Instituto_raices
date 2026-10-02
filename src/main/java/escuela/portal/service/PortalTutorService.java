@@ -29,20 +29,37 @@ public class PortalTutorService {
                                            int paginaEventos, int paginaCargos, int paginaAvisos,
                                            int paginaNotificaciones, int paginaPagos) {
         return consultar(principal, alumnoId, paginaEventos, paginaCargos, paginaAvisos,
-                paginaNotificaciones, paginaPagos, true);
+                paginaNotificaciones, paginaPagos, null, null, true);
     }
 
     public PortalTutorResultado consultarComoSoporte(UsuarioPrincipal principal, Long alumnoId,
                                                        int paginaEventos, int paginaCargos, int paginaAvisos,
                                                        int paginaPagos) {
-        return consultar(principal, alumnoId, paginaEventos, paginaCargos, paginaAvisos, 0, paginaPagos, false);
+        return consultar(principal, alumnoId, paginaEventos, paginaCargos, paginaAvisos, 0, paginaPagos,
+                null, null, false);
+    }
+
+    public PortalTutorResultado consultarPagos(UsuarioPrincipal principal, Long alumnoId,
+                                                 int paginaCargos, int paginaPagos,
+                                                 Integer mes, Integer anio) {
+        return consultar(principal, alumnoId, 0, paginaCargos, 0, 0, paginaPagos,
+                mes, anio, true);
+    }
+
+    public PortalTutorResultado consultarPagosComoSoporte(UsuarioPrincipal principal, Long alumnoId,
+                                                            int paginaCargos, int paginaPagos,
+                                                            Integer mes, Integer anio) {
+        return consultar(principal, alumnoId, 0, paginaCargos, 0, 0, paginaPagos,
+                mes, anio, false);
     }
 
     private PortalTutorResultado consultar(UsuarioPrincipal principal, Long alumnoId,
                                            int paginaEventos, int paginaCargos, int paginaAvisos,
                                            int paginaNotificaciones, int paginaPagos,
+                                           Integer mesPago, Integer anioPago,
                                            boolean sincronizarNotificaciones) {
         validarPrincipal(principal);
+        validarFiltrosPago(mesPago, anioPago);
         var institucion = institucionService.obtener(principal.institucionId());
         ZoneId zona = ZoneId.of(institucion.zonaHoraria());
         LocalDate hoy = LocalDate.now(zona);
@@ -69,7 +86,9 @@ public class PortalTutorService {
                 ? estadoCuenta(hijo, principal.institucionId(), hoy, zona, institucion.monedaPredeterminada(), cargosPagina)
                 : null;
         org.springframework.data.domain.Page<PortalPagoFila> pagos = hijo.accesoFinanciero()
-                ? Optional.ofNullable(portalRepository.pagos(principal.usuarioId(), principal.institucionId(), institucion.zonaHoraria(), Math.max(0,paginaPagos), TAMANIO))
+                ? Optional.ofNullable(portalRepository.pagos(principal.usuarioId(), principal.institucionId(),
+                        hijo.alumnoId(), institucion.zonaHoraria(), mesPago, anioPago,
+                        Math.max(0,paginaPagos), TAMANIO))
                     .orElseGet(() -> org.springframework.data.domain.Page.<PortalPagoFila>empty())
                 : org.springframework.data.domain.Page.<PortalPagoFila>empty();
         return new PortalTutorResultado(tutor, institucion.nombre(), hijos, hijo, estadoCuenta, eventos, avisos, bandeja, pagos);
@@ -82,6 +101,14 @@ public class PortalTutorService {
         return portalRepository.hijos(principal.usuarioId(), principal.institucionId(), hoy).stream()
                 .filter(h -> h.alumnoId().equals(alumnoId)).findFirst()
                 .orElseThrow(() -> new AccessDeniedException("El alumno no está disponible para esta cuenta"));
+    }
+
+    public List<Integer> aniosPagos(UsuarioPrincipal principal, Long alumnoId) {
+        PortalHijoResumen hijo = validarHijo(principal, alumnoId);
+        if (!hijo.accesoFinanciero()) return List.of();
+        var institucion = institucionService.obtener(principal.institucionId());
+        return portalRepository.aniosPagos(principal.usuarioId(), principal.institucionId(),
+                hijo.alumnoId(), institucion.zonaHoraria());
     }
 
     private ResultadoEstadoCuentaAlumno estadoCuenta(PortalHijoResumen hijo, Long institucionId,
@@ -108,6 +135,15 @@ public class PortalTutorService {
         if (principal == null || principal.usuarioId() == null || principal.institucionId() == null
                 || principal.accesoRecuperacion()) {
             throw new AccessDeniedException("El portal familiar requiere una cuenta de tutor activa");
+        }
+    }
+
+    private void validarFiltrosPago(Integer mes, Integer anio) {
+        if (mes != null && (mes < 1 || mes > 12)) {
+            throw new ReglaNegocioException("El mes para consultar pagos debe estar entre enero y diciembre");
+        }
+        if (anio != null && (anio < 2000 || anio > 2200)) {
+            throw new ReglaNegocioException("El año para consultar pagos no es válido");
         }
     }
 }

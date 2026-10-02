@@ -72,18 +72,63 @@ public class PortalTutorRepository {
                 (rs,n)->new PortalPlantelPago(rs.getLong("id"),rs.getString("nombre")));
     }
 
-    public Page<PortalPagoFila> pagos(Long usuarioId, Long institucionId, String zona, int pagina, int tamanio) {
+    public Page<PortalPagoFila> pagos(Long usuarioId, Long institucionId, Long alumnoId, String zona,
+                                      Integer mes, Integer anio, int pagina, int tamanio) {
         var p = new MapSqlParameterSource().addValue("usuarioId",usuarioId).addValue("institucionId",institucionId)
-                .addValue("zona",zona).addValue("limite",tamanio).addValue("offset",(long)pagina*tamanio);
-        String desde=" FROM pago pa JOIN tutor t ON t.id=pa.tutor_id WHERE t.usuario_id=:usuarioId AND pa.institucion_id=:institucionId ";
+                .addValue("alumnoId", alumnoId).addValue("zona",zona).addValue("limite",tamanio)
+                .addValue("offset",(long)pagina*tamanio);
+        String filtros = "";
+        if (mes != null) {
+            filtros += " AND EXTRACT(MONTH FROM timezone(:zona,pa.fecha_pago))=:mes ";
+            p.addValue("mes", mes);
+        }
+        if (anio != null) {
+            filtros += " AND EXTRACT(YEAR FROM timezone(:zona,pa.fecha_pago))=:anio ";
+            p.addValue("anio", anio);
+        }
+        String desde="""
+                 FROM pago pa
+                 JOIN tutor t ON t.id=pa.tutor_id
+                 JOIN (
+                     SELECT sap.pago_id, SUM(sap.monto_solicitado) AS monto_alumno
+                     FROM solicitud_aplicacion_pago sap
+                     JOIN cargo c ON c.id=sap.cargo_id
+                     JOIN inscripcion i ON i.id=c.inscripcion_id
+                     WHERE i.alumno_id=:alumnoId
+                     GROUP BY sap.pago_id
+                 ) aplicado ON aplicado.pago_id=pa.id
+                 WHERE t.usuario_id=:usuarioId AND pa.institucion_id=:institucionId
+                """ + filtros;
         Long total=jdbc.queryForObject("SELECT count(*)"+desde,p,Long.class);
         List<PortalPagoFila> filas=jdbc.query("""
-                SELECT pa.id,pa.folio,timezone(:zona,pa.fecha_pago) fecha_local,pa.monto,pa.moneda,pa.estado,pa.referencia,
+                SELECT pa.id,pa.folio,timezone(:zona,pa.fecha_pago) fecha_local,
+                       aplicado.monto_alumno AS monto,pa.moneda,pa.metodo,
+                       pa.estado,pa.referencia,
                        (SELECT count(*) FROM comprobante_pago cp WHERE cp.pago_id=pa.id) comprobantes
                 """+desde+" ORDER BY pa.fecha_pago DESC,pa.id DESC LIMIT :limite OFFSET :offset",p,
                 (rs,n)->new PortalPagoFila(rs.getLong("id"),rs.getString("folio"),rs.getObject("fecha_local",LocalDateTime.class),
-                        rs.getBigDecimal("monto"),rs.getString("moneda"),rs.getString("estado"),rs.getString("referencia"),rs.getInt("comprobantes")));
+                        rs.getBigDecimal("monto"),rs.getString("moneda"),rs.getString("metodo"),
+                        rs.getString("estado"),rs.getString("referencia"),rs.getInt("comprobantes")));
         return new PageImpl<>(filas,PageRequest.of(pagina,tamanio),total==null?0:total);
+    }
+
+    public List<Integer> aniosPagos(Long usuarioId, Long institucionId, Long alumnoId, String zona) {
+        return jdbc.query("""
+                SELECT DISTINCT EXTRACT(YEAR FROM timezone(:zona,pa.fecha_pago))::integer AS anio
+                FROM pago pa
+                JOIN tutor t ON t.id=pa.tutor_id
+                WHERE t.usuario_id=:usuarioId AND pa.institucion_id=:institucionId
+                  AND EXISTS (
+                      SELECT 1
+                      FROM solicitud_aplicacion_pago sap
+                      JOIN cargo c ON c.id=sap.cargo_id
+                      JOIN inscripcion i ON i.id=c.inscripcion_id
+                      WHERE sap.pago_id=pa.id AND i.alumno_id=:alumnoId
+                  )
+                ORDER BY anio DESC
+                """, new MapSqlParameterSource().addValue("usuarioId", usuarioId)
+                        .addValue("institucionId", institucionId).addValue("alumnoId", alumnoId)
+                        .addValue("zona", zona), (rs, n) -> rs.getInt("anio"));
     }
 
     public List<PortalHijoResumen> hijos(Long usuarioId, Long institucionId, LocalDate hoy) {
