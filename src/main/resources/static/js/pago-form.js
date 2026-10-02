@@ -24,6 +24,8 @@
         if (plantel.selectedOptions[0]?.hidden) plantel.value = '';
         const seleccion = institucion.selectedOptions[0];
         if (seleccion?.dataset.moneda) moneda.value = seleccion.dataset.moneda;
+        document.querySelectorAll('.protected-amount-control b')
+            .forEach(etiqueta => etiqueta.textContent = moneda.value || 'MXN');
         if (!conservar) {
             limpiarAutocompletado(document.querySelector('[data-payment-autocomplete="tutor"]'));
             limpiarAutocompletado(document.querySelector('[data-payment-autocomplete="cuenta"]'));
@@ -67,7 +69,69 @@
         fila.querySelector('.remove-distribution').addEventListener('click', () => {
             fila.remove(); reindexar();
         });
-        fila.querySelector('.monto-solicitado').addEventListener('input', actualizarTotales);
+        const importe = fila.querySelector('.monto-solicitado');
+        const parcial = fila.querySelector('.partial-payment-toggle');
+        importe.addEventListener('input', actualizarTotales);
+        parcial.addEventListener('click', () => alternarPagoParcial(fila));
+        fila.querySelector('.protected-amount-control b').textContent = moneda.value || 'MXN';
+        if (fila.querySelector('.cargo-id').value) {
+            protegerAsignacion(fila, fila.querySelector('.full-amount-reference').value || importe.value);
+        }
+    }
+
+    function protegerAsignacion(fila, saldoCompleto) {
+        const importe = fila.querySelector('.monto-solicitado');
+        const entradaCargo = fila.querySelector('.distribution-charge input[type="search"]');
+        const parcial = fila.querySelector('.partial-payment-toggle');
+        const fijo = fila.dataset.fixedCharge === 'true';
+        const saldo = numero(saldoCompleto);
+        if (saldo > 0) {
+            importe.dataset.fullAmount = saldo.toFixed(2);
+            fila.querySelector('.full-amount-reference').value = saldo.toFixed(2);
+        }
+        importe.readOnly = true;
+        entradaCargo.readOnly = true;
+        fila.classList.add('distribution-selected');
+        parcial.hidden = fijo;
+        parcial.textContent = 'Registrar pago parcial';
+        fila.querySelector('.amount-help').textContent = fijo
+            ? 'Importe protegido: corresponde al saldo vigente del pago seleccionado.'
+            : 'Saldo completo protegido contra cambios accidentales.';
+    }
+
+    function restablecerAsignacion(fila) {
+        if (fila.dataset.fixedCharge === 'true') return;
+        const importe = fila.querySelector('.monto-solicitado');
+        importe.value = '';
+        delete importe.dataset.fullAmount;
+        fila.querySelector('.full-amount-reference').value = '';
+        importe.readOnly = true;
+        fila.querySelector('.distribution-charge input[type="search"]').readOnly = false;
+        fila.querySelector('.partial-payment-toggle').hidden = true;
+        fila.querySelector('.amount-help').textContent = 'Selecciona un cargo para obtener su saldo pendiente.';
+        fila.classList.remove('distribution-selected', 'partial-payment-active');
+        actualizarTotales();
+    }
+
+    function alternarPagoParcial(fila) {
+        const importe = fila.querySelector('.monto-solicitado');
+        const boton = fila.querySelector('.partial-payment-toggle');
+        const ayuda = fila.querySelector('.amount-help');
+        if (importe.readOnly) {
+            importe.readOnly = false;
+            fila.classList.add('partial-payment-active');
+            boton.textContent = 'Usar saldo completo';
+            ayuda.textContent = 'Modo parcial activo. Captura exclusivamente el importe realmente recibido para este cargo.';
+            importe.focus();
+            importe.select();
+            return;
+        }
+        importe.value = importe.dataset.fullAmount || importe.value;
+        importe.readOnly = true;
+        fila.classList.remove('partial-payment-active');
+        boton.textContent = 'Registrar pago parcial';
+        ayuda.textContent = 'Saldo completo protegido contra cambios accidentales.';
+        actualizarTotales();
     }
 
     function reindexar() {
@@ -79,6 +143,7 @@
             fila.querySelector('label').htmlFor = busqueda.id;
             fila.querySelector('.cargo-id').name = `solicitudes[${indice}].cargoId`;
             fila.querySelector('.monto-solicitado').name = `solicitudes[${indice}].montoSolicitado`;
+            fila.querySelector('.full-amount-reference').name = `solicitudes[${indice}].saldoReferencia`;
         });
         vacio.hidden = lista.children.length > 0;
         actualizarTotales();
@@ -177,8 +242,10 @@
                         boton.append(titulo, detalle); boton.addEventListener('click', () => {
                             entrada.value = opcion.titulo; etiqueta = opcion.titulo; valor.value = opcion.id;
                             if (tipo === 'cargo' && opcion.monto != null) {
-                                const importe = contenedor.closest('.distribution-row')?.querySelector('.monto-solicitado');
+                                const fila = contenedor.closest('.distribution-row');
+                                const importe = fila?.querySelector('.monto-solicitado');
                                 if (importe) importe.value = Number(opcion.monto).toFixed(2);
+                                if (fila) protegerAsignacion(fila, opcion.monto);
                                 const solicitado = [...lista.querySelectorAll('.monto-solicitado')]
                                     .reduce((suma, input) => suma + numero(input.value), 0);
                                 monto.value = solicitado.toFixed(2);
@@ -195,6 +262,7 @@
         limpiar.addEventListener('click', () => {
             entrada.value = ''; etiqueta = ''; valor.value = '';
             valor.dispatchEvent(new Event('change', {bubbles: true}));
+            if (tipo === 'cargo') restablecerAsignacion(contenedor.closest('.distribution-row'));
             reiniciarBusqueda();
             mostrarEstado(requisitos(tipo) || 'Escribe al menos 3 caracteres.');
             entrada.focus();
@@ -227,6 +295,7 @@
         const tipo = contenedor.dataset.paymentAutocomplete;
         const valor = tipo === 'tutor' ? tutorId : tipo === 'cuenta' ? cuentaId : contenedor.querySelector('.cargo-id');
         valor.value = ''; valor.dispatchEvent(new Event('change', {bubbles: true}));
+        if (tipo === 'cargo') restablecerAsignacion(contenedor.closest('.distribution-row'));
         contenedor.dispatchEvent(new Event('payment-autocomplete-reset'));
     }
 

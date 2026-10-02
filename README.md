@@ -261,7 +261,7 @@ políticas, saldos y nuevos importes. Sólo después se habilita **Confirmar y g
 recargos**. La confirmación recalcula los datos vigentes antes de escribir y conserva la
 idempotencia. Los pagos completamente liquidados no aparecen ni reciben recargos.
 
-La generación automática de Pagos de alumnos aplica la misma protección. **Visualizar
+La generación automática de Cargos a alumnos aplica la misma protección. **Visualizar
 cuotas por aplicar** presenta, sin escribir datos, los alumnos y periodos faltantes junto
 con sus vencimientos, importes y totales. Únicamente después se habilita **Confirmar y
 generar pagos faltantes**. La confirmación recalcula el corte y crea sólo los periodos que
@@ -291,12 +291,23 @@ Efectivo se declara en una caja; transferencia y tarjeta muestran cuentas bancar
 inversión. Una terminal no requiere cuenta propia cuando deposita en una cuenta bancaria
 ya registrada. Desde una inscripción, el pago rápido protege institución, plantel, tutor
 titular y moneda para impedir que el registro se desvincule accidentalmente del alumno.
+La distribución carga el saldo completo de cada cargo y lo mantiene protegido; para
+capturar un abono menor, el operador debe elegir expresamente **Registrar pago parcial**.
+El folio interno se asigna al guardar mediante una secuencia global de base de datos con
+formato `PAG-AAAAMMdd-consecutivo`. No aparece en el formulario ni puede ser propuesto por
+el cliente; se conserva en consultas, movimientos, comprobantes y reportes para rastrear
+la operación. Los valores consumidos no se reutilizan aunque una transacción se revierta.
 
 Al validar se elige la cuenta destino compatible, se recalcula el saldo de cada cargo y
 se crean aplicaciones independientes por alumno. En la misma transacción se publica un
 solo movimiento de ingreso por todo el pago; el remanente queda disponible. El rechazo
 exige motivo y conserva el comprobante sin afectar saldos. Los bloqueos, secuencias y
 claves idempotentes impiden aplicar o ingresar dos veces el mismo pago.
+
+La cuenta declarada se precarga y protege como destino durante la validación. Si el
+operador detecta un error puede habilitar **Cambiar cuenta destino**; seleccionar una cuenta
+distinta exige un motivo y registra en auditoría la cuenta original, la definitiva y la
+explicación del cambio.
 
 Movimientos financieros ofrece un libro inmutable con saldo actual por cuenta, filtros
 paginados por cuenta, plantel, dirección, clase y fechas, además de Excel equivalente.
@@ -761,7 +772,7 @@ financieros. Desde una inscripción se prepara una cuota individual única con s
 precargado y se puede emitir inmediatamente el pago por cobrar. La emisión es idempotente:
 volver a solicitarla no duplica el cargo. Después, **Registrar pago** abre el formulario
 con el cargo, saldo pendiente, institución, plantel, moneda y tutor responsable financiero
-ya seleccionados. Los permisos de Cuotas, Pagos de alumnos y Pagos continúan separados y
+ya seleccionados. Los permisos de Cuotas, Cargos a alumnos y Pagos continúan separados y
 se validan en cada paso.
 
 Como mejora pendiente, la pestaña Cobranza incorporará **Preparar pago anticipado**. El

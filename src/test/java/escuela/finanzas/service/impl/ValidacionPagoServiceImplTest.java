@@ -64,6 +64,7 @@ class ValidacionPagoServiceImplTest {
         cuenta = new CuentaFinanciera(); cuenta.setId(8L); cuenta.setInstitucion(institucion); cuenta.setPlantel(plantel);
         cuenta.setNombre("Caja principal"); cuenta.setMoneda("MXN"); cuenta.setTipo(TipoCuentaFinanciera.CAJA);
         cuenta.setActivo(true); cuenta.setSaldoInicial(new BigDecimal("100.00")); cuenta.setFechaSaldoInicial(LocalDate.now().minusYears(1));
+        pago.setCuentaDeclarada(cuenta);
         when(pagos.findByIdForUpdate(50L)).thenReturn(Optional.of(pago));
         when(pagos.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0));
         when(cuentas.findByIdForUpdate(8L)).thenReturn(Optional.of(cuenta));
@@ -96,7 +97,7 @@ class ValidacionPagoServiceImplTest {
         when(cargos.findByIdForUpdate(10L)).thenReturn(Optional.of(cargoA));
         when(cargos.findByIdForUpdate(11L)).thenReturn(Optional.of(cargoB));
 
-        var respuesta = service.validar(50L, new ValidacionPagoRequest(8L, 0L));
+        var respuesta = service.validar(50L, new ValidacionPagoRequest(8L, null, 0L));
 
         assertThat(respuesta.estado()).isEqualTo(EstadoPago.VALIDADO);
         assertThat(respuesta.montoAplicado()).isEqualByComparingTo("500.00");
@@ -122,7 +123,7 @@ class ValidacionPagoServiceImplTest {
     @Test
     void efectivoNoPuedeValidarseEnCuentaBancaria() {
         cuenta.setTipo(TipoCuentaFinanciera.BANCO);
-        assertThatThrownBy(() -> service.validar(50L, new ValidacionPagoRequest(8L, 0L)))
+        assertThatThrownBy(() -> service.validar(50L, new ValidacionPagoRequest(8L, null, 0L)))
                 .isInstanceOf(escuela.common.exception.ReglaNegocioException.class)
                 .hasMessageContaining("tipo caja");
         verify(movimientos, never()).save(any());
@@ -131,7 +132,7 @@ class ValidacionPagoServiceImplTest {
     @Test
     void tarjetaNoPuedeValidarseEnCaja() {
         pago.setMetodo(MetodoPago.TARJETA);
-        assertThatThrownBy(() -> service.validar(50L, new ValidacionPagoRequest(8L, 0L)))
+        assertThatThrownBy(() -> service.validar(50L, new ValidacionPagoRequest(8L, null, 0L)))
                 .isInstanceOf(escuela.common.exception.ReglaNegocioException.class)
                 .hasMessageContaining("cuenta bancaria o de inversión");
         verify(movimientos, never()).save(any());
@@ -139,10 +140,40 @@ class ValidacionPagoServiceImplTest {
 
     @Test
     void exigeSeleccionarCuentaDestino() {
-        assertThatThrownBy(() -> service.validar(50L, new ValidacionPagoRequest(null, 0L)))
+        assertThatThrownBy(() -> service.validar(50L, new ValidacionPagoRequest(null, null, 0L)))
                 .isInstanceOf(escuela.common.exception.ReglaNegocioException.class)
                 .hasMessageContaining("Selecciona la cuenta destino");
         verify(movimientos, never()).save(any());
+    }
+
+    @Test
+    void exigeMotivoCuandoLaCuentaDestinoCambia() {
+        CuentaFinanciera alternativa = cuentaAlternativa(10L);
+        when(cuentas.findByIdForUpdate(10L)).thenReturn(Optional.of(alternativa));
+
+        assertThatThrownBy(() -> service.validar(50L,
+                new ValidacionPagoRequest(10L, "  ", 0L)))
+                .isInstanceOf(escuela.common.exception.ReglaNegocioException.class)
+                .hasMessageContaining("motivo");
+        verify(movimientos, never()).save(any());
+    }
+
+    @Test
+    void auditaLaCuentaDeclaradaYElMotivoCuandoSeCambiaElDestino() {
+        CuentaFinanciera alternativa = cuentaAlternativa(10L);
+        when(cuentas.findByIdForUpdate(10L)).thenReturn(Optional.of(alternativa));
+        when(movimientos.findFirstByCuentaIdOrderBySecuenciaCuentaDesc(10L)).thenReturn(Optional.empty());
+
+        var respuesta = service.validar(50L,
+                new ValidacionPagoRequest(10L, "La recepción quedó en la caja secundaria", 0L));
+
+        assertThat(respuesta.cuentaDestinoId()).isEqualTo(10L);
+        verify(auditoria).registrar(eq(1L), eq(escuela.auditoria.entity.AccionAuditoria.PAGO_VALIDADO),
+                eq("PAGO"), eq(50L), eq("La recepción quedó en la caja secundaria"),
+                argThat(cambios -> cambios.get("cuentaDeclaradaId").equals(8L)
+                        && cambios.get("cuentaDestinoId").equals(10L)
+                        && cambios.get("cuentaDestinoModificada").equals(true)
+                        && cambios.get("motivoCambioCuenta").equals("La recepción quedó en la caja secundaria")));
     }
 
     @Test
@@ -169,5 +200,15 @@ class ValidacionPagoServiceImplTest {
         SolicitudAplicacionPago solicitud = new SolicitudAplicacionPago(); solicitud.setId(id);
         solicitud.setPago(pago); solicitud.setCargo(cargo); solicitud.setMontoSolicitado(new BigDecimal(monto));
         pago.getSolicitudes().add(solicitud); return solicitud;
+    }
+
+    private CuentaFinanciera cuentaAlternativa(Long id) {
+        CuentaFinanciera alternativa = new CuentaFinanciera(); alternativa.setId(id);
+        alternativa.setInstitucion(institucion); alternativa.setPlantel(plantel);
+        alternativa.setNombre("Caja secundaria"); alternativa.setMoneda("MXN");
+        alternativa.setTipo(TipoCuentaFinanciera.CAJA); alternativa.setActivo(true);
+        alternativa.setSaldoInicial(BigDecimal.ZERO);
+        alternativa.setFechaSaldoInicial(LocalDate.now().minusYears(1));
+        return alternativa;
     }
 }

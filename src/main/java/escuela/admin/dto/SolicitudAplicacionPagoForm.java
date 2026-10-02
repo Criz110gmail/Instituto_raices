@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 public class SolicitudAplicacionPagoForm {
     @NotNull private Long cargoId;
     private String cargoEtiqueta;
+    private BigDecimal saldoReferencia;
     @NotNull @DecimalMin("0.01") @Digits(integer = 17, fraction = 2)
     private BigDecimal montoSolicitado;
 

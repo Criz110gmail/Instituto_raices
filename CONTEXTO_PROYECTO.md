@@ -1,5 +1,59 @@
 # Contexto del proyecto
 
+## Claridad del acceso temporal en validación financiera
+
+- El usuario bootstrap configurado por entorno sigue siendo exclusivamente un acceso de
+  recuperación: no representa una cuenta persistida y no puede validar, rechazar ni autorizar
+  movimientos de dinero porque la operación quedaría sin un responsable administrativo.
+- El detalle de pago ahora detecta ese acceso antes del envío, oculta las decisiones financieras
+  y muestra una explicación visible para cerrar sesión e ingresar con un usuario creado en
+  **Seguridad → Usuarios**. Cambiar y después restaurar la cuenta destino no altera esta regla.
+- Docker compiló 701 fuentes y ejecutó 438 pruebas sin fallos. La imagen quedó desplegada y
+  `/actuator/health` respondió `UP`; no se agregó una migración.
+
+## Ajuste posterior a V52 — cuenta precargada durante la validación
+
+- La validación de un pago precarga como destino la cuenta declarada durante el registro y
+  la mantiene protegida. El operador puede publicar el ingreso sin volver a buscarla.
+- **Cambiar cuenta destino** habilita la búsqueda como corrección excepcional. Si el destino
+  seleccionado es diferente, el motivo es obligatorio tanto en interfaz como en servicio.
+  Volver a **Conservar cuenta declarada** restaura identificador y etiqueta originales.
+- La auditoría de `PAGO_VALIDADO` conserva cuenta declarada, cuenta destino, indicador de
+  modificación y motivo, además del usuario que ya identifica cada registro de auditoría.
+- Docker compiló 701 fuentes y ejecutó 436 pruebas sin fallos. La imagen quedó desplegada
+  y `/actuator/health` respondió `UP`. No hubo migración; la siguiente disponible continúa
+  siendo V53.
+
+## Ajuste posterior a V52 — separación visual entre cargos y pagos
+
+- El nombre visible **Pagos de alumnos** cambió a **Cargos a alumnos** en navegación,
+  permisos, formularios, generación automática y ayudas. Las rutas y permisos internos
+  se conservaron para no romper integraciones: un cargo representa lo que el alumno debe;
+  un pago representa dinero recibido.
+- La cuenta declarada ahora es obligatoria también en el formulario administrativo y en
+  el servicio. Debe señalar la caja o cuenta bancaria donde se recibió el dinero.
+- El ajuste manual se presenta como **Ajustar saldo del cargo**, con una explicación neutra:
+  descuentos y recargos modifican la obligación, pero no registran un ingreso. Los estados
+  validado, rechazado y cancelado, sus motivos y la cancelación excepcional recibieron un
+  diseño responsivo consistente en temas claro y oscuro.
+- Docker compiló 701 fuentes y ejecutó 433 pruebas sin fallos. El servicio desplegado
+  respondió `UP`. No hubo cambios de esquema; la siguiente migración disponible continúa
+  siendo V53.
+
+## Verificación V52 — folio interno secuencial de pagos
+
+- El folio dejó de formar parte de los formularios y solicitudes del administrador y del
+  portal familiar. `PagoServiceImpl` lo asigna dentro de la operación de guardado, por lo
+  que ningún cliente puede proponerlo ni modificarlo.
+- V52 crea la secuencia global `seq_pago_folio`. El formato es
+  `PAG-AAAAMMdd-consecutivo`, usando la fecha de registro en la zona horaria de la
+  institución y un consecutivo con al menos seis dígitos. La secuencia evita repeticiones
+  entre instituciones y no reutiliza valores; los saltos por transacciones revertidas son
+  normales. Una verificación adicional evita colisionar con folios históricos.
+- El folio se conserva como referencia interna en consultas, movimientos, auditoría,
+  comprobantes y reportes. Docker compiló 701 fuentes y ejecutó 432 pruebas sin fallos;
+  Flyway aplicó V52 y el servicio respondió `UP`. La siguiente migración disponible es V53.
+
 ## Verificación posterior a V50 — pagos administrativos con tarjeta y contexto protegido
 
 - V51 amplía los métodos administrativos con **Tarjeta**. Para evitar duplicar saldos,
@@ -12,6 +66,15 @@
   tutor titular y moneda quedan visibles pero protegidos. Se conserva editable el nombre
   de quien materialmente entrega, transfiere o presenta la tarjeta porque puede ser una
   persona distinta del tutor responsable.
+- Cada asignación muestra cargo/alumno e importe en una tarjeta responsiva. Al seleccionar
+  el cargo se carga y protege su saldo completo. En el flujo rápido no puede sustituirse;
+  en el alta general puede cambiarse el cargo y sólo **Registrar pago parcial** desbloquea
+  deliberadamente el importe. El saldo de referencia se conserva al volver de una
+  validación para que **Usar saldo completo** siempre restaure el valor correcto.
+- El selector de cargo/alumno ya tiene fondo, borde y contraste propios en temas claro y
+  oscuro. Las explicaciones bajo los campos se identifican con icono y color informativo;
+  sólo las validaciones reales permanecen rojas. Esta verificación usaba todavía un folio
+  visible generado al abrir la captura; V52 lo sustituyó por el folio interno secuencial.
 - Se unificó el diseño responsivo y oscuro del formulario y de **Cerrar detalle**,
   **Registrar pago** y **Aplicar ajuste**. Docker compiló 701 fuentes y ejecutó 431
   pruebas sin fallos. Flyway aplicó V51 y el servicio desplegado respondió `UP`; la

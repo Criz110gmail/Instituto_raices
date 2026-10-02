@@ -66,7 +66,7 @@ public class CuotaAlumnoAdminController {
         validarRelaciones(form, errores);
         if (form.isGenerarCargoAhora() && !tienePermiso(authentication, "CARGO_ADMINISTRAR")) {
             errores.reject("cuota.generar.permiso",
-                    "No tienes permiso para generar el pago del alumno inmediatamente");
+                    "No tienes permiso para generar el cargo al alumno inmediatamente");
         }
         if (errores.hasErrors()) {
             preparar(model, form, null);

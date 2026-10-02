@@ -75,6 +75,10 @@ class PagoServiceImplTest {
         when(cargoRepository.findById(11L)).thenReturn(Optional.of(cargoB));
         when(cargoRepository.findById(12L)).thenReturn(Optional.of(cargoC));
         when(vinculoRepository.tieneResponsabilidadFinancieraVigente(any(), eq(3L), any())).thenReturn(true);
+        lenient().when(cuentaRepository.findById(8L)).thenReturn(Optional.of(cuenta(8L, TipoCuentaFinanciera.CAJA)));
+        lenient().when(cuentaRepository.findById(9L)).thenReturn(Optional.of(cuenta(9L, TipoCuentaFinanciera.BANCO)));
+        lenient().when(pagoRepository.siguienteNumeroFolio()).thenReturn(42L);
+        lenient().when(pagoRepository.existsByFolioIgnoreCase(anyString())).thenReturn(false);
         when(pagoRepository.saveAndFlush(any())).thenAnswer(inv -> { Pago p = inv.getArgument(0); p.setId(50L); return p; });
         when(archivoRepository.saveAndFlush(any())).thenAnswer(inv -> { var a = inv.getArgument(0, escuela.archivo.entity.Archivo.class); a.setId(60L); return a; });
     }
@@ -85,11 +89,24 @@ class PagoServiceImplTest {
                 List.of(solicitud(10L, "1200.00"), solicitud(11L, "500.00"))), List.of());
 
         assertThat(respuesta.estado()).isEqualTo(EstadoPago.PENDIENTE_VALIDACION);
+        assertThat(respuesta.folio()).matches("PAG-\\d{8}-000042");
         assertThat(respuesta.montoSolicitado()).isEqualByComparingTo("1700.00");
         assertThat(respuesta.montoSinAsignar()).isEqualByComparingTo("300.00");
         assertThat(respuesta.solicitudes()).hasSize(2);
         verify(solicitudRepository, times(2)).save(any());
         verify(cargoRepository, never()).save(any());
+    }
+
+    @Test
+    void consumeOtroConsecutivoSiCoincideConUnFolioHistorico() {
+        when(pagoRepository.siguienteNumeroFolio()).thenReturn(42L, 43L);
+        when(pagoRepository.existsByFolioIgnoreCase(endsWith("-000042"))).thenReturn(true);
+        when(pagoRepository.existsByFolioIgnoreCase(endsWith("-000043"))).thenReturn(false);
+
+        var respuesta = service.registrar(request(MetodoPago.EFECTIVO, "500.00", null, List.of()), List.of());
+
+        assertThat(respuesta.folio()).endsWith("-000043");
+        verify(pagoRepository, times(2)).siguienteNumeroFolio();
     }
 
     @Test
@@ -121,6 +138,17 @@ class PagoServiceImplTest {
     }
 
     @Test
+    void exigeLaCuentaDondeSeRecibioElDinero() {
+        PagoRequest sinCuenta = new PagoRequest(1L, 2L, 3L, null,
+                Instant.now().minusSeconds(60), new BigDecimal("500.00"), "MXN",
+                MetodoPago.EFECTIVO, null, "REF", null, List.of());
+
+        assertThatThrownBy(() -> service.registrar(sinCuenta, List.of()))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessageContaining("cuenta donde se recibió el dinero");
+    }
+
+    @Test
     void impideDistribuirMasQueElPago() {
         assertThatThrownBy(() -> service.registrar(request(MetodoPago.EFECTIVO,
                 "500.00", null, List.of(solicitud(10L, "600.00"))), List.of()))
@@ -137,7 +165,7 @@ class PagoServiceImplTest {
 
     @Test
     void efectivoNoPuedeDeclararCuentaBancaria() {
-        CuentaFinanciera cuenta = cuenta(TipoCuentaFinanciera.BANCO);
+        CuentaFinanciera cuenta = cuenta(8L, TipoCuentaFinanciera.BANCO);
         when(cuentaRepository.findById(8L)).thenReturn(Optional.of(cuenta));
         assertThatThrownBy(() -> service.registrar(request(MetodoPago.EFECTIVO,
                 "500.00", 8L, List.of()), List.of()))
@@ -146,7 +174,7 @@ class PagoServiceImplTest {
 
     @Test
     void tarjetaUsaLaCuentaBancariaLigadaALaTerminal() {
-        CuentaFinanciera cuenta = cuenta(TipoCuentaFinanciera.BANCO);
+        CuentaFinanciera cuenta = cuenta(8L, TipoCuentaFinanciera.BANCO);
         when(cuentaRepository.findById(8L)).thenReturn(Optional.of(cuenta));
 
         var respuesta = service.registrar(request(MetodoPago.TARJETA,
@@ -158,7 +186,7 @@ class PagoServiceImplTest {
 
     @Test
     void tarjetaNoPuedeDeclararUnaCaja() {
-        CuentaFinanciera cuenta = cuenta(TipoCuentaFinanciera.CAJA);
+        CuentaFinanciera cuenta = cuenta(8L, TipoCuentaFinanciera.CAJA);
         when(cuentaRepository.findById(8L)).thenReturn(Optional.of(cuenta));
 
         assertThatThrownBy(() -> service.registrar(request(MetodoPago.TARJETA,
@@ -191,16 +219,18 @@ class PagoServiceImplTest {
 
     private PagoRequest request(MetodoPago metodo, String monto, Long cuenta,
                                 List<SolicitudAplicacionPagoRequest> solicitudes) {
-        return new PagoRequest(1L, 2L, 3L, null, "PAG-001", Instant.now().minusSeconds(60),
-                new BigDecimal(monto), "MXN", metodo, cuenta, "REF", null, solicitudes);
+        Long cuentaEfectiva = cuenta != null ? cuenta
+                : metodo == MetodoPago.EFECTIVO ? 8L : 9L;
+        return new PagoRequest(1L, 2L, 3L, null, Instant.now().minusSeconds(60),
+                new BigDecimal(monto), "MXN", metodo, cuentaEfectiva, "REF", null, solicitudes);
     }
 
     private SolicitudAplicacionPagoRequest solicitud(Long cargoId, String monto) {
         return new SolicitudAplicacionPagoRequest(cargoId, new BigDecimal(monto));
     }
 
-    private CuentaFinanciera cuenta(TipoCuentaFinanciera tipo) {
-        CuentaFinanciera cuenta = new CuentaFinanciera(); cuenta.setId(8L); cuenta.setActivo(true);
+    private CuentaFinanciera cuenta(Long id, TipoCuentaFinanciera tipo) {
+        CuentaFinanciera cuenta = new CuentaFinanciera(); cuenta.setId(id); cuenta.setActivo(true);
         cuenta.setInstitucion(institucion); cuenta.setPlantel(plantel); cuenta.setTipo(tipo);
         return cuenta;
     }

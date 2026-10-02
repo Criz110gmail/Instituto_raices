@@ -71,7 +71,7 @@ public class CargoAdminController {
             model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
             return "admin/cargo-form";
         }
-        flash.addFlashAttribute("mensaje", "Pago del alumno registrado correctamente");
+        flash.addFlashAttribute("mensaje", "Cargo al alumno registrado correctamente");
         return "redirect:/admin/catalogos/cargos";
     }
 
@@ -100,7 +100,7 @@ public class CargoAdminController {
             model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
             return "admin/cargo-detalle";
         }
-        flash.addFlashAttribute("mensaje", "Pago del alumno cancelado; el historial permanece disponible");
+        flash.addFlashAttribute("mensaje", "Cargo al alumno cancelado; el historial permanece disponible");
         return "redirect:/admin/catalogos/cargos";
     }
 
@@ -142,7 +142,7 @@ public class CargoAdminController {
         try {
             var resultado = service.generar(form.request());
             flash.addFlashAttribute("mensaje", "Generación terminada: "
-                    + resultado.cargosGenerados() + " pagos de alumnos nuevos, "
+                    + resultado.cargosGenerados() + " cargos a alumnos nuevos, "
                     + resultado.cargosYaExistentes() + " ya existían; "
                     + resultado.cuotasRevisadas() + " cuotas revisadas");
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
@@ -165,7 +165,7 @@ public class CargoAdminController {
                 throw new ReglaNegocioException("La cuota no pertenece a esta inscripción");
             }
             var cargo = service.generarCargoUnico(cuotaId);
-            flash.addFlashAttribute("mensaje", "Pago por cobrar disponible: " + cargo.descripcion());
+            flash.addFlashAttribute("mensaje", "Cargo disponible: " + cargo.descripcion());
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
             flash.addFlashAttribute("errorCobranza", MensajeErrorFormulario.desde(excepcion));
         }

@@ -1,0 +1,5 @@
+CREATE SEQUENCE seq_pago_folio
+    AS BIGINT
+    START WITH 1
+    INCREMENT BY 1
+    NO CYCLE;

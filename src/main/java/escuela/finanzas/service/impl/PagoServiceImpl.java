@@ -100,10 +100,7 @@ public class PagoServiceImpl implements PagoService {
         validarPropietarios(request, institucion, plantel, tutor);
         CuentaFinanciera cuenta = obtenerCuenta(request.cuentaDeclaradaId(), institucion, plantel, request.metodo());
 
-        String folio = codigo(request.folio());
-        if (pagoRepository.existsByInstitucionIdAndFolioIgnoreCase(institucion.getId(), folio)) {
-            throw new RecursoDuplicadoException("Ya existe un pago con ese folio en la institución");
-        }
+        String folio = generarFolio(institucion);
 
         List<CargoSolicitud> solicitudes = validarSolicitudes(request, institucion, tutor);
         BigDecimal totalSolicitado = solicitudes.stream().map(CargoSolicitud::monto)
@@ -193,6 +190,17 @@ public class PagoServiceImpl implements PagoService {
                 archivo.getNombreOriginal(), archivo.getTipoMime(), archivo.getTamanoBytes());
     }
 
+    private String generarFolio(Institucion institucion) {
+        String fecha = LocalDate.now(ZoneId.of(institucion.getZonaHoraria()))
+                .format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE);
+        String folio;
+        do {
+            long consecutivo = pagoRepository.siguienteNumeroFolio();
+            folio = "PAG-" + fecha + "-" + String.format(Locale.ROOT, "%06d", consecutivo);
+        } while (pagoRepository.existsByFolioIgnoreCase(folio));
+        return folio;
+    }
+
     private void validarPropietarios(PagoRequest request, Institucion institucion,
                                      Plantel plantel, Tutor tutor) {
         if (!institucion.isActivo()) throw new ReglaNegocioException("La institución debe estar activa");
@@ -212,7 +220,9 @@ public class PagoServiceImpl implements PagoService {
 
     private CuentaFinanciera obtenerCuenta(Long id, Institucion institucion, Plantel plantel,
                                             MetodoPago metodo) {
-        if (id == null) return null;
+        if (id == null) {
+            throw new ReglaNegocioException("Selecciona la cuenta donde se recibió el dinero");
+        }
         CuentaFinanciera cuenta = cuentaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("la cuenta declarada", id));
         boolean alcanceValido = cuenta.getInstitucion().getId().equals(institucion.getId())

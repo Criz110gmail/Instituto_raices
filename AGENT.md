@@ -22,12 +22,25 @@ no vuelvas a implementar componentes que ya existan.
 - Rama principal: `main`.
 - Confirma siempre `git status` y `git log` antes de continuar; el propietario realiza
   manualmente los commits y el `push`.
+- La interfaz distingue **Cargos a alumnos** (obligaciones y saldos) de **Pagos** (dinero
+  recibido). En Pagos, la cuenta declarada es obligatoria para cualquier método. El ajuste
+  de un cargo permanece separado porque aumenta o disminuye la deuda sin registrar un
+  ingreso. El detalle de pago usa estados y cancelación con diseño completo en temas claro
+  y oscuro. Al validar, la cuenta declarada queda precargada y protegida; cambiarla es una
+  corrección explícita con motivo obligatorio y auditoría de ambas cuentas. Este ajuste no
+  requirió migración; la siguiente disponible continúa siendo V53.
 - V51 incorpora **Tarjeta** como método de pago administrativo. No se crea una cuenta
   financiera por terminal: el pago se declara y valida contra la cuenta bancaria o de
   inversión donde la terminal deposita; efectivo continúa usando caja. El pago rápido
   iniciado desde una inscripción protege institución, plantel, tutor titular y moneda,
-  manteniendo editables sólo los datos propios de la operación. La siguiente migración
-  disponible es V52.
+  manteniendo editables sólo los datos propios de la operación. En la distribución, cargo
+  y saldo completo quedan protegidos por defecto; un abono menor requiere activar
+  explícitamente **Registrar pago parcial**. V52 crea la secuencia global de base de datos
+  para el folio interno del pago: se asigna al guardar como
+  `PAG-AAAAMMdd-consecutivo`, nunca lo captura el usuario y no se reutilizan números aunque
+  una transacción se revierta. El folio permanece en consultas y comprobantes. Las ayudas
+  informativas usan un estilo neutro diferenciado de los errores rojos. La siguiente
+  migración disponible es V53.
 - V50 implementa Proveedores y Compras. El catálogo de proveedores es multiinstitución;
   cada compra se captura con partidas, proveedor, plantel opcional, cuenta de caja/banco
   y categoría financiera. Guardar conserva un borrador sin afectar saldos, confirmar crea
@@ -900,6 +913,11 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   PostgreSQL local sin cambiar el volumen persistente ni las credenciales de `.env`.
 
 ## Siguiente paso acordado
+
+El acceso bootstrap/de recuperación no puede autorizar movimientos financieros porque carece de
+un `usuario_id` persistido al cual atribuirlos. En el detalle de un pago pendiente se ocultan las
+acciones de validación y rechazo para ese acceso y se explica que debe usarse una cuenta creada en
+**Seguridad → Usuarios**. No relajar esta protección en futuros cambios.
 
 V50 de Proveedores y Compras quedó implementada, compilada y desplegada; Docker ejecutó
 417 pruebas sin fallos, Flyway aplicó V50, Hibernate validó el esquema y salud respondió

@@ -57,7 +57,7 @@ public enum ModuloPermiso {
             "CONCEPTO_COBRO_LEER", "CONCEPTO_COBRO_ADMINISTRAR"),
     CUOTAS_ALUMNO("Cuotas por alumno", "Acceso completo a cuotas individuales",
             "CUOTA_ALUMNO_LEER", "CUOTA_ALUMNO_ADMINISTRAR"),
-    CARGOS("Pagos de alumnos", "Acceso completo a los importes por cobrar de cada alumno",
+    CARGOS("Cargos a alumnos", "Acceso completo a los importes por cobrar de cada alumno",
             "CARGO_LEER", "CARGO_ADMINISTRAR"),
     TIPOS_BECA("Tipos de beca", "Acceso completo al catálogo de becas",
             "TIPO_BECA_LEER", "TIPO_BECA_ADMINISTRAR"),

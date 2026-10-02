@@ -61,6 +61,13 @@ public class ValidacionPagoServiceImpl implements ValidacionPagoService {
         CuentaFinanciera cuenta = cuentaRepository.findByIdForUpdate(request.cuentaDestinoId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("la cuenta destino", request.cuentaDestinoId()));
         validarCuenta(pago, cuenta);
+        Long cuentaDeclaradaId = pago.getCuentaDeclarada() == null ? null : pago.getCuentaDeclarada().getId();
+        boolean cambioCuenta = cuentaDeclaradaId != null && !cuentaDeclaradaId.equals(cuenta.getId());
+        String motivoCambioCuenta = limpiar(request.motivoCambioCuenta());
+        if (cambioCuenta && (motivoCambioCuenta == null || motivoCambioCuenta.length() > 2000)) {
+            throw new ReglaNegocioException(
+                    "Indica el motivo por el que la cuenta destino es distinta de la cuenta declarada");
+        }
 
         List<SolicitudAplicacionPago> solicitudes = solicitudRepository
                 .findAllByPagoIdOrderByCargoIdAsc(pagoId);
@@ -101,10 +108,18 @@ public class ValidacionPagoServiceImpl implements ValidacionPagoService {
         pago.setMovimiento(movimiento);
         Pago guardado = pagoRepository.saveAndFlush(pago);
         PagoResponse respuesta = mapper.respuesta(guardado);
+        Map<String, Object> cambios = new LinkedHashMap<>();
+        cambios.put("folio", pago.getFolio());
+        cambios.put("monto", pago.getMonto());
+        cambios.put("moneda", pago.getMoneda());
+        cambios.put("cuentaDeclaradaId", cuentaDeclaradaId);
+        cambios.put("cuentaDestinoId", cuenta.getId());
+        cambios.put("cuentaDestinoModificada", cambioCuenta);
+        if (cambioCuenta) cambios.put("motivoCambioCuenta", motivoCambioCuenta);
+        cambios.put("montoAplicado", respuesta.montoAplicado());
+        cambios.put("montoDisponible", respuesta.montoDisponible());
         auditoria.registrar(pago.getInstitucion().getId(), AccionAuditoria.PAGO_VALIDADO,
-                "PAGO", pago.getId(), null, Map.of("folio", pago.getFolio(), "monto", pago.getMonto(),
-                        "moneda", pago.getMoneda(), "cuentaDestinoId", cuenta.getId(),
-                        "montoAplicado", respuesta.montoAplicado(), "montoDisponible", respuesta.montoDisponible()));
+                "PAGO", pago.getId(), cambioCuenta ? motivoCambioCuenta : null, cambios);
         return respuesta;
     }
 

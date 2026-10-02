@@ -26,7 +26,6 @@ public class PortalPagoForm {
 
     public PagoRequest request(Long institucionId, Long tutorId, String moneda, ZoneId zona) {
         return new PagoRequest(institucionId, plantelRegistroId, tutorId, nombrePagador,
-                "FAM-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase(Locale.ROOT),
                 fechaPago.atZone(zona).toInstant(), monto, moneda, MetodoPago.TRANSFERENCIA,
                 cuentaDeclaradaId, referencia, observaciones,
                 solicitudes.stream().map(PortalSolicitudPagoForm::request).toList());

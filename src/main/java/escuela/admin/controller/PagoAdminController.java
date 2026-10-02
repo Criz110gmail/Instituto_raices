@@ -20,6 +20,7 @@ import escuela.finanzas.dto.request.CancelacionPagoRequest;
 import escuela.institucion.dto.response.*;
 import escuela.institucion.service.*;
 import escuela.seguridad.service.AlcanceDatosService;
+import escuela.seguridad.service.UsuarioPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -37,7 +38,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.Authentication;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.net.URLEncoder;
 import java.util.*;
@@ -62,8 +62,6 @@ public class PagoAdminController {
                  @RequestParam(required = false) Long retornoInscripcionId,
                  Model model) {
         PagoForm form = new PagoForm();
-        form.setFolio("PAG-" + LocalDate.now().toString().replace("-", "") + "-"
-                + UUID.randomUUID().toString().substring(0, 6).toUpperCase(Locale.ROOT));
         if (cargoId != null) prepararDesdeCargo(form, cargoId, retornoInscripcionId, model);
         preparar(model, form);
         return "admin/pago-form";
@@ -104,18 +102,20 @@ public class PagoAdminController {
 
     @PostMapping("/{id}/validar")
     String validar(@PathVariable Long id, @RequestParam(required = false) Long cuentaDestinoId,
+                   @RequestParam(required = false) String motivoCambioCuenta,
                    @RequestParam Long version, Authentication authentication,
                    Model model, RedirectAttributes flash) {
         alcance.validarRecurso(ModuloCatalogo.PAGOS, id);
         try {
             PagoResponse pago = validacionService.validar(id,
-                    new ValidacionPagoRequest(cuentaDestinoId, version));
+                    new ValidacionPagoRequest(cuentaDestinoId, motivoCambioCuenta, version));
             flash.addFlashAttribute("mensaje", "Pago " + pago.folio()
                     + " validado; el ingreso y sus aplicaciones quedaron publicados");
             return "redirect:/admin/pagos/" + id + "/editar";
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
             prepararDetalle(model, service.obtener(id), authentication);
             model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
+            model.addAttribute("motivoCambioCuentaCapturado", motivoCambioCuenta);
             return "admin/pago-detalle";
         }
     }
@@ -192,8 +192,13 @@ public class PagoAdminController {
             model.addAttribute("fechaValidacionLocal", DateTimeFormatter.ofPattern("dd MMM yyyy · HH:mm", new Locale("es", "MX"))
                     .withZone(java.time.ZoneId.of(zona)).format(pago.validadoEn()));
         }
-        model.addAttribute("puedeValidar", authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("PAGO_VALIDAR")));
+        boolean accesoRecuperacion = authentication != null
+                && authentication.getPrincipal() instanceof UsuarioPrincipal principal
+                && principal.accesoRecuperacion();
+        boolean tienePermisoValidar = authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("PAGO_VALIDAR"));
+        model.addAttribute("accesoRecuperacion", accesoRecuperacion);
+        model.addAttribute("puedeValidar", tienePermisoValidar && !accesoRecuperacion);
         boolean puedeDevolver = authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("PAGO_DEVOLVER"));
         model.addAttribute("puedeDevolver", puedeDevolver);
@@ -296,6 +301,7 @@ public class PagoAdminController {
         solicitud.setCargoId(cargo.id());
         solicitud.setCargoEtiqueta(cargo.alumnoMatricula() + " · " + cargo.alumnoNombre()
                 + " · " + cargo.conceptoNombre());
+        solicitud.setSaldoReferencia(cargo.saldoPendiente());
         solicitud.setMontoSolicitado(cargo.saldoPendiente());
         form.getSolicitudes().add(solicitud);
         var tutor = cobranzaInscripcionService.tutorParaCargo(cargoId);

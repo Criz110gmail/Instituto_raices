@@ -7,9 +7,19 @@
     const estado = contenedor.querySelector('.autocomplete-status');
     const limpiar = contenedor.querySelector('.autocomplete-clear');
     const formulario = document.querySelector('#validation-form');
-    let timer; let controlador; let etiqueta = '';
+    const cambiar = document.querySelector('#change-destination-account');
+    const bloqueMotivo = document.querySelector('#destination-change-reason');
+    const motivo = bloqueMotivo?.querySelector('textarea');
+    const cuentaDeclaradaId = contenedor.dataset.declaredAccountId || '';
+    const cuentaDeclaradaEtiqueta = contenedor.dataset.declaredAccountLabel || '';
+    let timer; let controlador; let etiqueta = entrada.value;
     const mostrarEstado = mensaje => { estado.textContent = mensaje; estado.hidden = !mensaje; };
-    entrada.addEventListener('focus', () => { if (!entrada.value.trim() && !resultados.children.length) buscar(''); });
+    const actualizarCambio = () => {
+        const modificada = Boolean(cuentaDeclaradaId) && valor.value !== cuentaDeclaradaId;
+        if (bloqueMotivo) bloqueMotivo.hidden = !modificada;
+        if (motivo) motivo.required = modificada;
+    };
+    entrada.addEventListener('focus', () => { if (!entrada.readOnly && !entrada.value.trim() && !resultados.children.length) buscar(''); });
     entrada.addEventListener('input', () => {
         if (entrada.value !== etiqueta) valor.value = '';
         clearTimeout(timer); controlador?.abort(); resultados.hidden = true;
@@ -21,9 +31,30 @@
         clearTimeout(timer); controlador?.abort();
         entrada.value = ''; etiqueta = ''; valor.value = ''; resultados.hidden = true;
         mostrarEstado('Escribe al menos 3 caracteres para buscar.');
+        actualizarCambio();
         entrada.focus();
     });
-    formulario.addEventListener('submit', evento => { if (!valor.value) { evento.preventDefault(); mostrarEstado('Selecciona una cuenta destino de la lista.'); entrada.focus(); } });
+    cambiar?.addEventListener('click', () => {
+        if (entrada.readOnly) {
+            entrada.readOnly = false; limpiar.hidden = false;
+            cambiar.innerHTML = '<span aria-hidden="true">↶</span> Conservar cuenta declarada';
+            contenedor.classList.add('destination-change-active');
+            mostrarEstado('Busca y selecciona la cuenta correcta. Si es diferente, indica el motivo.');
+            entrada.focus(); entrada.select();
+            return;
+        }
+        entrada.value = cuentaDeclaradaEtiqueta; etiqueta = cuentaDeclaradaEtiqueta;
+        valor.value = cuentaDeclaradaId; entrada.readOnly = true; limpiar.hidden = true;
+        resultados.hidden = true; contenedor.classList.remove('destination-change-active');
+        cambiar.innerHTML = '<span aria-hidden="true">↻</span> Cambiar cuenta destino';
+        if (motivo) motivo.value = '';
+        actualizarCambio(); mostrarEstado('Cuenta cargada desde el registro del pago.');
+    });
+    formulario.addEventListener('submit', evento => {
+        if (!valor.value) { evento.preventDefault(); mostrarEstado('Selecciona una cuenta destino de la lista.'); entrada.focus(); return; }
+        actualizarCambio();
+        if (motivo?.required && !motivo.value.trim()) { evento.preventDefault(); motivo.focus(); }
+    });
     document.addEventListener('click', evento => { if (!contenedor.contains(evento.target)) resultados.hidden = true; });
     async function buscar(consulta) {
         controlador = new AbortController();
@@ -36,7 +67,7 @@
             (datos.resultados || []).forEach(opcion => {
                 const boton = document.createElement('button'); boton.type = 'button'; boton.className = 'autocomplete-option';
                 const titulo = document.createElement('strong'); titulo.textContent = opcion.titulo; const detalle = document.createElement('small'); detalle.textContent = opcion.detalle || '';
-                boton.append(titulo, detalle); boton.addEventListener('click', () => { entrada.value = opcion.titulo; etiqueta = opcion.titulo; valor.value = opcion.id; resultados.hidden = true; mostrarEstado(''); }); resultados.append(boton);
+                boton.append(titulo, detalle); boton.addEventListener('click', () => { entrada.value = opcion.titulo; etiqueta = opcion.titulo; valor.value = String(opcion.id); resultados.hidden = true; actualizarCambio(); mostrarEstado(valor.value === cuentaDeclaradaId ? 'Cuenta declarada conservada.' : 'Cuenta destino modificada; explica el motivo antes de validar.'); }); resultados.append(boton);
             });
             resultados.hidden = !resultados.children.length; mostrarEstado(resultados.children.length ? `${resultados.children.length} cuenta(s) compatible(s).` : 'No encontramos cuentas compatibles.');
         } catch (error) { if (error.name !== 'AbortError') mostrarEstado('No fue posible consultar las cuentas.'); }

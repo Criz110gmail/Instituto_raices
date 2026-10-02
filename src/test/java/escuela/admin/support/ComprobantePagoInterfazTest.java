@@ -23,12 +23,29 @@ class ComprobantePagoInterfazTest {
     @Test
     void moduloUsaNombreClaroSinCambiarSusRutasInternas() throws IOException {
         assertThat(recurso("templates/admin/cargo-form.html"))
-                .contains("Volver a pagos de alumnos", "@{/admin/cargos}");
+                .contains("Volver a cargos a alumnos", "@{/admin/cargos}");
         assertThat(recurso("templates/admin/cargo-generar.html"))
-                .contains("Generar pagos programados", "/admin/cargos/generar");
+                .contains("Generar cargos programados", "/admin/cargos/generar");
         assertThat(recurso("templates/admin/cargo-detalle.html"))
                 .contains("adjustment-submit-button", "detail-close-button",
                         "detail-payment-button");
+    }
+
+    @Test
+    void validacionPrecargaCuentaYProtegeLosCambiosExcepcionales() throws IOException {
+        assertThat(recurso("templates/admin/pago-detalle.html"))
+                .contains("th:value=\"${pago.cuentaDeclaradaId}\"")
+                .contains("th:value=\"${pago.cuentaDeclaradaNombre}\"")
+                .contains("Cambiar cuenta destino", "motivoCambioCuenta",
+                        "El cambio y su motivo quedarán registrados en auditoría");
+    }
+
+    @Test
+    void accesoTemporalExplicaPorQueNoPuedeAutorizarDinero() throws IOException {
+        assertThat(recurso("templates/admin/pago-detalle.html"))
+                .contains("and accesoRecuperacion")
+                .contains("Este acceso no puede autorizar movimientos financieros")
+                .contains("Seguridad → Usuarios");
     }
 
     private String recurso(String ruta) throws IOException {

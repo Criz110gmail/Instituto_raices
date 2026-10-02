@@ -11,18 +11,23 @@ import escuela.finanzas.dto.request.CancelacionPagoRequest;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.service.*;
 import escuela.seguridad.service.AlcanceDatosService;
+import escuela.seguridad.service.UsuarioPrincipal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -47,12 +52,11 @@ class PagoAdminControllerTest {
     }
 
     @Test
-    void preparaFormularioConFolioYMetodos() {
+    void preparaFormularioConMetodos() {
         ExtendedModelMap model = new ExtendedModelMap();
         String vista = controller.nuevo(model);
         PagoForm form = (PagoForm) model.get("form");
         assertThat(vista).isEqualTo("admin/pago-form");
-        assertThat(form.getFolio()).startsWith("PAG-");
         assertThat((MetodoPago[]) model.get("metodos")).containsExactly(
                 MetodoPago.EFECTIVO, MetodoPago.TRANSFERENCIA, MetodoPago.TARJETA);
     }
@@ -94,12 +98,33 @@ class PagoAdminControllerTest {
         when(respuesta.folio()).thenReturn("PAG-001");
         when(validacionService.validar(eq(50L), any())).thenReturn(respuesta);
 
-        String vista = controller.validar(50L, 8L, 2L, mock(Authentication.class),
+        String vista = controller.validar(50L, 8L, null, 2L, mock(Authentication.class),
                 new ExtendedModelMap(), new RedirectAttributesModelMap());
 
         verify(validacionService).validar(eq(50L), argThat(r -> r.cuentaDestinoId().equals(8L)
-                && r.version().equals(2L)));
+                && r.motivoCambioCuenta() == null && r.version().equals(2L)));
         assertThat(vista).isEqualTo("redirect:/admin/pagos/50/editar");
+    }
+
+    @Test
+    void accesoTemporalVeLaAdvertenciaPeroNoPuedeValidar() {
+        PagoResponse pago = mock(PagoResponse.class);
+        when(pago.institucionId()).thenReturn(1L);
+        when(pago.fechaPago()).thenReturn(Instant.parse("2026-09-15T16:00:00Z"));
+        when(pago.estado()).thenReturn(escuela.finanzas.entity.EstadoPago.PENDIENTE_VALIDACION);
+        when(service.obtener(50L)).thenReturn(pago);
+        when(institucionService.obtener(1L)).thenReturn(institucion());
+        UsuarioPrincipal principal = new UsuarioPrincipal(null, null, Set.of(), true, true,
+                "bootstrap", "x", List.of(new SimpleGrantedAuthority("PAGO_VALIDAR")));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                principal, null, principal.getAuthorities());
+        ExtendedModelMap model = new ExtendedModelMap();
+
+        String vista = controller.detalle(50L, authentication, model);
+
+        assertThat(vista).isEqualTo("admin/pago-detalle");
+        assertThat(model.get("accesoRecuperacion")).isEqualTo(true);
+        assertThat(model.get("puedeValidar")).isEqualTo(false);
     }
 
     @Test
@@ -133,9 +158,10 @@ class PagoAdminControllerTest {
     private PagoForm formulario() {
         PagoForm form = new PagoForm();
         form.setInstitucionId(1L); form.setPlantelRegistroId(2L); form.setTutorId(3L);
-        form.setFolio("PAG-001"); form.setFechaPago(LocalDateTime.of(2026, 9, 15, 10, 0));
+        form.setFechaPago(LocalDateTime.of(2026, 9, 15, 10, 0));
         form.setMonto(new BigDecimal("500.00")); form.setMoneda("MXN");
         form.setMetodo(MetodoPago.EFECTIVO);
+        form.setCuentaDeclaradaId(8L);
         return form;
     }
 

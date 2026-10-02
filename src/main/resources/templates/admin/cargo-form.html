@@ -2,17 +2,17 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
-    <title>Nuevo pago de alumno · Nexo Escolar</title>
+    <title>Nuevo cargo al alumno · Nexo Escolar</title>
     <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script><script src="/js/autocomplete.js" defer></script>
 </head>
 <body class="form-page">
 <main class="form-shell finance-shell">
-    <header class="form-top"><a href="/admin/catalogos/cargos">← Volver a pagos de alumnos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <header class="form-top"><a href="/admin/catalogos/cargos">← Volver a cargos a alumnos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <div class="finance-principle"><span>Registro controlado</span><strong>El importe por cobrar queda separado por alumno</strong><p>Aunque después un tutor cubra varios hijos con un solo pago, este importe conservará su inscripción, plantel, concepto y saldo individual.</p></div>
     <section class="form-card">
-        <div class="form-intro finance-intro"><span>Cobranza individual</span><h1>Registrar pago por cobrar</h1><p>Úsalo para inscripciones, material, eventos u otro cobro extraordinario que no provenga de una cuota automática.</p></div>
+        <div class="form-intro finance-intro"><span>Cobranza individual</span><h1>Registrar cargo al alumno</h1><p>Úsalo para inscripciones, material, eventos u otro cobro extraordinario que no provenga de una cuota automática.</p></div>
         <form class="entity-form" th:object="${form}" method="post" th:action="@{/admin/cargos}">
-            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo registrar el pago del alumno</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
+            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo registrar el cargo al alumno</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
             <fieldset class="form-section"><legend>Alumno e inscripción</legend><div class="form-grid">
                 <label><span>Institución *</span><select id="institucion" th:field="*{institucionId}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-moneda=${item.monedaPredeterminada}">Institución</option></select><small th:errors="*{institucionId}"></small></label>
                 <label><span>Plantel *</span><select id="plantel" th:field="*{plantelId}"><option value="">Selecciona un plantel</option><option th:each="item : ${planteles}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-institucion=${item.institucionId},data-activo=${item.activo}">Plantel</option></select><small th:errors="*{plantelId}"></small></label>
@@ -31,7 +31,7 @@
                 <label><span>Importe individual *</span><input type="number" min="0" step="0.01" th:field="*{importeOriginal}" placeholder="1500.00"><small th:errors="*{importeOriginal}"></small></label>
                 <label><span>Moneda *</span><input id="moneda" th:field="*{moneda}" maxlength="3" placeholder="MXN"><small th:errors="*{moneda}"></small></label>
             </div></fieldset>
-            <footer class="form-actions"><a href="/admin/catalogos/cargos">Cancelar</a><button type="submit">Registrar pago por cobrar</button></footer>
+            <footer class="form-actions"><a href="/admin/catalogos/cargos">Cancelar</a><button type="submit">Registrar cargo</button></footer>
         </form>
     </section>
 </main>
