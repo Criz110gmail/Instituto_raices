@@ -101,7 +101,11 @@ public class JasperComprobantePagoService {
         p.put("plantel", pago.plantelRegistroNombre());
         p.put("tutor", pago.tutorNombre());
         p.put("pagador", texto(pago.nombrePagador(), pago.tutorNombre()));
-        p.put("metodo", pago.metodo().name().equals("EFECTIVO") ? "Efectivo" : "Transferencia");
+        p.put("metodo", switch (pago.metodo()) {
+            case EFECTIVO -> "Efectivo";
+            case TRANSFERENCIA -> "Transferencia";
+            case TARJETA -> "Tarjeta";
+        });
         p.put("referencia", texto(pago.referencia(), "Sin referencia declarada"));
         p.put("cuenta", texto(pago.cuentaDestinoNombre(), "Sin cuenta identificada"));
         p.put("validadoPor", texto(pago.validadoPor(), "Sistema"));

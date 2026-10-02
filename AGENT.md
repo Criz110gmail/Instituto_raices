@@ -22,12 +22,18 @@ no vuelvas a implementar componentes que ya existan.
 - Rama principal: `main`.
 - Confirma siempre `git status` y `git log` antes de continuar; el propietario realiza
   manualmente los commits y el `push`.
+- V51 incorpora **Tarjeta** como método de pago administrativo. No se crea una cuenta
+  financiera por terminal: el pago se declara y valida contra la cuenta bancaria o de
+  inversión donde la terminal deposita; efectivo continúa usando caja. El pago rápido
+  iniciado desde una inscripción protege institución, plantel, tutor titular y moneda,
+  manteniendo editables sólo los datos propios de la operación. La siguiente migración
+  disponible es V52.
 - V50 implementa Proveedores y Compras. El catálogo de proveedores es multiinstitución;
   cada compra se captura con partidas, proveedor, plantel opcional, cuenta de caja/banco
   y categoría financiera. Guardar conserva un borrador sin afectar saldos, confirmar crea
   el egreso en Movimientos financieros y cancelar conserva el egreso original y publica
   una reversa compensatoria. Ambos listados son paginados, filtrables y exportables a
-  Excel con los mismos criterios. La siguiente migración disponible es V51.
+  Excel con los mismos criterios.
 - La mejora posterior a V50 incorpora cobranza asistida sin acoplar los módulos: desde
   la edición de una inscripción se consulta su cuota e historial de pagos por cobrar, se
   prepara una cuota única con el contexto precargado, se puede emitir inmediatamente su
@@ -1386,6 +1392,22 @@ enumeradas de etapas anteriores.
 - El flujo respeta por separado `CUOTA_ALUMNO_ADMINISTRAR`, `CARGO_ADMINISTRAR` y
   `PAGO_REGISTRAR`, además del alcance institucional. No hubo migración: V51 sigue libre.
   Docker compiló 697 fuentes principales y 121 de prueba y ejecutó 422 pruebas sin fallos.
+
+#### Pendiente acordado — pago anticipado desde la inscripción
+
+- Agregar una acción **Preparar pago anticipado** para el caso presencial en que el padre
+  cubra inscripción y varias mensualidades en una sola entrega.
+- El administrador elegirá los cargos y periodos a adelantar; el sistema mostrará una vista
+  previa con concepto, periodo, vencimiento e importe, diferenciando cargos existentes de
+  los que se generarían. Nada se escribirá antes de confirmar.
+- La generación será individual para esa inscripción e idempotente; no debe disparar cargos
+  masivos para otros alumnos. El pago resultante será uno solo, pero mantendrá una aplicación
+  independiente por inscripción, mensualidad y demás cargos seleccionados.
+- Efectivo deberá ingresar a una caja y transferencia a una cuenta compatible. La validación
+  seguirá siendo el momento que aplica los cargos y publica un único movimiento financiero
+  por el total. Se conservarán los permisos y alcances actuales.
+- Este apartado documenta trabajo futuro. Al 2026-10-02 no existe implementación, migración
+  ni cambio funcional asociado.
 
 ### Vista previa obligatoria de recargos — 2026-10-01
 

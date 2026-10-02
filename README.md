@@ -282,11 +282,15 @@ enmascarados en el listado paginado y en su Excel filtrado. Requiere
 `CUENTA_FINANCIERA_LEER` y/o `CUENTA_FINANCIERA_ADMINISTRAR`; V16 no concede estos
 permisos automáticamente a roles existentes.
 
-Pagos permite registrar efectivo o transferencia en estado pendiente. Un solo pago
+Pagos permite registrar efectivo, transferencia o tarjeta en estado pendiente. Un solo pago
 puede proponer importes separados para cargos de varios hijos del tutor. Las
 transferencias requieren comprobante privado y el listado conserva paginación, filtros
 y Excel equivalentes. `PAGO_LEER` consulta, `PAGO_REGISTRAR` recibe y `PAGO_VALIDAR`
 autoriza o rechaza; estos permisos no se asignan automáticamente a roles existentes.
+Efectivo se declara en una caja; transferencia y tarjeta muestran cuentas bancarias o de
+inversión. Una terminal no requiere cuenta propia cuando deposita en una cuenta bancaria
+ya registrada. Desde una inscripción, el pago rápido protege institución, plantel, tutor
+titular y moneda para impedir que el registro se desvincule accidentalmente del alumno.
 
 Al validar se elige la cuenta destino compatible, se recalcula el saldo de cada cargo y
 se crean aplicaciones independientes por alumno. En la misma transacción se publica un
@@ -759,3 +763,10 @@ volver a solicitarla no duplica el cargo. Después, **Registrar pago** abre el f
 con el cargo, saldo pendiente, institución, plantel, moneda y tutor responsable financiero
 ya seleccionados. Los permisos de Cuotas, Pagos de alumnos y Pagos continúan separados y
 se validan en cada paso.
+
+Como mejora pendiente, la pestaña Cobranza incorporará **Preparar pago anticipado**. El
+administrador podrá revisar inscripción y mensualidades futuras de un alumno, generar sólo
+los cargos faltantes después de una vista previa y abrir un único pago con aplicaciones
+separadas por concepto y periodo. El ingreso financiero será uno por el total validado; no
+se usarán importes sin identificar ni se generarán cargos de otros alumnos. Esta mejora está
+documentada para una etapa posterior y todavía no forma parte de la aplicación.

@@ -26,6 +26,9 @@ class ComprobantePagoInterfazTest {
                 .contains("Volver a pagos de alumnos", "@{/admin/cargos}");
         assertThat(recurso("templates/admin/cargo-generar.html"))
                 .contains("Generar pagos programados", "/admin/cargos/generar");
+        assertThat(recurso("templates/admin/cargo-detalle.html"))
+                .contains("adjustment-submit-button", "detail-close-button",
+                        "detail-payment-button");
     }
 
     private String recurso(String ruta) throws IOException {

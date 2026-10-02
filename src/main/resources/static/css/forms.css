@@ -20,6 +20,7 @@
 .payment-shell { max-width: 1080px; }
 .payment-card { overflow: visible; }
 .payment-principle { background: radial-gradient(circle at 92% 30%,#47d8c426,transparent 28%),linear-gradient(125deg,#071b33,#123e5f); }
+.payment-card .form-section{border-color:color-mix(in srgb,var(--line) 80%,#238d7e 20%);background:linear-gradient(145deg,var(--surface),color-mix(in srgb,var(--surface) 94%,#dff6f0 6%))}.payment-card .form-section legend{color:#087768}.protected-payment-field{position:relative;padding:12px;border:1px solid color-mix(in srgb,#38a991 38%,var(--line));border-radius:12px;background:color-mix(in srgb,#e7f8f3 62%,var(--surface))}.protected-payment-field:after{content:'Protegido';position:absolute;top:9px;right:10px;border-radius:999px;background:#d4f2e9;color:#08705f;padding:4px 8px;font-size:.58rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase}.protected-payment-field>span,.protected-payment-field>label{padding-right:76px}.protected-payment-field select:disabled,.protected-payment-field input[readonly],.protected-money-code[readonly]{opacity:1;background:color-mix(in srgb,var(--surface) 82%,#d9f2eb);color:var(--ink);font-weight:750;cursor:not-allowed}.payment-form-actions{padding-top:8px}.payment-form-actions .payment-cancel-button,.cargo-detail-actions .detail-close-button{display:inline-flex;align-items:center;justify-content:center;min-height:46px;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--muted);padding:11px 18px;font-weight:800;text-decoration:none}.payment-submit-button,.detail-payment-button,.adjustment-submit-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;border:0;border-radius:11px;background:linear-gradient(135deg,#087f71,#19a58f);color:#fff;padding:11px 18px;font:800 .78rem inherit;text-decoration:none;box-shadow:0 10px 22px rgba(8,127,113,.23);cursor:pointer}.payment-submit-button:hover,.detail-payment-button:hover,.adjustment-submit-button:hover{transform:translateY(-1px);box-shadow:0 13px 26px rgba(8,127,113,.3)}.adjustment-panel{display:grid;gap:16px}.adjustment-submit-button{justify-self:end}.adjustment-submit-button span{display:grid;width:23px;height:23px;place-items:center;border-radius:7px;background:#ffffff24;font-size:1rem}.cargo-detail-actions{align-items:center}.detail-payment-button span,.payment-submit-button span{font-size:1rem}.detail-close-button:hover,.payment-cancel-button:hover{border-color:#91a9bd;color:var(--ink);background:var(--soft)}
 .money-input { display: grid; grid-template-columns: minmax(0,1fr) 76px; gap: 8px; }
 .payment-autocomplete { position: relative; }
 .payment-autocomplete > label { display: block; margin-bottom: 7px; font-size: .78rem; font-weight: 700; }
@@ -73,6 +74,7 @@
 .receipt-list strong { font-size: .78rem; }.receipt-list small { color: var(--muted); font-size: .68rem; }
 .detail-notes { margin: 0; color: var(--muted); white-space: pre-wrap; line-height: 1.6; }
 [data-theme=dark] .upload-zone { border-color: #35698e; background: #0a1728; }
+[data-theme=dark] .payment-card .form-section{border-color:#344a63;background:linear-gradient(145deg,#0e1d31,#10282d)}[data-theme=dark] .protected-payment-field{border-color:#28665d;background:#12352f}[data-theme=dark] .protected-payment-field:after{background:#17483f;color:#a7eadb}[data-theme=dark] .protected-payment-field select:disabled,[data-theme=dark] .protected-payment-field input[readonly],[data-theme=dark] .protected-money-code[readonly]{background:#0c2630;color:#e7f4ff}[data-theme=dark] .payment-form-actions .payment-cancel-button,[data-theme=dark] .cargo-detail-actions .detail-close-button{background:#0e1d31}
 [data-theme=dark] .distribution-row { border-color: #344a63; background: #0d2033; }
 [data-theme=dark] .row-number { background: #17483f; color: #9de6d5; }
 [data-theme=dark] .distribution-total .remaining { background: #123d36; }
@@ -89,6 +91,7 @@
     .payment-detail-grid { margin: 0 20px 22px; }
     .detail-section { padding: 22px 20px; }
     .requested-list article,.detail-totals { display: grid; }
+    .payment-form-actions,.cargo-detail-actions{display:grid}.payment-form-actions a,.payment-form-actions button,.cargo-detail-actions a{width:100%}.adjustment-submit-button{justify-self:stretch}
 }
 
 .gradebook-shell { max-width: 1240px; }

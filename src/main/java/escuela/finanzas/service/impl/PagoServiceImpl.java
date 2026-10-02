@@ -223,8 +223,8 @@ public class PagoServiceImpl implements PagoService {
         if (metodo == MetodoPago.EFECTIVO && cuenta.getTipo() != TipoCuentaFinanciera.CAJA) {
             throw new ReglaNegocioException("Un pago en efectivo sólo puede declarar una cuenta de tipo caja");
         }
-        if (metodo == MetodoPago.TRANSFERENCIA && cuenta.getTipo() == TipoCuentaFinanciera.CAJA) {
-            throw new ReglaNegocioException("Una transferencia debe declarar una cuenta bancaria o de inversión");
+        if (metodo != MetodoPago.EFECTIVO && cuenta.getTipo() == TipoCuentaFinanciera.CAJA) {
+            throw new ReglaNegocioException("Una transferencia o pago con tarjeta debe declarar una cuenta bancaria o de inversión");
         }
         return cuenta;
     }

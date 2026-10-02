@@ -129,6 +129,15 @@ class ValidacionPagoServiceImplTest {
     }
 
     @Test
+    void tarjetaNoPuedeValidarseEnCaja() {
+        pago.setMetodo(MetodoPago.TARJETA);
+        assertThatThrownBy(() -> service.validar(50L, new ValidacionPagoRequest(8L, 0L)))
+                .isInstanceOf(escuela.common.exception.ReglaNegocioException.class)
+                .hasMessageContaining("cuenta bancaria o de inversión");
+        verify(movimientos, never()).save(any());
+    }
+
+    @Test
     void exigeSeleccionarCuentaDestino() {
         assertThatThrownBy(() -> service.validar(50L, new ValidacionPagoRequest(null, 0L)))
                 .isInstanceOf(escuela.common.exception.ReglaNegocioException.class)

@@ -264,6 +264,7 @@ public class PagoAdminController {
         model.addAttribute("instituciones", instituciones);
         model.addAttribute("planteles", planteles);
         model.addAttribute("metodos", MetodoPago.values());
+        model.addAttribute("pagoRapido", form.getRetornoInscripcionId() != null);
     }
 
     private void validarAlcance(PagoForm form) {
@@ -306,7 +307,7 @@ public class PagoAdminController {
             form.setTutorEtiqueta(tutor.etiqueta());
             if (tutor.responsablesDisponibles() > 1) {
                 model.addAttribute("advertenciaPagoRapido",
-                        "Se seleccionó el responsable financiero principal. Puedes cambiarlo si otro tutor realizó el pago.");
+                        "Se seleccionó el responsable financiero principal de la inscripción. Si no corresponde, corrige primero el vínculo del alumno.");
             }
         }
         model.addAttribute("cargoPrecargado", cargo);

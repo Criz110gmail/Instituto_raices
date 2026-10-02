@@ -10,6 +10,7 @@ import escuela.cobranza.repository.ConceptoCobroRepository;
 import escuela.cobranza.repository.TipoBecaRepository;
 import escuela.cobranza.repository.CargoRepository;
 import escuela.finanzas.repository.CuentaFinancieraRepository;
+import escuela.finanzas.entity.MetodoPago;
 import escuela.cobranza.entity.CategoriaConceptoCobro;
 import escuela.cobranza.entity.ConceptoCobro;
 import escuela.inscripcion.entity.Inscripcion;
@@ -51,6 +52,7 @@ class BusquedaAutocompletadoServiceTest {
     private final ConceptoCobroRepository conceptoCobroRepository = mock(ConceptoCobroRepository.class);
     private final GrupoRepository grupoRepository = mock(GrupoRepository.class);
     private final MaestroRepository maestroRepository = mock(MaestroRepository.class);
+    private final CuentaFinancieraRepository cuentaFinancieraRepository = mock(CuentaFinancieraRepository.class);
     private final AlcanceDatosService alcance = mock(AlcanceDatosService.class);
     private final BusquedaAutocompletadoService service = new BusquedaAutocompletadoService(
             alumnoRepository, tutorRepository, usuarioRepository, inscripcionRepository,
@@ -58,7 +60,7 @@ class BusquedaAutocompletadoServiceTest {
             mock(GradoRepository.class),
             grupoRepository, maestroRepository, mock(MateriaGradoRepository.class),
             mock(TipoBecaRepository.class), mock(CargoRepository.class),
-            mock(CuentaFinancieraRepository.class), alcance);
+            cuentaFinancieraRepository, alcance);
 
     @Test
     void noConsultaLaBaseConMenosDeTresCaracteres() {
@@ -168,6 +170,18 @@ class BusquedaAutocompletadoServiceTest {
 
         assertThat(resultado.resultados().getFirst().titulo()).isEqualTo("MAT · Material escolar");
         verify(alcance).validarInstitucion(1L);
+    }
+
+    @Test
+    void tarjetaBuscaCuentasBancariasODeInversionComoLaTransferencia() {
+        when(cuentaFinancieraRepository.buscarParaPago(any(), any(), any(Boolean.class), any(), any()))
+                .thenReturn(new SliceImpl<>(List.of()));
+
+        service.cuentasParaPago(1L, 8L, MetodoPago.TARJETA, "__INICIALES__");
+
+        verify(cuentaFinancieraRepository).buscarParaPago(
+                org.mockito.ArgumentMatchers.eq(1L), org.mockito.ArgumentMatchers.eq(8L),
+                org.mockito.ArgumentMatchers.eq(false), org.mockito.ArgumentMatchers.eq(""), any());
     }
 
     @Test

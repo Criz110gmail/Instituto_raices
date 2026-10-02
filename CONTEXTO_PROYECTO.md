@@ -1,5 +1,22 @@
 # Contexto del proyecto
 
+## Verificación posterior a V50 — pagos administrativos con tarjeta y contexto protegido
+
+- V51 amplía los métodos administrativos con **Tarjeta**. Para evitar duplicar saldos,
+  una terminal no se modela como cuenta financiera: el usuario selecciona la cuenta
+  bancaria o de inversión donde se deposita la venta; una caja no es válida para tarjeta.
+- El autocompletado de cuenta responde al método: efectivo muestra cajas y transferencia
+  o tarjeta muestran banco/inversión. El formulario adapta referencia y comprobante al
+  método elegido, y el comprobante oficial presenta el nombre correcto.
+- Cuando Registrar pago se abre desde un pago de alumno/inscripción, institución, plantel,
+  tutor titular y moneda quedan visibles pero protegidos. Se conserva editable el nombre
+  de quien materialmente entrega, transfiere o presenta la tarjeta porque puede ser una
+  persona distinta del tutor responsable.
+- Se unificó el diseño responsivo y oscuro del formulario y de **Cerrar detalle**,
+  **Registrar pago** y **Aplicar ajuste**. Docker compiló 701 fuentes y ejecutó 431
+  pruebas sin fallos. Flyway aplicó V51 y el servicio desplegado respondió `UP`; la
+  siguiente migración disponible es V52.
+
 ## Verificación posterior a V50 — reporte familiar de transferencia protegido
 
 - La búsqueda de **Cargo vigente del alumno** usa un desplegable propio, responsivo y
@@ -67,6 +84,19 @@
   una inscripción y un importe de prueba.
 
 ## Decisiones pendientes posteriores a V50
+
+- Queda pendiente incorporar **Preparar pago anticipado** dentro de la pestaña Cobranza de
+  una inscripción. Permitirá seleccionar el cargo de inscripción y uno o varios periodos
+  mensuales futuros —por cantidad de mensualidades o por periodos explícitos— y mostrará
+  una vista previa antes de escribir. La confirmación generará únicamente los cargos
+  faltantes de esa inscripción, reutilizando claves idempotentes, y distinguirá cuáles ya
+  existían. Después abrirá un solo pago administrativo precargado con aplicaciones
+  independientes para cada cargo. Al validarlo se publicará un único ingreso en caja o
+  cuenta, conservando alumno, concepto y periodo por separado. No deberá ejecutar el
+  generador masivo de otros alumnos ni aceptar importes sin identificar. Respetará los
+  permisos separados de cuotas, cargos y pagos, el alcance institucional y la validación
+  financiera actual. Este punto es sólo diseño pendiente; no se implementó código ni
+  migración en esta revisión.
 
 - Al finalizar completamente el sistema se elaborará un manual integral de usuario en PDF.
   Será un entregable final, no parte de la etapa actual, y explicará con lenguaje sencillo y

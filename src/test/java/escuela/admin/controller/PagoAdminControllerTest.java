@@ -54,7 +54,7 @@ class PagoAdminControllerTest {
         assertThat(vista).isEqualTo("admin/pago-form");
         assertThat(form.getFolio()).startsWith("PAG-");
         assertThat((MetodoPago[]) model.get("metodos")).containsExactly(
-                MetodoPago.EFECTIVO, MetodoPago.TRANSFERENCIA);
+                MetodoPago.EFECTIVO, MetodoPago.TRANSFERENCIA, MetodoPago.TARJETA);
     }
 
     @Test

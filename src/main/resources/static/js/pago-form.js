@@ -103,8 +103,18 @@
 
     function actualizarMetodo() {
         const transferencia = metodo.value === 'TRANSFERENCIA';
+        const tarjeta = metodo.value === 'TARJETA';
         document.querySelector('#receipt-title').textContent = transferencia
-            ? 'Comprobante de transferencia *' : 'Comprobante de efectivo (opcional)';
+            ? 'Comprobante de transferencia *'
+            : tarjeta ? 'Voucher o comprobante de tarjeta (opcional)'
+                : 'Comprobante de efectivo (opcional)';
+        document.querySelector('#payment-reference-label').textContent = tarjeta
+            ? 'Autorización o referencia de la terminal'
+            : transferencia ? 'Referencia bancaria' : 'Referencia o recibo interno';
+        document.querySelector('#payment-reference-help').textContent = tarjeta
+            ? 'Captura el código de autorización o referencia que entrega la terminal.'
+            : transferencia ? 'Captura el folio o clave disponible en el comprobante bancario.'
+                : 'Opcional: anota el folio del recibo entregado en ventanilla.';
     }
 
     function numero(valor) {
@@ -130,6 +140,12 @@
             resultados.hidden = true;
             resultados.replaceChildren();
         };
+
+        if (entrada.readOnly) {
+            limpiar.hidden = true;
+            resultados.hidden = true;
+            return;
+        }
 
         entrada.addEventListener('focus', () => {
             if (entrada.value.trim() || resultados.children.length || requisitos(tipo)) return;

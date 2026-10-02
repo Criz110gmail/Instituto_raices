@@ -145,6 +145,29 @@ class PagoServiceImplTest {
     }
 
     @Test
+    void tarjetaUsaLaCuentaBancariaLigadaALaTerminal() {
+        CuentaFinanciera cuenta = cuenta(TipoCuentaFinanciera.BANCO);
+        when(cuentaRepository.findById(8L)).thenReturn(Optional.of(cuenta));
+
+        var respuesta = service.registrar(request(MetodoPago.TARJETA,
+                "500.00", 8L, List.of()), List.of());
+
+        assertThat(respuesta.metodo()).isEqualTo(MetodoPago.TARJETA);
+        assertThat(respuesta.cuentaDeclaradaId()).isEqualTo(8L);
+    }
+
+    @Test
+    void tarjetaNoPuedeDeclararUnaCaja() {
+        CuentaFinanciera cuenta = cuenta(TipoCuentaFinanciera.CAJA);
+        when(cuentaRepository.findById(8L)).thenReturn(Optional.of(cuenta));
+
+        assertThatThrownBy(() -> service.registrar(request(MetodoPago.TARJETA,
+                "500.00", 8L, List.of()), List.of()))
+                .isInstanceOf(ReglaNegocioException.class)
+                .hasMessageContaining("cuenta bancaria o de inversión");
+    }
+
+    @Test
     void rechazaComprobanteConContenidoFalso() {
         MockMultipartFile falso = new MockMultipartFile("comprobantes", "falso.pdf",
                 "application/pdf", "esto no es pdf".getBytes());

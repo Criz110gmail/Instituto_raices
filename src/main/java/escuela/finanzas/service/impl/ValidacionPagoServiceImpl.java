@@ -167,8 +167,8 @@ public class ValidacionPagoServiceImpl implements ValidacionPagoService {
         if (pago.getMetodo() == MetodoPago.EFECTIVO && cuenta.getTipo() != TipoCuentaFinanciera.CAJA) {
             throw new ReglaNegocioException("El efectivo debe ingresar a una cuenta de tipo caja");
         }
-        if (pago.getMetodo() == MetodoPago.TRANSFERENCIA && cuenta.getTipo() == TipoCuentaFinanciera.CAJA) {
-            throw new ReglaNegocioException("La transferencia debe ingresar a una cuenta bancaria o de inversión");
+        if (pago.getMetodo() != MetodoPago.EFECTIVO && cuenta.getTipo() == TipoCuentaFinanciera.CAJA) {
+            throw new ReglaNegocioException("La transferencia o pago con tarjeta debe ingresar a una cuenta bancaria o de inversión");
         }
         LocalDate fechaPago = pago.getFechaPago().atZone(ZoneId.of(pago.getInstitucion().getZonaHoraria())).toLocalDate();
         if (fechaPago.isBefore(cuenta.getFechaSaldoInicial())) {

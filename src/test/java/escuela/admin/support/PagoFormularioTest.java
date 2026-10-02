@@ -20,6 +20,8 @@ class PagoFormularioTest {
         assertThat(plantilla)
                 .contains("method=\"post\" th:action=\"@{/admin/pagos}\"")
                 .contains("errorOperacion != null or #fields.hasErrors('*')")
+                .contains("'Tarjeta'", "th:readonly=\"${pagoRapido}\"",
+                        "protected-payment-field", "payment-submit-button")
                 .doesNotContain("${errorOperacion or #fields.hasErrors('*')}");
     }
 }
