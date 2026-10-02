@@ -8,6 +8,8 @@ import escuela.cobranza.dto.request.GeneracionRecargosRequest;
 import escuela.inscripcion.entity.Inscripcion;
 import escuela.institucion.entity.Institucion;
 import escuela.institucion.entity.Plantel;
+import escuela.finanzas.entity.AplicacionPago;
+import escuela.finanzas.entity.OperacionAplicacionPago;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.data.domain.SliceImpl;
@@ -129,12 +131,59 @@ class PoliticaRecargoServiceImplTest {
                 anyString(), nullable(Long.class), any(), anyLong(), anyString());
     }
 
+    @Test
+    void previsualizaSinModificarYResumeElNuevoSaldo() {
+        Cargo cargo = cargo(new BigDecimal("1000.00"), LocalDate.of(2026, 9, 20));
+        PoliticaRecargo politica = politica(cargo, ModalidadBeca.PORCENTAJE,
+                PeriodicidadRecargo.UNICA, TipoLimiteRecargo.SIN_LIMITE);
+        politica.setPorcentaje(new BigDecimal("5.0000"));
+        preparar(cargo, politica, BigDecimal.ZERO);
+
+        var vista = service.previsualizar(new GeneracionRecargosRequest(1L, null,
+                LocalDate.of(2026, 9, 25)), 0, 25);
+
+        assertThat(vista.cargosAplicables()).isEqualTo(1);
+        assertThat(vista.recargosNuevos()).isEqualTo(1);
+        assertThat(vista.totalRecargos()).isEqualByComparingTo("50.00");
+        assertThat(vista.nuevoSaldo()).isEqualByComparingTo("1050.00");
+        assertThat(vista.pagina().getContent()).singleElement().satisfies(fila -> {
+            assertThat(fila.diasAtraso()).isEqualTo(5);
+            assertThat(fila.politica()).contains("5 %");
+        });
+        verify(ajustes, never()).insertarRecargoSiAusente(anyLong(), any(), any(), any(),
+                anyString(), nullable(Long.class), any(), anyLong(), anyString());
+    }
+
+    @Test
+    void niPrevisualizaNiRecargaUnCargoCompletamentePagado() {
+        Cargo cargo = cargo(new BigDecimal("1000.00"), LocalDate.of(2026, 9, 20));
+        AplicacionPago aplicacion = new AplicacionPago();
+        aplicacion.setMonto(new BigDecimal("1000.00"));
+        aplicacion.setOperacion(OperacionAplicacionPago.APLICAR);
+        cargo.getAplicaciones().add(aplicacion);
+        PoliticaRecargo politica = politica(cargo, ModalidadBeca.PORCENTAJE,
+                PeriodicidadRecargo.UNICA, TipoLimiteRecargo.SIN_LIMITE);
+        politica.setPorcentaje(new BigDecimal("5.0000"));
+        preparar(cargo, politica, BigDecimal.ZERO);
+
+        var vista = service.previsualizar(new GeneracionRecargosRequest(1L, null,
+                LocalDate.of(2026, 9, 25)), 0, 25);
+        var generacion = service.generar(new GeneracionRecargosRequest(1L, null,
+                LocalDate.of(2026, 9, 25)));
+
+        assertThat(vista.cargosAplicables()).isZero();
+        assertThat(generacion.recargosGenerados()).isZero();
+        verify(ajustes, never()).insertarRecargoSiAusente(anyLong(), any(), any(), any(),
+                anyString(), nullable(Long.class), any(), anyLong(), anyString());
+    }
+
     private void preparar(Cargo cargo, PoliticaRecargo politica, BigDecimal acumulado) {
         when(cargos.buscarParaRecargo(anyLong(), nullable(Long.class), any(), anyLong(), any()))
                 .thenReturn(new SliceImpl<>(List.of(cargo)));
         when(politicas.findByConceptoCobroIdAndActivoTrueAndGeneracionAutomaticaTrue(20L))
                 .thenReturn(Optional.of(politica));
         when(ajustes.totalRecargosAutomaticos(30L, 40L)).thenReturn(acumulado);
+        when(ajustes.clavesDeRecargosAutomaticos(30L, 40L)).thenReturn(List.of());
     }
 
     private Cargo cargo(BigDecimal importe, LocalDate vencimiento) {
@@ -142,9 +191,13 @@ class PoliticaRecargoServiceImplTest {
         institucion.setId(1L);
         Plantel plantel = new Plantel();
         plantel.setId(2L);
+        plantel.setNombre("Plantel Centro");
         plantel.setInstitucion(institucion);
         Alumno alumno = new Alumno();
         alumno.setId(3L);
+        alumno.setMatricula("ALU-001");
+        alumno.setNombres("Ana");
+        alumno.setPrimerApellido("López");
         alumno.setInstitucion(institucion);
         Inscripcion inscripcion = new Inscripcion();
         inscripcion.setId(4L);

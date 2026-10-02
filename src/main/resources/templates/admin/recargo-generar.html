@@ -1,1 +1,146 @@
-<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1930"><title>Generar recargos · Nexo Escolar</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script></head><body class="form-page"><main class="form-shell finance-shell"><header class="form-top"><a href="/admin/catalogos/politicas-recargo">← Volver a políticas</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header><div class="finance-principle"><span>Proceso idempotente</span><strong>Generar recargos hasta una fecha</strong><p>Puedes repetir el proceso con la misma fecha: las claves únicas evitan cargos duplicados.</p></div><section class="form-card"><div class="form-intro finance-intro"><span>Ejecución controlada</span><h1>Procesar cargos vencidos</h1><p>Selecciona una institución completa o limita el proceso a un plantel.</p></div><form class="entity-form" th:object="${form}" method="post" action="/admin/politicas-recargo/generar"><div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo generar</strong><p th:text="${errorOperacion}"></p></div><fieldset class="form-section"><legend>Alcance del proceso</legend><div class="form-grid"><label><span>Institución *</span><select th:field="*{institucionId}"><option value="">Selecciona</option><option th:each="i:${instituciones}" th:value="${i.id}" th:text="${i.codigo+' · '+i.nombre}"></option></select></label><label><span>Plantel</span><select th:field="*{plantelId}"><option value="">Todos los planteles autorizados</option><option th:each="p:${planteles}" th:value="${p.id}" th:text="${p.nombre}"></option></select></label><label><span>Fecha de corte *</span><input type="date" th:field="*{fechaCorte}"></label></div></fieldset><div class="form-notice"><strong>Antes de ejecutar</strong><p>Se consideran únicamente cargos emitidos, vencidos y con una política activa. Los cargos pagados o con total cero no generan recargo.</p></div><footer class="form-actions"><a href="/admin/catalogos/politicas-recargo">Cancelar</a><button type="submit">Generar recargos</button></footer></form></section></main></body></html>
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#0b1930">
+    <title>Generar recargos · Nexo Escolar</title>
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/forms.css">
+    <script src="/js/theme.js"></script>
+    <script src="/js/generation-preview.js" defer></script>
+</head>
+<body class="form-page">
+<main class="form-shell finance-shell surcharge-preview-shell">
+    <header class="form-top">
+        <a href="/admin/catalogos/politicas-recargo">← Volver a políticas</a>
+        <div th:replace="~{admin/fragments/session-actions :: controls}"></div>
+    </header>
+
+    <div class="finance-principle">
+        <span>Proceso seguro en dos pasos</span>
+        <strong>Revisar antes de generar recargos</strong>
+        <p>Primero visualiza quién recibirá el recargo. Ningún saldo cambia hasta que confirmes la generación.</p>
+    </div>
+
+    <section class="form-card">
+        <div class="form-intro finance-intro">
+            <span>1 · Preparar vista previa</span>
+            <h1>Selecciona el corte de cobranza</h1>
+            <p>El sistema revisará únicamente pagos vencidos, con saldo pendiente y una política automática activa.</p>
+        </div>
+
+        <form class="entity-form surcharge-filter-form" data-preview-form th:object="${form}" method="get"
+              th:action="@{/admin/politicas-recargo/generar/vista-previa}">
+            <div class="form-error" role="alert" th:if="${errorOperacion != null or #fields.hasErrors('*')}">
+                <strong>No se pudo preparar la vista previa</strong>
+                <p th:if="${errorOperacion}" th:text="${errorOperacion}"></p>
+                <p th:each="error:${#fields.errors('*')}" th:text="${error}"></p>
+            </div>
+            <fieldset class="form-section">
+                <legend>Alcance del proceso</legend>
+                <div class="form-grid">
+                    <label>
+                        <span>Institución *</span>
+                        <select th:field="*{institucionId}">
+                            <option value="">Selecciona</option>
+                            <option th:each="i:${instituciones}" th:value="${i.id}"
+                                    th:text="${i.codigo+' · '+i.nombre}"></option>
+                        </select>
+                        <small th:errors="*{institucionId}"></small>
+                    </label>
+                    <label>
+                        <span>Plantel</span>
+                        <select th:field="*{plantelId}">
+                            <option value="">Todos los planteles autorizados</option>
+                            <option th:each="p:${planteles}" th:value="${p.id}" th:text="${p.nombre}"></option>
+                        </select>
+                        <small th:errors="*{plantelId}"></small>
+                    </label>
+                    <label>
+                        <span>Fecha de corte *</span>
+                        <input type="date" th:field="*{fechaCorte}">
+                        <small th:errors="*{fechaCorte}"></small>
+                    </label>
+                </div>
+            </fieldset>
+            <div class="form-notice">
+                <strong>Esta acción todavía no modifica saldos</strong>
+                <p>Los pagos liquidados, cancelados, sin saldo o sin política aplicable no aparecerán.</p>
+            </div>
+            <footer class="form-actions">
+                <a href="/admin/catalogos/politicas-recargo">Cancelar</a>
+                <button type="submit">Visualizar recargos</button>
+            </footer>
+        </form>
+    </section>
+
+    <section id="vista-previa-recargos" class="surcharge-preview-card generation-preview-target" data-generation-preview th:if="${vistaPrevia}" aria-labelledby="titulo-vista-previa">
+        <header class="surcharge-preview-header">
+            <div>
+                <span>2 · Verificar resultado</span>
+                <h2 id="titulo-vista-previa">Recargos que se aplicarán</h2>
+                <p th:if="${!vistaPrevia.pagina.empty}">Revisa alumnos, vencimientos e importes antes de confirmar.</p>
+                <p th:if="${vistaPrevia.pagina.empty}">No se encontró ningún recargo nuevo para este corte.</p>
+            </div>
+            <span class="surcharge-preview-badge" th:text="${vistaPrevia.cargosAplicables+' pagos afectados'}">0 pagos afectados</span>
+        </header>
+
+        <div class="surcharge-summary" th:if="${!vistaPrevia.pagina.empty}">
+            <article><span>Pagos afectados</span><strong th:text="${vistaPrevia.cargosAplicables}">0</strong></article>
+            <article><span>Recargos nuevos</span><strong th:text="${vistaPrevia.recargosNuevos}">0</strong></article>
+            <article><span>Saldo actual</span><strong th:text="${@formatoMoneda.pesos(vistaPrevia.saldoActual)}">$0.00</strong></article>
+            <article class="accent"><span>Total de recargos</span><strong th:text="${@formatoMoneda.pesos(vistaPrevia.totalRecargos)}">$0.00</strong></article>
+            <article class="total"><span>Nuevo saldo total</span><strong th:text="${@formatoMoneda.pesos(vistaPrevia.nuevoSaldo)}">$0.00</strong></article>
+        </div>
+
+        <div class="surcharge-empty" th:if="${vistaPrevia.pagina.empty}">
+            <span>✓</span>
+            <div><strong>No hay recargos pendientes de generar</strong><p>Prueba otra fecha de corte o verifica que las políticas estén activas.</p></div>
+        </div>
+
+        <div class="table-wrap surcharge-preview-table" th:if="${!vistaPrevia.pagina.empty}">
+            <table>
+                <thead><tr><th>Alumno</th><th>Concepto</th><th>Vencimiento</th><th>Política</th><th>Saldo actual</th><th>Recargo</th><th>Nuevo saldo</th></tr></thead>
+                <tbody>
+                <tr th:each="fila:${vistaPrevia.pagina.content}">
+                    <td data-label="Alumno"><strong th:text="${fila.alumnoNombre}">Alumno</strong><small th:text="${fila.alumnoMatricula+' · '+fila.plantelNombre}">Matrícula</small></td>
+                    <td data-label="Concepto"><strong th:text="${fila.concepto}">Concepto</strong><small th:text="${fila.periodosNuevos==1?'1 periodo nuevo':fila.periodosNuevos+' periodos nuevos'}">Periodo</small></td>
+                    <td data-label="Vencimiento"><strong th:text="${#temporals.format(fila.fechaVencimiento,'dd/MM/yyyy')}">Fecha</strong><small class="surcharge-overdue" th:text="${fila.diasAtraso+' días de atraso'}">0 días</small></td>
+                    <td data-label="Política" th:text="${fila.politica}">5 %</td>
+                    <td data-label="Saldo actual" th:text="${@formatoMoneda.pesos(fila.saldoActual)}">$0.00</td>
+                    <td data-label="Recargo"><strong class="surcharge-amount" th:text="${'+'+@formatoMoneda.pesos(fila.recargoNuevo)}">+$0.00</strong></td>
+                    <td data-label="Nuevo saldo"><strong th:text="${@formatoMoneda.pesos(fila.nuevoSaldo)}">$0.00</strong></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer class="pagination" th:if="${vistaPrevia.pagina.totalPages>1}">
+            <p><strong th:text="${vistaPrevia.pagina.number*vistaPrevia.pagina.size+1}">1</strong>–<strong th:text="${vistaPrevia.pagina.number*vistaPrevia.pagina.size+vistaPrevia.pagina.numberOfElements}">25</strong> de <strong th:text="${vistaPrevia.pagina.totalElements}">100</strong></p>
+            <div>
+                <a th:classappend="${vistaPrevia.pagina.first}?' disabled'"
+                   th:href="@{/admin/politicas-recargo/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number-1})}">Anterior</a>
+                <span th:text="${vistaPrevia.pagina.number+1}">1</span>
+                <a th:classappend="${vistaPrevia.pagina.last}?' disabled'"
+                   th:href="@{/admin/politicas-recargo/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number+1})}">Siguiente</a>
+            </div>
+        </footer>
+
+        <form class="surcharge-confirm" th:if="${!vistaPrevia.pagina.empty}" method="post"
+              th:action="@{/admin/politicas-recargo/generar}">
+            <input type="hidden" name="institucionId" th:value="${form.institucionId}">
+            <input type="hidden" name="plantelId" th:value="${form.plantelId}">
+            <input type="hidden" name="fechaCorte" th:value="${form.fechaCorte}">
+            <input type="hidden" name="confirmacion" value="true">
+            <div>
+                <strong>Confirma únicamente si los importes son correctos</strong>
+                <p>Al continuar, los recargos se agregarán al saldo de cada alumno y serán visibles en el portal familiar.</p>
+            </div>
+            <button class="generation-confirm-button" type="submit">Confirmar y generar recargos</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>

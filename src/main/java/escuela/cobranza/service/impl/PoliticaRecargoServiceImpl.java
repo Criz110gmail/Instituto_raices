@@ -1,23 +1,305 @@
 package escuela.cobranza.service.impl;
-import escuela.cobranza.dto.request.*;import escuela.cobranza.dto.response.*;import escuela.cobranza.entity.*;import escuela.cobranza.mapper.PoliticaRecargoMapper;import escuela.cobranza.repository.*;import escuela.common.exception.*;import escuela.seguridad.service.UsuarioPrincipal;
+
+import escuela.cobranza.dto.request.*;
+import escuela.cobranza.dto.response.*;
+import escuela.cobranza.entity.*;
+import escuela.cobranza.mapper.PoliticaRecargoMapper;
+import escuela.cobranza.repository.*;
 import escuela.cobranza.service.PoliticaRecargoService;
-import lombok.RequiredArgsConstructor;import org.springframework.data.domain.PageRequest;import org.springframework.security.core.context.SecurityContextHolder;import org.springframework.stereotype.Service;import org.springframework.transaction.annotation.Transactional;
-import java.math.*;import java.time.*;import java.time.temporal.ChronoUnit;import static escuela.common.mapper.NormalizacionTexto.codigo;import static escuela.common.service.ValidacionVersion.verificar;
-@Service @RequiredArgsConstructor @Transactional public class PoliticaRecargoServiceImpl implements PoliticaRecargoService{
- private static final int BLOQUE=100;private final PoliticaRecargoRepository repository;private final ConceptoCobroRepository conceptoRepository;private final CargoRepository cargoRepository;private final AjusteCargoRepository ajusteRepository;private final PoliticaRecargoMapper mapper;
- public PoliticaRecargoResponse crear(PoliticaRecargoRequest r){ConceptoCobro c=conceptoRepository.findById(r.conceptoCobroId()).orElseThrow(()->new RecursoNoEncontradoException("el concepto de cobro",r.conceptoCobroId()));validar(r,c,0L);return mapper.respuesta(repository.saveAndFlush(mapper.nueva(normalizar(r),c)));}
- public PoliticaRecargoResponse actualizar(Long id,PoliticaRecargoRequest r){PoliticaRecargo p=repository.findByIdForUpdate(id).orElseThrow(()->new RecursoNoEncontradoException("la política de recargo",id));verificar(p,r.version(),"Política de recargo");if(!p.getConceptoCobro().getId().equals(r.conceptoCobroId()))throw new ReglaNegocioException("No se puede cambiar el concepto de una política histórica");validar(r,p.getConceptoCobro(),id);mapper.actualizar(p,normalizar(r));return mapper.respuesta(repository.saveAndFlush(p));}
- @Transactional(readOnly=true)public PoliticaRecargoResponse obtener(Long id){return mapper.respuesta(repository.findById(id).orElseThrow(()->new RecursoNoEncontradoException("la política de recargo",id)));}
- public void desactivar(Long id,Long version){PoliticaRecargo p=repository.findByIdForUpdate(id).orElseThrow(()->new RecursoNoEncontradoException("la política de recargo",id));verificar(p,version,"Política de recargo");p.setActivo(false);p.setGeneracionAutomatica(false);}
- public GeneracionRecargosResponse generar(GeneracionRecargosRequest r){int revisados=0,generados=0,existentes=0,sinImporte=0;long ultimo=0;while(true){var bloque=cargoRepository.buscarParaRecargo(r.institucionId(),r.plantelId(),r.fechaCorte(),ultimo,PageRequest.of(0,BLOQUE));if(bloque.isEmpty())break;for(Cargo c:bloque){revisados++;Resultado x=generarCargo(c,r.fechaCorte());generados+=x.generados;existentes+=x.existentes;sinImporte+=x.sinImporte;ultimo=c.getId();}if(bloque.getNumberOfElements()<BLOQUE)break;}return new GeneracionRecargosResponse(revisados,generados,existentes,sinImporte);}
- private Resultado generarCargo(Cargo c,LocalDate corte){PoliticaRecargo p=repository.findByConceptoCobroIdAndActivoTrueAndGeneracionAutomaticaTrue(c.getConceptoCobro().getId()).orElse(null);if(p==null)return new Resultado(0,0,0);LocalDate primera=c.getFechaVencimiento().plusDays((long)p.getDiasGracia()+1);if(corte.isBefore(primera))return new Resultado(0,0,0);BigDecimal base=baseSinRecargos(c);if(base.signum()<=0)return new Resultado(0,0,1);int periodos=p.getPeriodicidad()==PeriodicidadRecargo.UNICA?1:periodosVencidos(primera,corte);int gen=0,exist=0;BigDecimal acumulado=ajusteRepository.totalRecargosAutomaticos(c.getId(),p.getId());if(acumulado==null)acumulado=BigDecimal.ZERO;BigDecimal limite=limite(p,c.getImporteOriginal());for(int n=0;n<periodos;n++){BigDecimal disponible=limite==null?null:limite.subtract(acumulado);if(disponible!=null&&disponible.signum()<=0)break;BigDecimal monto=monto(p,base);if(disponible!=null)monto=monto.min(disponible);if(monto.signum()<=0)break;LocalDate efectiva=fechaPeriodo(primera,n);String clave="RECARGO:"+p.getId()+":"+c.getId()+":"+n;int insertado=ajusteRepository.insertarRecargoSiAusente(c.getId(),monto,base,p.getModalidad()==ModalidadBeca.PORCENTAJE?p.getPorcentaje():null,"Recargo automático · "+p.getConceptoCobro().getNombre()+" · periodo "+(n+1),actorActual(),efectiva,p.getId(),clave);if(insertado==1){gen++;acumulado=acumulado.add(monto);}else exist++;}return new Resultado(gen,exist,0);}
- private int periodosVencidos(LocalDate primera,LocalDate corte){int meses=(int)ChronoUnit.MONTHS.between(YearMonth.from(primera),YearMonth.from(corte));int total=meses+1;if(fechaPeriodo(primera,meses).isAfter(corte))total--;return Math.max(0,total);}
- private LocalDate fechaPeriodo(LocalDate primera,int n){YearMonth mes=YearMonth.from(primera).plusMonths(n);return mes.atDay(Math.min(primera.getDayOfMonth(),mes.lengthOfMonth()));}
- private BigDecimal baseSinRecargos(Cargo c){BigDecimal b=c.getImporteOriginal();for(AjusteCargo a:c.getAjustes()){boolean esRecargo=a.getTipo()==TipoAjusteCargo.RECARGO||a.getReversaDe()!=null&&a.getReversaDe().getTipo()==TipoAjusteCargo.RECARGO;if(esRecargo)continue;b=a.getEfecto()==EfectoAjusteCargo.AUMENTO?b.add(a.getMonto()):b.subtract(a.getMonto());}return b.max(BigDecimal.ZERO).setScale(2,RoundingMode.HALF_UP);}
- private BigDecimal monto(PoliticaRecargo p,BigDecimal base){return(p.getModalidad()==ModalidadBeca.PORCENTAJE?base.multiply(p.getPorcentaje()).divide(new BigDecimal("100"),2,RoundingMode.HALF_UP):p.getMontoFijo()).setScale(2,RoundingMode.HALF_UP);}
- private BigDecimal limite(PoliticaRecargo p,BigDecimal original){return switch(p.getTipoLimite()){case SIN_LIMITE->null;case MONTO_FIJO->p.getValorLimite().setScale(2,RoundingMode.HALF_UP);case PORCENTAJE_ORIGINAL->original.multiply(p.getValorLimite()).divide(new BigDecimal("100"),2,RoundingMode.HALF_UP);};}
- private void validar(PoliticaRecargoRequest r,ConceptoCobro c,Long id){if(!c.isActivo()||!c.isPermiteRecargo())throw new ReglaNegocioException("El concepto debe estar activo y permitir recargos");if(repository.existsByConceptoCobroIdAndIdNot(c.getId(),id))throw new RecursoDuplicadoException("El concepto ya tiene una política de recargo");if(r.modalidad()==ModalidadBeca.PORCENTAJE){if(r.porcentaje()==null||r.porcentaje().signum()<=0||r.porcentaje().compareTo(new BigDecimal("100"))>0||r.porcentaje().scale()>4||r.montoFijo()!=null)throw new ReglaNegocioException("Indica un porcentaje mayor a 0 y máximo 100");}else{if(r.montoFijo()==null||r.montoFijo().signum()<=0||r.montoFijo().scale()>2||r.porcentaje()!=null)throw new ReglaNegocioException("Indica un monto fijo positivo con máximo dos decimales");if(!codigo(r.moneda()).equals(c.getInstitucion().getMonedaPredeterminada()))throw new ReglaNegocioException("La moneda debe coincidir con la institución");}if(r.tipoLimite()!=TipoLimiteRecargo.SIN_LIMITE&&(r.valorLimite()==null||r.valorLimite().signum()<=0))throw new ReglaNegocioException("La política seleccionada requiere un límite positivo");if(r.tipoLimite()==TipoLimiteRecargo.PORCENTAJE_ORIGINAL&&r.valorLimite().compareTo(new BigDecimal("1000"))>0)throw new ReglaNegocioException("El límite porcentual no puede superar 1000 %");}
- private PoliticaRecargoRequest normalizar(PoliticaRecargoRequest r){return new PoliticaRecargoRequest(r.conceptoCobroId(),r.modalidad(),r.modalidad()==ModalidadBeca.PORCENTAJE?r.porcentaje():null,r.modalidad()==ModalidadBeca.MONTO_FIJO?r.montoFijo().setScale(2,RoundingMode.UNNECESSARY):null,r.modalidad()==ModalidadBeca.MONTO_FIJO?codigo(r.moneda()):null,r.diasGracia(),r.periodicidad(),r.tipoLimite(),r.tipoLimite()==TipoLimiteRecargo.SIN_LIMITE?null:r.valorLimite(),r.generacionAutomatica(),r.activo(),r.version());}
- private Long actorActual(){var a=SecurityContextHolder.getContext().getAuthentication();return a!=null&&a.getPrincipal()instanceof UsuarioPrincipal p?p.usuarioId():null;}
- private record Resultado(int generados,int existentes,int sinImporte){}
+import escuela.common.exception.*;
+import escuela.seguridad.service.UsuarioPrincipal;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.*;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.stream.*;
+
+import static escuela.cobranza.support.CalculoCargo.saldo;
+import static escuela.common.mapper.NormalizacionTexto.codigo;
+import static escuela.common.service.ValidacionVersion.verificar;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class PoliticaRecargoServiceImpl implements PoliticaRecargoService {
+    private static final int BLOQUE = 100;
+    private final PoliticaRecargoRepository repository;
+    private final ConceptoCobroRepository conceptoRepository;
+    private final CargoRepository cargoRepository;
+    private final AjusteCargoRepository ajusteRepository;
+    private final PoliticaRecargoMapper mapper;
+
+    public PoliticaRecargoResponse crear(PoliticaRecargoRequest request) {
+        ConceptoCobro concepto = conceptoRepository.findById(request.conceptoCobroId())
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "el concepto de cobro", request.conceptoCobroId()));
+        validar(request, concepto, 0L);
+        return mapper.respuesta(repository.saveAndFlush(mapper.nueva(normalizar(request), concepto)));
+    }
+
+    public PoliticaRecargoResponse actualizar(Long id, PoliticaRecargoRequest request) {
+        PoliticaRecargo politica = repository.findByIdForUpdate(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("la política de recargo", id));
+        verificar(politica, request.version(), "Política de recargo");
+        if (!politica.getConceptoCobro().getId().equals(request.conceptoCobroId()))
+            throw new ReglaNegocioException("No se puede cambiar el concepto de una política histórica");
+        validar(request, politica.getConceptoCobro(), id);
+        mapper.actualizar(politica, normalizar(request));
+        return mapper.respuesta(repository.saveAndFlush(politica));
+    }
+
+    @Transactional(readOnly = true)
+    public PoliticaRecargoResponse obtener(Long id) {
+        return mapper.respuesta(repository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("la política de recargo", id)));
+    }
+
+    public void desactivar(Long id, Long version) {
+        PoliticaRecargo politica = repository.findByIdForUpdate(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("la política de recargo", id));
+        verificar(politica, version, "Política de recargo");
+        politica.setActivo(false);
+        politica.setGeneracionAutomatica(false);
+    }
+
+    @Transactional(readOnly = true)
+    public VistaPreviaRecargosResponse previsualizar(GeneracionRecargosRequest request,
+                                                      int numeroPagina, int tamanioPagina) {
+        int pagina = Math.max(numeroPagina, 0);
+        int tamanio = Math.min(Math.max(tamanioPagina, 10), 100);
+        long desde = (long) pagina * tamanio;
+        long aplicables = 0;
+        long recargos = 0;
+        BigDecimal saldoActual = BigDecimal.ZERO;
+        BigDecimal totalRecargos = BigDecimal.ZERO;
+        List<VistaPreviaRecargoFila> contenido = new ArrayList<>();
+
+        long ultimoId = 0;
+        while (true) {
+            var bloque = cargoRepository.buscarParaRecargo(request.institucionId(),
+                    request.plantelId(), request.fechaCorte(), ultimoId, PageRequest.of(0, BLOQUE));
+            if (bloque.isEmpty()) break;
+            for (Cargo cargo : bloque) {
+                ultimoId = cargo.getId();
+                PlanRecargo plan = planificar(cargo, request.fechaCorte());
+                if (plan.periodos().isEmpty()) continue;
+                BigDecimal recargoCargo = plan.periodos().stream().map(PeriodoRecargo::monto)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal saldoCargo = saldo(cargo);
+                if (aplicables >= desde && contenido.size() < tamanio)
+                    contenido.add(fila(cargo, plan, saldoCargo, recargoCargo, request.fechaCorte()));
+                aplicables++;
+                recargos += plan.periodos().size();
+                saldoActual = saldoActual.add(saldoCargo);
+                totalRecargos = totalRecargos.add(recargoCargo);
+            }
+            if (bloque.getNumberOfElements() < BLOQUE) break;
+        }
+
+        BigDecimal saldoNormalizado = saldoActual.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal recargosNormalizados = totalRecargos.setScale(2, RoundingMode.HALF_UP);
+        return new VistaPreviaRecargosResponse(
+                new PageImpl<>(contenido, PageRequest.of(pagina, tamanio), aplicables),
+                aplicables, recargos, saldoNormalizado, recargosNormalizados,
+                saldoNormalizado.add(recargosNormalizados).setScale(2, RoundingMode.HALF_UP));
+    }
+
+    public GeneracionRecargosResponse generar(GeneracionRecargosRequest request) {
+        int revisados = 0, generados = 0, existentes = 0, sinImporte = 0;
+        long ultimoId = 0;
+        while (true) {
+            var bloque = cargoRepository.buscarParaRecargo(request.institucionId(),
+                    request.plantelId(), request.fechaCorte(), ultimoId, PageRequest.of(0, BLOQUE));
+            if (bloque.isEmpty()) break;
+            for (Cargo cargo : bloque) {
+                ultimoId = cargo.getId();
+                revisados++;
+                Resultado resultado = generarCargo(cargo, request.fechaCorte());
+                generados += resultado.generados();
+                existentes += resultado.existentes();
+                sinImporte += resultado.sinImporte();
+            }
+            if (bloque.getNumberOfElements() < BLOQUE) break;
+        }
+        return new GeneracionRecargosResponse(revisados, generados, existentes, sinImporte);
+    }
+
+    private Resultado generarCargo(Cargo cargo, LocalDate corte) {
+        if (saldo(cargo).signum() <= 0) return new Resultado(0, 0, 1);
+        PoliticaRecargo politica = politica(cargo);
+        if (politica == null) return new Resultado(0, 0, 0);
+        PlanRecargo plan = planificar(cargo, politica, corte);
+        int generados = 0;
+        int existentes = plan.existentes();
+        for (PeriodoRecargo periodo : plan.periodos()) {
+            int insertado = ajusteRepository.insertarRecargoSiAusente(cargo.getId(), periodo.monto(),
+                    plan.base(), politica.getModalidad() == ModalidadBeca.PORCENTAJE
+                            ? politica.getPorcentaje() : null,
+                    "Recargo automático · " + politica.getConceptoCobro().getNombre()
+                            + " · periodo " + (periodo.numero() + 1), actorActual(), periodo.fecha(),
+                    politica.getId(), periodo.clave());
+            if (insertado == 1) generados++;
+            else existentes++;
+        }
+        return new Resultado(generados, existentes, plan.base().signum() <= 0 ? 1 : 0);
+    }
+
+    private PlanRecargo planificar(Cargo cargo, LocalDate corte) {
+        if (saldo(cargo).signum() <= 0) return PlanRecargo.vacio();
+        PoliticaRecargo politica = politica(cargo);
+        return politica == null ? PlanRecargo.vacio() : planificar(cargo, politica, corte);
+    }
+
+    private PlanRecargo planificar(Cargo cargo, PoliticaRecargo politica, LocalDate corte) {
+        LocalDate primera = cargo.getFechaVencimiento().plusDays((long) politica.getDiasGracia() + 1);
+        if (corte.isBefore(primera)) return PlanRecargo.vacio();
+        BigDecimal base = baseSinRecargos(cargo);
+        if (base.signum() <= 0) return new PlanRecargo(politica, base, List.of(), 0);
+        int cantidadPeriodos = politica.getPeriodicidad() == PeriodicidadRecargo.UNICA
+                ? 1 : periodosVencidos(primera, corte);
+        BigDecimal acumulado = ajusteRepository.totalRecargosAutomaticos(cargo.getId(), politica.getId());
+        if (acumulado == null) acumulado = BigDecimal.ZERO;
+        BigDecimal limite = limite(politica, cargo.getImporteOriginal());
+        Set<String> clavesExistentes = new HashSet<>(ajusteRepository.clavesDeRecargosAutomaticos(
+                cargo.getId(), politica.getId()));
+        List<PeriodoRecargo> nuevos = new ArrayList<>();
+        int existentes = 0;
+        for (int numero = 0; numero < cantidadPeriodos; numero++) {
+            BigDecimal disponible = limite == null ? null : limite.subtract(acumulado);
+            if (disponible != null && disponible.signum() <= 0) break;
+            BigDecimal monto = monto(politica, base);
+            if (disponible != null) monto = monto.min(disponible);
+            if (monto.signum() <= 0) break;
+            String clave = "RECARGO:" + politica.getId() + ":" + cargo.getId() + ":" + numero;
+            if (clavesExistentes.contains(clave)) {
+                existentes++;
+                continue;
+            }
+            nuevos.add(new PeriodoRecargo(numero, fechaPeriodo(primera, numero), monto, clave));
+            acumulado = acumulado.add(monto);
+        }
+        return new PlanRecargo(politica, base, nuevos, existentes);
+    }
+
+    private PoliticaRecargo politica(Cargo cargo) {
+        return repository.findByConceptoCobroIdAndActivoTrueAndGeneracionAutomaticaTrue(
+                cargo.getConceptoCobro().getId()).orElse(null);
+    }
+
+    private VistaPreviaRecargoFila fila(Cargo cargo, PlanRecargo plan, BigDecimal saldoActual,
+                                         BigDecimal recargo, LocalDate corte) {
+        var alumno = cargo.getInscripcion().getAlumno();
+        String nombre = Stream.of(alumno.getNombres(), alumno.getPrimerApellido(),
+                        alumno.getSegundoApellido()).filter(v -> v != null && !v.isBlank())
+                .collect(Collectors.joining(" "));
+        PoliticaRecargo politica = plan.politica();
+        String detalle = politica.getModalidad() == ModalidadBeca.PORCENTAJE
+                ? politica.getPorcentaje().stripTrailingZeros().toPlainString() + " %"
+                : politica.getMoneda() + " " + politica.getMontoFijo().setScale(2);
+        detalle += politica.getPeriodicidad() == PeriodicidadRecargo.UNICA
+                ? " · una vez" : " · mensual";
+        return new VistaPreviaRecargoFila(cargo.getId(), alumno.getMatricula(), nombre,
+                cargo.getInscripcion().getPlantel().getNombre(), cargo.getConceptoCobro().getNombre(),
+                cargo.getFechaVencimiento(), Math.max(0, ChronoUnit.DAYS.between(
+                        cargo.getFechaVencimiento(), corte)), detalle, plan.periodos().size(),
+                saldoActual, recargo, saldoActual.add(recargo).setScale(2, RoundingMode.HALF_UP));
+    }
+
+    private int periodosVencidos(LocalDate primera, LocalDate corte) {
+        int meses = (int) ChronoUnit.MONTHS.between(YearMonth.from(primera), YearMonth.from(corte));
+        int total = meses + 1;
+        if (fechaPeriodo(primera, meses).isAfter(corte)) total--;
+        return Math.max(0, total);
+    }
+
+    private LocalDate fechaPeriodo(LocalDate primera, int numero) {
+        YearMonth mes = YearMonth.from(primera).plusMonths(numero);
+        return mes.atDay(Math.min(primera.getDayOfMonth(), mes.lengthOfMonth()));
+    }
+
+    private BigDecimal baseSinRecargos(Cargo cargo) {
+        BigDecimal base = cargo.getImporteOriginal();
+        for (AjusteCargo ajuste : cargo.getAjustes()) {
+            boolean esRecargo = ajuste.getTipo() == TipoAjusteCargo.RECARGO
+                    || ajuste.getReversaDe() != null
+                    && ajuste.getReversaDe().getTipo() == TipoAjusteCargo.RECARGO;
+            if (esRecargo) continue;
+            base = ajuste.getEfecto() == EfectoAjusteCargo.AUMENTO
+                    ? base.add(ajuste.getMonto()) : base.subtract(ajuste.getMonto());
+        }
+        return base.max(BigDecimal.ZERO).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal monto(PoliticaRecargo politica, BigDecimal base) {
+        return (politica.getModalidad() == ModalidadBeca.PORCENTAJE
+                ? base.multiply(politica.getPorcentaje()).divide(new BigDecimal("100"),
+                2, RoundingMode.HALF_UP) : politica.getMontoFijo()).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal limite(PoliticaRecargo politica, BigDecimal original) {
+        return switch (politica.getTipoLimite()) {
+            case SIN_LIMITE -> null;
+            case MONTO_FIJO -> politica.getValorLimite().setScale(2, RoundingMode.HALF_UP);
+            case PORCENTAJE_ORIGINAL -> original.multiply(politica.getValorLimite())
+                    .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        };
+    }
+
+    private void validar(PoliticaRecargoRequest request, ConceptoCobro concepto, Long id) {
+        if (!concepto.isActivo() || !concepto.isPermiteRecargo())
+            throw new ReglaNegocioException("El concepto debe estar activo y permitir recargos");
+        if (repository.existsByConceptoCobroIdAndIdNot(concepto.getId(), id))
+            throw new RecursoDuplicadoException("El concepto ya tiene una política de recargo");
+        if (request.modalidad() == ModalidadBeca.PORCENTAJE) {
+            if (request.porcentaje() == null || request.porcentaje().signum() <= 0
+                    || request.porcentaje().compareTo(new BigDecimal("100")) > 0
+                    || request.porcentaje().scale() > 4 || request.montoFijo() != null)
+                throw new ReglaNegocioException("Indica un porcentaje mayor a 0 y máximo 100");
+        } else {
+            if (request.montoFijo() == null || request.montoFijo().signum() <= 0
+                    || request.montoFijo().scale() > 2 || request.porcentaje() != null)
+                throw new ReglaNegocioException("Indica un monto fijo positivo con máximo dos decimales");
+            if (!codigo(request.moneda()).equals(concepto.getInstitucion().getMonedaPredeterminada()))
+                throw new ReglaNegocioException("La moneda debe coincidir con la institución");
+        }
+        if (request.tipoLimite() != TipoLimiteRecargo.SIN_LIMITE
+                && (request.valorLimite() == null || request.valorLimite().signum() <= 0))
+            throw new ReglaNegocioException("La política seleccionada requiere un límite positivo");
+        if (request.tipoLimite() == TipoLimiteRecargo.PORCENTAJE_ORIGINAL
+                && request.valorLimite().compareTo(new BigDecimal("1000")) > 0)
+            throw new ReglaNegocioException("El límite porcentual no puede superar 1000 %");
+    }
+
+    private PoliticaRecargoRequest normalizar(PoliticaRecargoRequest request) {
+        return new PoliticaRecargoRequest(request.conceptoCobroId(), request.modalidad(),
+                request.modalidad() == ModalidadBeca.PORCENTAJE ? request.porcentaje() : null,
+                request.modalidad() == ModalidadBeca.MONTO_FIJO
+                        ? request.montoFijo().setScale(2, RoundingMode.UNNECESSARY) : null,
+                request.modalidad() == ModalidadBeca.MONTO_FIJO ? codigo(request.moneda()) : null,
+                request.diasGracia(), request.periodicidad(), request.tipoLimite(),
+                request.tipoLimite() == TipoLimiteRecargo.SIN_LIMITE ? null : request.valorLimite(),
+                request.generacionAutomatica(), request.activo(), request.version());
+    }
+
+    private Long actorActual() {
+        var autenticacion = SecurityContextHolder.getContext().getAuthentication();
+        return autenticacion != null && autenticacion.getPrincipal() instanceof UsuarioPrincipal principal
+                ? principal.usuarioId() : null;
+    }
+
+    private record PeriodoRecargo(int numero, LocalDate fecha, BigDecimal monto, String clave) { }
+    private record PlanRecargo(PoliticaRecargo politica, BigDecimal base,
+                               List<PeriodoRecargo> periodos, int existentes) {
+        private static PlanRecargo vacio() {
+            return new PlanRecargo(null, BigDecimal.ZERO, List.of(), 0);
+        }
+    }
+    private record Resultado(int generados, int existentes, int sinImporte) { }
 }

@@ -1,5 +1,54 @@
 # Contexto del proyecto
 
+## Verificación posterior a V50 — reporte familiar de transferencia protegido
+
+- La búsqueda de **Cargo vigente del alumno** usa un desplegable propio, responsivo y
+  compatible con tema oscuro. Cada foco consulta los primeros diez cargos; desde tres
+  caracteres filtra en servidor y conserva el comportamiento tras errores de validación.
+- El saldo de cada cargo y el total a transferir se completan automáticamente y son de sólo
+  lectura. Seleccionar varios cargos suma sus saldos completos sin captura manual.
+- El servidor no confía en esos campos: valida propiedad, vigencia, duplicados y saldo,
+  reemplazando cualquier importe enviado por el valor vigente antes de crear la solicitud.
+- No hubo migración. La suite aumentó a 427 pruebas.
+
+## Verificación posterior a V50 — vista previa de pagos automáticos
+
+- La generación de pagos programados desde cuotas ya no permite escribir en el primer
+  paso. **Visualizar cuotas por aplicar** muestra cada periodo faltante y sólo entonces
+  habilita **Confirmar y generar pagos faltantes**.
+- La tabla paginada identifica alumno, matrícula, plantel, concepto, frecuencia, periodo,
+  vencimiento e importe. El encabezado resume cuotas afectadas, pagos nuevos e importe
+  programado total.
+- Vista previa y confirmación reutilizan la misma planificación. La confirmación recalcula
+  el corte y las claves idempotentes `AUTO` evitan crear un periodo que ya exista.
+- Se corrigió además el diseño de los botones finales de los generadores de pagos y
+  recargos mediante un componente visual explícito para escritorio, móvil y tema oscuro.
+- Ambos formularios llevan automáticamente la vista al resultado recién calculado, enfocan
+  un encabezado accesible y muestran **Preparando vista…** durante el envío, evitando que
+  la lista pase inadvertida debajo del formulario o que se envíe dos veces.
+- Se corrigió el error al confirmar la generación: las acciones `POST` de pagos faltantes
+  y recargos ahora se procesan con `th:action`, permitiendo que Thymeleaf agregue la
+  protección CSRF. Las pruebas de interfaz verifican esta condición para evitar regresiones.
+- No hubo migración; V51 sigue disponible. Docker ejecutó 426 pruebas sin fallos, validó
+  los repositorios al arrancar y el servicio desplegado respondió `UP`.
+
+## Verificación posterior a V50 — vista previa obligatoria de recargos
+
+- La generación manual de recargos se convirtió en un flujo seguro de dos pasos. Primero
+  se ejecuta una vista previa de sólo lectura y después se habilita la confirmación.
+- La vista presenta totales y una lista paginada con alumno, concepto, plantel, vencimiento,
+  atraso, política, cantidad de periodos, saldo, recargo y nuevo saldo. El diseño responde
+  en escritorio y móvil y cuenta con variantes clara y oscura.
+- Previsualización y confirmación utilizan el mismo plan de cálculo. Antes de escribir, la
+  confirmación recalcula el corte; las claves únicas siguen evitando duplicados.
+- Los pagos completamente liquidados se excluyen expresamente tanto de la vista como de la
+  generación. También se omiten cargos cancelados, sin política automática, sin saldo o sin
+  nuevos periodos aplicables.
+- No hubo migración y V51 sigue libre. Docker ejecutó 425 pruebas sin fallos, Spring validó
+  los repositorios y la aplicación desplegada respondió `UP`. La sesión de navegador estaba
+  expirada, por lo que la prueba visual autenticada quedó para el propietario sin consultar
+  credenciales ni `.env`.
+
 ## Verificación posterior a V50 — cobranza asistida desde la inscripción
 
 - Se conservaron desacoplados Cuotas individuales, Pagos de alumnos y Pagos, pero la
@@ -18,6 +67,17 @@
   una inscripción y un importe de prueba.
 
 ## Decisiones pendientes posteriores a V50
+
+- Al finalizar completamente el sistema se elaborará un manual integral de usuario en PDF.
+  Será un entregable final, no parte de la etapa actual, y explicará con lenguaje sencillo y
+  procedimientos numerados cada configuración, captura, consulta, aprobación, exportación
+  y operación disponible para administración, maestros, familias y demás perfiles finales.
+  Incluirá requisitos previos, significado de campos, resultados esperados, errores comunes,
+  permisos y relaciones entre módulos. Siempre que sea posible utilizará capturas reales de
+  las pantallas finales —sin datos sensibles— con indicaciones visuales de botones, menús y
+  pestañas. Tendrá índice, glosario, solución de problemas, control de versión y revisión
+  visual completa. No debe generarse hasta que el propietario confirme que el sistema y sus
+  textos definitivos están terminados.
 
 - La consistencia visual pasa a ser un requisito de aceptación: todo módulo debe reutilizar
   los patrones consolidados de listados, filtros, formularios, ayudas, acciones y estados,

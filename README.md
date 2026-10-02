@@ -255,6 +255,26 @@ pagina y filtra en PostgreSQL y su Excel usa exactamente esos filtros. Requiere
 `POLITICA_RECARGO_LEER` y/o `POLITICA_RECARGO_ADMINISTRAR`; V15 no concede estos
 permisos automáticamente a roles existentes.
 
+La generación se realiza en dos pasos. **Visualizar recargos** calcula sin modificar
+saldos y muestra un resumen junto con una lista paginada de alumnos, vencimientos,
+políticas, saldos y nuevos importes. Sólo después se habilita **Confirmar y generar
+recargos**. La confirmación recalcula los datos vigentes antes de escribir y conserva la
+idempotencia. Los pagos completamente liquidados no aparecen ni reciben recargos.
+
+La generación automática de Pagos de alumnos aplica la misma protección. **Visualizar
+cuotas por aplicar** presenta, sin escribir datos, los alumnos y periodos faltantes junto
+con sus vencimientos, importes y totales. Únicamente después se habilita **Confirmar y
+generar pagos faltantes**. La confirmación recalcula el corte y crea sólo los periodos que
+continúen ausentes, utilizando las mismas claves idempotentes `AUTO`. Al solicitar la
+vista previa, la interfaz desplaza automáticamente el resultado al área visible y coloca
+el foco en su encabezado, para que también sea evidente en pantallas pequeñas.
+
+En el reporte familiar de transferencias, enfocar **Cargo vigente del alumno** abre los
+primeros diez cargos autorizados y escribir tres caracteres filtra la consulta. Al elegir
+uno, el saldo completo y el total de la transferencia se calculan automáticamente y
+quedan en modo de sólo lectura. El servidor vuelve a obtener esos saldos antes de guardar,
+por lo que alterar los importes desde el navegador no modifica la cantidad solicitada.
+
 Cuentas financieras prepara los destinos para recepción de pagos mediante cuentas
 institucionales o de plantel de tipo caja, banco o inversión. Valida institución,
 plantel, moneda, saldo y fecha inicial; los identificadores bancarios se presentan
@@ -700,6 +720,15 @@ conservará el XML original y se normalizarán encabezado, conceptos, impuestos 
 en tablas consultables, con control de UUID duplicado y comparación contra proveedor,
 moneda y totales de la compra. La importación de conceptos requerirá vista previa y
 confirmación del usuario.
+
+Como entregable final del proyecto queda pendiente un **manual integral de usuario en
+PDF**. Se elaborará cuando todas las funcionalidades y textos del sistema estén terminados
+y describirá, paso a paso y con lenguaje sencillo, cada proceso de los portales
+administrativo, docente y familiar. Incluirá capturas reales anotadas siempre que sea
+posible, requisitos previos, permisos, explicación de campos, resultados esperados,
+errores frecuentes, índice, glosario y solución de problemas. Las imágenes no contendrán
+credenciales ni datos personales reales y el documento completo se verificará visualmente
+antes de entregarse.
 
 El orden de Niveles educativos, Grados, Periodos académicos y Materias por grado es un dato
 técnico automático: no se captura en los formularios. Al crear un registro toma su mismo ID;

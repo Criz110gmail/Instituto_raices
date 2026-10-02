@@ -59,6 +59,7 @@ class CargoServiceImplTest {
         when(cuotaRepository.buscarParaGeneracion(eq(1L), isNull(),
                 eq(LocalDate.of(2026, 2, 28)), eq(0L), any()))
                 .thenReturn(new SliceImpl<>(List.of(cuota)));
+        when(repository.clavesGeneradasPorCuota(90L)).thenReturn(List.of());
         when(repository.insertarAutomaticoSiAusente(any(), any(), any(), any(), any(),
                 any(), any(), any(), any(), any(), any(), isNull())).thenReturn(1);
 
@@ -83,6 +84,7 @@ class CargoServiceImplTest {
         cuota.setFechaFin(LocalDate.of(2026, 1, 31));
         when(cuotaRepository.buscarParaGeneracion(any(), any(), any(), any(), any()))
                 .thenReturn(new SliceImpl<>(List.of(cuota)));
+        when(repository.clavesGeneradasPorCuota(90L)).thenReturn(List.of());
         when(repository.insertarAutomaticoSiAusente(any(), any(), any(), any(), any(),
                 any(), any(), any(), any(), any(), any(), isNull())).thenReturn(0);
 
@@ -93,6 +95,30 @@ class CargoServiceImplTest {
         assertThat(resultado.cargosYaExistentes()).isEqualTo(1);
         verify(repository, times(1)).insertarAutomaticoSiAusente(any(), any(), any(),
                 any(), any(), any(), any(), any(), any(), any(), any(), isNull());
+    }
+
+    @Test
+    void previsualizaSoloPeriodosFaltantesSinInsertar() {
+        CuotaAlumno cuota = cuotaMensual();
+        when(cuotaRepository.buscarParaGeneracion(eq(1L), isNull(),
+                eq(LocalDate.of(2026, 2, 28)), eq(0L), any()))
+                .thenReturn(new SliceImpl<>(List.of(cuota)));
+        when(repository.clavesGeneradasPorCuota(90L))
+                .thenReturn(List.of("AUTO:1:90:2026-01"));
+
+        var vista = service.previsualizar(new GeneracionCargosRequest(
+                1L, null, LocalDate.of(2026, 2, 28)), 0, 25);
+
+        assertThat(vista.cuotasConPendientes()).isEqualTo(1);
+        assertThat(vista.pagosPorGenerar()).isEqualTo(1);
+        assertThat(vista.importeTotal()).isEqualByComparingTo("3000.00");
+        assertThat(vista.pagina().getContent()).singleElement().satisfies(fila -> {
+            assertThat(fila.alumnoNombre()).isEqualTo("Ana López");
+            assertThat(fila.periodo()).contains("febrero 2026");
+            assertThat(fila.fechaVencimiento()).isEqualTo(LocalDate.of(2026, 2, 28));
+        });
+        verify(repository, times(0)).insertarAutomaticoSiAusente(any(), any(), any(),
+                any(), any(), any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test

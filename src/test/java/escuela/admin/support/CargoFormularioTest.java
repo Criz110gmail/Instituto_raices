@@ -15,7 +15,12 @@ class CargoFormularioTest {
                 .contains("Esta descripción se conservará en el registro")
                 .contains("Registrar pago por cobrar");
         assertThat(plantilla("admin/cargo-generar.html"))
-                .contains("method=\"post\" th:action=\"@{/admin/cargos/generar}\"");
+                .contains("Visualizar cuotas por aplicar")
+                .contains("th:action=\"@{/admin/cargos/generar/vista-previa}\"")
+                .contains("Confirmar y generar pagos faltantes")
+                .contains("method=\"post\" th:action=\"@{/admin/cargos/generar}\"")
+                .contains("data-preview-form", "data-generation-preview",
+                        "/js/generation-preview.js");
     }
 
     private String plantilla(String ruta) throws IOException {

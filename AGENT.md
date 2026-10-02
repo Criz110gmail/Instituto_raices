@@ -1098,8 +1098,39 @@ funcionales actuales.
 5. Probar las cuatro descargas Jasper con datos controlados y distintos tamaños de
    resultado. Ejecutar también la prueba manual de V37 y las pendientes descritas para V34, V35 y V36. Mantener
    además
-   en la lista las pruebas pendientes de cancelaciones V32 y retiros V33; no crear
-   movimientos operativos reales sólo para verificar.
+  en la lista las pruebas pendientes de cancelaciones V32 y retiros V33; no crear
+  movimientos operativos reales sólo para verificar.
+
+### Entregable final obligatorio — manual integral de usuario en PDF
+
+- Este pendiente se realizará únicamente cuando el propietario confirme que el sistema
+  está terminado. No generar anticipadamente el archivo ni sustituirlo por una explicación
+  breve en README.
+- Se deberá producir un **manual de usuario completo en PDF**, escrito con lenguaje muy
+  sencillo, directo e intuitivo, pensado para una persona sin conocimientos técnicos.
+- El manual explicará de forma exhaustiva el flujo integral del sistema y cada operación
+  disponible, indicando desde qué menú se inicia, requisitos previos, datos que deben
+  capturarse, significado de cada campo, botones que deben presionarse, resultado esperado,
+  validaciones, estados posteriores, errores comunes y cómo corregirlos.
+- Cada procedimiento será realmente paso a paso, numerado y verificable. No se omitirán
+  pasos por considerarlos evidentes ni se asumirirá que el lector conoce el sistema.
+- Se documentarán por separado los perfiles y permisos: administración, personal con
+  permisos limitados, maestros, tutores/familias y cualquier otro portal o rol que exista
+  al cierre. El manual explicará qué puede ver y hacer cada perfil.
+- Debe cubrir la secuencia recomendada de configuración inicial, operación cotidiana y
+  procesos relacionados entre módulos, además de consultas, filtros, exportaciones Excel,
+  documentos PDF, archivos, estados, aprobaciones, cancelaciones, reversas y auditoría.
+- Siempre que sea posible se incorporarán **capturas reales de las pantallas finales**,
+  señalando visualmente menús, pestañas, campos y botones relevantes. Las capturas deberán
+  incluir escritorio y, cuando aporte claridad, la experiencia móvil; nunca deberán mostrar
+  contraseñas, tokens, datos sensibles ni información personal real.
+- Antes de entregarlo se verificará que las rutas, nombres de módulos, permisos, textos,
+  imágenes y pasos coincidan con la versión final desplegada. El PDF tendrá índice,
+  capítulos por proceso, referencias cruzadas, glosario, solución de problemas frecuentes
+  y control de versión/fecha.
+- El documento deberá revisarse visualmente página por página para asegurar legibilidad,
+  imágenes nítidas, ausencia de recortes y navegación clara. La aceptación exige que una
+  persona nueva pueda completar cada tarea siguiendo únicamente el manual.
 6. Mantener el patrón completo: permisos sin autoasignación, alcance, filtros y
    paginación en PostgreSQL, exportación XLSX por bloques con los mismos filtros,
    formularios responsivos, temas y validación transaccional.
@@ -1355,3 +1386,60 @@ enumeradas de etapas anteriores.
 - El flujo respeta por separado `CUOTA_ALUMNO_ADMINISTRAR`, `CARGO_ADMINISTRAR` y
   `PAGO_REGISTRAR`, además del alcance institucional. No hubo migración: V51 sigue libre.
   Docker compiló 697 fuentes principales y 121 de prueba y ejecutó 422 pruebas sin fallos.
+
+### Vista previa obligatoria de recargos — 2026-10-01
+
+- **Generar recargos** ya no aplica cambios desde la primera pantalla. El administrador
+  selecciona institución, plantel opcional y fecha de corte y pulsa **Visualizar recargos**.
+- La misma pantalla presenta un resumen y una tabla paginada con alumno, matrícula,
+  plantel, concepto, vencimiento, días de atraso, política, periodos nuevos, saldo actual,
+  recargo y nuevo saldo. Sólo entonces aparece **Confirmar y generar recargos**.
+- La vista previa es de sólo lectura. La confirmación vuelve a calcular los datos vigentes
+  para evitar aplicar una simulación desactualizada y conserva las claves idempotentes para
+  impedir duplicados.
+- El cálculo de vista previa y el definitivo comparten la misma planificación. Los cargos
+  completamente pagados, cancelados, sin saldo, sin política automática o sin un periodo
+  nuevo no aparecen ni reciben recargo.
+- La pantalla reutiliza el diseño administrativo, tiene temas claro/oscuro y convierte la
+  tabla en tarjetas legibles en móvil. No requirió migración; V51 continúa disponible.
+  Docker compiló 699 fuentes principales y 122 de prueba, ejecutó 425 pruebas sin fallos y
+  el despliegue respondió `UP`. La revisión autenticada queda para el propietario porque la
+  sesión del navegador había caducado y no se consultó `.env`.
+
+### Vista previa de pagos automáticos y confirmaciones — 2026-10-01
+
+- **Pagos de alumnos → Generar automáticos** también usa un flujo obligatorio de dos
+  pasos. El primer formulario sólo ofrece **Visualizar cuotas por aplicar**; todavía no
+  modifica la cobranza.
+- La vista previa muestra, en una lista paginada, cada pago faltante por alumno, matrícula,
+  plantel, concepto, frecuencia, periodo, vencimiento e importe. El resumen indica cuotas
+  con pendientes, cantidad de pagos por generar e importe total programado.
+- Sólo después de revisar aparece **Confirmar y generar pagos faltantes**. Al confirmar se
+  recalculan cuotas y periodos para evitar datos obsoletos; las claves `AUTO` continúan
+  impidiendo duplicados ante ejecuciones repetidas o simultáneas.
+- La previsualización y la generación comparten la misma planificación, por lo que una
+  mensualidad ya existente no aparece. Ambos generadores usan ahora botones de confirmación
+  con diseño explícito, accesible, responsivo y compatible con tema oscuro.
+- Después de pulsar **Visualizar cuotas por aplicar** o **Visualizar recargos**, la pantalla
+  lleva automáticamente al usuario hasta el resultado y enfoca su título. Mientras se
+  prepara, el botón queda deshabilitado y muestra **Preparando vista…** para evitar dobles
+  envíos y dejar claro que la solicitud está en curso.
+- Se corrigieron los formularios finales de ambos generadores para usar `th:action`. Es
+  obligatorio conservarlo en operaciones `POST`: así Thymeleaf incorpora el token CSRF y
+  la confirmación no termina rechazada como un método HTTP no soportado.
+- No hubo migración; V51 permanece disponible. Docker compiló 701 fuentes principales y
+  122 de prueba, ejecutó 426 pruebas sin fallos y el despliegue respondió `UP`.
+
+### Reporte familiar con importes protegidos — 2026-10-02
+
+- **Portal familiar → Tus pagos → Reportar transferencia** dejó de usar el `datalist`
+  nativo para los cargos. La ayuda propia abre siempre los primeros diez cargos vigentes
+  al recibir foco y consulta desde tres caracteres, incluso después de una validación.
+- Cada cargo seleccionado carga su saldo pendiente completo. Tanto **Saldo a pagar** como
+  **Total a transferir** son de sólo lectura; al agregar varios hijos o cargos, el total se
+  suma automáticamente.
+- La protección no depende del navegador: antes de guardar, el servidor comprueba que los
+  cargos continúen vigentes, pertenezcan a la cuenta familiar, no estén repetidos y vuelve
+  a calcular cada saldo. Un importe alterado en la petición es reemplazado por el vigente.
+- No requiere migración. Se agregó una prueba de interfaz y las pruebas del servicio cubren
+  la normalización autoritativa de importes.

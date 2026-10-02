@@ -110,10 +110,31 @@ public class CargoAdminController {
         return "admin/cargo-generar";
     }
 
+    @GetMapping("/generar/vista-previa")
+    String vistaPreviaGeneracion(@Valid @ModelAttribute("form") GeneracionCargosForm form,
+                                 BindingResult errores,
+                                 @RequestParam(defaultValue = "0") int pagina,
+                                 @RequestParam(defaultValue = "25") int tamanio,
+                                 Model model) {
+        validarGeneracion(form, errores);
+        prepararGenerador(model, form);
+        if (!errores.hasErrors()) {
+            model.addAttribute("vistaPrevia", service.previsualizar(form.request(), pagina, tamanio));
+            model.addAttribute("tamanio", Math.min(Math.max(tamanio, 10), 100));
+        }
+        return "admin/cargo-generar";
+    }
+
     @PostMapping("/generar")
     String generar(@Valid @ModelAttribute("form") GeneracionCargosForm form,
-                   BindingResult errores, Model model, RedirectAttributes flash) {
+                   BindingResult errores,
+                   @RequestParam(defaultValue = "false") boolean confirmacion,
+                   Model model, RedirectAttributes flash) {
         validarGeneracion(form, errores);
+        if (!confirmacion) {
+            errores.reject("cargo.generacion.confirmacion",
+                    "Primero visualiza las cuotas por aplicar y confirma el resultado mostrado");
+        }
         if (errores.hasErrors()) {
             prepararGenerador(model, form);
             return "admin/cargo-generar";

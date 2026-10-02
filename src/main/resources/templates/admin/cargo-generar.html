@@ -1,39 +1,56 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title>Generar pagos de alumnos · Nexo Escolar</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script><script src="/js/generation-preview.js" defer></script>
 </head>
 <body class="form-page">
-<main class="form-shell finance-shell">
+<main class="form-shell finance-shell surcharge-preview-shell">
     <header class="form-top"><a href="/admin/catalogos/cargos">← Volver a pagos de alumnos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
-    <div class="finance-principle"><span>Proceso idempotente</span><strong>Puedes ejecutarlo nuevamente con seguridad</strong><p>El sistema revisa las cuotas automáticas por bloques y crea sólo los periodos faltantes. Una ejecución repetida o simultánea no duplica pagos por cobrar.</p></div>
+    <div class="finance-principle"><span>Proceso seguro en dos pasos</span><strong>Revisa antes de generar pagos programados</strong><p>Primero consulta las cuotas pendientes. Ningún pago por cobrar se crea hasta que confirmes el resultado.</p></div>
     <section class="form-card">
-        <div class="form-intro finance-intro"><span>Automatización de cobranza</span><h1>Generar pagos programados</h1><p>Selecciona el alcance y la fecha de corte. Cada importe por cobrar quedará asignado a la inscripción de un alumno.</p></div>
-        <form class="entity-form" th:object="${form}" method="post" th:action="@{/admin/cargos/generar}">
-            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo completar la generación</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
+        <div class="form-intro finance-intro"><span>1 · Preparar vista previa</span><h1>Generar pagos programados</h1><p>Selecciona alcance y fecha de corte para conocer exactamente qué pagos faltantes se crearán.</p></div>
+        <form class="entity-form" data-preview-form th:object="${form}" method="get" th:action="@{/admin/cargos/generar/vista-previa}">
+            <div class="form-error" role="alert" th:if="${errorOperacion != null or #fields.hasErrors('*')}"><strong>No se pudo preparar la vista previa</strong><p th:if="${errorOperacion}" th:text="${errorOperacion}"></p><p th:each="error:${#fields.errors('*')}" th:text="${error}"></p></div>
             <fieldset class="form-section"><legend>Alcance de generación</legend><div class="form-grid">
-                <label><span>Institución *</span><select id="institucion" th:field="*{institucionId}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><small th:errors="*{institucionId}"></small></label>
-                <label><span>Plantel <small>(opcional)</small></span><select id="plantel" th:field="*{plantelId}"><option value="">Todos los planteles autorizados</option><option th:each="item : ${planteles}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}" th:attr="data-institucion=${item.institucionId},data-activo=${item.activo}">Plantel</option></select><small th:errors="*{plantelId}"></small></label>
-                <label><span>Generar hasta *</span><input type="date" th:field="*{fechaCorte}"><small th:errors="*{fechaCorte}"></small><span class="field-help">Incluye meses cuya cuota esté vigente hasta esta fecha.</span></label>
-                <div class="policy-card wide"><span><strong>Qué se procesará</strong><small>Sólo cuotas activas con generación automática, concepto activo e inscripción vigente. Los pagos por cobrar registrados manualmente no se alteran.</small></span></div>
+                <label><span>Institución *</span><select id="institucion" th:field="*{institucionId}"><option value="">Selecciona una institución</option><option th:each="item:${instituciones}" th:value="${item.id}" th:text="${item.codigo+' · '+item.nombre}"></option></select><small th:errors="*{institucionId}"></small></label>
+                <label><span>Plantel <small>(opcional)</small></span><select id="plantel" th:field="*{plantelId}"><option value="">Todos los planteles autorizados</option><option th:each="item:${planteles}" th:value="${item.id}" th:text="${item.codigo+' · '+item.nombre}" th:attr="data-institucion=${item.institucionId},data-activo=${item.activo}"></option></select><small th:errors="*{plantelId}"></small></label>
+                <label><span>Generar hasta *</span><input type="date" th:field="*{fechaCorte}"><small th:errors="*{fechaCorte}"></small><span class="field-help">Incluye periodos cuya cuota esté vigente hasta esta fecha.</span></label>
+                <div class="policy-card wide"><span><strong>Qué se visualizará</strong><small>Sólo cuotas activas con generación automática, inscripción vigente y periodos que todavía no tengan un pago por cobrar.</small></span></div>
             </div></fieldset>
-            <footer class="form-actions"><a href="/admin/catalogos/cargos">Cancelar</a><button type="submit">Generar pagos faltantes</button></footer>
+            <div class="form-notice"><strong>Esta consulta no modifica información</strong><p>Podrás revisar alumno, concepto, periodo, vencimiento e importe antes de generar.</p></div>
+            <footer class="form-actions"><a href="/admin/catalogos/cargos">Cancelar</a><button type="submit">Visualizar cuotas por aplicar</button></footer>
+        </form>
+    </section>
+
+    <section id="vista-previa-cuotas" class="surcharge-preview-card generation-preview-target" data-generation-preview th:if="${vistaPrevia}" aria-labelledby="titulo-cuotas-previas">
+        <header class="surcharge-preview-header"><div><span>2 · Verificar resultado</span><h2 id="titulo-cuotas-previas">Cuotas que generarán pagos</h2><p th:if="${!vistaPrevia.pagina.empty}">Revisa cada periodo antes de confirmar la generación.</p><p th:if="${vistaPrevia.pagina.empty}">No existen pagos programados pendientes para este corte.</p></div><span class="surcharge-preview-badge" th:text="${vistaPrevia.pagosPorGenerar+' pagos por generar'}">0 pagos</span></header>
+        <div class="surcharge-summary charge-generation-summary" th:if="${!vistaPrevia.pagina.empty}">
+            <article><span>Cuotas con pendientes</span><strong th:text="${vistaPrevia.cuotasConPendientes}">0</strong></article>
+            <article class="accent"><span>Pagos por generar</span><strong th:text="${vistaPrevia.pagosPorGenerar}">0</strong></article>
+            <article class="total"><span>Importe programado</span><strong th:text="${@formatoMoneda.pesos(vistaPrevia.importeTotal)}">$0.00</strong></article>
+        </div>
+        <div class="surcharge-empty" th:if="${vistaPrevia.pagina.empty}"><span>✓</span><div><strong>Todo está al día para este corte</strong><p>Las cuotas aplicables ya tienen sus pagos generados o todavía no han iniciado.</p></div></div>
+        <div class="table-wrap surcharge-preview-table" th:if="${!vistaPrevia.pagina.empty}"><table><thead><tr><th>Alumno</th><th>Concepto</th><th>Frecuencia</th><th>Periodo</th><th>Vencimiento</th><th>Importe</th></tr></thead><tbody><tr th:each="fila:${vistaPrevia.pagina.content}">
+            <td data-label="Alumno"><strong th:text="${fila.alumnoNombre}">Alumno</strong><small th:text="${fila.alumnoMatricula+' · '+fila.plantelNombre}">Matrícula</small></td>
+            <td data-label="Concepto" th:text="${fila.concepto}">Concepto</td>
+            <td data-label="Frecuencia" th:text="${fila.frecuencia}">Mensual</td>
+            <td data-label="Periodo"><strong th:text="${fila.periodo}">Periodo</strong></td>
+            <td data-label="Vencimiento" th:text="${#temporals.format(fila.fechaVencimiento,'dd/MM/yyyy')}">Fecha</td>
+            <td data-label="Importe"><strong th:text="${@formatoMoneda.pesos(fila.importe)}">$0.00</strong><small th:text="${fila.moneda}">MXN</small></td>
+        </tr></tbody></table></div>
+        <footer class="pagination" th:if="${vistaPrevia.pagina.totalPages>1}"><p><strong th:text="${vistaPrevia.pagina.number*vistaPrevia.pagina.size+1}">1</strong>–<strong th:text="${vistaPrevia.pagina.number*vistaPrevia.pagina.size+vistaPrevia.pagina.numberOfElements}">25</strong> de <strong th:text="${vistaPrevia.pagina.totalElements}">100</strong></p><div>
+            <a th:classappend="${vistaPrevia.pagina.first}?' disabled'" th:href="@{/admin/cargos/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number-1})}">Anterior</a><span th:text="${vistaPrevia.pagina.number+1}">1</span><a th:classappend="${vistaPrevia.pagina.last}?' disabled'" th:href="@{/admin/cargos/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number+1})}">Siguiente</a>
+        </div></footer>
+        <form class="surcharge-confirm" th:if="${!vistaPrevia.pagina.empty}" method="post" th:action="@{/admin/cargos/generar}">
+            <input type="hidden" name="institucionId" th:value="${form.institucionId}"><input type="hidden" name="plantelId" th:value="${form.plantelId}"><input type="hidden" name="fechaCorte" th:value="${form.fechaCorte}"><input type="hidden" name="confirmacion" value="true">
+            <div><strong>Confirma únicamente si los periodos e importes son correctos</strong><p>El sistema recalculará los datos y creará únicamente los pagos que sigan faltando.</p></div><button class="generation-confirm-button" type="submit">Confirmar y generar pagos faltantes</button>
         </form>
     </section>
 </main>
 <script>
-(() => {
-    const institucion = document.querySelector('#institucion');
-    const plantel = document.querySelector('#plantel');
-    const opciones = [...plantel.options].slice(1);
-    const actualizar = () => {
-        opciones.forEach(o => { o.hidden = !institucion.value || o.dataset.institucion !== institucion.value || o.dataset.activo !== 'true'; });
-        if (plantel.selectedOptions[0]?.hidden) plantel.value = '';
-    };
-    institucion.addEventListener('change', actualizar); actualizar();
-})();
+(() => { const institucion=document.querySelector('#institucion'); const plantel=document.querySelector('#plantel'); const opciones=[...plantel.options].slice(1); const actualizar=()=>{opciones.forEach(o=>{o.hidden=!institucion.value||o.dataset.institucion!==institucion.value||o.dataset.activo!=='true';});if(plantel.selectedOptions[0]?.hidden)plantel.value='';}; institucion.addEventListener('change',actualizar); actualizar(); })();
 </script>
 </body>
 </html>

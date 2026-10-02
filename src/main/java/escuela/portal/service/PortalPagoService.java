@@ -21,6 +21,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
 
@@ -60,10 +61,32 @@ public class PortalPagoService {
     public PagoResponse reportar(UsuarioPrincipal p, PortalPagoForm form, List<MultipartFile> files) {
         validar(p); Tutor t=tutor(p); var i=instituciones.obtener(p.institucionId()); ZoneId z=ZoneId.of(i.zonaHoraria());
         if(form.getSolicitudes()==null||form.getSolicitudes().isEmpty())throw new ReglaNegocioException("Selecciona al menos un cargo para aplicar la transferencia");
-        var total=form.getSolicitudes().stream().map(PortalSolicitudPagoForm::getMontoSolicitado).reduce(java.math.BigDecimal.ZERO,java.math.BigDecimal::add);
-        if(form.getMonto()==null||total.compareTo(form.getMonto())!=0)throw new ReglaNegocioException("La distribución de cargos debe coincidir exactamente con el monto de la transferencia");
+        normalizarImportes(p, t, form);
         if(files==null||files.stream().noneMatch(f->f!=null&&!f.isEmpty()))throw new ReglaNegocioException("Adjunta el comprobante de la transferencia");
         return pagos.registrarDesdePortal(form.request(i.id(),t.getId(),i.monedaPredeterminada(),z),files,p);
+    }
+
+    private void normalizarImportes(UsuarioPrincipal p, Tutor tutor, PortalPagoForm form) {
+        Set<Long> seleccionados = new HashSet<>();
+        BigDecimal total = BigDecimal.ZERO;
+        for (PortalSolicitudPagoForm solicitud : form.getSolicitudes()) {
+            if (solicitud.getCargoId() == null) {
+                throw new ReglaNegocioException("Selecciona un cargo vigente de la lista");
+            }
+            if (!seleccionados.add(solicitud.getCargoId())) {
+                throw new ReglaNegocioException("Un cargo sólo puede seleccionarse una vez");
+            }
+            Cargo cargo = cargos.buscarVigenteParaPortal(solicitud.getCargoId(), p.institucionId(), tutor.getId())
+                    .orElseThrow(() -> new ReglaNegocioException(
+                            "Uno de los cargos ya no está vigente o no pertenece a tu cuenta familiar"));
+            BigDecimal pendiente = saldo(cargo);
+            if (pendiente.signum() <= 0) {
+                throw new ReglaNegocioException("Uno de los cargos seleccionados ya no tiene saldo pendiente");
+            }
+            solicitud.setMontoSolicitado(pendiente);
+            total = total.add(pendiente);
+        }
+        form.setMonto(total);
     }
     @Transactional(readOnly=true)
     public PagoResponse comprobante(UsuarioPrincipal p, Long pagoId) {

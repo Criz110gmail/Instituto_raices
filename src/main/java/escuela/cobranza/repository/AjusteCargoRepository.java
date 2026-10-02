@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 public interface AjusteCargoRepository extends JpaRepository<AjusteCargo, Long>, JpaSpecificationExecutor<AjusteCargo> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
@@ -23,6 +24,10 @@ public interface AjusteCargoRepository extends JpaRepository<AjusteCargo, Long>,
                    or a.reversaDe.politicaRecargo.id = :politicaId)
             """)
     BigDecimal totalRecargosAutomaticos(@Param("cargoId")Long cargoId,@Param("politicaId")Long politicaId);
+
+    @Query("select a.claveGeneracion from AjusteCargo a where a.cargo.id=:cargoId and a.politicaRecargo.id=:politicaId and a.claveGeneracion is not null")
+    List<String> clavesDeRecargosAutomaticos(@Param("cargoId")Long cargoId,
+                                              @Param("politicaId")Long politicaId);
 
     @Modifying
     @Query(value="""

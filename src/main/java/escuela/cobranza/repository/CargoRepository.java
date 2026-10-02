@@ -24,6 +24,9 @@ public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecific
 
     Optional<Cargo> findByClaveGeneracion(String claveGeneracion);
 
+    @Query("select c.claveGeneracion from Cargo c where c.cuotaAlumno.id=:cuotaId")
+    List<String> clavesGeneradasPorCuota(@Param("cuotaId") Long cuotaId);
+
     List<Cargo> findAllByInscripcionIdOrderByFechaVencimientoDescIdDesc(Long inscripcionId);
 
     @Query(value = """
@@ -61,6 +64,18 @@ public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecific
             """, nativeQuery = true)
     Slice<Cargo> buscarParaPortal(@Param("institucionId") Long institucionId,
                                   @Param("tutorId") Long tutorId, @Param("texto") String texto, Pageable limite);
+
+    @Query(value = """
+            SELECT DISTINCT c.* FROM cargo c JOIN inscripcion i ON i.id=c.inscripcion_id
+            JOIN alumno a ON a.id=i.alumno_id JOIN alumno_tutor v ON v.alumno_id=a.id
+            WHERE c.id=:cargoId AND a.institucion_id=:institucionId AND v.tutor_id=:tutorId
+              AND v.activo=true AND v.es_responsable_financiero=true AND v.puede_ver_finanzas=true
+              AND v.fecha_inicio<=CURRENT_DATE AND (v.fecha_fin IS NULL OR v.fecha_fin>=CURRENT_DATE)
+              AND c.estado_registro='EMITIDO' AND c.fecha_vencimiento>=CURRENT_DATE
+            """, nativeQuery = true)
+    Optional<Cargo> buscarVigenteParaPortal(@Param("cargoId") Long cargoId,
+                                            @Param("institucionId") Long institucionId,
+                                            @Param("tutorId") Long tutorId);
 
     @Query("""
             select c from Cargo c join c.conceptoCobro concepto join PoliticaRecargo p

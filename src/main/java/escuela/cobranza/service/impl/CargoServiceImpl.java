@@ -6,6 +6,8 @@ import escuela.cobranza.dto.request.CargoManualRequest;
 import escuela.cobranza.dto.request.GeneracionCargosRequest;
 import escuela.cobranza.dto.response.CargoResponse;
 import escuela.cobranza.dto.response.GeneracionCargosResponse;
+import escuela.cobranza.dto.response.VistaPreviaCargoAutomaticoFila;
+import escuela.cobranza.dto.response.VistaPreviaCargosAutomaticosResponse;
 import escuela.cobranza.entity.Cargo;
 import escuela.cobranza.entity.ConceptoCobro;
 import escuela.cobranza.entity.CuotaAlumno;
@@ -25,18 +27,26 @@ import escuela.inscripcion.repository.InscripcionRepository;
 import escuela.seguridad.service.UsuarioPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.RoundingMode;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.EnumSet;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static escuela.common.mapper.NormalizacionTexto.codigo;
 import static escuela.common.mapper.NormalizacionTexto.limpiar;
@@ -105,6 +115,43 @@ public class CargoServiceImpl implements CargoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public VistaPreviaCargosAutomaticosResponse previsualizar(GeneracionCargosRequest request,
+                                                               int numeroPagina, int tamanioPagina) {
+        int pagina = Math.max(numeroPagina, 0);
+        int tamanio = Math.min(Math.max(tamanioPagina, 10), 100);
+        long desde = (long) pagina * tamanio;
+        long cuotasConPendientes = 0;
+        long pagosPorGenerar = 0;
+        BigDecimal importeTotal = BigDecimal.ZERO;
+        List<VistaPreviaCargoAutomaticoFila> contenido = new ArrayList<>();
+        long ultimoId = 0L;
+        while (true) {
+            var bloque = cuotaRepository.buscarParaGeneracion(request.institucionId(),
+                    request.plantelId(), request.fechaCorte(), ultimoId,
+                    PageRequest.of(0, TAMANO_BLOQUE));
+            if (bloque.isEmpty()) break;
+            for (CuotaAlumno cuota : bloque.getContent()) {
+                ultimoId = cuota.getId();
+                PlanCuota plan = planificar(cuota, request.fechaCorte());
+                if (plan.pendientes().isEmpty()) continue;
+                cuotasConPendientes++;
+                for (PeriodoCargo periodo : plan.pendientes()) {
+                    if (pagosPorGenerar >= desde && contenido.size() < tamanio)
+                        contenido.add(fila(cuota, periodo));
+                    pagosPorGenerar++;
+                    importeTotal = importeTotal.add(cuota.getImporteBase());
+                }
+            }
+            if (bloque.getNumberOfElements() < TAMANO_BLOQUE) break;
+        }
+        return new VistaPreviaCargosAutomaticosResponse(
+                new PageImpl<>(contenido, PageRequest.of(pagina, tamanio), pagosPorGenerar),
+                cuotasConPendientes, pagosPorGenerar,
+                importeTotal.setScale(2, RoundingMode.HALF_UP));
+    }
+
+    @Override
     public CargoResponse generarCargoUnico(Long cuotaId) {
         CuotaAlumno cuota = cuotaRepository.findByIdForUpdate(cuotaId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("la cuota del alumno", cuotaId));
@@ -150,30 +197,58 @@ public class CargoServiceImpl implements CargoService {
     }
 
     private ResultadoGeneracion generarCuota(CuotaAlumno cuota, LocalDate fechaCorte) {
-        LocalDate fin = menor(fechaCorte, cuota.getFechaFin());
-        if (fin.isBefore(cuota.getFechaInicio())) return new ResultadoGeneracion(0, 0);
-        if (cuota.getFrecuencia() == FrecuenciaCuota.UNICA) {
-            return insertar(cuota, cuota.getFechaInicio(), cuota.getFechaFin(),
-                    cuota.getFechaVencimientoUnico(), "UNICA", cuota.getConceptoCobro().getNombre());
-        }
+        PlanCuota plan = planificar(cuota, fechaCorte);
         int generados = 0;
-        int existentes = 0;
-        YearMonth mes = YearMonth.from(cuota.getFechaInicio());
-        YearMonth ultimoMes = YearMonth.from(fin);
-        while (!mes.isAfter(ultimoMes)) {
-            LocalDate inicioPeriodo = mayor(mes.atDay(1), cuota.getFechaInicio());
-            LocalDate finPeriodo = menor(mes.atEndOfMonth(), cuota.getFechaFin());
-            LocalDate vencimiento = mes.atDay(Math.min(cuota.getDiaVencimiento(), mes.lengthOfMonth()));
-            vencimiento = mayor(inicioPeriodo, menor(finPeriodo, vencimiento));
-            String etiqueta = mes.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "MX"))
-                    + " " + mes.getYear();
-            ResultadoGeneracion resultado = insertar(cuota, inicioPeriodo, finPeriodo,
-                    vencimiento, mes.toString(), cuota.getConceptoCobro().getNombre() + " · " + etiqueta);
+        int existentes = plan.existentes();
+        for (PeriodoCargo periodo : plan.pendientes()) {
+            ResultadoGeneracion resultado = insertar(cuota, periodo.inicio(), periodo.fin(),
+                    periodo.vencimiento(), periodo.clavePeriodo(), periodo.descripcion());
             generados += resultado.generados();
             existentes += resultado.existentes();
-            mes = mes.plusMonths(1);
         }
         return new ResultadoGeneracion(generados, existentes);
+    }
+
+    private PlanCuota planificar(CuotaAlumno cuota, LocalDate fechaCorte) {
+        LocalDate fin = menor(fechaCorte, cuota.getFechaFin());
+        if (fin.isBefore(cuota.getFechaInicio())) return new PlanCuota(List.of(), 0);
+        List<PeriodoCargo> candidatos = new ArrayList<>();
+        if (cuota.getFrecuencia() == FrecuenciaCuota.UNICA) {
+            candidatos.add(new PeriodoCargo(cuota.getFechaInicio(), cuota.getFechaFin(),
+                    cuota.getFechaVencimientoUnico(), "UNICA", cuota.getConceptoCobro().getNombre()));
+        } else {
+            YearMonth mes = YearMonth.from(cuota.getFechaInicio());
+            YearMonth ultimoMes = YearMonth.from(fin);
+            while (!mes.isAfter(ultimoMes)) {
+                LocalDate inicioPeriodo = mayor(mes.atDay(1), cuota.getFechaInicio());
+                LocalDate finPeriodo = menor(mes.atEndOfMonth(), cuota.getFechaFin());
+                LocalDate vencimiento = mes.atDay(Math.min(cuota.getDiaVencimiento(), mes.lengthOfMonth()));
+                vencimiento = mayor(inicioPeriodo, menor(finPeriodo, vencimiento));
+                String etiqueta = mes.getMonth().getDisplayName(TextStyle.FULL,
+                        new Locale("es", "MX")) + " " + mes.getYear();
+                candidatos.add(new PeriodoCargo(inicioPeriodo, finPeriodo, vencimiento,
+                        mes.toString(), cuota.getConceptoCobro().getNombre() + " · " + etiqueta));
+                mes = mes.plusMonths(1);
+            }
+        }
+        Set<String> existentes = new HashSet<>(repository.clavesGeneradasPorCuota(cuota.getId()));
+        List<PeriodoCargo> pendientes = candidatos.stream()
+                .filter(periodo -> !existentes.contains(clave(cuota, periodo.clavePeriodo())))
+                .toList();
+        return new PlanCuota(pendientes, candidatos.size() - pendientes.size());
+    }
+
+    private VistaPreviaCargoAutomaticoFila fila(CuotaAlumno cuota, PeriodoCargo periodo) {
+        var alumno = cuota.getInscripcion().getAlumno();
+        String nombre = Stream.of(alumno.getNombres(), alumno.getPrimerApellido(),
+                        alumno.getSegundoApellido()).filter(v -> v != null && !v.isBlank())
+                .collect(Collectors.joining(" "));
+        String frecuencia = cuota.getFrecuencia() == FrecuenciaCuota.UNICA
+                ? "Cobro único" : "Mensual";
+        return new VistaPreviaCargoAutomaticoFila(cuota.getId(), alumno.getMatricula(), nombre,
+                cuota.getInscripcion().getPlantel().getNombre(), cuota.getConceptoCobro().getNombre(),
+                frecuencia, periodo.descripcion(), periodo.vencimiento(),
+                cuota.getImporteBase().setScale(2, RoundingMode.HALF_UP), cuota.getMoneda());
     }
 
     private ResultadoGeneracion insertar(CuotaAlumno cuota, LocalDate inicio, LocalDate fin,
@@ -256,4 +331,9 @@ public class CargoServiceImpl implements CargoService {
 
     private record ResultadoGeneracion(int generados, int existentes) {
     }
+
+    private record PeriodoCargo(LocalDate inicio, LocalDate fin, LocalDate vencimiento,
+                                String clavePeriodo, String descripcion) { }
+
+    private record PlanCuota(List<PeriodoCargo> pendientes, int existentes) { }
 }

@@ -87,19 +87,25 @@ class PortalPagoServiceTest {
     }
 
     @Test
-    void conservaTresDistribucionesAlConstruirLaSolicitud() {
+    void usaElSaldoVigenteAunqueElNavegadorEnvieImportesAlterados() {
         PortalPagoForm form = new PortalPagoForm();
         form.setPlantelRegistroId(2L);
         form.setFechaPago(LocalDateTime.now().minusMinutes(5));
-        form.setMonto(new BigDecimal("900.00"));
+        form.setMonto(new BigDecimal("3.00"));
         form.setCuentaDeclaradaId(8L);
         form.setReferencia("RASTREO-123");
-        form.setSolicitudes(List.of(solicitud(10L, "200.00"), solicitud(11L, "300.00"),
-                solicitud(12L, "400.00")));
+        form.setSolicitudes(List.of(solicitud(10L, "1.00"), solicitud(11L, "1.00"),
+                solicitud(12L, "1.00")));
         MockMultipartFile comprobante = new MockMultipartFile("comprobantes", "pago.pdf",
                 "application/pdf", "%PDF-1.4".getBytes());
         when(pagos.registrarDesdePortal(any(), anyList(), eq(principal)))
                 .thenReturn(mock(PagoResponse.class));
+        when(cargos.buscarVigenteParaPortal(10L, 1L, 3L)).thenReturn(Optional.of(
+                cargo(10L, 20L, "A-020", "Ana", "Colegiatura", "Septiembre", "200.00")));
+        when(cargos.buscarVigenteParaPortal(11L, 1L, 3L)).thenReturn(Optional.of(
+                cargo(11L, 20L, "A-020", "Ana", "Colegiatura", "Octubre", "300.00")));
+        when(cargos.buscarVigenteParaPortal(12L, 1L, 3L)).thenReturn(Optional.of(
+                cargo(12L, 20L, "A-020", "Ana", "Colegiatura", "Noviembre", "400.00")));
 
         service.reportar(principal, form, List.of(comprobante));
 
@@ -110,18 +116,20 @@ class PortalPagoServiceTest {
         assertThat(captor.getValue().solicitudes()).extracting(s -> s.montoSolicitado())
                 .containsExactly(new BigDecimal("200.00"), new BigDecimal("300.00"),
                         new BigDecimal("400.00"));
+        assertThat(captor.getValue().monto()).isEqualByComparingTo("900.00");
     }
 
     @Test
-    void noEnviaUnaDistribucionQueNoCoincideConLaTransferencia() {
+    void noEnviaUnCargoQueYaNoEstaVigenteOAutorizado() {
         PortalPagoForm form = new PortalPagoForm();
         form.setMonto(new BigDecimal("500.00"));
-        form.setSolicitudes(List.of(solicitud(10L, "400.00")));
+        form.setSolicitudes(List.of(solicitud(10L, "500.00")));
+        when(cargos.buscarVigenteParaPortal(10L, 1L, 3L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.reportar(principal, form,
                 List.of(new MockMultipartFile("comprobantes", "pago.pdf",
                         "application/pdf", "%PDF-1.4".getBytes()))))
-                .hasMessageContaining("debe coincidir exactamente");
+                .hasMessageContaining("ya no está vigente");
         verifyNoInteractions(pagos);
     }
 
@@ -174,14 +182,20 @@ class PortalPagoServiceTest {
 
     private Cargo cargo(Long id, Long alumnoId, String matricula, String nombre,
                         String conceptoNombre, String descripcion) {
+        return cargo(id, alumnoId, matricula, nombre, conceptoNombre, descripcion, "500.00");
+    }
+
+    private Cargo cargo(Long id, Long alumnoId, String matricula, String nombre,
+                        String conceptoNombre, String descripcion, String importe) {
+        Institucion institucion = new Institucion(); institucion.setId(1L);
         Alumno alumno = new Alumno(); alumno.setId(alumnoId); alumno.setMatricula(matricula);
-        alumno.setNombres(nombre); alumno.setPrimerApellido("López");
+        alumno.setNombres(nombre); alumno.setPrimerApellido("López"); alumno.setInstitucion(institucion);
         Inscripcion inscripcion = new Inscripcion(); inscripcion.setAlumno(alumno);
         ConceptoCobro concepto = new ConceptoCobro(); concepto.setNombre(conceptoNombre);
         Cargo cargo = new Cargo(); cargo.setId(id); cargo.setInscripcion(inscripcion);
         cargo.setConceptoCobro(concepto); cargo.setDescripcion(descripcion);
         cargo.setFechaVencimiento(LocalDate.of(2026, 10, 10));
-        cargo.setImporteOriginal(new BigDecimal("500.00")); cargo.setMoneda("MXN");
+        cargo.setImporteOriginal(new BigDecimal(importe)); cargo.setMoneda("MXN");
         return cargo;
     }
 }
