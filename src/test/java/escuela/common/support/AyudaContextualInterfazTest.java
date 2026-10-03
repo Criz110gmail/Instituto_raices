@@ -59,6 +59,16 @@ class AyudaContextualInterfazTest {
     }
 
     @Test
+    void politicaRecargoDistingueLaAyudaDeLosMensajesDeError() throws IOException {
+        String formulario = leer(Path.of("src/main/resources/templates/admin/politica-recargo-form.html"));
+        String estilos = leer(Path.of("src/main/resources/static/css/forms.css"));
+
+        assertThat(formulario).contains(
+                "<small class=\"field-help\">El cargo empieza a generar después del vencimiento más estos días.</small>");
+        assertThat(estilos).contains(".form-grid small.field-help { margin: 5px 0 0; color: var(--muted);");
+    }
+
+    @Test
     void autocompletadosConservanSuDisenoDentroDeFormulariosEspecializados() throws IOException {
         String estilos = leer(Path.of("src/main/resources/static/css/forms.css"));
 

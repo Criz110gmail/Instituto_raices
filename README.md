@@ -578,6 +578,11 @@ escritorio y móvil, con tema claro y oscuro; una función operativa no se consi
 si su presentación rompe este patrón. Calendario escolar tiene pendiente una homologación
 visual de su listado, filtros y formulario.
 
+Las fechas visibles para el usuario, incluidas las que forman parte de mensajes de
+validación, se presentan como `dd/MM/yyyy`. Los valores técnicos de controles HTML,
+persistencia e integraciones pueden conservar ISO `yyyy-MM-dd`, pero ese formato no debe
+exponerse como texto de interfaz.
+
 ### V41 · Asistencia diaria
 
 El módulo **Asistencia** permite seleccionar un grupo y una fecha para registrar en una

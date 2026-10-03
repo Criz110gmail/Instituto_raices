@@ -2438,3 +2438,16 @@ historial paginado.
   producción y 124 de prueba y ejecutó 445 pruebas sin fallos. El cambio no agregó una
   migración. La imagen se desplegó, Flyway actualizó esta base desde V40 hasta V53 y Spring
   Boot inició en el puerto 8080; la siguiente migración disponible continúa siendo V54.
+
+## Correcciones de presentación en recargos y becas (2026-10-02)
+
+- La leyenda de **Días de gracia** se separó visualmente de los errores mediante
+  `field-help`; conserva un tono neutro compatible con tema claro y oscuro.
+- `BecaAlumnoServiceImpl` usa un `DateTimeFormatter` explícito `dd/MM/yyyy` al informar el
+  rango permitido por la inscripción. La prueba reproduce el caso del 29/09/2026 al
+  15/06/2027 y evita regresar accidentalmente al formato ISO.
+- Se establece como contrato de interfaz que toda fecha visible para personas use
+  `dd/MM/yyyy`; `yyyy-MM-dd` se reserva para la capa técnica.
+- No hubo migración. `docker compose build app` compiló 702 fuentes principales y 125 de
+  prueba y ejecutó 447 pruebas sin fallos. La imagen se desplegó y salud respondió `UP`;
+  la siguiente migración disponible es V54.

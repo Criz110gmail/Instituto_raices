@@ -796,6 +796,7 @@
 .finance-principle strong { margin-top: 5px; color: var(--ink); font-size: 1rem; }
 .finance-principle p { max-width: 800px; margin: 7px 0 0; color: #52756e; font-size: .8rem; line-height: 1.55; }
 .policy-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin-top: 16px; }
+.form-grid small.field-help { margin: 5px 0 0; color: var(--muted); font-size: .72rem; line-height: 1.45; }
 .policy-card { display: flex !important; flex-direction: row !important; align-items: flex-start; gap: 11px; padding: 15px; border: 1px solid #d7e3ed; border-radius: 13px; background: #f8fbfe; cursor: pointer; }
 .policy-card:has(input:checked) { border-color: #35b6a6; background: #27b7a80d; box-shadow: inset 3px 0 #25aa9b; }
 .policy-card input { width: auto !important; margin-top: 3px; accent-color: #159c8d; }

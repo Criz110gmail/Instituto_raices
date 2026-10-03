@@ -17,12 +17,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.RoundingMode;
+import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
 import static escuela.common.mapper.NormalizacionTexto.codigo;
 import static escuela.common.service.ValidacionVersion.verificar;
 
 @Service @RequiredArgsConstructor @Transactional
 public class BecaAlumnoServiceImpl implements BecaAlumnoService {
+    private static final DateTimeFormatter FECHA_MENSAJE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final EnumSet<EstadoInscripcion> VIGENTES=EnumSet.of(EstadoInscripcion.PREINSCRITA,EstadoInscripcion.ACTIVA);
     private final BecaAlumnoRepository repository; private final InscripcionRepository inscripcionRepository;
     private final TipoBecaRepository tipoRepository; private final ConceptoCobroRepository conceptoRepository;
@@ -44,7 +46,7 @@ public class BecaAlumnoServiceImpl implements BecaAlumnoService {
         if(r.estado()==EstadoBeca.ACTIVA&&!c.isPermiteBeca()) throw new ReglaNegocioException("El concepto seleccionado no permite becas");
         if(r.fechaFin().isBefore(r.fechaInicio())) throw new ReglaNegocioException("El fin de la beca no puede ser anterior al inicio");
         var limiteFin=i.getFechaFin()==null?i.getCicloEscolar().getFechaFin():i.getFechaFin().isBefore(i.getCicloEscolar().getFechaFin())?i.getFechaFin():i.getCicloEscolar().getFechaFin();
-        if(r.fechaInicio().isBefore(i.getFechaInicio())||r.fechaFin().isAfter(limiteFin)) throw new ReglaNegocioException("La beca debe quedar dentro de la inscripción: "+i.getFechaInicio()+" a "+limiteFin);
+        if(r.fechaInicio().isBefore(i.getFechaInicio())||r.fechaFin().isAfter(limiteFin)) throw new ReglaNegocioException("La beca debe quedar dentro de la inscripción: "+FECHA_MENSAJE.format(i.getFechaInicio())+" a "+FECHA_MENSAJE.format(limiteFin));
         if(r.modalidad()==ModalidadBeca.PORCENTAJE){if(r.porcentaje()==null||r.porcentaje().signum()<=0||r.porcentaje().compareTo(new java.math.BigDecimal("100"))>0||r.porcentaje().scale()>4||r.montoFijo()!=null) throw new ReglaNegocioException("La beca porcentual requiere un porcentaje mayor a 0 y máximo 100");}
         else {if(r.montoFijo()==null||r.montoFijo().signum()<=0||r.montoFijo().scale()>2||r.porcentaje()!=null) throw new ReglaNegocioException("La beca de monto fijo requiere un importe positivo con máximo dos decimales"); if(!codigo(r.moneda()).equals(i.getAlumno().getInstitucion().getMonedaPredeterminada())) throw new ReglaNegocioException("La moneda debe coincidir con la moneda de la institución");}
         if(r.estado()==EstadoBeca.ACTIVA&&!repository.buscarActivasSuperpuestas(i.getId(),c.getId(),id,r.fechaInicio(),r.fechaFin()).isEmpty()) throw new ReglaNegocioException("Ya existe una beca activa para ese alumno, concepto y periodo");}

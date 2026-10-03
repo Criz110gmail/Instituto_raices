@@ -1556,3 +1556,16 @@ enumeradas de etapas anteriores.
   pruebas sin fallos. La imagen se desplegó; en esta base Flyway aplicó las migraciones
   pendientes V41–V53 y Spring Boot inició correctamente. La siguiente migración disponible
   continúa siendo V54.
+
+### Claridad visual de recargos y fechas de becas — 2026-10-02
+
+- La explicación de **Días de gracia** en políticas de recargo ahora usa la clase semántica
+  `field-help` y color neutro. El rojo queda reservado para errores de validación.
+- La validación del periodo de una beca ya no expone fechas ISO. El rango de inscripción se
+  presenta como `dd/MM/yyyy`, por ejemplo `29/09/2026 a 15/06/2027`.
+- Regla permanente: toda fecha visible para el usuario —incluidos mensajes de negocio— debe
+  usar `dd/MM/yyyy`. ISO `yyyy-MM-dd` queda limitado a controles HTML, persistencia e
+  integraciones técnicas.
+- No hubo migración. Docker compiló 702 fuentes principales y 125 de prueba y aprobó 447
+  pruebas sin fallos. La imagen se desplegó y `/actuator/health` respondió `UP`. La
+  siguiente migración disponible continúa siendo V54.
