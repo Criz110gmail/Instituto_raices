@@ -10,10 +10,13 @@
     <header class="form-top"><a href="/admin/catalogos/tutores">← Volver a tutores</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <section class="form-card">
         <div th:unless="${edicion}" class="form-intro"><span>Nuevo responsable</span><h1>Registrar tutor</h1><p>Registra la identidad y los medios de contacto. Los alumnos y permisos concretos se asignarán en el siguiente módulo.</p></div>
-        <nav th:if="${edicion}" class="student-tablist tutor-record-tabs" role="tablist" aria-label="Secciones del expediente del tutor" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'ficha' : pestanaActiva}">
-            <button type="button" role="tab" id="tab-tutor-ficha" aria-controls="datos-tutor" data-student-tab="ficha" data-tab-hash="#datos-tutor"><span aria-hidden="true">01</span><strong>Ficha del tutor</strong><small>Datos personales</small></button>
-            <button type="button" role="tab" id="tab-tutor-identificacion" aria-controls="identificacion-tutor" data-student-tab="identificacion" data-tab-hash="#identificacion-tutor"><span aria-hidden="true">02</span><strong>Identificación oficial</strong><small>Documento e historial</small></button>
-            <button type="button" role="tab" id="tab-tutor-acceso" aria-controls="portal-familias" data-student-tab="acceso" data-tab-hash="#portal-familias"><span aria-hidden="true">03</span><strong>Portal de familias</strong><small>Cuenta y seguridad</small></button>
+        <nav th:if="${edicion}" class="student-tablist tutor-record-tabs" role="tablist" aria-label="Secciones del expediente del tutor" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'identificacion' : pestanaActiva}">
+            <button type="button" role="tab" id="tab-tutor-identificacion" aria-controls="identificacion-tutor" data-student-tab="identificacion" data-tab-hash="#identificacion-tutor"><span aria-hidden="true">01</span><strong>Identificación oficial</strong><small>Documento e historial</small></button>
+            <button type="button" role="tab" id="tab-tutor-ficha" aria-controls="ficha-tutor" data-student-tab="ficha" data-tab-hash="#ficha-tutor"><span aria-hidden="true">02</span><strong>Ficha del tutor</strong><small>Resumen del expediente</small></button>
+            <button type="button" role="tab" id="tab-tutor-informacion" aria-controls="informacion-tutor" data-student-tab="informacion" data-tab-hash="#informacion-tutor"><span aria-hidden="true">03</span><strong>Información del tutor</strong><small>Identidad y datos personales</small></button>
+            <button type="button" role="tab" id="tab-tutor-contacto" aria-controls="contacto-tutor" data-student-tab="contacto" data-tab-hash="#contacto-tutor"><span aria-hidden="true">04</span><strong>Contacto y domicilio</strong><small>Comunicación y ubicación</small></button>
+            <button type="button" role="tab" id="tab-tutor-laboral" aria-controls="laboral-tutor" data-student-tab="laboral" data-tab-hash="#laboral-tutor"><span aria-hidden="true">05</span><strong>Información laboral</strong><small>Trabajo y estado</small></button>
+            <button type="button" role="tab" id="tab-tutor-acceso" aria-controls="portal-familias" data-student-tab="acceso" data-tab-hash="#portal-familias"><span aria-hidden="true">06</span><strong>Portal de familias</strong><small>Cuenta y seguridad</small></button>
         </nav>
         <section th:if="${edicion}" id="identificacion-tutor" class="student-profile tutor-profile student-tab-panel" data-student-panel="identificacion" role="tabpanel" aria-labelledby="tab-tutor-identificacion perfil-tutor-titulo">
             <div class="profile-photo-column tutor-document-column">
@@ -36,6 +39,7 @@
                     <div><dt>Correo</dt><dd th:text="${form.email == null or form.email.isBlank() ? 'No registrado' : form.email}">No registrado</dd></div>
                     <div><dt>Ocupación</dt><dd th:text="${form.ocupacion == null or form.ocupacion.isBlank() ? 'No registrada' : form.ocupacion}">No registrada</dd></div>
                 </dl>
+                <div class="student-report-actions"><a target="_blank" rel="noopener" th:href="@{/admin/tutores/{id}/ficha.pdf(id=${id})}"><span aria-hidden="true">PDF</span><strong>Exportar ficha del tutor</strong><small>Abrir reporte privado para imprimir</small></a></div>
                 <div class="profile-photo-tools tutor-document-tools" aria-labelledby="identificacion-titulo">
                     <div><strong id="identificacion-titulo" th:text="${identificacionActual == null ? 'Agregar identificación oficial' : 'Identificación oficial vigente'}">Identificación oficial</strong><span>INE, licencia, pasaporte u otra identificación. PDF, JPG o PNG, máximo 10 MB. Es opcional y su historial permanece privado.</span></div>
                     <div class="form-error" role="alert" th:if="${errorIdentificacion}"><strong>No se pudo actualizar la identificación</strong><p th:text="${errorIdentificacion}">Revisa el archivo.</p></div>
@@ -52,7 +56,22 @@
                         <div class="receipt-list identification-history-list"><a th:each="documento : ${historialIdentificaciones}" target="_blank" rel="noopener" th:href="@{/admin/tutores/{tutorId}/identificaciones/{identificacionId}(tutorId=${id},identificacionId=${documento.id})}"><span>↗</span><div><strong th:text="${documento.tipoEtiqueta}">Pasaporte</strong><small th:text="${documento.nombreOriginal}">archivo.pdf</small></div></a></div>
                     </details>
                 </div>
-                <a class="profile-edit-link" href="#datos-tutor" data-open-student-tab="ficha">Editar información completa →</a>
+                <a class="profile-edit-link" href="#informacion-tutor" data-open-student-tab="informacion">Editar información completa →</a>
+            </div>
+        </section>
+        <section th:if="${edicion}" id="ficha-tutor" class="student-profile tutor-summary-profile student-tab-panel" data-student-panel="ficha" role="tabpanel" aria-labelledby="tab-tutor-ficha ficha-tutor-titulo">
+            <div class="tutor-summary-mark" aria-hidden="true">TU</div>
+            <div class="profile-summary">
+                <div class="profile-heading"><div><span class="profile-eyebrow">Ficha del tutor</span><h1 id="ficha-tutor-titulo" th:text="${form.nombres + ' ' + form.primerApellido + (form.segundoApellido == null or form.segundoApellido.isBlank() ? '' : ' ' + form.segundoApellido)}">Nombre del tutor</h1><p><strong th:text="${institucionSeleccionada}">Institución</strong><span aria-hidden="true">·</span><span th:text="${cuentaPortal == null ? 'Sin acceso al portal' : cuentaPortal.username}">Usuario</span></p></div><span class="profile-status" th:classappend="${form.activo ? ' active' : ' inactive'}" th:text="${form.activo ? 'Activo' : 'Inactivo'}">Activo</span></div>
+                <dl class="profile-facts">
+                    <div><dt>Identificación vigente</dt><dd th:text="${identificacionActual == null ? 'No registrada' : identificacionActual.tipoEtiqueta}">No registrada</dd></div>
+                    <div><dt>Fecha de nacimiento</dt><dd th:text="${form.fechaNacimiento == null ? 'No registrada' : #temporals.format(form.fechaNacimiento, 'dd/MM/yyyy')}">No registrada</dd></div>
+                    <div><dt>Teléfono principal</dt><dd th:text="${form.telefonoPrincipal}">Sin teléfono</dd></div>
+                    <div><dt>Correo</dt><dd th:text="${form.email == null or form.email.isBlank() ? 'No registrado' : form.email}">No registrado</dd></div>
+                    <div><dt>Ocupación</dt><dd th:text="${form.ocupacion == null or form.ocupacion.isBlank() ? 'No registrada' : form.ocupacion}">No registrada</dd></div>
+                    <div><dt>Portal de familias</dt><dd th:text="${cuentaPortal == null ? 'Sin cuenta' : cuentaPortal.estado}">Sin cuenta</dd></div>
+                </dl>
+                <a class="profile-edit-link" href="#informacion-tutor" data-open-student-tab="informacion">Editar información del tutor →</a>
             </div>
         </section>
         <section th:if="${edicion}" id="portal-familias" class="portal-access-card tutor-access-card student-tab-panel" data-student-panel="acceso" role="tabpanel" aria-labelledby="tab-tutor-acceso portal-access-title">
@@ -78,40 +97,51 @@
                 </div>
             </div>
         </section>
-        <form id="datos-tutor" class="entity-form student-tab-panel" data-student-panel="ficha" th:object="${form}" method="post" th:action="${edicion ? '/admin/tutores/' + id : '/admin/tutores'}" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-tutor-ficha' : null}">
+        <form id="datos-tutor" class="entity-form tutor-edit-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/tutores/' + id : '/admin/tutores'}">
             <input type="hidden" th:field="*{version}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div>
-            <fieldset class="form-section"><legend>Identidad</legend><div class="form-grid">
-                <label class="wide"><span>Institución *</span><select id="institucion" th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
-            </div></fieldset>
-            <fieldset class="form-section"><legend>Datos personales</legend><div class="form-grid">
-                <label class="wide"><span>Nombre(s) *</span><input th:field="*{nombres}" maxlength="150" autocomplete="given-name"><small th:errors="*{nombres}"></small></label>
-                <label><span>Primer apellido *</span><input th:field="*{primerApellido}" maxlength="100" autocomplete="family-name"><small th:errors="*{primerApellido}"></small></label>
-                <label><span>Segundo apellido</span><input th:field="*{segundoApellido}" maxlength="100"><small th:errors="*{segundoApellido}"></small></label>
-                <label><span>Fecha de nacimiento</span><input type="date" th:field="*{fechaNacimiento}"><small th:errors="*{fechaNacimiento}"></small></label>
-                <label><span>Correo</span><input type="email" th:field="*{email}" maxlength="254" autocomplete="email"><small th:errors="*{email}"></small></label>
-                <label><span>Teléfono principal *</span><input type="tel" th:field="*{telefonoPrincipal}" maxlength="30" autocomplete="tel"><small th:errors="*{telefonoPrincipal}"></small></label>
-                <label><span>Teléfono secundario</span><input type="tel" th:field="*{telefonoSecundario}" maxlength="30"><small th:errors="*{telefonoSecundario}"></small></label>
-            </div></fieldset>
-            <fieldset class="form-section"><legend>Domicilio</legend><div class="form-grid">
-                <label class="wide"><span>Calle</span><input th:field="*{calle}" maxlength="150" autocomplete="address-line1"><small th:errors="*{calle}"></small></label>
-                <label><span>Número exterior</span><input th:field="*{numeroExterior}" maxlength="30"><small th:errors="*{numeroExterior}"></small></label>
-                <label><span>Número interior</span><input th:field="*{numeroInterior}" maxlength="30"><small th:errors="*{numeroInterior}"></small></label>
-                <label><span>Colonia</span><input th:field="*{colonia}" maxlength="120"><small th:errors="*{colonia}"></small></label>
-                <label><span>Ciudad</span><input th:field="*{ciudad}" maxlength="100" autocomplete="address-level2"><small th:errors="*{ciudad}"></small></label>
-                <label><span>Estado</span><input th:field="*{estado}" maxlength="100" autocomplete="address-level1"><small th:errors="*{estado}"></small></label>
-                <label><span>Código postal</span><input th:field="*{codigoPostal}" maxlength="15" autocomplete="postal-code"><small th:errors="*{codigoPostal}"></small></label>
-                <label><span>País</span><input th:field="*{pais}" maxlength="2" autocapitalize="characters" placeholder="MX"><small th:errors="*{pais}"></small></label>
-            </div></fieldset>
-            <fieldset class="form-section"><legend>Información laboral</legend><div class="form-grid">
-                <label><span>Ocupación</span><input th:field="*{ocupacion}" maxlength="120"><small th:errors="*{ocupacion}"></small></label>
-                <label><span>Lugar de trabajo</span><input th:field="*{lugarTrabajo}" maxlength="180"><small th:errors="*{lugarTrabajo}"></small></label>
-                <label><span>Teléfono de trabajo</span><input type="tel" th:field="*{telefonoTrabajo}" maxlength="30"><small th:errors="*{telefonoTrabajo}"></small></label>
-                <label class="switch-row"><input type="checkbox" th:field="*{activo}"><span>Tutor activo</span></label>
-            </div></fieldset>
-            <footer class="form-actions"><a href="/admin/catalogos/tutores">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Registrar tutor'}">Guardar</button></footer>
+            <section id="informacion-tutor" class="student-edit-panel tutor-edit-panel student-tab-panel" data-student-panel="informacion" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-tutor-informacion' : null}">
+                <div class="student-section-intro"><span>Información del tutor</span><h2>Identidad y datos personales</h2><p>Datos que permiten reconocer al responsable dentro de la institución.</p></div>
+                <fieldset class="form-section"><legend>Identidad</legend><div class="form-grid"><label class="wide"><span>Institución *</span><select id="institucion" th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label></div></fieldset>
+                <fieldset class="form-section"><legend>Datos personales</legend><div class="form-grid">
+                    <label class="wide"><span>Nombre(s) *</span><input th:field="*{nombres}" maxlength="150" autocomplete="given-name"><small th:errors="*{nombres}"></small></label>
+                    <label><span>Primer apellido *</span><input th:field="*{primerApellido}" maxlength="100" autocomplete="family-name"><small th:errors="*{primerApellido}"></small></label>
+                    <label><span>Segundo apellido</span><input th:field="*{segundoApellido}" maxlength="100"><small th:errors="*{segundoApellido}"></small></label>
+                    <label><span>Fecha de nacimiento</span><input type="date" th:field="*{fechaNacimiento}"><small th:errors="*{fechaNacimiento}"></small></label>
+                </div></fieldset>
+                <footer th:if="${edicion}" class="form-actions"><a href="/admin/catalogos/tutores">Cancelar</a><button type="submit">Guardar información</button></footer>
+            </section>
+            <section id="contacto-tutor" class="student-edit-panel tutor-edit-panel student-tab-panel" data-student-panel="contacto" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-tutor-contacto' : null}">
+                <div class="student-section-intro"><span>Contacto y domicilio</span><h2>Comunicación y ubicación</h2><p>Medios de contacto y dirección principal del tutor.</p></div>
+                <fieldset class="form-section"><legend>Contacto</legend><div class="form-grid">
+                    <label><span>Correo</span><input type="email" th:field="*{email}" maxlength="254" autocomplete="email"><small th:errors="*{email}"></small></label>
+                    <label><span>Teléfono principal *</span><input type="tel" th:field="*{telefonoPrincipal}" maxlength="30" autocomplete="tel"><small th:errors="*{telefonoPrincipal}"></small></label>
+                    <label><span>Teléfono secundario</span><input type="tel" th:field="*{telefonoSecundario}" maxlength="30"><small th:errors="*{telefonoSecundario}"></small></label>
+                </div></fieldset>
+                <fieldset class="form-section"><legend>Domicilio</legend><div class="form-grid">
+                    <label class="wide"><span>Calle</span><input th:field="*{calle}" maxlength="150" autocomplete="address-line1"><small th:errors="*{calle}"></small></label>
+                    <label><span>Número exterior</span><input th:field="*{numeroExterior}" maxlength="30"><small th:errors="*{numeroExterior}"></small></label>
+                    <label><span>Número interior</span><input th:field="*{numeroInterior}" maxlength="30"><small th:errors="*{numeroInterior}"></small></label>
+                    <label><span>Colonia</span><input th:field="*{colonia}" maxlength="120"><small th:errors="*{colonia}"></small></label>
+                    <label><span>Ciudad</span><input th:field="*{ciudad}" maxlength="100" autocomplete="address-level2"><small th:errors="*{ciudad}"></small></label>
+                    <label><span>Estado</span><input th:field="*{estado}" maxlength="100" autocomplete="address-level1"><small th:errors="*{estado}"></small></label>
+                    <label><span>Código postal</span><input th:field="*{codigoPostal}" maxlength="15" autocomplete="postal-code"><small th:errors="*{codigoPostal}"></small></label>
+                    <label><span>País</span><input th:field="*{pais}" maxlength="2" autocapitalize="characters" placeholder="MX"><small th:errors="*{pais}"></small></label>
+                </div></fieldset>
+                <footer th:if="${edicion}" class="form-actions"><a href="/admin/catalogos/tutores">Cancelar</a><button type="submit">Guardar contacto</button></footer>
+            </section>
+            <section id="laboral-tutor" class="student-edit-panel tutor-edit-panel student-tab-panel" data-student-panel="laboral" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-tutor-laboral' : null}">
+                <div class="student-section-intro"><span>Información laboral</span><h2>Trabajo y estado del expediente</h2><p>Datos laborales opcionales y disponibilidad administrativa del tutor.</p></div>
+                <fieldset class="form-section"><legend>Información laboral</legend><div class="form-grid">
+                    <label><span>Ocupación</span><input th:field="*{ocupacion}" maxlength="120"><small th:errors="*{ocupacion}"></small></label>
+                    <label><span>Lugar de trabajo</span><input th:field="*{lugarTrabajo}" maxlength="180"><small th:errors="*{lugarTrabajo}"></small></label>
+                    <label><span>Teléfono de trabajo</span><input type="tel" th:field="*{telefonoTrabajo}" maxlength="30"><small th:errors="*{telefonoTrabajo}"></small></label>
+                    <label class="switch-row"><input type="checkbox" th:field="*{activo}"><span>Tutor activo</span></label>
+                </div></fieldset>
+                <footer class="form-actions"><a href="/admin/catalogos/tutores">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar información laboral' : 'Registrar tutor'}">Guardar</button></footer>
+            </section>
         </form>
-        <form th:if="${edicion and form.activo}" class="danger-zone student-tab-panel" data-student-panel="ficha" role="tabpanel" aria-labelledby="tab-tutor-ficha" method="post" th:action="@{/admin/tutores/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este tutor? Sus vínculos históricos se conservarán.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar tutor</strong><p>El registro y sus relaciones se conservarán.</p></div><button type="submit">Desactivar</button></form>
+        <form th:if="${edicion and form.activo}" class="danger-zone student-tab-panel" data-student-panel="laboral" role="tabpanel" aria-labelledby="tab-tutor-laboral" method="post" th:action="@{/admin/tutores/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este tutor? Sus vínculos históricos se conservarán.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar tutor</strong><p>El registro y sus relaciones se conservarán.</p></div><button type="submit">Desactivar</button></form>
     </section>
 </main>
 </body>

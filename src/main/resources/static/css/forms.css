@@ -165,9 +165,9 @@
 .standalone-record-tabs { margin: 20px 0 0; }
 .standalone-record-tabs + .teacher-tab-panel { border-top-left-radius: 0; border-top-right-radius: 0; }
 .teacher-admin-shell .teacher-tab-panel { margin-top: 0; }
-.tutor-record-tabs ~ #datos-tutor,
 .tutor-record-tabs ~ .tutor-access-card { margin: 0 34px 28px; border: 1px solid #d7e3ed; border-radius: 0 0 18px 18px; }
-.tutor-record-tabs ~ #datos-tutor { padding: 24px; }
+.tutor-record-tabs ~ #datos-tutor { margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.tutor-record-tabs ~ .tutor-summary-profile { margin: 0 34px 24px; border: 1px solid #d7e3ed; border-radius: 0 0 18px 18px; }
 .student-tablist + .student-profile { margin: 0 34px 24px; border: 1px solid #d7e3ed; border-radius: 0 0 18px 18px; }
 .student-tablist ~ .student-record-section { border-radius: 0 0 18px 18px; }
 .student-record-tabs { grid-template-columns: repeat(3,minmax(0,1fr)); }
@@ -565,6 +565,8 @@
 .profile-edit-link { justify-self: start; color: #0b63ce; font-size: .75rem; font-weight: 700; text-decoration: none; }
 .profile-edit-link:hover { text-decoration: underline; }
 .tutor-profile { grid-template-columns: 240px minmax(0,1fr); }
+.tutor-summary-profile { grid-template-columns: 150px minmax(0,1fr); align-items: center; }
+.tutor-summary-mark { display: grid; width: 132px; aspect-ratio: 1; place-items: center; border-radius: 32px; background: linear-gradient(145deg,#1478f2,#148f82); color: #fff; font: 900 2rem Manrope; box-shadow: 0 18px 38px #164a782e; }
 .tutor-document-column { align-self: start; }
 .tutor-document-frame { position: relative; width: 100%; aspect-ratio: 4/5; overflow: hidden; display: grid; place-items: center; border: 1px solid #c7d7e6; border-radius: 18px; background: #edf4fa; color: var(--ink); text-decoration: none; box-shadow: inset 0 0 0 5px #fff,0 18px 42px #16365320; }
 .tutor-document-frame img { width: 100%; height: 100%; display: block; padding: 7px; object-fit: contain; background: #fff; }
@@ -596,6 +598,8 @@
 [data-theme=dark] .tutor-document-frame { border-color: #344a63; background: #0a1728; box-shadow: inset 0 0 0 5px #0e1d31,0 18px 42px #0006; }
 [data-theme=dark] .tutor-document-frame img,[data-theme=dark] .tutor-document-frame > div strong { background: #102035; }
 [data-theme=dark] .tutor-document-frame.empty > div strong { background: #19324d; color: #9fc8e8; }
+[data-theme=dark] .tutor-record-tabs ~ .tutor-summary-profile { border-color: #344a63; }
+[data-theme=dark] .tutor-summary-mark { box-shadow: 0 18px 38px #0007; }
 [data-theme=dark] .photo-upload-form input { background: #0e1d31; color: #eef5fd; border-color: #344a63; }
 [data-theme=dark] .photo-upload-form select { background: #0e1d31; color: #eef5fd; border-color: #344a63; }
 [data-theme=dark] .photo-upload-form input::file-selector-button { background: #19324d; color: #cde6fa; }
@@ -679,6 +683,8 @@
 @media (max-width: 680px) {
     .student-profile { grid-template-columns: 1fr; padding: 24px 20px; }
     .tutor-profile { grid-template-columns: 1fr; }
+    .tutor-summary-profile { grid-template-columns: 1fr; justify-items: center; }
+    .tutor-summary-profile .profile-summary { width: 100%; }
     .tutor-document-frame { width: min(240px,76vw); }
     .profile-photo { width: min(210px,70vw); }
     .profile-heading { display: grid; }

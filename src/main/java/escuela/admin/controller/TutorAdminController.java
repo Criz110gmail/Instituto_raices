@@ -3,6 +3,7 @@ package escuela.admin.controller;
 import escuela.admin.dto.ModuloCatalogo;
 import escuela.admin.dto.TutorForm;
 import escuela.admin.dto.PortalTutorCuentaForm;
+import escuela.admin.service.JasperFichaTutorService;
 import escuela.admin.support.MensajeErrorFormulario;
 import escuela.archivo.dto.ArchivoDescarga;
 import escuela.common.exception.ReglaNegocioException;
@@ -46,6 +47,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.nio.charset.StandardCharsets;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.time.Duration;
 import java.util.regex.Matcher;
@@ -61,6 +63,7 @@ public class TutorAdminController {
 
     private final TutorService service;
     private final IdentificacionTutorService identificacionService;
+    private final JasperFichaTutorService reporteService;
     private final InstitucionService institucionService;
     private final AccesoPortalTutorService accesoPortalService;
     private final InvitacionUsuarioService invitacionService;
@@ -109,6 +112,7 @@ public class TutorAdminController {
         validarAlcance(form);
         if (errores.hasErrors()) {
             preparar(model, form, id);
+            model.addAttribute("pestanaActiva", pestanaConErrores(errores));
             return "admin/tutor-form";
         }
         try {
@@ -133,6 +137,7 @@ public class TutorAdminController {
         } catch (ReglaNegocioException | DataIntegrityViolationException |
                  ObjectOptimisticLockingFailureException excepcion) {
             prepararError(model, TutorForm.desde(tutor), id, excepcion);
+            model.addAttribute("pestanaActiva", "laboral");
             return "admin/tutor-form";
         }
         flash.addFlashAttribute("mensaje", "Tutor desactivado correctamente");
@@ -264,6 +269,21 @@ public class TutorAdminController {
                 .body(descarga.recurso());
     }
 
+    @GetMapping("/{id}/ficha.pdf")
+    ResponseEntity<byte[]> exportarFicha(@PathVariable Long id) {
+        TutorResponse tutor = tutorAdministrable(id);
+        ByteArrayOutputStream salida = new ByteArrayOutputStream();
+        reporteService.exportar(tutor.id(), salida);
+        byte[] contenido = salida.toByteArray();
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                .contentType(MediaType.APPLICATION_PDF)
+                .contentLength(contenido.length)
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline()
+                        .filename("ficha-tutor-" + id + ".pdf", StandardCharsets.UTF_8).build().toString())
+                .body(contenido);
+    }
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     String identificacionDemasiadoGrande(HttpServletRequest request, Model model) {
         Matcher coincidencia = RUTA_IDENTIFICACION.matcher(request.getRequestURI());
@@ -318,6 +338,9 @@ public class TutorAdminController {
     private void prepararError(Model model, TutorForm form, Long id, RuntimeException excepcion) {
         preparar(model, form, id);
         model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
+        if (id != null) {
+            model.addAttribute("pestanaActiva", "informacion");
+        }
     }
 
     private void prepararErrorIdentificacion(Model model, TutorResponse tutor, Long id,
@@ -345,5 +368,21 @@ public class TutorAdminController {
         return ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/activar-cuenta").queryParam("token", token)
                 .build().toUriString();
+    }
+
+    private String pestanaConErrores(BindingResult errores) {
+        if (errores.hasFieldErrors("telefonoPrincipal") || errores.hasFieldErrors("telefonoSecundario")
+                || errores.hasFieldErrors("email") || errores.hasFieldErrors("calle")
+                || errores.hasFieldErrors("numeroExterior") || errores.hasFieldErrors("numeroInterior")
+                || errores.hasFieldErrors("colonia") || errores.hasFieldErrors("ciudad")
+                || errores.hasFieldErrors("estado") || errores.hasFieldErrors("codigoPostal")
+                || errores.hasFieldErrors("pais")) {
+            return "contacto";
+        }
+        if (errores.hasFieldErrors("ocupacion") || errores.hasFieldErrors("lugarTrabajo")
+                || errores.hasFieldErrors("telefonoTrabajo") || errores.hasFieldErrors("activo")) {
+            return "laboral";
+        }
+        return "informacion";
     }
 }

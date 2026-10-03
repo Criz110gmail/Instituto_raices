@@ -19,6 +19,18 @@ imprimir. Los reportes usan el logo de la institución, incluyen la fotografía 
 cuando existe, presentan fechas como `dd/MM/yyyy`, admiten contenido de varias páginas y
 se sirven `inline` mediante endpoints protegidos por permiso y alcance institucional.
 
+## Expediente del tutor
+
+La edición del tutor se divide en identificación oficial, ficha de resumen, información
+personal, contacto y domicilio, información laboral y acceso al Portal de familias. Los
+datos principales conservan un único formulario y las validaciones regresan directamente
+a la sección relacionada.
+
+Desde Identificación oficial se abre una ficha Jasper PDF privada con logo institucional,
+vista de la identificación cuando es imagen y el resumen completo del expediente. Los PDF
+de identificación no se incrustan: el reporte conserva únicamente sus metadatos y el
+archivo original sigue disponible mediante su endpoint privado autorizado.
+
 ## Inicio rápido con Docker
 
 1. Revisa las credenciales locales de `.env` y cámbialas antes de publicar el sistema.

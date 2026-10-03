@@ -12,7 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
         '#informacion-alumno': 'informacion',
         '#contacto-alumno': 'contacto',
         '#notas-alumno': 'notas',
-        '#panel-ficha-resumen': 'ficha'
+        '#panel-ficha-resumen': 'ficha',
+        '#datos-tutor': 'informacion',
+        '#informacion-tutor': 'informacion',
+        '#contacto-tutor': 'contacto',
+        '#laboral-tutor': 'laboral',
+        '#ficha-tutor': 'ficha'
     };
 
     const activate = (name, updateUrl = false) => {

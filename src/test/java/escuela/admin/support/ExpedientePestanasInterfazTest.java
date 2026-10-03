@@ -18,12 +18,17 @@ class ExpedientePestanasInterfazTest {
     }
 
     @Test
-    void tutorOrganizaFichaIdentificacionYPortalEnPestanas() throws Exception {
+    void tutorOrganizaExpedienteCompletoEnSeisPestanas() throws Exception {
         assertThat(recurso("templates/admin/tutor-form.html"))
                 .contains("/js/student-tabs.js", "data-student-tabs",
                         "data-student-tab=\"ficha\"", "data-student-tab=\"identificacion\"",
-                        "data-student-tab=\"acceso\"", "id=\"datos-tutor\"",
-                        "id=\"identificacion-tutor\"", "id=\"portal-familias\"");
+                        "data-student-tab=\"informacion\"", "data-student-tab=\"contacto\"",
+                        "data-student-tab=\"laboral\"", "data-student-tab=\"acceso\"",
+                        "data-active-tab=${pestanaActiva == null ? 'identificacion' : pestanaActiva}",
+                        "id=\"ficha-tutor\"", "id=\"informacion-tutor\"",
+                        "id=\"contacto-tutor\"", "id=\"laboral-tutor\"",
+                        "id=\"identificacion-tutor\"", "id=\"portal-familias\"",
+                        "/ficha.pdf", "class=\"entity-form tutor-edit-form\"");
     }
 
     @Test

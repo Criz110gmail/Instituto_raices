@@ -1,6 +1,7 @@
 package escuela.admin.controller;
 
 import escuela.admin.dto.TutorForm;
+import escuela.admin.service.JasperFichaTutorService;
 import escuela.common.dto.response.AuditoriaResponse;
 import escuela.common.exception.RecursoDuplicadoException;
 import escuela.institucion.dto.response.InstitucionResponse;
@@ -26,6 +27,7 @@ import org.springframework.ui.ExtendedModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.http.MediaType;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -35,12 +37,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doAnswer;
 
 @ExtendWith(MockitoExtension.class)
 class TutorAdminControllerTest {
 
     @Mock private TutorService service;
     @Mock private IdentificacionTutorService identificacionService;
+    @Mock private JasperFichaTutorService reporteService;
     @Mock private InstitucionService institucionService;
     @Mock private UsuarioService usuarioService;
     @Mock private AccesoPortalTutorService accesoPortalService;
@@ -121,6 +125,24 @@ class TutorAdminControllerTest {
 
         verify(identificacionService).asignar(10L, TipoIdentificacionTutor.INE, archivo);
         assertThat(vista).isEqualTo("redirect:/admin/tutores/10/editar#identificacion-tutor");
+    }
+
+    @Test
+    void abreFichaPdfProtegidaEnLinea() throws Exception {
+        when(service.obtener(10L)).thenReturn(tutor());
+        doAnswer(invocacion -> {
+            ((java.io.OutputStream) invocacion.getArgument(1)).write("%PDF-1.7".getBytes());
+            return null;
+        }).when(reporteService).exportar(org.mockito.ArgumentMatchers.eq(10L), any());
+
+        var respuesta = controller.exportarFicha(10L);
+
+        assertThat(respuesta.getStatusCode().is2xxSuccessful()).isTrue();
+        assertThat(respuesta.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_PDF);
+        assertThat(respuesta.getHeaders().getFirst("Content-Disposition"))
+                .contains("inline", "ficha-tutor-10.pdf");
+        assertThat(respuesta.getBody()).startsWith((byte) '%', (byte) 'P', (byte) 'D', (byte) 'F');
+        verify(alcance).validarRecurso(escuela.admin.dto.ModuloCatalogo.TUTORES, 10L);
     }
 
     private TutorForm formulario() {

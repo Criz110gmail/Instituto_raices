@@ -31,6 +31,14 @@ no vuelvas a implementar componentes que ya existan.
   del alumno cuando existe, paginación y formato de fechas `dd/MM/yyyy`. No hubo migración;
   Docker compiló 703 fuentes principales y 126 de prueba, aprobó 449 pruebas y el servicio
   desplegado respondió `UP`. La siguiente migración disponible continúa siendo V54.
+- La edición de Tutores aplica el mismo patrón en seis pestañas y abre por defecto
+  **Identificación oficial**; continúan Ficha del tutor, Información del tutor, Contacto y
+  domicilio, Información laboral y Portal de familias. Los tres bloques editables comparten
+  un solo formulario y los errores abren la pestaña correcta. Identificación ofrece una
+  ficha Jasper PDF privada con logo institucional, identificación vigente cuando es imagen,
+  datos personales, contacto, domicilio, trabajo y estado del portal. Docker compiló 704
+  fuentes principales y 127 de prueba, aprobó 451 pruebas y el servicio desplegado respondió
+  `UP`. No hubo migración; V54 sigue disponible.
 - La interfaz distingue **Cargos a alumnos** (obligaciones y saldos) de **Pagos** (dinero
   recibido). En Pagos, la cuenta declarada es obligatoria para cualquier método. El ajuste
   de un cargo permanece separado porque aumenta o disminuye la deuda sin registrar un
@@ -930,6 +938,13 @@ provocar una validación para confirmar que se reabre la pestaña correcta, revi
 oscuro y móvil, y abrir/imprimir ambos PDF con logo y fotografía reales. No cargar datos
 personales reales sólo para verificar. Después de aprobarlo, acordar con el propietario
 cuál pendiente priorizar; no crear V54 hasta que el nuevo alcance requiera esquema.
+
+También quedó terminada la reorganización del expediente de Tutores y su ficha Jasper. La
+prueba funcional controlada debe recorrer las seis pestañas, guardar Información, Contacto
+y Laboral, provocar validaciones en cada bloque, comprobar Identificación y Portal, y abrir
+el PDF con una identificación de imagen y otra de tipo PDF. Cuando la identificación sea
+PDF, el reporte muestra sus metadatos y deja vacía la vista previa; no convierte ni expone
+el documento dentro del reporte.
 
 El expediente administrativo de Pagos usa navegación por pestañas basada en `student-tabs.js`:
 Resumen, Distribución, Gestión, Devoluciones condicional y Comprobantes. Los errores de las

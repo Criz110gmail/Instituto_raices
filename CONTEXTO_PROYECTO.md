@@ -1,5 +1,26 @@
 # Contexto del proyecto
 
+## Expediente de tutor segmentado y ficha Jasper (2026-10-02)
+
+- La edición administrativa de Tutores abre en **Identificación oficial** y continúa con
+  **Ficha del tutor**, **Información del tutor**, **Contacto y domicilio**, **Información
+  laboral** y **Portal de familias**. La navegación reduce el desplazamiento y conserva
+  hashes directos para cada sección.
+- Información, contacto y trabajo siguen siendo campos de la misma tabla y se envían en un
+  solo formulario. Los botones por sección actualizan el expediente íntegro, conservan la
+  versión optimista y los errores activan automáticamente la pestaña del campo afectado.
+  Identificación y acceso familiar mantienen formularios y operaciones independientes.
+- Identificación oficial incorpora una ficha Jasper PDF privada con logo institucional,
+  resumen del tutor, documento vigente, información personal, contacto, domicilio, datos
+  laborales y estado del portal. Si la identificación vigente es una imagen aparece en el
+  encabezado; si es PDF se incluyen tipo, nombre y fecha, sin incrustar el documento.
+- El endpoint exige permiso de Tutores y alcance institucional, usa `no-store` y abre el
+  reporte `inline`. La prueba generó, leyó y renderizó sus dos páginas; la inspección visual
+  no encontró recortes, traslapes ni problemas de jerarquía.
+- No hubo migración. Docker compiló 704 fuentes principales y 127 de prueba, ejecutó 451
+  pruebas sin fallos, desplegó la imagen y `/actuator/health` respondió `UP`. La siguiente
+  migración disponible continúa siendo V54.
+
 ## Expediente de alumno segmentado y reportes Jasper (2026-10-02)
 
 - La edición administrativa de Alumnos usa seis pestañas: **Ficha del alumno**,
