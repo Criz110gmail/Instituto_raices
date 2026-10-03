@@ -36,12 +36,15 @@ public class PortalPagoController {
     String guardar(@Valid @ModelAttribute("form") PortalPagoForm form, BindingResult errores,
                    @RequestParam(name="comprobantes",required=false) List<MultipartFile> files,
                    @AuthenticationPrincipal UsuarioPrincipal p, Model model, RedirectAttributes flash){
-        if(errores.hasErrors()){preparar(p,model); return "portal/pago-form";}
+        if(errores.hasErrors()){
+            model.addAttribute("error","Revisa los datos obligatorios y vuelve a enviar el comprobante.");
+            preparar(p,model); return "portal/pago-form";
+        }
         try {service.reportar(p,form,files); flash.addFlashAttribute("mensajePortal","Transferencia enviada. Quedará en revisión por la escuela."); return "redirect:/portal/pagos";}
         catch(ReglaNegocioException ex){model.addAttribute("error",ex.getMessage()); preparar(p,model); return "portal/pago-form";}
     }
     @GetMapping("/cargos") @ResponseBody ResultadoAutocompletado cargos(@RequestParam(defaultValue="")String q,@AuthenticationPrincipal UsuarioPrincipal p){return service.buscarCargos(p,q);}
-    @GetMapping("/cuentas") @ResponseBody ResultadoAutocompletado cuentas(@RequestParam Long plantelId,@RequestParam(defaultValue="")String q,@AuthenticationPrincipal UsuarioPrincipal p){return service.buscarCuentas(p,plantelId,q);}
+    @GetMapping("/cuentas") @ResponseBody ResultadoAutocompletado cuentas(@RequestParam Long cargoId,@RequestParam(defaultValue="")String q,@AuthenticationPrincipal UsuarioPrincipal p){return service.buscarCuentas(p,cargoId,q);}
     @GetMapping("/{id}/comprobante-pago")
     void comprobante(@PathVariable Long id, @AuthenticationPrincipal UsuarioPrincipal p,
                      jakarta.servlet.http.HttpServletResponse response) throws java.io.IOException {
@@ -52,5 +55,5 @@ public class PortalPagoController {
                 URLEncoder.encode("comprobante-" + pago.folio() + ".pdf", StandardCharsets.UTF_8));
         jasperComprobante.exportar(pago, response.getOutputStream());
     }
-    private void preparar(UsuarioPrincipal p,Model m){m.addAttribute("planteles",service.planteles(p));m.addAttribute("moneda",instituciones.obtener(p.institucionId()).monedaPredeterminada());}
+    private void preparar(UsuarioPrincipal p,Model m){m.addAttribute("moneda",instituciones.obtener(p.institucionId()).monedaPredeterminada());}
 }

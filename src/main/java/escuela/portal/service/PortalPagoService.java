@@ -5,13 +5,10 @@ import escuela.cobranza.entity.Cargo;
 import escuela.cobranza.repository.CargoRepository;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.finanzas.dto.response.PagoResponse;
-import escuela.finanzas.entity.CuentaFinanciera;
-import escuela.finanzas.entity.TipoCuentaFinanciera;
 import escuela.finanzas.repository.CuentaFinancieraRepository;
 import escuela.finanzas.service.PagoService;
 import escuela.institucion.service.InstitucionService;
 import escuela.portal.dto.*;
-import escuela.portal.repository.PortalTutorRepository;
 import escuela.seguridad.service.UsuarioPrincipal;
 import escuela.tutor.entity.Tutor;
 import escuela.tutor.repository.TutorRepository;
@@ -22,7 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
-import java.time.*;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static escuela.cobranza.support.CalculoCargo.saldo;
@@ -30,14 +28,10 @@ import static escuela.cobranza.support.CalculoCargo.saldo;
 @Service @RequiredArgsConstructor @Transactional
 public class PortalPagoService {
     private final InstitucionService instituciones;
-    private final PortalTutorRepository portal;
     private final TutorRepository tutores;
     private final CargoRepository cargos;
     private final CuentaFinancieraRepository cuentas;
     private final PagoService pagos;
-
-    @Transactional(readOnly=true)
-    public List<PortalPlantelPago> planteles(UsuarioPrincipal p) { validar(p); return portal.plantelesPago(p.usuarioId(),p.institucionId(),LocalDate.now(zona(p))); }
 
     @Transactional(readOnly=true)
     public ResultadoAutocompletado buscarCargos(UsuarioPrincipal p,String q) {
@@ -46,13 +40,19 @@ public class PortalPagoService {
         var opciones=r.getContent().stream().filter(c->saldo(c).signum()>0).map(c->new OpcionAutocompletado(c.getId(),
                 c.getInscripcion().getAlumno().getMatricula()+" · "+c.getInscripcion().getAlumno().getNombres()+" "+c.getInscripcion().getAlumno().getPrimerApellido()
                         +" · "+c.getConceptoCobro().getNombre()+" · "+c.getDescripcion()+" · #"+c.getId(),
-                "Vence "+c.getFechaVencimiento()+" · saldo "+saldo(c)+" "+c.getMoneda(), saldo(c))).toList();
+                "Plantel "+c.getInscripcion().getPlantel().getNombre()+" · vence "+c.getFechaVencimiento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                        +" · saldo "+saldo(c)+" "+c.getMoneda(), saldo(c))).toList();
         return new ResultadoAutocompletado(opciones,r.hasNext());
     }
 
     @Transactional(readOnly=true)
-    public ResultadoAutocompletado buscarCuentas(UsuarioPrincipal p,Long plantelId,String q) {
-        validar(p); if(plantelId==null)return ResultadoAutocompletado.vacio(); String texto=q==null?"":q.trim();
+    public ResultadoAutocompletado buscarCuentas(UsuarioPrincipal p,Long cargoId,String q) {
+        validar(p); if(cargoId==null)return ResultadoAutocompletado.vacio();
+        Tutor tutor=tutor(p);
+        Cargo cargo=cargos.buscarVigenteParaPortal(cargoId,p.institucionId(),tutor.getId())
+                .orElseThrow(()->new ReglaNegocioException("El cargo ya no está vigente o no pertenece a tu cuenta familiar"));
+        Long plantelId=cargo.getInscripcion().getPlantel().getId();
+        String texto=q==null?"":q.trim();
         var r=cuentas.buscarParaPago(p.institucionId(),plantelId,false,texto,PageRequest.of(0,20));
         return new ResultadoAutocompletado(r.getContent().stream().map(c->new OpcionAutocompletado(c.getId(),c.getNombre(),
                 (c.getBancoNombre()==null?"":c.getBancoNombre()+" · ")+c.getMoneda())).toList(),r.hasNext());
@@ -69,6 +69,7 @@ public class PortalPagoService {
     private void normalizarImportes(UsuarioPrincipal p, Tutor tutor, PortalPagoForm form) {
         Set<Long> seleccionados = new HashSet<>();
         BigDecimal total = BigDecimal.ZERO;
+        Long plantelId = null;
         for (PortalSolicitudPagoForm solicitud : form.getSolicitudes()) {
             if (solicitud.getCargoId() == null) {
                 throw new ReglaNegocioException("Selecciona un cargo vigente de la lista");
@@ -84,8 +85,16 @@ public class PortalPagoService {
                 throw new ReglaNegocioException("Uno de los cargos seleccionados ya no tiene saldo pendiente");
             }
             solicitud.setMontoSolicitado(pendiente);
+            Long plantelCargo = cargo.getInscripcion().getPlantel().getId();
+            if (plantelId == null) {
+                plantelId = plantelCargo;
+            } else if (!plantelId.equals(plantelCargo)) {
+                throw new ReglaNegocioException(
+                        "Los cargos pertenecen a planteles distintos. Reporta una transferencia separada por cada plantel");
+            }
             total = total.add(pendiente);
         }
+        form.setPlantelRegistroId(plantelId);
         form.setMonto(total);
     }
     @Transactional(readOnly=true)
@@ -102,6 +111,5 @@ public class PortalPagoService {
         return pago;
     }
     private Tutor tutor(UsuarioPrincipal p){return tutores.findByUsuarioIdAndInstitucionIdAndActivoTrue(p.usuarioId(),p.institucionId()).orElseThrow(()->new AccessDeniedException("La cuenta no está vinculada a un tutor activo"));}
-    private ZoneId zona(UsuarioPrincipal p){return ZoneId.of(instituciones.obtener(p.institucionId()).zonaHoraria());}
     private void validar(UsuarioPrincipal p){if(p==null||p.usuarioId()==null||p.institucionId()==null||p.accesoRecuperacion())throw new AccessDeniedException("El portal familiar requiere una cuenta activa");}
 }

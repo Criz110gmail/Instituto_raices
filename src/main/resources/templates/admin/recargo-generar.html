@@ -48,7 +48,7 @@
                             <option th:each="i:${instituciones}" th:value="${i.id}"
                                     th:text="${i.codigo+' · '+i.nombre}"></option>
                         </select>
-                        <small th:errors="*{institucionId}"></small>
+                        <small class="field-error" th:errors="*{institucionId}"></small>
                     </label>
                     <label>
                         <span>Plantel</span>
@@ -56,12 +56,12 @@
                             <option value="">Todos los planteles autorizados</option>
                             <option th:each="p:${planteles}" th:value="${p.id}" th:text="${p.nombre}"></option>
                         </select>
-                        <small th:errors="*{plantelId}"></small>
+                        <small class="field-error" th:errors="*{plantelId}"></small>
                     </label>
                     <label>
                         <span>Fecha de corte *</span>
                         <input type="date" th:field="*{fechaCorte}">
-                        <small th:errors="*{fechaCorte}"></small>
+                        <small class="field-error" th:errors="*{fechaCorte}"></small>
                     </label>
                 </div>
             </fieldset>

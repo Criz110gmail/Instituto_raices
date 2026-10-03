@@ -10,6 +10,6 @@ import java.math.BigDecimal;
 public class PortalSolicitudPagoForm {
     @NotNull private Long cargoId;
     private String cargoEtiqueta;
-    @NotNull @DecimalMin("0.01") @Digits(integer=17, fraction=2) private BigDecimal montoSolicitado;
+    private BigDecimal montoSolicitado;
     public SolicitudAplicacionPagoRequest request() { return new SolicitudAplicacionPagoRequest(cargoId, montoSolicitado); }
 }

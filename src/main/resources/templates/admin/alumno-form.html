@@ -65,11 +65,11 @@
             </div>
             <div class="form-error" role="alert" th:if="${errorDocumento}"><strong>No se pudo actualizar el expediente documental</strong><p th:text="${errorDocumento}">Revisa los datos e intenta nuevamente.</p></div>
             <form class="record-upload-form" method="post" enctype="multipart/form-data" th:action="@{/admin/alumnos/{id}/documentos(id=${id})}" th:object="${documentoForm}">
-                <label><span>Tipo de documento *</span><select th:field="*{tipo}" required><option value="">Selecciona un tipo</option><option th:each="tipo : ${tiposDocumentoAlumno}" th:value="${tipo}" th:text="${tipo.etiqueta}">Documento</option></select><small th:errors="*{tipo}"></small></label>
-                <label><span>Fecha del documento</span><input type="date" th:field="*{fechaDocumento}"><small th:errors="*{fechaDocumento}"></small></label>
-                <label><span>Vigente hasta</span><input type="date" th:field="*{vigenteHasta}"><small th:errors="*{vigenteHasta}"></small></label>
-                <label class="wide"><span>Descripción</span><input th:field="*{descripcion}" maxlength="500" placeholder="Ej. Acta certificada entregada para inscripción"><small th:errors="*{descripcion}"></small></label>
-                <label class="wide file-field"><span>Archivo *</span><input type="file" th:field="*{archivo}" accept="application/pdf,image/jpeg,image/png" required><small>PDF, JPEG o PNG; máximo 10 MB.</small><small th:errors="*{archivo}"></small></label>
+                <label><span>Tipo de documento *</span><select th:field="*{tipo}" required><option value="">Selecciona un tipo</option><option th:each="tipo : ${tiposDocumentoAlumno}" th:value="${tipo}" th:text="${tipo.etiqueta}">Documento</option></select><small class="field-error" th:errors="*{tipo}"></small></label>
+                <label><span>Fecha del documento</span><input type="date" th:field="*{fechaDocumento}"><small class="field-error" th:errors="*{fechaDocumento}"></small></label>
+                <label><span>Vigente hasta</span><input type="date" th:field="*{vigenteHasta}"><small class="field-error" th:errors="*{vigenteHasta}"></small></label>
+                <label class="wide"><span>Descripción</span><input th:field="*{descripcion}" maxlength="500" placeholder="Ej. Acta certificada entregada para inscripción"><small class="field-error" th:errors="*{descripcion}"></small></label>
+                <label class="wide file-field"><span>Archivo *</span><input type="file" th:field="*{archivo}" accept="application/pdf,image/jpeg,image/png" required><small>PDF, JPEG o PNG; máximo 10 MB.</small><small class="field-error" th:errors="*{archivo}"></small></label>
                 <button type="submit">Agregar documento</button>
             </form>
             <div class="record-document-list" th:if="${!documentosVigentes.isEmpty()}">
@@ -88,23 +88,23 @@
             <form class="medical-record-form" method="post" th:action="@{/admin/alumnos/{id}/ficha-medica(id=${id})}" th:object="${fichaMedicaForm}">
                 <input type="hidden" th:field="*{version}">
                 <fieldset class="form-section"><legend>Datos médicos esenciales</legend><div class="form-grid">
-                    <label><span>Tipo sanguíneo *</span><select th:field="*{tipoSanguineo}"><option th:each="tipo : ${tiposSanguineos}" th:value="${tipo}" th:text="${tipo.etiqueta}">No especificado</option></select><small th:errors="*{tipoSanguineo}"></small></label>
-                    <label><span>Servicio médico</span><input th:field="*{servicioMedico}" maxlength="150" placeholder="IMSS, ISSSTE, privado..."><small th:errors="*{servicioMedico}"></small></label>
-                    <label><span>Número de afiliación</span><input th:field="*{numeroAfiliacion}" maxlength="100"><small th:errors="*{numeroAfiliacion}"></small></label>
-                    <label><span>Médico tratante</span><input th:field="*{medicoTratante}" maxlength="180"><small th:errors="*{medicoTratante}"></small></label>
-                    <label class="wide"><span>Alergias</span><textarea th:field="*{alergias}" maxlength="4000" rows="3" placeholder="Medicamentos, alimentos, picaduras u otras alergias"></textarea><small th:errors="*{alergias}"></small></label>
-                    <label class="wide"><span>Padecimientos o diagnósticos</span><textarea th:field="*{padecimientos}" maxlength="4000" rows="3" placeholder="Asma, diabetes, epilepsia u otra condición relevante"></textarea><small th:errors="*{padecimientos}"></small></label>
-                    <label class="wide"><span>Medicamentos actuales</span><textarea th:field="*{medicamentos}" maxlength="4000" rows="3" placeholder="Nombre, dosis y horario cuando aplique"></textarea><small th:errors="*{medicamentos}"></small></label>
+                    <label><span>Tipo sanguíneo *</span><select th:field="*{tipoSanguineo}"><option th:each="tipo : ${tiposSanguineos}" th:value="${tipo}" th:text="${tipo.etiqueta}">No especificado</option></select><small class="field-error" th:errors="*{tipoSanguineo}"></small></label>
+                    <label><span>Servicio médico</span><input th:field="*{servicioMedico}" maxlength="150" placeholder="IMSS, ISSSTE, privado..."><small class="field-error" th:errors="*{servicioMedico}"></small></label>
+                    <label><span>Número de afiliación</span><input th:field="*{numeroAfiliacion}" maxlength="100"><small class="field-error" th:errors="*{numeroAfiliacion}"></small></label>
+                    <label><span>Médico tratante</span><input th:field="*{medicoTratante}" maxlength="180"><small class="field-error" th:errors="*{medicoTratante}"></small></label>
+                    <label class="wide"><span>Alergias</span><textarea th:field="*{alergias}" maxlength="4000" rows="3" placeholder="Medicamentos, alimentos, picaduras u otras alergias"></textarea><small class="field-error" th:errors="*{alergias}"></small></label>
+                    <label class="wide"><span>Padecimientos o diagnósticos</span><textarea th:field="*{padecimientos}" maxlength="4000" rows="3" placeholder="Asma, diabetes, epilepsia u otra condición relevante"></textarea><small class="field-error" th:errors="*{padecimientos}"></small></label>
+                    <label class="wide"><span>Medicamentos actuales</span><textarea th:field="*{medicamentos}" maxlength="4000" rows="3" placeholder="Nombre, dosis y horario cuando aplique"></textarea><small class="field-error" th:errors="*{medicamentos}"></small></label>
                 </div></fieldset>
                 <fieldset class="form-section"><legend>Cuidados y apoyos</legend><div class="form-grid">
-                    <label class="wide"><span>Discapacidad o necesidades de apoyo</span><textarea th:field="*{discapacidadNecesidades}" maxlength="4000" rows="3"></textarea><small th:errors="*{discapacidadNecesidades}"></small></label>
-                    <label class="wide"><span>Restricciones físicas</span><textarea th:field="*{restriccionesFisicas}" maxlength="4000" rows="3" placeholder="Actividades que debe evitar o realizar con apoyo"></textarea><small th:errors="*{restriccionesFisicas}"></small></label>
-                    <label class="wide"><span>Restricciones alimentarias</span><textarea th:field="*{restriccionesAlimentarias}" maxlength="4000" rows="3"></textarea><small th:errors="*{restriccionesAlimentarias}"></small></label>
+                    <label class="wide"><span>Discapacidad o necesidades de apoyo</span><textarea th:field="*{discapacidadNecesidades}" maxlength="4000" rows="3"></textarea><small class="field-error" th:errors="*{discapacidadNecesidades}"></small></label>
+                    <label class="wide"><span>Restricciones físicas</span><textarea th:field="*{restriccionesFisicas}" maxlength="4000" rows="3" placeholder="Actividades que debe evitar o realizar con apoyo"></textarea><small class="field-error" th:errors="*{restriccionesFisicas}"></small></label>
+                    <label class="wide"><span>Restricciones alimentarias</span><textarea th:field="*{restriccionesAlimentarias}" maxlength="4000" rows="3"></textarea><small class="field-error" th:errors="*{restriccionesAlimentarias}"></small></label>
                 </div></fieldset>
                 <fieldset class="form-section"><legend>Contacto y actuación en emergencia</legend><div class="form-grid">
-                    <label><span>Contacto de emergencia</span><input th:field="*{contactoEmergencia}" maxlength="180"><small th:errors="*{contactoEmergencia}"></small></label>
-                    <label><span>Teléfono de emergencia</span><input type="tel" th:field="*{telefonoEmergencia}" maxlength="30"><small th:errors="*{telefonoEmergencia}"></small></label>
-                    <label class="wide"><span>Observaciones médicas</span><textarea th:field="*{observaciones}" maxlength="4000" rows="4"></textarea><small th:errors="*{observaciones}"></small></label>
+                    <label><span>Contacto de emergencia</span><input th:field="*{contactoEmergencia}" maxlength="180"><small class="field-error" th:errors="*{contactoEmergencia}"></small></label>
+                    <label><span>Teléfono de emergencia</span><input type="tel" th:field="*{telefonoEmergencia}" maxlength="30"><small class="field-error" th:errors="*{telefonoEmergencia}"></small></label>
+                    <label class="wide"><span>Observaciones médicas</span><textarea th:field="*{observaciones}" maxlength="4000" rows="4"></textarea><small class="field-error" th:errors="*{observaciones}"></small></label>
                     <label class="switch-row wide"><input type="checkbox" th:field="*{autorizaAtencionEmergencia}"><span>Existe autorización registrada para brindar atención médica de emergencia</span></label>
                 </div></fieldset>
                 <footer class="record-form-actions"><button type="submit">Guardar ficha médica</button></footer>
@@ -116,42 +116,42 @@
             <section id="informacion-alumno" class="student-edit-panel student-tab-panel" data-student-panel="informacion" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-informacion' : null}">
             <div class="student-section-intro"><span>Información del alumno</span><h2>Identidad escolar y datos personales</h2><p>Datos base que identifican al alumno dentro de la institución.</p></div>
             <fieldset class="form-section"><legend>Identidad escolar</legend><div class="form-grid">
-                <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
-                <label><span>Matrícula *</span><input th:field="*{matricula}" maxlength="50" autocomplete="off" placeholder="ALU-2026-001"><small th:errors="*{matricula}"></small></label>
-                <label><span>Fecha de ingreso *</span><input type="date" th:field="*{fechaIngreso}"><small th:errors="*{fechaIngreso}"></small></label>
+                <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small class="field-error" th:errors="*{institucionId}"></small></label>
+                <label><span>Matrícula *</span><input th:field="*{matricula}" maxlength="50" autocomplete="off" placeholder="ALU-2026-001"><small class="field-error" th:errors="*{matricula}"></small></label>
+                <label><span>Fecha de ingreso *</span><input type="date" th:field="*{fechaIngreso}"><small class="field-error" th:errors="*{fechaIngreso}"></small></label>
             </div></fieldset>
             <fieldset class="form-section"><legend>Datos personales</legend><div class="form-grid">
-                <label class="wide"><span>Nombre(s) *</span><input th:field="*{nombres}" maxlength="150" autocomplete="given-name" placeholder="Nombre o nombres"><small th:errors="*{nombres}"></small></label>
-                <label><span>Primer apellido *</span><input th:field="*{primerApellido}" maxlength="100" autocomplete="family-name"><small th:errors="*{primerApellido}"></small></label>
-                <label><span>Segundo apellido</span><input th:field="*{segundoApellido}" maxlength="100"><small th:errors="*{segundoApellido}"></small></label>
-                <label><span>CURP</span><input th:field="*{curp}" minlength="18" maxlength="18" autocapitalize="characters" placeholder="18 caracteres"><small th:errors="*{curp}"></small></label>
-                <label><span>Fecha de nacimiento *</span><input type="date" th:field="*{fechaNacimiento}"><small th:errors="*{fechaNacimiento}"></small></label>
-                <label><span>Sexo</span><input th:field="*{sexo}" maxlength="30" placeholder="Dato administrativo opcional"><small th:errors="*{sexo}"></small></label>
-                <label><span>Nacionalidad</span><input th:field="*{nacionalidad}" maxlength="80" placeholder="Mexicana"><small th:errors="*{nacionalidad}"></small></label>
-                <label class="wide"><span>Lugar de nacimiento</span><input th:field="*{lugarNacimiento}" maxlength="150"><small th:errors="*{lugarNacimiento}"></small></label>
+                <label class="wide"><span>Nombre(s) *</span><input th:field="*{nombres}" maxlength="150" autocomplete="given-name" placeholder="Nombre o nombres"><small class="field-error" th:errors="*{nombres}"></small></label>
+                <label><span>Primer apellido *</span><input th:field="*{primerApellido}" maxlength="100" autocomplete="family-name"><small class="field-error" th:errors="*{primerApellido}"></small></label>
+                <label><span>Segundo apellido</span><input th:field="*{segundoApellido}" maxlength="100"><small class="field-error" th:errors="*{segundoApellido}"></small></label>
+                <label><span>CURP</span><input th:field="*{curp}" minlength="18" maxlength="18" autocapitalize="characters" placeholder="18 caracteres"><small class="field-error" th:errors="*{curp}"></small></label>
+                <label><span>Fecha de nacimiento *</span><input type="date" th:field="*{fechaNacimiento}"><small class="field-error" th:errors="*{fechaNacimiento}"></small></label>
+                <label><span>Sexo</span><input th:field="*{sexo}" maxlength="30" placeholder="Dato administrativo opcional"><small class="field-error" th:errors="*{sexo}"></small></label>
+                <label><span>Nacionalidad</span><input th:field="*{nacionalidad}" maxlength="80" placeholder="Mexicana"><small class="field-error" th:errors="*{nacionalidad}"></small></label>
+                <label class="wide"><span>Lugar de nacimiento</span><input th:field="*{lugarNacimiento}" maxlength="150"><small class="field-error" th:errors="*{lugarNacimiento}"></small></label>
             </div></fieldset>
             <footer class="form-actions" th:if="${edicion}"><a href="/admin/catalogos/alumnos">Cancelar</a><button type="submit">Guardar cambios</button></footer>
             </section>
             <section id="contacto-alumno" class="student-edit-panel student-tab-panel" data-student-panel="contacto" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-contacto' : null}">
             <div class="student-section-intro"><span>Localización</span><h2>Contacto y domicilio</h2><p>Información para comunicación administrativa y ubicación del alumno.</p></div>
             <fieldset class="form-section"><legend>Contacto y domicilio</legend><div class="form-grid">
-                <label><span>Teléfono</span><input type="tel" th:field="*{telefono}" maxlength="30" autocomplete="tel"><small th:errors="*{telefono}"></small></label>
-                <label><span>Correo</span><input type="email" th:field="*{email}" maxlength="254" autocomplete="email"><small th:errors="*{email}"></small></label>
-                <label class="wide"><span>Calle</span><input th:field="*{calle}" maxlength="150" autocomplete="address-line1"><small th:errors="*{calle}"></small></label>
-                <label><span>Número exterior</span><input th:field="*{numeroExterior}" maxlength="30"><small th:errors="*{numeroExterior}"></small></label>
-                <label><span>Número interior</span><input th:field="*{numeroInterior}" maxlength="30"><small th:errors="*{numeroInterior}"></small></label>
-                <label><span>Colonia</span><input th:field="*{colonia}" maxlength="120"><small th:errors="*{colonia}"></small></label>
-                <label><span>Ciudad</span><input th:field="*{ciudad}" maxlength="100" autocomplete="address-level2"><small th:errors="*{ciudad}"></small></label>
-                <label><span>Estado</span><input th:field="*{estado}" maxlength="100" autocomplete="address-level1"><small th:errors="*{estado}"></small></label>
-                <label><span>Código postal</span><input th:field="*{codigoPostal}" maxlength="15" autocomplete="postal-code"><small th:errors="*{codigoPostal}"></small></label>
-                <label><span>País</span><input th:field="*{pais}" maxlength="2" autocapitalize="characters" placeholder="MX"><small th:errors="*{pais}"></small></label>
+                <label><span>Teléfono</span><input type="tel" th:field="*{telefono}" maxlength="30" autocomplete="tel"><small class="field-error" th:errors="*{telefono}"></small></label>
+                <label><span>Correo</span><input type="email" th:field="*{email}" maxlength="254" autocomplete="email"><small class="field-error" th:errors="*{email}"></small></label>
+                <label class="wide"><span>Calle</span><input th:field="*{calle}" maxlength="150" autocomplete="address-line1"><small class="field-error" th:errors="*{calle}"></small></label>
+                <label><span>Número exterior</span><input th:field="*{numeroExterior}" maxlength="30"><small class="field-error" th:errors="*{numeroExterior}"></small></label>
+                <label><span>Número interior</span><input th:field="*{numeroInterior}" maxlength="30"><small class="field-error" th:errors="*{numeroInterior}"></small></label>
+                <label><span>Colonia</span><input th:field="*{colonia}" maxlength="120"><small class="field-error" th:errors="*{colonia}"></small></label>
+                <label><span>Ciudad</span><input th:field="*{ciudad}" maxlength="100" autocomplete="address-level2"><small class="field-error" th:errors="*{ciudad}"></small></label>
+                <label><span>Estado</span><input th:field="*{estado}" maxlength="100" autocomplete="address-level1"><small class="field-error" th:errors="*{estado}"></small></label>
+                <label><span>Código postal</span><input th:field="*{codigoPostal}" maxlength="15" autocomplete="postal-code"><small class="field-error" th:errors="*{codigoPostal}"></small></label>
+                <label><span>País</span><input th:field="*{pais}" maxlength="2" autocapitalize="characters" placeholder="MX"><small class="field-error" th:errors="*{pais}"></small></label>
             </div></fieldset>
             <footer class="form-actions" th:if="${edicion}"><a href="/admin/catalogos/alumnos">Cancelar</a><button type="submit">Guardar cambios</button></footer>
             </section>
             <section id="notas-alumno" class="student-edit-panel student-tab-panel" data-student-panel="notas" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-notas' : null}">
             <div class="student-section-intro"><span>Uso interno</span><h2>Notas administrativas</h2><p>Observaciones operativas y estado vigente del expediente.</p></div>
             <fieldset class="form-section"><legend>Notas administrativas</legend><div class="form-grid">
-                <label class="wide"><span>Observaciones</span><textarea th:field="*{observaciones}" maxlength="4000" rows="4" placeholder="Información administrativa pertinente"></textarea><small th:errors="*{observaciones}"></small></label>
+                <label class="wide"><span>Observaciones</span><textarea th:field="*{observaciones}" maxlength="4000" rows="4" placeholder="Información administrativa pertinente"></textarea><small class="field-error" th:errors="*{observaciones}"></small></label>
                 <label class="switch-row"><input type="checkbox" th:field="*{activo}"><span>Alumno activo</span></label>
             </div></fieldset>
             <footer class="form-actions"><a href="/admin/catalogos/alumnos">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Registrar alumno'}">Guardar</button></footer>

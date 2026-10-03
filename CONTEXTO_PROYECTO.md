@@ -2542,3 +2542,23 @@ historial paginado.
 - No cambiaron slugs, rutas, permisos técnicos ni esquema. Se añadieron contratos de prueba
   para las secciones, la ruta de Adeudos y los nombres visibles de Roles. Docker compiló
   719 fuentes principales y 129 de prueba y aprobó 456 pruebas; V55 continúa disponible.
+
+## Correcciones del reporte familiar y ayudas de formularios (2026-10-03)
+
+- El plantel del reporte familiar se deriva autoritativamente de los cargos y dejó de ser una
+  decisión del tutor. Las cuentas bancarias se consultan mediante un cargo autorizado; no por
+  un identificador de plantel manipulable.
+- Se permiten varios hijos mientras todos los cargos correspondan al mismo plantel. Una mezcla
+  de planteles permanece en el formulario con una indicación para separar las transferencias.
+- Los montos individuales y el total son campos calculados, visibles con formato de pesos y de
+  sólo lectura; el servidor vuelve a calcularlos antes de registrar.
+- El selector remoto de cargos abre resultados con foco o clic y conserva importes y cuenta
+  después de una validación. Las fechas de vencimiento se presentan como `dd/MM/yyyy`.
+- La ayuda contextual de cada campo ya no usa un botón labelable dentro de la etiqueta, por lo
+  que sólo abre el modal al pulsar directamente el icono y continúa fuera del recorrido Tab.
+- Se clasificaron todos los `th:errors` como `field-error`; las leyendas informativas quedan en
+  tono neutro y sólo las validaciones reales usan rojo.
+- No se agregó migración. La sintaxis JavaScript y el diff se verificaron. Maven local compiló
+  719 fuentes principales y 129 de prueba y aprobó las 459 pruebas completas. Docker Desktop
+  falló internamente al escribir sus bases de BuildKit/containerd; no se desplegó una imagen
+  nueva y hay que reparar o reiniciar Docker antes del siguiente despliegue.

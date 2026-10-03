@@ -35,9 +35,10 @@ class AyudaContextualInterfazTest {
         assertThat(ayuda).contains("querySelectorAll('label')", "input,select,textarea",
                 "MutationObserver", "aria-haspopup", "aria-modal", "Escape",
                 "¿Qué hace este módulo?", "MODULE_FIELD", "fallback",
-                "button.tabIndex = -1", "button, control",
+                "trigger.tabIndex = -1", "trigger, control",
+                "document.createElement('span')", "trigger.setAttribute('role', 'button')",
                 "previousFocus?.isConnected");
-        assertThat(ayuda.split("button\\.tabIndex = -1", -1)).hasSize(3);
+        assertThat(ayuda).contains("button.tabIndex = -1");
         assertThat(estilos).contains(".context-help-trigger", ".context-module-help",
                 ".context-help-overlay", ".filters .context-help-trigger",
                 "aspect-ratio:1/1", "border-radius:999px!important",
@@ -66,6 +67,27 @@ class AyudaContextualInterfazTest {
         assertThat(formulario).contains(
                 "<small class=\"field-help\">El cargo empieza a generar después del vencimiento más estos días.</small>");
         assertThat(estilos).contains(".form-grid small.field-help { margin: 5px 0 0; color: var(--muted);");
+    }
+
+    @Test
+    void ayudasDeCampoSonNeutrasYLosErroresEstanMarcadosExplicitamente() throws IOException {
+        String admin = leer(Path.of("src/main/resources/static/css/admin.css"));
+        String formularios = leer(Path.of("src/main/resources/static/css/forms.css"));
+        Path plantillas = Path.of("src/main/resources/templates");
+
+        assertThat(admin).contains(
+                ".form-grid small{display:block;color:var(--muted)",
+                ".form-grid small.field-error{color:#b22b3a");
+        assertThat(formularios).contains(
+                ".assignment-form small { display: block; color: var(--muted);",
+                ".assignment-form small.field-error { color: #b22b3a;");
+        try (var archivos = Files.walk(plantillas)) {
+            List<Path> erroresSinClase = archivos
+                    .filter(ruta -> ruta.toString().endsWith(".html"))
+                    .filter(ruta -> leer(ruta).contains("<small th:errors="))
+                    .toList();
+            assertThat(erroresSinClase).as("mensajes de validación sin clase field-error").isEmpty();
+        }
     }
 
     @Test

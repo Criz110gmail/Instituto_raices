@@ -14,8 +14,8 @@
         <div class="alert error" th:if="${errorOperacion}" th:text="${errorOperacion}">La invitación no es válida.</div>
         <form method="post" th:action="@{/activar-cuenta}" th:object="${form}">
             <input type="hidden" th:field="*{token}">
-            <label><span>Contraseña</span><input type="password" th:field="*{password}" minlength="12" maxlength="72" autocomplete="new-password" required placeholder="Mínimo 12 caracteres"><small th:errors="*{password}"></small></label>
-            <label><span>Confirmar contraseña</span><input type="password" th:field="*{confirmarPassword}" minlength="12" maxlength="72" autocomplete="new-password" required placeholder="Repite la contraseña"><small th:errors="*{confirmarPassword}"></small></label>
+            <label><span>Contraseña</span><input type="password" th:field="*{password}" minlength="12" maxlength="72" autocomplete="new-password" required placeholder="Mínimo 12 caracteres"><small class="field-error" th:errors="*{password}"></small></label>
+            <label><span>Confirmar contraseña</span><input type="password" th:field="*{confirmarPassword}" minlength="12" maxlength="72" autocomplete="new-password" required placeholder="Repite la contraseña"><small class="field-error" th:errors="*{confirmarPassword}"></small></label>
             <button type="submit">Activar mi cuenta <span>→</span></button>
         </form>
         <p class="support">Si el enlace venció, solicita una nueva invitación a la administración.</p>

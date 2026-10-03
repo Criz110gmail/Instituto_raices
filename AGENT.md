@@ -1678,3 +1678,29 @@ enumeradas de etapas anteriores.
   roles existentes conservan sus asignaciones.
 - `node --check` aprobó ambos JavaScript modificados y Docker compiló 719 fuentes principales
   y 129 de prueba; las 456 pruebas pasaron sin fallos. No se creó migración y V55 sigue libre.
+
+### Reporte familiar de transferencias y ayudas semánticas — 2026-10-03
+
+- El portal familiar ya no pregunta el plantel al reportar una transferencia. La cuenta
+  destino se consulta a partir del primer cargo autorizado y el servidor deriva de nuevo el
+  plantel desde los cargos; nunca confía en un plantel enviado por el navegador.
+- Una transferencia puede distribuirse entre varios cargos e hijos del mismo plantel. Si los
+  cargos pertenecen a planteles distintos, se conserva el formulario y se solicita reportar
+  una transferencia separada por plantel, porque `pago.plantel_registro_id` representa un solo
+  origen contable.
+- Los saldos individuales y el total se muestran como pesos, bloqueados para edición. Sus
+  valores autoritativos se recalculan en servidor antes de registrar el pago. El cargo muestra
+  también plantel y vencimiento en `dd/MM/yyyy`.
+- El autocompletado abre las primeras diez opciones tanto al recibir foco como al hacer clic,
+  incluso después de una validación. La cuenta seleccionada se restaura si continúa siendo
+  válida para el cargo recuperado.
+- Los iconos de ayuda de campo dejaron de ser botones HTML dentro de `label`: ahora son
+  activadores no etiquetables, excluidos de Tab y únicamente responden al clic directo. Esto
+  evita que pulsar otra parte del campo abra accidentalmente el modal.
+- Todas las plantillas marcan explícitamente los mensajes `th:errors` con `field-error`. Las
+  leyendas normales de formularios y autocompletados usan color neutro; el rojo queda
+  reservado para validaciones reales.
+- No requiere migración y V55 sigue libre. `node --check` y `git diff --check` finalizaron sin
+  errores. Maven local compiló 719 fuentes principales y 129 de prueba; la suite completa pasó
+  con 459 pruebas, cero fallos y cero errores. Docker Desktop devolvió un error interno de
+  escritura en `metadata_v2.db` y `meta.db`, por lo que no se desplegó una imagen nueva.

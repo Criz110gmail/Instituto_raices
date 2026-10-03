@@ -61,9 +61,9 @@
             <input type="hidden" th:field="*{version}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo completar la operación</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
             <div class="form-grid">
-                <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
-                <label><span>Usuario *</span><input th:field="*{username}" maxlength="80" autocomplete="off" placeholder="nombre.apellido"><small th:errors="*{username}"></small></label>
-                <label><span>Correo *</span><input type="email" th:field="*{email}" maxlength="254" autocomplete="off" placeholder="persona@institucion.mx"><small th:errors="*{email}"></small></label>
+                <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small class="field-error" th:errors="*{institucionId}"></small></label>
+                <label><span>Usuario *</span><input th:field="*{username}" maxlength="80" autocomplete="off" placeholder="nombre.apellido"><small class="field-error" th:errors="*{username}"></small></label>
+                <label><span>Correo *</span><input type="email" th:field="*{email}" maxlength="254" autocomplete="off" placeholder="persona@institucion.mx"><small class="field-error" th:errors="*{email}"></small></label>
             </div>
             <footer class="form-actions"><a href="/admin/catalogos/usuarios">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar identidad' : 'Crear usuario'}">Guardar</button></footer>
         </form>
@@ -94,9 +94,9 @@
             <div class="empty-assignment" th:if="${asignaciones.empty}">Este usuario todavía no tiene roles asignados.</div>
 
             <form class="assignment-form" th:if="${usuario.estado.name() != 'INACTIVO'}" th:object="${asignacionForm}" method="post" th:action="@{/admin/usuarios/{id}/roles(id=${id})}">
-                <label><span>Rol *</span><select th:field="*{rolId}" id="assignment-role"><option value="">Selecciona un rol</option><option th:each="rol : ${roles}" th:if="${rol.activo}" th:value="${rol.id}" th:text="${rol.codigo + ' · ' + rol.nombre}" th:attr="data-institucion=${rol.institucionId}">Rol</option></select><small th:errors="*{rolId}"></small></label>
-                <label><span>Alcance *</span><select th:field="*{alcance}" id="assignment-scope"><option th:each="alcance : ${alcances}" th:value="${alcance}" th:text="${alcance.name() == 'INSTITUCION' ? 'Toda la institución' : (alcance.name() == 'PLANTEL' ? 'Un plantel' : 'Vínculos de tutor')}">Alcance</option></select><small th:errors="*{alcance}"></small></label>
-                <label id="plantel-field"><span>Plantel *</span><select th:field="*{plantelId}" id="assignment-campus"><option value="">Selecciona un plantel</option><option th:each="plantel : ${planteles}" th:if="${plantel.activo}" th:value="${plantel.id}" th:text="${plantel.codigo + ' · ' + plantel.nombre}" th:attr="data-institucion=${plantel.institucionId}">Plantel</option></select><small th:errors="*{plantelId}"></small></label>
+                <label><span>Rol *</span><select th:field="*{rolId}" id="assignment-role"><option value="">Selecciona un rol</option><option th:each="rol : ${roles}" th:if="${rol.activo}" th:value="${rol.id}" th:text="${rol.codigo + ' · ' + rol.nombre}" th:attr="data-institucion=${rol.institucionId}">Rol</option></select><small class="field-error" th:errors="*{rolId}"></small></label>
+                <label><span>Alcance *</span><select th:field="*{alcance}" id="assignment-scope"><option th:each="alcance : ${alcances}" th:value="${alcance}" th:text="${alcance.name() == 'INSTITUCION' ? 'Toda la institución' : (alcance.name() == 'PLANTEL' ? 'Un plantel' : 'Vínculos de tutor')}">Alcance</option></select><small class="field-error" th:errors="*{alcance}"></small></label>
+                <label id="plantel-field"><span>Plantel *</span><select th:field="*{plantelId}" id="assignment-campus"><option value="">Selecciona un plantel</option><option th:each="plantel : ${planteles}" th:if="${plantel.activo}" th:value="${plantel.id}" th:text="${plantel.codigo + ' · ' + plantel.nombre}" th:attr="data-institucion=${plantel.institucionId}">Plantel</option></select><small class="field-error" th:errors="*{plantelId}"></small></label>
                 <button type="submit">Asignar rol</button>
             </form>
         </section>

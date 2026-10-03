@@ -36,11 +36,11 @@
                                 th:text="${item.codigo + ' · ' + item.nombre}">Institución</option>
                     </select>
                     <input th:if="${edicion}" type="hidden" th:field="*{institucionId}">
-                    <small th:errors="*{institucionId}"></small>
+                    <small class="field-error" th:errors="*{institucionId}"></small>
                 </label>
-                <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="ADMIN_PLANTEL"><small th:errors="*{codigo}"></small></label>
-                <label><span>Nombre *</span><input th:field="*{nombre}" maxlength="150" placeholder="Administrador de plantel"><small th:errors="*{nombre}"></small></label>
-                <label class="wide"><span>Descripción</span><textarea th:field="*{descripcion}" maxlength="2000" rows="3" placeholder="Responsabilidades y límites del perfil"></textarea><small th:errors="*{descripcion}"></small></label>
+                <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="ADMIN_PLANTEL"><small class="field-error" th:errors="*{codigo}"></small></label>
+                <label><span>Nombre *</span><input th:field="*{nombre}" maxlength="150" placeholder="Administrador de plantel"><small class="field-error" th:errors="*{nombre}"></small></label>
+                <label class="wide"><span>Descripción</span><textarea th:field="*{descripcion}" maxlength="2000" rows="3" placeholder="Responsabilidades y límites del perfil"></textarea><small class="field-error" th:errors="*{descripcion}"></small></label>
                 <label class="switch-row"><input type="checkbox" th:field="*{activo}"><span>Rol activo</span></label>
             </div>
 

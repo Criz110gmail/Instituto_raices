@@ -11,11 +11,11 @@ import escuela.finanzas.repository.CuentaFinancieraRepository;
 import escuela.finanzas.service.PagoService;
 import escuela.institucion.dto.response.InstitucionResponse;
 import escuela.institucion.entity.Institucion;
+import escuela.institucion.entity.Plantel;
 import escuela.institucion.service.InstitucionService;
 import escuela.inscripcion.entity.Inscripcion;
 import escuela.portal.dto.PortalPagoForm;
 import escuela.portal.dto.PortalSolicitudPagoForm;
-import escuela.portal.repository.PortalTutorRepository;
 import escuela.seguridad.entity.Usuario;
 import escuela.seguridad.service.UsuarioPrincipal;
 import escuela.tutor.entity.Tutor;
@@ -44,7 +44,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class PortalPagoServiceTest {
     @Mock private InstitucionService instituciones;
-    @Mock private PortalTutorRepository portal;
     @Mock private TutorRepository tutores;
     @Mock private CargoRepository cargos;
     @Mock private CuentaFinancieraRepository cuentas;
@@ -55,7 +54,7 @@ class PortalPagoServiceTest {
 
     @BeforeEach
     void preparar() {
-        service = new PortalPagoService(instituciones, portal, tutores, cargos, cuentas, pagos);
+        service = new PortalPagoService(instituciones, tutores, cargos, cuentas, pagos);
         principal = new UsuarioPrincipal(7L, 1L, Set.of(), false, false,
                 "familia", "x", List.of());
         Institucion institucion = new Institucion();
@@ -84,6 +83,20 @@ class PortalPagoServiceTest {
                         "A-020 · Ana López · Colegiatura · Septiembre · #10",
                         "A-020 · Ana López · Colegiatura · Octubre · #11")
                 .doesNotHaveDuplicates();
+        assertThat(resultado.resultados()).allSatisfy(opcion ->
+                assertThat(opcion.detalle()).contains("Plantel 2", "10/10/2026"));
+    }
+
+    @Test
+    void consultaCuentasConElPlantelDelCargoAutorizado() {
+        Cargo cargo = cargo(10L, 20L, "A-020", "Ana", "Colegiatura", "Septiembre");
+        when(cargos.buscarVigenteParaPortal(10L, 1L, 3L)).thenReturn(Optional.of(cargo));
+        when(cuentas.buscarParaPago(eq(1L), eq(2L), eq(false), eq(""), any()))
+                .thenReturn(new SliceImpl<>(List.of()));
+
+        assertThat(service.buscarCuentas(principal, 10L, "").resultados()).isEmpty();
+
+        verify(cuentas).buscarParaPago(eq(1L), eq(2L), eq(false), eq(""), any());
     }
 
     @Test
@@ -117,6 +130,25 @@ class PortalPagoServiceTest {
                 .containsExactly(new BigDecimal("200.00"), new BigDecimal("300.00"),
                         new BigDecimal("400.00"));
         assertThat(captor.getValue().monto()).isEqualByComparingTo("900.00");
+        assertThat(captor.getValue().plantelRegistroId()).isEqualTo(2L);
+    }
+
+    @Test
+    void rechazaUnaSolaTransferenciaParaCargosDePlantelesDistintos() {
+        PortalPagoForm form = new PortalPagoForm();
+        form.setFechaPago(LocalDateTime.now().minusMinutes(5));
+        form.setCuentaDeclaradaId(8L);
+        form.setReferencia("RASTREO-123");
+        form.setSolicitudes(List.of(solicitud(10L, "1.00"), solicitud(11L, "1.00")));
+        when(cargos.buscarVigenteParaPortal(10L, 1L, 3L)).thenReturn(Optional.of(
+                cargo(10L, 20L, "A-020", "Ana", "Colegiatura", "Septiembre", "200.00", 2L)));
+        when(cargos.buscarVigenteParaPortal(11L, 1L, 3L)).thenReturn(Optional.of(
+                cargo(11L, 21L, "A-021", "Luis", "Colegiatura", "Septiembre", "300.00", 4L)));
+
+        assertThatThrownBy(() -> service.reportar(principal, form, List.of(
+                new MockMultipartFile("comprobantes", "pago.pdf", "application/pdf", "%PDF-1.4".getBytes()))))
+                .hasMessageContaining("planteles distintos");
+        verifyNoInteractions(pagos);
     }
 
     @Test
@@ -187,10 +219,17 @@ class PortalPagoServiceTest {
 
     private Cargo cargo(Long id, Long alumnoId, String matricula, String nombre,
                         String conceptoNombre, String descripcion, String importe) {
+        return cargo(id, alumnoId, matricula, nombre, conceptoNombre, descripcion, importe, 2L);
+    }
+
+    private Cargo cargo(Long id, Long alumnoId, String matricula, String nombre,
+                        String conceptoNombre, String descripcion, String importe, Long plantelId) {
         Institucion institucion = new Institucion(); institucion.setId(1L);
+        Plantel plantel = new Plantel(); plantel.setId(plantelId); plantel.setNombre("Plantel " + plantelId);
+        plantel.setInstitucion(institucion);
         Alumno alumno = new Alumno(); alumno.setId(alumnoId); alumno.setMatricula(matricula);
         alumno.setNombres(nombre); alumno.setPrimerApellido("López"); alumno.setInstitucion(institucion);
-        Inscripcion inscripcion = new Inscripcion(); inscripcion.setAlumno(alumno);
+        Inscripcion inscripcion = new Inscripcion(); inscripcion.setAlumno(alumno); inscripcion.setPlantel(plantel);
         ConceptoCobro concepto = new ConceptoCobro(); concepto.setNombre(conceptoNombre);
         Cargo cargo = new Cargo(); cargo.setId(id); cargo.setInscripcion(inscripcion);
         cargo.setConceptoCobro(concepto); cargo.setDescripcion(descripcion);

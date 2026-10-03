@@ -10,18 +10,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PortalPagoInterfazTest {
 
     @Test
-    void losImportesSonCalculadosYLaAyudaSeAbreDesdeElFoco() throws Exception {
+    void plantelEImportesSonCalculadosYLosCargosSeAbrenConFocoOClic() throws Exception {
         String html = Files.readString(Path.of("src/main/resources/templates/portal/pago-form.html"));
         String javascript = Files.readString(Path.of("src/main/resources/static/js/portal-pago.js"));
 
         assertThat(html)
-                .contains("Total a transferir", "Saldo a pagar", "readonly aria-readonly=\"true\"",
+                .contains("Plantel asignado automáticamente", "Total a transferir", "Saldo a pagar",
+                        "readonly aria-readonly=\"true\"", "portal-charge-amount-display",
                         "data-cargo-autocomplete", "/js/portal-pago.js")
+                .doesNotContain("Plantel que recibe el pago", "th:field=\"*{plantelRegistroId}\"")
                 .doesNotContain("cargos-list", "<datalist");
         assertThat(javascript)
-                .contains("entrada.addEventListener('focus', () => buscar(''))")
+                .contains("entrada.addEventListener('focus', mostrarIniciales)")
+                .contains("entrada.addEventListener('click'")
+                .contains("/cuentas?cargoId=")
                 .contains("importe.value = Number(opcion.monto).toFixed(2)")
-                .contains("montoTotal.value = total > 0 ? total.toFixed(2) : ''");
+                .contains("montoTotal.value = total > 0 ? total.toFixed(2) : ''")
+                .contains("formatoMoneda.format(total)");
     }
 
     @Test

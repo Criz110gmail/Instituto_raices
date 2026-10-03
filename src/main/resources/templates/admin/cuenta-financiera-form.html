@@ -47,7 +47,7 @@
                             <option th:each="i : ${instituciones}" th:value="${i.id}" th:text="${i.codigo + ' · ' + i.nombre}"></option>
                         </select>
                         <input th:if="${edicion}" type="hidden" th:field="*{institucionId}">
-                        <small th:errors="*{institucionId}"></small>
+                        <small class="field-error" th:errors="*{institucionId}"></small>
                     </label>
                     <label><span>Plantel</span>
                         <select id="plantel" th:field="*{plantelId}">
@@ -56,10 +56,10 @@
                                     th:attr="data-institucion=${p.institucionId}"></option>
                         </select>
                         <small>Sin plantel requiere alcance institucional.</small>
-                        <small th:errors="*{plantelId}"></small>
+                        <small class="field-error" th:errors="*{plantelId}"></small>
                     </label>
-                    <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="BBVA-COBROS"><small th:errors="*{codigo}"></small></label>
-                    <label class="wide"><span>Nombre *</span><input th:field="*{nombre}" maxlength="150" placeholder="Cuenta principal de colegiaturas"><small th:errors="*{nombre}"></small></label>
+                    <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="BBVA-COBROS"><small class="field-error" th:errors="*{codigo}"></small></label>
+                    <label class="wide"><span>Nombre *</span><input th:field="*{nombre}" maxlength="150" placeholder="Cuenta principal de colegiaturas"><small class="field-error" th:errors="*{nombre}"></small></label>
                     <label><span>Tipo *</span>
                         <select id="tipo" th:field="*{tipo}">
                             <option th:each="t : ${tipos}" th:value="${t}"
@@ -72,19 +72,19 @@
             <fieldset class="form-section">
                 <legend>Datos bancarios</legend>
                 <div class="form-grid">
-                    <label data-datos-bancarios><span>Banco o institución financiera *</span><input th:field="*{bancoNombre}" maxlength="120" autocomplete="off"><small th:errors="*{bancoNombre}"></small></label>
-                    <label><span>Titular</span><input th:field="*{titular}" maxlength="150" autocomplete="off"><small th:errors="*{titular}"></small></label>
-                    <label data-datos-bancarios><span>Número de cuenta</span><input th:field="*{numeroCuenta}" maxlength="34" inputmode="numeric" autocomplete="off"><small th:errors="*{numeroCuenta}"></small></label>
-                    <label data-datos-bancarios><span>CLABE</span><input th:field="*{clabe}" maxlength="18" inputmode="numeric" autocomplete="off"><small>Captura exactamente 18 dígitos.</small><small th:errors="*{clabe}"></small></label>
+                    <label data-datos-bancarios><span>Banco o institución financiera *</span><input th:field="*{bancoNombre}" maxlength="120" autocomplete="off"><small class="field-error" th:errors="*{bancoNombre}"></small></label>
+                    <label><span>Titular</span><input th:field="*{titular}" maxlength="150" autocomplete="off"><small class="field-error" th:errors="*{titular}"></small></label>
+                    <label data-datos-bancarios><span>Número de cuenta</span><input th:field="*{numeroCuenta}" maxlength="34" inputmode="numeric" autocomplete="off"><small class="field-error" th:errors="*{numeroCuenta}"></small></label>
+                    <label data-datos-bancarios><span>CLABE</span><input th:field="*{clabe}" maxlength="18" inputmode="numeric" autocomplete="off"><small>Captura exactamente 18 dígitos.</small><small class="field-error" th:errors="*{clabe}"></small></label>
                 </div>
             </fieldset>
 
             <fieldset class="form-section">
                 <legend>Apertura</legend>
                 <div class="form-grid">
-                    <label><span>Moneda *</span><input th:field="*{moneda}" maxlength="3"><small th:errors="*{moneda}"></small></label>
-                    <label><span>Saldo inicial *</span><input type="number" min="0" step="0.01" th:field="*{saldoInicial}"><small th:errors="*{saldoInicial}"></small></label>
-                    <label><span>Fecha del saldo *</span><input type="date" th:field="*{fechaSaldoInicial}"><small th:errors="*{fechaSaldoInicial}"></small></label>
+                    <label><span>Moneda *</span><input th:field="*{moneda}" maxlength="3"><small class="field-error" th:errors="*{moneda}"></small></label>
+                    <label><span>Saldo inicial *</span><input type="number" min="0" step="0.01" th:field="*{saldoInicial}"><small class="field-error" th:errors="*{saldoInicial}"></small></label>
+                    <label><span>Fecha del saldo *</span><input type="date" th:field="*{fechaSaldoInicial}"><small class="field-error" th:errors="*{fechaSaldoInicial}"></small></label>
                     <label class="policy-card wide"><input type="checkbox" th:field="*{activo}"><span><strong>Cuenta activa</strong><small>Disponible como destino para operaciones futuras.</small></span></label>
                 </div>
             </fieldset>

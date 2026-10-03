@@ -15,10 +15,10 @@
             <input type="hidden" th:field="*{version}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
             <fieldset class="form-section"><legend>Identidad de la materia</legend><div class="form-grid">
-                <label class="wide"><span>Institución *</span><select id="institucion" th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
-                <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="MAT"><small th:errors="*{codigo}"></small></label>
-                <label><span>Nombre *</span><input th:field="*{nombre}" maxlength="150" placeholder="Matemáticas"><small th:errors="*{nombre}"></small></label>
-                <label class="wide"><span>Descripción</span><textarea th:field="*{descripcion}" maxlength="4000" rows="4" placeholder="Propósito general de la materia"></textarea><small th:errors="*{descripcion}"></small></label>
+                <label class="wide"><span>Institución *</span><select id="institucion" th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small class="field-error" th:errors="*{institucionId}"></small></label>
+                <label><span>Código *</span><input th:field="*{codigo}" maxlength="50" placeholder="MAT"><small class="field-error" th:errors="*{codigo}"></small></label>
+                <label><span>Nombre *</span><input th:field="*{nombre}" maxlength="150" placeholder="Matemáticas"><small class="field-error" th:errors="*{nombre}"></small></label>
+                <label class="wide"><span>Descripción</span><textarea th:field="*{descripcion}" maxlength="4000" rows="4" placeholder="Propósito general de la materia"></textarea><small class="field-error" th:errors="*{descripcion}"></small></label>
                 <label class="switch-row wide"><input type="checkbox" th:field="*{activo}"><span>Materia activa y disponible para planes nuevos</span></label>
             </div></fieldset>
             <footer class="form-actions"><a href="/admin/catalogos/materias">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear y configurar grados'}">Guardar</button></footer>

@@ -348,20 +348,24 @@
         const info = MODULE_FIELD[`${module?.title || ''}:${key}`] || HELP[key] || HELP[clean(title)] || fallback(control, title);
         const heading = findHeading(label, control);
         heading.classList.add('context-help-label');
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.tabIndex = -1;
-        button.className = 'context-help-trigger';
-        button.textContent = 'i';
-        button.setAttribute('aria-label', `Información sobre ${title}`);
-        button.setAttribute('aria-haspopup', 'dialog');
-        button.setAttribute('aria-expanded', 'false');
-        button.addEventListener('click', event => {
+        // Un botón es un elemento "labelable": al colocarlo dentro de un <label>,
+        // algunos navegadores lo activan al pulsar cualquier parte de la etiqueta.
+        // Este activador sólo responde al clic directo sobre el icono y queda fuera
+        // de la navegación con Tab, como corresponde a una ayuda opcional.
+        const trigger = document.createElement('span');
+        trigger.tabIndex = -1;
+        trigger.className = 'context-help-trigger';
+        trigger.textContent = 'i';
+        trigger.setAttribute('role', 'button');
+        trigger.setAttribute('aria-label', `Información sobre ${title}`);
+        trigger.setAttribute('aria-haspopup', 'dialog');
+        trigger.setAttribute('aria-expanded', 'false');
+        trigger.addEventListener('click', event => {
             event.preventDefault();
             event.stopPropagation();
-            openHelp({title, description: info[0], example: info[1]}, button, control);
+            openHelp({title, description: info[0], example: info[1]}, trigger, control);
         });
-        heading.appendChild(button);
+        heading.appendChild(trigger);
         label.dataset.contextHelpReady = 'true';
     };
 

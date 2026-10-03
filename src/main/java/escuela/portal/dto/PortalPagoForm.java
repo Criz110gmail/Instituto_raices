@@ -13,10 +13,10 @@ import java.util.*;
 
 @Getter @Setter
 public class PortalPagoForm {
-    @NotNull private Long plantelRegistroId;
+    private Long plantelRegistroId;
     private String plantelEtiqueta;
     @NotNull private LocalDateTime fechaPago;
-    @NotNull @DecimalMin("0.01") @Digits(integer=17, fraction=2) private BigDecimal monto;
+    private BigDecimal monto;
     @NotNull private Long cuentaDeclaradaId;
     private String cuentaDeclaradaEtiqueta;
     @Size(max=180) private String nombrePagador;
