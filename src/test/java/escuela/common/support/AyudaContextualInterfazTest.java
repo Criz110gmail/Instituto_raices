@@ -26,7 +26,7 @@ class AyudaContextualInterfazTest {
     }
 
     @Test
-    void componenteIncluyeCamposFiltrosDinamicosModalYAccesibilidad() throws IOException {
+    void componenteIncluyeCamposFiltrosDinamicosModalYNavegacionDirectaEntreControles() throws IOException {
         String tema = leer(Path.of("src/main/resources/static/js/theme.js"));
         String ayuda = leer(Path.of("src/main/resources/static/js/contextual-help.js"));
         String estilos = leer(Path.of("src/main/resources/static/css/contextual-help.css"));
@@ -34,7 +34,10 @@ class AyudaContextualInterfazTest {
         assertThat(tema).contains("/js/contextual-help.js", "/css/contextual-help.css");
         assertThat(ayuda).contains("querySelectorAll('label')", "input,select,textarea",
                 "MutationObserver", "aria-haspopup", "aria-modal", "Escape",
-                "¿Qué hace este módulo?", "MODULE_FIELD", "fallback");
+                "¿Qué hace este módulo?", "MODULE_FIELD", "fallback",
+                "button.tabIndex = -1", "button, control",
+                "previousFocus?.isConnected");
+        assertThat(ayuda.split("button\\.tabIndex = -1", -1)).hasSize(3);
         assertThat(estilos).contains(".context-help-trigger", ".context-module-help",
                 ".context-help-overlay", ".filters .context-help-trigger",
                 "aspect-ratio:1/1", "border-radius:999px!important",

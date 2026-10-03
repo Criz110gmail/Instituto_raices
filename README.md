@@ -551,9 +551,11 @@ sirve el dato y se presenta un ejemplo de captura.
 
 La ayuda se genera mediante un componente común y un glosario semántico, por lo que
 también cubre controles agregados dinámicamente. Es responsiva, funciona con tema claro y
-oscuro, puede operarse con teclado y no modifica ni envía el formulario. Los campos
-ocultos de seguridad, concurrencia e identificadores internos no muestran icono porque
-no son entradas que capture el usuario.
+oscuro y no modifica ni envía el formulario. Como los iconos son ayuda opcional, quedan
+fuera del recorrido de `Tab`: la navegación pasa directamente de un campo capturable al
+siguiente y la ayuda se abre sólo al hacer clic. Al cerrar la ayuda de un campo, el foco
+regresa a ese control. Los campos ocultos de seguridad, concurrencia e identificadores
+internos no muestran icono porque no son entradas que capture el usuario.
 
 En filtros los iconos se presentan con menor tamaño y contraste para no competir con la
 consulta. Las pantallas de login, activación y recuperación no muestran la tarjeta general

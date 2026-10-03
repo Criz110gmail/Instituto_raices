@@ -2422,3 +2422,19 @@ historial paginado.
   amplió la cobertura del formulario y del servicio; Docker ejecutó 445 pruebas sin fallos,
   Flyway aplicó V53 y `/actuator/health` respondió `UP`. La siguiente migración disponible
   es V54.
+
+## Ayuda contextual excluida del orden de tabulación (2026-10-02)
+
+- Se confirmó como regla de experiencia que los iconos informativos son ayuda secundaria:
+  se activan con clic, pero no deben interrumpir la captura al navegar con `Tab`.
+- `contextual-help.js` asigna `tabIndex = -1` tanto a los iconos generados junto a campos
+  como al botón de información general del módulo. El alcance global incluye formularios,
+  filtros, login, portal familiar, portal docente y controles creados dinámicamente.
+- La ayuda de campo conserva el control asociado como destino al cerrar el modal. Así, un
+  clic informativo no rompe la posición de captura y el siguiente `Tab` continúa hacia el
+  siguiente control operativo.
+- `AyudaContextualInterfazTest` protege la exclusión de ambos tipos de ayuda del recorrido.
+  `node --check` aprobó la sintaxis y `docker compose build app` compiló 702 fuentes de
+  producción y 124 de prueba y ejecutó 445 pruebas sin fallos. El cambio no agregó una
+  migración. La imagen se desplegó, Flyway actualizó esta base desde V40 hasta V53 y Spring
+  Boot inició en el puerto 8080; la siguiente migración disponible continúa siendo V54.

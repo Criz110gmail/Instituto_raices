@@ -294,7 +294,8 @@
             overlay.hidden = true;
             document.body.classList.remove('context-help-open');
             document.querySelectorAll('.context-help-trigger[aria-expanded=true]').forEach(button => button.setAttribute('aria-expanded', 'false'));
-            if (previousFocus) previousFocus.focus();
+            if (previousFocus?.isConnected) previousFocus.focus({preventScroll: true});
+            else if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
         };
         overlay.querySelector('.context-help-close').addEventListener('click', close);
         overlay.querySelector('[data-context-help-accept]').addEventListener('click', close);
@@ -312,9 +313,9 @@
         return overlay;
     };
 
-    const openHelp = ({title, description, example, kind = 'Ayuda del campo', note = 'Esta ayuda no modifica la información capturada.'}, trigger) => {
+    const openHelp = ({title, description, example, kind = 'Ayuda del campo', note = 'Esta ayuda no modifica la información capturada.'}, trigger, focusAfterClose = null) => {
         const modal = ensureModal();
-        previousFocus = trigger || document.activeElement;
+        previousFocus = focusAfterClose || (trigger?.tabIndex >= 0 ? trigger : null);
         modal.querySelector('#context-help-kind').textContent = kind;
         modal.querySelector('#context-help-title').textContent = title;
         modal.querySelector('#context-help-description').textContent = description;
@@ -348,6 +349,7 @@
         heading.classList.add('context-help-label');
         const button = document.createElement('button');
         button.type = 'button';
+        button.tabIndex = -1;
         button.className = 'context-help-trigger';
         button.textContent = 'i';
         button.setAttribute('aria-label', `Información sobre ${title}`);
@@ -356,7 +358,7 @@
         button.addEventListener('click', event => {
             event.preventDefault();
             event.stopPropagation();
-            openHelp({title, description: info[0], example: info[1]}, button);
+            openHelp({title, description: info[0], example: info[1]}, button, control);
         });
         heading.appendChild(button);
         label.dataset.contextHelpReady = 'true';
@@ -375,6 +377,7 @@
         summary.querySelector('strong').textContent = module.title;
         const button = document.createElement('button');
         button.type = 'button';
+        button.tabIndex = -1;
         button.textContent = '¿Qué hace este módulo?';
         button.addEventListener('click', () => openHelp({title: module.title, description: module.description, example: module.example, kind: 'Información general', note: 'La explicación es informativa; tus permisos determinan las acciones disponibles.'}, button));
         card.append(summary, button);

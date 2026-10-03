@@ -1539,3 +1539,20 @@ enumeradas de etapas anteriores.
   responsivo y los temas claro/oscuro del sistema. Docker compiló 702 fuentes principales
   y 124 de prueba, aprobó 445 pruebas, aplicó V53 y el servicio desplegado respondió `UP`.
   La siguiente migración disponible es V54.
+
+### Ayuda contextual fuera de la navegación con Tab — 2026-10-02
+
+- Los iconos informativos de formularios, filtros, accesos y portales, así como el botón
+  **¿Qué hace este módulo?**, son ayudas opcionales activadas únicamente con clic y usan
+  `tabindex="-1"`.
+- Al recorrer una captura con `Tab`, el foco avanza directamente entre `input`, `select`,
+  `textarea` y los demás controles operativos; ya no se detiene en los botones de ayuda.
+- Si se abre con clic la ayuda asociada a un campo, al cerrar el modal el foco regresa a
+  ese campo para conservar la continuidad de la captura. Los controles internos del modal
+  continúan administrando su propio foco mientras está abierto.
+- La regla se implementó una sola vez en `contextual-help.js`, por lo que también cubre
+  campos agregados dinámicamente. No agregó migración. `node --check` aprobó la sintaxis y
+  `docker compose build app` compiló 702 fuentes principales y 124 de prueba y ejecutó 445
+  pruebas sin fallos. La imagen se desplegó; en esta base Flyway aplicó las migraciones
+  pendientes V41–V53 y Spring Boot inició correctamente. La siguiente migración disponible
+  continúa siendo V54.
