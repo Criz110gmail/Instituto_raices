@@ -1,6 +1,7 @@
 package escuela.admin.controller;
 
 import escuela.admin.dto.AlumnoForm;
+import escuela.admin.service.JasperExpedienteAlumnoService;
 import escuela.alumno.dto.request.AlumnoRequest;
 import escuela.alumno.dto.response.AlumnoResponse;
 import escuela.alumno.service.AlumnoService;
@@ -38,6 +39,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doAnswer;
 
 @ExtendWith(MockitoExtension.class)
 class AlumnoAdminControllerTest {
@@ -46,6 +48,7 @@ class AlumnoAdminControllerTest {
     @Mock private FotografiaAlumnoService fotografiaService;
     @Mock private DocumentoAlumnoService documentoService;
     @Mock private FichaMedicaAlumnoService fichaMedicaService;
+    @Mock private JasperExpedienteAlumnoService reporteService;
     @Mock private InstitucionService institucionService;
     @Mock private AlcanceDatosService alcance;
     @InjectMocks private AlumnoAdminController controller;
@@ -173,6 +176,31 @@ class AlumnoAdminControllerTest {
                 .startsWith("inline;")
                 .contains("acta.pdf");
         assertThat(respuesta.getBody()).isNotNull();
+    }
+
+    @Test
+    void exportaLasDosFichasPdfEnElNavegador() throws Exception {
+        when(service.obtener(10L)).thenReturn(alumno());
+        doAnswer(invocacion -> {
+            ((java.io.OutputStream) invocacion.getArgument(1)).write("%PDF-ficha".getBytes());
+            return null;
+        }).when(reporteService).exportarFicha(org.mockito.ArgumentMatchers.eq(10L), any());
+        doAnswer(invocacion -> {
+            ((java.io.OutputStream) invocacion.getArgument(1)).write("%PDF-medica".getBytes());
+            return null;
+        }).when(reporteService).exportarFichaMedica(org.mockito.ArgumentMatchers.eq(10L), any());
+
+        var ficha = controller.exportarFicha(10L);
+        var medica = controller.exportarFichaMedica(10L);
+
+        assertThat(ficha.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_PDF);
+        assertThat(ficha.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION))
+                .contains("inline", "ficha-alumno-10.pdf");
+        assertThat(medica.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_PDF);
+        assertThat(medica.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION))
+                .contains("inline", "ficha-medica-alumno-10.pdf");
+        assertThat(ficha.getBody()).startsWith((byte) '%', (byte) 'P', (byte) 'D', (byte) 'F');
+        assertThat(medica.getBody()).startsWith((byte) '%', (byte) 'P', (byte) 'D', (byte) 'F');
     }
 
     private AlumnoForm formulario() {

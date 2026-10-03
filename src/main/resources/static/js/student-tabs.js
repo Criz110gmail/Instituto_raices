@@ -8,7 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const legacyHashTabs = {
         '#expediente-documental': 'documentos',
         '#ficha-medica': 'medica',
-        '#datos-expediente': 'ficha',
+        '#datos-expediente': 'informacion',
+        '#informacion-alumno': 'informacion',
+        '#contacto-alumno': 'contacto',
+        '#notas-alumno': 'notas',
         '#panel-ficha-resumen': 'ficha'
     };
 
@@ -45,7 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', () => activate(link.dataset.openStudentTab, false));
     });
 
+    const panelWithErrors = panels.find(panel => [...panel.querySelectorAll('small[id$="errors"],.field-error')]
+        .some(error => error.textContent.trim().length > 0));
     const requestedByHash = tabs.find(tab => tab.dataset.tabHash === window.location.hash)?.dataset.studentTab
         || legacyHashTabs[window.location.hash];
-    activate(requestedByHash || navigation.dataset.activeTab || 'ficha');
+    activate(panelWithErrors?.dataset.studentPanel || requestedByHash || navigation.dataset.activeTab || 'ficha');
 });

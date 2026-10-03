@@ -10,10 +10,13 @@
     <header class="form-top"><a href="/admin/catalogos/alumnos">← Volver a alumnos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <section class="form-card">
         <div th:unless="${edicion}" class="form-intro"><span>Nuevo expediente</span><h1>Registrar alumno</h1><p>La trayectoria académica se administrará mediante inscripciones; aquí se conserva únicamente la identidad institucional.</p></div>
-        <nav th:if="${edicion}" class="student-tablist" role="tablist" aria-label="Secciones del expediente del alumno" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'ficha' : pestanaActiva}">
+        <nav th:if="${edicion}" class="student-tablist student-record-tabs" role="tablist" aria-label="Secciones del expediente del alumno" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'ficha' : pestanaActiva}">
             <button type="button" role="tab" id="tab-ficha" aria-controls="panel-ficha-resumen" data-student-tab="ficha" data-tab-hash="#panel-ficha-resumen"><span aria-hidden="true">01</span><strong>Ficha del alumno</strong><small>Identidad y fotografía</small></button>
-            <button type="button" role="tab" id="tab-documentos" aria-controls="expediente-documental" data-student-tab="documentos" data-tab-hash="#expediente-documental"><span aria-hidden="true">02</span><strong>Expediente documental</strong><small>Archivos e historial</small></button>
-            <button type="button" role="tab" id="tab-medica" aria-controls="ficha-medica" data-student-tab="medica" data-tab-hash="#ficha-medica"><span aria-hidden="true">03</span><strong>Ficha médica</strong><small>Salud y emergencias</small></button>
+            <button type="button" role="tab" id="tab-informacion" aria-controls="informacion-alumno" data-student-tab="informacion" data-tab-hash="#informacion-alumno"><span aria-hidden="true">02</span><strong>Información del alumno</strong><small>Identidad y datos personales</small></button>
+            <button type="button" role="tab" id="tab-contacto" aria-controls="contacto-alumno" data-student-tab="contacto" data-tab-hash="#contacto-alumno"><span aria-hidden="true">03</span><strong>Contacto y domicilio</strong><small>Comunicación y ubicación</small></button>
+            <button type="button" role="tab" id="tab-notas" aria-controls="notas-alumno" data-student-tab="notas" data-tab-hash="#notas-alumno"><span aria-hidden="true">04</span><strong>Notas administrativas</strong><small>Observaciones y estado</small></button>
+            <button type="button" role="tab" id="tab-documentos" aria-controls="expediente-documental" data-student-tab="documentos" data-tab-hash="#expediente-documental"><span aria-hidden="true">05</span><strong>Expediente documental</strong><small>Archivos e historial</small></button>
+            <button type="button" role="tab" id="tab-medica" aria-controls="ficha-medica" data-student-tab="medica" data-tab-hash="#ficha-medica"><span aria-hidden="true">06</span><strong>Ficha médica</strong><small>Salud y emergencias</small></button>
         </nav>
         <section th:if="${edicion}" id="panel-ficha-resumen" class="student-profile student-tab-panel" data-student-panel="ficha" role="tabpanel" aria-labelledby="tab-ficha">
             <div class="profile-photo-column">
@@ -28,6 +31,7 @@
                     <div><span class="profile-eyebrow">Ficha del alumno</span><h1 id="perfil-alumno-titulo" th:text="${form.nombres + ' ' + form.primerApellido + (form.segundoApellido == null or form.segundoApellido.isBlank() ? '' : ' ' + form.segundoApellido)}">Nombre del alumno</h1><p><strong th:text="${form.matricula}">ALU-001</strong><span aria-hidden="true">·</span><span th:text="${institucionSeleccionada}">Institución</span></p></div>
                     <span class="profile-status" th:classappend="${form.activo ? ' active' : ' inactive'}" th:text="${form.activo ? 'Activo' : 'Inactivo'}">Activo</span>
                 </div>
+                <div class="student-report-actions"><a target="_blank" rel="noopener" th:href="@{/admin/alumnos/{id}/ficha.pdf(id=${id})}"><span aria-hidden="true">PDF</span><strong>Exportar ficha del alumno</strong><small>Abrir reporte para imprimir</small></a></div>
                 <dl class="profile-facts">
                     <div><dt>Fecha de nacimiento</dt><dd th:text="${#temporals.format(form.fechaNacimiento, 'dd/MM/yyyy')}">01/01/2018</dd></div>
                     <div><dt>Ingreso</dt><dd th:text="${#temporals.format(form.fechaIngreso, 'dd/MM/yyyy')}">20/08/2024</dd></div>
@@ -51,7 +55,7 @@
                         </div>
                     </details>
                 </div>
-                <a class="profile-edit-link" href="#datos-expediente">Editar información completa ↓</a>
+                <a class="profile-edit-link" href="#informacion-alumno" data-open-student-tab="informacion">Editar información del alumno →</a>
             </div>
         </section>
         <section th:if="${edicion}" id="expediente-documental" class="student-record-section student-tab-panel" data-student-panel="documentos" role="tabpanel" aria-labelledby="tab-documentos documentos-alumno-titulo">
@@ -79,7 +83,7 @@
             <details class="record-history" th:if="${!historialDocumentos.isEmpty()}"><summary th:text="${'Ver documentos retirados (' + historialDocumentos.size() + ')'}">Ver documentos retirados</summary><div><a th:each="documento : ${historialDocumentos}" target="_blank" rel="noopener" th:href="@{/admin/alumnos/{alumnoId}/documentos/{documentoId}/visualizar(alumnoId=${id},documentoId=${documento.id})}"><strong th:text="${documento.tipoEtiqueta}">Tipo</strong><span th:text="${documento.nombreOriginal}">archivo.pdf</span><small th:text="${'Retirado ' + #temporals.format(documento.retiradoEn, 'dd/MM/yyyy HH:mm')}">Retirado</small></a></div></details>
         </section>
         <section th:if="${edicion}" id="ficha-medica" class="student-record-section medical-record-section student-tab-panel" data-student-panel="medica" role="tabpanel" aria-labelledby="tab-medica ficha-medica-titulo">
-            <div class="record-section-heading"><div><span>Información sensible</span><h2 id="ficha-medica-titulo">Ficha médica</h2><p>Registra información útil para la atención y seguridad del alumno. Debe mantenerse actualizada y consultarse sólo cuando sea necesario.</p></div><strong>Privada</strong></div>
+            <div class="record-section-heading"><div><span>Información sensible</span><h2 id="ficha-medica-titulo">Ficha médica</h2><p>Registra información útil para la atención y seguridad del alumno. Debe mantenerse actualizada y consultarse sólo cuando sea necesario.</p></div><div class="record-heading-actions"><strong>Privada</strong><a target="_blank" rel="noopener" th:href="@{/admin/alumnos/{id}/ficha-medica.pdf(id=${id})}">Exportar PDF</a></div></div>
             <div class="form-error" role="alert" th:if="${errorFichaMedica}"><strong>No se pudo guardar la ficha médica</strong><p th:text="${errorFichaMedica}">Revisa los datos e intenta nuevamente.</p></div>
             <form class="medical-record-form" method="post" th:action="@{/admin/alumnos/{id}/ficha-medica(id=${id})}" th:object="${fichaMedicaForm}">
                 <input type="hidden" th:field="*{version}">
@@ -106,9 +110,11 @@
                 <footer class="record-form-actions"><button type="submit">Guardar ficha médica</button></footer>
             </form>
         </section>
-        <form id="datos-expediente" class="entity-form student-tab-panel" data-student-panel="ficha" th:object="${form}" method="post" th:action="${edicion ? '/admin/alumnos/' + id : '/admin/alumnos'}" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-ficha' : null}">
+        <form id="datos-expediente" class="entity-form student-edit-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/alumnos/' + id : '/admin/alumnos'}">
             <input type="hidden" th:field="*{version}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos e intenta nuevamente.</p></div>
+            <section id="informacion-alumno" class="student-edit-panel student-tab-panel" data-student-panel="informacion" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-informacion' : null}">
+            <div class="student-section-intro"><span>Información del alumno</span><h2>Identidad escolar y datos personales</h2><p>Datos base que identifican al alumno dentro de la institución.</p></div>
             <fieldset class="form-section"><legend>Identidad escolar</legend><div class="form-grid">
                 <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small th:errors="*{institucionId}"></small></label>
                 <label><span>Matrícula *</span><input th:field="*{matricula}" maxlength="50" autocomplete="off" placeholder="ALU-2026-001"><small th:errors="*{matricula}"></small></label>
@@ -124,6 +130,10 @@
                 <label><span>Nacionalidad</span><input th:field="*{nacionalidad}" maxlength="80" placeholder="Mexicana"><small th:errors="*{nacionalidad}"></small></label>
                 <label class="wide"><span>Lugar de nacimiento</span><input th:field="*{lugarNacimiento}" maxlength="150"><small th:errors="*{lugarNacimiento}"></small></label>
             </div></fieldset>
+            <footer class="form-actions" th:if="${edicion}"><a href="/admin/catalogos/alumnos">Cancelar</a><button type="submit">Guardar cambios</button></footer>
+            </section>
+            <section id="contacto-alumno" class="student-edit-panel student-tab-panel" data-student-panel="contacto" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-contacto' : null}">
+            <div class="student-section-intro"><span>Localización</span><h2>Contacto y domicilio</h2><p>Información para comunicación administrativa y ubicación del alumno.</p></div>
             <fieldset class="form-section"><legend>Contacto y domicilio</legend><div class="form-grid">
                 <label><span>Teléfono</span><input type="tel" th:field="*{telefono}" maxlength="30" autocomplete="tel"><small th:errors="*{telefono}"></small></label>
                 <label><span>Correo</span><input type="email" th:field="*{email}" maxlength="254" autocomplete="email"><small th:errors="*{email}"></small></label>
@@ -136,13 +146,18 @@
                 <label><span>Código postal</span><input th:field="*{codigoPostal}" maxlength="15" autocomplete="postal-code"><small th:errors="*{codigoPostal}"></small></label>
                 <label><span>País</span><input th:field="*{pais}" maxlength="2" autocapitalize="characters" placeholder="MX"><small th:errors="*{pais}"></small></label>
             </div></fieldset>
+            <footer class="form-actions" th:if="${edicion}"><a href="/admin/catalogos/alumnos">Cancelar</a><button type="submit">Guardar cambios</button></footer>
+            </section>
+            <section id="notas-alumno" class="student-edit-panel student-tab-panel" data-student-panel="notas" th:attr="role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-notas' : null}">
+            <div class="student-section-intro"><span>Uso interno</span><h2>Notas administrativas</h2><p>Observaciones operativas y estado vigente del expediente.</p></div>
             <fieldset class="form-section"><legend>Notas administrativas</legend><div class="form-grid">
                 <label class="wide"><span>Observaciones</span><textarea th:field="*{observaciones}" maxlength="4000" rows="4" placeholder="Información administrativa pertinente"></textarea><small th:errors="*{observaciones}"></small></label>
                 <label class="switch-row"><input type="checkbox" th:field="*{activo}"><span>Alumno activo</span></label>
             </div></fieldset>
             <footer class="form-actions"><a href="/admin/catalogos/alumnos">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Registrar alumno'}">Guardar</button></footer>
+            </section>
         </form>
-        <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/alumnos/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este alumno? Su expediente e historial se conservarán.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar alumno</strong><p>El expediente se conserva y no se elimina físicamente.</p></div><button type="submit">Desactivar</button></form>
+        <form th:if="${edicion and form.activo}" class="danger-zone student-tab-panel" data-student-panel="notas" role="tabpanel" aria-labelledby="tab-notas" method="post" th:action="@{/admin/alumnos/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este alumno? Su expediente e historial se conservarán.');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar alumno</strong><p>El expediente se conserva y no se elimina físicamente.</p></div><button type="submit">Desactivar</button></form>
     </section>
 </main>
 </body>

@@ -4,6 +4,7 @@ import escuela.admin.dto.AlumnoForm;
 import escuela.admin.dto.DocumentoAlumnoForm;
 import escuela.admin.dto.FichaMedicaAlumnoForm;
 import escuela.admin.dto.ModuloCatalogo;
+import escuela.admin.service.JasperExpedienteAlumnoService;
 import escuela.admin.support.MensajeErrorFormulario;
 import escuela.alumno.dto.response.AlumnoResponse;
 import escuela.alumno.dto.response.FotografiaAlumnoResponse;
@@ -44,6 +45,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.nio.charset.StandardCharsets;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,6 +64,7 @@ public class AlumnoAdminController {
     private final FotografiaAlumnoService fotografiaService;
     private final DocumentoAlumnoService documentoService;
     private final FichaMedicaAlumnoService fichaMedicaService;
+    private final JasperExpedienteAlumnoService reporteService;
     private final InstitucionService institucionService;
     private final AlcanceDatosService alcance;
 
@@ -111,6 +114,7 @@ public class AlumnoAdminController {
         }
         if (errores.hasErrors()) {
             preparar(model, form, id);
+            model.addAttribute("pestanaActiva", pestanaConErrores(errores));
             return "admin/alumno-form";
         }
         try {
@@ -135,6 +139,7 @@ public class AlumnoAdminController {
         } catch (ReglaNegocioException | DataIntegrityViolationException |
                  ObjectOptimisticLockingFailureException excepcion) {
             prepararError(model, AlumnoForm.desde(alumno), id, excepcion);
+            model.addAttribute("pestanaActiva", "notas");
             return "admin/alumno-form";
         }
         flash.addFlashAttribute("mensaje", "Alumno desactivado correctamente");
@@ -184,6 +189,22 @@ public class AlumnoAdminController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline()
                         .filename(descarga.nombreOriginal(), StandardCharsets.UTF_8).build().toString())
                 .body(descarga.recurso());
+    }
+
+    @GetMapping("/{id}/ficha.pdf")
+    ResponseEntity<byte[]> exportarFicha(@PathVariable Long id) {
+        AlumnoResponse alumno = alumnoAutorizado(id);
+        ByteArrayOutputStream salida = new ByteArrayOutputStream();
+        reporteService.exportarFicha(alumno.id(), salida);
+        return pdf(salida.toByteArray(), "ficha-alumno-" + id + ".pdf");
+    }
+
+    @GetMapping("/{id}/ficha-medica.pdf")
+    ResponseEntity<byte[]> exportarFichaMedica(@PathVariable Long id) {
+        AlumnoResponse alumno = alumnoAutorizado(id);
+        ByteArrayOutputStream salida = new ByteArrayOutputStream();
+        reporteService.exportarFichaMedica(alumno.id(), salida);
+        return pdf(salida.toByteArray(), "ficha-medica-alumno-" + id + ".pdf");
     }
 
     @PostMapping("/{id}/documentos")
@@ -327,6 +348,7 @@ public class AlumnoAdminController {
     private void prepararError(Model model, AlumnoForm form, Long id, RuntimeException excepcion) {
         preparar(model, form, id);
         model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
+        if (id != null) model.addAttribute("pestanaActiva", "informacion");
     }
 
     private void prepararErrorFotografia(Model model, AlumnoResponse alumno, Long id,
@@ -334,5 +356,36 @@ public class AlumnoAdminController {
         preparar(model, AlumnoForm.desde(alumno), id);
         model.addAttribute("errorFotografia", MensajeErrorFormulario.desde(excepcion));
         model.addAttribute("pestanaActiva", "ficha");
+    }
+
+    private AlumnoResponse alumnoAutorizado(Long id) {
+        alcance.validarRecurso(ModuloCatalogo.ALUMNOS, id);
+        AlumnoResponse alumno = service.obtener(id);
+        alcance.validarAdministracionInstitucional(alumno.institucionId());
+        return alumno;
+    }
+
+    private ResponseEntity<byte[]> pdf(byte[] contenido, String nombre) {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                .contentType(MediaType.APPLICATION_PDF)
+                .contentLength(contenido.length)
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline()
+                        .filename(nombre, StandardCharsets.UTF_8).build().toString())
+                .body(contenido);
+    }
+
+    private String pestanaConErrores(BindingResult errores) {
+        if (errores.hasFieldErrors("telefono") || errores.hasFieldErrors("email")
+                || errores.hasFieldErrors("calle") || errores.hasFieldErrors("numeroExterior")
+                || errores.hasFieldErrors("numeroInterior") || errores.hasFieldErrors("colonia")
+                || errores.hasFieldErrors("ciudad") || errores.hasFieldErrors("estado")
+                || errores.hasFieldErrors("codigoPostal") || errores.hasFieldErrors("pais")) {
+            return "contacto";
+        }
+        if (errores.hasFieldErrors("observaciones") || errores.hasFieldErrors("activo")) {
+            return "notas";
+        }
+        return "informacion";
     }
 }

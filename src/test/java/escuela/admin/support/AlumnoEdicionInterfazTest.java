@@ -15,13 +15,21 @@ class AlumnoEdicionInterfazTest {
 
         assertThat(plantilla)
                 .contains("data-student-tab=\"ficha\"")
+                .contains("data-student-tab=\"informacion\"")
+                .contains("data-student-tab=\"contacto\"")
+                .contains("data-student-tab=\"notas\"")
                 .contains("data-student-tab=\"documentos\"")
                 .contains("data-student-tab=\"medica\"")
                 .contains("data-student-panel=\"ficha\"")
+                .contains("data-student-panel=\"informacion\"")
+                .contains("data-student-panel=\"contacto\"")
+                .contains("data-student-panel=\"notas\"")
                 .contains("data-student-panel=\"documentos\"")
                 .contains("data-student-panel=\"medica\"")
-                .contains("/visualizar")
+                .contains("/ficha.pdf", "/ficha-medica.pdf")
                 .contains("target=\"_blank\"")
+                .contains("student-edit-form")
+                .contains("/visualizar")
                 .contains("/js/student-tabs.js");
     }
 

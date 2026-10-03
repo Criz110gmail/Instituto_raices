@@ -7,6 +7,18 @@
 Base del sistema multi-plantel construida con Java 21, Spring Boot 4.1.1,
 Thymeleaf, PostgreSQL, Flyway y Maven.
 
+## Expediente del alumno
+
+La edición del alumno se organiza en pestañas independientes para ficha, información
+personal y escolar, contacto y domicilio, notas administrativas, documentos y ficha
+médica. Las secciones de información, contacto y notas forman una sola actualización del
+alumno, mientras documentos y datos médicos conservan sus propios flujos privados.
+
+Desde la ficha principal y la ficha médica se pueden abrir reportes Jasper PDF listos para
+imprimir. Los reportes usan el logo de la institución, incluyen la fotografía vigente
+cuando existe, presentan fechas como `dd/MM/yyyy`, admiten contenido de varias páginas y
+se sirven `inline` mediante endpoints protegidos por permiso y alcance institucional.
+
 ## Inicio rápido con Docker
 
 1. Revisa las credenciales locales de `.env` y cámbialas antes de publicar el sistema.

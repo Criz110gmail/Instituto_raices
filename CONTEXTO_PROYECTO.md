@@ -1,5 +1,28 @@
 # Contexto del proyecto
 
+## Expediente de alumno segmentado y reportes Jasper (2026-10-02)
+
+- La edición administrativa de Alumnos usa seis pestañas: **Ficha del alumno**,
+  **Información del alumno**, **Contacto y domicilio**, **Notas administrativas**,
+  **Expediente documental** y **Ficha médica**. Sólo se presenta una sección a la vez para
+  reducir el desplazamiento; expediente documental y ficha médica conservaron sus flujos.
+- Información, contacto y notas siguen perteneciendo a la misma entidad y al mismo
+  formulario HTML. Cada sección ofrece su acción Guardar, pero todas actualizan el alumno
+  de forma íntegra, conservan versión optimista y muestran los errores en la pestaña del
+  campo afectado. El alta nueva permanece como un formulario continuo.
+- La ficha principal permite abrir en otra pestaña un PDF Jasper con identidad escolar,
+  datos personales, contacto, domicilio y observaciones. La ficha médica ofrece otro PDF
+  privado con datos médicos, cuidados y actuación en emergencias. Ambos usan el logo de la
+  institución —o el provisional—, fotografía cuando existe, fechas `dd/MM/yyyy`, pie con
+  paginación y contenido extensible a varias páginas sin recortes.
+- Los endpoints validan permiso de Alumnos y alcance institucional, responden
+  `Content-Disposition: inline` y no almacenan copias públicas. La revisión automatizada
+  leyó y renderizó todas las páginas de ambos documentos; la inspección visual confirmó
+  jerarquía, espaciado, saltos de página y ausencia de traslapes.
+- No hubo migración. Docker compiló 703 fuentes principales y 126 de prueba, ejecutó 449
+  pruebas sin fallos, desplegó la imagen y `/actuator/health` respondió `UP`. La siguiente
+  migración disponible continúa siendo V54.
+
 ## Expediente de pago con navegación por pestañas
 
 - La acción **Ver** de Pagos presenta el expediente con la misma navegación tipo navegador

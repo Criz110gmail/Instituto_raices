@@ -170,12 +170,27 @@
 .tutor-record-tabs ~ #datos-tutor { padding: 24px; }
 .student-tablist + .student-profile { margin: 0 34px 24px; border: 1px solid #d7e3ed; border-radius: 0 0 18px 18px; }
 .student-tablist ~ .student-record-section { border-radius: 0 0 18px 18px; }
+.student-record-tabs { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.student-edit-form { padding: 0; }
+.student-edit-panel { margin: 0 34px 28px; padding: 24px; border: 1px solid #d7e3ed; border-radius: 0 0 18px 18px; background: linear-gradient(145deg,#f8fbfe,#fff); }
+.student-section-intro { margin-bottom: 20px; }
+.student-section-intro > span { color: #148f82; font-size: .68rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.student-section-intro h2 { margin: 5px 0; color: var(--ink); font: 800 1.25rem Manrope; }
+.student-section-intro p { margin: 0; color: var(--muted); font-size: .78rem; line-height: 1.5; }
+.student-report-actions { display: flex; margin: 16px 0 2px; }
+.student-report-actions a { display: grid; grid-template-columns: 42px 1fr; gap: 2px 11px; align-items: center; padding: 11px 14px; border: 1px solid #b9d8d4; border-radius: 12px; background: #edf9f6; color: #0c625b; text-decoration: none; }
+.student-report-actions a > span { display: grid; grid-row: 1/3; width: 42px; height: 42px; place-items: center; border-radius: 11px; background: #148f82; color: #fff; font-size: .66rem; font-weight: 900; }
+.student-report-actions strong { font-size: .76rem; }
+.student-report-actions small { color: #52756e; font-size: .67rem; }
 .student-record-section { margin: 0 34px 28px; padding: 24px; border: 1px solid #d7e3ed; border-radius: 18px; background: linear-gradient(145deg,#f8fbfe,#fff); }
 .record-section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 20px; }
 .record-section-heading span { color: #148f82; font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .record-section-heading h2 { margin: 4px 0 5px; color: var(--ink); font: 800 1.2rem Manrope; }
 .record-section-heading p { max-width: 680px; margin: 0; color: var(--muted); font-size: .78rem; line-height: 1.5; }
 .record-section-heading > strong { flex: 0 0 auto; padding: 7px 10px; border-radius: 999px; background: #e6f7f3; color: #087864; font-size: .7rem; }
+.record-heading-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; }
+.record-heading-actions > strong { padding: 7px 10px; border-radius: 999px; background: #e6f7f3; color: #087864; font-size: .7rem; }
+.record-heading-actions > a { padding: 8px 11px; border: 1px solid #a9c9e9; border-radius: 9px; background: #edf6ff; color: #135c9f; font-size: .7rem; font-weight: 800; text-decoration: none; }
 .record-upload-form { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 14px; margin-bottom: 20px; padding: 18px; border: 1px solid #dce6ef; border-radius: 14px; background: #fff; }
 .record-upload-form label { display: grid; align-content: start; gap: 6px; }
 .record-upload-form label > span { color: var(--ink); font-size: .73rem; font-weight: 700; }
@@ -214,6 +229,9 @@
 [data-theme=dark] .student-tablist button > span { background: #19324d; color: #a9c7df; }
 [data-theme=dark] .student-tablist button[aria-selected=true] { background: #0e1d31; color: #cde6fa; box-shadow: 0 -6px 18px rgba(0,0,0,.18); }
 [data-theme=dark] .student-tablist + .student-profile { border-color: #344a63; }
+[data-theme=dark] .student-edit-panel { border-color: #344a63; background: linear-gradient(145deg,#0a1728,#0e1d31); }
+[data-theme=dark] .student-report-actions a { border-color: #28665d; background: #12322f; color: #a7eadf; }
+[data-theme=dark] .student-report-actions small { color: #9cb7b4; }
 [data-theme=dark] .enrollment-record-tabs + .enrollment-student-profile,
 [data-theme=dark] .enrollment-record-tabs ~ #datos-inscripcion,
 [data-theme=dark] .enrollment-record-tabs ~ #grupos-inscripcion,
@@ -221,6 +239,8 @@
 [data-theme=dark] .tutor-record-tabs ~ #datos-tutor,
 [data-theme=dark] .tutor-record-tabs ~ .tutor-access-card { border-color: #344a63; }
 [data-theme=dark] .record-section-heading > strong { background: #123d36; color: #9de6d5; }
+[data-theme=dark] .record-heading-actions > strong { background: #123d36; color: #9de6d5; }
+[data-theme=dark] .record-heading-actions > a { border-color: #315676; background: #142a42; color: #b8dcf7; }
 [data-theme=dark] .record-upload-form,[data-theme=dark] .record-document-card,[data-theme=dark] .medical-record-form .form-section { border-color: #344a63; background: #0e1d31; }
 [data-theme=dark] .record-upload-form input,[data-theme=dark] .record-upload-form select { border-color: #344a63; background: #0a1728; color: #eef5fd; }
 [data-theme=dark] .record-upload-form input::file-selector-button { background: #19324d; color: #cde6fa; }
@@ -237,6 +257,7 @@
     .tutor-record-tabs ~ .tutor-access-card { margin: 0 20px 22px; }
     .tutor-record-tabs ~ #datos-tutor { padding: 20px 18px; }
     .student-tablist + .student-profile { margin: 0 20px 20px; padding: 22px 18px; }
+    .student-edit-panel { margin: 0 20px 22px; padding: 20px 18px; }
     .enrollment-record-tabs + .enrollment-student-profile { margin: 0 20px; }
     .enrollment-record-tabs ~ #datos-inscripcion,
     .enrollment-record-tabs ~ #grupos-inscripcion,
@@ -244,6 +265,7 @@
     .student-record-section { margin: 0 20px 22px; padding: 20px; }
     .record-section-heading { display: grid; gap: 12px; }
     .record-section-heading > strong { justify-self: start; }
+    .record-heading-actions { justify-content: space-between; }
     .record-upload-form { grid-template-columns: 1fr; padding: 14px; }
     .record-upload-form .wide { grid-column: auto; }
     .record-upload-form > button { width: 100%; }

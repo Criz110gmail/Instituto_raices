@@ -22,6 +22,15 @@ no vuelvas a implementar componentes que ya existan.
 - Rama principal: `main`.
 - Confirma siempre `git status` y `git log` antes de continuar; el propietario realiza
   manualmente los commits y el `push`.
+- Estado más reciente verificado el 02/10/2026: la edición de Alumnos quedó dividida en
+  seis pestañas —Ficha del alumno, Información del alumno, Contacto y domicilio, Notas
+  administrativas, Expediente documental y Ficha médica—. Las tres secciones editables
+  principales conservan un solo formulario y una sola actualización de la entidad; los
+  errores abren automáticamente la sección correspondiente. La ficha general y la ficha
+  médica cuentan con PDF Jasper institucional `inline`, logo de la escuela, fotografía
+  del alumno cuando existe, paginación y formato de fechas `dd/MM/yyyy`. No hubo migración;
+  Docker compiló 703 fuentes principales y 126 de prueba, aprobó 449 pruebas y el servicio
+  desplegado respondió `UP`. La siguiente migración disponible continúa siendo V54.
 - La interfaz distingue **Cargos a alumnos** (obligaciones y saldos) de **Pagos** (dinero
   recibido). En Pagos, la cuenta declarada es obligatoria para cualquier método. El ajuste
   de un cargo permanece separado porque aumenta o disminuye la deuda sin registrar un
@@ -913,6 +922,14 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   PostgreSQL local sin cambiar el volumen persistente ni las credenciales de `.env`.
 
 ## Siguiente paso acordado
+
+El último cambio terminado es la reorganización del expediente de Alumnos y sus dos
+reportes Jasper. El propietario debe hacer una prueba funcional controlada al editar un
+alumno: recorrer las seis pestañas, guardar por separado Información, Contacto y Notas,
+provocar una validación para confirmar que se reabre la pestaña correcta, revisar tema
+oscuro y móvil, y abrir/imprimir ambos PDF con logo y fotografía reales. No cargar datos
+personales reales sólo para verificar. Después de aprobarlo, acordar con el propietario
+cuál pendiente priorizar; no crear V54 hasta que el nuevo alcance requiera esquema.
 
 El expediente administrativo de Pagos usa navegación por pestañas basada en `student-tabs.js`:
 Resumen, Distribución, Gestión, Devoluciones condicional y Comprobantes. Los errores de las
