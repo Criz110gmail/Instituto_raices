@@ -80,7 +80,7 @@ public class CargoServiceImpl implements CargoService {
                         request.conceptoCobroId()));
         PeriodoAcademico periodo = request.periodoAcademicoId() == null ? null
                 : periodoRepository.findById(request.periodoAcademicoId())
-                .orElseThrow(() -> new RecursoNoEncontradoException("el periodo académico",
+                .orElseThrow(() -> new RecursoNoEncontradoException("el periodo de evaluación",
                         request.periodoAcademicoId()));
         validarManual(request, inscripcion, concepto, periodo);
         String clave = "MANUAL:" + inscripcion.getAlumno().getInstitucion().getId()
@@ -321,11 +321,11 @@ public class CargoServiceImpl implements CargoService {
         if (!periodo.getCicloEscolar().getId().equals(inscripcion.getCicloEscolar().getId())
                 || !periodo.getNivelEducativo().getId()
                 .equals(inscripcion.getGrado().getNivelEducativo().getId())) {
-            throw new ReglaNegocioException("El periodo académico no corresponde a la inscripción");
+            throw new ReglaNegocioException("El periodo de evaluación no corresponde a la inscripción");
         }
         if (request.periodoCobroInicio().isBefore(periodo.getFechaInicio())
                 || request.periodoCobroFin().isAfter(periodo.getFechaFin())) {
-            throw new ReglaNegocioException("El periodo de cobro debe quedar dentro del periodo académico");
+            throw new ReglaNegocioException("El periodo de cobro debe quedar dentro del periodo de evaluación");
         }
     }
 

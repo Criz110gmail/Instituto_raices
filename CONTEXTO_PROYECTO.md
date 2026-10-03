@@ -87,7 +87,7 @@
 
 ## Ajuste posterior a V52 — separación visual entre cargos y pagos
 
-- El nombre visible **Pagos de alumnos** cambió a **Cargos a alumnos** en navegación,
+- El nombre visible de las obligaciones cambió finalmente a **Adeudos de alumnos** en navegación,
   permisos, formularios, generación automática y ayudas. Las rutas y permisos internos
   se conservaron para no romper integraciones: un cargo representa lo que el alumno debe;
   un pago representa dinero recibido.
@@ -192,7 +192,7 @@
 
 ## Verificación posterior a V50 — cobranza asistida desde la inscripción
 
-- Se conservaron desacoplados Cuotas individuales, Pagos de alumnos y Pagos, pero la
+- Se conservaron desacoplados Cuotas individuales, Adeudos de alumnos y Pagos recibidos, pero la
   inscripción ahora los enlaza mediante una tercera pestaña **Cobranza**. La pantalla
   resume cuotas, cargos y estado del proceso sin recuperar catálogos completos.
 - El alta asistida precarga el contexto de la inscripción y permite crear una cuota única
@@ -512,7 +512,7 @@
 - Los recursos inexistentes y errores inesperados continúan en el manejador global para
   no ocultar fallos de programación o navegación inválida.
 - Este comportamiento es obligatorio para los mantenimientos futuros de ciclos,
-  periodos académicos y grupos.
+  periodos de evaluación y grupos.
 
 ## Verificación del manejo de errores
 
@@ -543,7 +543,7 @@
 - La exportación filtrada de ciclos respondió HTTP 200 con firma XLSX válida.
 - PostgreSQL permaneció saludable y `/actuator/health` respondió `UP`.
 
-## Decisiones — mantenimiento de periodos académicos
+## Decisiones — mantenimiento de periodos de evaluación
 
 - Se completó el mantenimiento de PeriodoAcademico con alta y edición de ciclo, nivel,
   código, nombre, tipo, orden, fechas, estado y observaciones.
@@ -553,7 +553,7 @@
   validación definitiva de rango, solapamientos, duplicados y ciclo cerrado.
 - Todos los errores esperables se muestran dentro del formulario conservando la captura.
 
-## Verificación del mantenimiento de periodos académicos
+## Verificación del mantenimiento de periodos de evaluación
 
 - Compilación Docker correcta de 96 archivos Java de producción.
 - 24 pruebas ejecutadas sin fallos ni errores.
@@ -1105,7 +1105,7 @@
   roles existentes. Cada obligación pertenece a una inscripción y, por consecuencia,
   conserva el alumno y plantel al que corresponde.
 - El alta manual permite registrar cobros extraordinarios con concepto, descripción
-  histórica, periodo, emisión, vencimiento, importe y periodo académico opcional.
+  histórica, periodo, emisión, vencimiento, importe y periodo de evaluación opcional.
 - El generador consulta por bloques de 100 únicamente cuotas activas, automáticas, con
   concepto activo e inscripción vigente. Las cuotas mensuales se convierten en un cargo
   por mes y el día 29, 30 o 31 se recorta al último día del mes cuando corresponde.
@@ -1117,7 +1117,7 @@
 - El catálogo filtra y pagina en PostgreSQL, aplica alcance institucional o por plantel
   y exporta con Apache POI exactamente el mismo filtro en bloques. Las pantallas de alta,
   generación y detalle/cancelación son responsivas y compatibles con tema claro/oscuro.
-- El autocompletado opcional de periodo académico se acota por la inscripción y usa un
+- El autocompletado opcional de periodo de evaluación se acota por la inscripción y usa un
   índice GIN `pg_trgm`; no carga todos los periodos en el formulario.
 
 ## Verificación de cargos
@@ -2373,7 +2373,7 @@ historial paginado.
 
 ## Orden técnico automático en catálogos (2026-09-30)
 
-- Se retiró la captura de orden de Niveles, Grados, Periodos académicos y la configuración
+- Se retiró la captura de orden de Niveles, Grados, Periodos de evaluación y la configuración
   de Materias por grado. Los DTO de entrada tampoco aceptan el valor y las ediciones
   preservan el dato que exista en base de datos.
 - Flyway V46 actualizó los registros existentes para usar `orden = id` y creó triggers
@@ -2385,7 +2385,7 @@ historial paginado.
 - V46 quedó aplicada, la comprobación devolvió `0|0|0|0` diferencias y confirmó los cuatro
   triggers. Docker aprobó 393 pruebas y la siguiente migración disponible es V47.
 
-## Comprobante oficial de pago y Pagos de alumnos (2026-09-30)
+## Comprobante oficial de pago y Adeudos de alumnos (2026-09-30)
 
 - Los pagos `VALIDADO` exponen un comprobante Jasper en Administración, Portal familiar y
   Portal tú. Todos los enlaces abren una pestaña nueva y los endpoints responden PDF
@@ -2398,7 +2398,7 @@ historial paginado.
   del estado validado. Soporte administrativo reutiliza esa verificación y audita la
   consulta. El endpoint administrativo conserva alcance institucional y autoridades de
   Pagos.
-- El nombre visible **Cargos** se sustituyó por **Pagos de alumnos** en el catálogo de
+- El catálogo técnico **Cargos** se presenta actualmente como **Adeudos de alumnos** en el catálogo de
   administración, permisos, textos de ayuda y pantallas de alta, detalle y generación. Se
   conservaron el slug `cargos`, URLs, entidades y permisos `CARGO_*` como contrato interno.
 - La prueba de exportación genera, lee y renderiza una página A4; la inspección visual no
@@ -2514,3 +2514,17 @@ historial paginado.
   Roles y permisos.
 - Incluye listado paginado, filtros, detalle histórico, Excel por bloques, diseño responsivo
   y estados derivados. Flyway aplicó V54 y el despliegue respondió `UP`; V55 queda libre.
+
+## Navegación administrativa por proceso (2026-10-03)
+
+- La navegación lateral ahora se divide en **Operación escolar** y **Administración**. Sus
+  subsecciones siguen el proceso de trabajo y no el orden histórico de implementación.
+- Se homologaron los nombres funcionales **Periodos de evaluación**, **Familiares del
+  alumno**, **Adeudos de alumnos**, **Pagos recibidos** y **Soporte del portal familiar**.
+  La pantalla de Roles obtiene estos mismos nombres desde `ModuloPermiso`.
+- La generación automática ya describe adeudos por generar. “Pago” se reserva para dinero
+  recibido; “cargo” permanece como nombre interno y en contextos financieros donde identifica
+  la obligación concreta a la que se aplica un abono.
+- No cambiaron slugs, rutas, permisos técnicos ni esquema. Se añadieron contratos de prueba
+  para las secciones, la ruta de Adeudos y los nombres visibles de Roles. Docker compiló
+  719 fuentes principales y 129 de prueba y aprobó 456 pruebas; V55 continúa disponible.

@@ -63,7 +63,7 @@ public class PeriodoAcademicoAdminController {
             prepararError(model, form, null, excepcion);
             return "admin/periodo-form";
         }
-        flash.addFlashAttribute("mensaje", "Periodo académico creado correctamente");
+        flash.addFlashAttribute("mensaje", "Periodo de evaluación creado correctamente");
         return "redirect:/admin/catalogos/periodos";
     }
 
@@ -94,7 +94,7 @@ public class PeriodoAcademicoAdminController {
             prepararError(model, form, id, excepcion);
             return "admin/periodo-form";
         }
-        flash.addFlashAttribute("mensaje", "Periodo académico actualizado correctamente");
+        flash.addFlashAttribute("mensaje", "Periodo de evaluación actualizado correctamente");
         return "redirect:/admin/catalogos/periodos";
     }
 

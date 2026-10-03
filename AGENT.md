@@ -32,6 +32,15 @@ no vuelvas a implementar componentes que ya existan.
   `dd/MM/yyyy`. V54 se aplicó correctamente, Docker aprobó 454 pruebas y el servicio
   respondió `UP`. La siguiente migración
   disponible es V55.
+- Ajuste visual verificado el 03/10/2026: la navegación administrativa se ordena por el
+  proceso real en dos áreas, **Operación escolar** y **Administración**, subdivididas en
+  Control escolar, Gestión académica, Cobranza escolar, Comunicación, Finanzas, Compras y
+  proveedores, Configuración escolar y Seguridad y soporte. Los nombres visibles son
+  **Periodos de evaluación**, **Familiares del alumno**, **Adeudos de alumnos**, **Pagos
+  recibidos** y **Soporte del portal familiar**. La pantalla de Roles usa exactamente los
+  mismos nombres. No cambiaron slugs, URLs, permisos técnicos, entidades ni tablas. Docker
+  compiló 719 fuentes principales y 129 de prueba y aprobó 456 pruebas. No hubo migración;
+  V55 continúa disponible.
 - La edición de Alumnos quedó dividida en
   seis pestañas —Ficha del alumno, Información del alumno, Contacto y domicilio, Notas
   administrativas, Expediente documental y Ficha médica—. Las tres secciones editables
@@ -49,7 +58,7 @@ no vuelvas a implementar componentes que ya existan.
   datos personales, contacto, domicilio, trabajo y estado del portal. Docker compiló 704
   fuentes principales y 127 de prueba, aprobó 451 pruebas y el servicio desplegado respondió
   `UP`. No hubo migración; V54 sigue disponible.
-- La interfaz distingue **Cargos a alumnos** (obligaciones y saldos) de **Pagos** (dinero
+- La interfaz distingue **Adeudos de alumnos** (obligaciones y saldos) de **Pagos recibidos** (dinero
   recibido). En Pagos, la cuenta declarada es obligatoria para cualquier método. El ajuste
   de un cargo permanece separado porque aumenta o disminuye la deuda sin registrar un
   ingreso. El detalle de pago usa estados y cancelación con diseño completo en temas claro
@@ -941,6 +950,13 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
+La reorganización del menú y los nombres funcionales quedó implementada. El propietario
+debe revisar visualmente con un rol amplio y otro limitado que la sección activa se abra,
+que el orden resulte natural en escritorio y móvil y que Roles muestre **Periodos de
+evaluación**, **Familiares del alumno**, **Adeudos de alumnos** y **Pagos recibidos** sin
+perder selecciones existentes. Las rutas internas conservan `/admin/catalogos/cargos`,
+`/admin/catalogos/pagos` y los permisos `CARGO_*`/`PAGO_*`.
+
 El último cambio implementado es V54 **Convenios de pago**. Falta la prueba funcional del
 propietario: asignar/confirmar el permiso `Convenios de pago`, seleccionar dos o más cargos
 de hermanos, verificar saldo anterior, monto acordado y condonación, confirmar que el portal
@@ -1393,7 +1409,7 @@ enumeradas de etapas anteriores.
 
 ### Orden técnico automático en catálogos — 2026-09-30
 
-- Los formularios de Niveles educativos, Grados, Periodos académicos y Materias por grado
+- Los formularios de Niveles educativos, Grados, Periodos de evaluación y Materias por grado
   ya no muestran ni reciben el campo **Orden**. También dejó de presentarse en los listados
   de Niveles/Grados y en las ayudas de materias.
 - V46 alineó el `orden` existente con el `id` en `nivel_educativo`, `grado`,
@@ -1441,7 +1457,7 @@ enumeradas de etapas anteriores.
 ### Cobranza asistida desde la inscripción — 2026-10-01
 
 - La edición de Inscripciones agrega la pestaña **Cobranza**, sin fusionar ni duplicar las
-  responsabilidades de Cuotas, Pagos de alumnos y Pagos. Presenta un resumen del avance,
+  responsabilidades de Cuotas, Adeudos de alumnos y Pagos recibidos. Presenta un resumen del avance,
   cuotas configuradas y cargos emitidos para ese alumno.
 - **Preparar cobro** abre una cuota individual de frecuencia única con inscripción,
   institución, plantel, moneda y vigencia precargados. El usuario sólo elige concepto,
@@ -1495,12 +1511,12 @@ enumeradas de etapas anteriores.
 
 ### Vista previa de pagos automáticos y confirmaciones — 2026-10-01
 
-- **Pagos de alumnos → Generar automáticos** también usa un flujo obligatorio de dos
+- **Adeudos de alumnos → Generar automáticos** también usa un flujo obligatorio de dos
   pasos. El primer formulario sólo ofrece **Visualizar cuotas por aplicar**; todavía no
   modifica la cobranza.
 - La vista previa muestra, en una lista paginada, cada pago faltante por alumno, matrícula,
   plantel, concepto, frecuencia, periodo, vencimiento e importe. El resumen indica cuotas
-  con pendientes, cantidad de pagos por generar e importe total programado.
+  con pendientes, cantidad de adeudos por generar e importe total programado.
 - Sólo después de revisar aparece **Confirmar y generar pagos faltantes**. Al confirmar se
   recalculan cuotas y periodos para evitar datos obsoletos; las claves `AUTO` continúan
   impidiendo duplicados ante ejecuciones repetidas o simultáneas.
@@ -1550,7 +1566,7 @@ enumeradas de etapas anteriores.
 
 ### Captura simplificada del periodo de un cargo — 2026-10-02
 
-- **Cargos a alumnos → Nuevo registro** ya no obliga al usuario a interpretar siempre las
+- **Adeudos de alumnos → Nuevo registro** ya no obliga al usuario a interpretar siempre las
   fechas técnicas de inicio y fin. Ahora permite elegir **Mes completo**, **Fecha
   específica** o **Rango personalizado**.
 - Mes completo solicita únicamente mes y año y calcula el primer y último día. Fecha
@@ -1569,7 +1585,7 @@ enumeradas de etapas anteriores.
 
 ### Fecha de registro protegida en cargos — 2026-10-02
 
-- **Cargos a alumnos → Nuevo registro** muestra la fecha institucional actual como
+- **Adeudos de alumnos → Nuevo registro** muestra la fecha institucional actual como
   **Fecha de registro del cargo**. El campo permanece bloqueado y el servidor vuelve a
   imponer esa fecha aunque una petición intente alterarla.
 - La opción **Registrar con una fecha diferente** habilita una excepción explícita. En
@@ -1636,3 +1652,23 @@ enumeradas de etapas anteriores.
 - Docker compiló 719 fuentes principales y 129 de prueba y aprobó 454 pruebas. Flyway aplicó
   V54 sobre PostgreSQL 17 y Spring Boot inició en el puerto 8080. La siguiente migración
   disponible es V55.
+
+### Navegación administrativa por proceso — 2026-10-03
+
+- El menú lateral dejó de agruparse por categorías técnicas aisladas. Ahora presenta dos
+  áreas principales: **Operación escolar** y **Administración**, cada una con subsecciones
+  plegables ordenadas según el flujo habitual de trabajo.
+- Operación escolar reúne Control escolar, Gestión académica, Cobranza escolar y
+  Comunicación. Administración reúne Finanzas, Compras y proveedores, Configuración
+  escolar y Seguridad y soporte. La subsección del módulo activo siempre permanece abierta.
+- Los nombres visibles se homologaron en navegación, formularios, mensajes, ayuda contextual
+  y Roles: **Periodos de evaluación**, **Familiares del alumno**, **Adeudos de alumnos**,
+  **Pagos recibidos** y **Soporte del portal familiar**.
+- La generación automática habla de adeudos, no de pagos, porque todavía no existe recepción
+  de dinero. Dentro del expediente financiero se conserva la palabra cargo cuando identifica
+  técnicamente la obligación a la que se aplica un pago.
+- No se renombraron código, entidades, tablas, rutas ni autoridades. La compatibilidad de
+  `PeriodoAcademico`, `Cargo`, `/admin/cargos`, `CARGO_*` y `PAGO_*` permanece intacta y los
+  roles existentes conservan sus asignaciones.
+- `node --check` aprobó ambos JavaScript modificados y Docker compiló 719 fuentes principales
+  y 129 de prueba; las 456 pruebas pasaron sin fallos. No se creó migración y V55 sigue libre.

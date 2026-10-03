@@ -7,7 +7,7 @@
 </head>
 <body class="form-page">
 <main class="form-shell finance-shell">
-    <header class="form-top"><a href="/admin/catalogos/cargos">← Volver a cargos a alumnos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <header class="form-top"><a href="/admin/catalogos/cargos">← Volver a adeudos de alumnos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <div class="finance-principle"><span th:text="${cargo.situacionCobro}">Pendiente</span><strong th:text="${cargo.descripcion}">Cargo al alumno</strong><p>Los datos registrados son históricos e inmutables. Si el importe por cobrar no corresponde, cancélalo indicando el motivo.</p></div>
     <section class="form-card">
         <div class="form-intro finance-intro"><span th:text="${cargo.claveGeneracion}">Clave</span><h1 th:text="${cargo.alumnoMatricula + ' · ' + cargo.alumnoNombre}">Alumno</h1><p th:text="${cargo.numeroInscripcion + ' · ' + cargo.plantelNombre}">Inscripción</p></div>
@@ -17,7 +17,7 @@
                 <label><span>Concepto</span><strong th:text="${cargo.conceptoCodigo + ' · ' + cargo.conceptoNombre}">Concepto</strong></label>
                 <label><span>Origen</span><strong th:text="${cargo.cuotaAlumnoId == null ? 'Emisión manual' : 'Cuota automática #' + cargo.cuotaAlumnoId}">Origen</strong></label>
                 <label><span>Periodo de cobro</span><strong th:text="${cargo.periodoCobroInicio + ' — ' + cargo.periodoCobroFin}">Periodo</strong></label>
-                <label><span>Periodo académico</span><strong th:text="${cargo.periodoAcademicoNombre == null ? 'Sin asociación' : cargo.periodoAcademicoNombre}">Periodo</strong></label>
+                <label><span>Periodo de evaluación</span><strong th:text="${cargo.periodoAcademicoNombre == null ? 'Sin asociación' : cargo.periodoAcademicoNombre}">Periodo</strong></label>
                 <label><span>Fecha de registro</span><strong th:text="${cargo.fechaEmision}">Fecha</strong></label>
                 <label><span>Fecha límite para pagar</span><strong th:text="${cargo.fechaVencimiento}">Fecha</strong></label>
                 <label class="wide" th:if="${cargo.motivoFechaRegistroDiferente != null}"><span>Motivo de fecha de registro diferente</span><strong th:text="${cargo.motivoFechaRegistroDiferente}">Motivo</strong></label>

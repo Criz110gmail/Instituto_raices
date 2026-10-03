@@ -23,9 +23,9 @@ class ComprobantePagoInterfazTest {
     @Test
     void moduloUsaNombreClaroSinCambiarSusRutasInternas() throws IOException {
         assertThat(recurso("templates/admin/cargo-form.html"))
-                .contains("Volver a cargos a alumnos", "@{/admin/cargos}");
+                .contains("Volver a adeudos de alumnos", "@{/admin/cargos}");
         assertThat(recurso("templates/admin/cargo-generar.html"))
-                .contains("Generar cargos programados", "/admin/cargos/generar");
+                .contains("Generar adeudos programados", "/admin/cargos/generar");
         assertThat(recurso("templates/admin/cargo-detalle.html"))
                 .contains("adjustment-submit-button", "detail-close-button",
                         "detail-payment-button");
@@ -57,7 +57,7 @@ class ComprobantePagoInterfazTest {
                 .contains("data-student-tab=\"gestion\"")
                 .contains("data-student-tab=\"devoluciones\"")
                 .contains("data-student-tab=\"comprobantes\"")
-                .contains("payment-list-button", "Volver al listado de pagos")
+                .contains("payment-list-button", "Volver a pagos recibidos")
                 .contains("/js/student-tabs.js")
                 .containsOnlyOnce("data-student-panel=\"gestion\"");
     }

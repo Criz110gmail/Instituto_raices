@@ -6,49 +6,49 @@ import java.util.Set;
 import java.util.Map;
 
 public enum ModuloCatalogo {
+    ALUMNOS("alumnos", "Alumnos", List.of("Matrícula", "Alumno", "CURP", "Nacimiento", "Ingreso")),
+    TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),
+    VINCULOS_TUTOR("vinculos-tutor", "Familiares del alumno", List.of("Alumno", "Tutor", "Parentesco", "Permisos", "Vigencia")),
+    INSCRIPCIONES("inscripciones", "Inscripciones", List.of("Inscripción", "Alumno", "Plantel", "Ciclo", "Grado", "Vigencia")),
+    GRUPOS("grupos", "Grupos", List.of("Grupo", "Código", "Plantel", "Grado", "Turno", "Capacidad")),
+    ACTUALIZACIONES_EXPEDIENTE("actualizaciones-expediente", "Actualizaciones familiares", List.of()),
+    MATERIAS("materias", "Materias", List.of("Código", "Materia", "Institución", "Descripción")),
+    MAESTROS("maestros", "Maestros", List.of("Número", "Maestro", "Correo", "Cuenta de acceso", "Institución")),
+    HORARIOS_CLASE("horarios-clases", "Horarios y clases", List.of()),
+    CALENDARIO_ESCOLAR("calendario-escolar", "Calendario escolar", List.of()),
+    PLANEACIONES("planeaciones", "Planeaciones", List.of()),
+    ASISTENCIA("asistencia", "Asistencia", List.of("Fecha", "Alumno", "Matrícula", "Grupo", "Plantel", "Observaciones")),
+    CALIFICACIONES("calificaciones", "Calificaciones", List.of("Alumno", "Matrícula", "Materia", "Periodo", "Grado", "Resultado")),
+    BOLETAS("boletas", "Boletas", List.of()),
+    CONCEPTOS_COBRO("conceptos-cobro", "Conceptos de cobro", List.of("Código", "Concepto", "Institución", "Categoría", "Reglas")),
+    CUOTAS_ALUMNO("cuotas-alumno", "Cuotas por alumno", List.of("Alumno", "Concepto", "Importe", "Frecuencia", "Vencimiento", "Generación")),
+    TIPOS_BECA("tipos-beca", "Tipos de beca", List.of("Código", "Tipo de beca", "Institución", "Descripción")),
+    BECAS_ALUMNO("becas-alumno", "Becas por alumno", List.of("Alumno", "Tipo", "Concepto", "Beneficio", "Vigencia")),
+    CARGOS("cargos", "Adeudos de alumnos", List.of("Alumno", "Concepto", "Descripción", "Periodo", "Vencimiento", "Importe", "Saldo")),
+    CONVENIOS_PAGO("convenios-pago", "Convenios de pago", List.of()),
+    AJUSTES_CARGO("ajustes-cargo", "Historial de ajustes", List.of("Alumno", "Concepto", "Tipo", "Efecto", "Monto", "Fecha", "Motivo")),
+    POLITICAS_RECARGO("politicas-recargo", "Políticas de recargo", List.of("Concepto", "Institución", "Recargo", "Gracia", "Periodicidad", "Límite", "Generación")),
+    AVISOS("avisos", "Avisos escolares", List.of()),
+    EVENTOS_ESCOLARES("eventos-escolares", "Eventos escolares", List.of()),
+    PAGOS("pagos", "Pagos recibidos", List.of("Folio", "Tutor", "Plantel de registro", "Fecha", "Método", "Origen", "Monto", "Distribución", "Comprobantes")),
+    MOTIVOS_FINANCIEROS("motivos-financieros", "Motivos financieros", List.of("Código", "Motivo", "Institución", "Naturaleza", "Categoría")),
+    CUENTAS_FINANCIERAS("cuentas-financieras", "Cuentas financieras", List.of("Código", "Cuenta", "Alcance", "Tipo", "Institución financiera", "Identificador", "Saldo inicial", "Fecha inicial")),
+    MOVIMIENTOS_FINANCIEROS("movimientos-financieros", "Movimientos financieros", List.of()),
+    RETIROS_FONDO("retiros-fondo", "Retiros de fondos", List.of()),
+    REPORTES_FINANCIEROS("reportes-financieros", "Reportes financieros", List.of()),
+    PROVEEDORES("proveedores", "Proveedores", List.of()),
+    COMPRAS("compras", "Compras", List.of()),
     INSTITUCIONES("instituciones", "Instituciones", List.of("Código", "Nombre", "Zona horaria", "Moneda")),
     PLANTELES("planteles", "Planteles", List.of("Código", "Plantel", "Institución", "Ciudad")),
     NIVELES("niveles", "Niveles educativos", List.of("Código", "Nivel", "Institución")),
     OFERTA("oferta", "Niveles por plantel", List.of("Plantel", "Nivel", "Clave CCT")),
     GRADOS("grados", "Grados", List.of("Código", "Grado", "Nivel")),
     CICLOS("ciclos", "Ciclos escolares", List.of("Código", "Ciclo", "Inicio", "Fin", "Predeterminado")),
-    PERIODOS("periodos", "Periodos académicos", List.of("Código", "Periodo", "Nivel", "Tipo", "Fechas")),
-    CALENDARIO_ESCOLAR("calendario-escolar", "Calendario escolar", List.of()),
-    GRUPOS("grupos", "Grupos", List.of("Grupo", "Código", "Plantel", "Grado", "Turno", "Capacidad")),
-    MATERIAS("materias", "Materias", List.of("Código", "Materia", "Institución", "Descripción")),
-    CALIFICACIONES("calificaciones", "Calificaciones", List.of("Alumno", "Matrícula", "Materia", "Periodo", "Grado", "Resultado")),
-    ASISTENCIA("asistencia", "Asistencia", List.of("Fecha", "Alumno", "Matrícula", "Grupo", "Plantel", "Observaciones")),
-    BOLETAS("boletas", "Boletas", List.of()),
-    MAESTROS("maestros", "Maestros", List.of("Número", "Maestro", "Correo", "Cuenta de acceso", "Institución")),
-    PLANEACIONES("planeaciones", "Planeaciones", List.of()),
-    HORARIOS_CLASE("horarios-clases", "Horarios y clases", List.of()),
-    ALUMNOS("alumnos", "Alumnos", List.of("Matrícula", "Alumno", "CURP", "Nacimiento", "Ingreso")),
-    ACTUALIZACIONES_EXPEDIENTE("actualizaciones-expediente", "Actualizaciones familiares", List.of()),
-    TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),
-    VINCULOS_TUTOR("vinculos-tutor", "Vínculos alumno–tutor", List.of("Alumno", "Tutor", "Parentesco", "Permisos", "Vigencia")),
-    INSCRIPCIONES("inscripciones", "Inscripciones", List.of("Inscripción", "Alumno", "Plantel", "Ciclo", "Grado", "Vigencia")),
-    CONCEPTOS_COBRO("conceptos-cobro", "Conceptos de cobro", List.of("Código", "Concepto", "Institución", "Categoría", "Reglas")),
-    CUOTAS_ALUMNO("cuotas-alumno", "Cuotas por alumno", List.of("Alumno", "Concepto", "Importe", "Frecuencia", "Vencimiento", "Generación")),
-    CARGOS("cargos", "Cargos a alumnos", List.of("Alumno", "Concepto", "Descripción", "Periodo", "Vencimiento", "Importe", "Saldo")),
-    CONVENIOS_PAGO("convenios-pago", "Convenios de pago", List.of()),
-    TIPOS_BECA("tipos-beca", "Tipos de beca", List.of("Código", "Tipo de beca", "Institución", "Descripción")),
-    BECAS_ALUMNO("becas-alumno", "Becas por alumno", List.of("Alumno", "Tipo", "Concepto", "Beneficio", "Vigencia")),
-    AJUSTES_CARGO("ajustes-cargo", "Historial de ajustes", List.of("Alumno", "Concepto", "Tipo", "Efecto", "Monto", "Fecha", "Motivo")),
-    POLITICAS_RECARGO("politicas-recargo", "Políticas de recargo", List.of("Concepto", "Institución", "Recargo", "Gracia", "Periodicidad", "Límite", "Generación")),
-    MOTIVOS_FINANCIEROS("motivos-financieros", "Motivos financieros", List.of("Código", "Motivo", "Institución", "Naturaleza", "Categoría")),
-    CUENTAS_FINANCIERAS("cuentas-financieras", "Cuentas financieras", List.of("Código", "Cuenta", "Alcance", "Tipo", "Institución financiera", "Identificador", "Saldo inicial", "Fecha inicial")),
-    PROVEEDORES("proveedores", "Proveedores", List.of()),
-    COMPRAS("compras", "Compras", List.of()),
-    PAGOS("pagos", "Pagos", List.of("Folio", "Tutor", "Plantel de registro", "Fecha", "Método", "Origen", "Monto", "Distribución", "Comprobantes")),
-    MOVIMIENTOS_FINANCIEROS("movimientos-financieros", "Movimientos financieros", List.of()),
-    RETIROS_FONDO("retiros-fondo", "Retiros de fondos", List.of()),
-    REPORTES_FINANCIEROS("reportes-financieros", "Reportes financieros", List.of()),
-    EVENTOS_ESCOLARES("eventos-escolares", "Eventos escolares", List.of()),
-    AVISOS("avisos", "Avisos escolares", List.of()),
+    PERIODOS("periodos", "Periodos de evaluación", List.of("Código", "Periodo", "Nivel", "Tipo", "Fechas")),
     ROLES("roles", "Roles y permisos", List.of("Código", "Rol", "Institución", "Descripción")),
     USUARIOS("usuarios", "Usuarios", List.of("Usuario", "Correo", "Institución", "Credencial")),
     AUDITORIA("auditoria", "Auditoría", List.of()),
-    PORTAL_TUTOR("portal-tutor", "Portal tutor", List.of());
+    PORTAL_TUTOR("portal-tutor", "Soporte del portal familiar", List.of());
 
     private final String slug;
     private final String titulo;
@@ -111,13 +111,14 @@ public enum ModuloCatalogo {
 
     public String seccion() {
         return switch (this) {
-            case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS, CALENDARIO_ESCOLAR, GRUPOS, MATERIAS -> "Estructura";
-            case ALUMNOS, ACTUALIZACIONES_EXPEDIENTE, TUTORES, VINCULOS_TUTOR, MAESTROS -> "Personas";
-            case INSCRIPCIONES, CALIFICACIONES, ASISTENCIA, BOLETAS, PLANEACIONES, HORARIOS_CLASE -> "Trayectoria";
-            case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, CONVENIOS_PAGO, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
-            case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PROVEEDORES, COMPRAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Finanzas";
-            case EVENTOS_ESCOLARES, AVISOS -> "Comunicación";
-            case ROLES, USUARIOS, AUDITORIA, PORTAL_TUTOR -> "Seguridad";
+            case ALUMNOS, TUTORES, VINCULOS_TUTOR, INSCRIPCIONES, GRUPOS, ACTUALIZACIONES_EXPEDIENTE -> "Operación escolar · Control escolar";
+            case MATERIAS, MAESTROS, HORARIOS_CLASE, CALENDARIO_ESCOLAR, PLANEACIONES, ASISTENCIA, CALIFICACIONES, BOLETAS -> "Operación escolar · Gestión académica";
+            case CONCEPTOS_COBRO, CUOTAS_ALUMNO, TIPOS_BECA, BECAS_ALUMNO, CARGOS, CONVENIOS_PAGO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Operación escolar · Cobranza escolar";
+            case EVENTOS_ESCOLARES, AVISOS -> "Operación escolar · Comunicación";
+            case PAGOS, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Administración · Finanzas";
+            case PROVEEDORES, COMPRAS -> "Administración · Compras y proveedores";
+            case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS -> "Administración · Configuración escolar";
+            case ROLES, USUARIOS, AUDITORIA, PORTAL_TUTOR -> "Administración · Seguridad y soporte";
         };
     }
 

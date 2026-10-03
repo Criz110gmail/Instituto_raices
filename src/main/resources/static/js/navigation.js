@@ -3,12 +3,20 @@
     if (!navegacion) return;
 
     const ordenSecciones = [
-        'Estructura', 'Personas', 'Trayectoria', 'Cobranza',
-        'Finanzas', 'Comunicación', 'Seguridad'
+        'Operación escolar · Control escolar',
+        'Operación escolar · Gestión académica',
+        'Operación escolar · Cobranza escolar',
+        'Operación escolar · Comunicación',
+        'Administración · Finanzas',
+        'Administración · Compras y proveedores',
+        'Administración · Configuración escolar',
+        'Administración · Seguridad y soporte'
     ];
     const ordenModulos = {
-        Personas: ['Alumnos', 'Tutores', 'Vínculos alumno–tutor', 'Maestros'],
-        Trayectoria: ['Inscripciones', 'Calificaciones', 'Asistencia', 'Boletas', 'Planeaciones']
+        'Operación escolar · Control escolar': ['Alumnos', 'Tutores', 'Familiares del alumno', 'Inscripciones', 'Grupos', 'Actualizaciones familiares'],
+        'Operación escolar · Gestión académica': ['Materias', 'Maestros', 'Horarios y clases', 'Calendario escolar', 'Planeaciones', 'Asistencia', 'Calificaciones', 'Boletas'],
+        'Operación escolar · Cobranza escolar': ['Conceptos de cobro', 'Cuotas por alumno', 'Tipos de beca', 'Becas por alumno', 'Adeudos de alumnos', 'Convenios de pago', 'Historial de ajustes', 'Políticas de recargo'],
+        'Administración · Finanzas': ['Pagos recibidos', 'Motivos financieros', 'Cuentas financieras', 'Movimientos financieros', 'Retiros de fondos', 'Reportes financieros']
     };
     const clavePreferencias = 'nexo.menu.secciones-abiertas';
     const secciones = new Map();
@@ -32,8 +40,19 @@
         return (izquierda < 0 ? 999 : izquierda) - (derecha < 0 ? 999 : derecha);
     });
 
+    let areaAnterior = '';
     ordenadas.forEach((seccion, indice) => {
         ordenarEnlaces(seccion);
+        const partes = seccion.nombre.split(' · ');
+        const area = partes.shift() || seccion.nombre;
+        const nombreVisible = partes.join(' · ') || area;
+        if (area !== areaAnterior) {
+            const tituloArea = document.createElement('p');
+            tituloArea.className = 'nav-area-title';
+            tituloArea.textContent = area;
+            fragmento.append(tituloArea);
+            areaAnterior = area;
+        }
         const contenedor = document.createElement('section');
         contenedor.className = 'nav-section';
         contenedor.dataset.section = seccion.nombre;
@@ -43,7 +62,7 @@
         boton.type = 'button';
         boton.className = 'nav-section-toggle';
         boton.setAttribute('aria-controls', id);
-        boton.innerHTML = `<span>${escapar(seccion.nombre)}</span><i aria-hidden="true"></i>`;
+        boton.innerHTML = `<span>${escapar(nombreVisible)}</span><i aria-hidden="true"></i>`;
 
         const lista = document.createElement('div');
         lista.className = 'nav-section-items';

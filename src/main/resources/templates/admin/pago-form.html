@@ -8,7 +8,7 @@
 </head>
 <body class="form-page">
 <main class="form-shell payment-shell">
-    <header class="form-top"><a href="/admin/catalogos/pagos">← Volver a pagos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <header class="form-top"><a href="/admin/catalogos/pagos">← Volver a pagos recibidos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <div class="finance-principle payment-principle"><span>Recepción protegida</span><strong>Un solo pago, distribución clara por cada alumno</strong><p>El registro queda pendiente de validación. Las cantidades sugeridas no reducen todavía el saldo de ningún cargo ni incrementan una cuenta.</p></div>
     <div class="finance-principle" th:if="${cargoPrecargado}"><span>Pago rápido desde cobranza</span><strong th:text="${cargoPrecargado.alumnoMatricula+' · '+cargoPrecargado.alumnoNombre}">Alumno</strong><p th:text="${cargoPrecargado.conceptoNombre+' · Saldo precargado '+@formatoMoneda.pesos(cargoPrecargado.saldoPendiente)}">Cargo seleccionado</p></div>
     <section class="form-card payment-card">

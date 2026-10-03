@@ -146,7 +146,7 @@ public class CargoAdminController {
         try {
             var resultado = service.generar(form.request());
             flash.addFlashAttribute("mensaje", "Generación terminada: "
-                    + resultado.cargosGenerados() + " cargos a alumnos nuevos, "
+                    + resultado.cargosGenerados() + " adeudos de alumnos nuevos, "
                     + resultado.cargosYaExistentes() + " ya existían; "
                     + resultado.cuotasRevisadas() + " cuotas revisadas");
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {

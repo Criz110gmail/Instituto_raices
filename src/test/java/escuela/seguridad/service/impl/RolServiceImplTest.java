@@ -86,7 +86,7 @@ class RolServiceImplTest {
                 permiso(30L, "PORTAL_TUTOR_ACCEDER")));
 
         assertThat(service.listarPermisos()).extracting(p -> p.codigo())
-                .containsExactly("Alumnos", "Pagos");
+                .containsExactly("Alumnos", "Pagos recibidos");
         assertThat(service.listarPermisos()).extracting(p -> p.id())
                 .containsExactly(10L, 20L);
     }

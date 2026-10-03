@@ -115,7 +115,7 @@ public class CalificacionServiceImpl implements CalificacionService {
         Grupo grupo = grupoRepository.findById(grupoId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("el grupo", grupoId));
         PeriodoAcademico periodo = periodoRepository.findById(periodoId)
-                .orElseThrow(() -> new RecursoNoEncontradoException("el periodo académico", periodoId));
+                .orElseThrow(() -> new RecursoNoEncontradoException("el periodo de evaluación", periodoId));
         MateriaGrado plan = materiaGradoRepository.findById(materiaGradoId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("el plan de materia", materiaGradoId));
         if (!periodo.getCicloEscolar().getId().equals(grupo.getCicloEscolar().getId())

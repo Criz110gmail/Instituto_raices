@@ -48,7 +48,7 @@ public class PeriodoAcademicoServiceImpl implements PeriodoAcademicoService {
     @Override
     public PeriodoAcademicoResponse actualizar(Long id, PeriodoAcademicoRequest request) {
         PeriodoAcademico entidad = buscar(id);
-        verificar(entidad, request.version(), "Periodo académico");
+        verificar(entidad, request.version(), "Periodo de evaluación");
         if (!entidad.getCicloEscolar().getId().equals(request.cicloEscolarId())
                 || !entidad.getNivelEducativo().getId().equals(request.nivelEducativoId())) {
             throw new ReglaNegocioException("No se pueden cambiar ciclo o nivel de un periodo existente");
@@ -98,7 +98,7 @@ public class PeriodoAcademicoServiceImpl implements PeriodoAcademicoService {
 
     private PeriodoAcademico buscar(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException("el periodo académico", id));
+                .orElseThrow(() -> new RecursoNoEncontradoException("el periodo de evaluación", id));
     }
 
     private CicloEscolar ciclo(Long id) {

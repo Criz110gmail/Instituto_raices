@@ -29,6 +29,16 @@
 .sidebar .brand small { color: #a8bbcf; }
 .sidebar .nav-label { color: #8299b2; }
 
+.sidebar .nav-area-title {
+    margin: 18px 10px 6px;
+    color: #f7fbff;
+    font: 800 .68rem "DM Sans", system-ui, sans-serif;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+
+.sidebar .nav-area-title:first-child { margin-top: 3px; }
+
 .sidebar .nav-section {
     margin: 3px 0 7px;
 }

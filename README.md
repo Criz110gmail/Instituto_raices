@@ -170,7 +170,7 @@ el usuario existe, está inactivo o está bloqueado.
 La consola y el login incluyen temas claro y oscuro con preferencia persistente en el
 dispositivo. Instituciones, planteles, niveles, oferta educativa y grados ya permiten
 crear, editar y desactivar registros; los ciclos escolares permiten crear y editar su
-vigencia, estado y selección predeterminada, y los periodos académicos permiten administrar
+vigencia, estado y selección predeterminada, y los periodos de evaluación permiten administrar
 su calendario por ciclo y nivel. Los grupos permiten alta, edición y desactivación con
 selectores que respetan la oferta educativa. Los errores de validación, reglas de negocio,
 concurrencia y restricciones de integridad se muestran dentro del mismo formulario sin
@@ -285,7 +285,7 @@ políticas, saldos y nuevos importes. Sólo después se habilita **Confirmar y g
 recargos**. La confirmación recalcula los datos vigentes antes de escribir y conserva la
 idempotencia. Los pagos completamente liquidados no aparecen ni reciben recargos.
 
-La generación automática de Cargos a alumnos aplica la misma protección. **Visualizar
+La generación automática de Adeudos de alumnos aplica la misma protección. **Visualizar
 cuotas por aplicar** presenta, sin escribir datos, los alumnos y periodos faltantes junto
 con sus vencimientos, importes y totales. Únicamente después se habilita **Confirmar y
 generar pagos faltantes**. La confirmación recalcula el corte y crea sólo los periodos que
@@ -776,13 +776,13 @@ errores frecuentes, índice, glosario y solución de problemas. Las imágenes no
 credenciales ni datos personales reales y el documento completo se verificará visualmente
 antes de entregarse.
 
-El orden de Niveles educativos, Grados, Periodos académicos y Materias por grado es un dato
+El orden de Niveles educativos, Grados, Periodos de evaluación y Materias por grado es un dato
 técnico automático: no se captura en los formularios. Al crear un registro toma su mismo ID;
 al editar se conserva, de modo que una excepción ajustada directamente en PostgreSQL no se
 sobrescribe desde la aplicación. Flyway V46 aplicó esta regla a los registros existentes y
 a las altas futuras.
 
-En la administración, el catálogo técnico de cargos se presenta al usuario como **Pagos de
+En la administración, el catálogo técnico de cargos se presenta al usuario como **Adeudos de
 alumnos**. El cambio es sólo de lenguaje visual: se conservan `/admin/cargos`, las entidades
 y los permisos `CARGO_*`. Cuando un pago queda validado, Administración y la familia pueden
 abrir su comprobante oficial Jasper PDF en otra pestaña. El documento incluye el detalle por
@@ -803,7 +803,7 @@ financieros. Desde una inscripción se prepara una cuota individual única con s
 precargado y se puede emitir inmediatamente el pago por cobrar. La emisión es idempotente:
 volver a solicitarla no duplica el cargo. Después, **Registrar pago** abre el formulario
 con el cargo, saldo pendiente, institución, plantel, moneda y tutor responsable financiero
-ya seleccionados. Los permisos de Cuotas, Cargos a alumnos y Pagos continúan separados y
+ya seleccionados. Los permisos de Cuotas, Adeudos de alumnos y Pagos recibidos continúan separados y
 se validan en cada paso.
 
 Como mejora pendiente, la pestaña Cobranza incorporará **Preparar pago anticipado**. El

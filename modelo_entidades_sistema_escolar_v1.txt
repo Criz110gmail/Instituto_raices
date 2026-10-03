@@ -343,7 +343,7 @@ Es la obligación de pago de un alumno, independientemente del pago recibido.
   montoPagado, saldoPendiente : Decimal [D].
   situacionCobro : Enum [D] — PENDIENTE, PARCIAL, PAGADO, CANCELADO.
   estaVencido : Boolean [D] — saldo > 0 y fecha actual > vencimiento.
-Periodo de cobro y periodo académico son conceptos distintos: septiembre puede
+Periodo de cobro y periodo de evaluación son conceptos distintos: septiembre puede
 ser una mensualidad dentro del primer trimestre. Validar ciclo y nivel si se
 asigna PeriodoAcademico. Un cargo parcial también puede estar vencido.
 
@@ -749,7 +749,7 @@ implementar las reglas respectivas.
 
 15. ORDEN SUGERIDO DE IMPLEMENTACIÓN
 ==================================
-1) Institución, planteles, niveles, grados, ciclos y periodos académicos.
+1) Institución, planteles, niveles, grados, ciclos y periodos de evaluación.
 2) Usuarios, roles, permisos, invitaciones, alumnos, tutores e inscripciones.
 3) Conceptos, cuotas individuales, becas y cargos con sus ajustes.
 4) Cuentas, pagos, archivos, validación, aplicaciones, devoluciones y traspasos.
