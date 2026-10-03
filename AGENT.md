@@ -22,7 +22,17 @@ no vuelvas a implementar componentes que ya existan.
 - Rama principal: `main`.
 - Confirma siempre `git status` y `git log` antes de continuar; el propietario realiza
   manualmente los commits y el `push`.
-- Estado más reciente verificado el 02/10/2026: la edición de Alumnos quedó dividida en
+- Estado más reciente verificado el 02/10/2026: V54 implementa **Convenios de pago**.
+  Un convenio selecciona mediante búsqueda hasta 100 cargos pendientes de uno o varios
+  hijos del mismo tutor, conserva pagos previos, marca los originales como `CONVENIDO` y
+  distribuye proporcionalmente el nuevo monto en un cargo por inscripción. Bloquea cargos
+  con transferencias pendientes y la cancelación sólo procede si los cargos nuevos aún no
+  tienen pagos; entonces cancela los nuevos y reactiva los originales. El módulo tiene un
+  único permiso funcional, alcance institucional, listado paginado, filtros, Excel y fechas
+  `dd/MM/yyyy`. V54 se aplicó correctamente, Docker aprobó 454 pruebas y el servicio
+  respondió `UP`. La siguiente migración
+  disponible es V55.
+- La edición de Alumnos quedó dividida en
   seis pestañas —Ficha del alumno, Información del alumno, Contacto y domicilio, Notas
   administrativas, Expediente documental y Ficha médica—. Las tres secciones editables
   principales conservan un solo formulario y una sola actualización de la entidad; los
@@ -931,13 +941,13 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-El último cambio terminado es la reorganización del expediente de Alumnos y sus dos
-reportes Jasper. El propietario debe hacer una prueba funcional controlada al editar un
-alumno: recorrer las seis pestañas, guardar por separado Información, Contacto y Notas,
-provocar una validación para confirmar que se reabre la pestaña correcta, revisar tema
-oscuro y móvil, y abrir/imprimir ambos PDF con logo y fotografía reales. No cargar datos
-personales reales sólo para verificar. Después de aprobarlo, acordar con el propietario
-cuál pendiente priorizar; no crear V54 hasta que el nuevo alcance requiera esquema.
+El último cambio implementado es V54 **Convenios de pago**. Falta la prueba funcional del
+propietario: asignar/confirmar el permiso `Convenios de pago`, seleccionar dos o más cargos
+de hermanos, verificar saldo anterior, monto acordado y condonación, confirmar que el portal
+familiar sólo presenta los cargos nuevos, registrar un pago parcial y comprobar que la
+cancelación queda bloqueada. En un segundo convenio sin pagos, cancelar y verificar que los
+cargos originales reaparecen. Revisar también filtros, paginación, Excel, tema oscuro y
+móvil. No usar datos personales reales sólo para probar.
 
 También quedó terminada la reorganización del expediente de Tutores y su ficha Jasper. La
 prueba funcional controlada debe recorrer las seis pestañas, guardar Información, Contacto
@@ -1601,3 +1611,28 @@ enumeradas de etapas anteriores.
 - No hubo migración. Docker compiló 702 fuentes principales y 125 de prueba y aprobó 447
   pruebas sin fallos. La imagen se desplegó y `/actuator/health` respondió `UP`. La
   siguiente migración disponible continúa siendo V54.
+
+### Convenios de pago auditables — V54 — 2026-10-02
+
+- El módulo **Cobranza → Convenios de pago** formaliza acuerdos familiares sin borrar ni
+  cancelar manualmente cada mensualidad. Usa un solo permiso asignable:
+  `CONVENIO_PAGO_ADMINISTRAR`.
+- La captura selecciona tutor y concepto con autocompletado y busca cargos pendientes en
+  bloques de máximo 20; nunca carga miles de alumnos o cargos en un `select`.
+- Un acuerdo puede incluir cargos de varios hijos del mismo tutor responsable financiero.
+  Se conserva el importe y pago previo de cada original, su estado cambia a `CONVENIDO` y
+  su saldo exigible se vuelve cero en catálogos y reportes.
+- El monto acordado se distribuye proporcionalmente por inscripción, con corrección del
+  último centavo. Cada hijo recibe un cargo nuevo independiente con clave idempotente
+  `CONVENIO:{convenioId}:{inscripcionId}`; caja, tarjeta y transferencia siguen usando el
+  flujo normal de Pagos.
+- La transacción rechaza cargos no emitidos, sin saldo, de otra institución/moneda, sin
+  responsabilidad financiera vigente o con una transferencia pendiente de validación.
+- Cancelar conserva el convenio y los cargos nuevos. Sólo procede antes de cualquier pago:
+  marca los nuevos como cancelados y reactiva los originales. Si existe una aplicación,
+  obliga a tratarla primero mediante los flujos financieros existentes.
+- El listado es paginado y filtrable en PostgreSQL y su Excel recorre exactamente los mismos
+  criterios. La situación se deriva como `VIGENTE`, `VENCIDO`, `CUMPLIDO` o `CANCELADO`.
+- Docker compiló 719 fuentes principales y 129 de prueba y aprobó 454 pruebas. Flyway aplicó
+  V54 sobre PostgreSQL 17 y Spring Boot inició en el puerto 8080. La siguiente migración
+  disponible es V55.

@@ -48,6 +48,7 @@ public class CargoMapper {
         var inscripcion = cargo.getInscripcion();
         var alumno = inscripcion.getAlumno();
         boolean cancelado = cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO;
+        boolean convenido = cargo.getEstadoRegistro() == EstadoRegistroCargo.CONVENIDO;
         BigDecimal cero = BigDecimal.ZERO.setScale(2);
         BigDecimal aumentos = cargo.getAjustes().stream()
                 .filter(a -> a.getEfecto() == EfectoAjusteCargo.AUMENTO)
@@ -57,11 +58,12 @@ public class CargoMapper {
                 .map(a -> a.getMonto()).reduce(cero, BigDecimal::add);
         BigDecimal total = cargo.getImporteOriginal().add(aumentos).subtract(disminuciones);
         BigDecimal pagado = aplicado(cargo);
-        BigDecimal saldo = cancelado ? cero : total.subtract(pagado).max(cero);
+        BigDecimal saldo = cancelado || convenido ? cero : total.subtract(pagado).max(cero);
         SituacionCobro situacion = cancelado ? SituacionCobro.CANCELADO
+                : convenido ? SituacionCobro.CONVENIDO
                 : saldo.signum() == 0 ? SituacionCobro.PAGADO
                 : pagado.signum() > 0 ? SituacionCobro.PARCIAL : SituacionCobro.PENDIENTE;
-        boolean vencido = !cancelado && saldo.signum() > 0
+        boolean vencido = !cancelado && !convenido && saldo.signum() > 0
                 && cargo.getFechaVencimiento().isBefore(LocalDate.now());
         return new CargoResponse(cargo.getId(), inscripcion.getId(),
                 alumno.getInstitucion().getId(), inscripcion.getPlantel().getId(),

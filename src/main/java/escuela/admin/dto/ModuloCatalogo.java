@@ -30,6 +30,7 @@ public enum ModuloCatalogo {
     CONCEPTOS_COBRO("conceptos-cobro", "Conceptos de cobro", List.of("Código", "Concepto", "Institución", "Categoría", "Reglas")),
     CUOTAS_ALUMNO("cuotas-alumno", "Cuotas por alumno", List.of("Alumno", "Concepto", "Importe", "Frecuencia", "Vencimiento", "Generación")),
     CARGOS("cargos", "Cargos a alumnos", List.of("Alumno", "Concepto", "Descripción", "Periodo", "Vencimiento", "Importe", "Saldo")),
+    CONVENIOS_PAGO("convenios-pago", "Convenios de pago", List.of()),
     TIPOS_BECA("tipos-beca", "Tipos de beca", List.of("Código", "Tipo de beca", "Institución", "Descripción")),
     BECAS_ALUMNO("becas-alumno", "Becas por alumno", List.of("Alumno", "Tipo", "Concepto", "Beneficio", "Vigencia")),
     AJUSTES_CARGO("ajustes-cargo", "Historial de ajustes", List.of("Alumno", "Concepto", "Tipo", "Efecto", "Monto", "Fecha", "Motivo")),
@@ -90,6 +91,8 @@ public enum ModuloCatalogo {
                     Map.entry("SUSPENDIDA", "Suspendida"), Map.entry("FINALIZADA", "Finalizada"),
                     Map.entry("CANCELADA", "Cancelada"));
             case CARGOS -> List.of(todos, Map.entry("EMITIDO", "Emitido"),
+                    Map.entry("CONVENIDO", "Sustituido por convenio"), Map.entry("CANCELADO", "Cancelado"));
+            case CONVENIOS_PAGO -> List.of(todos, Map.entry("VIGENTE", "Vigente"),
                     Map.entry("CANCELADO", "Cancelado"));
             case PAGOS -> List.of(todos, Map.entry("PENDIENTE_VALIDACION", "Pendiente de validación"),
                     Map.entry("VALIDADO", "Validado"), Map.entry("RECHAZADO", "Rechazado"),
@@ -111,7 +114,7 @@ public enum ModuloCatalogo {
             case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS, CALENDARIO_ESCOLAR, GRUPOS, MATERIAS -> "Estructura";
             case ALUMNOS, ACTUALIZACIONES_EXPEDIENTE, TUTORES, VINCULOS_TUTOR, MAESTROS -> "Personas";
             case INSCRIPCIONES, CALIFICACIONES, ASISTENCIA, BOLETAS, PLANEACIONES, HORARIOS_CLASE -> "Trayectoria";
-            case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
+            case CONCEPTOS_COBRO, CUOTAS_ALUMNO, CARGOS, CONVENIOS_PAGO, TIPOS_BECA, BECAS_ALUMNO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Cobranza";
             case MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PROVEEDORES, COMPRAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Finanzas";
             case EVENTOS_ESCOLARES, AVISOS -> "Comunicación";
             case ROLES, USUARIOS, AUDITORIA, PORTAL_TUTOR -> "Seguridad";
@@ -144,6 +147,7 @@ public enum ModuloCatalogo {
             case CONCEPTOS_COBRO -> "CONCEPTO_COBRO";
             case CUOTAS_ALUMNO -> "CUOTA_ALUMNO";
             case CARGOS -> "CARGO";
+            case CONVENIOS_PAGO -> "CONVENIO_PAGO";
             case TIPOS_BECA -> "TIPO_BECA";
             case BECAS_ALUMNO -> "BECA_ALUMNO";
             case AJUSTES_CARGO -> "AJUSTE_CARGO";
@@ -198,6 +202,7 @@ public enum ModuloCatalogo {
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
                 || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == CARGOS
+                || this == CONVENIOS_PAGO
                 || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO || this == POLITICAS_RECARGO
                 || this == MOTIVOS_FINANCIEROS
                 || this == CUENTAS_FINANCIERAS
@@ -235,6 +240,7 @@ public enum ModuloCatalogo {
             case CONCEPTOS_COBRO -> "/admin/conceptos-cobro";
             case CUOTAS_ALUMNO -> "/admin/cuotas-alumno";
             case CARGOS -> "/admin/cargos";
+            case CONVENIOS_PAGO -> "/admin/convenios-pago";
             case TIPOS_BECA -> "/admin/tipos-beca";
             case BECAS_ALUMNO -> "/admin/becas-alumno";
             case AJUSTES_CARGO -> "/admin/ajustes-cargo";
@@ -258,7 +264,7 @@ public enum ModuloCatalogo {
     }
 
     public String rutaListado() {
-        return this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == ACTUALIZACIONES_EXPEDIENTE || this == PROVEEDORES || this == COMPRAS || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
+        return this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == ACTUALIZACIONES_EXPEDIENTE || this == PROVEEDORES || this == COMPRAS || this == CONVENIOS_PAGO || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
                 ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }
@@ -269,6 +275,7 @@ public enum ModuloCatalogo {
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
                 || this == CONCEPTOS_COBRO || this == CUOTAS_ALUMNO
                 || this == CARGOS
+                || this == CONVENIOS_PAGO
                 || this == TIPOS_BECA || this == BECAS_ALUMNO || this == AJUSTES_CARGO || this == POLITICAS_RECARGO
                 || this == MOTIVOS_FINANCIEROS
                 || this == CUENTAS_FINANCIERAS

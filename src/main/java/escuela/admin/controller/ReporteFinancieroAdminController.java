@@ -171,7 +171,7 @@ public class ReporteFinancieroAdminController {
         }
         comunes(model, authentication, instituciones);
         model.addAttribute("filtro", filtro);
-        model.addAttribute("situaciones", List.of("PENDIENTE", "PARCIAL", "PAGADO", "VENCIDO", "CANCELADO"));
+        model.addAttribute("situaciones", List.of("PENDIENTE", "PARCIAL", "PAGADO", "VENCIDO", "CONVENIDO", "CANCELADO"));
         model.addAttribute("reporteActual", "ESTADO_CUENTA");
         return "admin/estado-cuenta-alumno";
     }

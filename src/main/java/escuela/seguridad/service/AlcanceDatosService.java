@@ -13,6 +13,7 @@ import escuela.alumno.repository.AlumnoTutorRepository;
 import escuela.cobranza.repository.ConceptoCobroRepository;
 import escuela.cobranza.repository.CuotaAlumnoRepository;
 import escuela.cobranza.repository.CargoRepository;
+import escuela.cobranza.repository.ConvenioPagoRepository;
 import escuela.cobranza.repository.TipoBecaRepository;
 import escuela.cobranza.repository.BecaAlumnoRepository;
 import escuela.cobranza.repository.AjusteCargoRepository;
@@ -76,6 +77,7 @@ public class AlcanceDatosService {
     private final ConceptoCobroRepository conceptoCobroRepository;
     private final CuotaAlumnoRepository cuotaAlumnoRepository;
     private final CargoRepository cargoRepository;
+    private final ConvenioPagoRepository convenioPagoRepository;
     private final TipoBecaRepository tipoBecaRepository;
     private final BecaAlumnoRepository becaAlumnoRepository;
     private final AjusteCargoRepository ajusteCargoRepository;
@@ -94,7 +96,7 @@ public class AlcanceDatosService {
         return (root, query, cb) -> {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
-                case PLANTELES, NIVELES, CICLOS, MATERIAS, ALUMNOS, ACTUALIZACIONES_EXPEDIENTE, TUTORES, MAESTROS, PLANEACIONES, HORARIOS_CLASE, CALENDARIO_ESCOLAR, CONCEPTOS_COBRO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PROVEEDORES, COMPRAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS, EVENTOS_ESCOLARES, AVISOS, ROLES, USUARIOS, AUDITORIA -> root.get("institucion").get("id");
+                case PLANTELES, NIVELES, CICLOS, MATERIAS, ALUMNOS, ACTUALIZACIONES_EXPEDIENTE, TUTORES, MAESTROS, PLANEACIONES, HORARIOS_CLASE, CALENDARIO_ESCOLAR, CONCEPTOS_COBRO, CONVENIOS_PAGO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PROVEEDORES, COMPRAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS, EVENTOS_ESCOLARES, AVISOS, ROLES, USUARIOS, AUDITORIA -> root.get("institucion").get("id");
                 case PORTAL_TUTOR -> root.get("id");
                 case POLITICAS_RECARGO -> root.get("conceptoCobro").get("institucion").get("id");
                 case VINCULOS_TUTOR, INSCRIPCIONES, BOLETAS -> root.get("alumno").get("institucion").get("id");
@@ -233,6 +235,8 @@ public class AlcanceDatosService {
                     .orElseThrow(this::denegado).getInscripcion().getPlantel().getId());
             case CARGOS -> validarPlantel(cargoRepository.findById(id)
                     .orElseThrow(this::denegado).getInscripcion().getPlantel().getId());
+            case CONVENIOS_PAGO -> validarInstitucion(convenioPagoRepository.findById(id)
+                    .orElseThrow(this::denegado).getInstitucion().getId());
             case TIPOS_BECA -> validarInstitucion(tipoBecaRepository.findById(id)
                     .orElseThrow(this::denegado).getInstitucion().getId());
             case BECAS_ALUMNO -> validarPlantel(becaAlumnoRepository.findById(id)

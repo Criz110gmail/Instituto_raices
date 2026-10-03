@@ -41,9 +41,10 @@ public class JdbcReporteFinancieroRepository implements ReporteFinancieroReposit
                 SELECT *, GREATEST(importe_original + ajustes, 0) AS importe_total
                 FROM importes
             ), estado AS (
-                SELECT *, CASE WHEN estado_registro = 'CANCELADO' THEN 0
+                SELECT *, CASE WHEN estado_registro IN ('CANCELADO','CONVENIDO') THEN 0
                                ELSE GREATEST(importe_total - aplicado, 0) END AS saldo,
                        CASE WHEN estado_registro = 'CANCELADO' THEN 'CANCELADO'
+                            WHEN estado_registro = 'CONVENIDO' THEN 'CONVENIDO'
                             WHEN GREATEST(importe_total - aplicado, 0) = 0 THEN 'PAGADO'
                             WHEN fecha_vencimiento < :fechaCorte THEN 'VENCIDO'
                             WHEN aplicado > 0 THEN 'PARCIAL'
@@ -84,9 +85,9 @@ public class JdbcReporteFinancieroRepository implements ReporteFinancieroReposit
                   AND (:institucional OR i.plantel_id IN (:plantelIds))
                   AND (CAST(:plantelId AS bigint) IS NULL OR i.plantel_id=:plantelId)
             ), estado AS (
-                SELECT *, CASE WHEN estado_registro='CANCELADO' THEN 0 ELSE importe END AS exigible,
-                       CASE WHEN estado_registro='CANCELADO' THEN 0 ELSE aplicado END AS pagado,
-                       CASE WHEN estado_registro='CANCELADO' THEN 0 ELSE GREATEST(importe-aplicado,0) END AS saldo
+                SELECT *, CASE WHEN estado_registro IN ('CANCELADO','CONVENIDO') THEN 0 ELSE importe END AS exigible,
+                       CASE WHEN estado_registro IN ('CANCELADO','CONVENIDO') THEN 0 ELSE aplicado END AS pagado,
+                       CASE WHEN estado_registro IN ('CANCELADO','CONVENIDO') THEN 0 ELSE GREATEST(importe-aplicado,0) END AS saldo
                 FROM importes
             )
             """;
@@ -124,8 +125,8 @@ public class JdbcReporteFinancieroRepository implements ReporteFinancieroReposit
         String condicion = " WHERE (:situacion = 'TODOS' OR situacion = :situacion) ";
         return jdbc.queryForObject(ESTADO_CUENTA_CTE + """
                 SELECT count(*) AS cargos,
-                       COALESCE(sum(CASE WHEN estado_registro = 'CANCELADO' THEN 0 ELSE importe_total END), 0) AS total,
-                       COALESCE(sum(CASE WHEN estado_registro = 'CANCELADO' THEN 0 ELSE aplicado END), 0) AS aplicado,
+                       COALESCE(sum(CASE WHEN estado_registro IN ('CANCELADO','CONVENIDO') THEN 0 ELSE importe_total END), 0) AS total,
+                       COALESCE(sum(CASE WHEN estado_registro IN ('CANCELADO','CONVENIDO') THEN 0 ELSE aplicado END), 0) AS aplicado,
                        COALESCE(sum(saldo), 0) AS saldo,
                        COALESCE(sum(CASE WHEN saldo > 0 AND fecha_vencimiento < :fechaCorte THEN saldo ELSE 0 END), 0) AS vencido
                 FROM estado

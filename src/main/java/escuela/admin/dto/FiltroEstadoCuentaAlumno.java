@@ -10,7 +10,7 @@ public record FiltroEstadoCuentaAlumno(Long institucionId, Long alumnoId, String
                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaCorte,
                                        int pagina, int tamanio) {
     private static final Set<String> SITUACIONES = Set.of(
-            "TODOS", "PENDIENTE", "PARCIAL", "PAGADO", "VENCIDO", "CANCELADO");
+            "TODOS", "PENDIENTE", "PARCIAL", "PAGADO", "VENCIDO", "CONVENIDO", "CANCELADO");
 
     public FiltroEstadoCuentaAlumno normalizado(LocalDate hoy) {
         String texto = alumnoTexto == null ? "" : alumnoTexto.trim().replaceAll("\\s+", " ");

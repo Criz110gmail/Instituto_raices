@@ -812,3 +812,11 @@ los cargos faltantes después de una vista previa y abrir un único pago con apl
 separadas por concepto y periodo. El ingreso financiero será uno por el total validado; no
 se usarán importes sin identificar ni se generarán cargos de otros alumnos. Esta mejora está
 documentada para una etapa posterior y todavía no forma parte de la aplicación.
+
+**Convenios de pago (V54)** permite sustituir varios saldos pendientes de una familia por
+un monto negociado sin borrar el historial. Los cargos originales quedan identificados como
+sustituidos, sus pagos previos se conservan y el nuevo monto se reparte en cargos separados
+por hijo. La familia ve únicamente el nuevo adeudo exigible y puede cubrirlo mediante los
+flujos normales de caja, tarjeta o transferencia. La cancelación es controlada: sólo puede
+reactivar los cargos anteriores cuando el convenio todavía no tiene pagos aplicados. El
+módulo incluye búsqueda escalable, permiso único, paginación, filtros y exportación Excel.

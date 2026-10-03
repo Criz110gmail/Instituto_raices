@@ -2495,3 +2495,22 @@ historial paginado.
 - No hubo migración. `docker compose build app` compiló 702 fuentes principales y 125 de
   prueba y ejecutó 447 pruebas sin fallos. La imagen se desplegó y salud respondió `UP`;
   la siguiente migración disponible es V54.
+
+## Convenios de pago (V54, 2026-10-02)
+
+- Se agregó un expediente formal de convenios por institución y tutor. Sus detalles enlazan
+  tanto los cargos originales como los cargos nuevos, con importes históricos y distribución
+  por inscripción.
+- Los originales no se eliminan: cambian a `CONVENIDO`, conservan ajustes y aplicaciones y
+  dejan de integrar el saldo exigible. Los estados de cuenta los identifican como
+  `CONVENIDO`; los concentrados evitan duplicar el adeudo.
+- La captura usa autocompletado y búsqueda limitada a 20 cargos. Admite varios hermanos,
+  calcula el saldo vigente en servidor y reparte el acuerdo proporcionalmente con precisión
+  de centavos.
+- Se rechazan transferencias pendientes sobre los cargos seleccionados. La reversión del
+  convenio sólo se habilita cuando sus cargos nuevos no tienen pagos aplicados.
+- Se agregó `CONVENIO_PAGO_ADMINISTRAR`, protegido también en Spring Security. V54 lo concede
+  inicialmente a roles que ya tenían `CARGO_ADMINISTRAR`; los demás se administran desde
+  Roles y permisos.
+- Incluye listado paginado, filtros, detalle histórico, Excel por bloques, diseño responsivo
+  y estados derivados. Flyway aplicó V54 y el despliegue respondió `UP`; V55 queda libre.

@@ -191,7 +191,7 @@ public class CatalogoConsultaService {
                     "Los reportes financieros usan su consulta especializada");
             case BOLETAS -> throw new IllegalArgumentException(
                     "Las boletas usan su consulta especializada");
-            case PLANEACIONES, HORARIOS_CLASE, CALENDARIO_ESCOLAR, ACTUALIZACIONES_EXPEDIENTE, PROVEEDORES, COMPRAS -> throw new IllegalArgumentException(
+            case PLANEACIONES, HORARIOS_CLASE, CALENDARIO_ESCOLAR, ACTUALIZACIONES_EXPEDIENTE, PROVEEDORES, COMPRAS, CONVENIOS_PAGO -> throw new IllegalArgumentException(
                     "El módulo académico usa su consulta especializada");
             case EVENTOS_ESCOLARES -> throw new IllegalArgumentException(
                     "Los eventos escolares usan su consulta especializada");
@@ -514,6 +514,9 @@ public class CatalogoConsultaService {
         if (cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO) {
             estado = "Cancelado";
             tono = "neutro";
+        } else if (cargo.getEstadoRegistro() == EstadoRegistroCargo.CONVENIDO) {
+            estado = "Sustituido por convenio";
+            tono = "neutro";
         } else if (saldo(cargo).signum() == 0) {
             estado = "Pagado";
             tono = "positivo";
@@ -527,7 +530,7 @@ public class CatalogoConsultaService {
         String periodo = FECHA.format(cargo.getPeriodoCobroInicio()) + " — "
                 + FECHA.format(cargo.getPeriodoCobroFin());
         String importe = formatear(cargo.getImporteOriginal());
-        String saldoTexto = cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO
+        String saldoTexto = cargo.getEstadoRegistro() != EstadoRegistroCargo.EMITIDO
                 ? formatear(java.math.BigDecimal.ZERO) : formatear(saldo(cargo));
         return new FilaCatalogo(cargo.getId(), List.of(
                 cargo.getInscripcion().getAlumno().getMatricula() + " · "

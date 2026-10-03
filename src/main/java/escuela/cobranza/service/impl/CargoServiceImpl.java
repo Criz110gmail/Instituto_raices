@@ -181,8 +181,10 @@ public class CargoServiceImpl implements CargoService {
         Cargo cargo = repository.findByIdForUpdate(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("el cargo", id));
         verificar(cargo, version, "Cargo");
-        if (cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO) {
-            throw new ReglaNegocioException("El cargo ya se encuentra cancelado");
+        if (cargo.getEstadoRegistro() != EstadoRegistroCargo.EMITIDO) {
+            throw new ReglaNegocioException(cargo.getEstadoRegistro() == EstadoRegistroCargo.CONVENIDO
+                    ? "El cargo fue sustituido por un convenio y no puede cancelarse por separado"
+                    : "El cargo ya se encuentra cancelado");
         }
         if (aplicado(cargo).signum() > 0) {
             throw new ReglaNegocioException("No se puede cancelar un cargo con pagos aplicados; primero deben reversarse sus aplicaciones");
