@@ -235,9 +235,9 @@
 
 - La consistencia visual pasa a ser un requisito de aceptación: todo módulo debe reutilizar
   los patrones consolidados de listados, filtros, formularios, ayudas, acciones y estados,
-  y revisarse en escritorio/móvil y en temas claro/oscuro. Calendario escolar conserva una
-  deuda visual específica en su listado, filtros y formulario; su funcionalidad V48 no se
-  modifica hasta que el propietario indique retomar esa corrección.
+  y revisarse en escritorio/móvil y en temas claro/oscuro. La deuda visual de Calendario
+  escolar fue atendida el 03/10/2026 sin modificar su funcionalidad V48; queda únicamente
+  la revisión visual autenticada del propietario en escritorio y móvil.
 - Compras tendrá posteriormente un expediente documental opcional con PDF, fotografías
   optimizadas y XML CFDI. Un gasto de caja puede confirmarse sin documento fiscal; si se
   marca sin comprobante exigirá justificación. Ticket/recibo y CFDI serán clasificaciones
@@ -315,6 +315,20 @@
   institucional y los de plantel respetan el alcance asignado al usuario.
 - Flyway V48 fue aplicada en la instalación local y la aplicación inició validando el
   esquema. La siguiente migración disponible es V49.
+
+## Homologación visual posterior a V48 — 03/10/2026
+
+- Se conservó intacta la consulta, paginación, exportación, permisos y edición de V48.
+- El listado incorporó encabezado y contador legibles, filtros agrupados en tarjeta,
+  acciones consistentes, resumen de resultados, estados diferenciados y vacío accionable.
+- El formulario ahora reutiliza la cabecera de sesión, mensajes de error descriptivos,
+  secciones numeradas, guía visual de alcance, controles y acciones del diseño compartido.
+- Se agregó una descripción contextual propia del módulo y se cubrieron tema oscuro y
+  puntos de quiebre para escritorio, tableta y móvil en la hoja dedicada.
+- Docker compiló 719 fuentes de producción y 129 de prueba; las 456 pruebas terminaron
+  sin fallos y la aplicación desplegada respondió `UP`. El navegador local llegó al login
+  por sesión caducada, así que permanece como comprobación manual abrir listado y formulario
+  con una sesión administrativa y revisar claro/oscuro y escritorio/móvil sin guardar datos.
 
 ## Verificación V47 — horarios y clases
 

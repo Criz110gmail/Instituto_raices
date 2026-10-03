@@ -599,8 +599,8 @@ La homogeneidad visual es una regla de aceptación para cualquier implementació
 corrección: listados, filtros, formularios, ayudas, botones, mensajes y estados deben
 reutilizar los componentes y proporciones ya consolidados. Cada pantalla se revisa en
 escritorio y móvil, con tema claro y oscuro; una función operativa no se considera terminada
-si su presentación rompe este patrón. Calendario escolar tiene pendiente una homologación
-visual de su listado, filtros y formulario.
+si su presentación rompe este patrón. Calendario escolar quedó homologado el 03/10/2026 en
+su listado, filtros, formulario, ayudas, estados y comportamiento responsivo.
 
 Las fechas visibles para el usuario, incluidas las que forman parte de mensajes de
 validación, se presentan como `dd/MM/yyyy`. Los valores técnicos de controles HTML,

@@ -996,12 +996,18 @@ paginación, Excel, tema oscuro y presentación móvil. No confirmar una compra 
 sólo para verificar. La siguiente migración disponible es V51 y el siguiente módulo aún debe
 acordarse con el propietario.
 
-Quedan documentados dos pendientes que no deben perderse al cambiar de etapa:
+La **corrección visual de Calendario escolar** quedó implementada el 03/10/2026 sin
+modificar la funcionalidad V48. El listado ahora usa encabezado, resumen, filtros en tarjeta,
+acciones, resultados y estados con la jerarquía común; el formulario usa cabecera de sesión,
+errores descriptivos, secciones numeradas, guía de alcance y acciones consistentes. Incluye
+ayuda contextual propia, tema claro/oscuro y puntos de quiebre para escritorio, tableta y
+móvil. Docker compiló 719 fuentes de producción y 129 de prueba y ejecutó 456 pruebas sin
+fallos. La aplicación quedó desplegada con salud `UP`; la revisión automática en navegador
+llegó al login porque la sesión había caducado, por lo que el propietario debe hacer la última
+revisión visual autenticada sin necesidad de crear o modificar datos.
 
-- **Corrección visual de Calendario escolar:** homologar listado, panel de filtros y
-  formulario con el diseño profesional común. Revisar alineación, jerarquía, ayudas,
-  acciones, estados, tema claro/oscuro y respuesta móvil. La funcionalidad V48 existe,
-  pero esta deuda visual impide considerar completamente terminada su presentación.
+Queda documentado el siguiente pendiente que no debe perderse al cambiar de etapa:
+
 - **Expediente documental y fiscal de Compras:** permitir varios adjuntos opcionales por
   compra: PDF, JPEG, PNG, HEIC/HEIF optimizados y XML CFDI. Los documentos se almacenan
   de forma privada y se visualizan en otra pestaña. El XML original debe conservarse y
