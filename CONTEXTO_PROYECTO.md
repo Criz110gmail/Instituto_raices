@@ -2562,3 +2562,17 @@ historial paginado.
   719 fuentes principales y 129 de prueba y aprobó las 459 pruebas completas. Docker Desktop
   falló internamente al escribir sus bases de BuildKit/containerd; no se desplegó una imagen
   nueva y hay que reparar o reiniciar Docker antes del siguiente despliegue.
+
+## Despliegue y comprobación de la ayuda contextual (2026-10-04)
+
+- Se confirmó que la aplicación en ejecución todavía servía el script anterior con un
+  `button` dentro de `label`; en el login administrativo se reprodujo el modal al pulsar
+  la etiqueta lejos del icono. El origen del fallo persistente era la imagen Docker antigua.
+- Docker volvió a funcionar: `docker compose build app` compiló 719 fuentes principales,
+  129 de prueba y aprobó 459 pruebas. Se recreó sólo `app` con
+  `docker compose up -d --no-deps app`; la base de datos y los volúmenes no se tocaron.
+- El servicio respondió `UP` y sirvió el script nuevo con `span.context-help-trigger`.
+  Tras recargar, se verificó en los login administrativo y familiar que un clic fuera del
+  icono no abre modal, un clic directo sí, y Tab omite la ayuda y pasa a la contraseña.
+- No se modificó código ni esquema en esta comprobación. Si una pestaña antigua conserva el
+  script anterior en caché, recargarla por completo antes de repetir la prueba.

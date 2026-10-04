@@ -1704,3 +1704,16 @@ enumeradas de etapas anteriores.
   errores. Maven local compiló 719 fuentes principales y 129 de prueba; la suite completa pasó
   con 459 pruebas, cero fallos y cero errores. Docker Desktop devolvió un error interno de
   escritura en `metadata_v2.db` y `meta.db`, por lo que no se desplegó una imagen nueva.
+
+### Ayuda contextual desplegada y verificada — 2026-10-04
+
+- Se recuperó el acceso a Docker. El contenedor anterior aún servía el JavaScript que creaba
+  botones dentro de las etiquetas; se reprodujo que un clic fuera del icono abría el modal.
+- Se reconstruyó la imagen y se recreó únicamente el servicio `app` con
+  `docker compose up -d --no-deps app`; PostgreSQL y los volúmenes permanecieron intactos.
+- La compilación aprobó las 459 pruebas (cero fallos y errores) y `/actuator/health` respondió
+  `UP`. El JavaScript servido ahora crea `span.context-help-trigger`.
+- En el navegador se comprobó en ambos accesos, administrativo y familiar, que pulsar la
+  etiqueta fuera del icono no abre la ayuda, pulsar el icono sí la abre y Tab pasa del usuario
+  a la contraseña. El comportamiento se implementa en el componente global de ayuda.
+- No hubo cambios de código ni migraciones en esta verificación; V55 continúa libre.
