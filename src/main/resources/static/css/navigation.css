@@ -30,14 +30,36 @@
 .sidebar .nav-label { color: #8299b2; }
 
 .sidebar .nav-area-title {
-    margin: 18px 10px 6px;
-    color: #f7fbff;
-    font: 800 .68rem "DM Sans", system-ui, sans-serif;
-    letter-spacing: .16em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 22px 10px 9px;
+    padding: 0 0 9px;
+    border-bottom: 1px solid #35506c;
+    color: #83eadc;
+    font: 800 .65rem "DM Sans", system-ui, sans-serif;
+    letter-spacing: .15em;
     text-transform: uppercase;
+    cursor: default;
+    user-select: none;
 }
 
 .sidebar .nav-area-title:first-child { margin-top: 3px; }
+.sidebar .nav-area-title > span {
+    display: grid;
+    width: 21px;
+    height: 21px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 6px;
+    background: #143d43;
+    color: #65dfcf;
+    font-size: .68rem;
+    letter-spacing: 0;
+}
+.sidebar .nav-area-title > strong { font: inherit; }
+.sidebar .nav-area-title.admin-area { color: #f0c780; border-bottom-color: #514631; }
+.sidebar .nav-area-title.admin-area > span { background: #49391f; color: #f4c66f; }
 
 .sidebar .nav-section {
     margin: 3px 0 7px;

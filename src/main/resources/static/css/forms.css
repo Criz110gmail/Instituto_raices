@@ -623,6 +623,68 @@
 .form-section { margin: 0 0 24px; padding: 20px; border: 1px solid var(--line); border-radius: 15px; }
 .form-section legend { padding: 0 8px; color: #148f82; font-size: .76rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 [data-theme=dark] .form-section { border-color: #344a63; }
+
+/* Contrato visual compartido para los filtros administrativos que usan .filters. */
+.filters > label > input {
+    height: 42px;
+    padding: 0 11px;
+    border: 1px solid #ccd8e5;
+    border-radius: 10px;
+    background: var(--white);
+}
+.filters .autocomplete-control .autocomplete-input {
+    height: 42px;
+    padding: 0 44px 0 11px;
+    border: 1px solid #ccd8e5;
+    border-radius: 10px;
+    background: var(--white);
+}
+.filters .autocomplete-clear {
+    top: 50%;
+    right: 7px;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+}
+.filters .filter-actions {
+    display: flex;
+    align-items: end;
+    gap: 9px;
+}
+.filters .filter-actions button,
+.filters .filter-actions a {
+    display: grid;
+    height: 42px;
+    place-items: center;
+    border-radius: 10px;
+    font-size: .8rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+.filters .filter-actions button {
+    border: 0;
+    background: var(--blue);
+    color: #fff;
+    padding: 0 17px;
+}
+.filters .filter-actions a {
+    padding: 0 9px;
+    color: var(--muted);
+}
+[data-theme=dark] .filters > label > input,
+[data-theme=dark] .filters .autocomplete-control .autocomplete-input {
+    border-color: #344a63;
+    background: #0e1d31;
+    color: #eef5fd;
+}
+@media (max-width: 700px) {
+    .filters .filter-actions { grid-column: 1 / -1; }
+    .filters .filter-actions button,.filters .filter-actions a { flex: 1; }
+}
 .pending-payment-section{border-color:#b9ded5;background:linear-gradient(135deg,#f2fbf8,#fff)}.pending-payment-intro{display:flex;align-items:flex-start;gap:10px;margin:0 0 13px;padding:12px 14px;border-radius:11px;background:#e6f8f2}.pending-payment-intro strong{color:#08785f;font-size:.78rem;white-space:nowrap}.pending-payment-intro p{margin:0;color:#47756d;font-size:.72rem;line-height:1.45}.pending-payment-list{display:grid;gap:9px}.pending-payment-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:15px;padding:13px 14px;border:1px solid #cfe4de;border-radius:12px;background:#fff}.pending-payment-main,.pending-payment-amount{display:grid;gap:3px;min-width:0}.pending-payment-main strong{font-size:.8rem}.pending-payment-main span{font-size:.74rem}.pending-payment-main small,.pending-payment-amount small{color:var(--muted);font-size:.68rem;overflow-wrap:anywhere}.pending-payment-amount{text-align:right}.pending-payment-amount strong{color:#08785f;font-size:.82rem}.pending-payment-link{display:inline-flex;align-items:center;gap:5px;border-radius:9px;background:#087f71;color:#fff;padding:9px 11px;font-size:.7rem;font-weight:800;text-decoration:none;white-space:nowrap}.pending-payment-link:hover{background:#09675d}.pending-payment-link span{font-size:14px}[data-theme=dark] .pending-payment-section{border-color:#28665d;background:linear-gradient(135deg,#102d2d,#0e1d31)}[data-theme=dark] .pending-payment-intro{background:#123d36}.pending-payment-section [data-theme=dark] .pending-payment-intro p{color:#a5d8cd}[data-theme=dark] .pending-payment-row{border-color:#344a63;background:#0e1d31}@media(max-width:720px){.pending-payment-intro{display:grid}.pending-payment-row{grid-template-columns:1fr;gap:9px}.pending-payment-amount{text-align:left}.pending-payment-link{justify-content:center}}
 
 .role-shell { max-width: 980px; }

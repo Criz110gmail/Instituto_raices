@@ -19,10 +19,10 @@ class NavegacionAgrupadaTest {
                 "if (!secciones.has(nombre))",
                 "Operación escolar · Control escolar",
                 "Administración · Configuración escolar",
-                "tituloArea.className = 'nav-area-title'",
+                "school-area' : 'admin-area'",
                 "const contieneActivo = Boolean(lista.querySelector('a.active'))",
                 "localStorage.setItem(clavePreferencias");
-        assertThat(estilos).contains(".nav-area-title", ".nav-section-toggle", ".nav-section-items[hidden]");
+        assertThat(estilos).contains(".nav-area-title", ".nav-area-title.admin-area", ".nav-section-toggle", ".nav-section-items[hidden]");
     }
 
     @Test

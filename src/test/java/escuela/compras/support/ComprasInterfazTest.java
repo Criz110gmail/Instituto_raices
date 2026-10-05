@@ -18,6 +18,8 @@ class ComprasInterfazTest {
         assertTrue(html.contains("estado=${filtro.estado}"));
         assertTrue(html.contains("desde=${filtro.desde}"));
         assertTrue(html.contains("pagina=${resultado.number+1}"));
+        assertTrue(html.contains("class=\"filters purchase-filters\""));
+        assertTrue(html.contains("class=\"filter-actions\""));
     }
 
     @Test
@@ -29,8 +31,20 @@ class ComprasInterfazTest {
         assertTrue(html.contains("data-add-line"));
         assertTrue(html.contains("data-line-template"));
         assertTrue(html.contains("Guardar no mueve dinero"));
+        assertTrue(html.contains("form-section purchase-form-section"));
+        assertTrue(html.contains("class=\"entity-form\""));
         assertTrue(js.contains("data-grand-total"));
         assertTrue(css.contains("@media"));
+    }
+
+    @Test
+    void proveedoresReutilizaLaMismaBaseVisualEnListadoYFormulario() throws Exception {
+        String listado = Files.readString(Path.of("src/main/resources/templates/admin/proveedores.html"));
+        String formulario = Files.readString(Path.of("src/main/resources/templates/admin/proveedor-form.html"));
+
+        assertTrue(listado.contains("class=\"filters purchase-filters supplier-filters\""));
+        assertTrue(formulario.contains("class=\"entity-form\""));
+        assertTrue(formulario.contains("form-section supplier-form-section"));
     }
 
     @Test

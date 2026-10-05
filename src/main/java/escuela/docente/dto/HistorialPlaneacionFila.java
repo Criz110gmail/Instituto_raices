@@ -4,4 +4,9 @@ import escuela.docente.entity.EstadoPlaneacion;
 import java.time.Instant;
 
 public record HistorialPlaneacionFila(EstadoPlaneacion anterior, EstadoPlaneacion nuevo,
-                                      String motivo, String actor, Instant ocurridoEn) { }
+                                      String motivo, String actor, Instant ocurridoEn) {
+
+    public EstadoPlaneacion getEstadoNuevo() {
+        return nuevo;
+    }
+}

@@ -820,3 +820,11 @@ por hijo. La familia ve únicamente el nuevo adeudo exigible y puede cubrirlo me
 flujos normales de caja, tarjeta o transferencia. La cancelación es controlada: sólo puede
 reactivar los cargos anteriores cuando el convenio todavía no tiene pagos aplicados. El
 módulo incluye búsqueda escalable, permiso único, paginación, filtros y exportación Excel.
+
+La interfaz administrativa mantiene sus reglas visuales compartidas en `admin.css` y
+`forms.css` para filtros, tablas, formularios, acciones, tema oscuro y pantallas móviles,
+sin temas paralelos por módulo. Esta homologación cubre también Actualizaciones familiares,
+Horarios y clases, Convenios de pago, Proveedores y Compras. En
+el menú lateral, **Operación escolar** y **Administración** son separadores visuales y no
+opciones desplegables. La revisión administrativa de planeaciones conserva compatibilidad
+con el historial de estados mostrado por la vista.

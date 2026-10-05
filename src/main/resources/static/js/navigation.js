@@ -48,8 +48,9 @@
         const nombreVisible = partes.join(' · ') || area;
         if (area !== areaAnterior) {
             const tituloArea = document.createElement('p');
-            tituloArea.className = 'nav-area-title';
-            tituloArea.textContent = area;
+            const esOperacion = area === 'Operación escolar';
+            tituloArea.className = `nav-area-title ${esOperacion ? 'school-area' : 'admin-area'}`;
+            tituloArea.innerHTML = `<span aria-hidden="true">${esOperacion ? '◎' : '◆'}</span><strong>${escapar(area)}</strong>`;
             fragmento.append(tituloArea);
             areaAnterior = area;
         }

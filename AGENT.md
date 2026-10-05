@@ -1717,3 +1717,26 @@ enumeradas de etapas anteriores.
   etiqueta fuera del icono no abre la ayuda, pulsar el icono sí la abre y Tab pasa del usuario
   a la contraseña. El comportamiento se implementa en el componente global de ayuda.
 - No hubo cambios de código ni migraciones en esta verificación; V55 continúa libre.
+
+### Homologación visual administrativa y revisión de planeaciones — 2026-10-05
+
+- Los rótulos **Operación escolar** y **Administración** del menú lateral ahora son
+  separadores visuales no interactivos. Usan icono, línea y colores distintos —turquesa y
+  ámbar— para evitar que se confundan con las subsecciones desplegables.
+- Actualizaciones familiares, Horarios y clases, Convenios de pago, Proveedores y Compras
+  reutilizan directamente la base visual existente de `admin.css` y `forms.css` para filtros,
+  acciones y formularios; no existe una hoja paralela que cambie sus colores. El botón
+  Limpiar queda como acción secundaria reconocible y el tema oscuro usa los selectores
+  globales ya establecidos.
+- Los formularios de Proveedores y Compras agrupan sus datos principales en las mismas
+  secciones `form-section` del sistema. Horarios usa ahora `form-top`, `form-intro` y
+  `entity-form`, sin alterar campos, validaciones ni comportamiento de negocio.
+- Planeaciones presenta **Revisar** y **Regresar al listado** como botones consistentes con
+  las acciones administrativas, en tema claro, oscuro y móvil.
+- Se corrigió la apertura de **Revisar planeación**. La plantilla consultaba la propiedad
+  histórica `estadoNuevo`, mientras el DTO sólo exponía el componente `nuevo`; se añadió un
+  accesor de compatibilidad probado para que Thymeleaf resuelva el estado sin error.
+- No se agregó migración y V55 sigue disponible. Docker compiló 719 fuentes principales y
+  130 de prueba; las 461 pruebas pasaron sin fallos. Se recreó únicamente `app`, Spring Boot
+  inició correctamente, validó las 54 migraciones existentes y `/login` y la nueva hoja de
+  estilos respondieron HTTP 200.

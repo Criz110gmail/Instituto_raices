@@ -2576,3 +2576,25 @@ historial paginado.
   icono no abre modal, un clic directo sí, y Tab omite la ayuda y pasa a la contraseña.
 - No se modificó código ni esquema en esta comprobación. Si una pestaña antigua conserva el
   script anterior en caché, recargarla por completo antes de repetir la prueba.
+
+## Homologación visual administrativa y planeaciones (2026-10-05)
+
+- Los títulos de área del menú lateral quedaron diferenciados de los acordeones mediante
+  icono, divisor y colores propios; continúan siendo texto no interactivo.
+- Actualizaciones familiares, Horarios y clases, Convenios de pago, Proveedores y Compras
+  reutilizan las reglas base de `admin.css` y `forms.css`. Se descartó la hoja visual
+  paralela porque podía forzar superficies blancas y separarse del lenguaje ya establecido;
+  filtros, botones e inputs quedan homologados desde las clases comunes y respetan el tema
+  oscuro.
+- Proveedores y Compras muestran secciones internas `form-section` para identificación,
+  origen y partidas. Horarios adoptó la estructura estándar `form-top`, `form-intro` y
+  `entity-form`. No cambió el modelo de datos ni los flujos existentes.
+- Los enlaces **Revisar** y **Regresar al listado** de Planeaciones tienen tratamiento de
+  botón administrativo y variantes compatibles con el tema oscuro.
+- El error al revisar una planeación provenía de la diferencia entre `estadoNuevo` usado en
+  Thymeleaf y `nuevo` expuesto por `HistorialPlaneacionFila`. El DTO conserva ahora el alias
+  de lectura requerido y una prueba evita la regresión.
+- `node --check` y `git diff --check` finalizaron correctamente. La imagen Docker compiló
+  719 fuentes principales y 130 de prueba y aprobó 461 pruebas. Se desplegó sólo el servicio
+  `app`; PostgreSQL permaneció intacto, Flyway confirmó V54 y los recursos públicos
+  respondieron HTTP 200. No hubo migración y V55 continúa libre.

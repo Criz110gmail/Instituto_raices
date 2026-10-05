@@ -15,6 +15,8 @@ class ActualizacionExpedienteInterfazTest {
         assertTrue(html.contains("estado=${filtro.estado}"));
         assertTrue(html.contains("desde=${filtro.desde}"));
         assertTrue(html.contains("pagina=${resultado.number+1}"));
+        assertTrue(html.contains("class=\"filters update-filters\""));
+        assertTrue(html.contains("class=\"filter-actions\""));
     }
 
     @Test
