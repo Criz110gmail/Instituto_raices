@@ -15,3 +15,25 @@
 .status.cancelado{background:#ffe9ec;color:#a52838}
 .boleta-filters{grid-template-columns:repeat(4,minmax(150px,1fr))}.boleta-search{grid-column:span 2}.boleta-pdf{display:inline-flex}.boleta-filters+.table-wrap{margin-top:0}@media(max-width:850px){.boleta-filters{grid-template-columns:1fr 1fr}.boleta-search{grid-column:1/-1}}@media(max-width:560px){.boleta-filters{grid-template-columns:1fr}.boleta-search{grid-column:1}.boleta-pdf{font-size:.76rem;padding:8px 11px}.panel-actions{flex-wrap:wrap;justify-content:flex-end}.panel-actions .export-button{font-size:.72rem}}
 .event-workspace{background:radial-gradient(circle at 90% 0,#826cff12,transparent 25%),var(--paper)}.event-hero{display:flex;align-items:center;justify-content:space-between;gap:25px;margin-bottom:18px;padding:26px 30px;border-radius:20px;background:linear-gradient(125deg,#291d55,#174771);color:#fff;box-shadow:var(--shadow)}.event-hero span{color:#78eadc;font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.event-hero h2{margin:7px 0;font:800 clamp(1.25rem,2.4vw,1.8rem) Manrope}.event-hero p{max-width:760px;margin:0;color:#d2dced;font-size:.84rem}.event-hero>a{flex:0 0 auto;padding:12px 17px;border-radius:11px;background:#36d6c3;color:#07111f;font-weight:800;text-decoration:none}.event-filters{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:13px;padding:20px 26px;border-block:1px solid var(--line)}.event-filters label>span{display:block;margin-bottom:6px;color:var(--muted);font-size:.72rem;font-weight:700}.event-filters input,.event-filters select{width:100%;height:42px;padding:0 11px;border:1px solid #ccd8e5;border-radius:10px;background:#fff;color:var(--ink);font:500 .83rem inherit}.event-filter-search{grid-column:span 2}.event-table-detail{display:block;margin-top:4px;color:var(--muted);font-size:.7rem}[data-theme=dark] .event-filters input,[data-theme=dark] .event-filters select{background:#0e1d31;color:#eef5fd;border-color:#344a63}@media(max-width:1050px){.event-filters{grid-template-columns:repeat(3,1fr)}}@media(max-width:720px){.event-hero{align-items:flex-start;flex-direction:column;padding:22px}.event-filters{grid-template-columns:1fr 1fr;padding:18px}.event-filter-search{grid-column:1/-1}}@media(max-width:480px){.event-filters{grid-template-columns:1fr}.event-filter-search{grid-column:1}.event-hero>a{width:100%;text-align:center}}
+/* Navegación de retorno compartida por detalles y formularios administrativos. */
+.form-top > a[href],.workspace > a.admin-back[href],.detail-actions > a[href] {
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    min-height:42px; max-width:100%; padding:9px 14px; border:1px solid #b9cbdc;
+    border-radius:11px; background:var(--surface,var(--white)); color:#245f7c;
+    font-size:.85rem; font-weight:800; line-height:1.4; text-decoration:none;
+    white-space:normal; box-shadow:0 7px 18px rgba(24,59,90,.07);
+    transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.form-top > a[href]:hover,.workspace > a.admin-back[href]:hover,.detail-actions > a[href]:hover {
+    transform:translateY(-1px); border-color:#6d9fbb; color:#174d79;
+    box-shadow:0 10px 22px rgba(24,59,90,.12);
+}
+.form-top > a[href]:focus-visible,.workspace > a.admin-back[href]:focus-visible,.detail-actions > a[href]:focus-visible {
+    outline:3px solid var(--blue); outline-offset:3px;
+}
+[data-theme=dark] .form-top > a[href],[data-theme=dark] .workspace > a.admin-back[href],[data-theme=dark] .detail-actions > a[href] {
+    border-color:#415a74; background:#0e1d31; color:#cde6fa; box-shadow:none;
+}
+[data-theme=dark] .form-top > a[href]:hover,[data-theme=dark] .workspace > a.admin-back[href]:hover,[data-theme=dark] .detail-actions > a[href]:hover {
+    border-color:#6d9fbb; color:#eef5fd;
+}

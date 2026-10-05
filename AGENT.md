@@ -239,6 +239,10 @@ Los controladores y formularios de mantenimiento ya terminados sirven como patr�
 
 ## Requisitos no negociables para módulos nuevos
 
+- Todos los enlaces de volver de encabezados administrativos comparten en `admin.css` el
+  botón con borde de Pagos recibidos, incluidos los detalles de Planeaciones y Actualizaciones
+  familiares. Mantener esa regla común en módulos nuevos, con tema oscuro y foco visible.
+
 Todo módulo que se construya debe incluir desde su primera entrega:
 
 1. Diseño profesional e innovador, accesible y 100 % responsivo.
