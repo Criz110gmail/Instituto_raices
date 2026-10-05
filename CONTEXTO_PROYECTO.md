@@ -2522,6 +2522,12 @@ historial paginado.
 
 ## Corrección de captura de pagos parciales (2026-10-05)
 
+- Devoluciones incorpora elección Total/Parcial y vista previa de efectos por alumno. Total
+  calcula el importe de los abonos seleccionados más disponible sin aplicar; Parcial admite
+  un importe menor. Se distinguen dinero devuelto, abono remanente, deuda recuperada y saldo
+  posterior por cargo. Se verificaron cálculos en centavos para total, parcial, disponible
+  previo y varios alumnos; el servidor sigue validando saldos y fondos antes de publicar.
+
 - Cuentas financieras muestra **Saldo actual** en listado, Excel y edición. La consulta toma
   sólo el último movimiento por secuencia de cuenta y usa el saldo inicial si no existen
   movimientos, sin cargar todo el historial. Pruebas verifican ambos casos.

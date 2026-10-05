@@ -1654,6 +1654,13 @@ enumeradas de etapas anteriores.
 
 ### Pago parcial con total recibido sincronizado — 2026-10-05
 
+- La devolución administrativa distingue **Total** (importe calculado y protegido a partir
+  de abonos seleccionados más dinero disponible sin aplicar) y **Parcial** (importe capturado
+  dentro de ese máximo). La vista previa informa dinero a devolver, importe seleccionado
+  que seguirá aplicado, deuda recuperada y saldo por cargo tras devolver. Usa primero el
+  dinero sin aplicar y respeta el orden de aplicaciones del servicio; las validaciones
+  transaccionales del servidor se mantienen.
+
 - **Cuentas financieras** incluye saldo actual en tabla, Excel y edición/detalle como dato
   de consulta. Usa el saldo posterior del último movimiento por secuencia, o el saldo inicial
   si todavía no hay movimientos; no vuelve a sumar el saldo inicial. El saldo consultado

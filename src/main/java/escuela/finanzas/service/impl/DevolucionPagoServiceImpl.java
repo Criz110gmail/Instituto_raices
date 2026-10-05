@@ -259,7 +259,9 @@ public class DevolucionPagoServiceImpl implements DevolucionPagoService {
                 .filter(v -> v != null && !v.isBlank()).collect(Collectors.joining(" "));
         return new AplicacionPagoResponse(aplicacion.getId(), cargo.getId(), nombre, alumno.getMatricula(),
                 cargo.getConceptoCobro().getNombre(), cargo.getDescripcion(), aplicacion.getMonto(),
-                cargo.getMoneda(), aplicacion.getFechaAplicacion());
+                cargo.getMoneda(), aplicacion.getFechaAplicacion(),
+                escuela.cobranza.support.CalculoCargo.total(cargo),
+                escuela.cobranza.support.CalculoCargo.saldo(cargo));
     }
 
     private record EstadoCuenta(long secuencia, BigDecimal saldo) { }

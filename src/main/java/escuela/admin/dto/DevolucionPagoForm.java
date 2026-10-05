@@ -19,6 +19,7 @@ public class DevolucionPagoForm {
     private String cuentaOrigenTexto;
     @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") private LocalDateTime fecha;
     @NotNull @DecimalMin("0.01") @Digits(integer = 17, fraction = 2) private BigDecimal monto;
+    @Pattern(regexp = "TOTAL|PARCIAL") private String modoDevolucion = "TOTAL";
     @NotBlank @Size(max = 2000) private String motivo;
     @NotBlank @Size(max = 180) private String beneficiario;
     @Size(max = 150) private String referencia;
