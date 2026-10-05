@@ -21,7 +21,8 @@ class CargoFormularioTest {
                 .doesNotContain(">Inicio del periodo *<", ">Fin del periodo *<")
                 .contains("Registrar cargo");
         assertThat(plantilla("admin/cargo-detalle.html"))
-                .contains("Motivo de fecha de registro diferente", "cargo.motivoFechaRegistroDiferente");
+                .contains("Motivo de fecha de registro diferente", "cargo.motivoFechaRegistroDiferente")
+                .contains("Pagado acumulado", "cargo.montoPagado", "Saldo exigible");
         assertThat(plantilla("admin/cargo-generar.html"))
                 .contains("Visualizar cuotas por aplicar")
                 .contains("th:action=\"@{/admin/cargos/generar/vista-previa}\"")

@@ -67,11 +67,14 @@
 
     function conectarFila(fila) {
         fila.querySelector('.remove-distribution').addEventListener('click', () => {
-            fila.remove(); reindexar();
+            fila.remove(); reindexar(); sincronizarTotalConDistribucion();
         });
         const importe = fila.querySelector('.monto-solicitado');
         const parcial = fila.querySelector('.partial-payment-toggle');
-        importe.addEventListener('input', actualizarTotales);
+        importe.addEventListener('input', () => {
+            sincronizarTotalConDistribucion();
+            actualizarAyudaPagoParcial(fila);
+        });
         parcial.addEventListener('click', () => alternarPagoParcial(fila));
         fila.querySelector('.protected-amount-control b').textContent = moneda.value || 'MXN';
         if (fila.querySelector('.cargo-id').value) {
@@ -87,6 +90,7 @@
         const saldo = numero(saldoCompleto);
         if (saldo > 0) {
             importe.dataset.fullAmount = saldo.toFixed(2);
+            importe.max = saldo.toFixed(2);
             fila.querySelector('.full-amount-reference').value = saldo.toFixed(2);
         }
         importe.readOnly = true;
@@ -104,13 +108,14 @@
         const importe = fila.querySelector('.monto-solicitado');
         importe.value = '';
         delete importe.dataset.fullAmount;
+        importe.removeAttribute('max');
         fila.querySelector('.full-amount-reference').value = '';
         importe.readOnly = true;
         fila.querySelector('.distribution-charge input[type="search"]').readOnly = false;
         fila.querySelector('.partial-payment-toggle').hidden = true;
         fila.querySelector('.amount-help').textContent = 'Selecciona un cargo para obtener su saldo pendiente.';
         fila.classList.remove('distribution-selected', 'partial-payment-active');
-        actualizarTotales();
+        sincronizarTotalConDistribucion();
     }
 
     function alternarPagoParcial(fila) {
@@ -131,7 +136,7 @@
         fila.classList.remove('partial-payment-active');
         boton.textContent = 'Registrar pago parcial';
         ayuda.textContent = 'Saldo completo protegido contra cambios accidentales.';
-        actualizarTotales();
+        sincronizarTotalConDistribucion();
     }
 
     function reindexar() {
@@ -164,6 +169,31 @@
         const salida = document.querySelector('#total-restante');
         salida.textContent = formato.format(restante);
         salida.closest('.remaining').classList.toggle('over', restante < 0);
+    }
+
+    function totalDistribuido() {
+        return [...lista.querySelectorAll('.monto-solicitado')]
+            .reduce((suma, input) => suma + numero(input.value), 0);
+    }
+
+    function sincronizarTotalConDistribucion() {
+        const distribuido = totalDistribuido();
+        monto.value = distribuido > 0 ? distribuido.toFixed(2) : '';
+        actualizarTotales();
+    }
+
+    function actualizarAyudaPagoParcial(fila) {
+        if (!fila.classList.contains('partial-payment-active')) return;
+        const importe = fila.querySelector('.monto-solicitado');
+        const saldoCompleto = numero(importe.dataset.fullAmount);
+        const aplicado = numero(importe.value);
+        const saldoEstimado = Math.max(saldoCompleto - aplicado, 0);
+        const formato = new Intl.NumberFormat('es-MX', {
+            style: 'currency', currency: moneda.value || 'MXN'
+        });
+        fila.querySelector('.amount-help').textContent = aplicado > 0
+            ? `Después de validar este pago, el cargo conservará un saldo estimado de ${formato.format(saldoEstimado)}.`
+            : 'Modo parcial activo. Captura exclusivamente el importe realmente recibido para este cargo.';
     }
 
     function actualizarMetodo() {
@@ -246,10 +276,7 @@
                                 const importe = fila?.querySelector('.monto-solicitado');
                                 if (importe) importe.value = Number(opcion.monto).toFixed(2);
                                 if (fila) protegerAsignacion(fila, opcion.monto);
-                                const solicitado = [...lista.querySelectorAll('.monto-solicitado')]
-                                    .reduce((suma, input) => suma + numero(input.value), 0);
-                                monto.value = solicitado.toFixed(2);
-                                actualizarTotales();
+                                sincronizarTotalConDistribucion();
                             }
                             valor.dispatchEvent(new Event('change', {bubbles: true})); resultados.hidden = true;
                             mostrarEstado('');

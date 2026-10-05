@@ -27,7 +27,16 @@ class CobranzaAsistidaInterfazTest {
 
         assertThat(javascript).contains("opcion.monto != null",
                 "importe.value = Number(opcion.monto).toFixed(2)",
-                "monto.value = solicitado.toFixed(2)");
+                "sincronizarTotalConDistribucion()");
+    }
+
+    @Test
+    void pagoParcialSincronizaElTotalYExplicaElSaldoQueConservaraElCargo() throws Exception {
+        String javascript = recurso("static/js/pago-form.js");
+
+        assertThat(javascript).contains("sincronizarTotalConDistribucion()",
+                "monto.value = distribuido > 0 ? distribuido.toFixed(2) : ''",
+                "el cargo conservará un saldo estimado de");
     }
 
     private String recurso(String ruta) throws Exception {

@@ -57,6 +57,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
+import static escuela.cobranza.support.CalculoCargo.aplicado;
 import static escuela.cobranza.support.CalculoCargo.saldo;
 import static escuela.cobranza.support.CalculoCargo.total;
 import static escuela.common.support.FormatoMoneda.formatear;
@@ -92,6 +93,7 @@ public class CatalogoConsultaService {
     private final PoliticaRecargoRepository politicaRecargoRepository;
     private final MotivoFinancieroRepository motivoFinancieroRepository;
     private final CuentaFinancieraRepository cuentaFinancieraRepository;
+    private final escuela.finanzas.service.SaldoCuentaFinancieraService saldoCuentaService;
     private final PagoRepository pagoRepository;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
@@ -520,6 +522,9 @@ public class CatalogoConsultaService {
         } else if (saldo(cargo).signum() == 0) {
             estado = "Pagado";
             tono = "positivo";
+        } else if (aplicado(cargo).signum() > 0) {
+            estado = "Parcial";
+            tono = "aviso";
         } else if (cargo.getFechaVencimiento().isBefore(LocalDate.now())) {
             estado = "Vencido";
             tono = "aviso";
@@ -596,10 +601,21 @@ public class CatalogoConsultaService {
         return fila(cuenta.getId(), cuenta.isActivo(), cuenta.getCodigo(), cuenta.getNombre(), alcance,
                 tipo, institucionFinanciera, identificador,
                 formatear(cuenta.getSaldoInicial()),
+                formatear(saldoCuentaService.consultar(cuenta.getId(), cuenta.getSaldoInicial())),
                 FECHA.format(cuenta.getFechaSaldoInicial()));
     }
 
     private FilaCatalogo filaPago(Pago pago) {
+        var cargosVinculados = java.util.stream.Stream.concat(
+                pago.getSolicitudes().stream().map(escuela.finanzas.entity.SolicitudAplicacionPago::getCargo),
+                pago.getAplicaciones().stream().map(escuela.finanzas.entity.AplicacionPago::getCargo))
+                .collect(java.util.stream.Collectors.toMap(Cargo::getId, c -> c, (a, b) -> a)).values();
+        java.math.BigDecimal totalCargos = cargosVinculados.stream().map(c -> total(c))
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+        java.math.BigDecimal saldoCargos = cargosVinculados.stream()
+                .map(c -> c.getEstadoRegistro() == EstadoRegistroCargo.EMITIDO
+                        ? saldo(c) : java.math.BigDecimal.ZERO)
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
         java.math.BigDecimal solicitado = pago.getSolicitudes().stream()
                 .map(escuela.finanzas.entity.SolicitudAplicacionPago::getMontoSolicitado)
                 .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
@@ -633,6 +649,8 @@ public class CatalogoConsultaService {
                 pago.getOrigenRegistro() == escuela.finanzas.entity.OrigenRegistroPago.PORTAL_FAMILIAR
                         ? "Portal familiar" : "Administración",
                 formatear(pago.getMonto()), distribucion,
+                cargosVinculados.isEmpty() ? "—" : formatear(totalCargos),
+                cargosVinculados.isEmpty() ? "—" : formatear(saldoCargos),
                 String.valueOf(pago.getComprobantes().size())), estado, tono);
     }
 

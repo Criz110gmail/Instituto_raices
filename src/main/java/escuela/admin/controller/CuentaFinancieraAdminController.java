@@ -30,6 +30,7 @@ public class CuentaFinancieraAdminController {
     private final InstitucionService institucionService;
     private final PlantelService plantelService;
     private final AlcanceDatosService alcance;
+    private final escuela.finanzas.service.SaldoCuentaFinancieraService saldoCuentaService;
 
     @GetMapping("/nuevo")
     String nuevo(Model model) {
@@ -116,6 +117,10 @@ public class CuentaFinancieraAdminController {
         model.addAttribute("instituciones", instituciones);
         model.addAttribute("planteles", planteles);
         model.addAttribute("tipos", TipoCuentaFinanciera.values());
+        if (id != null) {
+            var cuenta = service.obtener(id);
+            model.addAttribute("saldoActual", saldoCuentaService.consultar(id, cuenta.saldoInicial()));
+        }
     }
 
     private void validarAlcance(CuentaFinancieraForm form, BindingResult errores) {

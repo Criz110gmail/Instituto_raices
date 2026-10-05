@@ -38,6 +38,19 @@
                 <strong>No se pudo guardar</strong><p th:text="${errorOperacion}"></p>
             </div>
 
+            <section class="account-balance-summary" th:if="${edicion}" aria-label="Saldos de la cuenta">
+                <article class="account-opening-balance">
+                    <span>Saldo inicial registrado</span>
+                    <strong th:text="${@formatoMoneda.pesos(form.saldoInicial)}">$0.00</strong>
+                    <small th:text="${form.moneda + ' · Apertura de la cuenta'}">MXN · Apertura de la cuenta</small>
+                </article>
+                <article>
+                    <span>Saldo actual disponible</span>
+                    <strong th:text="${@formatoMoneda.pesos(saldoActual)}">$0.00</strong>
+                    <small>Incluye los ingresos y egresos registrados.</small>
+                </article>
+            </section>
+
             <fieldset class="form-section">
                 <legend>Identidad y alcance</legend>
                 <div class="form-grid">
@@ -85,6 +98,7 @@
                     <label><span>Moneda *</span><input th:field="*{moneda}" maxlength="3"><small class="field-error" th:errors="*{moneda}"></small></label>
                     <label><span>Saldo inicial *</span><input type="number" min="0" step="0.01" th:field="*{saldoInicial}"><small class="field-error" th:errors="*{saldoInicial}"></small></label>
                     <label><span>Fecha del saldo *</span><input type="date" th:field="*{fechaSaldoInicial}"><small class="field-error" th:errors="*{fechaSaldoInicial}"></small></label>
+                    <label th:if="${edicion}"><span>Saldo actual de la cuenta</span><input type="text" th:value="${@formatoMoneda.pesos(saldoActual)}" readonly aria-readonly="true"><small class="field-help">Incluye el saldo inicial y los movimientos registrados. Sólo consulta.</small></label>
                     <label class="policy-card wide"><input type="checkbox" th:field="*{activo}"><span><strong>Cuenta activa</strong><small>Disponible como destino para operaciones futuras.</small></span></label>
                 </div>
             </fieldset>

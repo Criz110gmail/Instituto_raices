@@ -26,8 +26,19 @@ class PagoFormularioTest {
                         "data-fixed-charge", "monto-solicitado",
                         "full-amount-reference", "saldoReferencia",
                         "input-help", "field-error", "Cuenta declarada *",
+                        "Total recibido", "Distribuido entre cargos",
+                        "Dinero pendiente de asignar",
                         "th:errors=\"*{cuentaDeclaradaId}\"")
                 .doesNotContain("th:field=\"*{folio}\"")
                 .doesNotContain("${errorOperacion or #fields.hasErrors('*')}");
+
+        String detalle;
+        try (var entrada = getClass().getClassLoader()
+                .getResourceAsStream("templates/admin/pago-detalle.html")) {
+            assertThat(entrada).isNotNull();
+            detalle = new String(entrada.readAllBytes(), StandardCharsets.UTF_8);
+        }
+        assertThat(detalle).contains("Saldo actual del cargo", "Se aplicará al cargo",
+                "Seguirá debiendo después de validar", "saldoEstimadoTrasValidacion");
     }
 }

@@ -25,6 +25,7 @@
                 <label><span>Descuentos y becas</span><strong th:text="${'- ' + @formatoMoneda.pesos(cargo.descuentoTotal)}">-$0.00</strong></label>
                 <label><span>Recargos y aumentos</span><strong th:text="${'+ ' + @formatoMoneda.pesos(cargo.recargoTotal)}">+$0.00</strong></label>
                 <label><span>Total ajustado</span><strong th:text="${@formatoMoneda.pesos(cargo.importeTotal)}">$0.00</strong></label>
+                <label><span>Pagado acumulado</span><strong th:text="${@formatoMoneda.pesos(cargo.montoPagado)}">$0.00</strong></label>
                 <label><span>Saldo exigible</span><strong th:text="${@formatoMoneda.pesos(cargo.saldoPendiente)}">$0.00</strong></label>
             </div></fieldset>
             <fieldset class="form-section pending-payment-section" th:if="${!pagosPendientes.empty}"><legend>Transferencias reportadas por el tutor</legend><div class="pending-payment-intro"><strong>Revisión pendiente</strong><p>El tutor informó estas transferencias desde el portal familiar. Revisa el comprobante y abre el pago para validarlo; todavía no modifica el saldo del alumno.</p></div><div class="pending-payment-list"><article th:each="p:${pagosPendientes}" class="pending-payment-row"><div class="pending-payment-main"><strong th:text="${p.folio}">Folio</strong><span th:text="${p.tutorNombre}">Tutor</span><small th:text="${#temporals.format(p.fechaPago,'dd/MM/yyyy HH:mm')+' · '+p.referencia}">Fecha y referencia</small></div><div class="pending-payment-amount"><strong th:text="${@formatoMoneda.pesos(p.montoSolicitado)}">$0.00</strong><small th:text="${p.comprobantes+' comprobante(s) · '+(p.origenRegistro=='PORTAL_FAMILIAR'?'Portal familiar':'Administración')}">Comprobante</small></div><a class="pending-payment-link" th:if="${puedeValidarPago}" th:href="@{/admin/pagos/{id}/editar(id=${p.pagoId})}">Revisar pago <span>↗</span></a><span class="field-help" th:unless="${puedeValidarPago}">Solicita permiso de pagos para validar</span></article></div></fieldset>
@@ -35,7 +36,7 @@
             <footer class="form-actions cargo-detail-actions">
                 <a class="detail-close-button" href="/admin/catalogos/cargos">Cerrar detalle</a>
                 <a class="primary-action detail-payment-button"
-                   th:if="${puedeRegistrarPago and cargo.estadoRegistro.name() == 'EMITIDO' and (cargo.situacionCobro.name() == 'PENDIENTE' or cargo.situacionCobro.name() == 'PARCIAL')}"
+                   th:if="${puedeRegistrarPago == true and cargo.estadoRegistro.name() == 'EMITIDO' and (cargo.situacionCobro.name() == 'PENDIENTE' or cargo.situacionCobro.name() == 'PARCIAL')}"
                    th:href="@{/admin/pagos/nuevo(cargoId=${cargo.id},retornoInscripcionId=${cargo.inscripcionId})}">Registrar pago <span aria-hidden="true">→</span></a>
             </footer>
         </div>

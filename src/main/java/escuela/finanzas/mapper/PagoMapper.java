@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import static escuela.common.mapper.AuditoriaMapper.desde;
+import static escuela.cobranza.support.CalculoCargo.saldo;
 
 @Component
 public class PagoMapper {
@@ -55,7 +56,8 @@ public class PagoMapper {
         return new AplicacionPagoResponse(aplicacion.getId(), cargo.getId(),
                 nombreAlumno(alumno.getNombres(), alumno.getPrimerApellido(), alumno.getSegundoApellido()),
                 alumno.getMatricula(), cargo.getConceptoCobro().getNombre(), cargo.getDescripcion(),
-                aplicacion.getMonto(), cargo.getMoneda(), aplicacion.getFechaAplicacion());
+                aplicacion.getMonto(), cargo.getMoneda(), aplicacion.getFechaAplicacion(),
+                escuela.cobranza.support.CalculoCargo.total(cargo), saldo(cargo));
     }
 
     private MovimientoFinancieroResponse movimiento(MovimientoFinanciero movimiento, String moneda) {
@@ -74,11 +76,14 @@ public class PagoMapper {
     private SolicitudAplicacionPagoResponse solicitud(SolicitudAplicacionPago solicitud) {
         var cargo = solicitud.getCargo();
         var alumno = cargo.getInscripcion().getAlumno();
+        BigDecimal saldoActual = saldo(cargo);
+        BigDecimal saldoEstimado = saldoActual.subtract(solicitud.getMontoSolicitado())
+                .max(BigDecimal.ZERO).setScale(2);
         return new SolicitudAplicacionPagoResponse(solicitud.getId(), cargo.getId(),
                 Stream.of(alumno.getNombres(), alumno.getPrimerApellido(), alumno.getSegundoApellido())
                         .filter(v -> v != null && !v.isBlank()).collect(java.util.stream.Collectors.joining(" ")),
                 alumno.getMatricula(), cargo.getConceptoCobro().getNombre(), cargo.getDescripcion(),
-                solicitud.getMontoSolicitado(), cargo.getMoneda());
+                solicitud.getMontoSolicitado(), cargo.getMoneda(), saldoActual, saldoEstimado);
     }
 
     private String nombreTutor(Tutor tutor) {

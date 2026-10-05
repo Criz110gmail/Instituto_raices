@@ -2510,6 +2510,51 @@ historial paginado.
   prueba y ejecutó 447 pruebas sin fallos. La imagen se desplegó y salud respondió `UP`;
   la siguiente migración disponible es V54.
 
+## Pendiente de usabilidad — límites de las políticas de recargo
+
+- La prueba guiada de cobranza mostró que las etiquetas **Tipo de límite** y **Valor del
+  límite** no comunican por sí solas qué se está limitando ni cómo interviene en el cálculo.
+- Se deberá rediseñar esa captura con términos operativos, ayuda visible y ejemplos numéricos
+  que distingan sin tope, tope monetario y porcentaje máximo del importe original. Debe
+  aclararse que el tope se aplica al total acumulado de recargos automáticos.
+- Para periodicidad única se evaluará una opción predeterminada o una captura simplificada.
+  Es una mejora pendiente de interfaz; en esta decisión no se implementó código.
+
+## Corrección de captura de pagos parciales (2026-10-05)
+
+- Cuentas financieras muestra **Saldo actual** en listado, Excel y edición. La consulta toma
+  sólo el último movimiento por secuencia de cuenta y usa el saldo inicial si no existen
+  movimientos, sin cargar todo el historial. Pruebas verifican ambos casos.
+
+- Al aplicar un ajuste rechazado por reglas del concepto, el controlador reconstruía el
+  detalle sin `puedeRegistrarPago`; Thymeleaf fallaba al convertir null a boolean y ocultaba
+  el mensaje de negocio. La preparación compartida ahora incluye ese permiso y la vista
+  utiliza comparación booleana explícita. Pruebas cubren rechazo de descuento y errores de
+  captura conservando datos y permisos. La prueba local del cargo de $400 confirmó que su
+  concepto no permitía descuentos ni recargos; esas opciones deben habilitarse desde el
+  catálogo para ejecutar el escenario previsto.
+
+- La prueba integral de cobranza detectó que al cambiar una distribución de `$1,000` a
+  `$300`, el formulario conservaba el total recibido en `$1,000` y producía `$700` como
+  dinero sin asignar. Ahora cualquier cambio en los importes distribuidos sincroniza el
+  total recibido con su suma, evitando una recepción accidental mayor al efectivo real.
+- La terminología visible cambió a **Total recibido**, **Distribuido entre cargos** y
+  **Dinero pendiente de asignar**. El pago parcial informa además el saldo estimado que
+  conservará el cargo después de validarlo.
+- La pestaña Distribución del detalle de un pago pendiente también presenta por cargo su
+  saldo actual y el saldo estimado posterior a la validación, evitando confundir dinero no
+  asignado con deuda todavía pendiente del alumno.
+- Adeudos de alumnos ahora muestra **Parcial** cuando un cargo tiene aplicaciones y conserva
+  saldo. El detalle incorpora **Pagado acumulado**, de modo que un cargo de `$1,000` con
+  `$300` abonados comunica directamente los `$700` exigibles.
+- La tabla de Pagos recibidos incorpora total de cargos vinculados y saldo actual por pagar,
+  separados del dinero recibido. Distribución también muestra estos valores después de la
+  validación: cargo `$1,000`, abono de este pago `$300`, saldo actual `$700`. Los saldos se
+  actualizan con aplicaciones posteriores; los totales de tabla deduplican cargos vinculados.
+- El total sigue siendo editable después de la sincronización para conservar el caso
+  válido de dinero recibido todavía no asignado. No hubo cambio de esquema. La construcción
+  Docker aprobó las 462 pruebas del proyecto.
+
 ## Convenios de pago (V54, 2026-10-02)
 
 - Se agregó un expediente formal de convenios por institución y tutor. Sus detalles enlazan

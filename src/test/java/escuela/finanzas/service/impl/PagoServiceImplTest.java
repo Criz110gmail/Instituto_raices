@@ -93,6 +93,9 @@ class PagoServiceImplTest {
         assertThat(respuesta.montoSolicitado()).isEqualByComparingTo("1700.00");
         assertThat(respuesta.montoSinAsignar()).isEqualByComparingTo("300.00");
         assertThat(respuesta.solicitudes()).hasSize(2);
+        assertThat(respuesta.solicitudes().get(1).saldoCargoActual()).isEqualByComparingTo("800.00");
+        assertThat(respuesta.solicitudes().get(1).saldoEstimadoTrasValidacion())
+                .isEqualByComparingTo("300.00");
         verify(solicitudRepository, times(2)).save(any());
         verify(cargoRepository, never()).save(any());
     }

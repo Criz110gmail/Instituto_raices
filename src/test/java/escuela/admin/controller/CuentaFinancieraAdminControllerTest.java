@@ -30,6 +30,7 @@ class CuentaFinancieraAdminControllerTest {
     @Mock private InstitucionService institucionService;
     @Mock private PlantelService plantelService;
     @Mock private AlcanceDatosService alcance;
+    @Mock private escuela.finanzas.service.SaldoCuentaFinancieraService saldoCuentaService;
     @InjectMocks private CuentaFinancieraAdminController controller;
 
     @BeforeEach

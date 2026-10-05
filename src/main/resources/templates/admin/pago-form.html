@@ -31,7 +31,7 @@
             <fieldset class="form-section"><legend>Datos del pago</legend><div class="form-grid">
                 <label><span>Fecha y hora del pago *</span><input id="fechaPago" type="datetime-local" th:field="*{fechaPago}"></label>
                 <label><span>Método *</span><select id="metodo" th:field="*{metodo}"><option th:each="m : ${metodos}" th:value="${m}" th:text="${m.name() == 'EFECTIVO' ? 'Efectivo' : (m.name() == 'TRANSFERENCIA' ? 'Transferencia' : 'Tarjeta')}"></option></select><small class="input-help">Efectivo usa una caja; transferencia y tarjeta usan una cuenta bancaria o de inversión.</small></label>
-                <label><span>Monto total *</span><div class="money-input"><input id="monto" type="number" min="0.01" step="0.01" th:field="*{monto}" placeholder="0.00"><input id="moneda" class="protected-money-code" th:field="*{moneda}" maxlength="3" aria-label="Moneda" readonly></div><small class="input-help">La moneda proviene de la institución y no puede modificarse.</small></label>
+                <label><span>Total recibido *</span><div class="money-input"><input id="monto" type="number" min="0.01" step="0.01" th:field="*{monto}" placeholder="0.00"><input id="moneda" class="protected-money-code" th:field="*{moneda}" maxlength="3" aria-label="Moneda" readonly></div><small class="input-help">Es el dinero que realmente entregó el tutor. Se actualiza al distribuir importes entre cargos.</small></label>
                 <label class="wide"><span id="payment-reference-label">Referencia bancaria</span><input th:field="*{referencia}" maxlength="150" placeholder="Folio, rastreo o concepto del banco"><small class="input-help" id="payment-reference-help">Captura la referencia disponible en el comprobante.</small><small class="field-error" th:errors="*{referencia}"></small></label>
                 <div class="wide payment-autocomplete" data-payment-autocomplete="cuenta"><label for="cuenta-busqueda">Cuenta declarada *</label><div class="autocomplete-control"><input id="cuenta-busqueda" type="search" autocomplete="off" placeholder="Código, nombre o banco" th:field="*{cuentaDeclaradaEtiqueta}" aria-required="true"><button type="button" class="autocomplete-clear" aria-label="Limpiar cuenta">×</button></div><input id="cuentaDeclaradaId" type="hidden" th:field="*{cuentaDeclaradaId}"><div class="autocomplete-results" role="listbox" hidden></div><small class="autocomplete-status">Selecciona la cuenta donde quedará registrado el ingreso. Efectivo muestra cajas; transferencia y tarjeta muestran cuentas bancarias o de inversión.</small><small class="field-error" th:errors="*{cuentaDeclaradaId}"></small></div>
                 <label class="wide"><span>Observaciones</span><textarea th:field="*{observaciones}" maxlength="4000" rows="3" placeholder="Aclaraciones administrativas relevantes"></textarea><small class="field-error" th:errors="*{observaciones}"></small></label>
@@ -42,7 +42,7 @@
                 <div id="file-summary" class="file-summary" aria-live="polite">No se han seleccionado archivos.</div>
             </fieldset>
 
-            <fieldset class="form-section"><legend>Distribución solicitada</legend>
+            <fieldset class="form-section"><legend>Distribución entre cargos</legend>
                 <div class="distribution-heading"><div><strong>Asignación por cargo y alumno</strong><p>El saldo completo queda protegido. Si realmente recibiste un abono menor, habilita de forma expresa el pago parcial.</p></div><button id="agregar-cargo" type="button">+ Agregar cargo</button></div>
                 <div id="solicitudes" class="distribution-list">
                     <article class="distribution-row" th:each="s,iter : *{solicitudes}" th:attr="data-fixed-charge=${pagoRapido and iter.index == 0}">
@@ -53,7 +53,7 @@
                     </article>
                 </div>
                 <div id="distribution-empty" class="distribution-empty"><strong>Sin distribución todavía</strong><p>El pago completo quedará como importe pendiente de asignación hasta que sea validado.</p></div>
-                <div class="distribution-total"><span><small>Total del pago</small><strong id="total-pago">$0.00</strong></span><span><small>Solicitado</small><strong id="total-solicitado">$0.00</strong></span><span class="remaining"><small>Sin asignar</small><strong id="total-restante">$0.00</strong></span></div>
+                <div class="distribution-total"><span><small>Total recibido</small><strong id="total-pago">$0.00</strong></span><span><small>Distribuido entre cargos</small><strong id="total-solicitado">$0.00</strong></span><span class="remaining"><small>Dinero pendiente de asignar</small><strong id="total-restante">$0.00</strong></span></div>
             </fieldset>
 
             <div class="form-notice"><strong>Importante</strong><p>“Pendiente de validación” significa que el comprobante aún no confirma la recepción. Este paso no crea aplicaciones, movimientos financieros ni cambios de saldo.</p></div>

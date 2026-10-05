@@ -1634,6 +1634,52 @@ enumeradas de etapas anteriores.
   pruebas sin fallos. La imagen se desplegó y `/actuator/health` respondió `UP`. La
   siguiente migración disponible continúa siendo V54.
 
+### Pendiente acordado — simplificar límites de políticas de recargo
+
+- El propietario confirmó durante la prueba funcional que **Tipo de límite** y **Valor del
+  límite** no resultan comprensibles para un usuario administrativo sin explicación previa.
+- Antes de dar por cerrada la experiencia de cobranza se deberá rediseñar esa parte del
+  formulario con nombres orientados a la operación, ayudas visibles en lenguaje sencillo y
+  ejemplos calculados con el importe original del cargo. La pantalla debe explicar claramente
+  la diferencia entre **sin tope**, **tope máximo en dinero** y **tope como porcentaje del
+  importe original**, así como que el límite controla el recargo acumulado y no el importe de
+  cada mensualidad.
+- También se deberá evaluar ocultar o simplificar el límite cuando la periodicidad sea
+  **Una sola vez**, evitando pedir decisiones que no aporten valor al caso más sencillo. Este
+  punto queda documentado únicamente como pendiente; todavía no se modificó código.
+
+### Pago parcial con total recibido sincronizado — 2026-10-05
+
+- **Cuentas financieras** incluye saldo actual en tabla, Excel y edición/detalle como dato
+  de consulta. Usa el saldo posterior del último movimiento por secuencia, o el saldo inicial
+  si todavía no hay movimientos; no vuelve a sumar el saldo inicial. El saldo consultado
+  no forma parte de los campos editables.
+
+- En **Pagos recibidos → Nuevo registro**, al habilitar un pago parcial y modificar el
+  importe que se aplicará a un cargo, **Total recibido** se sincroniza inmediatamente con
+  la suma distribuida. Con varios cargos utiliza la suma de todos; el administrador aún
+  puede modificar después el total si realmente recibió dinero que desea conservar sin
+  asignar.
+- Las etiquetas distinguen ahora **Total recibido**, **Distribuido entre cargos** y
+  **Dinero pendiente de asignar**. Este último representa dinero recibido sin destino, no
+  el saldo que todavía debe el alumno.
+- Durante la captura parcial se muestra el saldo estimado que conservará el cargo después
+  de validar. El importe tampoco puede superar desde la interfaz el saldo completo usado
+  como referencia; las reglas de servidor permanecen como protección definitiva.
+- El detalle de un pago pendiente muestra por cada distribución el saldo actual del cargo
+  y el saldo estimado después de validar; por ejemplo, `$1,000` actual, `$300` distribuido
+  y `$700` que seguirá debiendo el alumno.
+- El listado de **Adeudos de alumnos** identifica como **Parcial** un cargo con abonos y
+  saldo pendiente. Su detalle presenta **Pagado acumulado** junto al saldo exigible para
+  que el usuario pueda conciliar ambos importes sin acudir al expediente del pago.
+- **Pagos recibidos** distingue en su tabla total recibido, total de cargos vinculados y
+  saldo actual por pagar. Para varios cargos suma cada cargo una sola vez. El detalle de
+  un pago validado presenta por abono el total del cargo, el importe de ese pago y el saldo
+  actual restante; este último cambia con los pagos posteriores y no es una fotografía
+  histórica del saldo al momento de validar.
+- No requirió migración. `node --check` aprobó `pago-form.js` y Docker compiló 719 fuentes
+  principales y 130 de prueba y ejecutó 462 pruebas sin fallos.
+
 ### Convenios de pago auditables — V54 — 2026-10-02
 
 - El módulo **Cobranza → Convenios de pago** formaliza acuerdos familiares sin borrar ni
