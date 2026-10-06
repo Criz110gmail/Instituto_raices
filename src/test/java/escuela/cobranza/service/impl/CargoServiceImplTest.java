@@ -24,6 +24,7 @@ import escuela.inscripcion.repository.InscripcionRepository;
 import escuela.institucion.entity.Institucion;
 import escuela.institucion.entity.Plantel;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.data.domain.SliceImpl;
 
 import java.math.BigDecimal;
@@ -52,6 +53,12 @@ class CargoServiceImplTest {
     private final CargoServiceImpl service = new CargoServiceImpl(repository, cuotaRepository,
             inscripcionRepository, conceptoRepository, periodoRepository, new CargoMapper(),
             aplicacionBecaService);
+
+    @BeforeEach
+    void sinBecaPorDefecto() {
+        when(aplicacionBecaService.previsualizar(any(), any(), any(), any(), any()))
+                .thenReturn(new AplicacionBecaCargoService.CalculoBeca(null, new BigDecimal("0.00")));
+    }
 
     @Test
     void generaMensualidadesPorAlumnoYRecortaElDiaEnFebrero() {
@@ -112,13 +119,38 @@ class CargoServiceImplTest {
         assertThat(vista.cuotasConPendientes()).isEqualTo(1);
         assertThat(vista.pagosPorGenerar()).isEqualTo(1);
         assertThat(vista.importeTotal()).isEqualByComparingTo("3000.00");
+        assertThat(vista.becaTotal()).isEqualByComparingTo("0.00");
+        assertThat(vista.importeNetoTotal()).isEqualByComparingTo("3000.00");
         assertThat(vista.pagina().getContent()).singleElement().satisfies(fila -> {
             assertThat(fila.alumnoNombre()).isEqualTo("Ana López");
             assertThat(fila.periodo()).contains("febrero 2026");
             assertThat(fila.fechaVencimiento()).isEqualTo(LocalDate.of(2026, 2, 28));
+            assertThat(fila.descripcionBeca()).isEqualTo("Sin beca aplicable");
+            assertThat(fila.importeNeto()).isEqualByComparingTo("3000.00");
         });
         verify(repository, times(0)).insertarAutomaticoSiAusente(any(), any(), any(),
                 any(), any(), any(), any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void resumeBecasDeTodosLosPeriodosAunqueLaPaginaNoLosMuestre() {
+        CuotaAlumno cuota = cuotaMensual();
+        when(cuotaRepository.buscarParaGeneracion(any(), any(), any(), any(), any()))
+                .thenReturn(new SliceImpl<>(List.of(cuota)));
+        when(repository.clavesGeneradasPorCuota(90L)).thenReturn(List.of());
+        when(aplicacionBecaService.previsualizar(eq(50L), eq(70L),
+                eq(LocalDate.of(2026, 2, 1)), eq(LocalDate.of(2026, 2, 28)), any()))
+                .thenReturn(new AplicacionBecaCargoService.CalculoBeca(null, new BigDecimal("600.00")));
+        var vista = service.previsualizar(new GeneracionCargosRequest(
+                1L, null, LocalDate.of(2026, 2, 28)), 1, 10);
+        assertThat(vista.pagina().getContent()).isEmpty();
+        assertThat(vista.pagosPorGenerar()).isEqualTo(2);
+        assertThat(vista.importeTotal()).isEqualByComparingTo("6000.00");
+        assertThat(vista.becaTotal()).isEqualByComparingTo("600.00");
+        assertThat(vista.importeNetoTotal()).isEqualByComparingTo("5400.00");
+        verify(repository, times(0)).insertarAutomaticoSiAusente(any(), any(), any(),
+                any(), any(), any(), any(), any(), any(), any(), any(), any());
+        verify(aplicacionBecaService, times(0)).aplicar(any());
     }
 
     @Test

@@ -19,7 +19,7 @@
                 <label><span>Generar hasta *</span><input type="date" th:field="*{fechaCorte}"><small class="field-error" th:errors="*{fechaCorte}"></small><span class="field-help">Incluye periodos cuya cuota esté vigente hasta esta fecha.</span></label>
                 <div class="policy-card wide"><span><strong>Qué se visualizará</strong><small>Sólo cuotas activas con generación automática, inscripción vigente y periodos que todavía no tengan un adeudo.</small></span></div>
             </div></fieldset>
-            <div class="form-notice"><strong>Esta consulta no modifica información</strong><p>Podrás revisar alumno, concepto, periodo, vencimiento e importe antes de generar.</p></div>
+            <div class="form-notice"><strong>Esta consulta no modifica información</strong><p>Podrás revisar alumno, concepto, periodo, vencimiento, importe original, beca aplicable y total estimado por cobrar antes de generar.</p></div>
             <footer class="form-actions"><a href="/admin/catalogos/cargos">Cancelar</a><button type="submit">Visualizar cuotas por aplicar</button></footer>
         </form>
     </section>
@@ -29,16 +29,21 @@
         <div class="surcharge-summary charge-generation-summary" th:if="${!vistaPrevia.pagina.empty}">
             <article><span>Cuotas con pendientes</span><strong th:text="${vistaPrevia.cuotasConPendientes}">0</strong></article>
             <article class="accent"><span>Adeudos por generar</span><strong th:text="${vistaPrevia.pagosPorGenerar}">0</strong></article>
-            <article class="total"><span>Importe programado</span><strong th:text="${@formatoMoneda.pesos(vistaPrevia.importeTotal)}">$0.00</strong></article>
+            <article><span>Importe original total</span><strong th:text="${@formatoMoneda.pesos(vistaPrevia.importeTotal)}">$0.00</strong></article>
+            <article class="accent"><span>Becas por aplicar</span><strong th:text="${@formatoMoneda.pesos(vistaPrevia.becaTotal)}">$0.00</strong></article>
+            <article class="total"><span>Total estimado por cobrar</span><strong th:text="${@formatoMoneda.pesos(vistaPrevia.importeNetoTotal)}">$0.00</strong></article>
         </div>
+        <div class="form-notice" th:if="${!vistaPrevia.pagina.empty}"><strong>Importe original − beca = total estimado por cobrar</strong><p>La beca corresponde a la inscripción, concepto y vigencia de cada periodo. Los totales incluyen todas las páginas. No incluye ajustes manuales ni recargos posteriores. Al confirmar se consultarán nuevamente las becas vigentes; si cambias una beca, actualiza esta vista previa antes de generar.</p></div>
         <div class="surcharge-empty" th:if="${vistaPrevia.pagina.empty}"><span>✓</span><div><strong>Todo está al día para este corte</strong><p>Las cuotas aplicables ya tienen sus adeudos generados o todavía no han iniciado.</p></div></div>
-        <div class="table-wrap surcharge-preview-table" th:if="${!vistaPrevia.pagina.empty}"><table><thead><tr><th>Alumno</th><th>Concepto</th><th>Frecuencia</th><th>Periodo</th><th>Vencimiento</th><th>Importe</th></tr></thead><tbody><tr th:each="fila:${vistaPrevia.pagina.content}">
+        <div class="table-wrap surcharge-preview-table" th:if="${!vistaPrevia.pagina.empty}"><table><thead><tr><th>Alumno</th><th>Concepto</th><th>Frecuencia</th><th>Periodo</th><th>Vencimiento</th><th>Importe original</th><th>Beca por aplicar</th><th>Total por cobrar</th></tr></thead><tbody><tr th:each="fila:${vistaPrevia.pagina.content}">
             <td data-label="Alumno"><strong th:text="${fila.alumnoNombre}">Alumno</strong><small th:text="${fila.alumnoMatricula+' · '+fila.plantelNombre}">Matrícula</small></td>
             <td data-label="Concepto" th:text="${fila.concepto}">Concepto</td>
             <td data-label="Frecuencia" th:text="${fila.frecuencia}">Mensual</td>
             <td data-label="Periodo"><strong th:text="${fila.periodo}">Periodo</strong></td>
             <td data-label="Vencimiento" th:text="${#temporals.format(fila.fechaVencimiento,'dd/MM/yyyy')}">Fecha</td>
-            <td data-label="Importe"><strong th:text="${@formatoMoneda.pesos(fila.importe)}">$0.00</strong><small th:text="${fila.moneda}">MXN</small></td>
+            <td data-label="Importe original"><strong th:text="${@formatoMoneda.pesos(fila.importe)}">$0.00</strong><small th:text="${fila.moneda}">MXN</small></td>
+            <td data-label="Beca por aplicar"><strong th:text="${@formatoMoneda.pesos(fila.montoBeca)}">$0.00</strong><small th:text="${fila.descripcionBeca}">Sin beca aplicable</small></td>
+            <td data-label="Total por cobrar"><strong th:text="${@formatoMoneda.pesos(fila.importeNeto)}">$0.00</strong><small th:text="${fila.moneda}">MXN</small></td>
         </tr></tbody></table></div>
         <footer class="pagination" th:if="${vistaPrevia.pagina.totalPages>1}"><p><strong th:text="${vistaPrevia.pagina.number*vistaPrevia.pagina.size+1}">1</strong>–<strong th:text="${vistaPrevia.pagina.number*vistaPrevia.pagina.size+vistaPrevia.pagina.numberOfElements}">25</strong> de <strong th:text="${vistaPrevia.pagina.totalElements}">100</strong></p><div>
             <a th:classappend="${vistaPrevia.pagina.first}?' disabled'" th:href="@{/admin/cargos/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number-1})}">Anterior</a><span th:text="${vistaPrevia.pagina.number+1}">1</span><a th:classappend="${vistaPrevia.pagina.last}?' disabled'" th:href="@{/admin/cargos/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number+1})}">Siguiente</a>

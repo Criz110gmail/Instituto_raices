@@ -27,6 +27,10 @@ class CargoFormularioTest {
                 .contains("Visualizar cuotas por aplicar")
                 .contains("th:action=\"@{/admin/cargos/generar/vista-previa}\"")
                 .contains("Confirmar y generar adeudos faltantes")
+                .contains("Importe original", "Beca por aplicar", "Total por cobrar",
+                        "fila.montoBeca", "fila.descripcionBeca", "fila.importeNeto",
+                        "vistaPrevia.becaTotal", "vistaPrevia.importeNetoTotal",
+                        "No incluye ajustes manuales ni recargos posteriores")
                 .contains("method=\"post\" th:action=\"@{/admin/cargos/generar}\"")
                 .contains("data-preview-form", "data-generation-preview",
                         "/js/generation-preview.js");

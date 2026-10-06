@@ -1,5 +1,52 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Vista previa de adeudos con becas — 2026-10-06
+
+- Antes de confirmar la generación automática, la tabla desglosa importe original,
+  beca por aplicar (monto, nombre y porcentaje/modalidad) y total estimado por cobrar.
+  Sin beca aplicable muestra $0.00. El resumen suma todas las páginas, no sólo la visible.
+- La consulta reutiliza la selección por inscripción, concepto y vigencia, el redondeo
+  y el límite del monto fijo de la emisión. No genera cargos ni ajustes; mantiene
+  paginación y procesamiento por bloques. No estima ajustes manuales ni recargos futuros.
+- Procedimiento actualizado: Adeudos de alumnos → Generar automáticos → seleccionar
+  alcance y corte → Visualizar cuotas por aplicar → verificar original menos beca y
+  totales por alumno → confirmar sólo si son correctos. Si se cambia una beca, volver
+  a consultar: la confirmación recalcula según los datos vigentes.
+- El caso funcional de los dos hijos sigue pendiente de confirmación del propietario;
+  no generar sus adeudos ni registrar pagos mediante herramientas de desarrollo.
+
+## Regla acordada — guía viva por procesos probados — 2026-10-06
+
+- La fuente principal de ayuda será un módulo integrado **Guía de procesos y casos
+  prácticos**, no un PDF estático. Se implementará progresivamente sobre funcionalidades
+  estables; no esperar a que termine todo el sistema ni describir funciones aún inexistentes.
+- Cada proceso probado y confirmado por el propietario debe incorporarse a la guía con
+  escenario, requisitos y permisos, ejemplo ficticio completo, menú/módulo/botón exactos,
+  campos y valores de cada paso, resultados antes/después, saldos y estados esperados,
+  lugares de comprobación, errores frecuentes, correcciones y variantes relacionadas.
+- Distinguir siempre pruebas pendientes de escenarios confirmados; una implementación o
+  prueba automatizada no sustituye la confirmación funcional del propietario. Si la guía
+  aún no existe, conservar esos procedimientos en documentación de continuidad para su
+  incorporación posterior. Nunca inventar resultados de una prueba no terminada.
+- Al modificar una función estable, actualizar simultáneamente su procedimiento, ejemplo
+  e imágenes. Esto forma parte de la definición de terminado. La guía tendrá búsqueda por
+  situaciones, navegación por proceso/perfil, escenarios vinculados y versión/fecha de revisión;
+  cada perfil sólo verá guías acordes a sus permisos. Mantener el diseño y los temas del sistema.
+- Los ejemplos se marcarán ilustrativos: la guía no ejecutará registros ni pagos, y marcar
+  un paso revisado no significa que el sistema haya realizado la operación. Utilizar datos
+  controlados autorizados para las pruebas; no mezclar ejemplos con información operativa real.
+- Al cierre del proyecto se hará una revisión integral. El PDF podrá derivarse del mismo
+  contenido como complemento, no como fuente paralela. Primera candidata: cobranza, después
+  de confirmar el caso pendiente de un pago de $1,000 para dos hijos ($600 y $400).
+- En esta decisión sólo se actualiza documentación: el módulo de guía aún no está implementado.
+
+## Corrección visual de búsqueda de cargos en convenios — 2026-10-06
+
+- Nuevo convenio incorpora `form-grid` al buscador de cargos pendientes para reutilizar
+  los inputs, bordes, foco, tipografía y tema oscuro comunes. Se mantiene el layout
+  responsivo de `agreement-charge-search` y la búsqueda existente. No requiere migración;
+  V56 continúa disponible.
+
 ## V55 — soporte del portal docente — 2026-10-05
 
 - Seguridad y soporte incorpora **Soporte del portal de maestros** bajo
@@ -1246,13 +1293,13 @@ funcionales actuales.
   en la lista las pruebas pendientes de cancelaciones V32 y retiros V33; no crear
   movimientos operativos reales sólo para verificar.
 
-### Entregable final obligatorio — manual integral de usuario en PDF
+### Antecedente — manual integral y complemento PDF
 
-- Este pendiente se realizará únicamente cuando el propietario confirme que el sistema
-  está terminado. No generar anticipadamente el archivo ni sustituirlo por una explicación
-  breve en README.
-- Se deberá producir un **manual de usuario completo en PDF**, escrito con lenguaje muy
-  sencillo, directo e intuitivo, pensado para una persona sin conocimientos técnicos.
+- La estrategia del 06/10/2026 reemplaza el PDF estático como fuente principal por una guía
+  integrada progresiva. Los requisitos de detalle siguientes se conservan para esa guía.
+  No implementar ahora el módulo ni generar un PDF sin una solicitud específica.
+- El posible complemento PDF se derivará de la guía verificada; la explicación será
+  sencilla, directa e intuitiva, pensada para una persona sin conocimientos técnicos.
 - El manual explicará de forma exhaustiva el flujo integral del sistema y cada operación
   disponible, indicando desde qué menú se inicia, requisitos previos, datos que deben
   capturarse, significado de cada campo, botones que deben presionarse, resultado esperado,

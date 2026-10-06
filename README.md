@@ -787,9 +787,14 @@ en tablas consultables, con control de UUID duplicado y comparación contra prov
 moneda y totales de la compra. La importación de conceptos requerirá vista previa y
 confirmación del usuario.
 
-Como entregable final del proyecto queda pendiente un **manual integral de usuario en
-PDF**. Se elaborará cuando todas las funcionalidades y textos del sistema estén terminados
-y describirá, paso a paso y con lenguaje sencillo, cada proceso de los portales
+Queda pendiente una **Guía de procesos y casos prácticos integrada al sistema**. Se
+construirá progresivamente: cada proceso funcional probado y confirmado se documentará
+con pasos, módulos, botones, requisitos, ejemplo completo y resultados verificables.
+Las variantes y errores se explicarán por separado y cada cambio de funcionalidad
+exigirá actualizar su guía. Si el módulo aún no existe, los procedimientos se conservarán
+en la documentación de continuidad. Al final habrá una revisión integral y el PDF será
+un posible complemento derivado del mismo contenido, no una fuente estática paralela.
+La guía describirá, paso a paso y con lenguaje sencillo, cada proceso de los portales
 administrativo, docente y familiar. Incluirá capturas reales anotadas siempre que sea
 posible, requisitos previos, permisos, explicación de campos, resultados esperados,
 errores frecuentes, índice, glosario y solución de problemas. Las imágenes no contendrán

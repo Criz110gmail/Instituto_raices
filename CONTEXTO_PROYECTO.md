@@ -1,5 +1,45 @@
 # Contexto del proyecto
 
+## Vista previa de generación automática con becas (2026-10-06)
+
+- La tabla ahora presenta importe original, beca por aplicar en dinero y total por cobrar;
+  identifica la beca y su modalidad, o indica que no existe beca aplicable.
+- Resumen global de originales, becas y netos de todos los periodos pendientes,
+  conservando paginación y lectura por bloques. El cálculo comparte la misma selección
+  y redondeo que la generación, sin persistir ajustes en la consulta.
+- La vista aclara que no incluye ajustes manuales ni recargos posteriores y que confirmar
+  recalcula las becas vigentes. Antes de confirmar, volver a visualizar si cambian las becas.
+- Caso de dos hijos: el propietario confirmó dos filas en la vista previa, pero todavía
+  no confirma la generación. La prueba completa no debe documentarse como aprobada.
+- Verificación técnica: `docker compose build app` exitoso, 488 pruebas sin fallos;
+  aplicación actualizada con `docker compose up -d --no-deps app`, arranque correcto,
+  esquema V55 sin nuevas migraciones. No se ejecutaron operaciones de cobranza.
+
+## Estrategia de guía integrada progresiva (2026-10-06)
+
+- El propietario prioriza una guía viva por procesos y casos prácticos sobre un PDF estático.
+  Cada prueba funcional que confirme deberá documentarse con requisitos, permisos, ejemplo
+  completo, pasos de menú y botones, datos de captura, resultados esperados, comprobaciones,
+  errores y variantes. No declarar aprobado un escenario todavía pendiente.
+- Si aún no existe el módulo, guardar el procedimiento confirmado en documentación de
+  continuidad para incorporarlo después. Los cambios de funcionalidad exigirán actualizar
+  la guía asociada. Implementar primero procesos estables y revisar todo al cierre del sistema.
+- La guía ofrecerá búsqueda por situaciones, navegación por procesos y permisos, ejemplos
+  ilustrativos e imágenes sin datos sensibles. No generará operaciones automáticamente.
+  El PDF será un complemento derivado del mismo contenido, no documentación paralela.
+- Primera candidata: cobranza después de confirmar el pago único para dos hijos, $600 y $400.
+  Esta actualización es únicamente documental; no se implementó el módulo ni se registraron pagos.
+
+## Buscador de cargos en Nuevo convenio (2026-10-06)
+
+- El input de búsqueda carecía de estilo porque su contenedor no incluía `form-grid`,
+  clase requerida por las reglas compartidas de campos. Ahora reutiliza el mismo diseño
+  en claro/oscuro, foco y móvil, sin otra paleta ni cambios de consulta o validación.
+- Una prueba protege el uso de la clase común y el layout responsivo. No hay migración;
+  la siguiente disponible sigue siendo V56.
+- La construcción Docker aprobó 484 pruebas sin fallos ni errores.
+- Se desplegó sólo `app` y salud respondió `UP`; no se modificaron datos ni volúmenes.
+
 ## V55 — soporte del portal de maestros (2026-10-05)
 
 - Se agregó un módulo propio en Seguridad y soporte, con permiso `PORTAL_MAESTRO_SOPORTE`
@@ -266,16 +306,16 @@
   financiera actual. Este punto es sólo diseño pendiente; no se implementó código ni
   migración en esta revisión.
 
-- Al finalizar completamente el sistema se elaborará un manual integral de usuario en PDF.
-  Será un entregable final, no parte de la etapa actual, y explicará con lenguaje sencillo y
+- La decisión inicial de manual PDF se actualizó el 06/10/2026: la guía integrada será
+  la fuente principal y se construirá progresivamente con procesos probados. Un PDF podrá
+  derivarse del mismo contenido como complemento. La ayuda explicará con lenguaje sencillo y
   procedimientos numerados cada configuración, captura, consulta, aprobación, exportación
   y operación disponible para administración, maestros, familias y demás perfiles finales.
   Incluirá requisitos previos, significado de campos, resultados esperados, errores comunes,
   permisos y relaciones entre módulos. Siempre que sea posible utilizará capturas reales de
   las pantallas finales —sin datos sensibles— con indicaciones visuales de botones, menús y
   pestañas. Tendrá índice, glosario, solución de problemas, control de versión y revisión
-  visual completa. No debe generarse hasta que el propietario confirme que el sistema y sus
-  textos definitivos están terminados.
+  visual completa. Al concluir el sistema se revisarán todos los recorridos y textos definitivos.
 
 - La consistencia visual pasa a ser un requisito de aceptación: todo módulo debe reutilizar
   los patrones consolidados de listados, filtros, formularios, ayudas, acciones y estados,

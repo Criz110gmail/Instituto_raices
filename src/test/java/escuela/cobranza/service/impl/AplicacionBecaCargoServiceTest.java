@@ -7,6 +7,33 @@ import static org.assertj.core.api.Assertions.assertThat;import static org.mocki
 class AplicacionBecaCargoServiceTest {
  private final BecaAlumnoRepository becas=mock(BecaAlumnoRepository.class);private final AjusteCargoRepository ajustes=mock(AjusteCargoRepository.class);
  private final AplicacionBecaCargoService service=new AplicacionBecaCargoService(becas,ajustes,mock(UsuarioRepository.class));
+ @Test void vistaPreviaUsaElMismoMontoQueLaEmisionSinEscribir(){
+  Cargo c=cargo("999.99");
+  when(becas.buscarAplicable(1L,2L,c.getPeriodoCobroInicio(),c.getPeriodoCobroFin()))
+   .thenReturn(List.of(beca(ModalidadBeca.PORCENTAJE,"12.5",null)));
+  var vista=service.previsualizar(1L,2L,c.getPeriodoCobroInicio(),c.getPeriodoCobroFin(),c.getImporteOriginal());
+  assertThat(vista.monto()).isEqualByComparingTo("125.00");
+  assertThat(vista.descripcion()).isEqualTo("Académica · 12.5%");
+  verifyNoInteractions(ajustes);
+  service.aplicar(c);
+  ArgumentCaptor<AjusteCargo> cap=ArgumentCaptor.forClass(AjusteCargo.class);
+  verify(ajustes).saveAndFlush(cap.capture());
+  assertThat(cap.getValue().getMonto()).isEqualByComparingTo(vista.monto());
+ }
+ @Test void vistaPreviaLimitaMontoFijoYAdmiteBecaTotal(){
+  when(becas.buscarAplicable(any(),any(),any(),any())).thenReturn(List.of(beca(ModalidadBeca.MONTO_FIJO,null,"900")));
+  var vista=service.previsualizar(1L,2L,LocalDate.of(2026,9,1),LocalDate.of(2026,9,30),new BigDecimal("500.00"));
+  assertThat(vista.monto()).isEqualByComparingTo("500.00");
+  assertThat(vista.descripcion()).isEqualTo("Académica · monto fijo");
+  verifyNoInteractions(ajustes);
+ }
+ @Test void vistaPreviaSinBecaAplicableNoDescuenta(){
+  when(becas.buscarAplicable(any(),any(),any(),any())).thenReturn(List.of());
+  var vista=service.previsualizar(1L,2L,LocalDate.of(2026,9,1),LocalDate.of(2026,9,30),new BigDecimal("500.00"));
+  assertThat(vista.monto()).isEqualByComparingTo("0.00");
+  assertThat(vista.descripcion()).isEqualTo("Sin beca aplicable");
+  verifyNoInteractions(ajustes);
+ }
  @Test void congelaPorcentajeConRedondeoHalfUp(){Cargo c=cargo("999.99");BecaAlumno b=beca(ModalidadBeca.PORCENTAJE,"12.5",null);when(becas.buscarAplicable(any(),any(),any(),any())).thenReturn(List.of(b));service.aplicar(c);ArgumentCaptor<AjusteCargo> cap=ArgumentCaptor.forClass(AjusteCargo.class);verify(ajustes).saveAndFlush(cap.capture());assertThat(cap.getValue().getMonto()).isEqualByComparingTo("125.00");assertThat(cap.getValue().getBaseCalculo()).isEqualByComparingTo("999.99");assertThat(cap.getValue().getPorcentajeAplicado()).isEqualByComparingTo("12.5");}
  @Test void limitaMontoFijoAlImporteOriginal(){Cargo c=cargo("500.00");when(becas.buscarAplicable(any(),any(),any(),any())).thenReturn(List.of(beca(ModalidadBeca.MONTO_FIJO,null,"900.00")));service.aplicar(c);ArgumentCaptor<AjusteCargo> cap=ArgumentCaptor.forClass(AjusteCargo.class);verify(ajustes).saveAndFlush(cap.capture());assertThat(cap.getValue().getMonto()).isEqualByComparingTo("500.00");}
  @Test void reintentoNoDuplicaAjuste(){Cargo c=cargo("500.00");BecaAlumno b=beca(ModalidadBeca.PORCENTAJE,"10",null);when(becas.buscarAplicable(any(),any(),any(),any())).thenReturn(List.of(b));when(ajustes.existsByCargoIdAndBecaAlumnoIdAndReversaDeIsNull(3L,4L)).thenReturn(true);service.aplicar(c);verify(ajustes,never()).saveAndFlush(any());}

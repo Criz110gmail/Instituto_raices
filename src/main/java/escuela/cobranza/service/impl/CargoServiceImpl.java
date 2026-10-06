@@ -125,6 +125,8 @@ public class CargoServiceImpl implements CargoService {
         long cuotasConPendientes = 0;
         long pagosPorGenerar = 0;
         BigDecimal importeTotal = BigDecimal.ZERO;
+        BigDecimal becaTotal = BigDecimal.ZERO;
+        BigDecimal importeNetoTotal = BigDecimal.ZERO;
         List<VistaPreviaCargoAutomaticoFila> contenido = new ArrayList<>();
         long ultimoId = 0L;
         while (true) {
@@ -138,10 +140,13 @@ public class CargoServiceImpl implements CargoService {
                 if (plan.pendientes().isEmpty()) continue;
                 cuotasConPendientes++;
                 for (PeriodoCargo periodo : plan.pendientes()) {
+                    var fila = fila(cuota, periodo);
                     if (pagosPorGenerar >= desde && contenido.size() < tamanio)
-                        contenido.add(fila(cuota, periodo));
+                        contenido.add(fila);
                     pagosPorGenerar++;
-                    importeTotal = importeTotal.add(cuota.getImporteBase());
+                    importeTotal = importeTotal.add(fila.importe());
+                    becaTotal = becaTotal.add(fila.montoBeca());
+                    importeNetoTotal = importeNetoTotal.add(fila.importeNeto());
                 }
             }
             if (bloque.getNumberOfElements() < TAMANO_BLOQUE) break;
@@ -149,7 +154,8 @@ public class CargoServiceImpl implements CargoService {
         return new VistaPreviaCargosAutomaticosResponse(
                 new PageImpl<>(contenido, PageRequest.of(pagina, tamanio), pagosPorGenerar),
                 cuotasConPendientes, pagosPorGenerar,
-                importeTotal.setScale(2, RoundingMode.HALF_UP));
+                importeTotal.setScale(2, RoundingMode.HALF_UP), becaTotal,
+                importeNetoTotal);
     }
 
     @Override
@@ -248,10 +254,14 @@ public class CargoServiceImpl implements CargoService {
                 .collect(Collectors.joining(" "));
         String frecuencia = cuota.getFrecuencia() == FrecuenciaCuota.UNICA
                 ? "Cobro único" : "Mensual";
+        BigDecimal importe = cuota.getImporteBase().setScale(2, RoundingMode.HALF_UP);
+        var beca = aplicacionBecaService.previsualizar(cuota.getInscripcion().getId(),
+                cuota.getConceptoCobro().getId(), periodo.inicio(), periodo.fin(), importe);
         return new VistaPreviaCargoAutomaticoFila(cuota.getId(), alumno.getMatricula(), nombre,
                 cuota.getInscripcion().getPlantel().getNombre(), cuota.getConceptoCobro().getNombre(),
                 frecuencia, periodo.descripcion(), periodo.vencimiento(),
-                cuota.getImporteBase().setScale(2, RoundingMode.HALF_UP), cuota.getMoneda());
+                importe, cuota.getMoneda(), beca.monto(), beca.descripcion(),
+                importe.subtract(beca.monto()));
     }
 
     private ResultadoGeneracion insertar(CuotaAlumno cuota, LocalDate inicio, LocalDate fin,
