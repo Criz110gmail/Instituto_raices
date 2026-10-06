@@ -11,7 +11,7 @@
     <div class="finance-principle" th:if="${modoAsistido}"><span>Asistente de cobranza</span><strong>La inscripción ya está seleccionada</strong><p>El sistema completó alumno, plantel, ciclo, moneda y vigencia. Sólo selecciona el concepto, confirma el importe y ajusta el vencimiento si es necesario.</p></div>
     <div class="finance-principle"><span>Control individual</span><strong>Un pago familiar, saldos separados por alumno</strong><p>Cada cuota y cada cargo pertenecen a una inscripción. Cuando un pago cubra varios hijos, se distribuirá en aplicaciones independientes para conservar el control de cada alumno.</p></div>
     <section class="form-card">
-        <div class="form-intro finance-intro"><span>Configuración de cobranza</span><h1 th:text="${edicion ? 'Editar cuota individual' : 'Configurar cuota individual'}">Configurar cuota</h1><p>Define importe, periodo, vencimiento y si los cargos deberán generarse automáticamente.</p></div>
+        <div class="form-intro finance-intro"><span>Configuración de cobranza</span><h1 th:text="${edicion ? 'Editar cuota individual' : 'Configurar cuota individual'}">Configurar cuota</h1><p>Elige cuánto se cobrará, si será una sola vez o cada mes y hasta cuándo podrá pagar la familia.</p></div>
         <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/cuotas-alumno/' + id : '/admin/cuotas-alumno'}">
             <input type="hidden" th:field="*{version}"><input type="hidden" th:field="*{retornoInscripcionId}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
@@ -21,62 +21,38 @@
                 <div class="wide autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/inscripciones" data-scope-input="plantel" data-scope-param="plantelId" data-scope-label="un plantel"><label class="autocomplete-label" for="inscripcion-busqueda">Inscripción vigente *</label><div class="autocomplete-control"><input id="inscripcion-busqueda" class="autocomplete-input" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="inscripcion-resultados" placeholder="Matrícula, alumno o número de inscripción" th:value="${inscripcionSeleccionada}" th:disabled="${edicion or modoAsistido}"><button class="autocomplete-clear" type="button" aria-label="Limpiar inscripción" hidden>×</button></div><input class="autocomplete-value" type="hidden" th:field="*{inscripcionId}"><div id="inscripcion-resultados" class="autocomplete-results" role="listbox" hidden></div><span class="autocomplete-status" aria-live="polite" th:text="${edicion or modoAsistido ? 'La inscripción está protegida para conservar el origen de la cuota.' : 'Escribe al menos 3 caracteres para buscar.'}">Busca una inscripción.</span><small class="field-error" th:errors="*{inscripcionId}"></small></div>
                 <div class="wide autocomplete" data-autocomplete data-endpoint="/admin/autocompletado/conceptos-cobro" data-scope-input="institucion" data-scope-param="institucionId" data-scope-label="una institución"><label class="autocomplete-label" for="concepto-busqueda">Concepto de cobro *</label><div class="autocomplete-control"><input id="concepto-busqueda" class="autocomplete-input" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="concepto-resultados" placeholder="Código o nombre del concepto" th:value="${conceptoSeleccionado}" th:disabled="${edicion}"><button class="autocomplete-clear" type="button" aria-label="Limpiar concepto" hidden>×</button></div><input class="autocomplete-value" type="hidden" th:field="*{conceptoCobroId}"><div id="concepto-resultados" class="autocomplete-results" role="listbox" hidden></div><span class="autocomplete-status" aria-live="polite" th:text="${edicion ? 'El concepto está protegido para conservar el historial.' : 'Escribe al menos 3 caracteres para buscar.'}">Busca un concepto.</span><small class="field-error" th:errors="*{conceptoCobroId}"></small></div>
             </div></fieldset>
-            <fieldset class="form-section"><legend>Importe y vigencia</legend><div class="form-grid">
+            <fieldset class="form-section"><legend>Importe de la cuota</legend><div class="form-grid">
                 <label><span>Importe individual *</span><input type="number" min="0" step="0.01" th:field="*{importeBase}" placeholder="3000.00"><small class="field-error" th:errors="*{importeBase}"></small></label>
                 <label><span>Moneda *</span><input id="moneda" th:field="*{moneda}" maxlength="3" placeholder="MXN"><small class="field-error" th:errors="*{moneda}"></small></label>
-                <label><span>Inicio de cobro *</span><input type="date" th:field="*{fechaInicio}"><small class="field-error" th:errors="*{fechaInicio}"></small></label>
-                <label><span>Fin de cobro *</span><input type="date" th:field="*{fechaFin}"><small class="field-error" th:errors="*{fechaFin}"></small></label>
                 <label class="wide"><span>Motivo del importe personalizado</span><textarea th:field="*{motivoImportePersonalizado}" maxlength="2000" rows="3" placeholder="Ej. tarifa acordada para este alumno"></textarea><small class="field-error" th:errors="*{motivoImportePersonalizado}"></small></label>
             </div></fieldset>
             <fieldset class="form-section"><legend>Calendario y automatización</legend><div class="form-grid">
-                <label><span>Frecuencia *</span><select id="frecuencia" th:field="*{frecuencia}"><option th:each="item : ${frecuencias}" th:value="${item}" th:text="${item.name() == 'UNICA' ? 'Cobro único' : 'Mensual'}">Frecuencia</option></select><small class="field-error" th:errors="*{frecuencia}"></small></label>
-                <label id="vencimiento-mensual"><span>Día de vencimiento *</span><input id="dia-vencimiento" type="number" min="1" max="31" th:field="*{diaVencimiento}"><small class="field-error" th:errors="*{diaVencimiento}"></small><span class="field-help">Si el mes es más corto, se usará su último día.</span></label>
-                <label id="vencimiento-unico"><span>Vencimiento exacto *</span><input id="fecha-vencimiento-unico" type="date" th:field="*{fechaVencimientoUnico}"><small class="field-error" th:errors="*{fechaVencimientoUnico}"></small></label>
+                <label><span>¿Cada cuándo se cobrará? *</span><select id="frecuencia" th:field="*{frecuencia}"><option th:each="item : ${frecuencias}" th:value="${item}" th:text="${item.name() == 'UNICA' ? 'Una sola vez' : 'Cada mes'}">Frecuencia</option></select><small class="field-error" th:errors="*{frecuencia}"></small></label>
+                <label id="vencimiento-unico"><span>Fecha límite de pago *</span><input id="fecha-vencimiento-unico" type="date" th:field="*{fechaVencimientoUnico}"><small class="field-error" th:errors="*{fechaVencimientoUnico}"></small><span class="field-help">Último día para pagar sin atraso. Esta cuota no se repite cada mes.</span></label>
+                <div id="calendario-mensual" class="wide form-grid">
+                    <label><span>Primer mes que se cobrará *</span><input type="month" th:field="*{primerMes}"><small class="field-error" th:errors="*{primerMes}"></small></label>
+                    <label><span>Último mes que se cobrará *</span><input type="month" th:field="*{ultimoMes}"><small class="field-error" th:errors="*{ultimoMes}"></small></label>
+                    <label id="vencimiento-mensual"><span>Día límite de pago de cada mes *</span><input id="dia-vencimiento" type="number" min="1" max="31" th:field="*{diaVencimiento}"><small class="field-error" th:errors="*{diaVencimiento}"></small><span class="field-help">Si el mes es más corto, se usará su último día.</span></label>
+                </div>
                 <label><span>Estado *</span><select id="estado-cuota" th:field="*{estado}"><option th:each="item : ${estados}" th:value="${item}" th:text="${#strings.capitalize(#strings.toLowerCase(item.name()))}">Estado</option></select><small class="field-error" th:errors="*{estado}"></small></label>
-                <label class="policy-card automatic-policy wide"><input id="generacion-automatica" type="checkbox" th:field="*{generacionAutomatica}"><span><strong>Generar cargos automáticamente</strong><small>Al habilitarlo, el generador de cargos emitirá sólo los periodos futuros de esta cuota. Desactivado permite control manual.</small></span></label>
+                <label class="policy-card automatic-policy wide"><input id="generacion-automatica" type="checkbox" th:field="*{generacionAutomatica}"><span><strong>Incluir en generación automática de cargos</strong><small id="ayuda-generacion">El generador creará únicamente los cargos faltantes. Guardar la cuota no registra un pago recibido.</small></span></label>
                 <label class="policy-card automatic-policy wide" th:if="${modoAsistido and puedeGenerarCargo}"><input type="checkbox" th:field="*{generarCargoAhora}"><span><strong>Crear ahora el pago por cobrar</strong><small>Guarda la cuota y genera inmediatamente el cargo único. Volver a ejecutar esta acción no duplica el cargo.</small></span></label>
                 <div class="form-notice wide" th:if="${modoAsistido and !puedeGenerarCargo}"><strong>Generación posterior</strong><p>La cuota se guardará preparada, pero un usuario con permiso de Adeudos de alumnos deberá generar el cargo.</p></div>
             </div></fieldset>
+            <details class="cuota-advanced" id="vigencia-avanzada" th:open="${#fields.hasErrors('fechaInicio') or #fields.hasErrors('fechaFin') or errorOperacion != null}">
+                <summary>Configuración adicional · vigencia de la cuota</summary>
+                <p class="field-help">Estas fechas indican cuándo aplica esta configuración; no son la fecha límite de pago. Para cobro único se sugieren las fechas de la inscripción y el ciclo escolar. Cambiarlas no hace que el cobro se repita.</p>
+                <div class="form-grid">
+                    <label><span>Configuración válida desde *</span><input type="date" th:field="*{fechaInicio}"><small class="field-error" th:errors="*{fechaInicio}"></small></label>
+                    <label><span>Configuración válida hasta *</span><input type="date" th:field="*{fechaFin}"><small class="field-error" th:errors="*{fechaFin}"></small></label>
+                </div>
+                <p id="vigencia-ayuda" class="field-help" aria-live="polite">Selecciona una inscripción para consultar el rango permitido.</p>
+            </details>
+            <section class="charge-period-summary" aria-live="polite" aria-atomic="true"><span aria-hidden="true">✓</span><div><small>Así quedará la cuota</small><strong id="cuota-resumen">Completa el importe y el calendario.</strong><p id="cuota-resumen-generacion">Guardar configura una cuota; no registra dinero recibido.</p></div></section>
             <footer class="form-actions"><a th:href="${modoAsistido ? '/admin/inscripciones/' + form.retornoInscripcionId + '/editar#cobranza-inscripcion' : '/admin/catalogos/cuotas-alumno'}">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar configuración' : (modoAsistido ? 'Preparar cobro' : 'Crear cuota')}">Guardar</button></footer>
         </form>
     </section>
 </main>
-<script>
-(() => {
-    const institucion = document.querySelector('#institucion');
-    const plantel = document.querySelector('#plantel');
-    const moneda = document.querySelector('#moneda');
-    const frecuencia = document.querySelector('#frecuencia');
-    const mensual = document.querySelector('#vencimiento-mensual');
-    const unica = document.querySelector('#vencimiento-unico');
-    const dia = document.querySelector('#dia-vencimiento');
-    const fechaUnica = document.querySelector('#fecha-vencimiento-unico');
-    const estado = document.querySelector('#estado-cuota');
-    const automatica = document.querySelector('#generacion-automatica');
-    const planteles = [...plantel.options].slice(1);
-    const filtrarPlanteles = () => {
-        if (institucion.disabled) return;
-        planteles.forEach(o => { o.hidden = !institucion.value || o.dataset.institucion !== institucion.value || o.dataset.activo !== 'true'; });
-        if (plantel.selectedOptions[0]?.hidden) { plantel.value = ''; plantel.dispatchEvent(new Event('change')); }
-        const seleccion = institucion.selectedOptions[0];
-        if (seleccion?.dataset.moneda && !moneda.value) moneda.value = seleccion.dataset.moneda;
-    };
-    const alternarFrecuencia = () => {
-        const esMensual = frecuencia.value === 'MENSUAL';
-        mensual.hidden = !esMensual; unica.hidden = esMensual;
-        dia.disabled = !esMensual; fechaUnica.disabled = esMensual;
-        if (esMensual) fechaUnica.value = ''; else dia.value = '';
-    };
-    const alternarAutomatica = () => {
-        const activa = estado.value === 'ACTIVA';
-        automatica.disabled = !activa;
-        if (!activa) automatica.checked = false;
-    };
-    institucion.addEventListener('change', filtrarPlanteles);
-    frecuencia.addEventListener('change', alternarFrecuencia);
-    estado.addEventListener('change', alternarAutomatica);
-    filtrarPlanteles(); alternarFrecuencia(); alternarAutomatica();
-})();
-</script>
+<script src="/js/cuota-alumno-form.js"></script>
 </body>
 </html>

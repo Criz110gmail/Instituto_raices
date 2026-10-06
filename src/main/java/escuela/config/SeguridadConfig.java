@@ -36,6 +36,8 @@ public class SeguridadConfig {
                         .hasAuthority("PORTAL_TUTOR_ACCEDER")
                         .requestMatchers("/admin/portal-soporte/**")
                         .hasAuthority("PORTAL_TUTOR_SOPORTE")
+                        .requestMatchers("/admin/portal-maestros-soporte/**", "/admin/catalogos/portal-maestro/**")
+                        .hasAuthority("PORTAL_MAESTRO_SOPORTE")
                         .requestMatchers("/admin/maestros/**").hasAuthority("MAESTRO_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/planeaciones/**")
                         .hasAnyAuthority("PLANEACION_LEER", "PLANEACION_ADMINISTRAR")

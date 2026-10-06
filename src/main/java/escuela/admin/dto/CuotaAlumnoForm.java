@@ -15,6 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 
 @Getter
 @Setter
@@ -27,8 +28,10 @@ public class CuotaAlumnoForm {
     private BigDecimal importeBase;
     @NotNull @Pattern(regexp = "[A-Za-z]{3}") private String moneda;
     @NotNull private FrecuenciaCuota frecuencia = FrecuenciaCuota.MENSUAL;
-    @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate fechaInicio;
-    @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate fechaFin;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate fechaInicio;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate fechaFin;
+    @DateTimeFormat(pattern = "yyyy-MM") private YearMonth primerMes;
+    @DateTimeFormat(pattern = "yyyy-MM") private YearMonth ultimoMes;
     private Integer diaVencimiento;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) private LocalDate fechaVencimientoUnico;
     private boolean generacionAutomatica;
@@ -37,6 +40,23 @@ public class CuotaAlumnoForm {
     private Long version;
     private boolean generarCargoAhora;
     private Long retornoInscripcionId;
+
+    public void prepararCalendario(LocalDate inicioPermitido, LocalDate finPermitido) {
+        if (frecuencia == FrecuenciaCuota.UNICA) {
+            if (fechaInicio == null) fechaInicio = inicioPermitido;
+            if (fechaFin == null) fechaFin = finPermitido;
+        } else if (frecuencia == FrecuenciaCuota.MENSUAL) {
+            // Preserve partial-month boundaries when editing an existing configuration.
+            if (primerMes != null && (fechaInicio == null || !primerMes.equals(YearMonth.from(fechaInicio)))) {
+                fechaInicio = primerMes.equals(YearMonth.from(inicioPermitido))
+                        ? inicioPermitido : primerMes.atDay(1);
+            }
+            if (ultimoMes != null && (fechaFin == null || !ultimoMes.equals(YearMonth.from(fechaFin)))) {
+                fechaFin = ultimoMes.equals(YearMonth.from(finPermitido))
+                        ? finPermitido : ultimoMes.atEndOfMonth();
+            }
+        }
+    }
 
     public CuotaAlumnoRequest request() {
         Integer diaMensual = frecuencia == FrecuenciaCuota.MENSUAL ? diaVencimiento : null;
@@ -57,6 +77,8 @@ public class CuotaAlumnoForm {
         form.frecuencia = cuota.frecuencia();
         form.fechaInicio = cuota.fechaInicio();
         form.fechaFin = cuota.fechaFin();
+        form.primerMes = YearMonth.from(cuota.fechaInicio());
+        form.ultimoMes = YearMonth.from(cuota.fechaFin());
         form.diaVencimiento = cuota.diaVencimiento();
         form.fechaVencimientoUnico = cuota.fechaVencimientoUnico();
         form.generacionAutomatica = cuota.generacionAutomatica();

@@ -30,11 +30,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
+import java.time.LocalDate;
 
 @Controller
 @RequiredArgsConstructor
@@ -48,6 +50,21 @@ public class CuotaAlumnoAdminController {
     private final InstitucionService institucionService;
     private final PlantelService plantelService;
     private final AlcanceDatosService alcance;
+
+    @GetMapping("/vigencia-inscripcion")
+    @ResponseBody
+    VigenciaCuota vigenciaInscripcion(@RequestParam Long inscripcionId) {
+        alcance.validarRecurso(ModuloCatalogo.INSCRIPCIONES, inscripcionId);
+        var inscripcion = inscripcionService.obtener(inscripcionId);
+        var ciclo = cicloService.obtener(inscripcion.cicloEscolarId());
+        LocalDate inicio = inscripcion.fechaInicio().isAfter(ciclo.fechaInicio())
+                ? inscripcion.fechaInicio() : ciclo.fechaInicio();
+        LocalDate fin = inscripcion.fechaFin() == null || inscripcion.fechaFin().isAfter(ciclo.fechaFin())
+                ? ciclo.fechaFin() : inscripcion.fechaFin();
+        return new VigenciaCuota(inicio, fin);
+    }
+
+    record VigenciaCuota(LocalDate inicio, LocalDate fin) { }
 
     @GetMapping("/nuevo")
     String nuevo(@RequestParam(required = false) Long inscripcionId, Model model) {
@@ -160,6 +177,16 @@ public class CuotaAlumnoAdminController {
     }
 
     private void validarRelaciones(CuotaAlumnoForm form, BindingResult errores) {
+        if (form.getInscripcionId() != null) {
+            var vigencia = vigenciaInscripcion(form.getInscripcionId());
+            form.prepararCalendario(vigencia.inicio(), vigencia.fin());
+        }
+        if (form.getFechaInicio() == null) errores.rejectValue("fechaInicio", "cuota.inicio", "Selecciona el primer mes que se cobrará");
+        if (form.getFechaFin() == null) errores.rejectValue("fechaFin", "cuota.fin", "Selecciona el último mes que se cobrará");
+        if (form.getFrecuencia() == FrecuenciaCuota.MENSUAL) {
+            if (form.getPrimerMes() == null) errores.rejectValue("primerMes", "cuota.mes.inicio", "Selecciona el primer mes que se cobrará");
+            if (form.getUltimoMes() == null) errores.rejectValue("ultimoMes", "cuota.mes.fin", "Selecciona el último mes que se cobrará");
+        }
         if (form.getInstitucionId() == null || form.getPlantelId() == null
                 || form.getInscripcionId() == null || form.getConceptoCobroId() == null) return;
         var inscripcion = inscripcionService.obtener(form.getInscripcionId());

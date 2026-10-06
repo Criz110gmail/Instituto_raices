@@ -1,0 +1,14 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><body>
+<header class="teacher-bar" th:fragment="header">
+    <a th:href="${rutaPortal}" class="teacher-brand"><span>N</span><div><strong>Nexo Docente</strong><small th:text="${perfil.institucion}"></small></div></a>
+    <div class="teacher-user"><img class="teacher-avatar" th:if="${fotoPerfil == true}" th:src="${rutaPortal + '/fotografia'}" alt="Fotografía del maestro"><div><strong th:text="${perfil.nombreCompleto}"></strong><small th:text="${perfil.numeroEmpleado}"></small></div>
+        <button type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button>
+        <a class="teacher-logout" th:if="${soporte == true}" href="/admin/portal-maestros-soporte">Cambiar maestro</a>
+        <form th:unless="${soporte == true}" method="post" th:action="@{/logout}"><input type="hidden" name="origen" value="maestros"><button type="submit" class="teacher-logout">Cerrar sesión</button></form>
+    </div>
+</header>
+<section class="teacher-support-banner" role="status" th:fragment="aviso" th:if="${soporte == true}">
+    <div><span>Soporte administrativo · sólo lectura</span><strong th:text="${'Estás consultando el portal de ' + perfil.nombreCompleto}"></strong><p>Ves la información del maestro seleccionado. Tu sesión sigue siendo administrativa; no puedes guardar, enviar ni descartar planeaciones desde esta vista.</p></div>
+    <a href="/admin">Volver a administración</a>
+</section>
+</body></html>

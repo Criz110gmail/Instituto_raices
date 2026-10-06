@@ -48,6 +48,7 @@ public class CatalogoAdminController {
                     Authentication authentication,
                     Model model) {
         ModuloCatalogo modulo = ModuloCatalogo.desde(slug);
+        if (modulo == ModuloCatalogo.PORTAL_MAESTRO) return "redirect:" + modulo.rutaListado();
         if (modulo == ModuloCatalogo.PORTAL_TUTOR) {
             return "redirect:/admin/portal-soporte";
         }

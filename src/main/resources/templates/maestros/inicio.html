@@ -6,21 +6,18 @@
     <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/maestro-portal.css"><script src="/js/theme.js"></script>
 </head>
 <body>
-<header class="teacher-bar">
-    <a href="/maestros" class="teacher-brand"><span>N</span><div><strong>Nexo Docente</strong><small th:text="${perfil.institucion}"></small></div></a>
-    <div class="teacher-user"><img class="teacher-avatar" th:if="${fotoPerfil}" src="/maestros/fotografia" alt="Mi fotografía"><div><strong th:text="${perfil.nombreCompleto}"></strong><small th:text="${perfil.numeroEmpleado}"></small></div><button type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button><form method="post" th:action="@{/logout}"><input type="hidden" name="origen" value="maestros"><button type="submit" class="teacher-logout">Cerrar sesión</button></form></div>
-</header>
+<header th:replace="~{maestros/fragments/cabecera :: header}"></header><section th:replace="~{maestros/fragments/cabecera :: aviso}"></section>
 <main class="teacher-shell">
-    <section class="teacher-hero"><div><span>Tu semana, bien organizada</span><h1>Mis planeaciones</h1><p>Consulta tu historial por fecha, abre cada planeación y edita directamente las que continúan disponibles.</p></div><div class="teacher-hero-actions"><a href="/maestros/horario">Mi horario</a><a href="/maestros/alumnos">Ver mis alumnos</a><a href="/maestros/planeaciones/nueva">＋ Nueva planeación</a></div></section>
+    <section class="teacher-hero"><div><span>Tu semana, bien organizada</span><h1>Mis planeaciones</h1><p>Consulta tu historial por fecha, abre cada planeación y edita directamente las que continúan disponibles.</p></div><div class="teacher-hero-actions"><a th:href="${rutaPortal + '/horario'}">Mi horario</a><a th:href="${rutaPortal + '/alumnos'}">Ver mis alumnos</a><a th:unless="${soporte == true}" href="/maestros/planeaciones/nueva">＋ Nueva planeación</a></div></section>
     <p class="teacher-flash" th:if="${mensaje}" th:text="${mensaje}"></p>
     <section class="teacher-board teacher-planning-board">
         <header><div><span>Historial personal</span><h2>Planeaciones semanales</h2><p>Los resultados se consultan por bloques de 20 registros.</p></div><b th:text="${planeaciones.totalElements}">0</b></header>
-        <form class="teacher-plan-filters" method="get" action="/maestros">
+        <form class="teacher-plan-filters" method="get" th:action="${rutaPortal}">
             <div class="teacher-filter-heading"><strong>Filtrar planeaciones</strong><span>Busca semanas que coincidan con el periodo seleccionado.</span></div>
             <label><span>Desde</span><input type="date" name="desde" th:value="${desde}"></label>
             <label><span>Hasta</span><input type="date" name="hasta" th:value="${hasta}"></label>
             <label><span>Estado</span><select name="estado"><option value="">Todos los estados</option><option th:each="item : ${estados}" th:value="${item}" th:text="${item.etiqueta}" th:selected="${estado == item}">Borrador</option></select></label>
-            <div class="teacher-filter-actions"><button type="submit">Aplicar filtros</button><a href="/maestros">Limpiar</a></div>
+            <div class="teacher-filter-actions"><button type="submit">Aplicar filtros</button><a th:href="${rutaPortal}">Limpiar</a></div>
         </form>
         <div class="teacher-filter-error" role="alert" th:if="${errorFiltro}" th:text="${errorFiltro}"></div>
         <div class="teacher-table-wrap" th:if="${!planeaciones.empty}">
@@ -33,13 +30,13 @@
                     <td data-label="Plantel"><span th:text="${p.plantel}">Plantel</span></td>
                     <td data-label="Materias"><span th:text="${p.materias+' materia'+(p.materias==1?'':'s')}">3 materias</span></td>
                     <td data-label="Estado"><span class="status" th:classappend="${' s-'+p.estado.name().toLowerCase()}" th:text="${p.estado.etiqueta}">Borrador</span></td>
-                    <td data-label="Acción" class="teacher-plan-action"><a th:if="${p.estado.name()=='BORRADOR' or p.estado.name()=='REQUIERE_AJUSTES' or p.estado.name()=='REABIERTA'}" th:href="@{/maestros/planeaciones/{id}/editar(id=${p.id})}">Editar</a><a th:unless="${p.estado.name()=='BORRADOR' or p.estado.name()=='REQUIERE_AJUSTES' or p.estado.name()=='REABIERTA'}" class="secondary" th:href="@{/maestros/planeaciones/{id}(id=${p.id})}">Ver detalle</a></td>
+                    <td data-label="Acción" class="teacher-plan-action"><a th:if="${soporte != true and (p.estado.name()=='BORRADOR' or p.estado.name()=='REQUIERE_AJUSTES' or p.estado.name()=='REABIERTA')}" th:href="@{/maestros/planeaciones/{id}/editar(id=${p.id})}">Editar</a><a th:unless="${soporte != true and (p.estado.name()=='BORRADOR' or p.estado.name()=='REQUIERE_AJUSTES' or p.estado.name()=='REABIERTA')}" class="secondary" th:href="${rutaPortal + '/planeaciones/' + p.id}">Ver detalle</a></td>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <div class="teacher-empty" th:if="${planeaciones.empty}"><span>✦</span><h3 th:text="${desde != null or hasta != null or estado != null ? 'No hay planeaciones con esos filtros' : 'Tu espacio está listo'}">Tu espacio está listo</h3><p th:text="${desde != null or hasta != null or estado != null ? 'Cambia el periodo o limpia los filtros para consultar nuevamente.' : 'Cuando prepares la primera semana aparecerá aquí para darle seguimiento.'}">Cuando prepares la primera semana aparecerá aquí.</p><a th:if="${desde == null and hasta == null and estado == null}" href="/maestros/planeaciones/nueva">Crear mi primera planeación</a></div>
-        <nav class="teacher-pager" th:if="${planeaciones.totalPages>1}" aria-label="Paginación de planeaciones"><a th:if="${planeaciones.hasPrevious()}" th:href="@{/maestros(desde=${desde},hasta=${hasta},estado=${estado},pagina=${planeaciones.number-1})}">← Anterior</a><span th:text="${(planeaciones.number+1)+' de '+planeaciones.totalPages}">1 de 1</span><a th:if="${planeaciones.hasNext()}" th:href="@{/maestros(desde=${desde},hasta=${hasta},estado=${estado},pagina=${planeaciones.number+1})}">Siguiente →</a></nav>
+        <div class="teacher-empty" th:if="${planeaciones.empty}"><span>✦</span><h3 th:text="${desde != null or hasta != null or estado != null ? 'No hay planeaciones con esos filtros' : 'Tu espacio está listo'}">Tu espacio está listo</h3><p th:text="${desde != null or hasta != null or estado != null ? 'Cambia el periodo o limpia los filtros para consultar nuevamente.' : 'Cuando prepares la primera semana aparecerá aquí para darle seguimiento.'}">Cuando prepares la primera semana aparecerá aquí.</p><a th:if="${soporte != true and desde == null and hasta == null and estado == null}" href="/maestros/planeaciones/nueva">Crear mi primera planeación</a></div>
+        <nav class="teacher-pager" th:if="${planeaciones.totalPages>1}" aria-label="Paginación de planeaciones"><a th:if="${planeaciones.hasPrevious()}" th:href="@{${rutaPortal}(desde=${desde},hasta=${hasta},estado=${estado},pagina=${planeaciones.number-1})}">← Anterior</a><span th:text="${(planeaciones.number+1)+' de '+planeaciones.totalPages}">1 de 1</span><a th:if="${planeaciones.hasNext()}" th:href="@{${rutaPortal}(desde=${desde},hasta=${hasta},estado=${estado},pagina=${planeaciones.number+1})}">Siguiente →</a></nav>
     </section>
 </main>
 </body>

@@ -926,6 +926,11 @@
 .charge-period-panel > label { max-width: 470px; }
 .charge-period-custom > .form-grid { margin: 0; }
 .charge-period-note { margin: 11px 0 0; padding: 10px 12px; border-left: 3px solid #1aab9a; border-radius: 0 9px 9px 0; background: #e8f8f5; color: #41645f; font-size: .72rem; line-height: 1.5; }
+.cuota-advanced { margin-top: 18px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.cuota-advanced summary { color: var(--ink); font-size: .85rem; font-weight: 800; cursor: pointer; }
+.cuota-advanced summary:focus-visible { outline: 3px solid var(--blue); outline-offset: 5px; border-radius: 5px; }
+.cuota-advanced > p { margin: 14px 0; }
+#calendario-mensual[hidden], #vencimiento-unico[hidden] { display: none; }
 .charge-period-summary { display: flex; align-items: flex-start; gap: 13px; margin-top: 19px; padding: 17px; border: 1px solid #bfe4db; border-radius: 16px; background: linear-gradient(135deg,#ebfaf6,#f8fdfc); }
 .charge-period-summary > span { display: grid; flex: 0 0 36px; width: 36px; height: 36px; place-items: center; border-radius: 11px; background: #159c8d; color: #fff; font-weight: 900; }
 .charge-period-summary > div { display: grid; gap: 3px; min-width: 0; }

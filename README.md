@@ -31,6 +31,19 @@ vista de la identificación cuando es imagen y el resumen completo del expedient
 de identificación no se incrustan: el reporte conserva únicamente sus metadatos y el
 archivo original sigue disponible mediante su endpoint privado autorizado.
 
+## Soporte del portal docente (V55)
+
+En **Seguridad y soporte → Soporte del portal de maestros**, un administrador con alcance
+institucional selecciona un maestro con cuenta activa para consultar su portal, planeaciones,
+captura protegida, PDF, horario y alumnos asignados, incluidas fotografías y ficha médica.
+Se reutiliza el diseño y el alcance del maestro; la sesión del administrador no se sustituye
+y las consultas quedan auditadas. No permite crear, modificar, enviar ni descartar planeaciones.
+El listado tiene búsqueda, paginación y Excel con los mismos filtros.
+
+Debe asignarse el módulo **Soporte del portal de maestros** al rol desde Roles y permisos y
+volver a iniciar sesión. El permiso `PORTAL_MAESTRO_SOPORTE` no se concede automáticamente;
+la ruta es `/admin/portal-maestros-soporte`.
+
 ## Inicio rápido con Docker
 
 1. Revisa las credenciales locales de `.env` y cámbialas antes de publicar el sistema.
@@ -254,6 +267,13 @@ vencimiento y modalidad de generación manual o automática. Ambos listados filt
 paginan en PostgreSQL y exportan exactamente esos filtros con Apache POI. Requieren los
 permisos `CONCEPTO_COBRO_LEER`/`CONCEPTO_COBRO_ADMINISTRAR` y
 `CUOTA_ALUMNO_LEER`/`CUOTA_ALUMNO_ADMINISTRAR`.
+
+La captura de cuotas distingue **Una sola vez**, que pide una **Fecha límite de pago**,
+de **Cada mes**, que pide primer mes, último mes y día límite mensual. La vigencia técnica
+permanece en **Configuración adicional**, con fechas sugeridas según inscripción y ciclo.
+El resumen explica qué se generará; guardar una cuota no significa recibir dinero y un
+cobro único no se repite al ejecutar nuevamente el generador. La edición conserva fechas
+históricas y los cargos emitidos no cambian.
 
 La cuota es configuración y `Cargo` representa la deuda emitida. El administrador puede
 emitir un cargo extraordinario o ejecutar el generador hasta una fecha de corte; éste

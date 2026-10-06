@@ -1,5 +1,49 @@
 # Contexto del proyecto
 
+## V55 — soporte del portal de maestros (2026-10-05)
+
+- Se agregó un módulo propio en Seguridad y soporte, con permiso `PORTAL_MAESTRO_SOPORTE`
+  independiente del acceso familiar y de la administración de Maestros. Requiere cuenta
+  administrativa persistida y alcance institucional; no autoriza recuperación ni cuenta docente.
+- La selección filtra maestros y cuentas activos de la misma institución antes de paginar;
+  Excel Apache POI reutiliza la búsqueda y procesa bloques de 100 registros.
+- El soporte comparte plantillas y servicios con el portal real, conservando el principal
+  administrativo de sesión y pasando una identidad docente temporal exclusivamente a
+  consultas. Todas las rutas revalidan cuenta y alcance; las fichas de alumnos siguen limitadas
+  a las asignaciones docentes y las planeaciones a su propietario.
+- Banner persistente, cambio de maestro y regreso a administración; filtros y paginación
+  conservan el contexto. La captura puede consultarse con campos protegidos, incluso con
+  grupo histórico sin asignación vigente, pero no se guarda ni envía. PDF y fotos responden
+  inline y sin caché, y la auditoría atribuye las consultas al administrador real.
+- V55 registra sólo el permiso nuevo, sin asignarlo a roles. Próxima migración: V56.
+- Docker compiló 722 fuentes principales y aprobó 483 pruebas. Las pruebas de renderizado
+  recorrieron portal compartido con paginación, captura protegida y portal normal del maestro;
+  comprobaron que sólo el portal real muestra edición y cierre de sesión docente. Las pruebas
+  de servicio cubrieron permiso propio, alcance, cuenta activa, otra institución y principal
+  de consulta sin cambiar la autenticación original. Queda la revisión visual autenticada
+  del propietario, sin crear datos personales ni planeaciones operativas para verificar.
+- Se recreó únicamente `app`; PostgreSQL confirmó V55 exitosa y `PORTAL_MAESTRO_SOPORTE`,
+  y `/actuator/health` respondió `UP`. No se asignaron permisos a roles ni se cambiaron
+  maestros, cuentas o datos académicos durante el despliegue.
+
+## Captura guiada del calendario de cuotas (2026-10-05)
+
+- Una sola vez muestra Fecha límite de pago y despliega la vigencia sólo en Configuración
+  adicional. Cada mes solicita primer mes, último mes y día límite. Un resumen vivo explica
+  importe, repetición y generación; se reutilizan los controles y temas del sistema.
+- La sugerencia de vigencia consulta una sola inscripción autorizada y usa su intersección
+  con el ciclo escolar. El servidor también completa la vigencia de cuota única cuando no
+  se envía y deriva rangos mensuales; conserva fechas históricas parciales del mismo mes.
+- Las validaciones transaccionales originales y la generación sin duplicados no cambian.
+  No hubo migración ni se modificaron cargos o cuotas existentes para verificar.
+- Se añadieron pruebas de sugerencia autorizada, meses HTML, rangos parciales, preservación
+  de fechas, meses fuera del ciclo y contrato de interfaz. La revisión en navegador llegó
+  al login por sesión caducada; queda la comprobación visual autenticada del propietario.
+- Docker compiló 720 fuentes principales y aprobó 474 pruebas sin fallos. Node verificó
+  sintaxis y el comportamiento de campos, resumen y derivación de fechas mensuales.
+- Se recreó únicamente `app` y `/actuator/health` respondió `UP`. La base de datos y los
+  volúmenes permanecieron intactos; no es necesario reconstruir otra vez para probar.
+
 ## Expediente de tutor segmentado y ficha Jasper (2026-10-02)
 
 - La edición administrativa de Tutores abre en **Identificación oficial** y continúa con

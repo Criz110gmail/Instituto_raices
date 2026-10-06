@@ -1,5 +1,45 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V55 — soporte del portal docente — 2026-10-05
+
+- Seguridad y soporte incorpora **Soporte del portal de maestros** bajo
+  `/admin/portal-maestros-soporte`. V55 crea `PORTAL_MAESTRO_SOPORTE` sin concederlo
+  automáticamente a roles existentes. El propietario debe asignar el módulo desde Roles y
+  permisos y volver a iniciar sesión. Exige administrador persistido con alcance institucional.
+- Selección paginada de maestros activos con cuenta docente activa de la misma institución,
+  búsqueda por nombre, empleado o usuario y Excel Apache POI con los mismos filtros por bloques.
+- Reutiliza el portal real: planeaciones y filtros, horario, alumnos asignados, fotos,
+  ficha médica, detalle de planeación, captura original protegida y PDF privado inline.
+  No cambia el SecurityContext ni inicia sesión como el docente. Cada consulta de portal
+  registra al administrador real en auditoría sin almacenar datos médicos ni credenciales.
+- Sólo admite consulta: no crear, editar, enviar ni descartar; la captura no carga su script
+  de edición y sus campos están deshabilitados. Un banner identifica siempre al maestro y
+  permite cambiarlo o volver a administración. Los enlaces permanecen dentro del contexto.
+- La siguiente migración disponible es V56. Queda la prueba visual y funcional autenticada
+  del propietario con dos maestros de prueba, incluyendo aislamiento entre sus planeaciones
+  y alumnos. No se crearán datos docentes reales sólo para verificar.
+- Docker aprobó 483 pruebas, incluidos renderizado compartido, captura protegida, portal
+  normal, permisos y aislamiento institucional. No se modificó ningún expediente docente.
+- Se desplegó sólo `app`; PostgreSQL confirmó V55 y el permiso nuevo, y salud respondió
+  `UP`. Los volúmenes permanecieron intactos. No requiere otra reconstrucción para probar.
+
+## Captura guiada de cuotas — 2026-10-05
+
+- Cuotas por alumno separa **Una sola vez** (importe y Fecha límite de pago) de **Cada mes**
+  (primer/último mes y día límite). La vigencia técnica queda en Configuración adicional,
+  con sugerencias autorizadas según la intersección entre inscripción y ciclo escolar.
+- El servidor completa fechas ausentes de una cuota única y deriva las fechas mensuales
+  desde los meses elegidos. Conserva rangos parciales existentes al editar el mismo mes;
+  no modifica cuotas históricas ni cargos ya emitidos. Se mantienen las validaciones de
+  vigencia, solapamientos y claves de generación idempotentes.
+- El resumen explica que un cobro único no se repite y que guardar la configuración no es
+  recibir dinero. Generación automática continúa siendo una ejecución explícita desde
+  Adeudos de alumnos. No requiere migración; V55 permanece disponible.
+- La revisión visual autenticada queda para el propietario: el navegador de verificación
+  llegó al login por sesión caducada. No se consultaron credenciales ni se crearon cuotas.
+- Docker aprobó 474 pruebas y la verificación JavaScript comprobó alternancia de campos,
+  fechas mensuales y resumen monetario. No se hicieron operaciones de cobranza de prueba.
+
 Este archivo permite continuar el desarrollo desde otra computadora o una conversación
 nueva sin perder las decisiones tomadas. Antes de modificar código, lee también
 `CONTEXTO_PROYECTO.md`, `README.md` y `modelo_entidades_sistema_escolar_v1.txt`.
@@ -954,6 +994,14 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
+El último módulo implementado es V55 **Soporte del portal de maestros**. El propietario
+debe asignar ese módulo al rol administrativo institucional, cerrar sesión y volver a
+entrar. Probar dos maestros con cuentas activas, filtros y paginación de planeaciones,
+captura protegida, PDF en nueva pestaña, horario, alumnos y ficha médica; comprobar que
+cambiar maestro o volver a administración conserva la sesión administrativa y que todas
+las consultas de portal aparecen en Auditoría. V56 queda disponible. La prueba integral
+de cobranza con dos hijos también continúa pendiente del propietario.
+
 La reorganización del menú y los nombres funcionales quedó implementada. El propietario
 debe revisar visualmente con un rol amplio y otro limitado que la sección activa se abra,
 que el orden resulte natural en escritorio y móvil y que Roles muestre **Periodos de
@@ -961,7 +1009,7 @@ evaluación**, **Familiares del alumno**, **Adeudos de alumnos** y **Pagos recib
 perder selecciones existentes. Las rutas internas conservan `/admin/catalogos/cargos`,
 `/admin/catalogos/pagos` y los permisos `CARGO_*`/`PAGO_*`.
 
-El último cambio implementado es V54 **Convenios de pago**. Falta la prueba funcional del
+La etapa anterior V54 **Convenios de pago** conserva pendiente la prueba funcional del
 propietario: asignar/confirmar el permiso `Convenios de pago`, seleccionar dos o más cargos
 de hermanos, verificar saldo anterior, monto acordado y condonación, confirmar que el portal
 familiar sólo presenta los cargos nuevos, registrar un pago parcial y comprobar que la

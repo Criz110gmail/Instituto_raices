@@ -30,6 +30,12 @@ public class PortalMaestroController {
     private final PortalAlumnoMaestroService alumnos;private final FotografiaMaestroService fotografias;
     private final HorarioClaseService horarios;
 
+    @ModelAttribute
+    void navegacion(Model model) {
+        model.addAttribute("rutaPortal", "/maestros");
+        model.addAttribute("soporte", false);
+    }
+
     @GetMapping String inicio(@RequestParam(required=false)LocalDate desde,@RequestParam(required=false)LocalDate hasta,@RequestParam(required=false)EstadoPlaneacion estado,@RequestParam(defaultValue="0")int pagina,@AuthenticationPrincipal UsuarioPrincipal principal,Model m){var perfil=service.perfil(principal);m.addAttribute("perfil",perfil);m.addAttribute("fotoPerfil",fotografias.actual(perfil.id())!=null);m.addAttribute("desde",desde);m.addAttribute("hasta",hasta);m.addAttribute("estado",estado);m.addAttribute("estados",EstadoPlaneacion.values());if(desde!=null&&hasta!=null&&hasta.isBefore(desde))m.addAttribute("errorFiltro","La fecha final debe ser igual o posterior a la fecha inicial");m.addAttribute("planeaciones",service.listarMaestro(principal,desde,hasta,estado,pagina));return"maestros/inicio";}
     @GetMapping("/fotografia") ResponseEntity<Resource> fotografiaPropia(@AuthenticationPrincipal UsuarioPrincipal p){var perfil=service.perfil(p);var a=fotografias.descargar(perfil.id());return archivo(a);}
     @GetMapping("/alumnos") String alumnos(@RequestParam(defaultValue="")String q,@RequestParam(defaultValue="0")int pagina,@AuthenticationPrincipal UsuarioPrincipal p,Model m){var perfil=service.perfil(p);m.addAttribute("perfil",perfil);m.addAttribute("fotoPerfil",fotografias.actual(perfil.id())!=null);m.addAttribute("q",q);m.addAttribute("alumnos",alumnos.listar(p,q,pagina));return"maestros/alumnos";}

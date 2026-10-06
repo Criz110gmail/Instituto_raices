@@ -102,7 +102,9 @@ public enum ModuloPermiso {
     PORTAL_MAESTROS("Portal de maestros", "Acceso técnico derivado de la cuenta del maestro",
             "PORTAL_MAESTRO_ACCEDER"),
     SOPORTE_PORTAL("Soporte del portal familiar", "Permite consultar el portal de un tutor en modo de sólo lectura",
-            "PORTAL_TUTOR_SOPORTE");
+            "PORTAL_TUTOR_SOPORTE"),
+    SOPORTE_PORTAL_MAESTROS("Soporte del portal de maestros", "Consulta del portal docente sin modificar datos ni suplantar al maestro",
+            "PORTAL_MAESTRO_SOPORTE");
 
     private final String nombre;
     private final String descripcion;

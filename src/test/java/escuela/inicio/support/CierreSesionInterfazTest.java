@@ -12,7 +12,9 @@ class CierreSesionInterfazTest {
     @Test
     void losPortalesMuestranCerrarSesionYConservanSuOrigen() throws IOException {
         String familias = recurso("/templates/portal/inicio.html");
-        String maestros = recurso("/templates/maestros/inicio.html");
+        String maestros = recurso("/templates/maestros/fragments/cabecera.html");
+        assertThat(recurso("/templates/maestros/inicio.html"))
+                .contains("maestros/fragments/cabecera :: header");
 
         assertThat(familias)
                 .contains("Cerrar sesión")
