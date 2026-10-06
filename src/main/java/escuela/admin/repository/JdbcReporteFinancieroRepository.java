@@ -100,7 +100,7 @@ public class JdbcReporteFinancieroRepository implements ReporteFinancieroReposit
                                                     Instant corteExclusivo) {
         MapSqlParameterSource p = parametrosEstado(filtro, alcance, corteExclusivo)
                 .addValue("limite", filtro.tamanio()).addValue("offset", (long) filtro.pagina() * filtro.tamanio());
-        String condicion = " WHERE (:situacion = 'TODOS' OR situacion = :situacion) ";
+        String condicion = " WHERE (:situacion = 'TODOS' OR situacion = :situacion OR (:situacion = 'POR_PAGAR' AND saldo > 0)) ";
         Long total = jdbc.queryForObject(ESTADO_CUENTA_CTE + "SELECT count(*) FROM estado" + condicion, p, Long.class);
         var filas = jdbc.query(ESTADO_CUENTA_CTE + """
                 SELECT id, plantel, ciclo, concepto, descripcion, fecha_emision, fecha_vencimiento,
@@ -122,7 +122,7 @@ public class JdbcReporteFinancieroRepository implements ReporteFinancieroReposit
                                                     AlcanceReporteFinanciero alcance,
                                                     Instant corteExclusivo, String moneda) {
         MapSqlParameterSource p = parametrosEstado(filtro, alcance, corteExclusivo);
-        String condicion = " WHERE (:situacion = 'TODOS' OR situacion = :situacion) ";
+        String condicion = " WHERE (:situacion = 'TODOS' OR situacion = :situacion OR (:situacion = 'POR_PAGAR' AND saldo > 0)) ";
         return jdbc.queryForObject(ESTADO_CUENTA_CTE + """
                 SELECT count(*) AS cargos,
                        COALESCE(sum(CASE WHEN estado_registro IN ('CANCELADO','CONVENIDO') THEN 0 ELSE importe_total END), 0) AS total,

@@ -5,6 +5,9 @@
     const montoTotal = document.querySelector('.portal-total-value');
     const montoTotalVisible = document.getElementById('monto-visible');
     const agregar = document.getElementById('agregar');
+    const form = document.querySelector('.portal-payment-form');
+    const cuentaAyuda = document.getElementById('cuenta-ayuda');
+    const archivos = document.getElementById('comprobantes');
     const moneda = document.querySelector('.portal-money-input em')?.textContent?.trim() || 'MXN';
     const formatoMoneda = new Intl.NumberFormat('es-MX', {style: 'currency', currency: moneda,
         minimumFractionDigits: 2, maximumFractionDigits: 2});
@@ -15,6 +18,8 @@
     solicitudes.querySelectorAll('[data-cargo-autocomplete]').forEach(inicializarCargo);
     recalcularTotal();
     sincronizarCuentas();
+    form?.addEventListener('input', actualizarResumen);
+    form?.addEventListener('change', actualizarResumen);
 
     agregar.addEventListener('click', () => {
         const indice = solicitudes.children.length;
@@ -37,12 +42,16 @@
         const controlador = new AbortController();
         consultaCuentas = controlador;
         const seleccionPrevia = cuenta.value || cuentaSeleccionada;
+        cuenta.disabled = true;
         cuenta.innerHTML = '<option value="">Consultando cuentas…</option>';
+        if (cuentaAyuda) cuentaAyuda.textContent = 'Consultando las cuentas del plantel del cargo seleccionado…';
+        actualizarResumen();
         try {
             const respuesta = await fetch(`${base}/cuentas?cargoId=${encodeURIComponent(cargoId)}`,
                     {headers: {Accept: 'application/json'}, signal: controlador.signal});
             if (!respuesta.ok) throw new Error();
             const datos = await respuesta.json();
+            if (controlador.signal.aborted) return;
             cuenta.innerHTML = '<option value="">Selecciona una cuenta</option>';
             datos.resultados.forEach(opcion => cuenta.add(new Option(
                     `${opcion.titulo} · ${opcion.detalle}`, opcion.id)));
@@ -50,10 +59,17 @@
                 cuenta.value = String(seleccionPrevia);
             }
             cuentaSeleccionada = cuenta.value;
+            cuenta.disabled = !datos.resultados.length;
+            if (cuentaAyuda) cuentaAyuda.textContent = datos.resultados.length
+                    ? 'Selecciona la cuenta donde realizaste la transferencia.'
+                    : 'No hay cuentas disponibles para este cargo. Comunícate con administración.';
         } catch (_) {
             if (!controlador.signal.aborted) {
                 cuenta.innerHTML = '<option value="">No fue posible consultar las cuentas</option>';
+                if (cuentaAyuda) cuentaAyuda.textContent = 'No fue posible consultar las cuentas. Vuelve a seleccionar el cargo para reintentar.';
             }
+        } finally {
+            if (consultaCuentas === controlador) actualizarResumen();
         }
     }
 
@@ -63,7 +79,10 @@
         if (!cargoId) {
             consultaCuentas?.abort();
             cuenta.innerHTML = '<option value="">Selecciona primero un cargo</option>';
+            cuenta.disabled = true;
+            if (cuentaAyuda) cuentaAyuda.textContent = 'Primero selecciona qué vas a pagar para consultar las cuentas disponibles.';
             cuentaSeleccionada = '';
+            actualizarResumen();
             return;
         }
         cargarCuentas(cargoId);
@@ -195,6 +214,50 @@
                 .reduce((suma, campo) => suma + (Number(campo.value) || 0), 0);
         montoTotal.value = total > 0 ? total.toFixed(2) : '';
         montoTotalVisible.value = total > 0 ? formatoMoneda.format(total) : '';
+        actualizarResumen();
+    }
+
+    function actualizarResumen() {
+        const filas = [...solicitudes.querySelectorAll('.portal-distribution-row')]
+                .filter(fila => fila.querySelector('.portal-cargo-id')?.value);
+        const contador = document.getElementById('total-cargos');
+        if (contador) contador.textContent = filas.length
+                ? `${filas.length} cargo${filas.length === 1 ? '' : 's'} seleccionado${filas.length === 1 ? '' : 's'} · importe calculado`
+                : 'Selecciona tus cargos para calcularlo';
+        const lista = document.getElementById('resumen-cargos');
+        if (lista) {
+            lista.replaceChildren();
+            if (!filas.length) agregarTexto(lista, 'Aún no has seleccionado cargos.');
+            filas.forEach(fila => agregarTexto(lista,
+                    `${fila.querySelector('.portal-cargo-search').value} · ${formatoMoneda.format(Number(fila.querySelector('.portal-charge-amount').value) || 0)}`));
+        }
+        texto('resumen-total', formatoMoneda.format(Number(montoTotal.value) || 0));
+        texto('resumen-cuenta', cuenta.value && !cuenta.disabled
+                ? cuenta.selectedOptions[0].textContent : 'Pendiente de seleccionar');
+        const fecha = document.getElementById('fechaPago')?.value || '';
+        const partes = fecha.split('T');
+        const dia = partes[0]?.split('-');
+        texto('resumen-fecha', dia?.length === 3 && partes[1]
+                ? `${dia[2]}/${dia[1]}/${dia[0]} · ${partes[1].slice(0,5)} h` : 'Pendiente de capturar');
+        texto('resumen-referencia', document.getElementById('referencia')?.value.trim() || 'Pendiente de capturar');
+        const seleccion = [...(archivos?.files || [])];
+        const listaArchivos = document.getElementById('archivos-seleccionados');
+        if (listaArchivos) {
+            listaArchivos.replaceChildren();
+            seleccion.forEach(archivo => agregarTexto(listaArchivos, `${archivo.name} · ${(archivo.size / 1024 / 1024).toFixed(2)} MB`));
+        }
+        texto('resumen-archivos', seleccion.length ? seleccion.map(archivo => archivo.name).join(', ') : 'Pendiente de adjuntar');
+    }
+
+    function texto(id, valor) {
+        const elemento = document.getElementById(id);
+        if (elemento) elemento.textContent = valor;
+    }
+
+    function agregarTexto(lista, valor) {
+        const item = document.createElement('li');
+        item.textContent = valor;
+        lista.appendChild(item);
     }
 
     function mostrarImporte(origen, destino) {

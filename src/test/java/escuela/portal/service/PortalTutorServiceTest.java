@@ -98,8 +98,11 @@ class PortalTutorServiceTest {
         PortalTutorResultado resultado = service.consultar(principal, 20L, -4, -3, -2, -1, -1);
 
         assertThat(resultado.estadoCuenta().resumen().saldo()).isEqualByComparingTo("1000");
-        verify(reportes).estadoCuenta(argThat(f -> f.alumnoId().equals(20L) && f.pagina() == 0),
+        verify(reportes).estadoCuenta(argThat(f -> f.alumnoId().equals(20L) && f.pagina() == 0
+                        && f.situacion().equals("POR_PAGAR")),
                 argThat(AlcanceReporteFinanciero::institucional), any());
+        verify(reportes).resumenEstadoCuenta(argThat(f -> f.alumnoId().equals(20L)
+                        && f.situacion().equals("TODOS")), any(), any(), eq("MXN"));
         verify(portal).eventos(eq(20L), eq(1L), anyString(), any(), eq(0), eq(10));
     }
 
@@ -117,6 +120,20 @@ class PortalTutorServiceTest {
         service.consultarPagos(principal, 20L, 0, 0, 9, 2026);
 
         verify(portal).pagos(7L, 1L, 20L, "America/Mexico_City", 9, 2026, 0, 10);
+    }
+
+    @Test
+    void soporteConservaPendientesPaginadosYResumenCompleto() {
+        when(portal.hijos(eq(7L), eq(1L), any())).thenReturn(List.of(hijo(true, true)));
+        when(reportes.estadoCuenta(any(), any(), any())).thenReturn(Page.empty());
+        service.consultarPagosComoSoporte(principal, 20L, 2, 3, 10, 2026);
+        verify(reportes).estadoCuenta(argThat(f -> f.situacion().equals("POR_PAGAR")
+                && f.institucionId().equals(1L) && f.alumnoId().equals(20L)
+                && f.pagina() == 2 && f.tamanio() == 10), any(), any());
+        verify(reportes).resumenEstadoCuenta(argThat(f -> f.situacion().equals("TODOS")),
+                any(), any(), eq("MXN"));
+        verify(portal).pagos(7L, 1L, 20L, "America/Mexico_City", 10, 2026, 3, 10);
+        verifyNoInteractions(notificaciones);
     }
 
     @Test

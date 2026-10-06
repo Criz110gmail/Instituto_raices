@@ -1,5 +1,48 @@
 # Contexto del proyecto
 
+## Captura familiar de transferencia en orden de operación (2026-10-06)
+
+- Una sola pantalla ordena cargos, cuenta, fecha/referencia y comprobantes con cinco
+  secciones numeradas. Total protegido antes de los cargos, fijo durante desplazamiento
+  móvil, y revisión al final para no regresar arriba. No se modificaron reglas financieras.
+- La cuenta se habilita al obtener opciones para el primer cargo; explica bloqueo, carga,
+  falta de cuentas o error. Resumen dinámico: cargos/importes, total, cuenta, fecha/hora,
+  referencia y archivos. Los nombres se incorporan como texto, no HTML.
+- El adjunto muestra archivos y tamaños; volver a elegir reemplaza la selección y actualiza
+  la revisión. Se conservan cinco PDF/JPEG/PNG de 10 MB, multipart y protección CSRF.
+- Procedimiento ilustrativo: seleccionar cargos $600/$400 → comprobar total $1,000 →
+  cuenta del plantel → fecha y referencia reales del comprobante → adjuntar → revisar
+  resumen → enviar a revisión. No registrar el caso de dos hijos como probado todavía.
+- Node verifica suma, cuenta bloqueada/habilitada, resumen, fecha y reemplazo de archivos
+  con DOM y respuestas simulados. No se enviaron transferencias ni se alteraron saldos.
+- Docker construyó correctamente y aprobó 494 pruebas sin fallos. Se actualizó únicamente
+  `app`. La inspección visual autenticada en celular y tema oscuro queda para el propietario;
+  se reutilizó la base visual familiar y no se consultaron credenciales para acceder.
+
+## Tus pagos familiar organizado por propósito (2026-10-06)
+
+- Tres bloques: Resumen de tu cuenta, Lo que falta por pagar y Tus pagos y comprobantes.
+  El listado filtra saldo positivo en SQL antes de paginar; conserva deuda vencida y parcial,
+  no presenta registros liquidados/cancelados/convenidos con cero. El resumen completo se
+  mantiene independiente y los pagos históricos no se borran ni se ocultan por este filtro.
+- Tabla pendiente: total con becas/ajustes, abonos efectivos y falta por pagar, periodo,
+  fecha límite y estado. La porción vencida se explica como incluida en el saldo pendiente.
+  Historial distingue importes destinados al hijo de aplicaciones efectivas y aclara que
+  las transferencias en revisión sólo descuentan al validarlas. Mantiene mes/año y PDF inline.
+- Procedimiento ilustrativo actualizado: seleccionar hijo → Tus pagos → saldo/cargos →
+  reportar transferencia → consultar historial → esperar validación. Cargo $1,000 menos
+  $300 efectivo deja $700; un reporte de $200 pendiente no cambia todavía ese saldo.
+- Soporte reutiliza la misma presentación. No se ejecutaron operaciones financieras;
+  el caso de dos hijos sigue pendiente y no debe registrarse como aprobado.
+- Verificación técnica: construcción Docker exitosa y 493 pruebas sin fallos. Incluye
+  renderizado de abonos y transferencia en revisión, cuenta sin deuda con historial,
+  página fuera de rango y soporte; verifica consulta SQL con filtro antes de paginación,
+  alcance por alumno/institución y resumen independiente. La revisión visual autenticada
+  en escritorio/móvil y temas queda para el propietario: no había sesión familiar disponible
+  en el navegador de verificación y no se consultaron credenciales.
+- Se recreó únicamente `app` y `/actuator/health` respondió `UP`. No requiere reconstrucción
+  adicional para probar; recargar el portal (volver a iniciar sesión si el reinicio la cerró).
+
 ## Vista previa de generación automática con becas (2026-10-06)
 
 - La tabla ahora presenta importe original, beca por aplicar en dinero y total por cobrar;

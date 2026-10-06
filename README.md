@@ -9,6 +9,16 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Expediente del alumno
 
+En el portal familiar, **Tus pagos** separa el resumen de cuenta, los cargos pendientes
+por cubrir y el historial de pagos/comprobantes. La lista pendiente incluye abonos y deuda
+vencida, pero no cargos liquidados o cancelados; se filtra antes de paginar en PostgreSQL.
+Las transferencias en revisión no reducen el saldo hasta que administración las valida.
+Los filtros de mes/año afectan sólo el historial; cada hijo mantiene su información propia.
+**Reportar transferencia** se captura en una sola pantalla: cargos, cuenta destino,
+datos bancarios y comprobante, con un resumen final. El total calculado está arriba de
+los cargos y permanece visible en celular; la cuenta sólo se habilita después de elegir
+un cargo. La selección de archivos muestra qué se adjuntará y puede reemplazarse.
+
 La edición del alumno se organiza en pestañas independientes para ficha, información
 personal y escolar, contacto y domicilio, notas administrativas, documentos y ficha
 médica. Las secciones de información, contacto y notas forman una sola actualización del

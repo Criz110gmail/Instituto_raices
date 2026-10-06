@@ -116,10 +116,12 @@ public class PortalTutorService {
                                                        int pagina) {
         FiltroEstadoCuentaAlumno filtro = new FiltroEstadoCuentaAlumno(institucionId, hijo.alumnoId(),
                 hijo.nombre(), null, "TODOS", hoy, pagina, TAMANIO);
+        FiltroEstadoCuentaAlumno pendientes = new FiltroEstadoCuentaAlumno(institucionId, hijo.alumnoId(),
+                hijo.nombre(), null, "POR_PAGAR", hoy, pagina, TAMANIO);
         Instant corte = hoy.plusDays(1).atStartOfDay(zona).toInstant();
         AlcanceReporteFinanciero alcance = new AlcanceReporteFinanciero(true, Set.of());
         return new ResultadoEstadoCuentaAlumno(hijo.alumnoId(), hijo.nombre(), hijo.matricula(),
-                reporteRepository.estadoCuenta(filtro, alcance, corte),
+                reporteRepository.estadoCuenta(pendientes, alcance, corte),
                 reporteRepository.resumenEstadoCuenta(filtro, alcance, corte, moneda));
     }
 

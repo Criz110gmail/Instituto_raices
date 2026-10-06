@@ -1,5 +1,41 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Transferencia familiar en una sola pantalla — 2026-10-06
+
+- Reportar transferencia sigue el flujo: total calculado encima de cargos → seleccionar
+  cargos → cuenta destino habilitada tras consultar por cargo → fecha/referencia/datos →
+  comprobantes → resumen final y Enviar transferencia a revisión. No usa un asistente
+  con pantallas ni botones Siguiente. En celular el total permanece visible al desplazarse.
+- Revisión final reúne cada cargo e importe, total, cuenta, fecha en dd/MM/yyyy, referencia
+  y archivos seleccionados; cambia inmediatamente al editar. El selector permite reemplazar
+  los archivos elegidos y muestra nombres/tamaños. No altera validaciones ni publica pagos.
+- Guía ilustrativa: dos cargos $600 y $400 actualizan el total a $1,000; seleccionar la
+  cuenta bancaria del plantel, fecha/hora del comprobante, referencia y archivo; revisar
+  al final y enviar. Queda en revisión y no reduce saldos hasta validación administrativa.
+- Mantiene campos/CSRF/endpoints y diseño familiar claro/oscuro. Cuenta bloqueada sin cargo
+  o durante la consulta, con explicación visible. Para grupos de hijos en planteles distintos
+  sigue requiriendo una transferencia separada. Sin migración; V56 continúa disponible.
+- Prueba JavaScript: `node src/test/js/portal-pago-flujo.test.cjs`, con DOM simulado y
+  consultas ficticias; no usa sesión ni registra operaciones reales.
+
+## Claridad de pagos familiares — 2026-10-06
+
+- Tus pagos separa Resumen de tu cuenta, Lo que falta por pagar y Tus pagos y comprobantes.
+  La lista consulta `POR_PAGAR` (saldo positivo) en PostgreSQL antes de contar y paginar:
+  conserva pendientes, parciales y vencidos, excluye liquidados, cancelados y convenidos.
+  El resumen sigue usando TODOS para no perder abonos históricos ni alterar cálculos.
+- La tabla pendiente muestra concepto/periodo, total con ajustes, abonos efectivos, saldo,
+  fecha límite y estado. La deuda vencida se identifica como parte del saldo, no otro total.
+  Historial aclara importe destinado al alumno y transferencias en revisión sin efecto aún.
+- Guía: Familias → seleccionar hijo → Tus pagos → revisar saldo y cargos pendientes →
+  Reportar transferencia si corresponde → revisar estado en historial; el saldo sólo baja
+  al validar. Ejemplo ilustrativo: cargo $1,000, abonos $300, falta $700; una transferencia
+  de $200 en revisión no reduce todavía esos $700. Sin saldo aparece Estás al corriente.
+  No confundir una página fuera de rango con ausencia de deuda.
+- Mantiene diseño familiar, claro/oscuro, tarjetas móviles, filtros de historial y ambos
+  paginadores. Soporte comparte la vista de consulta. No hubo migración ni movimientos.
+  La prueba funcional de los dos hijos sigue pendiente del propietario.
+
 ## Vista previa de adeudos con becas — 2026-10-06
 
 - Antes de confirmar la generación automática, la tabla desglosa importe original,
