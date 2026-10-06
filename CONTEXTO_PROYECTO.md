@@ -1,5 +1,24 @@
 # Contexto del proyecto
 
+## Resultado funcional comunicado por el propietario (2026-10-06)
+
+- Tras validar una transferencia de $1,000, confirmó un aumento de $1,000 en la cuenta,
+  que ese importe dejó de aparecer como pendiente en el portal familiar y que el
+  comprobante oficial ya está disponible. Se registra como confirmado por el propietario.
+- Procedimiento para la futura guía: familia selecciona cargos y reporta transferencia
+  con cuenta, fecha/referencia y comprobante; queda en revisión; administración entra a
+  Pagos recibidos → Ver → Gestión y valida/publica; consulta cuenta financiera y portal
+  familiar para verificar saldo pendiente y comprobante. La validación es la que produce
+  el ingreso y las aplicaciones, no el envío del comprobante.
+- El ejemplo acordado reparte $1,000 entre cargos $600 y $400 de dos hijos. El resultado
+  total y la comprobación final de Distribución y consulta individual de ambos hijos
+  quedaron confirmados por el propietario. Caso aprobado: ingreso $1,000, aplicaciones
+  $600/$400, cargos liquidados, historiales por alumno y comprobante disponible.
+  Incorporarlo como primer caso confirmado de la guía integrada; no extender esta
+  aprobación automáticamente a otros escenarios.
+- Sólo se actualizó documentación. El agente no registró ni validó pagos, y esta
+  confirmación no sustituye las pruebas de otros escenarios ni del diseño móvil/oscuro.
+
 ## Captura familiar de transferencia en orden de operación (2026-10-06)
 
 - Una sola pantalla ordena cargos, cuenta, fecha/referencia y comprobantes con cinco
@@ -12,7 +31,8 @@
   la revisión. Se conservan cinco PDF/JPEG/PNG de 10 MB, multipart y protección CSRF.
 - Procedimiento ilustrativo: seleccionar cargos $600/$400 → comprobar total $1,000 →
   cuenta del plantel → fecha y referencia reales del comprobante → adjuntar → revisar
-  resumen → enviar a revisión. No registrar el caso de dos hijos como probado todavía.
+  resumen → enviar a revisión. El ingreso total y resultado familiar ya fueron confirmados;
+  la comprobación individual del reparto también quedó confirmada posteriormente.
 - Node verifica suma, cuenta bloqueada/habilitada, resumen, fecha y reemplazo de archivos
   con DOM y respuestas simulados. No se enviaron transferencias ni se alteraron saldos.
 - Docker construyó correctamente y aprobó 494 pruebas sin fallos. Se actualizó únicamente
@@ -33,7 +53,7 @@
   reportar transferencia → consultar historial → esperar validación. Cargo $1,000 menos
   $300 efectivo deja $700; un reporte de $200 pendiente no cambia todavía ese saldo.
 - Soporte reutiliza la misma presentación. No se ejecutaron operaciones financieras;
-  el caso de dos hijos sigue pendiente y no debe registrarse como aprobado.
+  el resultado total y reparto individual de dos hijos están confirmados por el propietario.
 - Verificación técnica: construcción Docker exitosa y 493 pruebas sin fallos. Incluye
   renderizado de abonos y transferencia en revisión, cuenta sin deuda con historial,
   página fuera de rango y soporte; verifica consulta SQL con filtro antes de paginación,
@@ -52,8 +72,8 @@
   y redondeo que la generación, sin persistir ajustes en la consulta.
 - La vista aclara que no incluye ajustes manuales ni recargos posteriores y que confirmar
   recalcula las becas vigentes. Antes de confirmar, volver a visualizar si cambian las becas.
-- Caso de dos hijos: el propietario confirmó dos filas en la vista previa, pero todavía
-  no confirma la generación. La prueba completa no debe documentarse como aprobada.
+- Caso de dos hijos: confirmó dos filas en la vista previa y posteriormente validó el pago
+  de $1,000 con efecto en cuenta y portal; falta confirmar explícitamente el reparto por hijo.
 - Verificación técnica: `docker compose build app` exitoso, 488 pruebas sin fallos;
   aplicación actualizada con `docker compose up -d --no-deps app`, arranque correcto,
   esquema V55 sin nuevas migraciones. No se ejecutaron operaciones de cobranza.
@@ -70,7 +90,7 @@
 - La guía ofrecerá búsqueda por situaciones, navegación por procesos y permisos, ejemplos
   ilustrativos e imágenes sin datos sensibles. No generará operaciones automáticamente.
   El PDF será un complemento derivado del mismo contenido, no documentación paralela.
-- Primera candidata: cobranza después de confirmar el pago único para dos hijos, $600 y $400.
+- Primer caso confirmado para la guía: pago único para dos hijos, $600 y $400.
   Esta actualización es únicamente documental; no se implementó el módulo ni se registraron pagos.
 
 ## Buscador de cargos en Nuevo convenio (2026-10-06)

@@ -1,5 +1,22 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Confirmación funcional del propietario — transferencia de $1,000 — 2026-10-06
+
+- El propietario confirmó que validó el pago, la cuenta financiera aumentó $1,000,
+  el portal familiar dejó de mostrar esa cantidad como deuda y apareció el comprobante.
+  Estos resultados son confirmación humana, no una operación ejecutada por el agente.
+- El flujo probado se conserva para la guía: Portal familiar → Tus pagos → Reportar
+  transferencia → seleccionar cargos → cuenta → datos y comprobante → enviar a revisión;
+  administración → Pagos recibidos → Ver → Gestión → validar y publicar; después comprobar
+  saldo de la cuenta y regresar al portal para revisar pendientes y comprobante oficial.
+- Ejemplo acordado: una transferencia $1,000 para dos hijos, con cargos $600 y $400.
+  El propietario confirmó también la comprobación final: Distribución $600 y $400,
+  consulta individual con saldo de esos cargos $0 e importe propio en el historial.
+  Caso de una transferencia para dos hijos aprobado funcionalmente por el propietario.
+  Es el primer caso confirmado para incorporar al módulo Guía de procesos y casos prácticos.
+- No marca aprobados otros escenarios ni la revisión móvil/oscura. No cambia código,
+  permisos, cuotas, cargos o pagos. El módulo de guía sigue pendiente de implementación.
+
 ## Transferencia familiar en una sola pantalla — 2026-10-06
 
 - Reportar transferencia sigue el flujo: total calculado encima de cargos → seleccionar
@@ -34,7 +51,8 @@
   No confundir una página fuera de rango con ausencia de deuda.
 - Mantiene diseño familiar, claro/oscuro, tarjetas móviles, filtros de historial y ambos
   paginadores. Soporte comparte la vista de consulta. No hubo migración ni movimientos.
-  La prueba funcional de los dos hijos sigue pendiente del propietario.
+  El ingreso total, resultado familiar y desglose por hijo están confirmados,
+  según la confirmación funcional al inicio de este documento.
 
 ## Vista previa de adeudos con becas — 2026-10-06
 
@@ -48,7 +66,8 @@
   alcance y corte → Visualizar cuotas por aplicar → verificar original menos beca y
   totales por alumno → confirmar sólo si son correctos. Si se cambia una beca, volver
   a consultar: la confirmación recalcula según los datos vigentes.
-- El caso funcional de los dos hijos sigue pendiente de confirmación del propietario;
+- El ingreso de $1,000, saldo familiar, comprobante y reparto por hijo están confirmados.
+  Mantener las pruebas de otros escenarios bajo control del propietario;
   no generar sus adeudos ni registrar pagos mediante herramientas de desarrollo.
 
 ## Regla acordada — guía viva por procesos probados — 2026-10-06
@@ -72,8 +91,8 @@
   un paso revisado no significa que el sistema haya realizado la operación. Utilizar datos
   controlados autorizados para las pruebas; no mezclar ejemplos con información operativa real.
 - Al cierre del proyecto se hará una revisión integral. El PDF podrá derivarse del mismo
-  contenido como complemento, no como fuente paralela. Primera candidata: cobranza, después
-  de confirmar el caso pendiente de un pago de $1,000 para dos hijos ($600 y $400).
+  contenido como complemento, no como fuente paralela. Primer caso aprobado para la guía:
+  un pago de $1,000 para dos hijos ($600 y $400), confirmado el 06/10/2026.
 - En esta decisión sólo se actualiza documentación: el módulo de guía aún no está implementado.
 
 ## Corrección visual de búsqueda de cargos en convenios — 2026-10-06
@@ -1083,7 +1102,8 @@ entrar. Probar dos maestros con cuentas activas, filtros y paginación de planea
 captura protegida, PDF en nueva pestaña, horario, alumnos y ficha médica; comprobar que
 cambiar maestro o volver a administración conserva la sesión administrativa y que todas
 las consultas de portal aparecen en Auditoría. V56 queda disponible. La prueba integral
-de cobranza con dos hijos también continúa pendiente del propietario.
+de cobranza con dos hijos ya confirmó ingreso total, saldo familiar y comprobante;
+también quedó confirmado el reparto individual de $600 y $400. Incorporarlo a la guía.
 
 La reorganización del menú y los nombres funcionales quedó implementada. El propietario
 debe revisar visualmente con un rol amplio y otro limitado que la sección activa se abra,
