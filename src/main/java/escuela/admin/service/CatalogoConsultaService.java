@@ -201,7 +201,7 @@ public class CatalogoConsultaService {
                     "Los avisos escolares usan su consulta especializada");
             case AUDITORIA -> throw new IllegalArgumentException(
                     "La auditoría usa su consulta especializada");
-            case PORTAL_TUTOR, PORTAL_MAESTRO -> throw new IllegalArgumentException(
+            case PORTAL_TUTOR, PORTAL_MAESTRO, GUIAS -> throw new IllegalArgumentException(
                     "El portal tutor usa su consulta especializada");
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));

@@ -104,7 +104,9 @@ public enum ModuloPermiso {
     SOPORTE_PORTAL("Soporte del portal familiar", "Permite consultar el portal de un tutor en modo de sólo lectura",
             "PORTAL_TUTOR_SOPORTE"),
     SOPORTE_PORTAL_MAESTROS("Soporte del portal de maestros", "Consulta del portal docente sin modificar datos ni suplantar al maestro",
-            "PORTAL_MAESTRO_SOPORTE");
+            "PORTAL_MAESTRO_SOPORTE"),
+    GUIAS("Guía de procesos", "Consulta y exportación de guías verificadas según permisos del proceso",
+            "GUIA_PROCESOS_CONSULTAR");
 
     private final String nombre;
     private final String descripcion;

@@ -41,6 +41,21 @@ vista de la identificación cuando es imagen y el resumen completo del expedient
 de identificación no se incrustan: el reporte conserva únicamente sus metadatos y el
 archivo original sigue disponible mediante su endpoint privado autorizado.
 
+## Guía de procesos (V56)
+
+En **Seguridad y soporte → Guía de procesos** (`/admin/guias`) se consultan procedimientos
+con requisitos, ejemplos completos, instrucciones numeradas y resultados verificables.
+La primera guía explica un pago compartido de $1,000 para dos hijos, con cargos de $600
+y $400, desde configurar cuotas hasta validar y consultar saldos/comprobante.
+Dispone de búsqueda, filtros, paginación PostgreSQL y Excel Apache POI con el mismo acceso.
+El contenido es editorial versionado: no usa personas reales ni ejecuta pagos.
+
+Asignar el módulo **Guía de procesos** al rol y volver a iniciar sesión. También se
+requieren los permisos de los módulos del proceso; el permiso de guía no concede esos
+accesos. Esta primera entrega es administrativa. Guías familiares/docentes y capturas de
+pantalla se incorporarán progresivamente. El contenido se actualiza con nuevas migraciones,
+sin modificar las ya aplicadas. No se mantiene un PDF estático paralelo.
+
 ## Soporte del portal docente (V55)
 
 En **Seguridad y soporte → Soporte del portal de maestros**, un administrador con alcance
@@ -797,8 +812,8 @@ en tablas consultables, con control de UUID duplicado y comparación contra prov
 moneda y totales de la compra. La importación de conceptos requerirá vista previa y
 confirmación del usuario.
 
-Queda pendiente una **Guía de procesos y casos prácticos integrada al sistema**. Se
-construirá progresivamente: cada proceso funcional probado y confirmado se documentará
+La **Guía de procesos y casos prácticos integrada al sistema** ya tiene una primera
+entrega administrativa V56. Se ampliará progresivamente: cada proceso probado y confirmado se documentará
 con pasos, módulos, botones, requisitos, ejemplo completo y resultados verificables.
 Las variantes y errores se explicarán por separado y cada cambio de funcionalidad
 exigirá actualizar su guía. Si el módulo aún no existe, los procedimientos se conservarán

@@ -1,5 +1,38 @@
 # Contexto del proyecto
 
+## V56 — guía integrada inicial (2026-10-06)
+
+- Módulo administrativo Guía de procesos con permiso propio sin autoasignación. Contenido
+  editorial compartido sin alumnos reales, cuentas o transacciones: guía, permisos y pasos.
+  Consulta por búsqueda de situaciones/textos, categoría y estado, paginada en PostgreSQL.
+  Excel Apache POI recorre bloques y aplica los mismos filtros y acceso que la pantalla.
+- Una guía disponible: caso confirmado de una transferencia para dos hijos, $600 y $400.
+  Conserva ocho etapas desde concepto/cuotas hasta validación, saldo B+$1,000 y comprobante.
+  Instrucciones numeradas, perfil responsable, requisitos, captura de ejemplo, resultados
+  esperados y errores/precauciones. Versionada y fechada; ejemplos nunca se ejecutan solos.
+- Listar, abrir por slug y exportar sólo admiten usuario persistido con permiso de guía y
+  permisos requeridos del proceso. No hay POST ni gestión de pagos desde este módulo.
+  Navegación común y diseño claro/oscuro, índice, secciones desplegables y enlaces a módulos.
+- Asignar Guía de procesos desde Roles y permisos y volver a entrar. El primer contenido
+  requiere módulos de Alumnos, Tutores, Familiares del alumno, Inscripciones, Conceptos,
+  Cuotas, Adeudos, Pagos (incluida validación) y Cuentas financieras. Permisos insuficientes
+  producen listado sin la guía y bloquean detalle directo; exportación respeta lo mismo.
+- Pendientes de ampliación: capturas verificadas sin datos sensibles, guías adaptadas a los
+  portales y más escenarios confirmados. No se implementó un manual PDF paralelo ni progreso
+  de operaciones. Nuevos contenidos/revisiones requieren migración nueva y actualización
+  de fecha/versión y procedimientos al cambiar funciones. Próxima migración V57.
+- Verificación: Docker aprobó 500 pruebas sin fallos, incluidas consultas con permisos,
+  página/filtros, acceso directo, normalización, instrucciones decimales, renderizado real
+  de listado/detalle y lectura del Excel con filtros. Node aprobó los scripts.
+- La primera comprobación de arranque detectó una FK por código de permiso incompatible
+  con la restricción existente. V56 no se aplicó y PostgreSQL revirtió la transacción;
+  se corrigió antes de aplicar usando `permiso_id`. No se editó una migración aplicada.
+- Despliegue final: sólo `app`, salud `UP`, V56 exitosa, una guía, ocho pasos y diez
+  permisos requeridos. La consulta real dio cero guías teniendo sólo el permiso de guía
+  y una con todos los permisos. No se otorgaron permisos ni se tocaron pagos o alumnos.
+- La revisión visual autenticada de claro/oscuro y móvil queda para el propietario;
+  no había sesión administrativa de verificación y no se consultaron credenciales.
+
 ## Resultado funcional comunicado por el propietario (2026-10-06)
 
 - Tras validar una transferencia de $1,000, confirmó un aumento de $1,000 en la cuenta,

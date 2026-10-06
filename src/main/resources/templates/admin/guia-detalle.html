@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title th:text="${guia.titulo+' · Guía de procesos'}"></title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><link rel="stylesheet" href="/css/navigation.css"><link rel="stylesheet" href="/css/guias.css"><script src="/js/theme.js"></script><script src="/js/navigation.js" defer></script><script src="/js/guias.js" defer></script></head>
+<body>
+<input class="nav-toggle" type="checkbox" id="nav-toggle"><label class="nav-backdrop" for="nav-toggle"></label>
+<aside th:replace="~{admin/fragments/guia-navegacion :: sidebar}"></aside>
+<main class="workspace">
+    <header class="topbar"><label class="menu-button" for="nav-toggle"><span></span><span></span><span></span></label><div><p>Guía de procesos</p><h1 th:text="${guia.categoria}"></h1></div><div class="top-actions"><div th:replace="~{admin/fragments/session-actions :: controls}"></div></div></header>
+    <header class="form-top"><a href="/admin/guias">← Volver a las guías</a><span th:text="${'Versión '+guia.versionContenido+' · Revisada '+#temporals.format(guia.revisadaEl,'dd/MM/yyyy')}"></span></header>
+    <div class="finance-principle"><span th:text="${guia.estado=='CONFIRMADA'?'Caso confirmado por el propietario':'Caso pendiente de verificar'}"></span><strong th:text="${guia.titulo}"></strong><p th:text="${guia.resumen}"></p></div>
+    <div class="form-notice"><strong>Esta guía orienta; no ejecuta operaciones</strong><p>Los botones Abrir módulo sólo llevan a una pantalla. Usa datos controlados y autorizados para probar. No captures ejemplos ficticios en la operación real ni vuelvas a pagar un cargo ya liquidado.</p></div>
+    <section class="data-panel guide-preparation"><h2>Antes de empezar</h2><p class="guide-copy" th:text="${guia.requisitos}"></p><div class="form-notice"><strong>Ejemplo completo</strong><p class="guide-copy" th:text="${guia.ejemplo}"></p></div></section>
+    <div class="guide-layout">
+        <nav class="data-panel guide-index" aria-label="Pasos del proceso"><h2>Recorrido</h2><a th:each="p:${pasos}" th:href="${'#paso-'+p.numero}"><b th:text="${p.numero}"></b><span th:text="${p.titulo}"></span></a></nav>
+        <div class="guide-steps">
+            <details class="data-panel guide-step" th:each="p,st:${pasos}" th:id="${'paso-'+p.numero}" th:open="${st.first}">
+                <summary><b th:text="${p.numero}"></b><span><small th:text="${p.perfil+' · '+p.modulo}"></small><strong th:text="${p.titulo}"></strong></span></summary>
+                <div class="guide-step-content">
+                    <h3>Qué hacer, en orden</h3><ol class="guide-copy guide-action-list"><li th:each="accion:${p.acciones()}" th:text="${accion}"></li></ol>
+                    <div class="form-notice"><strong>Qué capturar en este ejemplo</strong><p class="guide-copy" th:text="${p.ejemplo}"></p></div>
+                    <div class="form-notice"><strong>Resultado que debes comprobar</strong><p class="guide-copy" th:text="${p.resultado}"></p></div>
+                    <h3>Evita confusiones</h3><p class="guide-copy" th:text="${p.precaucion}"></p>
+                    <div class="guide-actions"><a class="export-button secondary" th:if="${p.ruta != null}" th:href="${p.ruta}" target="_blank" rel="noopener">Abrir módulo ↗</a><a class="export-button secondary" th:if="${!st.last}" th:href="${'#paso-'+pasos[st.index+1].numero}">Consultar siguiente paso →</a></div>
+                    <small>Consultar el siguiente paso no significa que hayas guardado o validado una operación.</small>
+                </div>
+            </details>
+        </div>
+    </div>
+</main>
+</body></html>

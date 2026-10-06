@@ -2,6 +2,7 @@
     'use strict';
 
     const MODULES = [
+        [/^\/admin\/guias/, 'Guía de procesos', 'Consulta procesos probados con requisitos, pasos y resultados esperados. Sólo orienta; no crea registros ni ejecuta pagos.', 'Seguir la guía de una transferencia de $1,000 para dos hijos con cargos de $600 y $400.'],
         [/^\/admin\/catalogos\/instituciones|^\/admin\/instituciones/, 'Instituciones', 'Define los datos legales y operativos de cada institución que utiliza el sistema. Es la raíz que separa planteles, personas, seguridad y finanzas.', 'Registrar Instituto Raíces con su código, zona horaria y moneda de trabajo.'],
         [/^\/admin\/(catalogos\/)?planteles/, 'Planteles', 'Administra las sedes físicas de una institución y sus datos de contacto, ubicación y operación.', 'Crear el plantel Centro y relacionarlo con Instituto Raíces.'],
         [/^\/admin\/(catalogos\/)?niveles/, 'Niveles educativos', 'Organiza los niveles académicos disponibles, por ejemplo preescolar, primaria o secundaria.', 'Registrar Primaria como un nivel disponible para la institución.'],

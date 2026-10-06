@@ -1,0 +1,5 @@
+<aside class="sidebar" xmlns:th="http://www.thymeleaf.org" th:fragment="sidebar">
+    <div class="brand"><span class="brand-mark">N</span><span><strong>Nexo</strong><small>Control escolar</small></span></div>
+    <nav><th:block th:each="item,iter:${modulos}"><p class="nav-label" th:if="${iter.first or item.seccion()!=modulos[iter.index-1].seccion()}" th:text="${item.seccion()}"></p><a th:href="${item.rutaListado()}" th:classappend="${item==moduloActual}?' active':''"><span class="nav-dot"></span><span th:text="${item.titulo}"></span></a></th:block></nav>
+    <div class="sidebar-foot"><span class="pulse"></span><span>Servicios operativos</span></div>
+</aside>

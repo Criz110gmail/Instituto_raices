@@ -49,7 +49,8 @@ public enum ModuloCatalogo {
     USUARIOS("usuarios", "Usuarios", List.of("Usuario", "Correo", "Institución", "Credencial")),
     AUDITORIA("auditoria", "Auditoría", List.of()),
     PORTAL_TUTOR("portal-tutor", "Soporte del portal familiar", List.of()),
-    PORTAL_MAESTRO("portal-maestro", "Soporte del portal de maestros", List.of());
+    PORTAL_MAESTRO("portal-maestro", "Soporte del portal de maestros", List.of()),
+    GUIAS("guias", "Guía de procesos", List.of());
 
     private final String slug;
     private final String titulo;
@@ -119,7 +120,7 @@ public enum ModuloCatalogo {
             case PAGOS, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Administración · Finanzas";
             case PROVEEDORES, COMPRAS -> "Administración · Compras y proveedores";
             case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS -> "Administración · Configuración escolar";
-            case ROLES, USUARIOS, AUDITORIA, PORTAL_TUTOR, PORTAL_MAESTRO -> "Administración · Seguridad y soporte";
+            case ROLES, USUARIOS, AUDITORIA, PORTAL_TUTOR, PORTAL_MAESTRO, GUIAS -> "Administración · Seguridad y soporte";
         };
     }
 
@@ -169,9 +170,11 @@ public enum ModuloCatalogo {
             case AUDITORIA -> "AUDITORIA";
             case PORTAL_TUTOR -> "PORTAL_TUTOR_SOPORTE";
             case PORTAL_MAESTRO -> "PORTAL_MAESTRO_SOPORTE";
+            case GUIAS -> "GUIA_PROCESOS_CONSULTAR";
         };
         if (this == PORTAL_TUTOR) return permisos.contains("PORTAL_TUTOR_SOPORTE");
         if (this == PORTAL_MAESTRO) return permisos.contains("PORTAL_MAESTRO_SOPORTE");
+        if (this == GUIAS) return permisos.contains("GUIA_PROCESOS_CONSULTAR");
         if (this == PAGOS) return permisos.contains("PAGO_LEER") || permisos.contains("PAGO_REGISTRAR")
                 || permisos.contains("PAGO_VALIDAR") || permisos.contains("PAGO_DEVOLVER")
                 || permisos.contains("PAGO_CANCELAR");
@@ -264,13 +267,14 @@ public enum ModuloCatalogo {
             case AUDITORIA -> "/admin/auditoria";
             case PORTAL_TUTOR -> "/admin/portal-soporte";
             case PORTAL_MAESTRO -> "/admin/portal-maestros-soporte";
+            case GUIAS -> "/admin/guias";
             default -> "";
         };
     }
 
     public String rutaListado() {
         return this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == ACTUALIZACIONES_EXPEDIENTE || this == PROVEEDORES || this == COMPRAS || this == CONVENIOS_PAGO || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
-                || this == PORTAL_MAESTRO ? rutaMantenimiento()
+                || this == PORTAL_MAESTRO || this == GUIAS ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }
 

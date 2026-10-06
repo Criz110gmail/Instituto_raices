@@ -1,5 +1,33 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V56 — Guía de procesos y casos prácticos — 2026-10-06
+
+- Primera entrega administrativa en Seguridad y soporte → Guía de procesos (`/admin/guias`).
+  Asignar `GUIA_PROCESOS_CONSULTAR` desde Roles y permisos y reiniciar sesión; la migración
+  no lo otorga automáticamente. Exige usuario persistido y permisos de los módulos del
+  proceso para listar, abrir o exportar. La guía no concede permisos ni usa datos operativos.
+- V56 guarda contenido editorial global, requisitos de permisos y pasos en tablas de guía.
+  Son ejemplos ficticios versionados, no expedientes de personas. Sin edición operativa;
+  posteriores revisiones de contenido se publican mediante nuevas migraciones controladas,
+  actualizando versión/fecha. Listado filtrado/paginado en PostgreSQL; Excel POI por bloques
+  comparte búsqueda, categoría, estado y restricciones de permisos.
+- Primera guía confirmada: transferencia $1,000 para cargos $600/$400 de dos hijos.
+  Ocho etapas: vínculos/inscripciones, concepto, cuotas individuales, vista previa/generación,
+  saldo B de referencia, reporte familiar, validación y comprobación por hijo/comprobante.
+  Cada etapa incluye perfil, módulo, instrucciones numeradas, ejemplo, resultado y precaución.
+- El detalle reutiliza el diseño administrativo, temas y acciones; índice de pasos,
+  secciones desplegables y enlaces GET a módulos en otra pestaña. No registra pagos ni
+  marca operaciones realizadas al avanzar. Para probar con tutor desde administración,
+  usar una sesión privada separada; la guía no suplanta cuentas familiares.
+- Las capturas de pantalla reales y el acceso directo a guías desde portales familiar/docente
+  quedan para ampliaciones posteriores con permisos y contenido propios; no se inventan
+  capturas ni se exponen guías administrativas a esos perfiles.
+- Próxima migración disponible V57. Verificar como propietario asignación del módulo,
+  búsqueda, pasos, Excel, tema oscuro y móvil. Continuar añadiendo sólo casos confirmados.
+- Despliegue confirmado: 500 pruebas, V56 aplicada, ocho pasos, servicio `UP` y filtros de
+  permisos comprobados en PostgreSQL. No se cambiaron roles ni datos operativos. El propietario
+  debe asignar Guía de procesos a su rol y reiniciar sesión para la revisión visual final.
+
 ## Confirmación funcional del propietario — transferencia de $1,000 — 2026-10-06
 
 - El propietario confirmó que validó el pago, la cuenta financiera aumentó $1,000,
@@ -15,7 +43,7 @@
   Caso de una transferencia para dos hijos aprobado funcionalmente por el propietario.
   Es el primer caso confirmado para incorporar al módulo Guía de procesos y casos prácticos.
 - No marca aprobados otros escenarios ni la revisión móvil/oscura. No cambia código,
-  permisos, cuotas, cargos o pagos. El módulo de guía sigue pendiente de implementación.
+  permisos, cuotas, cargos o pagos. Este caso ya se incorporó a la guía inicial V56.
 
 ## Transferencia familiar en una sola pantalla — 2026-10-06
 
@@ -93,7 +121,8 @@
 - Al cierre del proyecto se hará una revisión integral. El PDF podrá derivarse del mismo
   contenido como complemento, no como fuente paralela. Primer caso aprobado para la guía:
   un pago de $1,000 para dos hijos ($600 y $400), confirmado el 06/10/2026.
-- En esta decisión sólo se actualiza documentación: el módulo de guía aún no está implementado.
+- La decisión inicial sólo actualizó documentación; posteriormente V56 implementó el
+  módulo administrativo y el primer caso confirmado. Ampliar progresivamente el contenido.
 
 ## Corrección visual de búsqueda de cargos en convenios — 2026-10-06
 
@@ -1095,6 +1124,12 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
   PostgreSQL local sin cambiar el volumen persistente ni las credenciales de `.env`.
 
 ## Siguiente paso acordado
+
+Prioridad actual: probar Guía de procesos V56 desde administración, tras asignar su permiso
+y reiniciar sesión; recorrer el caso de dos hijos ya confirmado, revisar búsqueda/Excel,
+legibilidad móvil y tema oscuro. Incorporar nuevos escenarios conforme el propietario los
+confirme. El módulo no ejecuta capturas y no sustituye las pruebas operativas pendientes.
+La siguiente migración libre es V57. Los pendientes anteriores se conservan debajo.
 
 El último módulo implementado es V55 **Soporte del portal de maestros**. El propietario
 debe asignar ese módulo al rol administrativo institucional, cerrar sesión y volver a
