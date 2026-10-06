@@ -339,6 +339,8 @@ Es la obligación de pago de un alumno, independientemente del pago recibido.
   estadoRegistro : Enum [R] — EMITIDO, CANCELADO.
   canceladoEn : Instant [O].
   motivoCancelacion : Text [C].
+  reemplazaCargoId : FK(Cargo) [O] — único; cada cargo anterior admite un reemplazo directo.
+  motivoReemplazo : Text [C] — obligatorio al corregir y reemplazar un vencimiento.
   descuentoTotal, recargoTotal, importeTotal : Decimal [D].
   montoPagado, saldoPendiente : Decimal [D].
   situacionCobro : Enum [D] — PENDIENTE, PARCIAL, PAGADO, CANCELADO.
@@ -346,6 +348,16 @@ Es la obligación de pago de un alumno, independientemente del pago recibido.
 Periodo de cobro y periodo de evaluación son conceptos distintos: septiembre puede
 ser una mensualidad dentro del primer trimestre. Validar ciclo y nivel si se
 asigna PeriodoAcademico. Un cargo parcial también puede estar vencido.
+En V59, la corrección de vencimiento crea otro cargo vinculado sin borrar el anterior;
+mantiene importe/periodo y recalcula beca vigente. Requiere actor, motivo, confirmación y
+versión; bloquea pagos históricos/en revisión, convenios y ajustes distintos de beca.
+Cancelar no libera la clave de generación. Cuotas únicas generadas protegen fechas e
+importe; cuotas mensuales sólo afectan emisiones todavía no generadas.
+V60 añade metadatos técnicos privados de selección de generación (UUID, usuario, alcance,
+corte, tipo, expiración y claves/versión/importes/vencimiento de las filas). No son pagos ni
+movimientos: sólo preparan una vista previa paginada, caducan en dos horas y se confirman una
+vez. Confirmar valida los registros marcados y revierte la ejecución si cambió la información;
+las filas desmarcadas siguen pendientes. No almacena nombres ni expedientes en el snapshot.
 
 25. AjusteCargo [auxiliar propuesta]
 Desglosa becas, descuentos, recargos y correcciones con trazabilidad.

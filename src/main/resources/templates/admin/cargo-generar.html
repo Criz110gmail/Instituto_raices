@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title>Generar adeudos de alumnos · Nexo Escolar</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script><script src="/js/generation-preview.js" defer></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css?v=20261006-seleccion"><script src="/js/theme.js"></script><script src="/js/generation-preview.js" defer></script><script src="/js/generation-selection.js?v=20261006-1" defer></script>
 </head>
 <body class="form-page">
 <main class="form-shell finance-shell surcharge-preview-shell">
@@ -24,7 +24,7 @@
         </form>
     </section>
 
-    <section id="vista-previa-cuotas" class="surcharge-preview-card generation-preview-target" data-generation-preview th:if="${vistaPrevia}" aria-labelledby="titulo-cuotas-previas">
+    <section id="vista-previa-cuotas" class="surcharge-preview-card generation-preview-target" data-generation-preview data-generation-selection th:attr="data-selection-id=${vistaPrevia.seleccionId},data-selection-total=${vistaPrevia.pagosPorGenerar},data-selection-amount=${vistaPrevia.importeNetoTotal}" th:if="${vistaPrevia}" aria-labelledby="titulo-cuotas-previas">
         <header class="surcharge-preview-header"><div><span>2 · Verificar resultado</span><h2 id="titulo-cuotas-previas">Cuotas que generarán adeudos</h2><p th:if="${!vistaPrevia.pagina.empty}">Revisa cada periodo antes de confirmar la generación.</p><p th:if="${vistaPrevia.pagina.empty}">No existen adeudos programados pendientes para este corte.</p></div><span class="surcharge-preview-badge" th:text="${vistaPrevia.pagosPorGenerar+' adeudos por generar'}">0 adeudos</span></header>
         <div class="surcharge-summary charge-generation-summary" th:if="${!vistaPrevia.pagina.empty}">
             <article><span>Cuotas con pendientes</span><strong th:text="${vistaPrevia.cuotasConPendientes}">0</strong></article>
@@ -34,8 +34,11 @@
             <article class="total"><span>Total estimado por cobrar</span><strong th:text="${@formatoMoneda.pesos(vistaPrevia.importeNetoTotal)}">$0.00</strong></article>
         </div>
         <div class="form-notice" th:if="${!vistaPrevia.pagina.empty}"><strong>Importe original − beca = total estimado por cobrar</strong><p>La beca corresponde a la inscripción, concepto y vigencia de cada periodo. Los totales incluyen todas las páginas. No incluye ajustes manuales ni recargos posteriores. Al confirmar se consultarán nuevamente las becas vigentes; si cambias una beca, actualiza esta vista previa antes de generar.</p></div>
-        <div class="surcharge-empty" th:if="${vistaPrevia.pagina.empty}"><span>✓</span><div><strong>Todo está al día para este corte</strong><p>Las cuotas aplicables ya tienen sus adeudos generados o todavía no han iniciado.</p></div></div>
-        <div class="table-wrap surcharge-preview-table" th:if="${!vistaPrevia.pagina.empty}"><table><thead><tr><th>Alumno</th><th>Concepto</th><th>Frecuencia</th><th>Periodo</th><th>Vencimiento</th><th>Importe original</th><th>Beca por aplicar</th><th>Total por cobrar</th></tr></thead><tbody><tr th:each="fila:${vistaPrevia.pagina.content}">
+        <div class="surcharge-empty" th:if="${vistaPrevia.pagina.empty}"><span>i</span><div><strong>No hay adeudos faltantes para este corte</strong><p>Esto no significa que no haya deuda. Revisa abajo las cuotas no incluidas y su motivo. Los cargos cancelados no se regeneran automáticamente.</p></div></div>
+        <div class="generation-selection-bar" th:if="${!vistaPrevia.pagina.empty}"><label><input type="checkbox" data-select-page checked> Seleccionar esta página</label><p>Todo está seleccionado por defecto, incluidas las otras páginas. Cada fila es una cuota y periodo: puedes omitir un mes sin omitir los demás.</p><strong data-selection-summary aria-live="polite">Calculando selección…</strong></div>
+        <div class="generation-selection-bar" th:if="${!vistaPrevia.pagina.empty}"><button type="button" data-selection-all>Seleccionar todos</button><button type="button" data-selection-none>Desmarcar todos</button><p>Las tarjetas superiores son los totales de toda la vista previa. Sólo se confirmará el importe indicado en la selección.</p></div>
+        <div class="table-wrap surcharge-preview-table" th:if="${!vistaPrevia.pagina.empty}"><table><thead><tr><th>Generar</th><th>Alumno</th><th>Concepto</th><th>Frecuencia</th><th>Periodo</th><th>Vencimiento</th><th>Importe original</th><th>Beca por aplicar</th><th>Total por cobrar</th></tr></thead><tbody><tr th:each="fila:${vistaPrevia.pagina.content}">
+            <td data-label="Generar"><label class="generation-row-choice"><input type="checkbox" data-selection-row checked th:value="${fila.claveSeleccion}" th:attr="data-selection-amount=${fila.importeNeto},aria-label=${'Generar cargo de '+fila.alumnoNombre+' · '+fila.periodo}"><span>Generar</span></label></td>
             <td data-label="Alumno"><strong th:text="${fila.alumnoNombre}">Alumno</strong><small th:text="${fila.alumnoMatricula+' · '+fila.plantelNombre}">Matrícula</small></td>
             <td data-label="Concepto" th:text="${fila.concepto}">Concepto</td>
             <td data-label="Frecuencia" th:text="${fila.frecuencia}">Mensual</td>
@@ -46,13 +49,27 @@
             <td data-label="Total por cobrar"><strong th:text="${@formatoMoneda.pesos(fila.importeNeto)}">$0.00</strong><small th:text="${fila.moneda}">MXN</small></td>
         </tr></tbody></table></div>
         <footer class="pagination" th:if="${vistaPrevia.pagina.totalPages>1}"><p><strong th:text="${vistaPrevia.pagina.number*vistaPrevia.pagina.size+1}">1</strong>–<strong th:text="${vistaPrevia.pagina.number*vistaPrevia.pagina.size+vistaPrevia.pagina.numberOfElements}">25</strong> de <strong th:text="${vistaPrevia.pagina.totalElements}">100</strong></p><div>
-            <a th:classappend="${vistaPrevia.pagina.first}?' disabled'" th:href="@{/admin/cargos/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number-1})}">Anterior</a><span th:text="${vistaPrevia.pagina.number+1}">1</span><a th:classappend="${vistaPrevia.pagina.last}?' disabled'" th:href="@{/admin/cargos/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number+1})}">Siguiente</a>
+            <a th:classappend="${vistaPrevia.pagina.first}?' disabled'" th:href="@{/admin/cargos/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},seleccionId=${vistaPrevia.seleccionId},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number-1})}">Anterior</a><span th:text="${vistaPrevia.pagina.number+1}">1</span><a th:classappend="${vistaPrevia.pagina.last}?' disabled'" th:href="@{/admin/cargos/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},seleccionId=${vistaPrevia.seleccionId},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number+1})}">Siguiente</a>
         </div></footer>
-        <form class="surcharge-confirm" th:if="${!vistaPrevia.pagina.empty}" method="post" th:action="@{/admin/cargos/generar}">
+        <form class="surcharge-confirm" data-selection-confirm th:if="${!vistaPrevia.pagina.empty}" method="post" th:action="@{/admin/cargos/generar}">
             <input type="hidden" name="institucionId" th:value="${form.institucionId}"><input type="hidden" name="plantelId" th:value="${form.plantelId}"><input type="hidden" name="fechaCorte" th:value="${form.fechaCorte}"><input type="hidden" name="confirmacion" value="true">
-            <div><strong>Confirma únicamente si los periodos e importes son correctos</strong><p>El sistema recalculará los datos y creará únicamente los adeudos que sigan faltando.</p></div><button class="generation-confirm-button" type="submit">Confirmar y generar adeudos faltantes</button>
+            <input type="hidden" name="seleccionId" th:value="${vistaPrevia.seleccionId}"><span data-selection-hidden hidden></span>
+            <div><strong>Confirma únicamente si los periodos e importes son correctos</strong><p><strong data-selection-summary aria-live="polite">Revisa la selección antes de confirmar.</strong></p><p>Sólo se crearán los adeudos seleccionados de esta vista previa. Desmarcar no cancela la cuota: el periodo seguirá pendiente y aparecerá al volver a visualizar. La selección caduca en dos horas.</p></div><button class="generation-confirm-button" type="submit" disabled>Confirmar y generar adeudos seleccionados</button>
+            <noscript><p>Activa JavaScript para revisar y confirmar la selección.</p></noscript>
         </form>
     </section>
+    <details id="cuotas-no-incluidas" class="cuota-advanced" th:if="${cuotasExcluidas != null}" th:open="${mostrarExcluidas == true}">
+        <summary>Consultar cuotas no incluidas · sólo información, no se generarán cargos</summary>
+        <section class="surcharge-preview-card">
+        <div class="form-actions"><a th:href="@{/admin/cargos/generar/excluidas/excel(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte})}">Exportar motivos a Excel</a></div>
+        <header class="surcharge-preview-header"><div><span>Información · sin generación</span><h2>Cuotas no incluidas y motivo</h2><p>Usa el mismo alcance y corte de la consulta. No se generan cargos desde esta lista.</p></div><span class="surcharge-preview-badge" th:text="${cuotasExcluidas.totalElements+' cuotas'}"></span></header>
+        <p class="context-help" th:if="${cuotasExcluidas.empty}">No hay cuotas excluidas en esta página.</p>
+        <div class="table-wrap surcharge-preview-table" th:if="${!cuotasExcluidas.empty}"><table><thead><tr><th>Cuota</th><th>Alumno</th><th>Concepto</th><th>Motivo</th><th>Consultar</th></tr></thead><tbody><tr th:each="fila:${cuotasExcluidas.content}">
+        <td data-label="Cuota" th:text="${'#'+fila.cuotaId}"></td><td data-label="Alumno" th:text="${fila.alumno}"></td><td data-label="Concepto" th:text="${fila.concepto}"></td><td data-label="Motivo" th:text="${fila.motivo}"></td><td data-label="Consultar"><a class="detail-close-button" th:if="${fila.cargoId != null}" th:href="@{/admin/cargos/{id}/editar(id=${fila.cargoId})}">Abrir cargo</a></td>
+        </tr></tbody></table></div>
+        <footer class="pagination" th:if="${cuotasExcluidas.totalPages > 1}"><p th:text="${'Página '+(cuotasExcluidas.number+1)+' de '+cuotasExcluidas.totalPages}"></p><div><a th:if="${!cuotasExcluidas.first}" th:href="@{/admin/cargos/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},seleccionId=${vistaPrevia.seleccionId},paginaExcluidas=${cuotasExcluidas.number-1},mostrarExcluidas=true)}">Anterior</a><a th:if="${!cuotasExcluidas.last}" th:href="@{/admin/cargos/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},seleccionId=${vistaPrevia.seleccionId},paginaExcluidas=${cuotasExcluidas.number+1},mostrarExcluidas=true)}">Siguiente</a></div></footer>
+        </section>
+    </details>
 </main>
 <script>
 (() => { const institucion=document.querySelector('#institucion'); const plantel=document.querySelector('#plantel'); const opciones=[...plantel.options].slice(1); const actualizar=()=>{opciones.forEach(o=>{o.hidden=!institucion.value||o.dataset.institucion!==institucion.value||o.dataset.activo!=='true';});if(plantel.selectedOptions[0]?.hidden)plantel.value='';}; institucion.addEventListener('change',actualizar); actualizar(); })();

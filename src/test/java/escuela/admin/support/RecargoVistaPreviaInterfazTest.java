@@ -24,7 +24,7 @@ class RecargoVistaPreviaInterfazTest {
         assertThat(html).doesNotContain("${errorOperacion or #fields.hasErrors('*')}");
         assertThat(html)
                 .contains("th:action=\"@{/admin/politicas-recargo/generar/vista-previa}\"")
-                .contains("method=\"post\"\n              th:action=\"@{/admin/politicas-recargo/generar}\"");
+                .contains("method=\"post\"", "th:action=\"@{/admin/politicas-recargo/generar}\"", "data-selection-confirm", "name=\"seleccionId\"");
         assertThat(html.indexOf("Visualizar recargos"))
                 .isLessThan(html.indexOf("Confirmar y generar recargos"));
     }

@@ -7,4 +7,6 @@ public interface CuotaAlumnoService {
     CuotaAlumnoResponse crear(CuotaAlumnoRequest request);
     CuotaAlumnoResponse actualizar(Long id, CuotaAlumnoRequest request);
     CuotaAlumnoResponse obtener(Long id);
+    EstadoEmision estadoEmision(Long id);
+    record EstadoEmision(boolean generada, boolean bloqueada, Long cargoId) { }
 }

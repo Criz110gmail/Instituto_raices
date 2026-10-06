@@ -247,7 +247,7 @@ public class PagoServiceImpl implements PagoService {
             if (!ids.add(solicitud.cargoId())) {
                 throw new ReglaNegocioException("Un cargo sólo puede aparecer una vez en la distribución solicitada");
             }
-            Cargo cargo = cargoRepository.findById(solicitud.cargoId())
+            Cargo cargo = cargoRepository.findByIdForUpdate(solicitud.cargoId())
                     .orElseThrow(() -> new RecursoNoEncontradoException("el cargo", solicitud.cargoId()));
             if (cargo.getEstadoRegistro() != EstadoRegistroCargo.EMITIDO
                     || !cargo.getInscripcion().getAlumno().getInstitucion().getId().equals(institucion.getId())) {

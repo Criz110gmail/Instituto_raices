@@ -1,5 +1,120 @@
 # Contexto del proyecto
 
+## V60 — selección por fila antes de generar (2026-10-06)
+
+- El propietario pidió omitir pruebas no deseadas al confirmar ambas generaciones.
+  Nuevas casillas por cargo (recargo) o cuota-periodo (adeudo), todas marcadas inicialmente;
+  selección de página y botones globales Seleccionar/Desmarcar todos. Importe/cantidad de
+  selección separados de totales globales; estado conservado entre páginas por UUID.
+- Snapshot privado de claves/versión/importe/vencimiento, en DB por lotes100, asociado al
+  administrador y alcance/corte/tipo. No guarda nombres ni expedientes. Caduca2h, confirma
+  una vez, bloquea selección vacía/ajena y registros nuevos fuera de la vista revisada.
+  Cambios detectados de versión, importe, vencimiento o cantidad exigen volver a visualizar;
+  se revierte toda la operación. Confirma importe realmente emitido tras la beca.
+- Estado cliente sessionStorage y máximo5000 cambios; sólo incluidos o todos menos excluidos.
+  Sin script o persistencia cliente se bloquea la confirmación, evitando generar todo por error.
+  Desmarcar no cancela: vuelve a aparecer en una nueva vista; no genera cargos al visualizar.
+  La consulta sí registra metadatos privados de preparación, no movimientos financieros.
+- V60 actualiza procedimientos editoriales; siguiente V61. Nuevo caso pendiente del dueño:
+  desmarcar todos los recargos y marcar sólo19, esperado50 y saldo850. No ejecutado con datos
+  reales por herramientas. Pendiente acordar depuración de snapshots caducados antes de producción.
+- Verificación final: 536 pruebas Java sin fallos; Node comprueba preservación de selección
+  entre páginas y resumen global, modos Todos/Sólo incluidos y bloqueo si no hay selección
+  o no funciona el almacenamiento. V60 aplicada con éxito, `app` desplegado y salud `UP`.
+  Cargo19 continúa emitido, vencimiento05/10, original1000, beca200 y recargo0. No se ejecutó
+  ninguna selección real desde herramientas. Revisión visual y caso funcional del dueño pendientes.
+
+## Ocultar diagnóstico de cuotas hasta solicitarlo (2026-10-06)
+
+- Cuotas no incluidas y motivo queda cerrado por defecto en un details/summary con estilos
+  comunes y leyenda explícita de que no genera cargos. Abrirlo sólo muestra el diagnóstico;
+  al paginar dentro se mantiene abierto. Excel y filtros de alcance/corte no cambian.
+- No se modificó cargo18, cuota13 ni reglas de generación; sin migración (siguiente V60).
+  El propietario confirmó la confusión visual, no un fallo de cálculo de generación.
+- Verificación: 523 pruebas Java sin fallos; imagen desplegada sólo en `app`, salud `UP`.
+  Prueba de render confirma diagnóstico cerrado inicialmente y apertura explícita al paginar.
+
+## V59 — protección de cuotas y reemplazo de vencimiento (2026-10-06)
+
+- Se diagnosticó cargo #18 cancelado y cuota #13 activa corregida: AUTO:1:13:UNICA sigue
+  reservada, por eso cancelar no lo ofrece de nuevo. La indicación anterior de cancelar y
+  regenerar fue incorrecta. Se conserva la idempotencia; no borrar el histórico ni su clave.
+- Cuotas únicas generadas protegen importes/moneda/frecuencia/fechas en UI y servidor.
+  Mensuales conservan edición para futuras emisiones, con aviso y frecuencia protegida.
+  Generación incluye motivos de exclusión paginados y Excel POI por bloques y mismo alcance.
+- Corrección explícita desde detalle con motivo y confirmación crea reemplazo vinculado único,
+  conserva registro previo, cancela emitido atómicamente y recalcula beca vigente. Sólo cambia
+  fecha límite dentro del periodo. Actor administrativo identificado, versión y alcance;
+  bloquea historial de pagos, pagos en revisión, convenios, ajustes no BECA y reemplazo previo.
+  No modifica cuentas ni cuotas. Registro de pagos bloquea cargo para evitar carreras.
+- V59 incorpora FK/motivo y precauciones editoriales en guías existentes; siguiente V60.
+  Caso de sustitución aún pendiente de confirmación humana. No se ejecutaron reemplazos,
+  recargos ni pagos de prueba. Pasos: cargo18 → Corregir y reemplazar → 05/10/2026 y motivo →
+  comprobar nuevo cargo1000−200=800 → corte06/10 con recargo10% y tope50 → saldo850.
+- Verificación final: 522 pruebas Java aprobadas, incluidas aislamiento, versión, pago en
+  revisión, historial de pagos, recargos previos, duplicados, beca y render del formulario.
+  Node confirma protección de vigencia y ejemplo de topes. Imagen desplegada sólo en `app`,
+  V59 exitosa y salud `UP`. SQL confirma cargo18 sin reemplazo y sin cambio de importe/beca.
+  El propietario debe confirmar diseño en sesión y resultado funcional antes de añadir ese caso
+  como confirmado en Guía de procesos.
+
+## Tabla ilustrativa de recargos y distinción visual (2026-10-06)
+
+- Ante reporte de tabla vacía se refuerza inicialización del script, lectura por id/nombre,
+  eventos input/change y acción Actualizar ejemplo sin submit. Recursos versionados evitan
+  reutilizar el script previo. Sin acceso al navegador autenticado no se confirma una causa
+  específica de caché. Renderizado real verifica los campos usados por el cálculo.
+- Sin valores válidos aparece una fila explicativa (porcentaje/tope faltante o valores
+  inválidos), no un tbody vacío. Panel violeta diferenciado, aviso de simulación y temas
+  claro/oscuro; reutiliza tabla responsiva común. Node cubre arranque tardío, campos por
+  nombre, recálculo manual y resultado 80/70/0. No cambia datos ni reglas financieras.
+- Sin migración, V59 disponible. Revisión visual en sesión del propietario pendiente.
+- Verificación final: 506 pruebas Java aprobadas y Node correcto. Se reconstruyó y desplegó
+  únicamente `app`; salud `UP`. No se generaron ajustes ni movimientos de prueba.
+
+## Rediseño explicativo de topes de recargo (2026-10-06)
+
+- Se resuelve el pendiente visual Límite y operación: opciones claras de tope y campo
+  necesario, simulación independiente no persistida y activación separada. Mantiene el
+  diseño común claro/oscuro y las reglas transaccionales existentes; no cambia valores
+  iniciales ni políticas registradas. Tope porcentual sobre original; recargo sobre base
+  sin recargos. El acumulado sólo corresponde a esa política/cargo, no a todos los alumnos.
+- Ejemplo dinámico 1000−200, 10% mensual, tope150: aplicaciones 80/70/0, deuda950 sin
+  pagos. Único con tope50: aplicación50, deuda850. No se consulta ni escribe ningún cargo.
+- Node verifica dinero/porcentaje del tope, mensual/único, monto fijo, base cero e inválidos.
+  La prueba Java verifica generación 80/70 sobre base800 sin exceder150.
+- V58 actualiza la guía confirmada de becas al nuevo vocabulario, versión2. La prueba
+  funcional de topes queda pendiente del propietario; no publicar un caso nuevo confirmado
+  hasta su validación. Con fechas válidas pasadas puede probar un tope único de50 ahora;
+  para dos recargos mensuales esperar el segundo periodo o usar fechas de prueba pasadas
+  dentro de una inscripción/ciclo que realmente los cubra. No forzar reloj ni cortes futuros.
+- Próxima migración V59. No se generaron recargos, pagos ni movimientos durante el cambio.
+- Verificación final: 505 pruebas Java aprobadas, simulación Node correcta, imagen de `app`
+  reconstruida y desplegada, V58 aplicada y salud `UP`. Pendiente revisión visual autenticada
+  y confirmación del ejemplo por el propietario; no se ejecutaron transacciones de prueba.
+
+## V57 — ampliación editorial de cobranza (2026-10-06)
+
+- Nuevas guías confirmadas: beca del 20% y recargo único del 10% ($1,000 − $200 + $80 =
+  $880, liquidación), y abonos $300/$500/$200 sobre $1,000 (saldos $700/$200/$0).
+- Ocho y siete etapas respectivamente, con instrucciones numeradas, ejemplos, resultados,
+  restricciones de fechas y estados. Recargos se ejecuta explícitamente en Políticas de
+  recargo; no hay incremento diario implícito. El pago vencido de $880 se registra desde
+  administración, no desde el selector de cargos vigentes del portal.
+- Parciales parte de Pagos recibidos → Nuevo registro para habilitar Registrar pago parcial.
+  Primeros dos abonos ilustrados en efectivo a caja y últimos $200 transferidos al banco:
+  caja aumenta $800 y banco $200 después de validar. No se modifica un pago anterior.
+- V57 añade únicamente guías/pasos/permisos requeridos de contenido, no datos operativos
+  ni asignaciones a roles. Reutiliza sin cambios diseño, filtros, páginas y Excel V56.
+  La primera guía de dos hijos conserva sus ocho etapas. Próxima migración V58.
+- Propietario confirmó claridad de la primera guía; nuevas guías requieren revisión de
+  instrucciones. Otros porcentajes, topes, devoluciones y reversas siguen siendo casos distintos.
+- Verificación: Docker aprobó 502 pruebas, incluidas comprobaciones del contenido, rutas,
+  importes, saldos y ausencia de inserts operativos en V57. La imagen se desplegó sólo en
+  `app`; salud `UP` y PostgreSQL confirmó V57 exitosa, tres guías y 23 pasos (8/8/7).
+  Con todos los permisos salvo BECA_ALUMNO_LEER se ofrecen sólo las otras dos guías.
+  No se crearon cuotas, pagos ni movimientos de prueba; no se alteraron permisos de roles.
+
 ## V56 — guía integrada inicial (2026-10-06)
 
 - Módulo administrativo Guía de procesos con permiso propio sin autoasignación. Contenido
@@ -2690,7 +2805,11 @@ historial paginado.
   prueba y ejecutó 447 pruebas sin fallos. La imagen se desplegó y salud respondió `UP`;
   la siguiente migración disponible es V54.
 
-## Pendiente de usabilidad — límites de las políticas de recargo
+## Antecedente de usabilidad — límites de las políticas de recargo
+
+El rediseño del 06/10/2026 documentado al inicio resuelve la captura pendiente. Se conserva
+el tope en periodicidad única y se incorpora ejemplo calculado; falta confirmación funcional
+del propietario del nuevo caso de tope, no una nueva implementación de estos controles.
 
 - La prueba guiada de cobranza mostró que las etiquetas **Tipo de límite** y **Valor del
   límite** no comunican por sí solas qué se está limitando ni cómo interviene en el cálculo.

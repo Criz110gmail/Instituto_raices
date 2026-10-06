@@ -71,9 +71,9 @@ class PagoServiceImplTest {
         when(institucionRepository.findById(1L)).thenReturn(Optional.of(institucion));
         when(plantelRepository.findById(2L)).thenReturn(Optional.of(plantel));
         when(tutorRepository.findById(3L)).thenReturn(Optional.of(tutor));
-        when(cargoRepository.findById(10L)).thenReturn(Optional.of(cargoA));
-        when(cargoRepository.findById(11L)).thenReturn(Optional.of(cargoB));
-        when(cargoRepository.findById(12L)).thenReturn(Optional.of(cargoC));
+        when(cargoRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(cargoA));
+        when(cargoRepository.findByIdForUpdate(11L)).thenReturn(Optional.of(cargoB));
+        when(cargoRepository.findByIdForUpdate(12L)).thenReturn(Optional.of(cargoC));
         when(vinculoRepository.tieneResponsabilidadFinancieraVigente(any(), eq(3L), any())).thenReturn(true);
         lenient().when(cuentaRepository.findById(8L)).thenReturn(Optional.of(cuenta(8L, TipoCuentaFinanciera.CAJA)));
         lenient().when(cuentaRepository.findById(9L)).thenReturn(Optional.of(cuenta(9L, TipoCuentaFinanciera.BANCO)));

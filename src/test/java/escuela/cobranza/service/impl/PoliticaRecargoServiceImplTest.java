@@ -29,8 +29,9 @@ class PoliticaRecargoServiceImplTest {
     private final ConceptoCobroRepository conceptos = mock(ConceptoCobroRepository.class);
     private final CargoRepository cargos = mock(CargoRepository.class);
     private final AjusteCargoRepository ajustes = mock(AjusteCargoRepository.class);
+    private final escuela.cobranza.service.SeleccionGeneracionService selecciones=mock(escuela.cobranza.service.SeleccionGeneracionService.class);
     private final PoliticaRecargoServiceImpl service = new PoliticaRecargoServiceImpl(
-            politicas, conceptos, cargos, ajustes, new PoliticaRecargoMapper());
+            politicas, conceptos, cargos, ajustes, new PoliticaRecargoMapper(),selecciones);
 
     @Test
     void generaPorcentajeSobreBaseSinDescuentosYDespuesDeLaGracia() {
@@ -92,6 +93,27 @@ class PoliticaRecargoServiceImplTest {
                 new BigDecimal("40.00"), new BigDecimal("40.00"), new BigDecimal("20.00"));
         assertThat(fechas.getAllValues()).containsExactly(
                 LocalDate.of(2026, 1, 31), LocalDate.of(2026, 2, 28), LocalDate.of(2026, 3, 31));
+    }
+
+    @Test
+    void ejemploConBecaYTopeGeneraOchentaYSetentaNoOtrosOchenta() {
+        Cargo cargo = cargo(new BigDecimal("1000.00"), LocalDate.of(2026, 7, 20));
+        AjusteCargo beca = new AjusteCargo(); beca.setTipo(TipoAjusteCargo.BECA);
+        beca.setEfecto(EfectoAjusteCargo.DISMINUCION); beca.setMonto(new BigDecimal("200.00"));
+        cargo.getAjustes().add(beca);
+        PoliticaRecargo politica = politica(cargo, ModalidadBeca.PORCENTAJE,
+                PeriodicidadRecargo.MENSUAL, TipoLimiteRecargo.MONTO_FIJO);
+        politica.setPorcentaje(new BigDecimal("10")); politica.setDiasGracia(0);
+        politica.setValorLimite(new BigDecimal("150.00"));
+        preparar(cargo, politica, BigDecimal.ZERO);
+        when(ajustes.insertarRecargoSiAusente(anyLong(), any(), any(), any(), anyString(),
+                nullable(Long.class), any(), anyLong(), anyString())).thenReturn(1);
+        service.generar(new GeneracionRecargosRequest(1L, 2L, LocalDate.of(2026, 9, 21)));
+        ArgumentCaptor<BigDecimal> montos = ArgumentCaptor.forClass(BigDecimal.class);
+        verify(ajustes,times(2)).insertarRecargoSiAusente(eq(30L),montos.capture(),
+                eq(new BigDecimal("800.00")),eq(new BigDecimal("10")),anyString(),
+                nullable(Long.class),any(),eq(40L),anyString());
+        assertThat(montos.getAllValues()).containsExactly(new BigDecimal("80.00"),new BigDecimal("70.00"));
     }
 
     @Test
@@ -177,6 +199,22 @@ class PoliticaRecargoServiceImplTest {
                 anyString(), nullable(Long.class), any(), anyLong(), anyString());
     }
 
+    @Test void noAplicaRecargoAlCargoDesmarcado() {
+        var cargo=cargo(new BigDecimal("1000"),LocalDate.of(2026,9,20));
+        var p=politica(cargo,ModalidadBeca.PORCENTAJE,PeriodicidadRecargo.UNICA,TipoLimiteRecargo.SIN_LIMITE);p.setPorcentaje(new BigDecimal("10"));preparar(cargo,p,BigDecimal.ZERO);
+        var r=service.generar(new GeneracionRecargosRequest(1L,null,LocalDate.of(2026,10,6),null,java.util.Set.of("RECARGO:30"),null));
+        assertThat(r.recargosGenerados()).isZero();verify(ajustes,never()).insertarRecargoSiAusente(anyLong(),any(),any(),any(),anyString(),nullable(Long.class),any(),anyLong(),anyString());
+    }
+    @Test void incluyeSoloCargoRevisadoYConsumeLaVistaUnaVez() {
+        var cargo=cargo(new BigDecimal("1000"),LocalDate.of(2026,9,20));cargo.setVersion(0L);
+        var p=politica(cargo,ModalidadBeca.PORCENTAJE,PeriodicidadRecargo.UNICA,TipoLimiteRecargo.SIN_LIMITE);p.setPorcentaje(new BigDecimal("10"));preparar(cargo,p,BigDecimal.ZERO);
+        var token=java.util.UUID.randomUUID();var clave="RECARGO:30";
+        when(selecciones.items(eq(token),any())).thenReturn(java.util.Map.of(clave,new escuela.cobranza.service.SeleccionGeneracionService.Item(clave,0L,new BigDecimal("100"),cargo.getFechaVencimiento())));
+        when(selecciones.confirmar(any(),any(),any(),any(),any(),any(),any())).thenReturn(1L);
+        when(ajustes.insertarRecargoSiAusente(anyLong(),any(),any(),any(),anyString(),nullable(Long.class),any(),anyLong(),anyString())).thenReturn(1);
+        var r=service.generar(new GeneracionRecargosRequest(1L,null,LocalDate.of(2026,10,6),token,java.util.Set.of(),java.util.Set.of(clave)));
+        assertThat(r.recargosGenerados()).isEqualTo(1);verify(selecciones).comprobarCantidad(1L,1L);verify(selecciones).consumida(token);
+    }
     private void preparar(Cargo cargo, PoliticaRecargo politica, BigDecimal acumulado) {
         when(cargos.buscarParaRecargo(anyLong(), nullable(Long.class), any(), anyLong(), any()))
                 .thenReturn(new SliceImpl<>(List.of(cargo)));

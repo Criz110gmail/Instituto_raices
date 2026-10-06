@@ -1,0 +1,7 @@
+-- Sin operaciones financieras: actualiza la guía al nuevo vocabulario de captura.
+UPDATE guia_proceso_paso s SET instrucciones=
+'1. En Políticas de recargo pulsa Nuevo registro o edita la política de prueba existente. 2. Selecciona institución y COLEG-BECA-TEST. 3. Modalidad Porcentaje; Porcentaje 10; Días de gracia 0; Periodicidad Una sola vez. 4. En Tope de recargos elige Sin tope adicional: no debes capturar un máximo. 5. Revisa la simulación ilustrativa con original 1000 y becas/descuentos 200; una aplicación muestra recargo 80 y deuda 880. Esos dos valores de ejemplo no se guardan como cuotas ni ajustes. 6. Activa Política habilitada e Incluir al ejecutar “Generar recargos”. 7. Pulsa Crear política o Guardar cambios. Guardarla no agrega recargos; después debes visualizar y confirmar en el generador.',
+precaucion='Sin tope adicional significa sin máximo acumulado extra, no un cargo inmediato ni infinitos recargos en periodicidad única. Hasta un monto máximo limita en dinero; Hasta un porcentaje del cargo original calcula el tope antes de becas y ajustes. El tope es por cargo para los recargos automáticos de esa política, no se comparte entre alumnos ni incluye recargos manuales. Otros topes son variantes por verificar; no cambies una política operativa para probar.'
+FROM guia_proceso g WHERE s.guia_id=g.id AND g.slug='beca-recargo-liquidacion' AND s.numero=5;
+UPDATE guia_proceso SET version_contenido=2,revisada_el=DATE '2026-10-06'
+WHERE slug='beca-recargo-liquidacion';

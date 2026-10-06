@@ -14,4 +14,7 @@ public interface CargoService {
     CargoResponse generarCargoUnico(Long cuotaId);
     CargoResponse obtener(Long id);
     CargoResponse cancelar(Long id, Long version, String motivo);
+    Long reemplazoDe(Long id);
+    org.springframework.data.domain.Page<CuotaExcluida> diagnosticar(GeneracionCargosRequest request,int pagina);
+    record CuotaExcluida(Long cuotaId,String alumno,String concepto,String motivo,Long cargoId) { }
 }

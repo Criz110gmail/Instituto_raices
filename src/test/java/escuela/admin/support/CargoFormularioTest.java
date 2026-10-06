@@ -26,7 +26,7 @@ class CargoFormularioTest {
         assertThat(plantilla("admin/cargo-generar.html"))
                 .contains("Visualizar cuotas por aplicar")
                 .contains("th:action=\"@{/admin/cargos/generar/vista-previa}\"")
-                .contains("Confirmar y generar adeudos faltantes")
+                .contains("Confirmar y generar adeudos seleccionados")
                 .contains("Importe original", "Beca por aplicar", "Total por cobrar",
                         "fila.montoBeca", "fila.descripcionBeca", "fila.importeNeto",
                         "vistaPrevia.becaTotal", "vistaPrevia.importeNetoTotal",

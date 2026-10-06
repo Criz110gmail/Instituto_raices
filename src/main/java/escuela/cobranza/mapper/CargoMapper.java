@@ -80,7 +80,8 @@ public class CargoMapper {
                 cargo.getFechaVencimiento(), cargo.getImporteOriginal(),
                 cargo.getMoneda(), cargo.getEstadoRegistro(), cargo.getCanceladoEn(),
                 cargo.getMotivoCancelacion(), disminuciones, aumentos, total, pagado, saldo, situacion,
-                vencido, desde(cargo));
+                vencido, desde(cargo), cargo.getReemplazaCargo()==null?null:cargo.getReemplazaCargo().getId(),
+                cargo.getMotivoReemplazo());
     }
 
     private String nombre(String... partes) {

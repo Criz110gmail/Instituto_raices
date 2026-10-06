@@ -50,9 +50,10 @@ class CargoServiceImplTest {
     private final ConceptoCobroRepository conceptoRepository = mock(ConceptoCobroRepository.class);
     private final PeriodoAcademicoRepository periodoRepository = mock(PeriodoAcademicoRepository.class);
     private final AplicacionBecaCargoService aplicacionBecaService = mock(AplicacionBecaCargoService.class);
+    private final escuela.cobranza.service.SeleccionGeneracionService selecciones=mock(escuela.cobranza.service.SeleccionGeneracionService.class);
     private final CargoServiceImpl service = new CargoServiceImpl(repository, cuotaRepository,
             inscripcionRepository, conceptoRepository, periodoRepository, new CargoMapper(),
-            aplicacionBecaService);
+            aplicacionBecaService,selecciones);
 
     @BeforeEach
     void sinBecaPorDefecto() {
@@ -207,6 +208,37 @@ class CargoServiceImplTest {
         assertThat(cargo.getCanceladoEn()).isNotNull();
     }
 
+    @Test void diagnosticoExplicaCuotaUnicaGeneradaAunqueElCargoEsteCancelado() {
+        var q=cuotaMensual();q.setFrecuencia(FrecuenciaCuota.UNICA);q.setFechaVencimientoUnico(LocalDate.of(2026,1,31));
+        when(cuotaRepository.buscarParaDiagnostico(eq(1L),isNull(),eq(0L),any())).thenReturn(new SliceImpl<>(List.of(q)));
+        when(repository.clavesGeneradasPorCuota(90L)).thenReturn(List.of("AUTO:1:90:UNICA"));when(cuotaRepository.ultimoCargo(90L)).thenReturn(101L);
+        var pagina=service.diagnosticar(new GeneracionCargosRequest(1L,null,LocalDate.of(2026,2,1)),0);
+        assertThat(pagina.getTotalElements()).isEqualTo(1);
+        assertThat(pagina.getContent().getFirst().motivo()).contains("Cancelar su cargo no la regenera");
+        assertThat(pagina.getContent().getFirst().cargoId()).isEqualTo(101L);
+        verify(repository,org.mockito.Mockito.never()).insertarAutomaticoSiAusente(any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any());
+    }
+    @Test void seleccionIndividualGeneraSoloElMesMarcadoYNoNuevosPeriodosFueraDeLaVista() {
+        var cuota=cuotaMensual();cuota.setVersion(0L);var token=java.util.UUID.randomUUID();
+        var corte=LocalDate.of(2026,2,28);var clave="AUTO:1:90:2026-02";
+        when(cuotaRepository.buscarParaGeneracion(any(),any(),any(),any(),any())).thenReturn(new SliceImpl<>(List.of(cuota)));
+        when(repository.clavesGeneradasPorCuota(90L)).thenReturn(List.of());
+        when(selecciones.items(eq(token),any())).thenReturn(java.util.Map.of(clave,new escuela.cobranza.service.SeleccionGeneracionService.Item(clave,0L,new BigDecimal("3000"),corte)));
+        when(selecciones.confirmar(any(),any(),any(),any(),any(),any(),any())).thenReturn(1L);
+        var emitido=new Cargo();emitido.setImporteOriginal(new BigDecimal("3000"));emitido.setFechaVencimiento(corte);
+        when(repository.findByClaveGeneracion(clave)).thenReturn(Optional.of(emitido));
+        when(repository.insertarAutomaticoSiAusente(any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any())).thenReturn(1);
+        var resultado=service.generar(new GeneracionCargosRequest(1L,null,corte,token,java.util.Set.of(),java.util.Set.of(clave)));
+        assertThat(resultado.cargosGenerados()).isEqualTo(1);
+        verify(repository,times(1)).insertarAutomaticoSiAusente(any(),any(),any(),eq(clave),any(),any(),any(),any(),any(),any(),any(),any());
+        verify(selecciones).comprobarCantidad(1L,1L);verify(selecciones).consumida(token);
+    }
+    @Test void desmarcarUnMesLoOmiteSinCancelarLaCuota() {
+        var cuota=cuotaMensual();when(cuotaRepository.buscarParaGeneracion(any(),any(),any(),any(),any())).thenReturn(new SliceImpl<>(List.of(cuota)));
+        when(repository.insertarAutomaticoSiAusente(any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any())).thenReturn(1);
+        var r=service.generar(new GeneracionCargosRequest(1L,null,LocalDate.of(2026,2,28),null,java.util.Set.of("AUTO:1:90:2026-01"),null));
+        assertThat(r.cargosGenerados()).isEqualTo(1);assertThat(cuota.getEstado()).isEqualTo(EstadoCuota.ACTIVA);
+    }
     private CuotaAlumno cuotaMensual() {
         CuotaAlumno cuota = new CuotaAlumno();
         cuota.setId(90L);

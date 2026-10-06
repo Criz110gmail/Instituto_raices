@@ -24,7 +24,8 @@
             ? `Cuota de ${monto} cada mes, de ${mes(primerMes.value)} a ${mes(ultimoMes.value)}. Fecha límite: día ${dia.value || 'pendiente'} de cada mes.`
             : `Un solo cargo de ${monto}, con fecha límite de pago ${fecha(fechaUnica.value)}. No se repetirá en los siguientes meses.`;
         const ahora = form.querySelector('[name="generarCargoAhora"]')?.checked;
-        campo('cuota-resumen-generacion').textContent = ahora
+        campo('cuota-resumen-generacion').textContent = form.dataset.cuotaBloqueada === 'true'
+            ? 'Esta cuota ya fue generada. Guardar o cancelar el cargo no lo vuelve a generar. Abre el cargo para corregirlo.' : ahora
             ? 'Al guardar se creará el cargo único; todavía no se registra dinero recibido.'
             : automatica.checked
                 ? 'Quedará preparada para Adeudos de alumnos → Generar automáticos. El generador crea sólo cargos faltantes, sin duplicarlos.'
@@ -52,7 +53,7 @@
         primerMes.disabled = !esMensual; ultimoMes.disabled = !esMensual;
         primerMes.required = esMensual; ultimoMes.required = esMensual;
         // The monthly range is entered through months; exact boundaries remain visible as reference.
-        inicio.readOnly = esMensual; fin.readOnly = esMensual;
+        inicio.readOnly = esMensual || form.dataset.cuotaBloqueada === 'true'; fin.readOnly = inicio.readOnly;
         if (!primerMes.value && inicio.value) primerMes.value = inicio.value.slice(0, 7);
         if (!ultimoMes.value && fin.value) ultimoMes.value = fin.value.slice(0, 7);
         campo('ayuda-generacion').textContent = esMensual

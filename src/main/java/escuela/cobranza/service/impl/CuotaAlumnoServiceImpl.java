@@ -24,6 +24,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
+import java.util.Objects;
 
 import static escuela.common.service.ValidacionVersion.verificar;
 
@@ -55,6 +56,17 @@ public class CuotaAlumnoServiceImpl implements CuotaAlumnoService {
         CuotaAlumno entidad = repository.findByIdForUpdate(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("la cuota del alumno", id));
         verificar(entidad, request.version(), "Cuota del alumno");
+        if (repository.tieneCargos(id)) {
+            if (entidad.getFrecuencia() != request.frecuencia())
+                throw new ReglaNegocioException("Esta cuota ya generó cargos: no se puede cambiar su frecuencia.");
+            if (entidad.getFrecuencia() == FrecuenciaCuota.UNICA
+                    && (entidad.getImporteBase().compareTo(request.importeBase()) != 0
+                        || !entidad.getMoneda().equalsIgnoreCase(request.moneda())
+                        || !Objects.equals(entidad.getFechaInicio(), request.fechaInicio())
+                        || !Objects.equals(entidad.getFechaFin(), request.fechaFin())
+                        || !Objects.equals(entidad.getFechaVencimientoUnico(), request.fechaVencimientoUnico())))
+                throw new ReglaNegocioException("Esta cuota única ya generó un cargo. Sus fechas e importe están protegidos; abre el cargo y utiliza Corregir y reemplazar cargo.");
+        }
         if (!entidad.getInscripcion().getId().equals(request.inscripcionId())
                 || !entidad.getConceptoCobro().getId().equals(request.conceptoCobroId())) {
             throw new ReglaNegocioException("No se pueden cambiar la inscripción ni el concepto de una cuota");
@@ -73,6 +85,14 @@ public class CuotaAlumnoServiceImpl implements CuotaAlumnoService {
     public CuotaAlumnoResponse obtener(Long id) {
         return mapper.respuesta(repository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("la cuota del alumno", id)));
+    }
+
+    @Override @Transactional(readOnly = true)
+    public EstadoEmision estadoEmision(Long id) {
+        var cuota=repository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException("la cuota",id));
+        boolean generada=repository.tieneCargos(id);
+        return new EstadoEmision(generada, generada && cuota.getFrecuencia()==FrecuenciaCuota.UNICA,
+                generada ? repository.ultimoCargo(id) : null);
     }
 
     private void validar(CuotaAlumnoRequest request, Inscripcion inscripcion,

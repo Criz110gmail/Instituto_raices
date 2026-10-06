@@ -39,6 +39,13 @@ public class Cargo extends EntidadAuditable {
     @JoinColumn(name = "cuota_alumno_id")
     private CuotaAlumno cuotaAlumno;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reemplaza_cargo_id", unique = true)
+    private Cargo reemplazaCargo;
+
+    @Column(name = "motivo_reemplazo", length = 2000)
+    private String motivoReemplazo;
+
     @Column(name = "clave_generacion", nullable = false, length = 180, unique = true)
     private String claveGeneracion;
 

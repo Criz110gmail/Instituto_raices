@@ -19,6 +19,7 @@ import escuela.cobranza.repository.CargoRepository;
 import escuela.cobranza.repository.ConceptoCobroRepository;
 import escuela.cobranza.repository.CuotaAlumnoRepository;
 import escuela.cobranza.service.CargoService;
+import escuela.cobranza.service.SeleccionGeneracionService;
 import escuela.common.exception.RecursoNoEncontradoException;
 import escuela.common.exception.ReglaNegocioException;
 import escuela.inscripcion.entity.EstadoInscripcion;
@@ -70,6 +71,7 @@ public class CargoServiceImpl implements CargoService {
     private final PeriodoAcademicoRepository periodoRepository;
     private final CargoMapper mapper;
     private final AplicacionBecaCargoService aplicacionBecaService;
+    private final SeleccionGeneracionService selecciones;
 
     @Override
     public CargoResponse crearManual(CargoManualRequest request) {
@@ -94,6 +96,7 @@ public class CargoServiceImpl implements CargoService {
 
     @Override
     public GeneracionCargosResponse generar(GeneracionCargosRequest request) {
+        long esperados=request.seleccionId()==null?0:selecciones.confirmar(request.seleccionId(),"CARGOS",request.institucionId(),request.plantelId(),request.fechaCorte(),request.excluidos(),request.incluidos());
         int cuotasRevisadas = 0;
         int generados = 0;
         int existentes = 0;
@@ -105,20 +108,23 @@ public class CargoServiceImpl implements CargoService {
             if (bloque.isEmpty()) break;
             for (CuotaAlumno cuota : bloque.getContent()) {
                 cuotasRevisadas++;
-                ResultadoGeneracion resultado = generarCuota(cuota, request.fechaCorte());
+                ResultadoGeneracion resultado = generarCuota(cuota, request);
                 generados += resultado.generados();
                 existentes += resultado.existentes();
                 ultimoId = cuota.getId();
             }
             if (bloque.getNumberOfElements() < TAMANO_BLOQUE) break;
         }
+        if(request.seleccionId()!=null){selecciones.comprobarCantidad(esperados,(long)generados+existentes);selecciones.consumida(request.seleccionId());}
         return new GeneracionCargosResponse(cuotasRevisadas, generados, existentes);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public VistaPreviaCargosAutomaticosResponse previsualizar(GeneracionCargosRequest request,
                                                                int numeroPagina, int tamanioPagina) {
+        var seleccion=selecciones.preparar(request.seleccionId(),"CARGOS",request.institucionId(),request.plantelId(),request.fechaCorte());
+        var captura=new ArrayList<SeleccionGeneracionService.Item>();
         int pagina = Math.max(numeroPagina, 0);
         int tamanio = Math.min(Math.max(tamanioPagina, 10), 100);
         long desde = (long) pagina * tamanio;
@@ -138,9 +144,20 @@ public class CargoServiceImpl implements CargoService {
                 ultimoId = cuota.getId();
                 PlanCuota plan = planificar(cuota, request.fechaCorte());
                 if (plan.pendientes().isEmpty()) continue;
-                cuotasConPendientes++;
+                var permitidas=seleccion!=null && !seleccion.nueva()?selecciones.items(seleccion.id(),plan.pendientes().stream().map(p->clave(cuota,p.clavePeriodo())).toList()):java.util.Map.<String,SeleccionGeneracionService.Item>of();
+                boolean cuotaIncluida=false;
                 for (PeriodoCargo periodo : plan.pendientes()) {
                     var fila = fila(cuota, periodo);
+                    if(seleccion!=null) {
+                        if(seleccion.nueva()) {
+                            captura.add(new SeleccionGeneracionService.Item(fila.claveSeleccion(),cuota.getVersion(),fila.importeNeto(),fila.fechaVencimiento()));
+                            if(captura.size()==100){selecciones.guardar(seleccion.id(),captura);captura.clear();}
+                        } else {
+                            var esperado=permitidas.get(fila.claveSeleccion());if(esperado==null)continue;
+                            selecciones.comprobar(esperado,cuota.getVersion(),fila.importeNeto(),fila.fechaVencimiento());
+                        }
+                    }
+                    cuotaIncluida=true;
                     if (pagosPorGenerar >= desde && contenido.size() < tamanio)
                         contenido.add(fila);
                     pagosPorGenerar++;
@@ -148,14 +165,17 @@ public class CargoServiceImpl implements CargoService {
                     becaTotal = becaTotal.add(fila.montoBeca());
                     importeNetoTotal = importeNetoTotal.add(fila.importeNeto());
                 }
+                if(cuotaIncluida)cuotasConPendientes++;
             }
             if (bloque.getNumberOfElements() < TAMANO_BLOQUE) break;
         }
+        if(seleccion!=null && seleccion.nueva()){selecciones.guardar(seleccion.id(),captura);selecciones.completar(seleccion.id());}
+        else if(seleccion!=null)selecciones.comprobarCantidad(selecciones.cantidad(seleccion.id()),pagosPorGenerar);
         return new VistaPreviaCargosAutomaticosResponse(
                 new PageImpl<>(contenido, PageRequest.of(pagina, tamanio), pagosPorGenerar),
                 cuotasConPendientes, pagosPorGenerar,
                 importeTotal.setScale(2, RoundingMode.HALF_UP), becaTotal,
-                importeNetoTotal);
+                importeNetoTotal,seleccion==null?null:seleccion.id());
     }
 
     @Override
@@ -171,8 +191,13 @@ public class CargoServiceImpl implements CargoService {
         }
         insertar(cuota, cuota.getFechaInicio(), cuota.getFechaFin(),
                 cuota.getFechaVencimientoUnico(), "UNICA", cuota.getConceptoCobro().getNombre());
-        return mapper.respuesta(repository.findByClaveGeneracion(clave(cuota, "UNICA"))
-                .orElseThrow(() -> new ReglaNegocioException("No fue posible localizar el cargo generado")));
+        var cargo=repository.findByClaveGeneracion(clave(cuota, "UNICA"))
+                .orElseThrow(() -> new ReglaNegocioException("No fue posible localizar el cargo generado"));
+        var siguiente=repository.findByReemplazaCargoId(cargo.getId());
+        while(siguiente.isPresent()) {cargo=siguiente.get();siguiente=repository.findByReemplazaCargoId(cargo.getId());}
+        if(cargo.getEstadoRegistro()!=EstadoRegistroCargo.EMITIDO)
+            throw new ReglaNegocioException("Esta cuota ya generó un cargo cancelado o convenido. Abre su detalle; no se regenera automáticamente.");
+        return mapper.respuesta(cargo);
     }
 
     @Override
@@ -180,6 +205,41 @@ public class CargoServiceImpl implements CargoService {
     public CargoResponse obtener(Long id) {
         return mapper.respuesta(repository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("el cargo", id)));
+    }
+
+    @Override @Transactional(readOnly=true)
+    public Long reemplazoDe(Long id) {return repository.findByReemplazaCargoId(id).map(Cargo::getId).orElse(null);}
+
+    @Override @Transactional(readOnly=true)
+    public org.springframework.data.domain.Page<CuotaExcluida> diagnosticar(GeneracionCargosRequest request,int pagina) {
+        int numero=Math.max(pagina,0), tamanio=25; long desde=(long)numero*tamanio, total=0, ultimo=0;
+        List<CuotaExcluida> filas=new ArrayList<>();
+        while(true) {
+            var bloque=cuotaRepository.buscarParaDiagnostico(request.institucionId(),request.plantelId(),ultimo,PageRequest.of(0,TAMANO_BLOQUE));
+            if(bloque.isEmpty()) break;
+            for(var q:bloque) {
+                ultimo=q.getId(); String motivo=null;
+                if(q.getEstado()!=EstadoCuota.ACTIVA) motivo="Cuota "+q.getEstado().name().toLowerCase();
+                else if(!q.isGeneracionAutomatica()) motivo="Generación automática deshabilitada";
+                else if(!q.getConceptoCobro().isActivo()) motivo="Concepto inactivo";
+                else if(!INSCRIPCIONES_VIGENTES.contains(q.getInscripcion().getEstado())) motivo="Inscripción no vigente";
+                else if(q.getFechaInicio().isAfter(request.fechaCorte())) motivo="La cuota inicia después del corte";
+                else if(planificar(q,request.fechaCorte()).pendientes().isEmpty())
+                    motivo=q.getFrecuencia()==FrecuenciaCuota.UNICA
+                        ? "Cuota única ya generada. Cancelar su cargo no la regenera; abre el cargo para corregir y reemplazar."
+                        : "Todos los periodos de este corte ya fueron generados, incluidos los cancelados. Corregir la cuota no modifica esos cargos.";
+                if(motivo!=null) {
+                    if(total>=desde && filas.size()<tamanio) {
+                        var a=q.getInscripcion().getAlumno();
+                        filas.add(new CuotaExcluida(q.getId(),a.getMatricula()+" · "+Stream.of(a.getNombres(),a.getPrimerApellido(),a.getSegundoApellido()).filter(v->v!=null).collect(Collectors.joining(" ")),
+                            q.getConceptoCobro().getNombre(),motivo,cuotaRepository.ultimoCargo(q.getId())));
+                    }
+                    total++;
+                }
+            }
+            if(bloque.getNumberOfElements()<TAMANO_BLOQUE) break;
+        }
+        return new PageImpl<>(filas,PageRequest.of(numero,tamanio),total);
     }
 
     @Override
@@ -205,13 +265,21 @@ public class CargoServiceImpl implements CargoService {
         return mapper.respuesta(repository.saveAndFlush(cargo));
     }
 
-    private ResultadoGeneracion generarCuota(CuotaAlumno cuota, LocalDate fechaCorte) {
-        PlanCuota plan = planificar(cuota, fechaCorte);
+    private ResultadoGeneracion generarCuota(CuotaAlumno cuota, GeneracionCargosRequest request) {
+        PlanCuota plan = planificar(cuota, request.fechaCorte());
+        var permitidas=request.seleccionId()==null?java.util.Map.<String,SeleccionGeneracionService.Item>of():selecciones.items(request.seleccionId(),plan.pendientes().stream().map(p->clave(cuota,p.clavePeriodo())).toList());
         int generados = 0;
-        int existentes = plan.existentes();
+        int existentes = request.seleccionId()==null?plan.existentes():0;
         for (PeriodoCargo periodo : plan.pendientes()) {
+            String clave=clave(cuota,periodo.clavePeriodo());
+            if(!SeleccionGeneracionService.solicitada(clave,request.excluidos(),request.incluidos()))continue;
+            if(request.seleccionId()!=null){var esperado=permitidas.get(clave);if(esperado==null)continue;var vista=fila(cuota,periodo);selecciones.comprobar(esperado,cuota.getVersion(),vista.importeNeto(),vista.fechaVencimiento());}
             ResultadoGeneracion resultado = insertar(cuota, periodo.inicio(), periodo.fin(),
                     periodo.vencimiento(), periodo.clavePeriodo(), periodo.descripcion());
+            if(request.seleccionId()!=null && resultado.generados()>0) {
+                var emitido=repository.findByClaveGeneracion(clave).orElseThrow(()->new ReglaNegocioException("No se pudo comprobar el cargo emitido; vuelve a visualizar."));
+                selecciones.comprobar(permitidas.get(clave),cuota.getVersion(),escuela.cobranza.support.CalculoCargo.total(emitido),emitido.getFechaVencimiento());
+            }
             generados += resultado.generados();
             existentes += resultado.existentes();
         }
@@ -261,7 +329,7 @@ public class CargoServiceImpl implements CargoService {
                 cuota.getInscripcion().getPlantel().getNombre(), cuota.getConceptoCobro().getNombre(),
                 frecuencia, periodo.descripcion(), periodo.vencimiento(),
                 importe, cuota.getMoneda(), beca.monto(), beca.descripcion(),
-                importe.subtract(beca.monto()));
+                importe.subtract(beca.monto()), clave(cuota,periodo.clavePeriodo()));
     }
 
     private ResultadoGeneracion insertar(CuotaAlumno cuota, LocalDate inicio, LocalDate fin,

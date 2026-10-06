@@ -6,6 +6,7 @@ import escuela.cobranza.entity.*;
 import escuela.cobranza.mapper.PoliticaRecargoMapper;
 import escuela.cobranza.repository.*;
 import escuela.cobranza.service.PoliticaRecargoService;
+import escuela.cobranza.service.SeleccionGeneracionService;
 import escuela.common.exception.*;
 import escuela.seguridad.service.UsuarioPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class PoliticaRecargoServiceImpl implements PoliticaRecargoService {
     private final CargoRepository cargoRepository;
     private final AjusteCargoRepository ajusteRepository;
     private final PoliticaRecargoMapper mapper;
+    private final SeleccionGeneracionService selecciones;
 
     public PoliticaRecargoResponse crear(PoliticaRecargoRequest request) {
         ConceptoCobro concepto = conceptoRepository.findById(request.conceptoCobroId())
@@ -69,9 +71,11 @@ public class PoliticaRecargoServiceImpl implements PoliticaRecargoService {
         politica.setGeneracionAutomatica(false);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public VistaPreviaRecargosResponse previsualizar(GeneracionRecargosRequest request,
                                                       int numeroPagina, int tamanioPagina) {
+        var seleccion=selecciones.preparar(request.seleccionId(),"RECARGOS",request.institucionId(),request.plantelId(),request.fechaCorte());
+        var captura=new ArrayList<SeleccionGeneracionService.Item>();
         int pagina = Math.max(numeroPagina, 0);
         int tamanio = Math.min(Math.max(tamanioPagina, 10), 100);
         long desde = (long) pagina * tamanio;
@@ -86,6 +90,7 @@ public class PoliticaRecargoServiceImpl implements PoliticaRecargoService {
             var bloque = cargoRepository.buscarParaRecargo(request.institucionId(),
                     request.plantelId(), request.fechaCorte(), ultimoId, PageRequest.of(0, BLOQUE));
             if (bloque.isEmpty()) break;
+            var permitidas=seleccion!=null && !seleccion.nueva()?selecciones.items(seleccion.id(),bloque.getContent().stream().map(c->"RECARGO:"+c.getId()).toList()):Map.<String,SeleccionGeneracionService.Item>of();
             for (Cargo cargo : bloque) {
                 ultimoId = cargo.getId();
                 PlanRecargo plan = planificar(cargo, request.fechaCorte());
@@ -93,6 +98,11 @@ public class PoliticaRecargoServiceImpl implements PoliticaRecargoService {
                 BigDecimal recargoCargo = plan.periodos().stream().map(PeriodoRecargo::monto)
                         .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
                 BigDecimal saldoCargo = saldo(cargo);
+                if(seleccion!=null) {
+                    String clave="RECARGO:"+cargo.getId();
+                    if(seleccion.nueva()) {captura.add(new SeleccionGeneracionService.Item(clave,cargo.getVersion(),recargoCargo,cargo.getFechaVencimiento()));if(captura.size()==100){selecciones.guardar(seleccion.id(),captura);captura.clear();}}
+                    else {var esperado=permitidas.get(clave);if(esperado==null)continue;selecciones.comprobar(esperado,cargo.getVersion(),recargoCargo,cargo.getFechaVencimiento());}
+                }
                 if (aplicables >= desde && contenido.size() < tamanio)
                     contenido.add(fila(cargo, plan, saldoCargo, recargoCargo, request.fechaCorte()));
                 aplicables++;
@@ -105,21 +115,27 @@ public class PoliticaRecargoServiceImpl implements PoliticaRecargoService {
 
         BigDecimal saldoNormalizado = saldoActual.setScale(2, RoundingMode.HALF_UP);
         BigDecimal recargosNormalizados = totalRecargos.setScale(2, RoundingMode.HALF_UP);
+        if(seleccion!=null && seleccion.nueva()){selecciones.guardar(seleccion.id(),captura);selecciones.completar(seleccion.id());}
+        else if(seleccion!=null)selecciones.comprobarCantidad(selecciones.cantidad(seleccion.id()),aplicables);
         return new VistaPreviaRecargosResponse(
                 new PageImpl<>(contenido, PageRequest.of(pagina, tamanio), aplicables),
                 aplicables, recargos, saldoNormalizado, recargosNormalizados,
-                saldoNormalizado.add(recargosNormalizados).setScale(2, RoundingMode.HALF_UP));
+                saldoNormalizado.add(recargosNormalizados).setScale(2, RoundingMode.HALF_UP),seleccion==null?null:seleccion.id());
     }
 
     public GeneracionRecargosResponse generar(GeneracionRecargosRequest request) {
+        long esperados=request.seleccionId()==null?0:selecciones.confirmar(request.seleccionId(),"RECARGOS",request.institucionId(),request.plantelId(),request.fechaCorte(),request.excluidos(),request.incluidos());
         int revisados = 0, generados = 0, existentes = 0, sinImporte = 0;
         long ultimoId = 0;
         while (true) {
             var bloque = cargoRepository.buscarParaRecargo(request.institucionId(),
                     request.plantelId(), request.fechaCorte(), ultimoId, PageRequest.of(0, BLOQUE));
             if (bloque.isEmpty()) break;
+            var permitidas=request.seleccionId()==null?Map.<String,SeleccionGeneracionService.Item>of():selecciones.items(request.seleccionId(),bloque.getContent().stream().map(c->"RECARGO:"+c.getId()).toList());
             for (Cargo cargo : bloque) {
                 ultimoId = cargo.getId();
+                String clave="RECARGO:"+cargo.getId();if(!SeleccionGeneracionService.solicitada(clave,request.excluidos(),request.incluidos()))continue;
+                if(request.seleccionId()!=null){var esperado=permitidas.get(clave);if(esperado==null)continue;var plan=planificar(cargo,request.fechaCorte());if(plan.periodos().isEmpty())continue;var monto=plan.periodos().stream().map(PeriodoRecargo::monto).reduce(BigDecimal.ZERO,BigDecimal::add);selecciones.comprobar(esperado,cargo.getVersion(),monto,cargo.getFechaVencimiento());}
                 revisados++;
                 Resultado resultado = generarCargo(cargo, request.fechaCorte());
                 generados += resultado.generados();
@@ -128,6 +144,7 @@ public class PoliticaRecargoServiceImpl implements PoliticaRecargoService {
             }
             if (bloque.getNumberOfElements() < BLOQUE) break;
         }
+        if(request.seleccionId()!=null){selecciones.comprobarCantidad(esperados,revisados);selecciones.consumida(request.seleccionId());}
         return new GeneracionRecargosResponse(revisados, generados, existentes, sinImporte);
     }
 

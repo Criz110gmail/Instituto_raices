@@ -1,3 +1,26 @@
+.recargo-example.form-section { border: 1px solid #c3b5ea; border-left: 4px solid #8060b4; background: #f5f1fc; }
+.generation-selection-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); margin: 16px 0; }
+.generation-selection-bar p { flex: 1 1 340px; margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.5; }
+.generation-selection-bar strong { flex: 1 1 100%; color: var(--ink); }
+.generation-selection-bar label,.generation-row-choice { display: inline-flex; align-items: center; gap: 10px; font-size: .8rem; font-weight: 750; color: var(--ink); }
+.generation-selection-bar input,.generation-row-choice input { width: 20px; height: 20px; accent-color: var(--blue); cursor: pointer; }
+.generation-selection-bar button { min-height: 44px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; font-weight: 750; cursor: pointer; }
+.generation-omitted td { opacity: .6; }
+.generation-omitted td:first-child { opacity: 1; }
+.generation-confirm-button:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+.entity-form .detail-close-button,.surcharge-preview-card .detail-close-button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 16px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); color: var(--ink); font-weight: 800; text-decoration: none; }
+.entity-form fieldset:disabled { opacity: .85; }
+.recargo-example legend { color: #62428d; }
+.recargo-example-badge { display: inline-block; padding: 6px 10px; border-radius: 8px; background: #e6dcf6; color: #604187; font-size: .68rem; font-weight: 800; letter-spacing: .05em; }
+.recargo-example .form-notice { border-color: #d5c7ee; background: #eee7f8; }
+.recargo-example .table-wrap { overflow-x: auto; border: 1px solid #d5c7ee; border-radius: 12px; background: var(--surface); }
+.recargo-example-actions button { min-height: 44px; padding: 10px 16px; border: 1px solid #8060b4; border-radius: 10px; background: #6c4b98; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.recargo-example-actions button:hover { background: #593c80; }
+[data-theme=dark] .recargo-example.form-section { border-color: #665184; background: #231e34; }
+[data-theme=dark] .recargo-example legend { color: #d6baf9; }
+[data-theme=dark] .recargo-example-badge { background: #403050; color: #e3cbff; }
+[data-theme=dark] .recargo-example .form-notice { border-color: #665184; background: #302640; }
+[data-theme=dark] .recargo-example .table-wrap { border-color: #665184; }
 .form-grid select {
     width: 100%;
     min-height: 44px;

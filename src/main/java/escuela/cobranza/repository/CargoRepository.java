@@ -24,6 +24,11 @@ public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecific
 
     Optional<Cargo> findByClaveGeneracion(String claveGeneracion);
 
+    Optional<Cargo> findByReemplazaCargoId(Long cargoId);
+
+    @Query("select count(s)>0 from SolicitudAplicacionPago s where s.cargo.id=:id and s.pago.estado='PENDIENTE_VALIDACION'")
+    boolean tienePagoEnRevision(@Param("id") Long id);
+
     @Query("select c.claveGeneracion from Cargo c where c.cuotaAlumno.id=:cuotaId")
     List<String> clavesGeneradasPorCuota(@Param("cuotaId") Long cuotaId);
 

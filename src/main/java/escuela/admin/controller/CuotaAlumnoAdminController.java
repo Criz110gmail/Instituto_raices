@@ -152,6 +152,10 @@ public class CuotaAlumnoAdminController {
                     .map(InstitucionResponse::monedaPredeterminada).ifPresent(form::setMoneda);
         }
         model.addAttribute("form", form);
+        var emision=id==null?null:service.estadoEmision(id);
+        model.addAttribute("cuotaGenerada",emision!=null && emision.generada());
+        model.addAttribute("cuotaBloqueada",emision!=null && emision.bloqueada());
+        model.addAttribute("cargoGeneradoId",emision==null?null:emision.cargoId());
         model.addAttribute("id", id);
         model.addAttribute("edicion", id != null);
         model.addAttribute("instituciones", instituciones);

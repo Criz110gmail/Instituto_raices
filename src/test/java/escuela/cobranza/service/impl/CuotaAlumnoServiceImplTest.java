@@ -144,6 +144,24 @@ class CuotaAlumnoServiceImplTest {
                 .hasMessageContaining("reactivarse");
     }
 
+    @Test void protegeLaCuotaUnicaInclusoSiElCargoFueCancelado() {
+        var request=new CuotaAlumnoRequest(10L,20L,new BigDecimal("1000.00"),"MXN",FrecuenciaCuota.UNICA,
+                LocalDate.of(2026,10,1),LocalDate.of(2027,6,15),null,LocalDate.of(2026,10,5),true,null,EstadoCuota.ACTIVA,1L);
+        var q=new CuotaAlumnoMapper().nueva(request,inscripcion(1L),concepto(1L));q.setId(30L);q.setVersion(1L);
+        q.setFechaVencimientoUnico(LocalDate.of(2026,10,10));
+        when(repository.findByIdForUpdate(30L)).thenReturn(Optional.of(q));when(repository.tieneCargos(30L)).thenReturn(true);
+        assertThatThrownBy(()->service.actualizar(30L,request)).hasMessageContaining("fechas e importe están protegidos");
+        org.mockito.Mockito.verify(repository,org.mockito.Mockito.never()).saveAndFlush(any());
+    }
+    @Test void laCuotaMensualGeneradaPermiteConfigurarEmisionesFuturasSinCambiarLaFrecuencia() {
+        prepararRelaciones(1L,1L);var inicial=mensual(EstadoCuota.ACTIVA,true);
+        var r=new CuotaAlumnoRequest(inicial.inscripcionId(),inicial.conceptoCobroId(),inicial.importeBase(),inicial.moneda(),
+                inicial.frecuencia(),inicial.fechaInicio(),inicial.fechaFin(),inicial.diaVencimiento(),null,true,null,EstadoCuota.ACTIVA,1L);
+        var q=new CuotaAlumnoMapper().nueva(r,inscripcion(1L),concepto(1L));q.setId(30L);q.setVersion(1L);
+        when(repository.findByIdForUpdate(30L)).thenReturn(Optional.of(q));when(repository.tieneCargos(30L)).thenReturn(true);
+        service.actualizar(30L,r);
+        org.mockito.Mockito.verify(repository).saveAndFlush(q);
+    }
     private void prepararRelaciones(Long institucionInscripcion, Long institucionConcepto) {
         when(inscripcionRepository.findByIdForUpdate(10L))
                 .thenReturn(Optional.of(inscripcion(institucionInscripcion)));

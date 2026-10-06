@@ -1,5 +1,147 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V60 — selección explícita de adeudos y recargos — 2026-10-06
+
+- Vistas previas de Generar automáticos y Generar recargos incluyen casillas inicialmente
+  marcadas, Seleccionar/Desmarcar todos y selección de página. En adeudos la clave pertenece
+  a cuota + periodo, no a toda la cuota; en recargos pertenece al cargo con sus periodos de mora.
+- Resumen vivo global de registros/importe seleccionados arriba y antes de confirmar.
+  Tarjetas originales mantienen totales de toda la vista, con aclaración. Desmarcar sólo omite
+  esa ejecución; no cancela cuotas, adeudos ni políticas, y vuelven a ofrecerse en nueva vista.
+  Confirmación deshabilitada con selección vacía o sin script/almacenamiento de sesión.
+- Metadatos privados V60: generacion_seleccion + items (claves, versiones, importe y fecha;
+  no nombres ni expedientes). Captura en lotes de100, lista paginada y estado cliente en
+  sessionStorage por UUID; no se envía toda la lista al navegador. Selección vinculada al
+  usuario persistido, institución, plantel, corte y tipo; caduca2h y se consume una vez.
+- Backend valida pertenencia, versión, importe, vencimiento y cantidad seleccionada; no
+  incorpora registros añadidos después de visualizar. Cambio detectado exige nueva vista
+  y revierte la transacción completa. El importe real del cargo emitido se verifica después
+  de aplicar beca. Máximo5000 cambios explícitos por solicitud; modo Todos menos excluidos
+  o modo Sólo incluidos permite seleccionar un registro aun con muchas páginas.
+- V60 actualiza instrucciones/precauciones de guías existentes; siguiente V61. Selección
+  funcional nueva pendiente de confirmar por el propietario. No se generaron cargos,
+  recargos ni pagos de prueba por herramientas. Mantener permisos/CSRF/diseño común.
+- Continuación pendiente: Políticas → Generar recargos → corte06/10/2026 → Visualizar →
+  Desmarcar todos → marcar solamente cargo19 de PRUEBA-TOPE → resumen1 registro/$50 →
+  Confirmar y generar recargos seleccionados → cargo19 debe quedar1000−200+50=850.
+  Probar automáticamente dos filas: desmarcar una, confirmar otra y comprobar que la omitida
+  sigue disponible al volver a visualizar. No confundir repetición con cuota cancelada.
+- Pendiente antes de producción: acordar retención/depuración de metadatos de vistas caducadas;
+  su expiración impide usarlos, pero esta entrega no borra esos metadatos ni registros financieros.
+- Verificación y despliegue: 536 pruebas Java aprobadas y Node verifica selección global,
+  exclusiones entre páginas, sólo un registro, montos, vacío y fallos de almacenamiento.
+  Render de filas marcado por defecto y guardas de token/usuario/corte/importe/version.
+  V60 aplicada, imagen `app` actualizada y salud `UP`. SQL confirma cargo19 sin recargo
+  (original1000/beca200); no se prepararon vistas reales ni se generaron cargos por herramientas.
+
+## Diagnóstico de cuotas cerrado por defecto — 2026-10-06
+
+- El propietario confirmó que la vista principal no tenía cuotas pendientes y confundió
+  la lista diagnóstica con cargos por generar. Cuotas no incluidas se oculta en un bloque
+  desplegable común: Consultar cuotas no incluidas · sólo información, no se generarán cargos.
+  Cerrado al visualizar inicialmente; conserva apertura al paginar explícitamente dentro
+  del diagnóstico. Mantiene paginación, alcance y Excel; no cambia generación ni datos.
+- Cargo #18 permanece cancelado. La prueba continúa desde su corrección con reemplazo,
+  no desde generación automática. Sin migración, V60 sigue disponible.
+- Verificado: 523 pruebas Java aprobadas, incluida apertura/cierre del diagnóstico renderizado.
+  Imagen desplegada sólo en `app`, salud `UP`. No se cambiaron cuotas, cargos ni pagos.
+
+## V59 — corrección controlada de vencimientos — 2026-10-06
+
+- Cuota única con cualquier cargo generado (también cancelado) protege importe, moneda,
+  frecuencia y fechas en interfaz y servicio. Mensuales permiten cambiar futuras emisiones;
+  frecuencia protegida y aviso explícito de que los cargos emitidos no cambian.
+- Generar automáticos añade Cuotas no incluidas y motivo: activación, concepto, inscripción,
+  inicio posterior al corte o periodos ya generados. Consulta institucional/plantel por bloques
+  de 100, página de 25 y Excel POI con el mismo alcance/corte; no extrae todo en memoria.
+- Adeudos → detalle → Corregir y reemplazar cargo (`/admin/cargos/{id}/corregir`) corrige sólo
+  el vencimiento de un cargo proveniente de cuota, con confirmación, motivo obligatorio,
+  administrador persistido y permiso CARGO_ADMINISTRAR. Valida alcance y versión; bloquea
+  pagos históricos, pagos en revisión, convenios, ajustes distintos de beca y reemplazo previo.
+- V59 enlaza nuevo cargo con anterior mediante FK única reemplaza_cargo_id y motivo_reemplazo.
+  Original cancelado permanece intacto; si estaba emitido se cancela en la misma transacción.
+  Conserva alumno, concepto, importe, moneda, periodo y fecha de registro original. Recalcula
+  beca vigente; no traslada ajustes manuales ni recargos. No modifica la cuota ni cuenta alguna.
+  Actor/instante de creación identifica la corrección. Enlaces anterior/siguiente en detalle.
+- Registro de pagos bloquea el cargo al comprobar solicitudes para serializar con reemplazos.
+  La clave automática original permanece reservada: cancelar no regenera. La generación única
+  inmediata localiza el último reemplazo y rechaza un último cargo cancelado/convenido.
+- V59 actualiza precauciones y versiones de las guías existentes, sin declarar confirmado el
+  nuevo caso. Próxima migración V60. No se reemplazó el cargo del propietario por herramientas.
+- Prueba pendiente del propietario: cargo #18 cancelado (10/10/2026), cuota #13 corregida
+  (05/10/2026). Abrir el cargo, corregir con vencimiento 05/10, motivo de captura incorrecta,
+  confirmar. Nuevo cargo debe tener original1000, beca200 y saldo800; recargo corte06/10 debe
+  proponer50, saldo850. Confirmar sólo el alcance revisado. Original conserva10/10 y cancelación.
+- Verificación y despliegue: 522 pruebas Java y pruebas Node de cuota protegida/recargos
+  aprobadas; formulario Thymeleaf renderizado con validación de confirmación. Sólo `app`
+  recreado, V59 aplicada con éxito y salud `UP`. Cargo18 sigue cancelado, original1000/beca200,
+  sin reemplazo creado por herramientas. Revisión visual autenticada pendiente del propietario.
+
+## Corrección del ejemplo de recargos — 2026-10-06
+
+- El propietario reportó la tabla ilustrativa vacía incluso al configurar el recargo.
+  No se atribuye una causa de navegador confirmada: no fue posible inspeccionar su sesión.
+  Se versionan script/estilos para evitar recursos anteriores, se refuerza inicio antes o
+  después de DOMContentLoaded y lectura de campos por id o nombre. Actualiza con input,
+  change y botón Actualizar ejemplo (type button; nunca guarda ni genera movimientos).
+- La tabla ya no queda sin explicación: informa el porcentaje o tope faltante o los valores
+  inválidos. Se conserva el ejemplo 1000−200, 10% mensual, tope150 → 80/70/0, deuda950.
+  Se distingue la simulación con acento violeta, aviso NO MODIFICA DATOS, temas claro/oscuro
+  y tabla móvil común. Prueba de renderizado real verifica los campos de Thymeleaf.
+- Sin migración ni cambio de reglas financieras. Próxima migración V59. Pendiente confirmar
+  visualmente en la sesión del propietario; no se registraron recargos ni pagos de prueba.
+- Verificación: 506 pruebas Java sin fallos, prueba Node aprobada, imagen final desplegada
+  sólo en `app` y salud `UP`. No requiere reconstrucción adicional para revisar el ejemplo.
+
+## Claridad del tope de recargos — 2026-10-06
+
+- Políticas de recargo separa Tope de recargos, Ejemplo calculado y Política habilitada.
+  Opciones: Sin tope adicional, Hasta un monto máximo y Hasta un porcentaje del cargo
+  original. Etiquetas dinámicas y ayudas distinguen acumulado por cargo, base con becas
+  y porcentaje del tope sobre original. No incluye ajustes manuales ni comparte tope familiar.
+- Ejemplo ilustrativo no persistido y sin consultas de alumnos: original 1000 y descuentos
+  200, modalidad 10%, mensual y tope 150 muestran 80/70/0 y deuda 950. Un recargo único
+  también se limita: tope 50 permite sólo 50 sobre base 800, deuda 850. No cambia reglas.
+- Se preservan valores y validaciones de políticas existentes. Guardar no genera recargos;
+  es obligatorio abrir Políticas → Generar recargos, visualizar y confirmar explícitamente.
+- V58 actualiza el paso 5 de la guía de beca/recargo y su versión a 2. No reescribe V57,
+  no crea ajustes y no registra pruebas. Próxima migración V59.
+- Verificación: 505 pruebas Java sin fallos y simulación Node aprobada. Imagen reconstruida
+  y desplegada en `app`, V58 aplicada y salud `UP`. No se generaron movimientos de prueba.
+  La revisión visual autenticada y el caso funcional quedan a cargo del propietario.
+- La prueba funcional de topes aún no está confirmada por el propietario. Prueba inmediata
+  segura: cuota 1000, beca 200, recargo 10% único y tope de 50, fecha límite pasada válida
+  dentro de inscripción/ciclo; vista previa espera 50 y saldo 850. Mensual con tope150
+  espera 80/70/0 en los tres meses de mora; para generar todos hoy requiere fechas pasadas
+  válidas que cubran esos meses, o esperar su transcurso. No confirmar cortes futuros en
+  datos operativos. La simulación de pantalla permite probarlo sin esperar ni guardar.
+
+## V57 — guías de becas/recargos y pagos parciales — 2026-10-06
+
+- Se incorporan dos casos confirmados por el propietario a Guía de procesos, manteniendo
+  la guía de dos hijos. Beca/recargo: original $1,000, beca 20% ($200), exigible $800,
+  recargo único 10% sobre $800 ($80), pago $880 y saldo cero. Parciales: cargo $1,000,
+  pagos independientes $300/$500/$200, saldos $700/$200/$0.
+- Ocho etapas para beca/recargo y siete para parciales, con requisitos, fechas válidas,
+  ejemplo, resultados, precauciones y enlaces exactos. Recargos se abre en Políticas de
+  recargo. Para abonos se usa Pagos recibidos → Nuevo registro; el flujo rápido tiene
+  protegida su fila inicial. La transferencia familiar liquida el saldo completo restante;
+  cargos vencidos no se ofrecen en su selector, por lo que se pagan desde administración.
+- V57 modifica sólo tablas editoriales de guías y sus requisitos de permisos. No crea
+  alumnos, cuotas, cargos, pagos, movimientos ni permisos de rol. No altera V56 aplicada.
+  La búsqueda, paginación, detalle y Excel existentes incorporan el contenido nuevo.
+- Mantener visibles sólo guías compatibles con permisos del usuario. El caso de beca
+  requiere además Tipos de beca, Becas, Políticas de recargo e Historial de ajustes.
+  Fechas de ejemplo se adaptan al ciclo; no forzar el reloj ni hacer operaciones reales
+  para leer una guía. Tasas/topes alternativos no se declaran probados por este caso.
+- El propietario aprobó la claridad de los pasos de la primera guía V56; no confundir
+  esa aprobación con una revisión visual exhaustiva en todos los dispositivos/temas.
+- Próxima migración V58. Revisar las dos nuevas guías y continuar documentando casos
+  confirmados; conservar pendientes de capturas y guías específicas de portales.
+- Despliegue confirmado: 502 pruebas, V57 exitosa, tres guías con 23 pasos y salud `UP`.
+  Se verificó en SQL la exclusión de la guía de becas al faltar ese permiso. El propietario
+  puede recargar Guía de procesos; no requiere reconstruir otra vez para consultar.
+
 ## V56 — Guía de procesos y casos prácticos — 2026-10-06
 
 - Primera entrega administrativa en Seguridad y soporte → Guía de procesos (`/admin/guias`).
@@ -1125,11 +1267,11 @@ tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
 
 ## Siguiente paso acordado
 
-Prioridad actual: probar Guía de procesos V56 desde administración, tras asignar su permiso
-y reiniciar sesión; recorrer el caso de dos hijos ya confirmado, revisar búsqueda/Excel,
+Prioridad actual: revisar las guías V57 de beca/recargo y abonos desde administración;
+la claridad de la guía V56 de dos hijos fue aprobada por el propietario. Revisar búsqueda/Excel,
 legibilidad móvil y tema oscuro. Incorporar nuevos escenarios conforme el propietario los
 confirme. El módulo no ejecuta capturas y no sustituye las pruebas operativas pendientes.
-La siguiente migración libre es V57. Los pendientes anteriores se conservan debajo.
+La siguiente migración libre es V58. Los pendientes anteriores se conservan debajo.
 
 El último módulo implementado es V55 **Soporte del portal de maestros**. El propietario
 debe asignar ese módulo al rol administrativo institucional, cerrar sesión y volver a
@@ -1824,7 +1966,11 @@ enumeradas de etapas anteriores.
   pruebas sin fallos. La imagen se desplegó y `/actuator/health` respondió `UP`. La
   siguiente migración disponible continúa siendo V54.
 
-### Pendiente acordado — simplificar límites de políticas de recargo
+### Antecedente del rediseño de topes — implementado el 06/10/2026
+
+El cambio descrito al inicio de este documento resuelve este pendiente de captura.
+Conservar el tope también en Una sola vez: puede reducir una aplicación al máximo permitido.
+La aceptación funcional del nuevo ejemplo de tope sigue pendiente del propietario.
 
 - El propietario confirmó durante la prueba funcional que **Tipo de límite** y **Valor del
   límite** no resultan comprensibles para un usuario administrativo sin explicación previa.

@@ -108,7 +108,8 @@ public class PoliticaRecargoAdminController {
         validarGenerador(form, errores);
         prepararGenerador(model, form);
         if (!errores.hasErrors()) {
-            model.addAttribute("vistaPrevia", service.previsualizar(form.request(), pagina, tamanio));
+            try {model.addAttribute("vistaPrevia", service.previsualizar(form.request(), pagina, tamanio));}
+            catch(ReglaNegocioException e){model.addAttribute("errorOperacion",MensajeErrorFormulario.desde(e));return "admin/recargo-generar";}
             model.addAttribute("tamanio", Math.min(Math.max(tamanio, 10), 100));
         }
         return "admin/recargo-generar";
@@ -123,6 +124,7 @@ public class PoliticaRecargoAdminController {
         if (!confirmacion)
             errores.reject("recargo.confirmacion",
                     "Primero visualiza los recargos y confirma el resultado mostrado");
+        if(form.getSeleccionId()==null)errores.reject("recargo.seleccion","Primero visualiza y revisa la selección antes de confirmar");
         if (errores.hasErrors()) {
             prepararGenerador(model, form);
             return "admin/recargo-generar";

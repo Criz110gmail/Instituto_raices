@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Corregir y reemplazar cargo · Nexo Escolar</title><link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script></head>
+<body class="form-page"><main class="form-shell finance-shell">
+<header class="form-top"><a th:href="@{/admin/cargos/{id}/editar(id=${cargo.id})}">← Volver al detalle</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+<section class="form-card"><div class="form-intro finance-intro"><span>Corrección auditada</span><h1>Corregir y reemplazar cargo</h1><p>Corrige la fecha límite sin sobrescribir el cargo original ni duplicar la deuda.</p></div>
+<form class="entity-form" method="post" th:object="${form}" th:action="@{/admin/cargos/{id}/corregir(id=${cargo.id})}">
+<input type="hidden" th:field="*{version}">
+<div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo reemplazar</strong><p th:text="${errorOperacion}"></p></div>
+<div class="form-notice" th:if="${enlaces.siguienteId != null}"><strong>Este cargo ya fue reemplazado</strong><p>Abre el cargo nuevo desde el detalle. No se puede crear un segundo reemplazo del mismo registro.</p></div>
+<fieldset class="form-section"><legend>Datos que se conservan</legend><div class="form-grid detail-grid">
+<label class="wide"><span>Alumno y concepto</span><strong th:text="${cargo.alumnoNombre+' · '+cargo.conceptoNombre}"></strong></label>
+<label><span>Cargo original</span><strong th:text="${'#'+cargo.id+' · '+cargo.estadoRegistro}"></strong></label>
+<label><span>Importe original protegido</span><strong th:text="${@formatoMoneda.pesos(cargo.importeOriginal)+' '+cargo.moneda}"></strong></label>
+<label><span>Periodo de cobro</span><strong th:text="${#temporals.format(cargo.periodoCobroInicio,'dd/MM/yyyy')+' — '+#temporals.format(cargo.periodoCobroFin,'dd/MM/yyyy')}"></strong></label>
+<label><span>Fecha límite anterior</span><strong th:text="${#temporals.format(cargo.fechaVencimiento,'dd/MM/yyyy')}"></strong></label>
+</div></fieldset>
+<fieldset class="form-section"><legend>Corrección de vencimiento</legend><div class="form-grid">
+<label><span>Nueva fecha límite para pagar *</span><input type="date" th:field="*{fechaVencimiento}" th:attr="min=${cargo.periodoCobroInicio},max=${cargo.periodoCobroFin}" required><small class="field-error" th:errors="*{fechaVencimiento}"></small><small class="field-help">Debe quedar dentro del periodo de cobro. Puede ser una fecha pasada si corresponde a la corrección.</small></label>
+<label class="wide"><span>Motivo de la corrección *</span><textarea th:field="*{motivo}" rows="3" maxlength="2000" required placeholder="Ej. Se capturó el 10 de octubre y debía ser el 5 de octubre"></textarea><small class="field-error" th:errors="*{motivo}"></small></label>
+</div></fieldset>
+<div class="form-notice"><strong>Qué ocurrirá al confirmar</strong><p>El cargo anterior queda cancelado (si aún estaba emitido); su historial no se borra. Se crea un cargo nuevo para el mismo alumno, concepto, periodo e importe, con esta fecha límite. La beca se recalcula según la configuración vigente; revisa el saldo del cargo nuevo. No se trasladan pagos ni recargos. No se modifica la cuota ni se genera dinero recibido.</p><p>Se bloquea la operación si hay historial de pagos, pagos en revisión, ajustes distintos de beca, un convenio o un reemplazo ya existente.</p></div>
+<label class="policy-card"><input type="checkbox" th:field="*{confirmacion}" required><span><strong>Revisé los datos y autorizo el reemplazo</strong><small>Mi usuario, fecha y motivo quedarán en el registro de auditoría.</small></span></label><small class="field-error" th:errors="*{confirmacion}"></small>
+<footer class="form-actions"><a th:href="@{/admin/cargos/{id}/editar(id=${cargo.id})}">Cancelar</a><button type="submit" th:disabled="${enlaces.siguienteId != null}">Confirmar y reemplazar cargo</button></footer>
+</form></section></main></body></html>

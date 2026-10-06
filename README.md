@@ -7,6 +7,26 @@
 Base del sistema multi-plantel construida con Java 21, Spring Boot 4.1.1,
 Thymeleaf, PostgreSQL, Flyway y Maven.
 
+## Correcciones de cobranza
+
+Las vistas de generación de adeudos y recargos permiten seleccionar filas, inicialmente
+todas marcadas. Usa **Desmarcar todos** para elegir únicamente los registros deseados.
+El resumen de selección indica cantidad e importe a confirmar; las tarjetas superiores
+son los totales de toda la vista. La selección se conserva al paginar, caduca en dos horas
+y exige volver a visualizar si cambia la información. Omitir una fila no cancela su cuota
+ni política: seguirá pendiente en una nueva vista. La consulta prepara metadatos privados,
+pero no emite adeudos ni recargos. No se permite confirmar una selección vacía.
+
+Una cuota única ya generada protege fechas e importe; las cuotas mensuales sólo cambian
+emisiones futuras. Cancelar un cargo no lo regenera. En la vista previa, **Consultar cuotas
+no incluidas** abre un diagnóstico cerrado por defecto: explica las exclusiones y permite
+exportarlas a Excel con el mismo alcance/corte. Esa lista informativa no genera cargos.
+Para corregir un vencimiento entra a **Adeudos de alumnos → Ver → Corregir y reemplazar cargo**:
+revisa fecha, motivo obligatorio y confirma. El original conserva el histórico y el nuevo
+queda vinculado, con beca recalculada. Requiere administrador autorizado; se bloquea si hay
+pagos, pagos en revisión, convenio, ajustes distintos de beca o reemplazo ya existente.
+No registra ingresos ni modifica cuentas; verifica la beca y el saldo del cargo nuevo.
+
 ## Expediente del alumno
 
 En el portal familiar, **Tus pagos** separa el resumen de cuenta, los cargos pendientes
@@ -42,6 +62,16 @@ de identificación no se incrustan: el reporte conserva únicamente sus metadato
 archivo original sigue disponible mediante su endpoint privado autorizado.
 
 ## Guía de procesos (V56)
+
+Políticas de recargo explica el tope por cargo con tres opciones y un ejemplo calculado
+sin guardar datos. La activación está separada; guardar no ejecuta el generador. V58
+actualiza el vocabulario de la guía de becas sin modificar cargos ni recargos existentes.
+
+V57 amplía el contenido con dos casos de cobranza confirmados: cuota $1,000 con beca de
+$200 y recargo de $80 hasta liquidar $880, y abonos $300/$500/$200 para liquidar $1,000.
+Incluye requisitos, capturas de ejemplo, precauciones y resultados por cargo/pago/cuenta.
+Son instrucciones editoriales: la migración no crea operaciones financieras. Se conservan
+los mismos filtros, permisos y exportación; la guía de becas requiere los módulos relacionados.
 
 En **Seguridad y soporte → Guía de procesos** (`/admin/guias`) se consultan procedimientos
 con requisitos, ejemplos completos, instrucciones numeradas y resultados verificables.

@@ -7,9 +7,10 @@
     <title>Generar recargos · Nexo Escolar</title>
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/admin.css">
-    <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/forms.css?v=20261006-seleccion">
     <script src="/js/theme.js"></script>
-    <script src="/js/generation-preview.js" defer></script>
+    <script src="/js/generation-preview.js" defer></script><script src="/js/generation-selection.js?v=20261006-1" defer></script>
+    <script src="/js/generation-selection.js?v=20261006-1" defer></script>
 </head>
 <body class="form-page">
 <main class="form-shell finance-shell surcharge-preview-shell">
@@ -76,7 +77,7 @@
         </form>
     </section>
 
-    <section id="vista-previa-recargos" class="surcharge-preview-card generation-preview-target" data-generation-preview th:if="${vistaPrevia}" aria-labelledby="titulo-vista-previa">
+    <section id="vista-previa-recargos" class="surcharge-preview-card generation-preview-target" data-generation-preview data-generation-selection th:attr="data-selection-id=${vistaPrevia.seleccionId},data-selection-total=${vistaPrevia.cargosAplicables},data-selection-amount=${vistaPrevia.totalRecargos}" th:if="${vistaPrevia}" aria-labelledby="titulo-vista-previa">
         <header class="surcharge-preview-header">
             <div>
                 <span>2 · Verificar resultado</span>
@@ -101,10 +102,13 @@
         </div>
 
         <div class="table-wrap surcharge-preview-table" th:if="${!vistaPrevia.pagina.empty}">
+            <div class="generation-selection-bar"><button type="button" data-selection-all>Seleccionar todos</button><button type="button" data-selection-none>Desmarcar todos</button><p>Las tarjetas superiores son los totales de toda la vista previa. Sólo se confirmará el importe indicado en la selección.</p></div>
+            <div class="generation-selection-bar"><label><input type="checkbox" data-select-page checked> Seleccionar esta página</label><p>Todo está seleccionado por defecto, incluidas las otras páginas. Desmarca los cargos que no quieras afectar.</p><strong data-selection-summary aria-live="polite">Calculando selección…</strong></div>
             <table>
-                <thead><tr><th>Alumno</th><th>Concepto</th><th>Vencimiento</th><th>Política</th><th>Saldo actual</th><th>Recargo</th><th>Nuevo saldo</th></tr></thead>
+                <thead><tr><th>Aplicar</th><th>Alumno</th><th>Concepto</th><th>Vencimiento</th><th>Política</th><th>Saldo actual</th><th>Recargo</th><th>Nuevo saldo</th></tr></thead>
                 <tbody>
                 <tr th:each="fila:${vistaPrevia.pagina.content}">
+                    <td data-label="Aplicar"><label class="generation-row-choice"><input type="checkbox" data-selection-row checked th:value="${'RECARGO:'+fila.cargoId}" th:attr="data-selection-amount=${fila.recargoNuevo},aria-label=${'Aplicar recargo a '+fila.alumnoNombre+' · '+fila.concepto}"><span>Aplicar</span></label></td>
                     <td data-label="Alumno"><strong th:text="${fila.alumnoNombre}">Alumno</strong><small th:text="${fila.alumnoMatricula+' · '+fila.plantelNombre}">Matrícula</small></td>
                     <td data-label="Concepto"><strong th:text="${fila.concepto}">Concepto</strong><small th:text="${fila.periodosNuevos==1?'1 periodo nuevo':fila.periodosNuevos+' periodos nuevos'}">Periodo</small></td>
                     <td data-label="Vencimiento"><strong th:text="${#temporals.format(fila.fechaVencimiento,'dd/MM/yyyy')}">Fecha</strong><small class="surcharge-overdue" th:text="${fila.diasAtraso+' días de atraso'}">0 días</small></td>
@@ -121,24 +125,29 @@
             <p><strong th:text="${vistaPrevia.pagina.number*vistaPrevia.pagina.size+1}">1</strong>–<strong th:text="${vistaPrevia.pagina.number*vistaPrevia.pagina.size+vistaPrevia.pagina.numberOfElements}">25</strong> de <strong th:text="${vistaPrevia.pagina.totalElements}">100</strong></p>
             <div>
                 <a th:classappend="${vistaPrevia.pagina.first}?' disabled'"
-                   th:href="@{/admin/politicas-recargo/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number-1})}">Anterior</a>
+                   th:href="@{/admin/politicas-recargo/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},seleccionId=${vistaPrevia.seleccionId},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number-1})}">Anterior</a>
                 <span th:text="${vistaPrevia.pagina.number+1}">1</span>
                 <a th:classappend="${vistaPrevia.pagina.last}?' disabled'"
-                   th:href="@{/admin/politicas-recargo/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number+1})}">Siguiente</a>
+                   th:href="@{/admin/politicas-recargo/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},seleccionId=${vistaPrevia.seleccionId},tamanio=${tamanio},pagina=${vistaPrevia.pagina.number+1})}">Siguiente</a>
             </div>
         </footer>
 
         <form class="surcharge-confirm" th:if="${!vistaPrevia.pagina.empty}" method="post"
+              data-selection-confirm
               th:action="@{/admin/politicas-recargo/generar}">
             <input type="hidden" name="institucionId" th:value="${form.institucionId}">
             <input type="hidden" name="plantelId" th:value="${form.plantelId}">
             <input type="hidden" name="fechaCorte" th:value="${form.fechaCorte}">
             <input type="hidden" name="confirmacion" value="true">
+            <input type="hidden" name="seleccionId" th:value="${vistaPrevia.seleccionId}">
+            <span data-selection-hidden hidden></span>
             <div>
                 <strong>Confirma únicamente si los importes son correctos</strong>
-                <p>Al continuar, los recargos se agregarán al saldo de cada alumno y serán visibles en el portal familiar.</p>
+                <p><strong data-selection-summary aria-live="polite">Revisa la selección antes de confirmar.</strong></p>
+                <p>Sólo se aplicarán los cargos seleccionados de esta vista previa. Desmarcar uno lo omite únicamente en esta ejecución; no cancela su deuda ni desactiva la política. La selección caduca en dos horas.</p>
             </div>
-            <button class="generation-confirm-button" type="submit">Confirmar y generar recargos</button>
+            <button class="generation-confirm-button" type="submit" disabled>Confirmar y generar recargos seleccionados</button>
+            <noscript><p>Activa JavaScript para revisar y confirmar la selección.</p></noscript>
         </form>
     </section>
 </main>

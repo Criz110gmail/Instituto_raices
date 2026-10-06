@@ -119,14 +119,40 @@ public class CargoAdminController {
                                  BindingResult errores,
                                  @RequestParam(defaultValue = "0") int pagina,
                                  @RequestParam(defaultValue = "25") int tamanio,
+                                 @RequestParam(defaultValue = "0") int paginaExcluidas,
+                                 @RequestParam(defaultValue = "false") boolean mostrarExcluidas,
                                  Model model) {
         validarGeneracion(form, errores);
         prepararGenerador(model, form);
         if (!errores.hasErrors()) {
-            model.addAttribute("vistaPrevia", service.previsualizar(form.request(), pagina, tamanio));
+            try {model.addAttribute("vistaPrevia", service.previsualizar(form.request(), pagina, tamanio));}
+            catch(ReglaNegocioException e){model.addAttribute("errorOperacion",MensajeErrorFormulario.desde(e));return "admin/cargo-generar";}
+            model.addAttribute("cuotasExcluidas",service.diagnosticar(form.request(),paginaExcluidas));
+            model.addAttribute("mostrarExcluidas",mostrarExcluidas);
             model.addAttribute("tamanio", Math.min(Math.max(tamanio, 10), 100));
         }
         return "admin/cargo-generar";
+    }
+
+    @GetMapping("/generar/excluidas/excel")
+    void excelExcluidas(@Valid @ModelAttribute("form") GeneracionCargosForm form,BindingResult errores,
+                       jakarta.servlet.http.HttpServletResponse response) throws java.io.IOException {
+        validarGeneracion(form,errores);
+        if(errores.hasErrors()) throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST,"Revisa institución, plantel y fecha de corte");
+        var bloque=service.diagnosticar(form.request(),0);
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition","attachment; filename=cuotas-no-incluidas.xlsx");response.setHeader("Cache-Control","no-store");
+        try(var libro=new org.apache.poi.xssf.streaming.SXSSFWorkbook(100)) {
+            var hoja=libro.createSheet("Cuotas no incluidas");var cabecera=hoja.createRow(0);
+            String[] titulos={"Cuota","Alumno","Concepto","Motivo","Cargo relacionado"};
+            for(int i=0;i<titulos.length;i++){cabecera.createCell(i).setCellValue(titulos[i]);hoja.setColumnWidth(i,i==3?18000:8000);}
+            hoja.createFreezePane(0,1);int fila=1,pagina=0;
+            while(true) {
+                for(var q:bloque){var row=hoja.createRow(fila++);row.createCell(0).setCellValue(q.cuotaId());row.createCell(1).setCellValue(q.alumno());row.createCell(2).setCellValue(q.concepto());row.createCell(3).setCellValue(q.motivo());if(q.cargoId()!=null)row.createCell(4).setCellValue(q.cargoId());}
+                if(!bloque.hasNext())break;bloque=service.diagnosticar(form.request(),++pagina);
+            }
+            libro.write(response.getOutputStream());
+        }
     }
 
     @PostMapping("/generar")
@@ -139,6 +165,7 @@ public class CargoAdminController {
             errores.reject("cargo.generacion.confirmacion",
                     "Primero visualiza las cuotas por aplicar y confirma el resultado mostrado");
         }
+        if(form.getSeleccionId()==null)errores.reject("cargo.seleccion","Primero visualiza y revisa la selección antes de confirmar");
         if (errores.hasErrors()) {
             prepararGenerador(model, form);
             return "admin/cargo-generar";

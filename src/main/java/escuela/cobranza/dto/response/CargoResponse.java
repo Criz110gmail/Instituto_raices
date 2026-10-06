@@ -43,6 +43,8 @@ public record CargoResponse(
         BigDecimal saldoPendiente,
         SituacionCobro situacionCobro,
         boolean vencido,
-        AuditoriaResponse auditoria
+        AuditoriaResponse auditoria,
+        Long reemplazaCargoId,
+        String motivoReemplazo
 ) {
 }

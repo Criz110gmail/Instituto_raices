@@ -37,6 +37,16 @@ public interface CuotaAlumnoRepository extends JpaRepository<CuotaAlumno, Long>,
 
     boolean existsByConceptoCobroIdAndEstado(Long conceptoId, EstadoCuota estado);
 
+    @Query(value="SELECT EXISTS(SELECT 1 FROM cargo WHERE cuota_alumno_id=:id)", nativeQuery=true)
+    boolean tieneCargos(@Param("id") Long id);
+
+    @Query(value="SELECT id FROM cargo WHERE cuota_alumno_id=:id ORDER BY id DESC LIMIT 1", nativeQuery=true)
+    Long ultimoCargo(@Param("id") Long id);
+
+    @Query("select c from CuotaAlumno c where c.id>:ultimoId and c.inscripcion.alumno.institucion.id=:institucionId and (:plantelId is null or c.inscripcion.plantel.id=:plantelId) order by c.id")
+    Slice<CuotaAlumno> buscarParaDiagnostico(@Param("institucionId") Long institucionId,
+            @Param("plantelId") Long plantelId,@Param("ultimoId") Long ultimoId,Pageable pageable);
+
     List<CuotaAlumno> findAllByInscripcionIdOrderByCreadoEnDescIdDesc(Long inscripcionId);
 
     @Query("""
