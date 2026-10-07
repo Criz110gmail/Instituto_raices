@@ -9,6 +9,12 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+**Pagos recibidos → Ver → Gestión** confirma por separado Validar y publicar, Rechazar
+sin afectar saldos y Cancelar y conservar trazabilidad. Cada modal muestra datos/efectos
+propios y permite **Cancelar** sin ejecutar. Los botones finales son **Confirmar validación**,
+**Confirmar rechazo** y **Confirmar cancelación**. Cancelar un pago validado compensa el
+ingreso y libera sus abonos; cancelar uno pendiente no modifica saldos. No es devolver dinero.
+
 **Cuotas por alumno → Crear cuota** muestra **Confirmar nueva cuota** antes de guardar:
 alumno, concepto, importe, calendario, vigencia, estado y generación. **Cancelar** conserva
 la captura sin guardar; **Confirmar y crear cuota** envía el formulario. El alta desde
@@ -23,8 +29,9 @@ se encuentra en Gestión, sin cambiar permisos ni reglas de negocio.
 Los importes administrativos se capturan como texto con teclado decimal: el scroll no
 los incrementa. Al salir del campo se muestran como moneda y al editar como decimal;
 el servicio recibe el decimal limpio (por ejemplo, `$1,400.50` → `1400.50`). No se redondean
-entradas inválidas ni se cambian porcentajes/cantidades. Validar pagos, devolver dinero y
-aplicar ajustes requieren revisar el modal y pulsar **Confirmar operación**; cancelar no envía.
+entradas inválidas ni se cambian porcentajes/cantidades. Devolver dinero y aplicar ajustes
+requieren revisar el modal y pulsar **Confirmar operación**; las decisiones de pagos usan
+los botones específicos descritos arriba. Cerrar una confirmación no envía el formulario.
 
 La guía **Devolver $100 y pagar nuevamente el saldo** documenta la devolución parcial
 confirmada de un pago de $400 y la liquidación posterior desde el portal familiar: egreso

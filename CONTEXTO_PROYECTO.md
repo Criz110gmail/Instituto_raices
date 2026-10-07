@@ -1,5 +1,32 @@
 # Contexto del proyecto
 
+## Confirmaciones de decisiones de pago — V70 — 2026-10-07
+
+- Pagos recibidos → Ver → Gestión: cada acción muestra confirmación específica, reutilizando
+  dialog nativo/estilos comunes: Confirmar validación del pago, Confirmar rechazo del pago
+  y Confirmar cancelación del pago. Cada una incluye folio/titular/importe; validación añade
+  cuenta destino y motivo de cambio si existe; rechazo/cancelación muestran motivo literal.
+- Botón Cancelar en las tres confirmaciones cierra sin envío y conserva captura; Escape/fondo
+  también. Botones finales distintos: Confirmar validación, Confirmar rechazo, Confirmar
+  cancelación. Conserva validación requerida, CSRF, requestSubmit y aprobación de un único envío.
+- Cancelación pendiente indica sin cambios de cuenta/adeudos. Validada identifica cuenta
+  del ingreso original, egreso compensatorio por importe del pago y liberación de abonos/deuda.
+  No equivale a devolución real; conserva historial. Rechazo explica motivo visible al tutor.
+  Reglas, permisos, transacciones y servicios financieros no se modifican.
+- V70 actualiza textos de validación/rechazo en guías ya confirmadas; no publica la prueba
+  de cancelación que el propietario todavía está preparando. Siete guías / 57 etapas.
+- Verificado: 586 pruebas Java sin fallos, diff limpio; SQL editorial probado con BEGIN/ROLLBACK;
+  V70 aplicada por Flyway, siete guías/57 etapas conservadas. Sólo app recreada, salud UP;
+  PostgreSQL/volúmenes preservados, sin validar/rechazar/cancelar mediante herramientas.
+  Revisión visual autenticada pendiente del propietario. Siguiente migración V71.
+  Once suites Node pasan
+  con escenarios validación/rechazo/cancelación pendiente/validada, cancelar/Escape sin envío,
+  motivo literal, datos propios sin mezclar acciones y confirmación única.
+- Próxima prueba humana: recargar Pagos recibidos → Ver → Gestión del pendiente $600, usar
+  Cancelar pago registrado por error (no Rechazar), revisar modal, primero Cancelar sin guardar
+  y luego Confirmar cancelación; cuenta B/deuda600. Después pago nuevo validado y cancelación
+  recupera B/deuda600. No ejecutar estas operaciones mediante herramientas.
+
 ## Confirmación al crear cuotas — V69 — 2026-10-07
 
 - Crear cuota y Preparar cobro del alta asistida abren Confirmar nueva cuota con el modal

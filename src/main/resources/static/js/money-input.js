@@ -199,8 +199,13 @@
                 dt.textContent = label; dd.textContent = value; details.append(dt, dd);
             };
             details.replaceChildren();
-            cancel.textContent = kind === 'cuota' ? 'Cancelar' : 'Volver a revisar';
+            const paymentDecision = ['validacion', 'rechazo', 'cancelacion'].includes(kind);
+            cancel.textContent = kind === 'cuota' || paymentDecision ? 'Cancelar' : 'Volver a revisar';
             accept.textContent = kind === 'cuota' ? 'Confirmar y crear cuota' : 'Confirmar operación';
+            if (paymentDecision) {
+                if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
+                if (form.dataset.confirmSubject) add('Titular del pago', form.dataset.confirmSubject);
+            }
             if (kind === 'cuota') {
                 title.textContent = 'Confirmar nueva cuota';
                 const value = id => form.querySelector('#' + id)?.value || '';
@@ -249,11 +254,33 @@
                 }
                 add('Motivo', form.querySelector('[name="motivo"]').value);
                 note.textContent = 'Este ajuste modifica la deuda. No registra un ingreso ni una salida de dinero de la cuenta.';
+            } else if (kind === 'rechazo') {
+                title.textContent = 'Confirmar rechazo del pago';
+                accept.textContent = 'Confirmar rechazo';
+                add('Importe del reporte', money(form.dataset.confirmAmount));
+                add('Motivo del rechazo', form.querySelector('[name="motivo"]').value);
+                add('Resultado', 'Pago rechazado · sin ingreso ni aplicaciones; la deuda no cambia');
+                note.textContent = 'El motivo quedará registrado y podrá consultarlo el tutor. Se conservarán el pago y sus comprobantes. Cancelar cierra esta ventana sin rechazar.';
+            } else if (kind === 'cancelacion') {
+                title.textContent = 'Confirmar cancelación del pago';
+                accept.textContent = 'Confirmar cancelación';
+                const validated = form.dataset.confirmState === 'VALIDADO';
+                add('Estado actual', validated ? 'Validado' : 'Pendiente de validación');
+                add('Importe del pago', money(form.dataset.confirmAmount));
+                add('Motivo de cancelación', form.querySelector('[name="motivo"]').value);
+                if (validated) {
+                    add('Cuenta del ingreso que se compensará', form.dataset.confirmAccount || 'Cuenta del ingreso original');
+                    add('Egreso compensatorio', money(form.dataset.confirmAmount));
+                    add('Efecto en los adeudos', 'Se liberarán los abonos vigentes y se recuperará la deuda correspondiente');
+                } else add('Efecto en los saldos', 'No cambiarán la cuenta ni los adeudos: este pago todavía no se había validado');
+                note.textContent = 'Se cancelará un registro creado por error y se conservará el historial. No es una devolución real al tutor. Cancelar cierra esta ventana sin ejecutar la cancelación del pago.';
             } else {
                 title.textContent = 'Confirmar validación del pago';
+                accept.textContent = 'Confirmar validación';
                 add('Importe recibido', money(form.dataset.confirmAmount));
-                if (form.dataset.confirmSubject) add('Titular del pago', form.dataset.confirmSubject);
                 add('Cuenta destino', form.querySelector('#cuentaDestinoBusqueda').value);
+                const reason = form.querySelector('[name="motivoCambioCuenta"]')?.value;
+                if (reason) add('Motivo del cambio de cuenta', reason);
                 note.textContent = 'Confirma que recibiste el dinero. Se publicará el ingreso y se aplicarán los abonos del pago.';
             }
             pending = form; submitter = event.submitter;
