@@ -226,6 +226,7 @@ public class PagoAdminController {
         DevolucionPagoForm form = new DevolucionPagoForm();
         form.setCuentaOrigenId(pago.cuentaDestinoId());
         form.setCuentaOrigenTexto(pago.cuentaDestinoNombre());
+        form.setCambiarCuentaOrigen(pago.cuentaDestinoId() == null);
         form.setFecha(java.time.LocalDateTime.now(java.time.ZoneId.of(zona)).withSecond(0).withNano(0));
         form.setBeneficiario(pago.nombrePagador() == null || pago.nombrePagador().isBlank()
                 ? pago.tutorNombre() : pago.nombrePagador());

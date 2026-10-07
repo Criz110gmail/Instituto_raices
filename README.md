@@ -9,6 +9,16 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+La guía **Devolver $100 y pagar nuevamente el saldo** documenta la devolución parcial
+confirmada de un pago de $400 y la liquidación posterior desde el portal familiar: egreso
+$100, deuda recuperada $100, nuevo ingreso $100 y saldo final $0. Conserva ambos pagos y
+devolución. La alternativa de devolución más descuento manual sigue pendiente de prueba.
+
+En **Pagos recibidos → Ver → Devoluciones**, la cuenta que recibió el pago viene protegida.
+**Devolver desde otra cuenta** permite cambiarla con motivo obligatorio si es distinta.
+Desactivar la opción restaura la cuenta original. El resumen indica importe y cuenta del
+egreso; el cambio queda en el historial y auditoría. No modifica el ingreso original.
+
 La guía **Rechazar un pago y corregir el reporte: $400** documenta el caso confirmado:
 primer reporte rechazado con motivo, consulta familiar del motivo, segundo reporte corregido
 y validación. Mantiene el primer folio y registra un único ingreso de $400, no $800.
@@ -19,7 +29,7 @@ ofrece **Ver motivo del rechazo** junto al estado. El modal muestra el mensaje r
 por administración y cómo corregir el reporte, sin hacer otra transferencia bancaria si
 el dinero ya salió. El rechazo no disminuye la deuda ni registra un ingreso.
 
-Las cinco guías de cobranza incluyen recorridos explícitos en sus 40 etapas: categoría del
+Las seis guías de cobranza incluyen recorridos explícitos en sus 48 etapas: categoría del
 menú, módulo, registro a buscar, Aplicar filtros, acción Ver/Editar, campos, guardado y
 resultado. Cada cambio entre administración y portal se explica. Regla de documentación:
 no usar instrucciones como «abre el cargo» sin indicar desde dónde llegar e identificarlo.

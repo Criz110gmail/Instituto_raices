@@ -53,6 +53,20 @@ public class DevolucionPagoServiceImpl implements DevolucionPagoService {
             throw new ReglaNegocioException("Sólo se puede devolver un pago validado");
         verificar(pago, request.pagoVersion(), "Pago");
 
+        Long cuentaOriginalId = pago.getCuentaDestino() == null ? null : pago.getCuentaDestino().getId();
+        boolean cuentaDistinta = !Objects.equals(cuentaOriginalId, request.cuentaOrigenId());
+        String motivoCambio = cuentaDistinta ? limpiar(request.motivoCambioCuenta()) : null;
+        if (cuentaDistinta && (!request.cambiarCuentaOrigen() || motivoCambio == null || motivoCambio.isBlank()))
+            throw new ReglaNegocioException("Para devolver desde otra cuenta, activa Devolver desde otra cuenta e indica el motivo del cambio");
+        if (motivoCambio != null && motivoCambio.length() > 500)
+            throw new ReglaNegocioException("El motivo del cambio de cuenta admite hasta 500 caracteres");
+        String motivoRegistrado = limpiar(request.motivo());
+        if (motivoRegistrado == null || motivoRegistrado.isBlank())
+            throw new ReglaNegocioException("Captura el motivo de la devolución");
+        if (cuentaDistinta) motivoRegistrado += "\nMotivo del cambio de cuenta de origen: " + motivoCambio;
+        if (motivoRegistrado == null || motivoRegistrado.isBlank() || motivoRegistrado.length() > 2000)
+            throw new ReglaNegocioException("Captura el motivo; los motivos de devolución y cambio de cuenta juntos deben ocupar hasta 2000 caracteres");
+
         CuentaFinanciera cuenta = cuentaRepository.findByIdForUpdate(request.cuentaOrigenId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("la cuenta de origen", request.cuentaOrigenId()));
         validarCuenta(pago, cuenta);
@@ -97,7 +111,7 @@ public class DevolucionPagoServiceImpl implements DevolucionPagoService {
         DevolucionPago devolucion = new DevolucionPago();
         devolucion.setInstitucion(pago.getInstitucion()); devolucion.setPago(pago);
         devolucion.setCuentaOrigen(cuenta); devolucion.setMonto(monto); devolucion.setFecha(fecha);
-        devolucion.setMotivo(limpiar(request.motivo())); devolucion.setBeneficiario(limpiar(request.beneficiario()));
+        devolucion.setMotivo(motivoRegistrado); devolucion.setBeneficiario(limpiar(request.beneficiario()));
         devolucion.setReferencia(limpiar(request.referencia())); devolucion.setAutorizadoPor(actor);
         devolucion.setClaveIdempotencia(request.claveIdempotencia());
         devolucion.setEstado(EstadoDevolucionPago.EJECUTADA);
@@ -124,10 +138,16 @@ public class DevolucionPagoServiceImpl implements DevolucionPagoService {
         movimiento.setSaldoPosterior(estadoCuenta.saldo().subtract(monto));
         movimiento = movimientoRepository.saveAndFlush(movimiento);
         devolucion.setMovimiento(movimiento);
+        Map<String, Object> detalleAuditoria = new LinkedHashMap<>();
+        detalleAuditoria.put("pagoId", pago.getId()); detalleAuditoria.put("folioPago", pago.getFolio());
+        detalleAuditoria.put("cuentaOrigenId", cuenta.getId()); detalleAuditoria.put("cuentaOriginalId", cuentaOriginalId);
+        detalleAuditoria.put("cuentaOrigenModificada", cuentaDistinta);
+        detalleAuditoria.put("motivoCambioCuenta", motivoCambio);
+        detalleAuditoria.put("monto", monto); detalleAuditoria.put("moneda", pago.getMoneda());
+        detalleAuditoria.put("aplicacionesAjustadas", ajustes.size());
         auditoria.registrar(pago.getInstitucion().getId(), AccionAuditoria.DEVOLUCION_EJECUTADA,
                 "DEVOLUCION_PAGO", devolucion.getId(), devolucion.getMotivo(),
-                Map.of("pagoId", pago.getId(), "folioPago", pago.getFolio(), "cuentaOrigenId", cuenta.getId(),
-                        "monto", monto, "moneda", pago.getMoneda(), "aplicacionesAjustadas", ajustes.size()));
+                detalleAuditoria);
         return respuesta(devolucion, movimiento);
     }
 

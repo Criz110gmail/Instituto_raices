@@ -1,5 +1,59 @@
 # Contexto del proyecto
 
+## V65 — devolución $100 y liquidación posterior confirmada (2026-10-07)
+
+- Confirmación humana: historial devuelto $100, cuenta −$100, cargo $400 con saldo $100;
+  nuevo pago familiar $100 validado por propietario, cuenta +$100, adeudo final $0 y portal
+  sin pendiente. Se cierra prueba de devolución/nuevo pago; no fue ejecutada por herramientas.
+- Guía nueva Devolver $100 y pagar nuevamente el saldo, ocho etapas con origen de menú,
+  fila, campos, botones, resultados/precauciones. Saldo base S ya incluye pago original;
+  S−100+100=S. Preserva ambos pagos y devolución, no aplica descuento. Seis guías / 48 etapas.
+- V65 sólo contenido editorial; sin fondos/roles/operaciones. Verificado: 571 pruebas Java,
+  Node devolución y diff correctos; SQL validado con rollback, V65 aplicada. Consulta de
+  sólo lectura: seis guías / 48 etapas / ocho nuevas. Sólo app recreada, salud UP; sin
+  reinicio de PostgreSQL/volúmenes. Sin operación financiera ni revisión visual autenticada.
+- Otra vertiente pendiente: caso separado $400 con concepto que permita descuento, pagar,
+  devolver $100 y ajustar DESCUENTO/DISMINUCION $100. Total ajustado $300, aplicado $300,
+  saldo $0 y cuenta no cambia al descontar. Esperar confirmación para añadirlo a guía.
+  Próxima migración V66. No reutilizar cargo liquidado ni cobrar y descontar el mismo saldo.
+
+## Claridad de vista previa en devoluciones (2026-10-07)
+
+- Tarjeta Así quedaría la devolución cambia a azul/lavanda con etiqueta de sólo revisión,
+  importes destacados y deuda recuperada en menta. Variante oscura y distribución móvil
+  existentes; aviso aclara que no se devolvió dinero antes de confirmar. Sin cambios de lógica.
+- Verificado: 568 pruebas Java sin fallos, Node de devolución correcto y diff limpio.
+  Sólo app recreada, salud UP; sin migración ni cambios de fondos/volúmenes. Sin ejecutar
+  devoluciones; revisión visual autenticada y prueba humana pendientes del propietario.
+
+## Botón profesional y motivo condicional en devolución (2026-10-07)
+
+- Cambio de cuenta pasa de checkbox a botón con diseño existente y estados accesibles.
+  Devolver desde otra cuenta abre selección/motivo; Conservar cuenta original los restaura
+  y oculta/limpia motivo. Booleano oculto conserva contrato y restricciones del servidor.
+- Causa del motivo visible estando inactivo: CSS display:block del formulario superaba
+  hidden. Se agrega regla específica para ocultarlo, cubierta en regresión.
+- Verificado: 568 pruebas Java sin fallos; Node botón/motivo/estado/restauración correctos.
+  Sólo app recreada, salud UP; sin migraciones ni cambios de saldos/volúmenes. Revisión
+  visual autenticada pendiente del propietario; no se ejecutó devolución.
+
+## Devoluciones: cuenta protegida y cambio explícito (2026-10-07)
+
+- Propietario pidió proteger cuenta de origen durante prueba parcial $400 → devolver $100.
+  Cuenta original readonly; opción Devolver desde otra cuenta permite seleccionar otra,
+  motivo obligatorio si difiere. Desactivar restaura cuenta y limpia motivo/búsquedas.
+- Servicio exige cambio explícito y motivo contra cuenta persistida del pago; conserva
+  restricciones financieras. Historial muestra motivo del cambio dentro del motivo de
+  devolución; auditoría conserva IDs original/nuevo y motivo separados. Sin migración.
+- Vista previa nombra cuenta e importe de egreso. Misma apariencia del formulario, temas
+  y controles. Autocompletado ahora respeta readonly y descarta respuestas tardías.
+- Verificado: 568 pruebas Java sin fallos y Node cuenta/cambio/motivo/restauración/vista
+  $100/$300/$100; flujo familiar previo correcto y diff limpio. Sólo app recreada, salud UP;
+  sin migración ni reinicio de PostgreSQL/volúmenes. Revisión visual autenticada pendiente.
+  No se ejecutó devolución ni se registraron fondos.
+  Esperar confirmación humana de cuenta −$100 / aplicado $300 / adeudo $100 antes de añadir
+  ese escenario confirmado a guía. Próxima migración V65; cinco guías / 40 etapas.
+
 ## V64 — guía del rechazo y reenvío confirmado (2026-10-07)
 
 - Dueño confirmó validación del reenvío de $400, incremento de $400 en cuenta y comprobante familiar.

@@ -16,7 +16,15 @@ public record DevolucionPagoRequest(
         @Size(max = 150) String referencia,
         List<Long> aplicacionIdsRevertir,
         @NotBlank @Size(max = 120) String claveIdempotencia,
-        Long pagoVersion) {
+        Long pagoVersion,
+        boolean cambiarCuentaOrigen,
+        @Size(max = 500) String motivoCambioCuenta) {
+    public DevolucionPagoRequest(Long pagoId, Long cuentaOrigenId, LocalDateTime fecha,
+            BigDecimal monto, String motivo, String beneficiario, String referencia,
+            List<Long> aplicacionIdsRevertir, String claveIdempotencia, Long pagoVersion) {
+        this(pagoId, cuentaOrigenId, fecha, monto, motivo, beneficiario, referencia,
+                aplicacionIdsRevertir, claveIdempotencia, pagoVersion, false, null);
+    }
     public DevolucionPagoRequest {
         aplicacionIdsRevertir = aplicacionIdsRevertir == null ? List.of() : List.copyOf(aplicacionIdsRevertir);
     }

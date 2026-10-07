@@ -17,6 +17,8 @@ import java.util.UUID;
 public class DevolucionPagoForm {
     @NotNull private Long cuentaOrigenId;
     private String cuentaOrigenTexto;
+    private boolean cambiarCuentaOrigen;
+    @Size(max = 500) private String motivoCambioCuenta;
     @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") private LocalDateTime fecha;
     @NotNull @DecimalMin("0.01") @Digits(integer = 17, fraction = 2) private BigDecimal monto;
     @Pattern(regexp = "TOTAL|PARCIAL") private String modoDevolucion = "TOTAL";
@@ -29,6 +31,7 @@ public class DevolucionPagoForm {
 
     public DevolucionPagoRequest request(Long pagoId) {
         return new DevolucionPagoRequest(pagoId, cuentaOrigenId, fecha, monto, motivo, beneficiario,
-                referencia, aplicacionIdsRevertir, claveIdempotencia, pagoVersion);
+                referencia, aplicacionIdsRevertir, claveIdempotencia, pagoVersion,
+                cambiarCuentaOrigen, motivoCambioCuenta);
     }
 }

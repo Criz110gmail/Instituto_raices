@@ -61,6 +61,7 @@ class DevolucionPagoServiceImplTest {
         cuenta.setPlantel(plantel); cuenta.setNombre("Caja principal"); cuenta.setMoneda("MXN");
         cuenta.setSaldoInicial(new BigDecimal("2000.00")); cuenta.setFechaSaldoInicial(LocalDate.now().minusYears(1));
         cuenta.setActivo(true);
+        pago.setCuentaDestino(cuenta);
         cargo = new Cargo(); cargo.setId(10L);
 
         when(pagos.findByIdForUpdate(50L)).thenReturn(Optional.of(pago));
@@ -157,6 +158,60 @@ class DevolucionPagoServiceImplTest {
         AplicacionPago aplicacion = new AplicacionPago(); aplicacion.setId(id); aplicacion.setPago(pago);
         aplicacion.setCargo(cargo); aplicacion.setMonto(new BigDecimal(monto));
         aplicacion.setOperacion(OperacionAplicacionPago.APLICAR); return aplicacion;
+    }
+
+    private DevolucionPagoRequest otraCuenta(boolean habilitada, String motivo) {
+        CuentaFinanciera original = new CuentaFinanciera(); original.setId(7L);
+        pago.setCuentaDestino(original);
+        var r = request("100.00", List.of());
+        return new DevolucionPagoRequest(r.pagoId(), r.cuentaOrigenId(), r.fecha(), r.monto(),
+                r.motivo(), r.beneficiario(), r.referencia(), r.aplicacionIdsRevertir(),
+                r.claveIdempotencia(), r.pagoVersion(), habilitada, motivo);
+    }
+
+    @Test void impideAlterarCuentaSinActivarElCambio() {
+        assertThatThrownBy(() -> service.ejecutar(otraCuenta(false, "Devolver desde caja")))
+                .isInstanceOf(ReglaNegocioException.class).hasMessageContaining("activa Devolver");
+        verify(devoluciones, never()).saveAndFlush(any());
+        verify(movimientos, never()).saveAndFlush(any());
+    }
+
+    @Test void cambioExplicitoExigeMotivoNoVacio() {
+        assertThatThrownBy(() -> service.ejecutar(otraCuenta(true, "   ")))
+                .isInstanceOf(ReglaNegocioException.class).hasMessageContaining("motivo del cambio");
+        verify(devoluciones, never()).saveAndFlush(any());
+    }
+
+    @Test void registraCuentaOriginalNuevaYMotivoEnAuditoriaEHistorial() {
+        var respuesta = service.ejecutar(otraCuenta(true, "El tutor recibe efectivo desde caja"));
+        assertThat(respuesta.motivo()).contains("Motivo del cambio de cuenta de origen", "El tutor recibe efectivo desde caja");
+        assertThat(respuesta.movimiento().saldoPosterior()).isEqualByComparingTo("1900.00");
+        ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
+        verify(auditoria).registrar(eq(1L), any(), eq("DEVOLUCION_PAGO"), eq(70L), anyString(), captor.capture());
+        assertThat(captor.getValue()).containsEntry("cuentaOriginalId", 7L)
+                .containsEntry("cuentaOrigenId", 8L).containsEntry("cuentaOrigenModificada", true)
+                .containsEntry("motivoCambioCuenta", "El tutor recibe efectivo desde caja");
+    }
+
+    @Test void rechazaMotivoDeCambioDemasiadoLargoAntesDePublicar() {
+        assertThatThrownBy(() -> service.ejecutar(otraCuenta(true, "x".repeat(501))))
+                .isInstanceOf(ReglaNegocioException.class).hasMessageContaining("500 caracteres");
+        verify(devoluciones, never()).saveAndFlush(any());
+    }
+
+    @Test void ejemploCuatrocientosDevuelveCienYConservaTrescientosAplicados() {
+        pago.setMonto(new BigDecimal("400.00"));
+        when(aplicaciones.findAplicacionesActivasByPagoIdForUpdate(50L))
+                .thenReturn(List.of(aplicacion(20L, "400.00")));
+        when(cargos.findByIdForUpdate(10L)).thenReturn(Optional.of(cargo));
+        var respuesta = service.ejecutar(request("100.00", List.of(20L)));
+        ArgumentCaptor<List<AplicacionPago>> captor = ArgumentCaptor.forClass(List.class);
+        verify(aplicaciones).saveAllAndFlush(captor.capture());
+        assertThat(captor.getValue().get(0).getMonto()).isEqualByComparingTo("400.00");
+        assertThat(captor.getValue().get(1).getMonto()).isEqualByComparingTo("300.00");
+        assertThat(respuesta.movimiento().saldoPosterior()).isEqualByComparingTo("1900.00");
+        assertThat(pago.getMonto()).isEqualByComparingTo("400.00");
+        assertThat(pago.getEstado()).isEqualTo(EstadoPago.VALIDADO);
     }
 
     private DevolucionPagoRequest request(String monto, List<Long> aplicaciones) {

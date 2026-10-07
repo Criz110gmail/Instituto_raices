@@ -1,5 +1,76 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V65 — devolución parcial y nuevo pago confirmados — 2026-10-07
+
+- Propietario confirmó devolución $100 del pago validado $400: historial devuelto $100,
+  cargo original $400, saldo recuperado $100 y cuenta disminuyó $100. Luego reportó y pagó
+  esos $100 en portal familiar, validó en administración, cuenta aumentó $100 y confirmó
+  saldo final $0 y desaparición del pendiente familiar. Operaciones hechas por propietario,
+  nunca por herramientas. Pendientes humanos de devolución/nuevo pago anteriores concluidos.
+- V65 agrega guía Devolver $100 y pagar nuevamente el saldo en ocho etapas explícitas:
+  identificar pago, saldo S, devolución, comprobaciones, portal, reporte, validación y
+  resultados. Conserva cuenta protegida/botón/motivo condicional y vista previa diferenciada.
+  Explica original $400 menos devolución $100 más pago nuevo $100 = neto $400; no descuento.
+- Seis guías confirmadas / 48 etapas; sólo contenido editorial y permisos requeridos de
+  guía, sin conceder roles ni alterar datos financieros.
+- Verificado: 571 pruebas Java sin fallos; Node devolución correcto; SQL editorial validado
+  con rollback antes de despliegue, V65 aplicada por Flyway. Lectura confirmó seis guías,
+  48 etapas y ocho nuevas. Sólo app recreada, salud UP; PostgreSQL/volúmenes preservados.
+  Sin devolución/pago/ajuste por herramientas ni validación visual autenticada del navegador.
+- Siguiente migración V66. Siguiente prueba: otro concepto que permita descuento, otro
+  cargo $400 sin beca/recargo → pagar $400 → devolver $100 → descuento manual $100 → total
+  ajustado $300 / abono $300 / saldo $0. No volver a pagar esos $100 ni usar el cargo ya
+  liquidado del caso confirmado. Descuento no mueve fondos; validar recepción y devolución
+  sí. Documentar como confirmado sólo cuando el propietario compruebe esa otra vertiente.
+
+## Vista previa de devolución diferenciada — 2026-10-07
+
+- Así quedaría la devolución usa tarjeta azul/lavanda, borde destacado y etiqueta Vista
+  previa · No necesitas capturar aquí. Explica que todavía no se ha devuelto dinero.
+  Importes conservan tarjetas y saldo recuperado en menta; tema oscuro tiene variante
+  equivalente. Cambio sólo HTML/CSS, sin modificar cálculos, IDs, permisos o operaciones.
+- Verificado: 568 pruebas Java y Node del flujo de devolución correctos; diff limpio.
+  Sólo app recreada, salud UP; sin migración ni cambios de fondos/volúmenes. Revisión
+  visual autenticada pendiente del propietario. La prueba humana de devolución $100 del pago $400
+  sigue pendiente; no se ejecutó devolución por herramientas ni se confirmó el caso en guía.
+
+## Botón de cambio de cuenta en devolución — 2026-10-07
+
+- Se reemplaza el checkbox visible por botón Devolver desde otra cuenta con diseño
+  existente, estado accesible aria-pressed/expanded y área táctil mínima 44px. Activo
+  cambia a Conservar cuenta original; volver restaura cuenta, oculta motivo y lo limpia.
+  Estado booleano se envía por campo oculto; las validaciones financieras no cambian.
+- Se corrige CSS: regla del formulario display:block anulaba hidden del apartado de
+  motivo. Regla específica hidden ahora garantiza que no aparezca mientras no se active.
+- Verificado: 568 pruebas Java sin fallos; Node cubre activación por botón, estado oculto,
+  motivo condicional, restauración y cantidades. Sólo app recreada, salud UP; sin migración
+  ni cambios de saldos/volúmenes. Revisión visual autenticada a cargo del propietario.
+  Sin ejecutar devolución. Prueba humana $400 → devolver
+  $100 todavía pendiente de confirmación; no añadirla como confirmada a la guía.
+
+## Cuenta protegida en devoluciones — 2026-10-07
+
+- Pago recibido → Ver → Devoluciones precarga y protege la cuenta donde se validó el
+  ingreso. Devolver desde otra cuenta habilita la ayuda existente; desactivarlo restaura
+  ID/nombre originales, limpia motivo y cancela búsqueda pendiente. Autocompletado respeta
+  readonly para no consultar, borrar ni seleccionar opciones mientras esté protegido.
+- Si se elige otra cuenta, motivo obligatorio hasta 500 caracteres, validado en servicio
+  contra la cuenta real del pago (no un ID original enviado por el navegador). No basta
+  alterar el input/POST. Se mantienen institución, moneda, alcance, saldo, fechas, actor,
+  concurrencia, idempotencia y límites de la devolución. Pagos sin cuenta original requieren
+  selección explícita y motivo; no se inventa una cuenta histórica.
+- Motivo del cambio se añade con etiqueta al motivo de la devolución visible en historial
+  (límite conjunto 2000); auditoría registra cuenta original, cuenta de egreso y motivo por
+  campos. Se usan tablas existentes, sin migración (siguiente V65), roles ni cambios de datos.
+- Resumen indica Se descontarán [importe] de [cuenta], con diseño existente claro/oscuro.
+  Verificado: 568 pruebas Java sin fallos; Node cubre cuenta protegida, cambio/motivo,
+  restauración y vista $100/$300/$100; flujo familiar anterior correcto y diff limpio.
+  Sólo app recreada, salud UP. Sin migración ni devolución por herramientas; PostgreSQL
+  y volúmenes intactos. Revisión visual autenticada pendiente del propietario.
+- Pendiente humano: pago de prueba corregido/validado $400 → devolución parcial $100 desde
+  misma cuenta → cuenta −$100, abono activo $300, deuda $100. No publicar aún como guía
+  confirmada; esperar resultado del propietario. Cinco guías confirmadas / 40 etapas.
+
 ## V64 — rechazo y reenvío corregido de $400 confirmado — 2026-10-07
 
 - Propietario confirmó completar la prueba, validar el reporte corregido, aumento de $400 en

@@ -23,12 +23,20 @@
         let etiquetaSeleccionada = entrada.value;
 
         actualizarLimpiar();
+        contenedor.addEventListener('autocomplete:restore', () => {
+            clearTimeout(temporizador); solicitud?.abort();
+            etiquetaSeleccionada = entrada.value;
+            cerrarLista(); actualizarLimpiar();
+            mostrarEstado(entrada.readOnly ? 'Cuenta donde se recibió el pago. Protegida para evitar cambios accidentales.' : 'Selecciona la cuenta de donde saldrá el dinero.');
+        });
         entrada.addEventListener('focus', () => {
+            if (entrada.readOnly) return;
             if ((!sinAlcance && !alcance.value) || entrada.value.trim() || opciones.length) return;
             mostrarEstado('Cargando opciones…');
             buscar('');
         });
         entrada.addEventListener('input', () => {
+            if (entrada.readOnly) return;
             if (entrada.value !== etiquetaSeleccionada) {
                 valor.value = '';
                 valor.dispatchEvent(new Event('change', {bubbles: true}));
@@ -52,6 +60,7 @@
         });
 
         entrada.addEventListener('keydown', evento => {
+            if (entrada.readOnly) return;
             if (!opciones.length) return;
             if (evento.key === 'ArrowDown') {
                 evento.preventDefault();
@@ -68,6 +77,7 @@
         });
 
         limpiar?.addEventListener('click', () => {
+            if (entrada.readOnly) return;
             entrada.value = '';
             valor.value = '';
             valor.dispatchEvent(new Event('change', {bubbles: true}));
@@ -95,14 +105,15 @@
         });
 
         async function buscar(consulta) {
-            solicitud = new AbortController();
+            const actual = new AbortController();
+            solicitud = actual;
             const parametros = new URLSearchParams({q: consulta});
             if (!sinAlcance) parametros.set(parametroAlcance, alcance.value);
             if (contenedor.dataset.excludeId) parametros.set('tutorId', contenedor.dataset.excludeId);
             try {
                 const respuesta = await fetch(`${contenedor.dataset.endpoint}?${parametros}`, {
                     headers: {'Accept': 'application/json'},
-                    signal: solicitud.signal
+                    signal: actual.signal
                 });
                 if (respuesta.redirected && new URL(respuesta.url).pathname === '/login') {
                     window.location.assign('/login?sesionExpirada');
@@ -110,9 +121,11 @@
                 }
                 if (!respuesta.ok) throw new Error('No fue posible consultar el catálogo');
                 const datos = await respuesta.json();
+                if (entrada.readOnly || actual.signal.aborted || solicitud !== actual) return;
                 renderizar(datos.resultados || [], Boolean(datos.hayMas));
             } catch (error) {
-                if (error.name !== 'AbortError') mostrarEstado('No se pudo completar la búsqueda. Intenta nuevamente.');
+                if (error.name !== 'AbortError' && !entrada.readOnly && solicitud === actual)
+                    mostrarEstado('No se pudo completar la búsqueda. Intenta nuevamente.');
             }
         }
 
@@ -148,6 +161,7 @@
         }
 
         function seleccionar(opcion) {
+            if (entrada.readOnly) return;
             entrada.value = opcion.titulo;
             valor.value = opcion.id;
             valor.dispatchEvent(new Event('change', {bubbles: true}));
@@ -188,7 +202,7 @@
         }
 
         function actualizarLimpiar() {
-            if (limpiar) limpiar.hidden = !entrada.value;
+            if (limpiar) limpiar.hidden = entrada.readOnly || !entrada.value;
         }
     }
 })();
