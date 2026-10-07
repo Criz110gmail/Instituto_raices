@@ -9,6 +9,12 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+Los importes administrativos se capturan como texto con teclado decimal: el scroll no
+los incrementa. Al salir del campo se muestran como moneda y al editar como decimal;
+el servicio recibe el decimal limpio (por ejemplo, `$1,400.50` → `1400.50`). No se redondean
+entradas inválidas ni se cambian porcentajes/cantidades. Validar pagos, devolver dinero y
+aplicar ajustes requieren revisar el modal y pulsar **Confirmar operación**; cancelar no envía.
+
 La guía **Devolver $100 y pagar nuevamente el saldo** documenta la devolución parcial
 confirmada de un pago de $400 y la liquidación posterior desde el portal familiar: egreso
 $100, deuda recuperada $100, nuevo ingreso $100 y saldo final $0. Conserva ambos pagos y

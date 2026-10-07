@@ -1,5 +1,67 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Foco de captura monetaria sólo al clicar el campo — 2026-10-07
+
+- Causa de foco al clicar arriba: activación nativa de label envolvente/asociado. Componente
+  evita esa activación por mouse/tacto en título/espacio del label, sólo para importes;
+  clic directo en input y Tab/foco asistido siguen funcionando. Botones/enlaces/controles
+  de ayuda dentro de label no se interceptan. Al clicar título de campo ya activo se quita
+  foco y reaparece moneda; readonly conserva moneda incluso al recibir foco.
+- Clase del input visible cambia a money-entry: money-input ya pertenecía a un contenedor
+  de forms.css con grid de dos columnas. No reutilizar nombres de clases sin comprobar su
+  uso previo. Valores canónicos, límites, modales, cálculos y envío no cambian.
+- Verificado: 576 pruebas Java y ocho suites Node sin fallos. Simulación DOM cubre label
+  asociado/envolvente, clic título bloqueado, clic campo permitido, desenfoque/formato,
+  activación asistida y botones de ayuda; regresiones monetarias previas correctas.
+  Sólo app recreada, salud UP y JS servido actualizado; sin migración ni cambios de fondos
+  o volúmenes. No se hizo inspección visual autenticada real; confirmar foco con propietario.
+  V67 libre;
+  prueba de devolución más descuento y captura/scroll/formato aún a cargo del propietario.
+
+## Captura monetaria segura y confirmaciones — V66 — 2026-10-07
+
+- 14 formularios administrativos de importes usan input text/data-money y teclado decimal:
+  cuotas, cargos, ajustes, pagos/distribución, devoluciones, becas fijas, recargos fijos/tope,
+  cuentas, movimientos, retiros, traspasos, corte, convenio y compras/precios (incluidas filas
+  nuevas). Porcentajes, cantidades, horas, fechas y calificaciones siguen sus controles.
+  Portal familiar ya tenía monto calculado protegido y decimal oculto; no se vuelve editable.
+- money-input.js conserva el input original como hidden canónico (mismos IDs/nombres y
+  valores numéricos para scripts/servicio) y crea visible text sin name. Al foco muestra
+  decimal, al blur moneda; original.value programático actualiza presentación, eventos
+  del visible notifican input/change originales. readonly/disabled/min/max/required y
+  setCustomValidity/focus/check/report se reflejan. Filas dinámicas se inicializan una vez,
+  renumeración de nombres sigue sobre original, reset vuelve al valor inicial.
+- Parsing exacto por cadenas/BigInt, sin redondear entrada; hasta 2 decimales, pega formato
+  $1,400.50 o decimal 1400.50, permite coma decimal no ambigua. Rechaza 1,400 sin símbolo ni
+  punto decimal, notación científica, negativos, exceso de precisión y texto inválido;
+  no convertirlos silenciosamente en cero ni enviar $/separadores. Tope híbrido conserva
+  precisión histórica 4 decimales: sólo muestra moneda para MONTO_FIJO, porcentaje sin $.
+  Servidor mantiene BigDecimal/Bean Validation, autoridad y reglas de negocio existentes.
+- Modal nativo compartido confirma Validar y publicar, Ejecutar devolución y publicar egreso
+  y Aplicar ajuste al saldo: importe, cuenta/titular o cargo/alumno/efecto según operación,
+  deuda recuperada y abono en devolución. Volver a revisar/Escape/fondo no envían; foco y
+  teclado nativos, modo oscuro/móvil, texto literal textContent; Confirmar operación usa
+  requestSubmit conservando handlers/CSRF y aprobación sólo para ese envío, no futuros.
+- V66 sólo actualiza pasos editoriales que mencionan esos botones y su versión; seis guías
+  / 48 etapas, sin publicar la prueba aún pendiente de devolución más descuento.
+- Verificado: 575 pruebas Java sin fallos; ocho suites Node incluidas captura/parser exacto,
+  simulación DOM (foco/blur, validación, bloqueos, filas nuevas/tope híbrido, cancelar y
+  confirmar una sola vez) y regresiones anteriores. Binding BigDecimal y reglas financieras
+  existentes aprobados. SQL editorial probado con rollback; V66 aplicada por Flyway,
+  lectura confirma seis guías / 48 etapas / nueve pasos con confirmación y versiones una
+  sola vez incrementadas. Sólo app recreada, salud UP y JS nuevo servido; sin operaciones
+  financieras ni cambios de PostgreSQL/volúmenes. No se hizo QA visual autenticado real;
+  captura/formato en navegador/móvil y desenlace descuento pendientes del propietario.
+- Durante preparación editorial se ejecutó V66 directamente una vez: se restauraron sólo
+  texto añadido/versiones a 4/6/3/2/1/1, con fecha previa idéntica; luego se probó en rollback
+  y se aplicó exclusivamente por Flyway. No dejó incrementos duplicados ni tocó finanzas.
+  Validar migraciones SQL siempre con BEGIN/ROLLBACK explícito, nunca psqlear archivo directo.
+- Siguiente V67. Prueba humana pendiente: concepto
+  DEV-DESC-TEST permite descuento, nueva cuota/cargo $400 → pagar/validar $400 → devolver
+  $100 → descontar $100 → ajustado $300, pagado $300, saldo $0; descuento no mueve cuenta.
+  Incluir al capturar cuota: teclear 400, usar rueda con foco, salir/ver $400.00, volver/ver
+  400.00, guardar y verificar cuota400/vista previa400. No reutilizar el cargo liquidado.
+
 ## V65 — devolución parcial y nuevo pago confirmados — 2026-10-07
 
 - Propietario confirmó devolución $100 del pago validado $400: historial devuelto $100,

@@ -1,0 +1,23 @@
+.money-entry { font-variant-numeric: tabular-nums; }
+.money-entry[aria-invalid=true] { border-color: #bf5262; }
+.money-confirm-dialog { box-sizing: border-box; width: min(520px,calc(100% - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 28px; border: 1px solid var(--line,#dfe7f0); border-radius: 22px; background: var(--surface,#fff); color: var(--ink,#0b1930); font: 500 .9rem "DM Sans",system-ui,sans-serif; box-shadow: 0 25px 90px #08172c55; }
+.money-confirm-dialog::backdrop { background: #07162799; backdrop-filter: blur(4px); }
+.money-confirm-badge { display:inline-block; padding:6px 10px; border-radius:999px; background:#e5f6f2; color:#176d5e; font-size:.7rem; font-weight:800; }
+.money-confirm-dialog h2 { margin:15px 0 18px; font:800 1.3rem Manrope,system-ui,sans-serif; }
+.money-confirm-dialog dl { display:grid; gap:6px; margin:0; padding:18px; border:1px solid var(--line,#dfe7f0); border-radius:14px; background:var(--soft,#f3f7fb); }
+.money-confirm-dialog dt { margin-top:10px; color:var(--muted,#697a90); font-size:.73rem; }
+.money-confirm-dialog dt:first-child { margin-top:0; }
+.money-confirm-dialog dd { margin:0; font-weight:800; overflow-wrap:anywhere; white-space:pre-wrap; }
+.money-confirm-dialog p { color:var(--muted,#697a90); font-size:.8rem; line-height:1.6; }
+.money-confirm-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:10px; margin-top:22px; }
+.money-confirm-actions button { min-height:44px; padding:11px 16px; border-radius:11px; border:1px solid var(--line,#dfe7f0); font:inherit; font-size:.8rem; font-weight:800; cursor:pointer; }
+.money-confirm-cancel { background:var(--surface,#fff); color:var(--ink,#0b1930); }
+.money-confirm-accept { background:#08785f; color:#fff; }
+.money-confirm-actions button:focus-visible { outline:3px solid var(--blue,#2979ff); outline-offset:3px; }
+.money-confirm-actions button:disabled { opacity:.5; cursor:wait; }
+body.money-confirm-open { overflow:hidden; }
+[data-theme=dark] .money-confirm-dialog { background:#0e1d31; color:#eef6ff; border-color:#344a63; }
+[data-theme=dark] .money-confirm-dialog dl { background:#13243a; border-color:#344a63; }
+[data-theme=dark] .money-confirm-badge { background:#153d35; color:#a7e9d9; }
+[data-theme=dark] .money-confirm-cancel { background:#19324d; color:#eef6ff; }
+@media(max-width:480px) { .money-confirm-dialog { padding:20px; } .money-confirm-actions { flex-direction:column-reverse; } .money-confirm-actions button { width:100%; } }

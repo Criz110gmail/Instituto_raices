@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/css/forms.css">
     <script src="/js/theme.js"></script>
     <script src="/js/cuenta-financiera-form.js" defer></script>
-</head>
+<link rel="stylesheet" href="/css/money-input.css"><script src="/js/money-input.js" defer></script></head>
 <body class="form-page">
 <main class="form-shell finance-shell">
     <header class="form-top">
@@ -96,7 +96,7 @@
                 <legend>Apertura</legend>
                 <div class="form-grid">
                     <label><span>Moneda *</span><input th:field="*{moneda}" maxlength="3"><small class="field-error" th:errors="*{moneda}"></small></label>
-                    <label><span>Saldo inicial *</span><input type="number" min="0" step="0.01" th:field="*{saldoInicial}"><small class="field-error" th:errors="*{saldoInicial}"></small></label>
+                    <label><span>Saldo inicial *</span><input data-money inputmode="decimal" type="text" min="0" step="0.01" th:field="*{saldoInicial}"><small class="field-error" th:errors="*{saldoInicial}"></small></label>
                     <label><span>Fecha del saldo *</span><input type="date" th:field="*{fechaSaldoInicial}"><small class="field-error" th:errors="*{fechaSaldoInicial}"></small></label>
                     <label th:if="${edicion}"><span>Saldo actual de la cuenta</span><input type="text" th:value="${@formatoMoneda.pesos(saldoActual)}" readonly aria-readonly="true"><small class="field-help">Incluye el saldo inicial y los movimientos registrados. Sólo consulta.</small></label>
                     <label class="policy-card wide"><input type="checkbox" th:field="*{activo}"><span><strong>Cuenta activa</strong><small>Disponible como destino para operaciones futuras.</small></span></label>

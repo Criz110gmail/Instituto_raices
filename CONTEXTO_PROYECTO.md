@@ -1,5 +1,43 @@
 # Contexto del proyecto
 
+## Ajuste de foco en campos monetarios (2026-10-07)
+
+- Label nativo activaba campo al clicar título/espacio superior. Se evita activación por
+  puntero fuera del input sólo para importes; mantiene Tab, nombre accesible, activación
+  asistida y botones de ayuda. Si estaba activo, clic en título lo desenfoca/formatea.
+- Clase money-entry separada del contenedor money-input ya existente; readonly conserva
+  presentación monetaria. No cambia valor, parsing, negocio, modal ni datos de servidor.
+- Verificado: 576 pruebas Java y ocho suites Node correctos, incluyendo label asociado y
+  envolvente, título vs input, desenfoque, activación asistida y ayuda. Sólo app recreada,
+  salud UP y JS nuevo servido; sin migración, fondos o volúmenes modificados. Prueba
+  visual real y devolución más descuento siguen pendientes; próxima migración V67.
+
+## V66 — captura monetaria sin scroll y revisión antes de publicar (2026-10-07)
+
+- Text/teclado decimal en importes de 14 formularios; foco decimal y blur formato moneda.
+  Componente separa visible sin name de hidden original canónico, conserva scripts/IDs,
+  BigDecimal, bloqueos, límites, validación y filas dinámicas. No se envían $ ni agrupaciones.
+  Texto inválido/ambiguo o precisión extra se rechaza, no se redondea ni convierte a cero.
+  Cantidades/horas/calificaciones/porcentajes no se cambian; tope híbrido conserva 4 decimales
+  y sólo se presenta moneda en MONTO_FIJO. Portal familiar sigue calculado y protegido.
+- Confirmación nativa con diseño existente para validar, devolver y ajustar; resumen exacto
+  de operación. Cancelar/Escape/fondo no envían; Confirmar operación mantiene validación,
+  handlers y CSRF, sin aprobación permanente. Métodos del input original delegan al visible.
+- V66 actualiza sólo contenido de guías para mencionar modal/Confirmar operación. Seis
+  guías confirmadas, 48 etapas; segunda vertiente no confirmada todavía. Siguiente V67.
+- Verificado: 575 pruebas Java y ocho suites Node sin fallos; simulación DOM de formato,
+  canonical/binding decimal, límites, readonly, filas nuevas, tope, cancelación y tres tipos
+  de confirmación. No se hizo revisión visual autenticada en navegador real.
+- V66 aplicada, salud UP, sólo app recreada; lectura confirma seis guías/48 etapas y nueve
+  pasos con confirmación. JS nuevo servido. No se ejecutaron movimientos financieros.
+- Preparación SQL editorial: ejecución directa temporal de V66 se restauró exactamente
+  (texto añadido y versiones originales 4/6/3/2/1/1; fecha no varió), antes de prueba con
+  rollback y aplicación por Flyway. Resultado sin duplicar versiones ni confirmaciones;
+  no hubo modificaciones de fondos. En siguientes validaciones usar BEGIN/ROLLBACK explícito.
+  Prueba humana pendiente: monto cuota400 y scroll/formato/envío, pagar400, devolver100,
+  descuento100 en cargo separado → original400/ajustado300/pagado300/saldo0, sin ingreso
+  ni egreso adicional al aplicar descuento. No repetir operaciones del caso ya confirmado.
+
 ## V65 — devolución $100 y liquidación posterior confirmada (2026-10-07)
 
 - Confirmación humana: historial devuelto $100, cuenta −$100, cargo $400 con saldo $100;
