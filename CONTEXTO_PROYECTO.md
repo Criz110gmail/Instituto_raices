@@ -1,5 +1,26 @@
 # Contexto del proyecto
 
+## Resumen de adeudo comprensible — V72 — 2026-10-07
+
+- Propietario confirmó pago600 validado aumentó caja y posterior cancelación devolvió la
+  cuenta a B; adeudo sigue pendiente con pagado neto0/saldo600. Resultado humano confirmado,
+  no ejecutado por herramientas. No cancelar el adeudo aún; esa prueba requiere revisar
+  las restricciones por historial de aplicaciones. Guía específica de cancelación aún pendiente.
+- Resumen conserva importes/cálculos y usa Total del adeudo con ajustes, Abonos vigentes
+  y Falta por pagar, últimos dos destacados en tarjetas distribution-total existentes.
+  Ayuda explica dinero actualmente aplicado, excluye cancelados/devueltos y conserva historial.
+  Sin abonos/saldo positivo aclara que cancelar un pago no cancela la obligación.
+  Liquidado informa sin pendiente; cancelado/convenido diferencia saldo no exigible de recibido.
+- V72 homologa etiquetas en instrucciones/resultados existentes (cinco pasos), sin publicar
+  nuevo caso ni modificar pagos/cargos/saldos. Siete guías/57 etapas.
+- Verificado: 590 pruebas Java sin fallos, con render real de pendiente sin abonos, parcial,
+  liquidado y cancelado. SQL probado con BEGIN/ROLLBACK; V72 aplicada, siete guías/57 etapas.
+  Sólo app recreada, salud UP, sin operaciones financieras ni cambios de base/volúmenes.
+  Revisión visual autenticada pendiente; diff limpio. Siguiente migración V73.
+- Continuación: propietario recarga Adeudos → Ver → Resumen y confirma claridad del caso600.
+  Antes de cancelar este adeudo, revisar regla vigente sobre pagos históricos; no prometer
+  que la cancelación está permitida ni ejecutar operaciones financieras por herramientas.
+
 ## Confirmación del registro administrativo de pago — V71 — 2026-10-07
 
 - Adeudos de alumnos → Ver → Resumen → Registrar pago abre formulario compartido; su botón

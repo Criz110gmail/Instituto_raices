@@ -9,6 +9,11 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+**Adeudos → Ver → Resumen** distingue **Total del adeudo con ajustes**, **Abonos vigentes**
+y **Falta por pagar**. Los abonos son dinero que sigue aplicado, no todo lo recibido en
+la historia: cancelaciones/devoluciones pueden recuperar deuda sin borrar los movimientos.
+Cancelar un pago no cancela el adeudo. Las tarjetas reutilizan el diseño y los temas comunes.
+
 **Adeudos de alumnos → Ver → Resumen → Registrar pago** y el alta general de Pagos
 recibidos confirman el registro antes de guardar. **Registrar como pendiente** abre un
 resumen de tutor, importe, cuenta, método, fecha, distribución y archivos. **Cancelar**

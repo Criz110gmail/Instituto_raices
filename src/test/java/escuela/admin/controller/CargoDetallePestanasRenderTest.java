@@ -26,12 +26,13 @@ class CargoDetallePestanasRenderTest {
     @Controller static class Vista {
         final StaticApplicationContext app=new StaticApplicationContext();
         Vista(){app.getBeanFactory().registerSingleton("formatoMoneda",new FormatoMoneda());}
-        @GetMapping("/test/cargo") String render(@RequestParam(defaultValue="EMITIDO") String estado,Model m){
+        @GetMapping("/test/cargo") String render(@RequestParam(defaultValue="EMITIDO") String estado,@RequestParam(defaultValue="300.00") String pagado,Model m){
             var f=LocalDate.of(2026,10,7);var zero=new BigDecimal("0.00");
+            var abonos=new BigDecimal(pagado);var saldo=estado.equals("EMITIDO")?new BigDecimal("400.00").subtract(abonos):zero;
             m.addAttribute("cargo",new CargoResponse(1L,2L,3L,4L,"Centro",5L,"A-1","Ana Prueba","INS-1",
                     6L,"TEST","Prueba",7L,"UNICO","Cuota prueba",f,f,null,null,f,null,f,
                     new BigDecimal("400.00"),"MXN",EstadoRegistroCargo.valueOf(estado),null,null,
-                    zero,zero,new BigDecimal("400.00"),new BigDecimal("300.00"),new BigDecimal("100.00"),
+                    zero,zero,new BigDecimal("400.00"),abonos,saldo,
                     SituacionCobro.PARCIAL,false,new AuditoriaResponse(Instant.now(),1L,Instant.now(),1L,0L),null,null));
             var form=new AjusteCargoForm();form.setMonto(new BigDecimal("100.00"));form.setMotivo("Prueba <script> literal");
             m.addAttribute("ajusteForm",form);m.addAttribute("tiposAjuste",new TipoAjusteCargo[]{TipoAjusteCargo.DESCUENTO,TipoAjusteCargo.RECARGO,TipoAjusteCargo.CORRECCION});
@@ -43,6 +44,9 @@ class CargoDetallePestanasRenderTest {
         }
     }
     String render(String state) throws Exception {
+        return render(state,"300.00");
+    }
+    String render(String state,String paid) throws Exception {
         var resolver=new ClassLoaderTemplateResolver();resolver.setPrefix("templates/");resolver.setSuffix(".html");resolver.setCharacterEncoding("UTF-8");
         var engine=new SpringTemplateEngine();engine.setTemplateResolver(resolver);
         var views=new ThymeleafViewResolver();views.setTemplateEngine(engine);views.setCharacterEncoding("UTF-8");
@@ -52,7 +56,7 @@ class CargoDetallePestanasRenderTest {
         var context=mvc.getDispatcherServlet().getWebApplicationContext();
         var addBean=context.getClass().getDeclaredMethod("addBean",String.class,Object.class);
         addBean.setAccessible(true);addBean.invoke(context,"formatoMoneda",new FormatoMoneda());
-        return mvc.perform(get("/test/cargo").param("estado",state)).andReturn().getResponse().getContentAsString();
+        return mvc.perform(get("/test/cargo").param("estado",state).param("pagado",paid)).andReturn().getResponse().getContentAsString();
     }
     @Test void cincoPestanasDatosPersistentesCapturaYVistaPrevia() throws Exception {
         String html=render("EMITIDO");
@@ -60,10 +64,20 @@ class CargoDetallePestanasRenderTest {
             assertThat(html).contains("id=\"tab-cargo-"+id+"\"","id=\"panel-cargo-"+id+"\"");
         assertThat(html).contains("Ana Prueba","Saldo pendiente actual","$100.00","data-force-active-tab=\"ajustes\"",
                 "data-charge-total=\"400.00\"","data-charge-paid=\"300.00\"","Así quedaría el cargo","charge-preview-balance",
-                "Sin transferencias por revisar","type=\"text\"","data-money","Cancelar cargo al alumno","&lt;script&gt;");
+                "Sin transferencias por revisar","type=\"text\"","data-money","Cancelar cargo al alumno","&lt;script&gt;",
+                "Abonos vigentes","Falta por pagar","Total del adeudo con ajustes");
     }
     @Test void canceladoNoPermiteCapturarNuevoAjusteNiRegistrarPago() throws Exception {
-        assertThat(render("CANCELADO")).contains("Este cargo no admite nuevos ajustes","Cancelación")
+        assertThat(render("CANCELADO")).contains("Este cargo no admite nuevos ajustes","Cancelación","no significa que se haya recibido ese dinero")
                 .doesNotContain("id=\"charge-adjustment-form\"","Registrar pago <span","Cancelar cargo al alumno</button>");
+    }
+    @Test void sinAbonosExplicaDeudaSinAfirmarUnaCancelacionHistorica() throws Exception {
+        assertThat(render("EMITIDO","0.00")).contains("$400.00","$0.00","Este adeudo no tiene abonos vigentes",
+                "Cancelar un pago no cancela el adeudo","Los importes cancelados o devueltos dejan de contar")
+                .doesNotContain("Este adeudo ya no tiene saldo pendiente por pagar");
+    }
+    @Test void liquidadoExplicaQueYaNoFaltaPagar() throws Exception {
+        assertThat(render("EMITIDO","400.00")).contains("Este adeudo ya no tiene saldo pendiente por pagar")
+                .doesNotContain("Este adeudo no tiene abonos vigentes");
     }
 }

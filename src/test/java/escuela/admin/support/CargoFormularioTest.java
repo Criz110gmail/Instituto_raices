@@ -22,7 +22,7 @@ class CargoFormularioTest {
                 .contains("Registrar cargo");
         assertThat(plantilla("admin/cargo-detalle.html"))
                 .contains("Motivo de fecha de registro diferente", "cargo.motivoFechaRegistroDiferente")
-                .contains("Pagado acumulado", "cargo.montoPagado", "Saldo exigible");
+                .contains("Abonos vigentes", "cargo.montoPagado", "Falta por pagar");
         assertThat(plantilla("admin/cargo-generar.html"))
                 .contains("Visualizar cuotas por aplicar")
                 .contains("th:action=\"@{/admin/cargos/generar/vista-previa}\"")

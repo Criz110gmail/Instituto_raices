@@ -35,9 +35,15 @@
                 <label><span>Importe original</span><strong th:text="${@formatoMoneda.pesos(cargo.importeOriginal)}">$0.00</strong></label>
                 <label><span>Descuentos y becas</span><strong th:text="${'- ' + @formatoMoneda.pesos(cargo.descuentoTotal)}">-$0.00</strong></label>
                 <label><span>Recargos y aumentos</span><strong th:text="${'+ ' + @formatoMoneda.pesos(cargo.recargoTotal)}">+$0.00</strong></label>
-                <label><span>Total ajustado</span><strong th:text="${@formatoMoneda.pesos(cargo.importeTotal)}">$0.00</strong></label>
-                <label><span>Pagado acumulado</span><strong th:text="${@formatoMoneda.pesos(cargo.montoPagado)}">$0.00</strong></label>
-                <label><span>Saldo exigible</span><strong th:text="${@formatoMoneda.pesos(cargo.saldoPendiente)}">$0.00</strong></label>
+                <label><span>Total del adeudo con ajustes</span><strong th:text="${@formatoMoneda.pesos(cargo.importeTotal)}">$0.00</strong><small class="field-help">Importe original menos becas y descuentos, más recargos y aumentos.</small></label>
+                <div class="distribution-total wide" aria-label="Abonos y cantidad pendiente del alumno">
+                    <span><small>Abonos vigentes</small><strong th:text="${@formatoMoneda.pesos(cargo.montoPagado)}">$0.00</strong><small>Dinero que sigue aplicado a este adeudo.</small></span>
+                    <span class="remaining"><small>Falta por pagar</small><strong th:text="${@formatoMoneda.pesos(cargo.saldoPendiente)}">$0.00</strong><small>Importe que todavía debe cubrir el alumno.</small></span>
+                </div>
+                <p class="field-help wide">Los abonos vigentes no son la suma de todos los pagos históricos. Los importes cancelados o devueltos dejan de contar como abono; el historial se conserva.</p>
+                <p class="form-notice wide" th:if="${cargo.estadoRegistro.name() == 'EMITIDO' and cargo.montoPagado.signum() == 0 and cargo.saldoPendiente.signum() > 0}">Este adeudo no tiene abonos vigentes: todavía falta pagar el saldo indicado. Cancelar un pago no cancela el adeudo.</p>
+                <p class="form-notice wide" th:if="${cargo.estadoRegistro.name() == 'EMITIDO' and cargo.saldoPendiente.signum() == 0}">Este adeudo ya no tiene saldo pendiente por pagar.</p>
+                <p class="field-help wide" th:if="${cargo.estadoRegistro.name() != 'EMITIDO'}">Este registro no tiene saldo exigible por su estado administrativo. El importe histórico se conserva; no significa que se haya recibido ese dinero.</p>
             </div></fieldset>
 <footer class="form-actions cargo-detail-actions">                <a class="primary-action detail-payment-button"
                    th:if="${puedeRegistrarPago == true and cargo.estadoRegistro.name() == 'EMITIDO' and (cargo.situacionCobro.name() == 'PENDIENTE' or cargo.situacionCobro.name() == 'PARCIAL')}"
