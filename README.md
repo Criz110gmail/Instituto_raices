@@ -9,6 +9,11 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+Las cuatro guías de cobranza incluyen recorridos explícitos en sus 30 etapas: categoría del
+menú, módulo, registro a buscar, Aplicar filtros, acción Ver/Editar, campos, guardado y
+resultado. Cada cambio entre administración y portal se explica. Regla de documentación:
+no usar instrucciones como «abre el cargo» sin indicar desde dónde llegar e identificarlo.
+
 El envío familiar muestra una tarjeta de **Comprobante recibido · En revisión**: todavía
 no reduce la deuda hasta validación administrativa. El paso **5 · Revisa y envía** usa
 lavanda y se identifica como **Sólo revisión**; no requiere capturar datos nuevamente.

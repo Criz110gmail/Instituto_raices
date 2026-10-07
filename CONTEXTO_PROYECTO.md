@@ -1,5 +1,24 @@
 # Contexto del proyecto
 
+## V63 — detalle de navegación y captura de todas las guías (2026-10-07)
+
+- El propietario pidió evitar indicaciones como Abre Ver del nuevo cargo sin mencionar el
+  módulo. Se reescriben las 30 etapas de las cuatro guías actuales con rutas de menú exactas,
+  buscador/filtros/fila, acciones, controles, guardado, mensajes y resultados. Transiciones
+  entre módulos y /familias explícitas; autorización por cargo y por plantel separadas.
+- Revisión preserva ejemplos/resultados ya confirmados, permisos y precauciones. Corrige
+  exclusión histórica de vencidos, describe selección de filas y diferencia entre cuota,
+  adeudo, pago pendiente y validación. Versiona contenido y fecha con V63, sin tocar migraciones
+  previas ni datos financieros. Misma pantalla, filtros, paginación y Excel existentes.
+- Regla para nuevas guías: cada etapa debe especificar desde dónde empezar y cada cambio
+  de módulo, registro a buscar, botón/pestaña, campos, guardar y resultado; no asumir que el
+  lector sabe dónde está. Comparar nombres con formularios reales.
+- Verificación: 558 pruebas Java sin fallos; regresión cubre todas las etapas y marcadores
+  numerados (los importes no deben partir una acción). Actualización SQL validada con
+  ROLLBACK antes de publicar. V63 exitosa, sólo app desplegada y salud UP. Cuatro guías,
+  30 pasos con inicio explícito y versiones incrementadas, revisadas07/10/2026. No se
+  registraron pagos ni cambiaron saldos/permisos; siguiente V64. Revisar claridad con el dueño.
+
 ## Confirmación funcional y mensajes del portal (2026-10-07)
 
 - Propietario confirmó validación del cargo19 e ingreso850 en caja, y nueva transferencia

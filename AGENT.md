@@ -1,5 +1,30 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V63 — recorridos explícitos de las cuatro guías — 2026-10-07
+
+- Se revisan las cuatro guías actuales y sus 30 etapas: dos hijos 8, beca/recargo 8,
+  pagos parciales 7 y transferencia vencida 7. Cada etapa comienza desde menú/perfil y
+  describe categoría, módulo, búsqueda, Aplicar filtros, fila/Acciones, botón, campos,
+  guardado y comprobación; las transiciones entre módulos y portal son explícitas.
+- Cargo vencido: Operación escolar → Cobranza escolar → Adeudos de alumnos → buscar
+  alumno → Aplicar filtros → Ver en fila correcta → Transferencia de cargo vencido →
+  checkbox → motivo → Guardar autorización. Alternativa general detalla Administración →
+  Configuración escolar → Planteles → buscar → Editar → opción → Guardar cambios.
+- Se corrigen referencias antiguas que excluían todos los vencidos del portal. Se mantienen
+  ejemplos, resultados, permisos, estados confirmados, precauciones de selección/fechas y
+  el diseño. V63 sólo actualiza tablas editoriales y versión/fecha; no cambia operaciones.
+- Regla permanente de guías: no escribir Abre el cargo, Busca el pago, Ve a Ver o Revisa
+  la cuenta sin precisar desde qué menú/módulo se llega, cómo se identifica el registro y
+  qué botón/pestaña/acción se usa. Cada etapa debe poder seguirse sin recordar la pantalla
+  anterior; explicar autocompletado, captura, errores, guardado, resultado y retorno.
+  Revisar nombres exactos contra HTML/rutas; distinguir guardar pendiente de validar.
+- Verificación: 558 pruebas Java aprobadas, incluyendo cobertura de las 30 etapas,
+  rutas/botones de autorización y numeración sin confundir importes con acciones. SQL
+  de actualización validado primero con ROLLBACK; V63 aplicada y sólo app desplegada,
+  salud UP. SQL confirma cuatro guías revisadas07/10 y30 etapas con origen explícito.
+  No se cambiaron operaciones ni permisos. Siguiente migración V64; revisión de claridad
+  en pantalla a cargo del propietario. No se editó ninguna migración previamente aplicada.
+
 ## Confirmación de transferencia vencida y claridad visual — 2026-10-07
 
 - Propietario confirmó validación del cargo19 y aumento850 en caja. Después creó una
