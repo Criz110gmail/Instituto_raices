@@ -1,5 +1,23 @@
 # Contexto del proyecto
 
+## Confirmación funcional y mensajes del portal (2026-10-07)
+
+- Propietario confirmó validación del cargo19 e ingreso850 en caja, y nueva transferencia
+  del cargo vencido500 desde portal familiar, validada con aumento bancario500. No fueron
+  operaciones del agente. No se declaran probadas revocaciones, duplicados ni concurrencia.
+- Se da diseño al resultado del envío: tarjeta menta Comprobante recibido, estado En revisión,
+  mensaje escapado y explicación de revisión antes de descontar deuda. Accesible role=status,
+  responsivo, sin temporizador. Paso5 se distingue con lavanda, etiqueta Sólo revisión y
+  explicación de que el resumen se llena automáticamente; conserva los controles anteriores.
+- V62 agrega contenido editorial confirmado500 a Guía de procesos, siete pasos con rutas,
+  ejemplo, precauciones y resultados. No crea pagos ni cambia permisos. Siguiente V63.
+- Verificación: 555 pruebas Java sin fallos y prueba Node del flujo correctas; render real
+  del aviso comprueba estado, mensaje escapado y ausencia si no hay confirmación. Paso5
+  verificado sin controles de captura. Sólo app desplegada, salud UP; V62 aplicada y guía
+  confirmada con siete pasos. Revisión visual autenticada pendiente del propietario.
+  Primer intento de V62 se revirtió por enlace /familias no admitido en la guía administrativa;
+  se dejó enlace NULL y texto de acceso, sin ampliar la restricción. Migración final confirmada.
+
 ## V61 — reporte de transferencias vencidas (2026-10-06)
 
 - Implementado control general por plantel (inicialmente desactivado) y excepción por cargo

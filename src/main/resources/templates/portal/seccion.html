@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#fff9f2"><title th:text="${(seccion=='NOTIFICACIONES'?'Notificaciones':(seccion=='AVISOS'?'Avisos':(seccion=='AGENDA'?'Agenda':(seccion=='CALIFICACIONES'?'Calificaciones':(seccion=='BOLETAS'?'Boletas':(seccion=='HORARIO'?'Horario':'Tus pagos'))))))+' · Mi familia'}">Mi familia</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/portal.css"><link rel="stylesheet" href="/css/notifications.css"><link rel="stylesheet" href="/css/portal-actions.css"><link rel="stylesheet" href="/css/portal-boletas.css"><script src="/js/theme.js"></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/portal.css?v=62"><link rel="stylesheet" href="/css/notifications.css"><link rel="stylesheet" href="/css/portal-actions.css"><link rel="stylesheet" href="/css/portal-boletas.css"><script src="/js/theme.js"></script>
 </head>
 <body th:classappend="${soporte == true ? ' support-mode' : ''}">
 <header class="family-bar">
@@ -12,7 +12,11 @@
 </header>
 <main class="family-shell portal-section-shell">
     <section class="support-mode-banner" th:if="${soporte == true}"><strong>Vista de soporte</strong><span>Esta vista es únicamente de consulta.</span><a href="/admin/portal-soporte">Salir de soporte</a></section>
-    <div class="form-alert success" th:if="${mensajePortal}" th:text="${mensajePortal}"></div>
+    <section class="family-transfer-success" th:if="${mensajePortal}" role="status" aria-live="polite" aria-atomic="true">
+        <span class="family-transfer-success-icon" aria-hidden="true">✓</span>
+        <div><span class="family-transfer-success-label">Comprobante recibido</span><h2>Tu transferencia fue enviada</h2><p th:text="${mensajePortal}"></p><small>El saldo se actualizará cuando la administración valide el pago. Puedes consultar su estado en Tus pagos y comprobantes.</small></div>
+        <span class="family-transfer-success-state"><span aria-hidden="true">◷</span> En revisión</span>
+    </section>
     <section class="portal-section-hero" th:classappend="${' '+seccion.toLowerCase()}"><div class="portal-section-symbol" aria-hidden="true" th:text="${seccion=='HORARIO'?'◷':(seccion=='NOTIFICACIONES'?'♡':(seccion=='AVISOS'?'♡':(seccion=='AGENDA'?'▣':(seccion=='CALIFICACIONES'?'✓':(seccion=='BOLETAS'?'▤':'$')))))}">♡</div><div><span th:text="${seccion=='HORARIO'?'Su semana escolar':(seccion=='NOTIFICACIONES'?'Tu bandeja personal':(seccion=='AVISOS'?'Mensajes de tu escuela':(seccion=='AGENDA'?'Para que no se te pase nada':(seccion=='CALIFICACIONES'?'Avance académico':(seccion=='BOLETAS'?'Documentos académicos':'Cargos y transferencias')))))}"></span><h1 th:text="${seccion=='HORARIO'?'Horario de clases':(seccion=='NOTIFICACIONES'?'Notificaciones':(seccion=='AVISOS'?'Avisos importantes':(seccion=='AGENDA'?'Agenda':(seccion=='CALIFICACIONES'?'Calificaciones':(seccion=='BOLETAS'?'Boletas':'Tus pagos')))))}"></h1><p th:text="${seccion=='HORARIO'?'Consulta las materias, horas y aulas que corresponden a su grupo.':(seccion=='NOTIFICACIONES'?'Aquí encontrarás únicamente las novedades que corresponden a tu familia.':(seccion=='AVISOS'?'Consulta con calma la información publicada por la escuela.':(seccion=='AGENDA'?'Revisa las próximas actividades y sus indicaciones.':(seccion=='CALIFICACIONES'?'Aquí aparecen únicamente los resultados que la escuela ya publicó.':(seccion=='BOLETAS'?'Consulta por ciclo y abre la boleta oficial sin descargar archivos innecesariamente.':'Consulta saldos, cargos y transferencias reportadas.')))))}"></p></div></section>
     <section class="empty-family" th:if="${portal.hijos.empty}"><span>♡</span><h2>Aún no vemos a tus hijos aquí</h2><p>Comunícate con administración para revisar el vínculo de tu cuenta.</p></section>
     <div th:if="${portal.hijo != null}">

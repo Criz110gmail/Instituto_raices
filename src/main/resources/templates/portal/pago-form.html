@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#fff9f2"><title>Reportar transferencia · Nexo Escolar</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/portal.css"><link rel="stylesheet" href="/css/forms.css"><link rel="stylesheet" href="/css/portal-pago.css?v=61"><script src="/js/theme.js"></script><script src="/js/portal-pago.js?v=61" defer></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/portal.css"><link rel="stylesheet" href="/css/forms.css"><link rel="stylesheet" href="/css/portal-pago.css?v=62"><script src="/js/theme.js"></script><script src="/js/portal-pago.js?v=61" defer></script>
 </head>
 <body class="portal-transfer-page">
 <header class="family-bar"><a class="family-brand" href="/portal" aria-label="Volver al portal"><span class="brand-heart">♥</span><span><strong>Mi familia</strong><small>Reportar transferencia</small></span></a><div class="family-actions"><a class="sign-out" href="/portal">Volver <b>↩</b></a><form method="post" th:action="@{/logout}"><input type="hidden" name="origen" value="familias"><button class="sign-out" type="submit" aria-label="Cerrar sesión"><span>Cerrar sesión</span><b aria-hidden="true">↗</b></button></form></div></header>
@@ -34,7 +34,7 @@
             </div></fieldset>
             <fieldset class="portal-payment-section portal-upload-section"><legend>4 · Adjunta el comprobante</legend><label class="portal-upload-zone"><span class="portal-upload-icon">↑</span><span><strong>Adjunta tu comprobante</strong><small>PDF, JPG o PNG · hasta 5 archivos · 10 MB por archivo</small></span><span class="portal-file-button">Seleccionar archivos<input type="file" id="comprobantes" name="comprobantes" accept="application/pdf,image/jpeg,image/png" multiple required></span></label><ul id="archivos-seleccionados" class="portal-selected-files" aria-live="polite"></ul><p class="portal-privacy-note">Puedes seleccionar archivos nuevamente para reemplazar la selección anterior. Tu comprobante sólo será visible para personal autorizado de la escuela.</p></fieldset>
             <fieldset class="portal-payment-section portal-transfer-review"><legend>5 · Revisa y envía</legend>
-                <p class="portal-review-intro">Verifica aquí lo que capturaste sin volver al inicio del formulario.</p>
+                <div class="portal-review-heading"><span class="portal-review-symbol" aria-hidden="true">✓</span><div><span class="portal-review-badge">Sólo revisión · no necesitas capturar nada aquí</span><h3>Así se enviará tu transferencia</h3><p class="portal-review-intro">Este resumen se completa automáticamente. Comprueba los datos antes de enviar; si necesitas corregir algo, cambia el campo correspondiente en las secciones anteriores.</p></div></div>
                 <ul id="resumen-cargos" class="portal-review-charges"><li>Aún no has seleccionado cargos.</li></ul>
                 <dl class="portal-review-facts">
                     <div><dt>Total a transferir</dt><dd id="resumen-total">$0.00</dd></div>

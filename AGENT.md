@@ -1,5 +1,29 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Confirmación de transferencia vencida y claridad visual — 2026-10-07
+
+- Propietario confirmó validación del cargo19 y aumento850 en caja. Después creó una
+  cuota única vencida05/10, emitió el cargo500, lo vio en el portal familiar, reportó el
+  comprobante y validó: confirmó incremento500 en la cuenta bancaria. No fueron operaciones
+  ejecutadas por herramientas. No atribuir a esta prueba revocaciones ni concurrencia.
+- Tus pagos presenta confirmación en tarjeta menta con icono, Comprobante recibido y
+  estado En revisión. Explica que el saldo sólo cambia al validar y dónde consultar el estado.
+  Se mantiene el mensaje del servidor escapado, role=status y no desaparece por temporizador.
+- Reportar transferencia → 5 · Revisa y envía usa la variante lavanda existente y etiqueta
+  Sólo revisión · no necesitas capturar nada aquí. Resumen automático sin inputs; para
+  corregir se usan las secciones anteriores. Mantiene tema claro/oscuro y diseño móvil.
+- V62 incorpora el caso confirmado500 a Guía de procesos en siete pasos, con cuota única,
+  generación seleccionada, autorización, reporte, validación y resultados. El ejemplo no
+  crea cargos ni dinero; su captura de cuota no usa la excepción de fecha del cargo manual.
+- Verificación: 555 pruebas Java aprobadas (incluido render real del aviso, escape del
+  mensaje y resumen sin inputs), prueba Node del flujo familiar y git diff --check correctos.
+  Sólo app desplegada, salud UP y V62 aplicada: guía CONFIRMADA con siete pasos. Próxima
+  migración V63. No se modificaron pagos, roles, vencimientos o importes. Revisión visual
+  autenticada, tema oscuro y móvil a cargo del propietario; no se envió un pago de prueba.
+  El primer arranque detectó enlace familiar incompatible con la restricción de guías;
+  V62 se revirtió y no quedó aplicada. Se corrigió el enlace editorial a NULL (instrucciones
+  conservan /familias), se añadió regresión y el despliegue final aplicó V62 correctamente.
+
 ## V61 — transferencias de cargos vencidos — 2026-10-06
 
 - Planteles → Editar: Permitir reportar transferencias de cargos vencidos. Inicialmente

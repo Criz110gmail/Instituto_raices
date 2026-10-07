@@ -9,6 +9,12 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+El envío familiar muestra una tarjeta de **Comprobante recibido · En revisión**: todavía
+no reduce la deuda hasta validación administrativa. El paso **5 · Revisa y envía** usa
+lavanda y se identifica como **Sólo revisión**; no requiere capturar datos nuevamente.
+La Guía de procesos incluye el caso confirmado de transferencia vencida por $500, desde
+cuota única hasta validación e incremento bancario, con siete pasos y precauciones.
+
 Los cargos vencidos pueden reportarse por transferencia en el portal familiar si se habilita
 **Configuración escolar → Planteles → Editar → Permitir reportar transferencias de cargos
 vencidos**. Para un solo cargo usa **Adeudos de alumnos → Ver → Transferencia de cargo
