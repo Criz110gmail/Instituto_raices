@@ -192,7 +192,7 @@
             if (!kind || event.defaultPrevented || approved.has(form)) return;
             event.preventDefault();
             if (!form.reportValidity()) return;
-            const currency = (kind === 'cuota' ? form.querySelector('#moneda')?.value : null) || form.dataset.confirmCurrency || form.dataset.currency || 'MXN';
+            const currency = (['cuota', 'registro-pago'].includes(kind) ? form.querySelector('#moneda')?.value : null) || form.dataset.confirmCurrency || form.dataset.currency || 'MXN';
             const money = raw => formatMoney(parseMoney(raw).raw, currency) || 'Sin importe';
             const add = (label, value) => {
                 const dt = document.createElement('dt'), dd = document.createElement('dd');
@@ -200,13 +200,44 @@
             };
             details.replaceChildren();
             const paymentDecision = ['validacion', 'rechazo', 'cancelacion'].includes(kind);
-            cancel.textContent = kind === 'cuota' || paymentDecision ? 'Cancelar' : 'Volver a revisar';
+            cancel.textContent = kind === 'cuota' || kind === 'registro-pago' || paymentDecision ? 'Cancelar' : 'Volver a revisar';
             accept.textContent = kind === 'cuota' ? 'Confirmar y crear cuota' : 'Confirmar operación';
             if (paymentDecision) {
                 if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
                 if (form.dataset.confirmSubject) add('Titular del pago', form.dataset.confirmSubject);
             }
-            if (kind === 'cuota') {
+            if (kind === 'registro-pago') {
+                title.textContent = 'Confirmar registro del pago';
+                accept.textContent = 'Confirmar y registrar como pendiente';
+                const value = selector => form.querySelector(selector)?.value || '';
+                add('Tutor titular', value('#tutor-busqueda'));
+                add('Total recibido', money(value('#monto')));
+                const method = value('#metodo');
+                add('Método de pago', method === 'EFECTIVO' ? 'Efectivo' : method === 'TRANSFERENCIA' ? 'Transferencia' : 'Tarjeta');
+                add('Cuenta declarada', value('#cuenta-busqueda'));
+                const when = value('[name="fechaPago"]');
+                const [date, time] = when.split('T');
+                add('Fecha y hora del pago', date ? date.split('-').reverse().join('/') + (time ? ' · ' + time : '') : 'Sin capturar');
+                const reference = value('[name="referencia"]');
+                if (reference) add('Referencia', reference);
+                let distributed = 0n;
+                const cents = raw => BigInt((parseMoney(raw).raw || '0.00').replace('.', ''));
+                const displayCents = amount => {
+                    const digits = amount.toString().padStart(3, '0');
+                    return formatMoney(digits.slice(0, -2) + '.' + digits.slice(-2), currency);
+                };
+                form.querySelectorAll('.distribution-row').forEach((row, index) => {
+                    const amount = row.querySelector('.monto-solicitado')?.value || '';
+                    distributed += cents(amount);
+                    add('Asignación ' + (index + 1), (row.querySelector('.distribution-charge input[type="search"]')?.value || 'Sin cargo seleccionado') + ' · ' + money(amount));
+                });
+                add('Distribuido entre cargos', displayCents(distributed));
+                const available = cents(value('#monto')) - distributed;
+                add('Dinero pendiente de asignar', available >= 0n ? displayCents(available) : 'La distribución supera el total recibido; corrige los importes');
+                const files = form.querySelector('#comprobantes')?.files;
+                add('Comprobantes seleccionados', files?.length ? Array.from(files, file => file.name).join('\n') : 'Sin archivos');
+                note.textContent = 'El pago quedará pendiente de validación. Todavía no reducirá adeudos ni aumentará la cuenta: eso ocurre al validar y publicar. Cancelar conserva la captura y los archivos seleccionados sin guardar.';
+            } else if (kind === 'cuota') {
                 title.textContent = 'Confirmar nueva cuota';
                 const value = id => form.querySelector('#' + id)?.value || '';
                 const selected = id => form.querySelector('#' + id)?.selectedOptions?.[0]?.textContent || 'Sin seleccionar';

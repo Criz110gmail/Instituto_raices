@@ -1,5 +1,27 @@
 # Contexto del proyecto
 
+## Confirmación del registro administrativo de pago — V71 — 2026-10-07
+
+- Adeudos de alumnos → Ver → Resumen → Registrar pago abre formulario compartido; su botón
+  Registrar como pendiente muestra Confirmar registro del pago antes de guardar. También
+  aplica al alta general desde Pagos recibidos, sin cambiar vínculo/origen del flujo rápido.
+- Resumen: tutor, total recibido, método, cuenta declarada, fecha/hora dd/MM/yyyy, referencia,
+  cada cargo/alumno e importe, total distribuido/dinero sin asignar y nombres de archivos.
+  Sumas exactas BigInt/centavos; datos literales con textContent, sin cambiar montos enviados.
+- Cancelar/Escape/fondo conservan captura/archivos sin envío. Confirmar y registrar como
+  pendiente usa requestSubmit/validación/CSRF/multipart originales, un envío autorizado.
+  Aclara que registrar no modifica cuentas/adeudos hasta validar. Servicios sin cambios.
+- V71 actualiza dos pasos editoriales de guías que registran pago administrativo y versiones;
+  siete guías/57 etapas. La prueba de cancelación sigue pendiente de confirmación humana.
+- Verificado: 588 pruebas Java sin fallos, diff limpio; SQL probado en BEGIN/ROLLBACK,
+  V71 aplicada, siete guías/57 etapas conservadas. Sólo app recreada, salud UP y base/volúmenes
+  intactos; sin operaciones financieras ni revisión visual autenticada. Próxima migración V72.
+  Once suites Node pasan incluyendo
+  resumen600, cambio a parcial300, archivo literal conservado al cancelar y un solo envío.
+- Continuar prueba del propietario: formulario de pago nuevo $600 del mismo adeudo, revisar
+  modal, confirmar pendiente, validar → B+600/deuda0, cancelar pago validado → B/deuda600.
+  No crear pagos ni ejecutar decisiones financieras por herramientas.
+
 ## Confirmaciones de decisiones de pago — V70 — 2026-10-07
 
 - Pagos recibidos → Ver → Gestión: cada acción muestra confirmación específica, reutilizando

@@ -198,4 +198,26 @@ assert.equal(rows()['Cuenta del ingreso que se compensará'],'Caja prueba');
 assert.equal(rows()['Egreso compensatorio'],'$600.00');assert.match(rows()['Efecto en los adeudos'],/recuperará la deuda/);
 cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,4);
 submit();accept.dispatchEvent({type:'click'});accept.dispatchEvent({type:'click'});assert.equal(form.submissions,5);
-console.log('DOM moneda y cuotas: resumen único/mensual/asistido, fechas, cancelar/Escape, corrección y un solo envío correctos.');
+// Registro de pago desde adeudo o alta general: pendiente, distribución y archivos conservados.
+form.dataset.moneyConfirm='registro-pago';
+for (const [id,name,value] of [['monto','monto','600.00'],['tutor-busqueda','','María'],['metodo','','EFECTIVO'],['cuenta-busqueda','','Caja prueba'],['fechaPago','fechaPago','2026-10-07T16:00'],['referencia','referencia','TEST-600']]) {
+    const el=new Input();el.id=id;el.name=name;el.value=value;el.form=form;
+}
+const receipt=new Input();receipt.id='comprobantes';receipt.files=[{name:'Prueba <script>.pdf'}];receipt.form=form;
+const assigned=new Input();assigned.value='600.00';
+const charge=new Input();charge.value='A-1 · Ana · TEST-CANCELACION';
+const row=new Element();row.querySelector=selector=>selector==='.monto-solicitado'?assigned:charge;
+const queryAll=form.querySelectorAll.bind(form);
+form.querySelectorAll=selector=>selector==='.distribution-row'?[row]:queryAll(selector);
+submit();assert.equal(doc.querySelector('#money-confirm-title').textContent,'Confirmar registro del pago');
+assert.equal(rows()['Total recibido'],'$600.00');assert.equal(rows()['Dinero pendiente de asignar'],'$0.00');
+assert.equal(rows()['Fecha y hora del pago'],'07/10/2026 · 16:00');
+assert.match(rows()['Asignación 1'],/TEST-CANCELACION · \$600.00/);
+assert.equal(rows()['Comprobantes seleccionados'],'Prueba <script>.pdf');
+assert.match(doc.querySelector('#money-confirm-note').textContent,/pendiente de validación/);
+cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,5);assert.equal(receipt.files.length,1);
+assigned.value='300.00';doc.querySelector('#monto').value='300.00';submit();
+assert.equal(rows()['Total recibido'],'$300.00');assert.match(rows()['Asignación 1'],/\$300.00/);
+assert.equal(accept.textContent,'Confirmar y registrar como pendiente');
+accept.dispatchEvent({type:'click'});accept.dispatchEvent({type:'click'});assert.equal(form.submissions,6);
+console.log('DOM: importes, cuotas y decisiones/registro de pagos; cancelar conserva captura/archivos, resumen exacto y confirmación única correctos.');

@@ -9,6 +9,12 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+**Adeudos de alumnos → Ver → Resumen → Registrar pago** y el alta general de Pagos
+recibidos confirman el registro antes de guardar. **Registrar como pendiente** abre un
+resumen de tutor, importe, cuenta, método, fecha, distribución y archivos. **Cancelar**
+conserva la captura; **Confirmar y registrar como pendiente** guarda sin modificar todavía
+los saldos. Después se valida desde Gestión.
+
 **Pagos recibidos → Ver → Gestión** confirma por separado Validar y publicar, Rechazar
 sin afectar saldos y Cancelar y conservar trazabilidad. Cada modal muestra datos/efectos
 propios y permite **Cancelar** sin ejecutar. Los botones finales son **Confirmar validación**,
