@@ -38,7 +38,8 @@ class PagoFormularioTest {
             assertThat(entrada).isNotNull();
             detalle = new String(entrada.readAllBytes(), StandardCharsets.UTF_8);
         }
-        assertThat(detalle).contains("Saldo actual del cargo", "Se aplicará al cargo",
+        assertThat(detalle).contains("Saldo actual del cargo", "Importe solicitado para el cargo",
+                "El importe reportado es diferente del saldo actual",
                 "Seguirá debiendo después de validar", "saldoEstimadoTrasValidacion");
     }
 }

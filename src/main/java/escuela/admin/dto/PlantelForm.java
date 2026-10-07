@@ -27,12 +27,13 @@ public class PlantelForm {
     @Size(max = 12) private String codigoPostal;
     @Pattern(regexp = "[A-Z]{2}") private String pais = "MX";
     private boolean activo = true;
+    private boolean permitirTransferenciasVencidas;
     private Long version;
 
     public PlantelRequest request() {
         return new PlantelRequest(institucionId, codigo, nombre, telefono, email, calle,
                 numeroExterior, numeroInterior, colonia, ciudad, estado, codigoPostal,
-                pais, activo, version);
+                pais, activo, version, permitirTransferenciasVencidas);
     }
 
     public static PlantelForm desde(PlantelResponse r) {
@@ -51,6 +52,7 @@ public class PlantelForm {
         f.codigoPostal = r.codigoPostal();
         f.pais = r.pais();
         f.activo = r.activo();
+        f.permitirTransferenciasVencidas = r.permitirTransferenciasVencidas();
         f.version = r.auditoria().version();
         return f;
     }

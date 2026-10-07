@@ -1,0 +1,22 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Transferencia de cargo vencido · Nexo Escolar</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script></head>
+<body class="form-page"><main class="form-shell finance-shell">
+<header class="form-top"><a th:href="@{/admin/cargos/{id}/editar(id=${cargo.id})}">← Volver al detalle</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+<section class="form-card"><div class="form-intro finance-intro"><span>Autorización auditada</span><h1>Transferencia de cargo vencido</h1><p>Permite que la familia reporte el comprobante sin acudir a ventanilla. No cambia la fecha límite ni elimina recargos.</p></div>
+<form class="entity-form" method="post" th:object="${form}" th:action="@{/admin/cargos/{id}/transferencia-vencida(id=${cargo.id})}">
+<input type="hidden" th:field="*{version}">
+<div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo actualizar</strong><p th:text="${errorOperacion}"></p></div>
+<fieldset class="form-section"><legend>Cargo seleccionado</legend><div class="form-grid detail-grid">
+<label class="wide"><span>Alumno y concepto</span><strong th:text="${cargo.alumnoNombre+' · '+cargo.conceptoNombre+' · #'+cargo.id}"></strong></label>
+<label><span>Fecha límite para pagar</span><strong th:text="${#temporals.format(cargo.fechaVencimiento,'dd/MM/yyyy')}"></strong></label>
+<label><span>Saldo actual</span><strong th:text="${@formatoMoneda.pesos(cargo.saldoPendiente)+' '+cargo.moneda}"></strong></label>
+<label><span>Regla del plantel</span><strong th:text="${config.plantelPermite ? 'Permite transferencias vencidas' : 'Sólo cargos vigentes o autorizados'}"></strong></label>
+<label><span>Autorización individual actual</span><strong th:text="${config.excepcionAutorizada ? 'Habilitada' : 'Sin excepción'}"></strong></label>
+</div></fieldset>
+<fieldset class="form-section"><legend>Autorización individual</legend>
+<label class="policy-card"><input type="checkbox" th:field="*{permitir}"><span><strong>Habilitar transferencia aunque este cargo esté vencido</strong><small>Esta excepción aplica sólo a este cargo. Desmarcar revoca la excepción, pero no bloquea la regla general si el plantel permite cargos vencidos.</small></span></label>
+<div class="form-grid"><label class="wide"><span>Motivo de autorización o revocación *</span><textarea th:field="*{motivo}" rows="3" maxlength="2000" required placeholder="Ej. La familia no puede acudir a ventanilla y pagará por transferencia"></textarea><small class="field-error" th:errors="*{motivo}"></small></label></div>
+</fieldset>
+<div class="form-notice"><strong>Se conserva el control administrativo</strong><p>Tu usuario, fecha, motivo y cambio quedan en Auditoría. Sólo se ofrecen cargos con saldo, emitidos y sin pago en revisión. El reporte no reduce la deuda hasta validar el pago. Revocar no cancela reportes ya enviados.</p></div>
+<footer class="form-actions"><a th:href="@{/admin/cargos/{id}/editar(id=${cargo.id})}">Cancelar</a><button type="submit">Guardar autorización</button></footer>
+</form></section></main></body></html>

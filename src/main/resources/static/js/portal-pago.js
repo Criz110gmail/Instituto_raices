@@ -27,9 +27,9 @@
         fila.className = 'portal-distribution-row';
         fila.innerHTML = `<span class="portal-row-number">${indice + 1}</span>
             <div class="portal-cargo-field portal-cargo-autocomplete" data-cargo-autocomplete><label>
-                <span>Cargo vigente del alumno <b>*</b></span>
+                <span>Cargo pendiente del alumno <b>*</b></span>
                 <div class="portal-autocomplete-control"><input class="portal-cargo-id" type="hidden" name="solicitudes[${indice}].cargoId"><input class="portal-cargo-search" type="search" name="solicitudes[${indice}].cargoEtiqueta" placeholder="Enfoca para ver cargos pendientes" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" required><button class="portal-autocomplete-clear" type="button" aria-label="Quitar cargo" hidden>×</button></div>
-                <div class="portal-cargo-results" role="listbox" hidden></div><small class="portal-cargo-status" aria-live="polite">Al enfocar verás los primeros 10; escribe 3 caracteres para buscar.</small>
+                <div class="portal-cargo-results" role="listbox" hidden></div><small class="portal-cargo-status" aria-live="polite">Al enfocar verás los primeros 10; escribe 3 caracteres para buscar.</small><small class="portal-selected-charge-detail" aria-live="polite" hidden></small>
             </label></div>
             <label class="portal-amount-field"><span>Saldo a pagar</span><input class="portal-charge-amount" type="hidden" name="solicitudes[${indice}].montoSolicitado"><div class="portal-money-input portal-charge-money"><b aria-hidden="true">$</b><input class="portal-charge-amount-display portal-calculated-input" type="text" placeholder="$0.00" readonly aria-readonly="true"><em>${moneda}</em></div></label>`;
         solicitudes.appendChild(fila);
@@ -93,6 +93,7 @@
         const id = contenedor.querySelector('.portal-cargo-id');
         const resultados = contenedor.querySelector('.portal-cargo-results');
         const estado = contenedor.querySelector('.portal-cargo-status');
+        const desglose = contenedor.querySelector('.portal-selected-charge-detail');
         const limpiar = contenedor.querySelector('.portal-autocomplete-clear');
         const fila = contenedor.closest('.portal-distribution-row');
         const importe = fila.querySelector('.portal-charge-amount');
@@ -112,6 +113,7 @@
                 id.value = '';
                 importe.value = '';
                 importeVisible.value = '';
+                if (desglose) { desglose.textContent = ''; desglose.hidden = true; }
                 etiquetaSeleccionada = '';
                 limpiar.hidden = !entrada.value;
                 recalcularTotal();
@@ -125,7 +127,7 @@
                 estado.textContent = 'Escribe al menos 3 caracteres o enfoca para ver los primeros 10.';
                 return;
             }
-            estado.textContent = 'Buscando cargos vigentes…';
+            estado.textContent = 'Buscando cargos disponibles…';
             temporizador = setTimeout(() => buscar(consulta), 250);
         });
         limpiar.addEventListener('click', () => {
@@ -133,6 +135,7 @@
             id.value = '';
             importe.value = '';
             importeVisible.value = '';
+            if (desglose) { desglose.textContent = ''; desglose.hidden = true; }
             etiquetaSeleccionada = '';
             limpiar.hidden = true;
             recalcularTotal();
@@ -146,7 +149,7 @@
         async function buscar(consulta) {
             solicitud?.abort();
             solicitud = new AbortController();
-            estado.textContent = 'Consultando cargos vigentes…';
+            estado.textContent = 'Consultando cargos disponibles…';
             try {
                 const respuesta = await fetch(`${base}/cargos?q=${encodeURIComponent(consulta)}`,
                         {headers: {Accept: 'application/json'}, signal: solicitud.signal});
@@ -159,7 +162,7 @@
                 resultados.replaceChildren();
                 if (!datos.resultados.length) {
                     cerrar();
-                    estado.textContent = 'No se encontraron cargos vigentes con saldo pendiente.';
+                    estado.textContent = 'No hay cargos disponibles. Los vencidos requieren autorización y los pagos en revisión deben resolverse primero.';
                     return;
                 }
                 datos.resultados.forEach(opcion => {
@@ -181,6 +184,7 @@
                         etiquetaSeleccionada = opcion.titulo;
                         limpiar.hidden = false;
                         estado.textContent = 'Saldo completo seleccionado.';
+                        if (desglose) { desglose.textContent = opcion.detalle || ''; desglose.hidden = !opcion.detalle; }
                         cerrar();
                         recalcularTotal();
                         sincronizarCuentas();
@@ -229,7 +233,7 @@
             lista.replaceChildren();
             if (!filas.length) agregarTexto(lista, 'Aún no has seleccionado cargos.');
             filas.forEach(fila => agregarTexto(lista,
-                    `${fila.querySelector('.portal-cargo-search').value} · ${formatoMoneda.format(Number(fila.querySelector('.portal-charge-amount').value) || 0)}`));
+                    `${fila.querySelector('.portal-cargo-search').value} · ${formatoMoneda.format(Number(fila.querySelector('.portal-charge-amount').value) || 0)}${fila.querySelector('.portal-selected-charge-detail')?.textContent ? ' · ' + fila.querySelector('.portal-selected-charge-detail').textContent : ''}`));
         }
         texto('resumen-total', formatoMoneda.format(Number(montoTotal.value) || 0));
         texto('resumen-cuenta', cuenta.value && !cuenta.disabled

@@ -9,6 +9,16 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+Los cargos vencidos pueden reportarse por transferencia en el portal familiar si se habilita
+**Configuración escolar → Planteles → Editar → Permitir reportar transferencias de cargos
+vencidos**. Para un solo cargo usa **Adeudos de alumnos → Ver → Transferencia de cargo
+vencido**, con motivo obligatorio. Los controles comienzan desactivados y sus cambios quedan
+en Auditoría; quitar la excepción individual no bloquea la regla general si el plantel la permite.
+No altera fechas ni calcula recargos nuevos: ofrece el saldo real con ajustes ya aplicados.
+Los cargos cancelados, convenidos, liquidados o con pago en revisión no se ofrecen.
+Si cambia el saldo durante captura exige revisar antes de guardar. Un reporte guardado conserva
+su monto original; administración ve cualquier diferencia con la deuda vigente antes de validar.
+
 Las vistas de generación de adeudos y recargos permiten seleccionar filas, inicialmente
 todas marcadas. Usa **Desmarcar todos** para elegir únicamente los registros deseados.
 El resumen de selección indica cantidad e importe a confirmar; las tarjetas superiores

@@ -55,6 +55,7 @@ class PortalPagoServiceTest {
     @BeforeEach
     void preparar() {
         service = new PortalPagoService(instituciones, tutores, cargos, cuentas, pagos);
+        lenient().when(cargos.findByIdForUpdate(anyLong())).thenReturn(Optional.of(new Cargo()));
         principal = new UsuarioPrincipal(7L, 1L, Set.of(), false, false,
                 "familia", "x", List.of());
         Institucion institucion = new Institucion();
@@ -100,15 +101,15 @@ class PortalPagoServiceTest {
     }
 
     @Test
-    void usaElSaldoVigenteAunqueElNavegadorEnvieImportesAlterados() {
+    void calculaElTotalConSaldosVigentesYNoConfiaEnElTotalDelNavegador() {
         PortalPagoForm form = new PortalPagoForm();
         form.setPlantelRegistroId(2L);
         form.setFechaPago(LocalDateTime.now().minusMinutes(5));
         form.setMonto(new BigDecimal("3.00"));
         form.setCuentaDeclaradaId(8L);
         form.setReferencia("RASTREO-123");
-        form.setSolicitudes(List.of(solicitud(10L, "1.00"), solicitud(11L, "1.00"),
-                solicitud(12L, "1.00")));
+        form.setSolicitudes(List.of(solicitud(10L, "200.00"), solicitud(11L, "300.00"),
+                solicitud(12L, "400.00")));
         MockMultipartFile comprobante = new MockMultipartFile("comprobantes", "pago.pdf",
                 "application/pdf", "%PDF-1.4".getBytes());
         when(pagos.registrarDesdePortal(any(), anyList(), eq(principal)))
@@ -163,6 +164,42 @@ class PortalPagoServiceTest {
                         "application/pdf", "%PDF-1.4".getBytes()))))
                 .hasMessageContaining("ya no está vigente");
         verifyNoInteractions(pagos);
+    }
+
+    @Test
+    void exigeRevisarSaldoCambiadoAntesDeGuardarComprobante() {
+        PortalPagoForm form=new PortalPagoForm();
+        form.setSolicitudes(List.of(solicitud(10L,"800.00")));
+        when(cargos.buscarVigenteParaPortal(10L,1L,3L)).thenReturn(Optional.of(
+                cargo(10L,20L,"A-020","Ana","Cuota","Octubre","850.00")));
+        assertThatThrownBy(() -> service.reportar(principal,form,List.of())).hasMessageContaining("El saldo cambió");
+        assertThat(form.getMonto()).isEqualByComparingTo("850.00");
+        verifyNoInteractions(pagos);
+    }
+
+    @Test
+    void impideSegundoReporteDeUnCargoEnRevisionInclusoEnPostDirecto() {
+        PortalPagoForm form=new PortalPagoForm(); form.setSolicitudes(List.of(solicitud(10L,"500.00")));
+        when(cargos.buscarVigenteParaPortal(10L,1L,3L)).thenReturn(Optional.of(
+                cargo(10L,20L,"A-020","Ana","Cuota","Octubre")));
+        when(cargos.tienePagoEnRevision(10L)).thenReturn(true);
+        assertThatThrownBy(() -> service.reportar(principal,form,List.of())).hasMessageContaining("pago en revisión");
+        verify(cargos).findByIdForUpdate(10L); verifyNoInteractions(pagos);
+    }
+
+    @Test
+    void muestraElDesgloseDelSaldoEnLaOpcion() {
+        var c=cargo(10L,20L,"A-020","Ana","Cuota","Octubre","1000.00");
+        c.setFechaVencimiento(LocalDate.now().minusDays(3));
+        var beca=new escuela.cobranza.entity.AjusteCargo();
+        beca.setEfecto(escuela.cobranza.entity.EfectoAjusteCargo.DISMINUCION);beca.setMonto(new BigDecimal("200"));
+        var recargo=new escuela.cobranza.entity.AjusteCargo();
+        recargo.setEfecto(escuela.cobranza.entity.EfectoAjusteCargo.AUMENTO);recargo.setMonto(new BigDecimal("50"));
+        c.getAjustes().addAll(List.of(beca,recargo));
+        when(cargos.buscarParaPortal(eq(1L),eq(3L),eq(""),any())).thenReturn(new SliceImpl<>(List.of(c)));
+        var opcion=service.buscarCargos(principal,"").resultados().getFirst();
+        assertThat(opcion.detalle()).contains("Vencido", "$1,000.00", "−$200.00", "+$50.00", "$850.00");
+        assertThat(opcion.monto()).isEqualByComparingTo("850.00");
     }
 
     @Test

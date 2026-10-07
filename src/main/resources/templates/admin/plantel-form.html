@@ -19,7 +19,12 @@
         <label><span>Estado</span><input th:field="*{estado}" maxlength="120"></label><label><span>Código postal</span><input th:field="*{codigoPostal}" maxlength="12"></label>
         <label><span>País (ISO)</span><input th:field="*{pais}" maxlength="2" placeholder="MX"><small class="field-error" th:errors="*{pais}"></small></label>
         <label class="switch-row"><input type="checkbox" th:field="*{activo}"><span>Plantel activo</span></label>
-      </div><footer class="form-actions"><a href="/admin/catalogos/planteles">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear plantel'}">Guardar</button></footer>
+      </div>
+      <fieldset class="form-section"><legend>Transferencias del portal familiar</legend>
+        <label class="policy-card"><input type="checkbox" th:field="*{permitirTransferenciasVencidas}"><span><strong>Permitir reportar transferencias de cargos vencidos</strong><small>Aplica a los alumnos de este plantel. Se cobra el saldo actual, con las becas y recargos ya aplicados; no genera recargos nuevos. Cada comprobante seguirá sujeto a revisión administrativa.</small></span></label>
+        <p class="field-help">Desactivado: sólo cargos vigentes o autorizados individualmente desde Adeudos de alumnos. Activarlo no modifica fechas ni registra pagos; el cambio queda en Auditoría.</p>
+      </fieldset>
+      <footer class="form-actions"><a href="/admin/catalogos/planteles">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear plantel'}">Guardar</button></footer>
     </form>
     <form th:if="${edicion and form.activo}" class="danger-zone" method="post" th:action="@{/admin/planteles/{id}/desactivar(id=${id})}" onsubmit="return confirm('¿Desactivar este plantel?');"><input type="hidden" name="version" th:value="${form.version}"><div><strong>Desactivar plantel</strong><p>El registro y su historial se conservarán.</p></div><button type="submit">Desactivar</button></form>
   </section>

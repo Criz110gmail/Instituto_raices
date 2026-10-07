@@ -28,12 +28,16 @@ public class PlantelServiceImpl implements PlantelService {
     private final PlantelRepository repository;
     private final InstitucionRepository institucionRepository;
     private final PlantelMapper mapper;
+    private final escuela.auditoria.service.RegistroAuditoriaService auditoria;
 
     @Override
     public PlantelResponse crear(PlantelRequest request) {
         Institucion institucion = institucionActiva(request.institucionId());
         validarCodigo(request.institucionId(), request.codigo(), 0L);
-        return mapper.respuesta(repository.saveAndFlush(mapper.nuevo(request, institucion)));
+        if(request.permitirTransferenciasVencidas()) exigirActorConfiguracion(institucion.getId(),null);
+        var nuevo=repository.saveAndFlush(mapper.nuevo(request, institucion));
+        if(request.permitirTransferenciasVencidas()) registrarConfiguracion(nuevo,false);
+        return mapper.respuesta(nuevo);
     }
 
     @Override
@@ -44,8 +48,12 @@ public class PlantelServiceImpl implements PlantelService {
             throw new ReglaNegocioException("No se puede cambiar la institución propietaria de un plantel");
         }
         validarCodigo(request.institucionId(), request.codigo(), id);
+        boolean anterior=entidad.isPermitirTransferenciasVencidas();
+        if(anterior!=request.permitirTransferenciasVencidas()) exigirActorConfiguracion(entidad.getInstitucion().getId(),entidad.getId());
         mapper.actualizar(entidad, request, entidad.getInstitucion());
-        return mapper.respuesta(repository.saveAndFlush(entidad));
+        repository.saveAndFlush(entidad);
+        if(anterior!=entidad.isPermitirTransferenciasVencidas()) registrarConfiguracion(entidad,anterior);
+        return mapper.respuesta(entidad);
     }
 
     @Override
@@ -76,6 +84,22 @@ public class PlantelServiceImpl implements PlantelService {
 
     private Plantel buscar(Long id) {
         return repository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException("el plantel", id));
+    }
+
+    private void exigirActorConfiguracion(Long institucionId,Long plantelId) {
+        var auth=org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if(auth==null || !(auth.getPrincipal() instanceof escuela.seguridad.service.UsuarioPrincipal p)
+                || p.accesoRecuperacion() || p.usuarioId()==null || !institucionId.equals(p.institucionId())
+                || auth.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("PLANTEL_ADMINISTRAR")))
+            throw new ReglaNegocioException("La configuración de transferencias requiere un administrador identificado con permiso de Planteles.");
+        if(!p.alcanceInstitucional() && (plantelId==null || !p.plantelIds().contains(plantelId)))
+            throw new org.springframework.security.access.AccessDeniedException("El plantel no pertenece a tu alcance administrativo.");
+    }
+    private void registrarConfiguracion(Plantel plantel,boolean anterior) {
+        auditoria.registrar(plantel.getInstitucion().getId(),
+                escuela.auditoria.entity.AccionAuditoria.TRANSFERENCIA_VENCIDA_CONFIGURADA,
+                "PLANTEL",plantel.getId(),"Configuración de transferencias vencidas en portal familiar",
+                java.util.Map.of("permitirAnterior",anterior,"permitirNuevo",plantel.isPermitirTransferenciasVencidas()));
     }
 
     private Institucion institucionActiva(Long id) {

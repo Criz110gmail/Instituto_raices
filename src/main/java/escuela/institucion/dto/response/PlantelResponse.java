@@ -5,6 +5,13 @@ import escuela.common.dto.response.AuditoriaResponse;
 public record PlantelResponse(
         Long id, Long institucionId, String codigo, String nombre, String telefono, String email,
         String calle, String numeroExterior, String numeroInterior, String colonia, String ciudad,
-        String estado, String codigoPostal, String pais, boolean activo, AuditoriaResponse auditoria
+        String estado, String codigoPostal, String pais, boolean activo, AuditoriaResponse auditoria,
+        boolean permitirTransferenciasVencidas
 ) {
+    public PlantelResponse(Long id, Long institucionId, String codigo, String nombre, String telefono,
+            String email, String calle, String numeroExterior, String numeroInterior, String colonia,
+            String ciudad, String estado, String codigoPostal, String pais, boolean activo, AuditoriaResponse auditoria) {
+        this(id,institucionId,codigo,nombre,telefono,email,calle,numeroExterior,numeroInterior,colonia,
+                ciudad,estado,codigoPostal,pais,activo,auditoria,false);
+    }
 }

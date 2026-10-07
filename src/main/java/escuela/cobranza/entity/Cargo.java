@@ -46,6 +46,9 @@ public class Cargo extends EntidadAuditable {
     @Column(name = "motivo_reemplazo", length = 2000)
     private String motivoReemplazo;
 
+    @Column(name = "transferencia_vencida_autorizada", nullable = false)
+    private boolean transferenciaVencidaAutorizada;
+
     @Column(name = "clave_generacion", nullable = false, length = 180, unique = true)
     private String claveGeneracion;
 

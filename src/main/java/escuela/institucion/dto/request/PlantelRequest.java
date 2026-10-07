@@ -21,6 +21,13 @@ public record PlantelRequest(
         @Size(max = 12) String codigoPostal,
         @Pattern(regexp = "[A-Z]{2}") String pais,
         boolean activo,
-        Long version
+        Long version,
+        boolean permitirTransferenciasVencidas
 ) {
+    public PlantelRequest(Long institucionId, String codigo, String nombre, String telefono, String email,
+            String calle, String numeroExterior, String numeroInterior, String colonia, String ciudad,
+            String estado, String codigoPostal, String pais, boolean activo, Long version) {
+        this(institucionId,codigo,nombre,telefono,email,calle,numeroExterior,numeroInterior,colonia,
+                ciudad,estado,codigoPostal,pais,activo,version,false);
+    }
 }

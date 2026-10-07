@@ -1,5 +1,44 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V61 — transferencias de cargos vencidos — 2026-10-06
+
+- Planteles → Editar: Permitir reportar transferencias de cargos vencidos. Inicialmente
+  desactivado para conservar la configuración; el agente no habilita planteles reales.
+- Adeudos de alumnos → Ver → Transferencia de cargo vencido permite autorizar/revocar una
+  excepción individual con motivo, versión y administrador persistido. Regla del plantel
+  y excepción se combinan con OR: quitar la excepción no anula la regla general del plantel.
+  Cada cambio conserva actor/instante/motivo/antes-después en la bitácora inmutable existente.
+  El cambio general del plantel también queda en Auditoría. No modifica fechas ni saldos.
+- Selector, cuenta y POST comparten la regla en PostgreSQL: vínculo financiero vigente,
+  tutor/alumno activos, institución, cargo emitido, saldo positivo, fecha vigente o permiso
+  de vencido, y ningún pago pendiente de validación. Se filtra antes de limitar 10/20 filas;
+  cancelados, convenidos, liquidados y pagos en revisión no consumen opciones del selector.
+  Fecha actual calculada en la zona institucional, no en la fecha UTC del contenedor.
+- Reportar bloquea cargos en orden ID y conserva bloqueos hasta guardar para evitar dos
+  reportes concurrentes del mismo cargo. Monto/total protegidos; si cambió el saldo respecto
+  de la selección, actualiza el formulario y exige revisar y adjuntar de nuevo, sin guardar.
+- Desglose al seleccionar y en revisión final: original, becas/descuentos, recargos/ajustes
+  aplicados, abonos y saldo; distingue vencido habilitado. No simula recargos futuros.
+  Cuenta bancaria, comprobantes privados, revisión administrativa y PDF inline se conservan.
+- Un reporte ya guardado NO se revaloriza: conserva su monto; administración ve aviso si
+  la deuda actual es distinta. Validación aplica hasta saldo y conserva excedente disponible
+  o deuda restante, sin inflar el ingreso. No se implementó cobro automático ni tarjeta online.
+- V61 actualiza precauciones editoriales de las guías existentes. El propietario confirmó
+  la selección del recargo único con tope50 y registro efectivo850 del ejemplo 1000−200+50;
+  esa prueba no fue ejecutada por herramientas. SQL posterior confirma cargo19 con ajuste
+  neto−150, abonos0 y un pago en revisión: falta validar/rechazar antes de otro reporte para
+  ese cargo; no declararlo liquidado todavía. Próxima migración V62.
+- Prueba del propietario: usar otro cargo vencido con saldo; habilitar sólo ese cargo con
+  motivo, entrar con su tutor, revisar desglose, reportar comprobante, comprobar que queda
+  en revisión y que no admite otro reporte. Validar desde administración y comprobar saldo,
+  ingreso y PDF. Revisar claro/oscuro y móvil. No cambiar vencimiento para habilitar el portal.
+- Verificación: 552 pruebas Java aprobadas, sintaxis Node y prueba del flujo familiar correctas.
+  PostgreSQL ejecutó la consulta con 11 escenarios en CTE en transacción READ ONLY: incluyó
+  vigente y vencidos habilitados, excluyó pagado/cancelado/convenido/en revisión/ajeno/inactivo.
+  Consulta sobre esquema real correcta; V61 aplicada, imagen app desplegada y salud UP.
+  Cero planteles habilitados y cero excepciones reales. No se crean pagos ni movimientos
+  por herramientas. Prueba operativa nueva y revisión visual autenticada pendientes del dueño.
+
 ## V60 — selección explícita de adeudos y recargos — 2026-10-06
 
 - Vistas previas de Generar automáticos y Generar recargos incluyen casillas inicialmente

@@ -43,7 +43,7 @@ public class AuditoriaAdminController {
         try{model.addAttribute("pagina",consulta.consultar(filtro));}
         catch(ReglaNegocioException ex){model.addAttribute("errorFiltro",ex.getMessage());model.addAttribute("pagina",Page.empty());}
         model.addAttribute("filtro",filtro);model.addAttribute("instituciones",disponibles);
-        model.addAttribute("acciones",AccionAuditoria.values());model.addAttribute("tipos",List.of("PAGO","DEVOLUCION_PAGO","TRANSFERENCIA_CUENTA","MOVIMIENTO_FINANCIERO","ROL_PERMISO","USUARIO_ROL","EVENTO_ESCOLAR","AVISO"));
+        model.addAttribute("acciones",AccionAuditoria.values());model.addAttribute("tipos",List.of("CARGO","PLANTEL","PAGO","DEVOLUCION_PAGO","TRANSFERENCIA_CUENTA","MOVIMIENTO_FINANCIERO","ROL_PERMISO","USUARIO_ROL","EVENTO_ESCOLAR","AVISO"));
         Set<String> permisos=authentication.getAuthorities().stream().map(a->a.getAuthority()).collect(Collectors.toSet());
         model.addAttribute("modulos",Arrays.stream(ModuloCatalogo.values()).filter(m->m.visibleCon(permisos)).toList());
         model.addAttribute("moduloActual",ModuloCatalogo.AUDITORIA);return "admin/auditoria";

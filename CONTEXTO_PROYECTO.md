@@ -1,5 +1,28 @@
 # Contexto del proyecto
 
+## V61 — reporte de transferencias vencidas (2026-10-06)
+
+- Implementado control general por plantel (inicialmente desactivado) y excepción por cargo
+  con motivo obligatorio, versión, alcance y actor persistido. Autorizar/revocar conserva
+  cambios en Auditoría; no borra recargos ni modifica vencimiento. Plantel habilitado OR
+  excepción permite el cargo vencido; revocar excepción no impide una regla general activa.
+- PostgreSQL aplica misma elegibilidad para búsqueda/cuentas/POST, filtra saldo positivo
+  antes de límite, excluye cancelados/convenidos/liquidados y pagos en revisión, usa fecha
+  de zona institucional. Reportar bloquea cargos por ID hasta guardar y evita duplicados.
+- Selección muestra original, becas/descuentos, aumentos aplicados, abonos y total protegido.
+  Cambio de saldo durante captura exige revisar monto actualizado y adjuntar nuevamente.
+  No genera recargos implícitos. Monto de reporte ya guardado permanece intacto; aviso en
+  administración señala diferencia con saldo actual, sin inventar un nuevo ingreso.
+- V61 ajusta guías existentes; nuevo escenario aún no se declara confirmado. Propietario
+  confirmó recargo con tope50 y registro efectivo850; SQL posterior conserva cargo19 con
+  original1000, ajustes netos−150, abonos0 y un pago en revisión. Falta validar/rechazar;
+  no considerarlo liquidado ni enviar otro reporte para el mismo cargo mientras siga pendiente.
+- Verificación: 552 pruebas Java sin fallos y prueba Node del formulario correctas; SQL en
+  CTE sólo lectura cubre 11 escenarios de elegibilidad, consulta real válida. V61 aplicada,
+  imagen app desplegada y salud UP. Cero planteles/excepciones habilitados. Sin pagos ni
+  movimientos de prueba o permisos de rol por herramientas. Siguiente migración V62;
+  revisión visual autenticada y prueba operativa nueva pendientes del propietario.
+
 ## V60 — selección por fila antes de generar (2026-10-06)
 
 - El propietario pidió omitir pruebas no deseadas al confirmar ambas generaciones.

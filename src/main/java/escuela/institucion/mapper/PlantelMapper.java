@@ -35,11 +35,13 @@ public class PlantelMapper {
         entidad.setCodigoPostal(limpiar(dto.codigoPostal()));
         entidad.setPais(codigo(dto.pais()));
         entidad.setActivo(dto.activo());
+        entidad.setPermitirTransferenciasVencidas(dto.permitirTransferenciasVencidas());
     }
 
     public PlantelResponse respuesta(Plantel e) {
         return new PlantelResponse(e.getId(), e.getInstitucion().getId(), e.getCodigo(), e.getNombre(),
                 e.getTelefono(), e.getEmail(), e.getCalle(), e.getNumeroExterior(), e.getNumeroInterior(),
-                e.getColonia(), e.getCiudad(), e.getEstado(), e.getCodigoPostal(), e.getPais(), e.isActivo(), desde(e));
+                e.getColonia(), e.getCiudad(), e.getEstado(), e.getCodigoPostal(), e.getPais(), e.isActivo(), desde(e),
+                e.isPermitirTransferenciasVencidas());
     }
 }

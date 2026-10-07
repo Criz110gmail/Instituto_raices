@@ -81,6 +81,8 @@ Regla: una institución inactiva conserva consultas históricas y bloquea altas.
   calle, numeroExterior, numeroInterior, colonia : String [O].
   ciudad, estado, codigoPostal, pais : String [O].
   activo : Boolean [R].
+  permitirTransferenciasVencidas : Boolean [R] — V61, inicialmente false; permite reportar
+    transferencias de cargos vencidos, sujetas a revisión, sin cambiar vencimiento/recargos.
 Único: institucionId + codigo. La oferta educativa se define en PlantelNivel.
 
 03. NivelEducativo
@@ -341,6 +343,10 @@ Es la obligación de pago de un alumno, independientemente del pago recibido.
   motivoCancelacion : Text [C].
   reemplazaCargoId : FK(Cargo) [O] — único; cada cargo anterior admite un reemplazo directo.
   motivoReemplazo : Text [C] — obligatorio al corregir y reemplazar un vencimiento.
+  transferenciaVencidaAutorizada : Boolean [R] — V61, inicialmente false; excepción individual.
+    Autorizar/revocar requiere motivo, versión, alcance y administrador persistido; conserva
+    actor/instante/cambios en Auditoria inmutable. Regla general del plantel OR excepción.
+    Sólo cargo emitido con saldo y sin pago en revisión. No concede acceso a otros tutores.
   descuentoTotal, recargoTotal, importeTotal : Decimal [D].
   montoPagado, saldoPendiente : Decimal [D].
   situacionCobro : Enum [D] — PENDIENTE, PARCIAL, PAGADO, CANCELADO.

@@ -58,4 +58,7 @@ public class Plantel extends EntidadAuditable {
 
     @Column(nullable = false)
     private boolean activo;
+
+    @Column(name = "permitir_transferencias_vencidas", nullable = false)
+    private boolean permitirTransferenciasVencidas;
 }
