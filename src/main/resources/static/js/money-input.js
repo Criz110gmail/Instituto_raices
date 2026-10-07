@@ -35,6 +35,7 @@
     }
     if (typeof module !== 'undefined') module.exports = {parseMoney, compareDecimals, formatMoney};
     if (typeof document === 'undefined') return;
+    globalThis.MoneyValues = {parseMoney, compareDecimals, formatMoney};
 
     const fields = new WeakMap();
     let sequence = 0;
@@ -215,6 +216,12 @@
                 add('Ajuste', type === 'DESCUENTO' ? 'Descuento' : type === 'RECARGO' ? 'Recargo' : 'Corrección');
                 add('Efecto', effect === 'DISMINUCION' ? 'Disminuye el importe del cargo' : 'Aumenta el importe del cargo');
                 add('Monto', money(form.querySelector('[name="monto"]').value));
+                const previewTotal = form.querySelector('#charge-preview-total');
+                if (previewTotal) {
+                    add('Nuevo total ajustado', previewTotal.textContent);
+                    add('Pagado acumulado', form.querySelector('#charge-preview-paid').textContent);
+                    add('Saldo después del ajuste', form.querySelector('#charge-preview-balance').textContent);
+                }
                 add('Motivo', form.querySelector('[name="motivo"]').value);
                 note.textContent = 'Este ajuste modifica la deuda. No registra un ingreso ni una salida de dinero de la cuenta.';
             } else {

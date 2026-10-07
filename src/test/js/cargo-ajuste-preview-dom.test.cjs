@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const {formatMoney}=require('../../main/resources/static/js/money-input.js');
+const el=(value='')=>({value,dataset:{},listeners:{},textContent:'',addEventListener(k,fn){this.listeners[k]=fn;}});
+const type=el('DESCUENTO'),effect=el('AUMENTO'),amount=el('100.00'),button=el();
+effect.options=[{value:'AUMENTO'},{value:'DISMINUCION'}];
+const map={'[name="tipo"]':type,'[name="efecto"]':effect,'[name="monto"]':amount,'button[type="submit"]':button};
+for(const id of ['current','paid','change','total','balance','warning'])map['#charge-preview-'+id]=el();
+map['.charge-adjustment-preview']=el();
+const form=el();form.dataset={chargeTotal:'400.00',chargePaid:'300.00',chargeCurrency:'MXN'};form.querySelector=s=>map[s];
+vm.runInNewContext(fs.readFileSync('src/main/resources/static/js/cargo-ajuste-preview.js','utf8'),{
+    document:{readyState:'complete',querySelector:()=>form},MoneyValues:{formatMoney}});
+assert.equal(effect.value,'DISMINUCION');assert.equal(effect.options[0].disabled,true);
+assert.equal(map['#charge-preview-total'].textContent,'$300.00');assert.equal(map['#charge-preview-balance'].textContent,'$0.00');
+assert.equal(button.disabled,false);
+amount.value='101.00';amount.listeners.input();assert.equal(button.disabled,true);
+let prevented=false;form.listeners.submit({preventDefault(){prevented=true;}});assert.equal(prevented,true);
+amount.value='100.00';amount.listeners.change();assert.equal(button.disabled,false);
+type.value='CORRECCION';type.listeners.change();assert.equal(effect.options[0].disabled,false);
+effect.value='AUMENTO';amount.value='50.05';effect.listeners.change();
+assert.equal(map['#charge-preview-total'].textContent,'$450.05');assert.equal(map['#charge-preview-balance'].textContent,'$150.05');
+console.log('DOM ajuste: datos canónicos actualizan vista, efecto forzado, bloqueo de total inferior a pagado y corrección exacta.');

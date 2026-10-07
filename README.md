@@ -9,6 +9,12 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+**Adeudos de alumnos → Ver** organiza el detalle en Resumen, Transferencias, Ajustar saldo,
+Historial y Gestión, con alumno y saldo visibles arriba. Ajustar saldo incluye vista previa
+del total/pagado/saldo resultantes; no mueve dinero. Los errores conservan la captura y
+abren su pestaña, y un ajuste guardado abre Historial. Habilitar vencidos/cancelar/reemplazar
+se encuentra en Gestión, sin cambiar permisos ni reglas de negocio.
+
 Los importes administrativos se capturan como texto con teclado decimal: el scroll no
 los incrementa. Al salir del campo se muestran como moneda y al editar como decimal;
 el servicio recibe el decimal limpio (por ejemplo, `$1,400.50` → `1400.50`). No se redondean

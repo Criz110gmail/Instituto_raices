@@ -57,5 +57,5 @@ document.addEventListener('DOMContentLoaded', () => {
         .some(error => error.textContent.trim().length > 0));
     const requestedByHash = tabs.find(tab => tab.dataset.tabHash === window.location.hash)?.dataset.studentTab
         || legacyHashTabs[window.location.hash];
-    activate(panelWithErrors?.dataset.studentPanel || requestedByHash || navigation.dataset.activeTab || 'ficha');
+    activate(panelWithErrors?.dataset.studentPanel || navigation.dataset.forceActiveTab || requestedByHash || navigation.dataset.activeTab || 'ficha');
 });

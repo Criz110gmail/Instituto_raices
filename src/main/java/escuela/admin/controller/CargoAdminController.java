@@ -102,6 +102,7 @@ public class CargoAdminController {
             ajusteController.prepararCargo(model, id, new escuela.admin.dto.AjusteCargoForm());
             model.addAttribute("motivoCapturado", motivo);
             model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
+            model.addAttribute("pestanaActiva", "gestion");
             return "admin/cargo-detalle";
         }
         flash.addFlashAttribute("mensaje", "Cargo al alumno cancelado; el historial permanece disponible");

@@ -1,5 +1,35 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Detalle de adeudos con pestañas y vista previa — V67 — 2026-10-07
+
+- Adeudos de alumnos → Ver usa mismas pestañas/clases de alumnos y pagos: Resumen,
+  Transferencias, Ajustar saldo, Historial y Gestión. Alumno/inscripción y saldo pendiente
+  destacado permanecen fuera de paneles. Registrar pago sigue en Resumen; habilitar
+  transferencia vencida, reemplazar y cancelar se separan en Gestión. Se conserva historial,
+  trazabilidad, permisos/condiciones de acciones y estado no editable para cargos cerrados.
+- Ajustar saldo muestra Así quedaría el cargo, usando tarjeta de revisión existente:
+  total actual, ajuste, nuevo total, pagado y saldo posterior. BigInt/centavos, sin redondeo;
+  Descuento fuerza disminución, Recargo aumento y Corrección permite elegir. Si total
+  posterior <0 o <pagado no se envía; backend sigue revalidando bajo bloqueo sus reglas.
+  Modal de confirmación incluye nuevo total/pagado/saldo. No se envían esos cálculos como
+  importes autoritativos ni se registran fondos por mostrar vista previa.
+- Errores de validación/negocio abren Ajustar saldo conservando formulario; cancelación
+  fallida abre Gestión con motivo. Ajuste exitoso redirige a Historial con aviso y saldos
+  recalculados. Atributo opcional force-active-tab prevalece al hash; otras páginas sin él
+  conservan su funcionamiento, incluyendo prioridad de errores y teclado.
+- V67 sólo actualiza navegación en guías existentes (Gestión/Historial/Transferencias),
+  sin nuevos escenarios confirmados; seis guías / 48 etapas.
+- Verificado: 579 pruebas Java sin fallos, incluyendo render real Thymeleaf de cinco
+  pestañas, valores de preview, cargo cancelado y captura escapada; errores/conservación
+  y flash de Historial. Once suites Node correctas: preview BigInt, DOM de efecto/límites,
+  prioridad de pestañas/teclado y regresiones monetarias. SQL editorial probado en rollback;
+  V67 aplicada, lectura confirma cinco pasos actualizados y seis guías/48 etapas. Sólo app
+  recreada, salud UP; sin operaciones financieras ni cambios de PostgreSQL/volúmenes.
+  Revisión visual autenticada y prueba humana siguen a cargo del propietario.
+- Siguiente V68. Prueba humana de devolución más descuento sigue pendiente: nuevo cargo
+  $400, pagar400, devolver100, descuento100 → ajustado300/pagado300/saldo0. Al llegar al
+  detalle usar pestaña Ajustar saldo; después de confirmar revisar Historial y Resumen.
+
 ## Foco de captura monetaria sólo al clicar el campo — 2026-10-07
 
 - Causa de foco al clicar arriba: activación nativa de label envolvente/asociado. Componente

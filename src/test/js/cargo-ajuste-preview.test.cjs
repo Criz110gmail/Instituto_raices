@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict');
+const {calcularVistaAjusteCargo:calc}=require('../../main/resources/static/js/cargo-ajuste-preview.js');
+const v=calc('400.00','300.00','DESCUENTO','AUMENTO','100.00');
+assert.equal(v.valid,true);assert.equal(v.next,30000n);assert.equal(v.paid,30000n);assert.equal(v.balance,0n);
+assert.equal(v.direction,'DISMINUCION');
+assert.equal(calc('400','400','DESCUENTO','DISMINUCION','100').valid,false);
+assert.equal(calc('400','300','DESCUENTO','DISMINUCION','500').valid,false);
+assert.equal(calc('400','300','DESCUENTO','DISMINUCION','100.001').valid,false);
+assert.equal(calc('400','300','DESCUENTO','DISMINUCION','').valid,false);
+assert.equal(calc('400','300','RECARGO','DISMINUCION','100').balance,20000n);
+assert.equal(calc('400','300','CORRECCION','DISMINUCION','50').balance,5000n);
+assert.equal(calc('99999999999999999.99','0','DESCUENTO','DISMINUCION','0.01').next,9999999999999999998n);
+console.log('Ajustes: descuento $100 sobre $400/$300 deja $300/$0; límites, recargo, corrección y centavos exactos correctos.');

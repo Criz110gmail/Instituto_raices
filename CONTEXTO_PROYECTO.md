@@ -1,5 +1,25 @@
 # Contexto del proyecto
 
+## V67 — navegación y claridad del ajuste de adeudos (2026-10-07)
+
+- Detalle separado en Resumen/Transferencias/Ajustar saldo/Historial/Gestión con diseño
+  compartido de alumnos/pagos y saldo/alumno siempre fuera de paneles. Resumen conserva
+  Registrar pago; Gestión contiene autorizaciones, reemplazo y cancelación; historial intacto.
+- Vista previa exacta por centavos del ajuste, sin mover fondos. Caso $400 con $300 pagados
+  y descuento $100 muestra nuevo total $300 y saldo $0. Disminuciones por debajo de pagado
+  o de cero se advierten/bloquean; reglas del servicio, autorización y concurrencia intactas.
+- Errores de ajuste conservan captura y abren su pestaña; cancelación errónea abre Gestión;
+  éxito abre Historial con aviso. Override inicial del hash opcional en student-tabs no
+  cambia navegación de otras pantallas sin atributo. Modal también muestra resultados.
+- V67 editorial actualiza recorridos de guías; sin nuevos casos confirmados ni finanzas.
+  Verificado: 579 pruebas Java sin fallos, con render real de cinco pestañas/preview/cancelado
+  y errores/flash; once suites Node, cálculo exacto y DOM/pestañas/teclado correctos.
+  SQL editorial validado con rollback, V67 aplicada; cinco pasos actualizados, seis guías /
+  48 etapas. Sólo app recreada, salud UP; sin operaciones financieras ni reinicio/borrado
+  de PostgreSQL/volúmenes. Revisión visual autenticada pendiente. Próxima V68.
+- Pendiente humano: caso separado devolver100 + descuento100 sobre cargo400 pagado400,
+  comprobar ajustado300/pagado300/saldo0 y cuenta no cambia al descontar, antes de publicarlo.
+
 ## Ajuste de foco en campos monetarios (2026-10-07)
 
 - Label nativo activaba campo al clicar título/espacio superior. Se evita activación por

@@ -43,6 +43,7 @@ class AjusteCargoAdminControllerTest {
         assertThat(model.get("errorAjuste")).isEqualTo("El concepto del cargo no permite descuentos");
         assertThat(model.get("puedeRegistrarPago")).isEqualTo(true);
         assertThat(model.get("ajusteForm")).isSameAs(form);
+        assertThat(model.get("pestanaActiva")).isEqualTo("ajustes");
     }
 
     @Test void erroresDeCapturaReconstruyenPermisosSinGuardar() {
@@ -53,6 +54,15 @@ class AjusteCargoAdminControllerTest {
         assertThat(controller.crear(15L, form, errores, model,
                 new RedirectAttributesModelMap())).isEqualTo("admin/cargo-detalle");
         assertThat(model.get("puedeRegistrarPago")).isEqualTo(false);
+        assertThat(model.get("pestanaActiva")).isEqualTo("ajustes");
         verify(ajustes, never()).crear(any());
+    }
+    @Test void alGuardarAbreHistorialSinPerderAviso() {
+        var form=new AjusteCargoForm();var flash=new RedirectAttributesModelMap();
+        String vista=controller.crear(15L,form,new BeanPropertyBindingResult(form,"ajusteForm"),
+                new ExtendedModelMap(),flash);
+        assertThat(vista).isEqualTo("redirect:/admin/cargos/15/editar");
+        assertThat(flash.getFlashAttributes().get("pestanaActiva")).isEqualTo("historial");
+        assertThat(flash.getFlashAttributes().get("mensaje")).isEqualTo("Ajuste aplicado correctamente");
     }
 }
