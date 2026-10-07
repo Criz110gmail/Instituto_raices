@@ -9,7 +9,17 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
-Las cuatro guías de cobranza incluyen recorridos explícitos en sus 30 etapas: categoría del
+La guía **Rechazar un pago y corregir el reporte: $400** documenta el caso confirmado:
+primer reporte rechazado con motivo, consulta familiar del motivo, segundo reporte corregido
+y validación. Mantiene el primer folio y registra un único ingreso de $400, no $800.
+Corregir el comprobante no exige otra transferencia bancaria si el dinero ya salió.
+
+En **Portal familiar → Tus pagos → Tus pagos y comprobantes**, un pago **Rechazado**
+ofrece **Ver motivo del rechazo** junto al estado. El modal muestra el mensaje registrado
+por administración y cómo corregir el reporte, sin hacer otra transferencia bancaria si
+el dinero ya salió. El rechazo no disminuye la deuda ni registra un ingreso.
+
+Las cinco guías de cobranza incluyen recorridos explícitos en sus 40 etapas: categoría del
 menú, módulo, registro a buscar, Aplicar filtros, acción Ver/Editar, campos, guardado y
 resultado. Cada cambio entre administración y portal se explica. Regla de documentación:
 no usar instrucciones como «abre el cargo» sin indicar desde dónde llegar e identificarlo.

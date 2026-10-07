@@ -1,5 +1,38 @@
 # Contexto del proyecto
 
+## V64 — guía del rechazo y reenvío confirmado (2026-10-07)
+
+- Dueño confirmó validación del reenvío de $400, incremento de $400 en cuenta y comprobante familiar.
+  Se cierra el pendiente humano de este proceso; no fue una operación hecha por el agente.
+- Nueva guía confirmada Rechazar un pago y corregir el reporte: $400, diez etapas con menús
+  exactos, búsquedas, selección, botones, campos, resultados y precauciones. Incluye motivo
+  visible en modal, deuda de $400 mientras está rechazado/en revisión y un solo ingreso de $400 al
+  validar. Conserva primer folio rechazado y explica que reenvío no es nueva transferencia.
+- V64 sólo añade guía/pasos/requisitos de permisos, sin conceder roles ni registrar pagos.
+  Cinco guías, 40 etapas; consultas/filtros/paginación/Excel/diseño existentes se conservan.
+- Verificado: 562 pruebas Java sin fallos; Node modal/transferencia correctos; SQL validado
+  con rollback. V64 aplicada por Flyway; lectura confirmó cinco guías / 40 etapas / diez
+  nuevas. Sólo app recreada, salud UP; sin cambios de pagos por herramientas ni reinicio
+  de PostgreSQL/volúmenes. No se realizó validación visual autenticada en navegador.
+- Siguiente V65. Continuar con caso exacto de devolución
+  parcial, bajo operación manual del propietario, antes de documentarlo como confirmado.
+
+## Motivo del rechazo consultable en pagos familiares (2026-10-07)
+
+- Causa: consulta/DTO del historial devolvían estado sin motivo. Se incluye motivo existente
+  sólo de pagos RECHAZADOS, limitado al usuario, institución e hijo autorizado y la página
+  actual. No se cambian estados, pagos ni saldos ni se consulta todo el historial.
+- Botón Ver motivo del rechazo junto al estado abre modal nativo con folio/motivo y ayuda
+  para corregir reporte. Conserva saltos, escapa HTML/textContent, temas y móvil, Escape,
+  botón/fondo, foco y restauración; también disponible en vista de soporte autorizada.
+- Sin migración (V64 libre), sin rechazar/validar pagos desde herramientas. Prueba en curso
+  del propietario: rechazo y reenvío400 todavía no confirmado de extremo a extremo.
+  No confundir nuevo reporte con nueva transferencia real.
+- Verificado: 559 pruebas Java aprobadas, render de motivo escapado en tutor/soporte y sin
+  botón en validados. Node cubre contenido literal, cierre, foco, fondo y motivo ausente;
+  flujo de transferencia anterior correcto. Sólo app actualizada, salud UP; sin migración.
+  Pendiente comprobar el motivo real al recargar el portal y terminar el caso de reenvío400.
+
 ## V63 — detalle de navegación y captura de todas las guías (2026-10-07)
 
 - El propietario pidió evitar indicaciones como Abre Ver del nuevo cargo sin mencionar el

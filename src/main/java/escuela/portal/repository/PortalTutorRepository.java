@@ -104,11 +104,12 @@ public class PortalTutorRepository {
                 SELECT pa.id,pa.folio,timezone(:zona,pa.fecha_pago) fecha_local,
                        aplicado.monto_alumno AS monto,pa.moneda,pa.metodo,
                        pa.estado,pa.referencia,
+                       CASE WHEN pa.estado='RECHAZADO' THEN pa.motivo_rechazo_cancelacion END AS motivo_rechazo,
                        (SELECT count(*) FROM comprobante_pago cp WHERE cp.pago_id=pa.id) comprobantes
                 """+desde+" ORDER BY pa.fecha_pago DESC,pa.id DESC LIMIT :limite OFFSET :offset",p,
                 (rs,n)->new PortalPagoFila(rs.getLong("id"),rs.getString("folio"),rs.getObject("fecha_local",LocalDateTime.class),
                         rs.getBigDecimal("monto"),rs.getString("moneda"),rs.getString("metodo"),
-                        rs.getString("estado"),rs.getString("referencia"),rs.getInt("comprobantes")));
+                        rs.getString("estado"),rs.getString("referencia"),rs.getInt("comprobantes"),rs.getString("motivo_rechazo")));
         return new PageImpl<>(filas,PageRequest.of(pagina,tamanio),total==null?0:total);
     }
 

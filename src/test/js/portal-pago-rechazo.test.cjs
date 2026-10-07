@@ -1,0 +1,20 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+function elemento() { return { listeners: {}, textContent: '', addEventListener(n,fn) {this.listeners[n]=fn;}, focus() {this.focused=true;} }; }
+const modal=elemento(), motivo=elemento(), folio=elemento(), cerrar=elemento();
+const boton=elemento();boton.dataset={folio:'PAG-TEST-400',motivo:'Comprobante incorrecto.\n<script>texto literal</script>'};
+modal.querySelector=s=>({'[data-rechazo-motivo]':motivo,'[data-rechazo-folio]':folio,'[data-rechazo-cerrar]':cerrar}[s]);
+modal.showModal=()=>{modal.open=true;};modal.close=()=>{modal.open=false;modal.listeners.close();};
+modal.getBoundingClientRect=()=>({left:20,right:200,top:20,bottom:200});
+let bloqueado=false;
+const document={getElementById:()=>modal,querySelectorAll:()=>[boton],body:{classList:{add(){bloqueado=true;},remove(){bloqueado=false;}}}};
+vm.runInNewContext(fs.readFileSync('src/main/resources/static/js/portal-pago-rechazo.js','utf8'),{document});
+boton.listeners.click();assert.equal(modal.open,true);assert.equal(cerrar.focused,true);assert.equal(bloqueado,true);
+assert.equal(motivo.textContent,boton.dataset.motivo);assert.equal(folio.textContent,'PAG-TEST-400');
+cerrar.listeners.click();assert.equal(modal.open,false);assert.equal(bloqueado,false);assert.equal(boton.focused,true);
+boton.dataset.motivo=' ';boton.listeners.click();assert.match(motivo.textContent,/No hay un motivo registrado/);
+modal.listeners.click({target:modal,clientX:50,clientY:50});assert.equal(modal.open,true);
+modal.listeners.click({target:modal,clientX:0,clientY:0});assert.equal(modal.open,false);
+vm.runInNewContext(fs.readFileSync('src/main/resources/static/js/portal-pago-rechazo.js','utf8'),{document:{getElementById:()=>null}});
+console.log('Modal de rechazo: motivo literal, folio, cierre, foco, fondo y motivo ausente correctos.');

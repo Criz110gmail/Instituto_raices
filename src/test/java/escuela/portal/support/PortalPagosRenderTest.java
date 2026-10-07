@@ -46,6 +46,22 @@ class PortalPagosRenderTest {
                 .doesNotContain("¡Estás al corriente!", "Reportar transferencia");
     }
 
+    @Test void pagoRechazadoOfreceMotivoEscapadoSinOfrecerloParaValidados() throws Exception {
+        var rechazado=new PortalPagoFila(9L,"PAG-PRUEBA",LocalDateTime.of(2026,10,7,12,0),
+                dinero("400"),"MXN","TRANSFERENCIA","RECHAZADO","TEST-RECHAZO-400",1,
+                "El comprobante es incorrecto. <script>prueba</script>\nAdjunta el correcto.");
+        var html=render(Page.empty(),dinero("400"),dinero("0"),new PageImpl<>(List.of(rechazado)),false);
+        assertThat(html).contains("Ver motivo del rechazo","data-ver-rechazo","data-motivo=",
+                "&lt;script&gt;","aria-haspopup=\"dialog\"","motivo-rechazo-modal","no hagas otra transferencia bancaria")
+                .doesNotContain("<script>prueba</script>");
+        assertThat(render(Page.empty(),dinero("400"),dinero("0"),new PageImpl<>(List.of(rechazado)),true))
+                .contains("Ver motivo del rechazo");
+        var validado=new PortalPagoFila(10L,"PAG-VALIDADO",LocalDateTime.of(2026,10,7,12,0),
+                dinero("400"),"MXN","TRANSFERENCIA","VALIDADO",null,1);
+        assertThat(render(Page.empty(),dinero("0"),dinero("0"),new PageImpl<>(List.of(validado)),false))
+                .doesNotContain("data-ver-rechazo");
+    }
+
     private String render(Page<EstadoCuentaCargoFila> cargos, BigDecimal saldo, BigDecimal vencido,
                           Page<PortalPagoFila> pagos, boolean soporte) throws Exception {
         String template = Files.readString(Path.of("src/main/resources/templates/portal/seccion.html"));

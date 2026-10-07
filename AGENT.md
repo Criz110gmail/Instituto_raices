@@ -1,5 +1,55 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V64 — rechazo y reenvío corregido de $400 confirmado — 2026-10-07
+
+- Propietario confirmó completar la prueba, validar el reporte corregido, aumento de $400 en
+  cuenta y comprobante visible en portal familiar. Es confirmación humana; el agente no
+  rechazó ni validó pagos. El pendiente de reenvío descrito debajo queda concluido.
+- V64 añade Guía de procesos → Rechazar un pago y corregir el reporte: $400, diez etapas
+  detalladas: concepto, cuota, emisión seleccionada, saldo B, primer reporte, rechazo con
+  motivo, consulta del motivo/modal, reporte corregido, validación y comprobación final.
+  En cada etapa: menú/módulo, búsqueda/fila, botones/pestañas, campos, guardado y resultado.
+- Ejemplo de $400 sin ajustes: rechazo mantiene deuda de $400 y cuenta B; segundo validado
+  deja saldo $0, un ingreso de $400 y banco B + $400, no $800. Primer folio conserva rechazo/comprobante.
+  Referencias TEST ilustrativas: corregir archivo no crea otra referencia bancaria real
+  ni exige una segunda transferencia. Modal de motivo se explica desde historial del hijo.
+- Nueva guía sólo visible con permisos requeridos, sin concederlos; mismos filtros,
+  paginación, diseño y Excel. V64 inserta exclusivamente contenido editorial; no afecta
+  cargos, cuotas, pagos, movimientos o roles. Ahora cinco guías y 40 etapas.
+- Verificado: 562 pruebas Java sin fallos; Node del modal y flujo de transferencia correctos;
+  SQL editorial validado con rollback y V64 aplicada por Flyway. Consulta de sólo lectura
+  confirmó cinco guías / 40 etapas / diez etapas nuevas. Sólo app recreada, salud UP;
+  PostgreSQL y volúmenes preservados. Sin validación visual autenticada en navegador.
+- Próxima migración V65. Siguiente prueba recomendada:
+  devolución parcial de un pago validado, comprobando egreso, saldo de cuenta y recuperación
+  de deuda. Ya se probó devolución antes, pero confirmar/reconstruir caso con valores exactos
+  antes de publicarlo en guía. No ejecutar devolución real por herramientas ni reutilizar
+  un pago del propietario sin que él decida cuál usar y autorice su propia prueba.
+
+## Motivo de rechazo visible en historial familiar — 2026-10-07
+
+- Durante prueba de rechazo/reenvío, propietario reportó que sólo veía Rechazado.
+  PortalPagoFila no incluía el motivo en la consulta del historial. Se agrega motivoRechazo
+  desde pago.motivo_rechazo_cancelacion únicamente para estado RECHAZADO, conservando
+  filtros por usuario/institución/alumno, paginación y contrato de constructores anteriores.
+- Tus pagos y comprobantes → Estado Rechazado → Ver motivo del rechazo abre dialog nativo
+  con folio, motivo literal, saltos de línea y orientación. Respeta temas/móvil y vista de
+  soporte; no muestra botón en pagos de otros estados. Cierre por botón, Escape o fondo;
+  foco dentro del modal y retorno al botón, fondo sin desplazamiento. Texto escapado en
+  HTML y escrito con textContent, nunca innerHTML; no hay datos de otros tutores.
+- Si no existe motivo histórico se solicita aclaración con administración, sin inventarlo.
+  Mensaje explica que rechazo no reduce deuda y que corregir reporte no exige otra
+  transferencia bancaria si el dinero ya salió. No cambia validación/rechazo ni cuentas.
+- Sin migración; V64 sigue disponible. Caso de reenvío aún pendiente de confirmación:
+  tutor debe recargar Tus pagos, consultar motivo de TEST-RECHAZO-400, reportar nuevamente
+  con TEST-CORREGIDO-400 y comprobar validación400, saldo0 y un solo ingreso400. No publicar
+  ese caso como confirmado todavía.
+- Verificación: 559 pruebas Java sin fallos, render real de filas rechazadas/validadas y
+  soporte, escape de texto y modal; Node prueba folio, motivo literal con saltos, fallback,
+  cierre, fondo y restauración de foco, además del flujo de reporte previo. Sólo app
+  desplegada, salud UP; sin migraciones ni cambios de pagos. Revisión autenticada del
+  motivo específico pendiente del propietario al recargar su historial y continuar paso5.
+
 ## V63 — recorridos explícitos de las cuatro guías — 2026-10-07
 
 - Se revisan las cuatro guías actuales y sus 30 etapas: dos hijos 8, beca/recargo 8,
