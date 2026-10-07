@@ -200,7 +200,7 @@
             };
             details.replaceChildren();
             const paymentDecision = ['validacion', 'rechazo', 'cancelacion'].includes(kind);
-            cancel.textContent = kind === 'cuota' || kind === 'registro-pago' || paymentDecision ? 'Cancelar' : 'Volver a revisar';
+            cancel.textContent = ['cuota', 'registro-pago', 'cancelacion-cargo'].includes(kind) || paymentDecision ? 'Cancelar' : 'Volver a revisar';
             accept.textContent = kind === 'cuota' ? 'Confirmar y crear cuota' : 'Confirmar operación';
             if (paymentDecision) {
                 if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
@@ -285,6 +285,19 @@
                 }
                 add('Motivo', form.querySelector('[name="motivo"]').value);
                 note.textContent = 'Este ajuste modifica la deuda. No registra un ingreso ni una salida de dinero de la cuenta.';
+            } else if (kind === 'cancelacion-cargo') {
+                title.textContent = 'Confirmar cancelación del adeudo';
+                accept.textContent = 'Confirmar cancelación del adeudo';
+                add('Número de cargo', '#' + form.dataset.confirmCharge);
+                add('Alumno', form.dataset.confirmSubject);
+                add('Concepto', form.dataset.confirmConcept);
+                add('Total del adeudo con ajustes', money(form.dataset.confirmAmount));
+                add('Abonos vigentes', money(form.dataset.confirmPaid));
+                add('Falta por pagar actualmente', money(form.dataset.confirmBalance));
+                add('Motivo de cancelación', form.querySelector('[name="motivo"]').value);
+                add('Resultado', 'Adeudo cancelado · deja de ser exigible y conserva su historial');
+                add('Efecto en caja y bancos', 'Ninguno · no registra ingresos, egresos ni devoluciones');
+                note.textContent = 'Esto cancela el adeudo, no un pago. Sólo se permite sin abonos vigentes; el servidor volverá a comprobarlo. Cancelar no ejecuta la operación. Si proviene de una cuota, cancelarlo no habilita su regeneración automática.';
             } else if (kind === 'rechazo') {
                 title.textContent = 'Confirmar rechazo del pago';
                 accept.textContent = 'Confirmar rechazo';

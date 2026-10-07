@@ -36,6 +36,15 @@ class CargoFormularioTest {
                         "/js/generation-preview.js");
     }
 
+    @Test void enlacesDeGestionesOpcionalesUsanBotonComunFueraDelFormulario() throws IOException {
+        String css=java.nio.file.Files.readString(java.nio.file.Path.of("src/main/resources/static/css/forms.css"));
+        assertThat(css).contains(".charge-tab-panel .detail-close-button { display: inline-flex",
+                "border: 1px solid var(--line)", "min-height: 44px", ".detail-close-button:focus-visible");
+        assertThat(plantilla("admin/cargo-detalle.html")).contains("Otras gestiones opcionales",
+                "class=\"detail-close-button\" th:href=\"@{/admin/cargos/{id}/transferencia-vencida",
+                "class=\"detail-close-button\" th:href=\"@{/admin/cargos/{id}/corregir");
+    }
+
     private String plantilla(String ruta) throws IOException {
         try (var entrada = getClass().getClassLoader().getResourceAsStream("templates/" + ruta)) {
             assertThat(entrada).as("plantilla %s", ruta).isNotNull();

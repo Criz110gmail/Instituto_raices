@@ -9,6 +9,19 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+Guía de procesos incorpora tres casos de cancelación confirmados con $600: **pago pendiente**
+(caja B, deuda $600), **pago validado** (compensar ingreso, caja B y deuda $600) y **adeudo
+sin abonos vigentes** (deuda $0, caja B e historial conservado). Son guías separadas con
+17 etapas nuevas, modales actuales y precauciones; no realizan operaciones al consultarlas.
+
+**Adeudos → Ver → Gestión → Cancelar cargo al alumno** muestra **Confirmar cancelación
+del adeudo** con alumno, concepto, importes y motivo. **Cancelar** cierra sin ejecutar;
+confirmar retira la obligación sin mover dinero y conserva el historial. No permite
+cancelar con abonos vigentes ni habilita regenerar la cuota automática de origen.
+La cancelación aparece separada y primero. Transferencia de cargo vencido y Corregir y
+reemplazar cargo se encuentran en **Otras gestiones opcionales · no son pasos para cancelar**,
+con una explicación independiente; no necesitas usarlos para cancelar el adeudo.
+
 **Adeudos → Ver → Resumen** distingue **Total del adeudo con ajustes**, **Abonos vigentes**
 y **Falta por pagar**. Los abonos son dinero que sigue aplicado, no todo lo recibido en
 la historia: cancelaciones/devoluciones pueden recuperar deuda sin borrar los movimientos.
@@ -67,7 +80,7 @@ ofrece **Ver motivo del rechazo** junto al estado. El modal muestra el mensaje r
 por administración y cómo corregir el reporte, sin hacer otra transferencia bancaria si
 el dinero ya salió. El rechazo no disminuye la deuda ni registra un ingreso.
 
-Las siete guías de cobranza incluyen recorridos explícitos en sus 57 etapas: categoría del
+Las diez guías de cobranza incluyen recorridos explícitos en sus 74 etapas: categoría del
 menú, módulo, registro a buscar, Aplicar filtros, acción Ver/Editar, campos, guardado y
 resultado. Cada cambio entre administración y portal se explica. Regla de documentación:
 no usar instrucciones como «abre el cargo» sin indicar desde dónde llegar e identificarlo.

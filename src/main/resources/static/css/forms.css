@@ -8,7 +8,8 @@
 .generation-omitted td { opacity: .6; }
 .generation-omitted td:first-child { opacity: 1; }
 .generation-confirm-button:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
-.entity-form .detail-close-button,.surcharge-preview-card .detail-close-button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 16px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); color: var(--ink); font-weight: 800; text-decoration: none; }
+.entity-form .detail-close-button,.surcharge-preview-card .detail-close-button,.charge-tab-panel .detail-close-button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 16px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); color: var(--ink); font-weight: 800; text-decoration: none; box-sizing: border-box; max-width: 100%; text-align: center; }
+.detail-close-button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
 .entity-form fieldset:disabled { opacity: .85; }
 .recargo-example legend { color: #62428d; }
 .recargo-example-badge { display: inline-block; padding: 6px 10px; border-radius: 8px; background: #e6dcf6; color: #604187; font-size: .68rem; font-weight: 800; letter-spacing: .05em; }

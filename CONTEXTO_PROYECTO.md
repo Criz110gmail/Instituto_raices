@@ -1,5 +1,73 @@
 # Contexto del proyecto
 
+## V74 — tres guías de cancelación confirmadas — 2026-10-07
+
+- Propietario confirmó la secuencia completa sobre $600: pendiente cancelado sin cambiar
+  caja/deuda; pago nuevo validado caja B+600/deuda0, luego cancelado caja B/deuda600;
+  finalmente adeudo cancelado conservando histórico600/abonos0/saldo0, cajaB y sin pendiente
+  familiar. Pagos anteriores conservados Cancelados. Confirmación humana, no por herramientas.
+- V74 agrega tres guías CONFIRMADA: Cancelar un pago pendiente registrado por error: $600
+  (siete etapas), Cancelar un pago validado registrado por error: $600 (cinco) y Cancelar
+  un adeudo sin abonos vigentes: $600 (cinco). Total diez guías / 74 etapas.
+- Cada recorrido precisa menú/módulo/búsqueda/filtro/fila/pestaña/campos/modales/confirmación
+  y resultados. Primera prepara concepto/cuota/selección600/cajaB; segunda reutiliza deuda
+  y registra otro pago; tercera retira obligación después de corregir pagos. No repetir al
+  consultar, no mezclar devolución/descuento ni regenerar cuota única cancelada.
+- Sólo tablas editoriales/requisitos de permisos existentes; no asigna roles ni ejecuta
+  cuotas, cargos, pagos, cancelaciones, ajustes o movimientos. Mismo diseño/filtros/paginación
+  y Excel del módulo existente. Perfil autorizado debe contar con permisos de cada proceso.
+- Verificado: 594 pruebas Java sin fallos, contenido/numeración/botones y límites editoriales.
+  SQL probado con BEGIN/ROLLBACK, tres guías/17 etapas y 16 relaciones con permisos existentes.
+  V74 aplicada; lectura confirma tres nuevas CONFIRMADA y diez guías/74 etapas totales.
+  Sólo app recreada, salud UP; base/volúmenes preservados, sin operaciones financieras ni
+  QA visual autenticada. Diff limpio; presentación de guías a revisar por propietario.
+- Siguiente migración V75. Consultar las guías en Administración → Seguridad y soporte →
+  Guía de procesos. Los pendientes de cancelaciones descritos anteriormente quedan concluidos
+  para estos escenarios exactos; no declarar probados convenios, saldo insuficiente,
+  concurrencia, cancelación con devoluciones u otras variantes. Próximo caso a acordar.
+
+## Botones de gestiones opcionales con estilo común — 2026-10-07
+
+- Al separar Transferencia de cargo vencido y Corregir y reemplazar cargo, sus enlaces
+  quedaron fuera de entity-form/cargo-detail-actions, únicos ancestros incluidos en
+  el selector del botón. No era falta de clase HTML: faltaba alcance CSS del patrón.
+- forms.css extiende la misma regla detail-close-button a charge-tab-panel: inline-flex,
+  borde/fondo de variables de tema, radio, espaciado, altura44, ancho máximo y texto centrado.
+  Foco de teclado visible común; sin paleta paralela, rutas/acciones/permisos sin cambios.
+- Verificado: 591 pruebas Java sin fallos; prueba estructural protege selector y enlaces
+  fuera del formulario. Sólo app recreada, salud UP; CSS servido contiene selector nuevo,
+  diff limpio. Sin migración ni operaciones financieras; base/volúmenes intactos. Revisión
+  visual autenticada pendiente. V74 sigue disponible; preservar V73 y cambios anteriores.
+- Recargar Adeudos → Ver → Gestión → Otras gestiones opcionales para revisar presentación.
+  Prueba de cancelación del adeudo600 sigue pendiente; no ejecutarla mediante herramientas.
+
+## Modal para cancelar un adeudo — 2026-10-07
+
+- Gestión → Cancelar cargo al alumno abre Confirmar cancelación del adeudo, con número,
+  alumno, concepto, total ajustado, abonos vigentes, saldo actual y motivo. Explica deja de
+  ser exigible, conserva historial, no mueve caja/bancos ni es devolución/cancelación de pago.
+- Cancelar/Escape/fondo no envían y conservan motivo; Confirmar cancelación del adeudo usa
+  requestSubmit con validación/CSRF y autorización sólo para ese envío. Backend conserva
+  bloqueo/versión y prohibición si existen abonos netos; el resumen no sustituye esa regla.
+  Advierte que cancelar no permite regenerar automáticamente la cuota de origen.
+- Gestión presenta Cancelar adeudo separado y primero, con explicación de que no requiere
+  habilitar transferencias ni corregir. Los otros botones van en Otras gestiones opcionales ·
+  no son pasos para cancelar, cerrado inicialmente, con tarjetas explicando cada finalidad.
+  Reutiliza form-section/student-section-intro/form-grid/form-notice/cuota-advanced y
+  detail-close-button; sin CSS paralelo ni cambios de permisos/rutas/condiciones operativas.
+- V73 sólo actualiza navegación de tres pasos de guías existentes para localizar ese bloque.
+  Guía específica de cancelaciones aún pendiente tras confirmar cancelación del adeudo;
+  siete guías/57 etapas, sin nuevos escenarios publicados por este cambio.
+- Verificado: 590 pruebas Java sin fallos; render Thymeleaf comprueba atributos, separación
+  de acciones y ausencia de formulario en cancelado. Once suites Node pasan, incluidas
+  $600/abonos0, cierre sin enviar, Escape y confirmación única. Diff limpio.
+  V73 editorial probada con BEGIN/ROLLBACK y aplicada; siete guías/57 etapas conservadas.
+  Sólo app recreada, salud UP; base/volúmenes intactos, sin operaciones financieras ni QA
+  visual autenticada. Próxima migración V74; confirmar presentación/prueba con propietario.
+- Propietario debe recargar Adeudos → Ver → Gestión, motivo de retirar cobro de prueba600,
+  Cancelar cargo al alumno → revisar resumen → Confirmar cancelación del adeudo; comprobar
+  estado cancelado/saldo0/cajaB y ausencia en pendientes familiares. No ejecutarlo con tools.
+
 ## Resumen de adeudo comprensible — V72 — 2026-10-07
 
 - Propietario confirmó pago600 validado aumentó caja y posterior cancelación devolvió la

@@ -65,11 +65,14 @@ class CargoDetallePestanasRenderTest {
         assertThat(html).contains("Ana Prueba","Saldo pendiente actual","$100.00","data-force-active-tab=\"ajustes\"",
                 "data-charge-total=\"400.00\"","data-charge-paid=\"300.00\"","Así quedaría el cargo","charge-preview-balance",
                 "Sin transferencias por revisar","type=\"text\"","data-money","Cancelar cargo al alumno","&lt;script&gt;",
-                "Abonos vigentes","Falta por pagar","Total del adeudo con ajustes");
+                "Abonos vigentes","Falta por pagar","Total del adeudo con ajustes",
+                "data-money-confirm=\"cancelacion-cargo\"","data-confirm-paid=\"300.00\"","data-confirm-balance=\"100.00\"",
+                "Otras gestiones opcionales · no son pasos para cancelar","No necesitas habilitar transferencias",
+                "Permitir reportar un pago vencido","Corregir una fecha límite equivocada");
     }
     @Test void canceladoNoPermiteCapturarNuevoAjusteNiRegistrarPago() throws Exception {
         assertThat(render("CANCELADO")).contains("Este cargo no admite nuevos ajustes","Cancelación","no significa que se haya recibido ese dinero")
-                .doesNotContain("id=\"charge-adjustment-form\"","Registrar pago <span","Cancelar cargo al alumno</button>");
+                .doesNotContain("id=\"charge-adjustment-form\"","Registrar pago <span","Cancelar cargo al alumno</button>","data-money-confirm=\"cancelacion-cargo\"");
     }
     @Test void sinAbonosExplicaDeudaSinAfirmarUnaCancelacionHistorica() throws Exception {
         assertThat(render("EMITIDO","0.00")).contains("$400.00","$0.00","Este adeudo no tiene abonos vigentes",
