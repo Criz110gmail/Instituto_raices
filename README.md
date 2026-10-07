@@ -24,7 +24,10 @@ aplicar ajustes requieren revisar el modal y pulsar **Confirmar operación**; ca
 La guía **Devolver $100 y pagar nuevamente el saldo** documenta la devolución parcial
 confirmada de un pago de $400 y la liquidación posterior desde el portal familiar: egreso
 $100, deuda recuperada $100, nuevo ingreso $100 y saldo final $0. Conserva ambos pagos y
-devolución. La alternativa de devolución más descuento manual sigue pendiente de prueba.
+devolución. La alternativa confirmada **Devolver $100 y ajustar la deuda con un descuento**
+tiene nueve etapas: pagar $400, devolver $100 y descontar $100 deja total ajustado $300,
+pagado $300 y saldo $0. El descuento no mueve la cuenta otra vez. Son alternativas:
+no volver a pagar y descontar los mismos $100.
 
 En **Pagos recibidos → Ver → Devoluciones**, la cuenta que recibió el pago viene protegida.
 **Devolver desde otra cuenta** permite cambiarla con motivo obligatorio si es distinta.
@@ -41,7 +44,7 @@ ofrece **Ver motivo del rechazo** junto al estado. El modal muestra el mensaje r
 por administración y cómo corregir el reporte, sin hacer otra transferencia bancaria si
 el dinero ya salió. El rechazo no disminuye la deuda ni registra un ingreso.
 
-Las seis guías de cobranza incluyen recorridos explícitos en sus 48 etapas: categoría del
+Las siete guías de cobranza incluyen recorridos explícitos en sus 57 etapas: categoría del
 menú, módulo, registro a buscar, Aplicar filtros, acción Ver/Editar, campos, guardado y
 resultado. Cada cambio entre administración y portal se explica. Regla de documentación:
 no usar instrucciones como «abre el cargo» sin indicar desde dónde llegar e identificarlo.

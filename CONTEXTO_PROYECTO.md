@@ -1,5 +1,30 @@
 # Contexto del proyecto
 
+## V68 — devolución parcial seguida de descuento confirmada — 2026-10-07
+
+- Propietario confirmó el caso separado: cargo original $400, pago validado $400,
+  devolución $100 y descuento manual $100 → total ajustado $300, pagado acumulado $300
+  y saldo $0. Historial correcto, cuenta sin otro movimiento al descontar y sin pendiente
+  familiar. Esta confirmación humana concluye el pendiente descrito en los bloques anteriores.
+- V68 publica Devolver $100 y ajustar la deuda con un descuento en nueve etapas:
+  concepto que admite descuento, cuota, emisión seleccionada, reporte familiar, validación
+  y saldo S, devolución, comprobación previa, ajuste con modal y verificación en ambos perfiles.
+  S ya incluye el pago: devolución deja S−100; descuento conserva ese saldo. No volver a
+  pagar y descontar los mismos $100; otra guía explica el nuevo pago sobre otro caso.
+- Se enlaza la alternativa confirmada en la última precaución de la guía de devolución
+  más nuevo pago, incrementando su versión. Sólo tablas editoriales; sin modificar
+  roles, cargos, pagos, ajustes ni movimientos. Siete guías / 57 etapas tras aplicar V68.
+- Verificado: 582 pruebas Java sin fallos; contenido/numeración/recorridos/botones cubiertos.
+  SQL probado dentro de BEGIN/ROLLBACK, nueve etapas y ocho requisitos de permisos existentes.
+  V68 aplicada por Flyway; lectura confirma siete guías / 57 etapas y nuevo caso CONFIRMADA.
+  Sólo app recreada, salud UP; PostgreSQL/volúmenes intactos. No se realizaron operaciones
+  financieras ni revisión visual autenticada; confirmación funcional proviene del propietario.
+- Siguiente migración V69. Próxima prueba propuesta: cancelación de un pago capturado
+  por error (no devolución real), primero pendiente sin afectar cuenta y después validado
+  con anulación de ingreso y recuperación de deuda. Usar casos nuevos controlados; no
+  cancelar el pago con devolución de este ejemplo. No publicar esos escenarios como
+  confirmados hasta que el propietario verifique los resultados. No operar dinero con tools.
+
 ## V67 — navegación y claridad del ajuste de adeudos (2026-10-07)
 
 - Detalle separado en Resumen/Transferencias/Ajustar saldo/Historial/Gestión con diseño
