@@ -1,5 +1,27 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Confirmación al crear cuotas — V69 — 2026-10-07
+
+- Crear cuota y Preparar cobro del alta asistida abren Confirmar nueva cuota con el modal
+  compartido: institución, plantel, alumno/inscripción, concepto, importe único o por mes,
+  frecuencia, vencimiento o meses/día límite, vigencia, estado, generación automática y si
+  se creará el cargo ahora. Moneda exacta del campo y fechas dd/MM/yyyy; texto literal seguro.
+- Cancelar/Escape/fondo cierran sin guardar, conservando captura y foco. Confirmar y crear
+  cuota usa requestSubmit con validación/CSRF y autorización sólo para ese envío. No modifica
+  servicios, reglas de cuotas ni edición existente. No registra pagos ni fondos.
+- V69 actualiza sólo instrucciones/versiones de cinco pasos de guías que configuran cuotas;
+  siete guías / 57 etapas, sin declarar la cancelación de pagos como confirmada.
+- Pruebas DOM: cuota única/mensual/asistida, resumen recalculado al corregir, texto literal,
+  Cancelar/Escape sin envío, confirmación única y no afectar botones de los otros modales.
+  Verificado: 584 pruebas Java sin fallos y once suites Node correctas; diff limpio.
+  SQL editorial probado con BEGIN/ROLLBACK, V69 aplicada por Flyway y lectura confirma
+  cinco pasos actualizados, siete guías/57 etapas. Sólo app recreada, salud UP; base/volúmenes
+  preservados, sin cuotas/pagos por herramientas. Revisión visual autenticada pendiente.
+  Siguiente migración V70.
+- Próxima prueba humana: recargar Crear cuota, revisar resumen de $600 de TEST-CANCELACION,
+  pulsar Cancelar, comprobar datos conservados y volver a confirmar; continuar la prueba
+  de cancelación pendiente/validada indicada antes. No crear esa cuota por herramientas.
+
 ## V68 — devolución parcial seguida de descuento confirmada — 2026-10-07
 
 - Propietario confirmó el caso separado: cargo original $400, pago validado $400,

@@ -9,6 +9,11 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+**Cuotas por alumno → Crear cuota** muestra **Confirmar nueva cuota** antes de guardar:
+alumno, concepto, importe, calendario, vigencia, estado y generación. **Cancelar** conserva
+la captura sin guardar; **Confirmar y crear cuota** envía el formulario. El alta desde
+Inscripciones también aclara si creará un cargo inmediatamente; no registra dinero recibido.
+
 **Adeudos de alumnos → Ver** organiza el detalle en Resumen, Transferencias, Ajustar saldo,
 Historial y Gestión, con alumno y saldo visibles arriba. Ajustar saldo incluye vista previa
 del total/pagado/saldo resultantes; no mueve dinero. Los errores conservan la captura y

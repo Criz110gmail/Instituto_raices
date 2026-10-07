@@ -152,4 +152,32 @@ form.dataset.moneyConfirm='validacion';form.dataset.confirmAmount='400.00';
 const bank=new Input();bank.id='cuentaDestinoBusqueda';bank.value='Banco principal';bank.form=form;
 submit();assert.equal(doc.querySelector('#money-confirm-title').textContent,'Confirmar validación del pago');
 accept.dispatchEvent({type:'click'});assert.equal(form.submissions,2);
-console.log('DOM moneda: valor canónico, foco/formato, scroll, validaciones, readonly, cancelar y confirmar un solo envío correctos.');
+// Nueva cuota: resumen literal, sin enviar al cancelar; recalcula después de corregir.
+form.dataset.moneyConfirm='cuota';
+for (const [id,value] of [['moneda','MXN'],['inscripcion-busqueda','A-1 · Ana <script>'],['concepto-busqueda','TEST · Inscripción'],['importeBase','600.00'],['fecha-vencimiento-unico','2026-10-20'],['fechaInicio','2026-09-01'],['fechaFin','2027-06-30'],['primerMes','2026-09'],['ultimoMes','2026-11'],['dia-vencimiento','20']]) {
+    const el=new Input();el.id=id;el.value=value;el.form=form;
+}
+for (const [id,value,text] of [['institucion','1','Escuela'],['plantel','2','Plantel norte'],['frecuencia','UNICA','Una sola vez'],['estado-cuota','ACTIVA','Activa']]) {
+    const el=new Element('select');el.id=id;el.value=value;el.selectedOptions=[{textContent:text}];el.form=form;
+}
+const auto=new Input();auto.id='generacion-automatica';auto.checked=true;auto.form=form;
+const now=new Input();now.name='generarCargoAhora';now.checked=false;now.form=form;
+const rows=()=>Object.fromEntries(dialog.children.find(el=>el.tag==='dl').children.reduce((pairs,el,i,all)=>i%2?pairs:[...pairs,[el.textContent,all[i+1].textContent]],[]));
+submit();assert.equal(dialog.open,true);assert.equal(form.submissions,2);
+assert.equal(doc.querySelector('#money-confirm-title').textContent,'Confirmar nueva cuota');
+assert.equal(rows()['Importe único'],'$600.00');assert.equal(rows()['Alumno e inscripción'],'A-1 · Ana <script>');
+assert.equal(rows()['Fecha límite de pago'],'20/10/2026');assert.match(rows()['Generación automática'],/^Sí/);
+assert.equal(cancel.textContent,'Cancelar');cancel.dispatchEvent({type:'click'});
+assert.equal(form.submissions,2);assert.equal(doc.querySelector('#importeBase').value,'600.00');
+doc.querySelector('#frecuencia').value='MENSUAL';doc.querySelector('#importeBase').value='500.00';
+submit();assert.equal(rows()['Importe por mes'],'$500.00');assert.equal(rows()['Meses a cobrar'],'09/2026 — 11/2026');
+assert.match(rows()['Fecha límite de pago'],/Día 20/);
+assert.ok(!('Importe único' in rows()));assert.equal(accept.textContent,'Confirmar y crear cuota');
+accept.dispatchEvent({type:'click'});accept.dispatchEvent({type:'click'});assert.equal(form.submissions,3);
+// Escape no guarda; modalidad asistida señala si creará el cargo ahora.
+doc.querySelector('#frecuencia').value='UNICA';now.checked=true;submit();
+assert.match(rows()['Crear cargo al confirmar'],/^Sí/);
+dialog.dispatchEvent({type:'cancel',preventDefault(){}});assert.equal(form.submissions,3);
+form.dataset.moneyConfirm='validacion';submit();assert.equal(cancel.textContent,'Volver a revisar');
+assert.equal(accept.textContent,'Confirmar operación');cancel.dispatchEvent({type:'click'});
+console.log('DOM moneda y cuotas: resumen único/mensual/asistido, fechas, cancelar/Escape, corrección y un solo envío correctos.');

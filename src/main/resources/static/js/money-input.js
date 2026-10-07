@@ -192,14 +192,39 @@
             if (!kind || event.defaultPrevented || approved.has(form)) return;
             event.preventDefault();
             if (!form.reportValidity()) return;
-            const currency = form.dataset.confirmCurrency || form.dataset.currency || 'MXN';
+            const currency = (kind === 'cuota' ? form.querySelector('#moneda')?.value : null) || form.dataset.confirmCurrency || form.dataset.currency || 'MXN';
             const money = raw => formatMoney(parseMoney(raw).raw, currency) || 'Sin importe';
             const add = (label, value) => {
                 const dt = document.createElement('dt'), dd = document.createElement('dd');
                 dt.textContent = label; dd.textContent = value; details.append(dt, dd);
             };
             details.replaceChildren();
-            if (kind === 'devolucion') {
+            cancel.textContent = kind === 'cuota' ? 'Cancelar' : 'Volver a revisar';
+            accept.textContent = kind === 'cuota' ? 'Confirmar y crear cuota' : 'Confirmar operación';
+            if (kind === 'cuota') {
+                title.textContent = 'Confirmar nueva cuota';
+                const value = id => form.querySelector('#' + id)?.value || '';
+                const selected = id => form.querySelector('#' + id)?.selectedOptions?.[0]?.textContent || 'Sin seleccionar';
+                const date = raw => /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw.split('-').reverse().join('/') : 'Se completará según inscripción y ciclo';
+                const month = raw => /^\d{4}-\d{2}$/.test(raw) ? raw.split('-').reverse().join('/') : 'Sin capturar';
+                const monthly = value('frecuencia') === 'MENSUAL';
+                add('Institución', selected('institucion'));
+                add('Plantel', selected('plantel'));
+                add('Alumno e inscripción', value('inscripcion-busqueda'));
+                add('Concepto de cobro', value('concepto-busqueda'));
+                add(monthly ? 'Importe por mes' : 'Importe único', money(value('importeBase')));
+                add('Frecuencia', monthly ? 'Cada mes' : 'Una sola vez · no se repite');
+                if (monthly) {
+                    add('Meses a cobrar', month(value('primerMes')) + ' — ' + month(value('ultimoMes')));
+                    add('Fecha límite de pago', 'Día ' + value('dia-vencimiento') + ' de cada mes; en meses más cortos, el último día');
+                } else add('Fecha límite de pago', date(value('fecha-vencimiento-unico')));
+                add('Vigencia de la configuración', date(value('fechaInicio')) + ' — ' + date(value('fechaFin')));
+                add('Estado', selected('estado-cuota'));
+                add('Generación automática', form.querySelector('#generacion-automatica')?.checked ? 'Sí · se incluirá en Generar automáticos' : 'No · generación manual');
+                const now = form.querySelector('[name="generarCargoAhora"]')?.checked;
+                add('Crear cargo al confirmar', now ? 'Sí · se preparará el cargo único de esta inscripción' : 'No · sólo se guardará la cuota');
+                note.textContent = 'Revisa antes de guardar. Crear la cuota no registra un pago recibido ni mueve dinero. Cancelar conserva los datos para corregirlos.';
+            } else if (kind === 'devolucion') {
                 title.textContent = 'Confirmar devolución';
                 add('Dinero a devolver', money(form.querySelector('#refund-amount').value));
                 add('Cuenta de origen', form.querySelector('#refund-account').value);
