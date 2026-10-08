@@ -1,6 +1,6 @@
 (() => {
     function iniciar() {
-        if (document.querySelector('[data-session-indicator]')) return;
+        if (document.querySelector('[data-session-clock-modal]')) return;
         const familia = /^\/portal(\/|$)/.test(location.pathname);
         const maestro = /^\/maestros(\/|$)/.test(location.pathname);
         const acceso = familia ? '/familias' : maestro ? '/maestros/acceso' : '/login';
@@ -17,11 +17,18 @@
         indicador.setAttribute('aria-label', 'Consultar tiempo restante de sesión');
         indicador.textContent = 'Sesión · consultando…';
         const cabecera = document.querySelector('.topbar, .family-bar, .teacher-bar, .form-top');
-        (cabecera || document.body).appendChild(indicador);
-        if (!cabecera) indicador.classList.add('session-indicator-floating');
+        // Familias conserva el aviso, sin reloj permanente. Salir sigue siendo el último control.
+        if (!familia) {
+            const controles = document.querySelector('.form-session-actions, .teacher-user');
+            if (controles) controles.insertBefore(indicador,
+                controles.querySelector('[data-theme-toggle]') || controles.firstChild);
+            else if (cabecera) cabecera.insertBefore(indicador, cabecera.lastElementChild);
+            else { document.body.appendChild(indicador); indicador.classList.add('session-indicator-floating'); }
+        }
 
         const modal = document.createElement('dialog');
         modal.className = 'session-warning-dialog';
+        modal.dataset.sessionClockModal = 'true';
         modal.setAttribute('aria-labelledby', 'session-warning-title');
         modal.setAttribute('aria-describedby', 'session-warning-description');
         modal.innerHTML = '<span class="session-warning-eyebrow">Protección de tu cuenta</span>' +

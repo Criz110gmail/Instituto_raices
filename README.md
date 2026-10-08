@@ -4,7 +4,10 @@ Al cerrar sesión o caducar, cada portal vuelve a su acceso propio: familias
 `/familias`, maestros `/maestros/acceso` y administración `/login`.
 La duración está configurada en `application.properties` mediante
 `server.servlet.session.timeout=30m`. Arriba de cada portal y formulario aparece
-**Sesión · mm:ss**. A los dos minutos restantes se abre un aviso: **Continuar sesión**
+**Sesión · mm:ss** sólo en administración y maestros, con presentación discreta antes
+de los controles de tema/cierre para mantener **Cerrar sesión** al extremo derecho.
+Familias no muestra contador permanente; conserva el aviso. A los dos minutos restantes
+se abre un aviso: **Continuar sesión**
 renueva otros30 minutos sin recargar ni guardar la captura; **Cerrar sesión** termina
 el acceso. Escribir en un formulario no renueva el tiempo. Las consultas del contador
 tampoco mantienen viva la sesión; el servidor aplica la caducidad aunque haya sondeos.

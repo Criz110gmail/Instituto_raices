@@ -1,5 +1,23 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Contador discreto sólo para administración y maestros — 2026-10-08
+
+- Portal familiar no adjunta el contador al DOM: mantiene reloj interno, aviso al quedar
+  dos minutos, Continuar sesión y Cerrar sesión. No se cambia duración ni lógica servidor.
+- Admin/maestros insertan indicador dentro de form-session-actions/teacher-user, antes
+  del control de tema; cierre de sesión sigue último y al extremo derecho. Si no hay
+  grupo compartido, inserta antes del último bloque de cabecera, no después de Salir.
+- Presentación compacta tipo cápsula, icono de reloj, texto tenue/tabular, borde suave,
+  foco visible y advertencia ámbar sólo cerca del vencimiento. Respeta claro/oscuro,
+  selectores docentes existentes y adaptación móvil. Modal y validación CSRF intactos.
+- Verificado: 614 pruebas Java y13 suites Node sin fallos. Prueba DOM comprueba ausencia
+  de indicador familiar y aviso/renovación conservados, indicador admin/docente y cierre
+  último. App reconstruida/recreada y salud UP; diff limpio. Revisión visual autenticada
+  pendiente del propietario; sin operaciones financieras ni cambios de datos/volúmenes.
+- Sin migración; V76 disponible. Convenio800 pendiente de pago familiar y validación
+  antes de publicar guía completa. .env no leído. Recargar portales para revisar ajuste.
+
+
 ## Contador y aviso de sesión con renovación explícita — 2026-10-08
 
 - application.properties fija server.servlet.session.timeout=30m. Componente global en
