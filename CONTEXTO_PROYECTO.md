@@ -1,5 +1,33 @@
 # Contexto del proyecto
 
+## V83 — cancelación de condonación total confirmada — 2026-10-08
+
+- Propietario confirmó cancelación del convenio y que el adeudo volvió a aparecer
+  para pagar en portal familiar. V83 agrega guía CONFIRMADA Cancelar una condonación
+  total: recuperar el adeudo de $500, siete etapas/cuatro acciones consecutivas:
+  identificar convenio de prueba, referencia bancoB, original/portal antes,
+  motivo y modal, historial/adeudo después, regreso familiar y cuenta/Excel.
+- Documenta mismo original restaurado, no cancelar el cargo, ausencia de cargos nuevos,
+  ni pagos/devoluciones/movimientos. Importe histórico condonado del acuerdo cancelado
+  no representa condonación activa. Si está vencido, autorización de transferencia
+  vencida sigue siendo independiente. No repetir operación ya cancelada.
+- Confirmación humana específica: cancelación y reaparición familiar. Banco sin
+  movimientos y Excel son verificaciones esperadas detalladas, no nuevas pruebas
+  ejecutadas por herramientas. Abonos previos100/saldo400 quedan como escenario humano
+  pendiente, aunque preservación/restauración esté cubierta automáticamente.
+- V83 sólo INSERT/UPDATE editorial en tablas guía y tres permisos existentes requeridos,
+  sin otorgar roles. Homologa precauciones etapas8/9 de guía de condonación V82 y aumenta
+  su versión de contenido2, sin modificar migraciones anteriores. SQL probado
+  BEGIN/ROLLBACK: siete etapas y ambas referencias actualizadas.
+- Verificado: 651 pruebas Java sin fallos, acciones numeradas/semántica/sólo contenido.
+  Sólo app recreada, salud UP; V83 aplicada, lectura confirma nueva guía CONFIRMADA y
+  catorce guías/108 etapas. .env, PostgreSQL/volúmenes y registros financieros preservados.
+- Siguiente migración V84. Cancelación de condonación500 sin abonos ya confirmada;
+  no seguir declarándola pendiente. Próximo caso opcional: condonación con abono previo
+  (original500, abono100, condonar400 y revertir400 conservando100), pedir prueba humana
+  antes de publicar ese escenario. No tocar convenios reales/liquidados.
+
+
 ## Botones compactos también en cuotas y adeudos — 2026-10-08
 
 - Cuotas por alumno y Adeudos de alumnos reutilizan exactamente el grupo flex de

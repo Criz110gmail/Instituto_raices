@@ -58,7 +58,11 @@ Requiere usuario administrativo persistido con permiso de convenios; no acceso d
 El propietario confirmó que el adeudo dejó de exigirse en administración y portal familiar,
 sin cambiar el saldo bancario. La guía **Condonar totalmente un adeudo mediante convenio:
 $500 a $0** documenta el caso en nueve etapas, con preparación opcional, selección, motivo,
-modal y verificación final. Su cancelación/reapertura sigue pendiente de prueba humana.
+modal y verificación final. El propietario también confirmó la cancelación del convenio
+y el regreso del adeudo al portal familiar. La guía **Cancelar una condonación total:
+recuperar el adeudo de $500** documenta esta reversión en siete etapas, con motivo,
+modal, historial, deuda restaurada y verificaciones de cuenta/Excel. Un caso con abonos
+previos sigue pendiente de prueba humana; no se mezcla con este ejemplo sin abonos.
 **Convenios de pago → Ver → Gestión → Cancelar y reactivar adeudos** abre una confirmación
 con folio, tutor, originales que se reactivarán, nuevos que se cancelarán y motivo.
 **Cancelar** conserva la captura; sólo **Confirmar cancelación del convenio** envía la
