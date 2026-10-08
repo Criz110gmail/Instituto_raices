@@ -1,5 +1,30 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V76 — convenio familiar liquidado confirmado y botón Ver de pagos — 2026-10-08
+
+- Propietario confirmó que reportó y validó los dos cargos nuevos480/320 y todo funcionó
+  correctamente. Caso de convenio de originales600/400, acuerdo800, condonación200,
+  pago familiar único800 queda confirmado por el propietario, no ejecutado con tools.
+- Pagos recibidos → acción Ver usa new-button común mediante clase condicional sólo
+  para PAGOS. Mantiene ruta /admin/pagos/{id}/editar, permisos y texto; otros módulos
+  conservan edit-link. No cambia botones del detalle, servicios ni reglas financieras.
+- V76 agrega guía CONFIRMADA Convenio de dos hijos y liquidación familiar: $480 + $320,
+  diez etapas con origen menú/módulo/filtros/campos y modales de cuota/generación/convenio/
+  reporte familiar/validación. Incluye bancoB+800, nuevos saldos0, originales Convenido,
+  convenio Cumplido y comprobantes; fechas ejemplo08/10 y20/10 adaptables al ciclo.
+  Sólo tablas de contenido y siete permisos existentes, sin asignaciones de rol.
+- Verificado: SQL editorial probado BEGIN/ROLLBACK; 618 pruebas Java y13 suites Node
+  sin fallos; app reconstruida/recreada, salud UP. V76 aplicada; lectura confirma guía
+  CONFIRMADA/diez etapas y once guías/84 etapas totales. Diff limpio. Sin pagos ni
+  movimientos mediante herramientas, base/volúmenes/.env preservados. Diseño del botón
+  a confirmar visualmente por propietario, no revisión autenticada por tools.
+- Siguiente migración V77. Siguiente prueba propuesta: cancelar OTRO convenio antes de
+  cualquier pago; debe cancelar sus cargos nuevos y reactivar originales sin mover cuenta.
+  No cancelar el convenio ya liquidado ni publicar cancelación como confirmada todavía.
+  Añadir instrucciones del modal familiar a otros recorridos existentes en actualización
+  editorial posterior; esta guía nueva ya incorpora Confirmar y enviar a revisión.
+
+
 ## Confirmar reporte familiar de transferencia antes de enviar — 2026-10-08
 
 - Portal familiar → Reportar transferencia → Enviar transferencia a revisión usa el

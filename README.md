@@ -22,6 +22,12 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+La guía **Convenio de dos hijos y liquidación familiar: $480 + $320** documenta el caso
+confirmado: originales $600/$400, convenio $800, condonación $200 y una transferencia
+validada que liquida ambos cargos nuevos. Incluye diez etapas y todos los modales actuales.
+Se consulta en **Administración → Seguridad y soporte → Guía de procesos**.
+En **Pagos recibidos**, únicamente **Ver** adopta el botón con borde del diseño común.
+
 **Portal familiar → Reportar transferencia → Enviar transferencia a revisión** abre
 un modal con cargos por alumno, total, cuenta, fecha, referencia y nombres de los
 comprobantes. **Cancelar** o Escape conserva la captura y los archivos sin enviar;
@@ -115,7 +121,7 @@ ofrece **Ver motivo del rechazo** junto al estado. El modal muestra el mensaje r
 por administración y cómo corregir el reporte, sin hacer otra transferencia bancaria si
 el dinero ya salió. El rechazo no disminuye la deuda ni registra un ingreso.
 
-Las diez guías de cobranza incluyen recorridos explícitos en sus 74 etapas: categoría del
+Las once guías de cobranza incluyen recorridos explícitos en sus 84 etapas: categoría del
 menú, módulo, registro a buscar, Aplicar filtros, acción Ver/Editar, campos, guardado y
 resultado. Cada cambio entre administración y portal se explica. Regla de documentación:
 no usar instrucciones como «abre el cargo» sin indicar desde dónde llegar e identificarlo.

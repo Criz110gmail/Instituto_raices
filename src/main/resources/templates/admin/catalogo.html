@@ -73,7 +73,7 @@
                 <tbody><tr th:each="fila : ${resultado.pagina.content}">
                     <td th:each="celda, iter : ${fila.celdas}" th:text="${celda}" th:attr="data-label=${resultado.columnas[iter.index]}">Dato</td>
                     <td data-label="Estado"><span class="status" th:classappend="${fila.tono}" th:text="${fila.estado}">Activo</span></td>
-                    <td data-label="Acciones" th:if="${resultado.modulo.mantenimientoDisponible()}"><a class="edit-link" th:href="${resultado.modulo.rutaMantenimiento() + '/' + fila.id + '/editar'}" th:text="${resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'AJUSTES_CARGO' or resultado.modulo.name() == 'PAGOS' ? 'Ver' : 'Editar'}">Editar</a></td>
+                    <td data-label="Acciones" th:if="${resultado.modulo.mantenimientoDisponible()}"><a class="edit-link" th:class="${resultado.modulo.name() == 'PAGOS' ? 'new-button' : 'edit-link'}" th:href="${resultado.modulo.rutaMantenimiento() + '/' + fila.id + '/editar'}" th:text="${resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'AJUSTES_CARGO' or resultado.modulo.name() == 'PAGOS' ? 'Ver' : 'Editar'}">Editar</a></td>
                 </tr></tbody>
             </table>
         </div>
