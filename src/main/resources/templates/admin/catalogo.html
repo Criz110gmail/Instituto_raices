@@ -10,6 +10,8 @@
     <link rel="stylesheet" th:href="@{/css/navigation.css}">
     <script th:src="@{/js/theme.js}"></script>
     <script th:src="@{/js/navigation.js}" defer></script>
+    <link rel="stylesheet" th:href="@{/css/catalogo-rangos.css}">
+    <script th:src="@{/js/catalogo-rangos.js}" defer></script>
 </head>
 <body>
 <input class="nav-toggle" type="checkbox" id="nav-toggle">
@@ -47,7 +49,7 @@
         <div class="flash" th:if="${mensaje}" th:text="${mensaje}">Operación completada</div>
         <div class="panel-heading">
             <div><h2 th:text="${resultado.modulo.name() == 'AJUSTES_CARGO' ? 'Movimientos registrados' : 'Directorio'}">Directorio</h2><p th:text="${resultado.modulo.name() == 'AJUSTES_CARGO' ? 'Consulta el historial aquí. Para modificar una obligación, abre el registro correspondiente en Adeudos de alumnos.' : 'Refina la consulta sin cargar el catálogo completo.'}">Refina la consulta sin cargar el catálogo completo.</p></div>
-            <div class="panel-actions"><a class="export-button" th:if="${resultado.modulo.name() == 'CARGOS'}" href="/admin/cargos/generar">Generar automáticos</a><a class="export-button" th:if="${resultado.modulo.name() == 'POLITICAS_RECARGO'}" href="/admin/politicas-recargo/generar">Generar recargos</a><a class="new-button" th:if="${resultado.modulo.mantenimientoDisponible() and resultado.modulo.name() != 'AJUSTES_CARGO' and (resultado.modulo.name() != 'PAGOS' or puedeRegistrarPago)}" th:href="${resultado.modulo.rutaMantenimiento() + resultado.modulo.segmentoNuevo()}">+ Nuevo registro</a><a class="export-button" th:href="@{/admin/catalogos/{slug}/excel(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado},fecha=${filtro.fecha})}">
+            <div class="panel-actions"><a class="export-button" th:if="${resultado.modulo.name() == 'CARGOS'}" href="/admin/cargos/generar">Generar automáticos</a><a class="export-button" th:if="${resultado.modulo.name() == 'POLITICAS_RECARGO'}" href="/admin/politicas-recargo/generar">Generar recargos</a><a class="new-button" th:if="${resultado.modulo.mantenimientoDisponible() and resultado.modulo.name() != 'AJUSTES_CARGO' and (resultado.modulo.name() != 'PAGOS' or puedeRegistrarPago)}" th:href="${resultado.modulo.rutaMantenimiento() + resultado.modulo.segmentoNuevo()}">+ Nuevo registro</a><a class="export-button" th:href="@{/admin/catalogos/{slug}/excel(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado},fecha=${filtro.fecha},desde=${filtro.desde},hasta=${filtro.hasta},tipoFecha=${filtro.tipoFecha})}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
                 Exportar Excel
             </a></div>
@@ -63,9 +65,23 @@
             <label><span>Por página</span><select name="tamanio">
                 <option th:each="n : ${ {10, 25, 50, 100} }" th:value="${n}" th:text="${n}" th:selected="${filtro.tamanio == n}">25</option>
             </select></label>
-            <button type="submit">Aplicar filtros</button>
-            <a class="clear-link" th:href="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug})}">Limpiar</a>
+            <fieldset class="catalogo-rango" data-date-range th:if="${resultado.modulo.name() == 'CUOTAS_ALUMNO' or resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'PAGOS'}" th:attr="data-today=${hoyFiltros}">
+                <legend>Filtrar por fechas</legend>
+                <label th:if="${resultado.modulo.name() == 'CARGOS'}"><span>Fecha que se buscará</span><select name="tipoFecha"><option value="VENCIMIENTO" th:selected="${filtro.tipoFecha == 'VENCIMIENTO'}">Fecha límite de pago</option><option value="REGISTRO" th:selected="${filtro.tipoFecha == 'REGISTRO'}">Fecha de registro del cargo</option></select></label>
+                <label><span>Desde · incluido</span><input type="date" name="desde" th:value="${filtro.desde}"></label>
+                <label><span>Hasta · incluido</span><input type="date" name="hasta" th:value="${filtro.hasta}"></label>
+                <label><span>Selección rápida</span><select data-range-preset><option value="custom">Rango personalizado</option><option value="month">Este mes</option><option value="previous">Mes anterior</option><option value="year">Este año</option></select></label>
+                <p class="catalogo-rango-help" th:text="${resultado.modulo.name() == 'CUOTAS_ALUMNO' ? 'Busca fechas límite de pago previstas. En mensuales incluye cuotas con algún vencimiento en el rango; no son pagos recibidos ni adeudos generados.' : (resultado.modulo.name() == 'PAGOS' ? 'Busca la fecha del pago en el horario de su institución, no la fecha de validación. Incluye todas las horas del último día.' : 'Busca la fecha elegida: límite de pago o registro del cargo. Puedes combinarla con la situación del adeudo.')}" ></p>
+                <p class="catalogo-rango-help">Puedes dejar una fecha vacía para buscar sin ese límite. Selecciona el rango y pulsa Aplicar filtros.</p>
+            </fieldset>
+            <button th:if="${resultado.modulo.name() != 'PAGOS' and resultado.modulo.name() != 'CUOTAS_ALUMNO' and resultado.modulo.name() != 'CARGOS'}" type="submit">Aplicar filtros</button>
+            <a th:if="${resultado.modulo.name() != 'PAGOS' and resultado.modulo.name() != 'CUOTAS_ALUMNO' and resultado.modulo.name() != 'CARGOS'}" class="clear-link" th:href="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug})}">Limpiar</a>
+            <div class="catalogo-filter-actions" th:if="${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'CUOTAS_ALUMNO' or resultado.modulo.name() == 'CARGOS'}">
+                <button type="submit">Aplicar filtros</button>
+                <a class="clear-link" th:href="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug})}">Limpiar</a>
+            </div>
         </form>
+        <div class="catalogo-rango-error" role="alert" th:if="${errorFiltro != null}" th:text="${errorFiltro}"></div>
         <p class="field-help" th:if="${resultado.modulo.name() == 'CARGOS'}">Con saldo pendiente incluye todos los adeudos por pagar. Un pago parcial puede estar vencido y aparecer en ambos filtros. Liquidado significa saldo $0 por pagos o ajustes; no necesariamente dinero recibido.</p>
 
         <div class="table-wrap" th:if="${!resultado.pagina.empty}">
@@ -83,9 +99,9 @@
         <footer class="pagination" th:if="${resultado.pagina.totalPages > 0}">
             <p><strong th:text="${resultado.pagina.number * resultado.pagina.size + 1}">1</strong>–<strong th:text="${resultado.pagina.number * resultado.pagina.size + resultado.pagina.numberOfElements}">25</strong> de <strong th:text="${resultado.pagina.totalElements}">100</strong></p>
             <div>
-                <a th:classappend="${resultado.pagina.first} ? ' disabled'" th:href="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado},fecha=${filtro.fecha},tamanio=${filtro.tamanio},pagina=${resultado.pagina.number - 1})}">Anterior</a>
+                <a th:classappend="${resultado.pagina.first} ? ' disabled'" th:href="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado},fecha=${filtro.fecha},desde=${filtro.desde},hasta=${filtro.hasta},tipoFecha=${filtro.tipoFecha},tamanio=${filtro.tamanio},pagina=${resultado.pagina.number - 1})}">Anterior</a>
                 <span th:text="${resultado.pagina.number + 1}">1</span>
-                <a th:classappend="${resultado.pagina.last} ? ' disabled'" th:href="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado},fecha=${filtro.fecha},tamanio=${filtro.tamanio},pagina=${resultado.pagina.number + 1})}">Siguiente</a>
+                <a th:classappend="${resultado.pagina.last} ? ' disabled'" th:href="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado},fecha=${filtro.fecha},desde=${filtro.desde},hasta=${filtro.hasta},tipoFecha=${filtro.tipoFecha},tamanio=${filtro.tamanio},pagina=${resultado.pagina.number + 1})}">Siguiente</a>
             </div>
         </footer>
     </section>

@@ -101,6 +101,7 @@ public class CatalogoConsultaService {
 
     public ResultadoCatalogo consultar(ModuloCatalogo modulo, FiltroCatalogo filtroOriginal) {
         FiltroCatalogo f = filtroOriginal.normalizado();
+        f.validarRango();
         Pageable pagina = PageRequest.of(f.pagina(), f.tamanio(), Sort.by("id").descending());
         Page<FilaCatalogo> resultado = switch (modulo) {
             case INSTITUCIONES -> consultar(modulo, institucionRepository, texto(f, "codigo", "nombre"), activo(f), pagina,
@@ -158,7 +159,7 @@ public class CatalogoConsultaService {
                             e.getInstitucion().getNombre(), etiqueta(e.getCategoria().name()),
                             reglas(e)));
             case CUOTAS_ALUMNO -> consultar(modulo, cuotaAlumnoRepository,
-                    textoCuota(f), estado(f, "estado"), pagina,
+                    textoCuota(f).and(escuela.admin.support.RangoFechasCatalogo.cuotas(f)), estado(f, "estado"), pagina,
                     e -> filaEstadoCuota(e,
                             e.getInscripcion().getAlumno().getMatricula() + " · "
                                     + nombreAlumno(e.getInscripcion().getAlumno()),
@@ -166,7 +167,7 @@ public class CatalogoConsultaService {
                             formatear(e.getImporteBase()),
                             etiqueta(e.getFrecuencia().name()), vencimiento(e),
                             e.isGeneracionAutomatica() ? "Automática" : "Manual"));
-            case CARGOS -> consultar(modulo, cargoRepository, textoCargo(f),
+            case CARGOS -> consultar(modulo, cargoRepository, textoCargo(f).and(escuela.admin.support.RangoFechasCatalogo.cargos(f)),
                     escuela.cobranza.support.SituacionAdeudo.filtro(f.estado(), LocalDate.now()), pagina, this::filaCargo);
             case TIPOS_BECA -> consultar(modulo, tipoBecaRepository,
                     texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
@@ -185,7 +186,7 @@ public class CatalogoConsultaService {
                             etiqueta(e.getCategoria())));
             case CUENTAS_FINANCIERAS -> consultar(modulo, cuentaFinancieraRepository,
                     textoCuentaFinanciera(f), activo(f), pagina, this::filaCuentaFinanciera);
-            case PAGOS -> consultar(modulo, pagoRepository, textoPago(f),
+            case PAGOS -> consultar(modulo, pagoRepository, textoPago(f).and(escuela.admin.support.RangoFechasCatalogo.pagos(f)),
                     estado(f, "estado"), pagina, this::filaPago);
             case RETIROS_FONDO, MOVIMIENTOS_FINANCIEROS -> throw new IllegalArgumentException(
                     "Los movimientos usan su consulta especializada");

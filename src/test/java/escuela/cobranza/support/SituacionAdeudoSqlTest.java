@@ -73,4 +73,23 @@ class SituacionAdeudoSqlTest {
         assertThat(sql).isNotNull();
     }
     private static class SqlCapturado extends RuntimeException { }
+
+    @Test void rangoDeCuotasPagosYCargosSeCompilaAntesDePaginar() {
+        var f=new escuela.admin.dto.FiltroCatalogo("","TODOS",null,0,10,LocalDate.of(2026,10,1),LocalDate.of(2026,10,31),"REGISTRO");
+        rango(Cargo.class,escuela.admin.support.RangoFechasCatalogo.cargos(f));
+        assertThat(sql).contains("fecha_emision>=", "fecha_emision<=", "fetch first");
+        rango(escuela.cobranza.entity.CuotaAlumno.class,escuela.admin.support.RangoFechasCatalogo.cuotas(f));
+        assertThat(sql).contains("cuota_vencimiento_en_rango", "fecha_vencimiento_unico>=", "fecha_vencimiento_unico<=");
+        rango(escuela.finanzas.entity.Pago.class,escuela.admin.support.RangoFechasCatalogo.pagos(f));
+        assertThat(sql).contains("timezone(","zona_horaria", "fecha_pago", "date(").doesNotContain("validado_en");
+    }
+    private <T> void rango(Class<T> tipo,org.springframework.data.jpa.domain.Specification<T> filtro) {
+        sql=null;
+        try(var em=emf.createEntityManager()) {
+            var cb=em.getCriteriaBuilder(); var q=cb.createQuery(Long.class); var root=q.from(tipo);
+            q.select(root.get("id")).where(filtro.toPredicate(root,q,cb));
+            try { em.createQuery(q).setMaxResults(10).getResultList(); } catch(RuntimeException esperado) { assertThat(sql).isNotNull(); }
+        }
+        assertThat(sql).isNotNull();
+    }
 }

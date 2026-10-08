@@ -16,6 +16,7 @@ public class ExcelCatalogoService {
     private final CatalogoConsultaService consultaService;
 
     public void exportar(ModuloCatalogo modulo, FiltroCatalogo filtro, OutputStream salida) throws IOException {
+        filtro.validarRango();
         try (SXSSFWorkbook libro = new SXSSFWorkbook(200)) {
             libro.setCompressTempFiles(true);
             Sheet hoja = libro.createSheet(modulo.titulo());
@@ -36,7 +37,7 @@ public class ExcelCatalogoService {
             ResultadoCatalogo bloque;
             do {
                 bloque = consultaService.consultar(modulo,
-                        new FiltroCatalogo(filtro.q(), filtro.estado(), filtro.fecha(), pagina++, 100));
+                        new FiltroCatalogo(filtro.q(), filtro.estado(), filtro.fecha(), pagina++, 100, filtro.desde(), filtro.hasta(), filtro.tipoFecha()));
                 for (FilaCatalogo dato : bloque.pagina().getContent()) {
                     Row fila = hoja.createRow(numeroFila++);
                     int c = 0;

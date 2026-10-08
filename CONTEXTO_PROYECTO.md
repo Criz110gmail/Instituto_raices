@@ -1,5 +1,78 @@
 # Contexto del proyecto
 
+## Botones compactos también en cuotas y adeudos — 2026-10-08
+
+- Cuotas por alumno y Adeudos de alumnos reutilizan exactamente el grupo flex de
+  Aplicar filtros/Limpiar de Pagos recibidos: ancho natural, mismos controles/colores,
+  adaptación móvil y tema heredado. Resto de módulos conserva su distribución.
+  Sin cambios de filtros, consultas, fechas, saldos, permisos ni rutas.
+- Verificado: 649 pruebas Java sin fallos, render real de los tres módulos y contrato
+  de tamaño natural; imagen reconstruida, sólo app recreada y salud UP. Sin migración,
+  operaciones sobre datos, lectura de .env ni cambios de volúmenes. Diff limpio.
+  Revisión visual autenticada pendiente del propietario.
+- V83 sigue disponible; trece guías/101 etapas de V82 sin modificaciones. Siguiente
+  prueba pendiente: reversión de otra condonación total, no repetir caso ya confirmado.
+
+
+## V82 — guía de condonación total confirmada y filtros compactos — 2026-10-08
+
+- Propietario confirmó prueba de condonación total: deuda ya no exigible en admin ni
+  portal familiar y saldo bancario sin cambio. V82 agrega guía CONFIRMADA
+  Condonar totalmente un adeudo mediante convenio: $500 a $0, nueve etapas detalladas
+  y cuatro acciones por etapa: reutilización/preparación opcional, cuota/generación
+  selectiva, referencia bancoB, selección, modalidad/motivo, modal, historial y portal.
+- Usa nombres/menús actuales, filtros Con saldo pendiente/Incluido en convenio,
+  monto0 protegido, ausencia de nuevos cargos/pagos/movimientos y autorización.
+  No presentar condonación como Pagado ni duplicar ajuste. Instrucciones incluyen
+  consulta/exportación sin afirmar aceptación humana específica de cada subpaso.
+  Cancelación/reapertura de esta condonación sigue pendiente de ensayo humano.
+- Cinco permisos existentes requeridos por guía, sin asignación de roles; sólo
+  INSERT editorial en tablas guía. SQL probado en BEGIN/ROLLBACK (nueve etapas).
+  Se corrigió referencia paso4. que el parser interpretaba como acción adicional.
+- Pagos recibidos agrupa Aplicar filtros/Limpiar en fila flex al final de filtros:
+  botón con ancho natural, sin estirarse a columna; misma altura/colores/borde globales.
+  CSS localizado, flex-wrap móvil/tema heredado, otros módulos no cambian.
+- Verificado: 649 pruebas Java sin fallos y15 Node; contrato nueve etapas/captura
+  explícita, sólo contenido y botón compacto. Render de tres módulos comprueba
+  grupo de acciones únicamente en Pagos. Sólo app recreada, salud UP; V82 aplicada,
+  lectura confirma guía CONFIRMADA/nueve etapas y trece guías/101 etapas totales.
+  .env, volúmenes y operaciones financieras preservados; sin QA visual autenticada.
+- Siguiente migración V83. Prueba principal V80 ya confirmada, no repetirla como pendiente.
+  Próximo caso propuesto: cancelar otra condonación total con motivo/modal para verificar
+  restauración del saldo sin movimientos y conservación de abonos si existen; solicitar
+  prueba al propietario antes de publicar esa reversión como confirmada.
+
+
+## V81 — rangos de fechas en cuotas, adeudos y pagos — 2026-10-08
+
+- Cuotas por alumno filtra por fecha límite prevista: única usa vencimiento exacto;
+  mensual busca algún vencimiento en rango usando día del mes limitado a meses cortos
+  y vigencia parcial, igual a planificar de CargoServiceImpl. No genera ni consulta
+  solamente cargos emitidos: muestra configuraciones. Función PostgreSQL inmutable
+  cuota_vencimiento_en_rango calcula en tiempo constante (máximo dos meses candidatos).
+- Adeudos permite Fecha límite de pago (predeterminada) o Fecha de registro del cargo.
+  Pagos usa fecha_pago local según zona de institución, no fecha de validación; ambos
+  extremos incluidos con todas las horas del último día. Desde/Hasta independientes.
+- DTO conserva fecha puntual de Asistencia y constructores existentes. Rango invertido
+  se valida cliente/servidor: listado conserva captura y muestra ayuda sin consultar;
+  Excel valida antes de generar respuesta. Texto, situación, alcance, COUNT y paginación
+  siguen en base. Excel conserva rango/tipo y todos los criterios en bloques100.
+- Tres pantallas usan mismos estilos de controles: sección Filtrar por fechas responsiva,
+  accesos Este mes/Mes anterior/Este año/Rango personalizado (calendario México servidor,
+  no UTC del navegador). Selección no envía sola; Aplicar filtros queda al final.
+  Limpiar quita todo; links de paginación/Excel conservan rango y tipo.
+- Verificado: 646 pruebas Java y15 Node sin fallos. Hibernate/PostgreSQL compila Criteria
+  para tres entidades; render Thymeleaf real de tres pantallas conserva fechas/links.
+  DTO/controlador comprueban rango invertido, captura/paginación; POI dos páginas.
+  SQL de casos12 + límites locales probado con función en BEGIN/ROLLBACK, y repetido
+  sólo lectura tras deploy: febrero28/29, vigencias parciales, bordes exactos/abiertos.
+- Sólo app recreada; salud UP, V81 aplicada, doce guías/92 etapas preservadas.
+  Sin operaciones sobre datos financieros, sin lectura de .env ni cambios de volúmenes.
+  Revisión visual autenticada pendiente del propietario; no presumir prueba humana.
+- Siguiente migración V82. Sigue pendiente prueba humana de condonación total500→0
+  de V80 y publicación de esa guía sólo tras confirmación. Conservar casos anteriores.
+
+
 ## Filtros por situación real del adeudo — 2026-10-08
 
 - Adeudos de alumnos reemplaza selector Emitido por Situación del adeudo:

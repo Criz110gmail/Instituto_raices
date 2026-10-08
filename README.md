@@ -22,6 +22,16 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+**Cuotas por alumno, Adeudos de alumnos y Pagos recibidos** ofrecen Desde/Hasta
+incluidos y accesos Este mes, Mes anterior, Este año y Rango personalizado.
+Cuotas busca vencimientos previstos (también mensuales), no pagos o adeudos generados.
+Adeudos permite límite de pago o fecha de registro; Pagos usa el día local del pago,
+no el de validación, e incluye todas las horas del último día. Puedes dejar un extremo
+vacío. Aplicar filtros ejecuta la consulta; paginación y Excel conservan el rango,
+tipo de fecha y demás criterios. V81 sólo agrega una función de consulta de vencimientos.
+En estos tres módulos, Aplicar filtros y Limpiar se agrupan al final con ancho compacto,
+sin estirar el botón a toda la columna y conservando los estilos comunes.
+
 **Adeudos de alumnos → Situación del adeudo** filtra en base de datos por saldo
 pendiente, pendiente sin abonos, pago parcial, vencido, liquidado, incluido en convenio
 o cancelado. Un parcial vencido aparece en ambos filtros y se identifica como
@@ -45,7 +55,10 @@ registra administrador/fecha y muestra **Condonado totalmente**, también en el 
 Excel. No crea cargos nuevos, pagos ni movimientos. Su cancelación con motivo y modal
 reactiva únicamente los saldos originales si sus abonos/ajustes no cambiaron.
 Requiere usuario administrativo persistido con permiso de convenios; no acceso de recuperación.
-La prueba humana de esta modalidad está pendiente; aún no se publica como guía confirmada.
+El propietario confirmó que el adeudo dejó de exigirse en administración y portal familiar,
+sin cambiar el saldo bancario. La guía **Condonar totalmente un adeudo mediante convenio:
+$500 a $0** documenta el caso en nueve etapas, con preparación opcional, selección, motivo,
+modal y verificación final. Su cancelación/reapertura sigue pendiente de prueba humana.
 **Convenios de pago → Ver → Gestión → Cancelar y reactivar adeudos** abre una confirmación
 con folio, tutor, originales que se reactivarán, nuevos que se cancelarán y motivo.
 **Cancelar** conserva la captura; sólo **Confirmar cancelación del convenio** envía la

@@ -1,0 +1,10 @@
+/* Sólo distribución; controles y colores heredan el diseño administrativo común. */
+.filters .catalogo-filter-actions{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:12px}
+.filters .catalogo-filter-actions>button{flex:0 0 auto;width:auto;min-width:0}
+.filters .catalogo-filter-actions>.clear-link{flex:0 0 auto;width:auto}
+.filters .catalogo-rango{grid-column:1/-1;min-width:0;margin:6px 0 0;padding:16px 0 0;border:0;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px}
+.catalogo-rango legend{padding:0 10px 0 0;color:var(--muted);font-size:.8rem;font-weight:700}
+.catalogo-rango .catalogo-rango-help{grid-column:1/-1;margin:0;color:var(--muted);font-size:.78rem;line-height:1.6}
+.catalogo-rango-error{margin:0 26px 16px;padding:12px 16px;border:1px solid currentColor;border-radius:10px;color:#c64242;font-size:.85rem}
+[data-theme=dark] .catalogo-rango-error{color:#ff9999}
+@media(max-width:560px){.filters .catalogo-rango{grid-template-columns:1fr}.catalogo-rango-error{margin-inline:18px}}

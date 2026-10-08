@@ -43,6 +43,9 @@ public class CatalogoAdminController {
                     @RequestParam(defaultValue = "") String q,
                     @RequestParam(defaultValue = "TODOS") String estado,
                     @RequestParam(required = false) LocalDate fecha,
+                    @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso=org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate desde,
+                    @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso=org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate hasta,
+                    @RequestParam(defaultValue = "VENCIMIENTO") String tipoFecha,
                     @RequestParam(defaultValue = "0") int pagina,
                     @RequestParam(defaultValue = "25") int tamanio,
                     Authentication authentication,
@@ -57,8 +60,15 @@ public class CatalogoAdminController {
         }
         List<ModuloCatalogo> modulos = modulosVisibles(authentication);
         validarPermiso(modulo, modulos);
-        FiltroCatalogo filtro = new FiltroCatalogo(q, estado, fecha, pagina, tamanio).normalizado();
-        model.addAttribute("resultado", consultaService.consultar(modulo, filtro));
+        FiltroCatalogo filtro = new FiltroCatalogo(q, estado, fecha, pagina, tamanio, desde, hasta, tipoFecha).normalizado();
+        try {
+            filtro.validarRango();
+            model.addAttribute("resultado", consultaService.consultar(modulo, filtro));
+        } catch (escuela.common.exception.ReglaNegocioException e) {
+            model.addAttribute("errorFiltro", e.getMessage());
+            model.addAttribute("resultado",new ResultadoCatalogo(modulo,modulo.columnas(),org.springframework.data.domain.Page.empty()));
+        }
+        model.addAttribute("hoyFiltros",LocalDate.now(java.time.ZoneId.of("America/Mexico_City")));
         model.addAttribute("filtro", filtro);
         model.addAttribute("modulos", modulos);
         model.addAttribute("puedeRegistrarPago", authentication.getAuthorities().stream()
@@ -68,7 +78,7 @@ public class CatalogoAdminController {
 
     String catalogo(String slug, String q, String estado, int pagina, int tamanio,
                     Authentication authentication, Model model) {
-        return catalogo(slug, q, estado, null, pagina, tamanio, authentication, model);
+        return catalogo(slug, q, estado, null, null, null, "VENCIMIENTO", pagina, tamanio, authentication, model);
     }
 
     @GetMapping("/admin/catalogos/{slug}/excel")
@@ -76,14 +86,19 @@ public class CatalogoAdminController {
                @RequestParam(defaultValue = "") String q,
                @RequestParam(defaultValue = "TODOS") String estado,
                @RequestParam(required = false) LocalDate fecha,
+               @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso=org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate desde,
+               @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso=org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate hasta,
+               @RequestParam(defaultValue = "VENCIMIENTO") String tipoFecha,
                Authentication authentication,
                HttpServletResponse response) throws IOException {
         ModuloCatalogo modulo = ModuloCatalogo.desde(slug);
         validarPermiso(modulo, modulosVisibles(authentication));
+        FiltroCatalogo filtro=new FiltroCatalogo(q,estado,fecha,0,100,desde,hasta,tipoFecha).normalizado();
+        filtro.validarRango();
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         String nombre = URLEncoder.encode(modulo.slug() + "-filtrado.xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + nombre);
-        excelService.exportar(modulo, new FiltroCatalogo(q, estado, fecha, 0, 100), response.getOutputStream());
+        excelService.exportar(modulo, filtro, response.getOutputStream());
     }
 
     private List<ModuloCatalogo> modulosVisibles(Authentication authentication) {
