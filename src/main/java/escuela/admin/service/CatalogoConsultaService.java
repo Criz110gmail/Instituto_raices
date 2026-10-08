@@ -167,7 +167,7 @@ public class CatalogoConsultaService {
                             etiqueta(e.getFrecuencia().name()), vencimiento(e),
                             e.isGeneracionAutomatica() ? "Automática" : "Manual"));
             case CARGOS -> consultar(modulo, cargoRepository, textoCargo(f),
-                    estado(f, "estadoRegistro"), pagina, this::filaCargo);
+                    escuela.cobranza.support.SituacionAdeudo.filtro(f.estado(), LocalDate.now()), pagina, this::filaCargo);
             case TIPOS_BECA -> consultar(modulo, tipoBecaRepository,
                     texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(),
@@ -511,25 +511,19 @@ public class CatalogoConsultaService {
     }
 
     private FilaCatalogo filaCargo(Cargo cargo) {
-        String estado;
+        String estado = escuela.cobranza.support.SituacionAdeudo.etiqueta(cargo, LocalDate.now());
         String tono;
         if (cargo.getEstadoRegistro() == EstadoRegistroCargo.CANCELADO) {
-            estado = "Cancelado";
             tono = "neutro";
         } else if (cargo.getEstadoRegistro() == EstadoRegistroCargo.CONVENIDO) {
-            estado = "Sustituido por convenio";
             tono = "neutro";
         } else if (saldo(cargo).signum() == 0) {
-            estado = "Pagado";
             tono = "positivo";
         } else if (aplicado(cargo).signum() > 0) {
-            estado = "Parcial";
             tono = "aviso";
         } else if (cargo.getFechaVencimiento().isBefore(LocalDate.now())) {
-            estado = "Vencido";
             tono = "aviso";
         } else {
-            estado = "Pendiente";
             tono = "positivo";
         }
         String periodo = FECHA.format(cargo.getPeriodoCobroInicio()) + " — "

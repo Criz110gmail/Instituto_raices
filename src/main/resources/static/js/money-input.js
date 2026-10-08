@@ -247,14 +247,18 @@
                 form.querySelectorAll('[data-convenio-cancelar] span').forEach(row => {
                     add('Adeudo nuevo que se cancelará', row.dataset.label + ' · ' + money(row.dataset.amount));
                 });
-                add('Total de nuevos adeudos que se cancelarán', money(form.dataset.confirmAmount));
+                if (form.dataset.confirmTotal === 'true') add('Cargos nuevos', 'No existen: este convenio condonó el saldo sin generar cargos');
+                else add('Total de nuevos adeudos que se cancelarán', money(form.dataset.confirmAmount));
                 add('Condonación del acuerdo que dejará de aplicar', money(form.dataset.confirmCondoned));
                 add('Motivo de cancelación', form.querySelector('[name="motivo"]').value);
                 add('Efecto en caja y bancos', 'Ninguno · no registra ingresos, egresos ni devoluciones');
                 note.textContent = 'Se cancelará el convenio y sus cargos nuevos; los adeudos originales volverán a ser exigibles. El historial y el motivo se conservan. El servidor comprobará que no haya pagos aplicados y que los cargos sigan vigentes. Cancelar cierra esta ventana sin ejecutar y conserva el motivo.';
+                if (form.dataset.confirmTotal === 'true') note.textContent = 'Se anulará la condonación y volverán a ser exigibles los saldos originales condonados, conservando los abonos anteriores. No mueve dinero. El servidor comprobará que los originales no hayan cambiado. Cancelar cierra sin ejecutar y conserva el motivo.';
             } else if (kind === 'convenio') {
-                title.textContent = 'Confirmar convenio de pago';
-                accept.textContent = 'Confirmar y crear convenio';
+                const condona = form.querySelector('[name="modalidad"]')?.value === 'CONDONACION_TOTAL';
+                title.textContent = condona ? 'Confirmar condonación total' : 'Confirmar convenio de pago';
+                accept.textContent = condona ? 'Confirmar y condonar saldo' : 'Confirmar y crear convenio';
+                add('Modalidad', condona ? 'Condonación total del saldo pendiente' : 'Convenio con monto por pagar');
                 const value = name => form.querySelector('[name="' + name + '"]')?.value || '';
                 const date = name => value(name).split('-').reverse().join('/');
                 add('Tutor responsable', form.querySelector('#tutor-busqueda')?.value || '');
@@ -266,11 +270,12 @@
                 add('Nuevo monto total', money(value('montoAcordado')));
                 add('Monto condonado estimado', form.querySelector('#monto-condonado')?.textContent || '');
                 add('Fecha del acuerdo', date('fechaAcuerdo'));
-                add('Nueva fecha límite', date('fechaVencimiento'));
+                add(condona ? 'Fecha de efecto' : 'Nueva fecha límite', date('fechaVencimiento'));
                 add('Descripción', value('descripcion'));
                 add('Motivo', value('motivo'));
                 if (value('condiciones')) add('Condiciones', value('condiciones'));
                 note.textContent = 'Los adeudos originales dejarán de ser exigibles sin borrarse y el nuevo monto se distribuirá proporcionalmente por alumno. No mueve dinero. Cancelar conserva la captura sin crear el convenio; el servidor volverá a comprobar los saldos.';
+                if (condona) note.textContent = 'Se condonará todo el saldo pendiente seleccionado. No se crearán cargos nuevos, pagos ni movimientos bancarios; se conservarán los abonos previos y el historial. Quedará registrado quién autorizó el acuerdo, cuándo y por qué. Cancelar conserva la captura sin condonar.';
             } else if (kind === 'registro-pago') {
                 title.textContent = 'Confirmar registro del pago';
                 accept.textContent = 'Confirmar y registrar como pendiente';

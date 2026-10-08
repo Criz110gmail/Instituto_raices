@@ -16,6 +16,10 @@ public class ConvenioPago extends EntidadAuditable {
     @ManyToOne(fetch=FetchType.LAZY,optional=false) @JoinColumn(name="tutor_id") private Tutor tutor;
     @ManyToOne(fetch=FetchType.LAZY,optional=false) @JoinColumn(name="concepto_cobro_id") private ConceptoCobro conceptoCobro;
     @Column(nullable=false,length=40,unique=true) private String folio;
+    @Enumerated(EnumType.STRING) @Column(nullable=false,length=30,updatable=false) private ModalidadConvenioPago modalidad=ModalidadConvenioPago.MONTO_ACORDADO;
+    @Column(name="autorizado_por_id",updatable=false) private Long autorizadoPorId;
+    @Column(name="autorizado_en",updatable=false) private Instant autorizadoEn;
+    @Column(name="autorizado_por_nombre",length=180,updatable=false) private String autorizadoPorNombre;
     @Column(name="fecha_acuerdo",nullable=false) private LocalDate fechaAcuerdo;
     @Column(name="fecha_vencimiento",nullable=false) private LocalDate fechaVencimiento;
     @Column(nullable=false,length=250) private String descripcion;

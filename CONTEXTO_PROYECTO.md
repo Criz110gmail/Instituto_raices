@@ -1,5 +1,68 @@
 # Contexto del proyecto
 
+## Filtros por situación real del adeudo — 2026-10-08
+
+- Adeudos de alumnos reemplaza selector Emitido por Situación del adeudo:
+  Todos, Con saldo pendiente, Pendiente sin abonos (no vencido), Pago parcial,
+  Vencido, Liquidado — saldo $0, Incluido en convenio y Cancelado.
+  Parcial vencido aparece en ambos filtros y tabla como Parcial · Vencido.
+  Liquidado cubre pagos o ajustes, no implica dinero recibido.
+- SituacionAdeudo mantiene estados persistidos sin modificaciones; filtra emitidos
+  usando original + ajustes firmados (becas/descuentos/recargos/reversas), total mínimo0,
+  menos aplicaciones firmadas (abonos/devoluciones/cancelaciones). Subconsultas
+  independientes evitan multiplicar importes al cruzar colecciones. Cancelado/convenido
+  no entra en filtros de deuda o liquidado aunque conserve importes históricos.
+- Criteria aplica situación, texto y alcance antes de COUNT y paginación en PostgreSQL.
+  Excel POI usa la misma consulta/filtro en bloques100 y mismas etiquetas. Enlaces
+  antiguos EMITIDO siguen admitidos, pero no se ofrece esa opción en nuevo selector.
+  Valor desconocido no devuelve registros. Conserva diseño compartido y ayuda neutra.
+- Verificado: 640 pruebas Java sin fallos y14 pruebas Node. Nuevas pruebas cubren
+  estados/beca-recargo/devolución/ajuste/liquidación, SQL compilado con Hibernate y dialecto
+  PostgreSQL sin acceder a datos (COUNT/LIMIT/subconsultas) y Excel con dos páginas.
+  No prueba de operaciones reales ni revisión visual autenticada. Sólo app recreada,
+  salud UP; sin cambios de datos, migraciones, .env ni volúmenes.
+- Sin migración: V81 sigue disponible. Prueba humana de condonación total V80 sigue
+  pendiente. Revisar estos filtros con casos existentes y continuar convenio500→0;
+  no publicar condonación como confirmada ni tocar convenio800 liquidado.
+
+
+## V80 — condonación total mediante convenio — 2026-10-08
+
+- Propietario autorizó modalidad explícita en Convenios de pago: Tipo de convenio
+  permite Convenio con monto por pagar o Condonación total del saldo pendiente.
+  Total fija monto por pagar0 y fecha de efecto igual al acuerdo; calcula condonación
+  desde saldo pendiente bloqueado en servidor, nunca desde el importe enviado.
+- Conserva motivo/condiciones, administrador persistido identificado (ID/nombre/fecha),
+  autorización y auditoría. Acceso de recuperación no puede condonar. Usa permisos
+  existentes, alcance institucional/tutor/cargos y bloqueos; sin asignaciones de roles.
+- Originales quedan CONVENIDO, acuerdo CONDONADO_TOTAL (Condonado totalmente).
+  No crea cargos0, pagos, comprobantes ni movimientos financieros; abonos previos
+  permanecen. Estado diferenciado de Pagado, filtro/Excel POI paginado con mismos
+  criterios y montos0/condonado. Detalle de pagos previos no presenta saldo convenido
+  como deuda exigible.
+- Confirmación compartida resume saldo/monto0/condonación/motivo/fecha/sin movimiento;
+  Cancelar/Escape/fondo no envían. Gestión permite cancelar con motivo y modal,
+  restaurando saldo pendiente original sin alterar abonos ni cuentas. Si originales
+  cambiaron importes/abonos después del acuerdo se bloquea reversión para revisión.
+- V80 agrega modalidad/autorización/restricciones; asociación original conserva historia
+  con activo e índice único parcial (un acuerdo activo por cargo, permite reutilizar tras
+  cancelar). Trigger impide cargos nuevos bajo condonación total. Modelo y README
+  actualizados. DDL probado previamente con BEGIN/ROLLBACK.
+- Verificado: imagen construida con 633 pruebas Java sin fallos y 14 pruebas Node;
+  render real, DTO/servicio, cancelación, pago previo, autorización, doble envío y Excel.
+  Sólo app recreada, salud UP; lectura confirma V80 aplicada, dos convenios históricos
+  MONTO_ACORDADO y doce guías/92 etapas. No operaciones financieras por herramientas,
+  sin lectura de .env ni borrado de datos/volúmenes. Sin QA visual autenticada.
+- Siguiente migración V81. Siguiente paso: prueba humana500 pendiente→condonación500/
+  por pagar0, autorización visible, portal sin deuda y cuenta sin cambios; probar
+  Cancelar del modal primero. Luego reversión opcional→500 exigible sin movimiento.
+  Abono100 previo sobre500 debe condonar sólo400; probado automáticamente, pendiente
+  ensayo humano. No publicar ninguno como guía confirmada hasta resultado del propietario.
+  No tocar convenio800 liquidado ni casos anteriores confirmados.
+- Los bloques V79 y anteriores son historial: propuesta antes pendiente ya autorizada
+  e implementada por esta V80. No repetir la propuesta como pendiente.
+
+
 ## V79 — cancelación de convenio sin pagos confirmada — 2026-10-08
 
 - Propietario confirmó ejemplo completo y reiteró que originales300/200 reaparecen en

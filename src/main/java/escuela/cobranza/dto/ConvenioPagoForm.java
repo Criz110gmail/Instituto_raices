@@ -6,8 +6,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import escuela.cobranza.entity.ModalidadConvenioPago;
 @Getter @Setter
 public class ConvenioPagoForm {
+ @NotNull private ModalidadConvenioPago modalidad=ModalidadConvenioPago.MONTO_ACORDADO;
  @NotNull private Long institucionId;
  @NotNull private Long tutorId;
  @NotNull private Long conceptoCobroId;
@@ -17,5 +19,5 @@ public class ConvenioPagoForm {
  @NotBlank @Size(max=250) private String descripcion;
  @NotBlank @Size(max=4000) private String motivo;
  @Size(max=4000) private String condiciones;
- @NotNull @DecimalMin("0.01") @Digits(integer=12,fraction=2) private BigDecimal montoAcordado;
+ @NotNull @DecimalMin("0.00") @Digits(integer=12,fraction=2) private BigDecimal montoAcordado;
 }

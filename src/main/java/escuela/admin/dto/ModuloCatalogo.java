@@ -92,8 +92,10 @@ public enum ModuloCatalogo {
             case BECAS_ALUMNO -> List.of(todos, Map.entry("ACTIVA", "Activa"),
                     Map.entry("SUSPENDIDA", "Suspendida"), Map.entry("FINALIZADA", "Finalizada"),
                     Map.entry("CANCELADA", "Cancelada"));
-            case CARGOS -> List.of(todos, Map.entry("EMITIDO", "Emitido"),
-                    Map.entry("CONVENIDO", "Sustituido por convenio"), Map.entry("CANCELADO", "Cancelado"));
+            case CARGOS -> List.of(todos, Map.entry("CON_SALDO", "Con saldo pendiente"),
+                    Map.entry("PENDIENTE", "Pendiente sin abonos"), Map.entry("PARCIAL", "Pago parcial"),
+                    Map.entry("VENCIDO", "Vencido"), Map.entry("LIQUIDADO", "Liquidado — saldo $0"),
+                    Map.entry("CONVENIDO", "Incluido en convenio"), Map.entry("CANCELADO", "Cancelado"));
             case CONVENIOS_PAGO -> List.of(todos, Map.entry("VIGENTE", "Vigente"),
                     Map.entry("CANCELADO", "Cancelado"));
             case PAGOS -> List.of(todos, Map.entry("PENDIENTE_VALIDACION", "Pendiente de validación"),

@@ -11,4 +11,5 @@ public class ConvenioPagoCargoOriginal {
  @Column(name="importe_total_snapshot",nullable=false,precision=14,scale=2) private BigDecimal importeTotalSnapshot;
  @Column(name="monto_aplicado_snapshot",nullable=false,precision=14,scale=2) private BigDecimal montoAplicadoSnapshot;
  @Column(name="saldo_incluido",nullable=false,precision=14,scale=2) private BigDecimal saldoIncluido;
+ @Column(nullable=false) private boolean activo=true;
 }

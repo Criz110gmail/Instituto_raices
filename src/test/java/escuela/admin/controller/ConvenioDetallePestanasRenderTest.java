@@ -23,12 +23,13 @@ class ConvenioDetallePestanasRenderTest {
   Vista(){app.getBeanFactory().registerSingleton("formatoMoneda",new FormatoMoneda());}
   @GetMapping("/test/convenio") String render(@RequestParam(defaultValue="VIGENTE") String estado,Model m){
    var fecha=LocalDate.of(2026,10,8);
+   boolean condona=estado.equals("CONDONADO_TOTAL");
    m.addAttribute("detalle",new ConvenioPagoDetalle(1L,0L,"CV-TEST","Escuela","Tutor Prueba",fecha,fecha.plusDays(12),
-     "Convenio prueba","Motivo del acuerdo","Liquidar antes del vencimiento","MXN",new BigDecimal("1000.00"),new BigDecimal("800.00"),new BigDecimal("200.00"),
+     "Convenio prueba","Motivo del acuerdo","Liquidar antes del vencimiento","MXN",new BigDecimal("1000.00"),condona?BigDecimal.ZERO:new BigDecimal("800.00"),condona?new BigDecimal("1000.00"):new BigDecimal("200.00"),
      EstadoConvenioPago.valueOf(estado),estado,"Cancelación <script> literal",
      List.of(new CargoConvenioOpcion(10L,1L,"Ana <script>","A-1","Original","Original",fecha.plusDays(12),new BigDecimal("600"),BigDecimal.ZERO,new BigDecimal("600"),"MXN"),
              new CargoConvenioOpcion(11L,2L,"Luis","A-2","Original","Original",fecha.plusDays(12),new BigDecimal("400"),BigDecimal.ZERO,new BigDecimal("400"),"MXN")),
-     List.of(new CargoConvenioOpcion(12L,1L,"Ana <script>","A-1","Convenio","Acuerdo",fecha.plusDays(12),new BigDecimal("480"),BigDecimal.ZERO,new BigDecimal("480"),"MXN"),
+     condona?List.of():List.of(new CargoConvenioOpcion(12L,1L,"Ana <script>","A-1","Convenio","Acuerdo",fecha.plusDays(12),new BigDecimal("480"),BigDecimal.ZERO,new BigDecimal("480"),"MXN"),
              new CargoConvenioOpcion(13L,2L,"Luis","A-2","Convenio","Acuerdo",fecha.plusDays(12),new BigDecimal("320"),BigDecimal.ZERO,new BigDecimal("320"),"MXN"))));
    var form=new CancelarConvenioForm();form.setVersion(0L);form.setMotivo("Motivo <script> literal");
    m.addAttribute("cancelacion",form);m.addAttribute("puedeAdministrar",true);m.addAttribute("pestanaActiva","gestion");
@@ -65,5 +66,10 @@ class ConvenioDetallePestanasRenderTest {
    "data-label=\"#10 · Ana &lt;script&gt; · Original\"", "method=\"post\"", "action=\"/admin/convenios-pago/1/cancelar\"",
    "name=\"version\"", "/js/money-input.js", "/css/money-input.css");
   assertThat(render("CANCELADO")).doesNotContain("data-money-confirm=\"cancelacion-convenio\"");
+ }
+ @Test void condonacionSeIdentificaSinPagadoNiCargosNuevosYPermiteReabrir()throws Exception{
+  assertThat(render("CONDONADO_TOTAL")).contains("Condonado totalmente", "Condonación total del saldo pendiente",
+   "No se crearon cargos nuevos ni pagos", "data-money-confirm=\"cancelacion-convenio\"", "data-confirm-total=\"true\"",
+   "Cancelar y reactivar adeudos").doesNotContain("Nuevos cargos por alumno</h2>","CUMPLIDO");
  }
 }

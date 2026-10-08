@@ -57,7 +57,7 @@ public class PagoMapper {
                 nombreAlumno(alumno.getNombres(), alumno.getPrimerApellido(), alumno.getSegundoApellido()),
                 alumno.getMatricula(), cargo.getConceptoCobro().getNombre(), cargo.getDescripcion(),
                 aplicacion.getMonto(), cargo.getMoneda(), aplicacion.getFechaAplicacion(),
-                escuela.cobranza.support.CalculoCargo.total(cargo), saldo(cargo));
+                escuela.cobranza.support.CalculoCargo.total(cargo), saldoExigible(cargo));
     }
 
     private MovimientoFinancieroResponse movimiento(MovimientoFinanciero movimiento, String moneda) {
@@ -73,10 +73,15 @@ public class PagoMapper {
                 .collect(java.util.stream.Collectors.joining(" "));
     }
 
+    private BigDecimal saldoExigible(escuela.cobranza.entity.Cargo cargo) {
+        return cargo.getEstadoRegistro() == escuela.cobranza.entity.EstadoRegistroCargo.EMITIDO
+                ? saldo(cargo) : new BigDecimal("0.00");
+    }
+
     private SolicitudAplicacionPagoResponse solicitud(SolicitudAplicacionPago solicitud) {
         var cargo = solicitud.getCargo();
         var alumno = cargo.getInscripcion().getAlumno();
-        BigDecimal saldoActual = saldo(cargo);
+        BigDecimal saldoActual = saldoExigible(cargo);
         BigDecimal saldoEstimado = saldoActual.subtract(solicitud.getMontoSolicitado())
                 .max(BigDecimal.ZERO).setScale(2);
         return new SolicitudAplicacionPagoResponse(solicitud.getId(), cargo.getId(),

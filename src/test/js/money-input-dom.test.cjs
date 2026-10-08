@@ -316,4 +316,17 @@ dialog.dispatchEvent({type:'click',target:dialog,clientX:0,clientY:0});assert.eq
 const oldValidity=form.reportValidity;form.reportValidity=()=>false;submit();assert.equal(dialog.open,false);assert.equal(form.submissions,10);form.reportValidity=oldValidity;
 submit();accept.dispatchEvent({type:'click'});accept.dispatchEvent({type:'click'});assert.equal(form.submissions,11);
 assert.equal(originalCharges[0].dataset.amount,'300.00');
-console.log('DOM: confirmaciones compartidas, reporte familiar y cancelación de convenio; resumen500/400/100, cancelar/Escape/fondo preservados y envío único correctos.');
+form.dataset={moneyConfirm:'convenio',confirmCurrency:'MXN'};
+const oldCondonaQuery=form.querySelector.bind(form);
+form.querySelector=selector=>selector==='[name="modalidad"]'?{value:'CONDONACION_TOTAL'}
+    :selector==='[name="montoAcordado"]'?{value:'0.00'}
+    :selector==='#monto-condonado'?{textContent:'$500.00'}:oldCondonaQuery(selector);
+submit();assert.equal(doc.querySelector('#money-confirm-title').textContent,'Confirmar condonación total');
+assert.equal(accept.textContent,'Confirmar y condonar saldo');assert.equal(rows()['Nuevo monto total'],'$0.00');
+assert.equal(rows()['Monto condonado estimado'],'$500.00');assert.match(doc.querySelector('#money-confirm-note').textContent,/No se crearán cargos nuevos/);
+cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,11);
+form.dataset={moneyConfirm:'cancelacion-convenio',confirmTotal:'true',confirmFolio:'CV-TOTAL',confirmSubject:'Tutor',confirmOriginal:'500.00',confirmAmount:'0.00',confirmCondoned:'500.00'};
+submit();assert.match(rows()['Cargos nuevos'],/No existen/);assert.ok(!('Total de nuevos adeudos que se cancelarán' in rows()));
+assert.match(doc.querySelector('#money-confirm-note').textContent,/conservando los abonos anteriores/);
+cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,11);
+console.log('DOM: confirmaciones compartidas y condonación total; sin cargos nuevos, cancelación restauradora, cierre sin envío y confirmación única correctos.');

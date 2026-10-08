@@ -22,6 +22,13 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+**Adeudos de alumnos → Situación del adeudo** filtra en base de datos por saldo
+pendiente, pendiente sin abonos, pago parcial, vencido, liquidado, incluido en convenio
+o cancelado. Un parcial vencido aparece en ambos filtros y se identifica como
+**Parcial · Vencido**. **Liquidado — saldo $0** puede resultar de pagos o ajustes;
+no implica dinero recibido. Pagina antes de traer los datos y Excel conserva los mismos
+criterios y etiquetas. No modifica saldos ni estados persistidos.
+
 La guía **Convenio de dos hijos y liquidación familiar: $480 + $320** documenta el caso
 confirmado: originales $600/$400, convenio $800, condonación $200 y una transferencia
 validada que liquida ambos cargos nuevos. Incluye diez etapas y todos los modales actuales.
@@ -32,6 +39,13 @@ en el portal familiar, conserva historial/motivo y no mueve caja/bancos. Incluye
 En **Pagos recibidos**, únicamente **Ver** adopta el botón con borde del diseño común.
 El formulario y modal de convenios usan **Concepto de cobro del convenio**: selecciona
 el concepto que identificará los nuevos adeudos del acuerdo, por ejemplo Convenio de pago.
+En **Tipo de convenio**, **Condonación total del saldo pendiente** calcula y bloquea
+el monto por pagar en $0.00. Conserva motivo, condiciones, originales y abonos previos;
+registra administrador/fecha y muestra **Condonado totalmente**, también en el filtro y
+Excel. No crea cargos nuevos, pagos ni movimientos. Su cancelación con motivo y modal
+reactiva únicamente los saldos originales si sus abonos/ajustes no cambiaron.
+Requiere usuario administrativo persistido con permiso de convenios; no acceso de recuperación.
+La prueba humana de esta modalidad está pendiente; aún no se publica como guía confirmada.
 **Convenios de pago → Ver → Gestión → Cancelar y reactivar adeudos** abre una confirmación
 con folio, tutor, originales que se reactivarán, nuevos que se cancelarán y motivo.
 **Cancelar** conserva la captura; sólo **Confirmar cancelación del convenio** envía la

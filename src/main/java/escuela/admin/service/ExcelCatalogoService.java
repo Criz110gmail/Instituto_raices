@@ -28,7 +28,7 @@ public class ExcelCatalogoService {
                 celda.setCellStyle(encabezado);
             }
             Cell estado = filaEncabezado.createCell(columna);
-            estado.setCellValue("Estado");
+            estado.setCellValue(modulo == ModuloCatalogo.CARGOS ? "Situación del adeudo" : "Estado");
             estado.setCellStyle(encabezado);
 
             int numeroFila = 1;

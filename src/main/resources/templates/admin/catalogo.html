@@ -55,7 +55,7 @@
 
         <form class="filters" method="get" th:action="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug})}">
             <label class="search-field"><span>Buscar</span><div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><input name="q" th:value="${filtro.q}" placeholder="Código, nombre o ubicación"></div></label>
-            <label><span>Estado</span><select name="estado">
+            <label><span th:text="${resultado.modulo.name() == 'CARGOS' ? 'Situación del adeudo' : 'Estado'}">Estado</span><select name="estado">
                 <option th:each="opcion : ${resultado.modulo.estadosFiltro()}" th:value="${opcion.key}"
                         th:text="${opcion.value}" th:selected="${filtro.estado == opcion.key}">Todos</option>
             </select></label>
@@ -66,10 +66,11 @@
             <button type="submit">Aplicar filtros</button>
             <a class="clear-link" th:href="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug})}">Limpiar</a>
         </form>
+        <p class="field-help" th:if="${resultado.modulo.name() == 'CARGOS'}">Con saldo pendiente incluye todos los adeudos por pagar. Un pago parcial puede estar vencido y aparecer en ambos filtros. Liquidado significa saldo $0 por pagos o ajustes; no necesariamente dinero recibido.</p>
 
         <div class="table-wrap" th:if="${!resultado.pagina.empty}">
             <table>
-                <thead><tr><th th:each="columna : ${resultado.columnas}" th:text="${columna}">Columna</th><th>Estado</th><th th:if="${resultado.modulo.mantenimientoDisponible()}">Acciones</th></tr></thead>
+                <thead><tr><th th:each="columna : ${resultado.columnas}" th:text="${columna}">Columna</th><th th:text="${resultado.modulo.name() == 'CARGOS' ? 'Situación del adeudo' : 'Estado'}">Estado</th><th th:if="${resultado.modulo.mantenimientoDisponible()}">Acciones</th></tr></thead>
                 <tbody><tr th:each="fila : ${resultado.pagina.content}">
                     <td th:each="celda, iter : ${fila.celdas}" th:text="${celda}" th:attr="data-label=${resultado.columnas[iter.index]}">Dato</td>
                     <td data-label="Estado"><span class="status" th:classappend="${fila.tono}" th:text="${fila.estado}">Activo</span></td>

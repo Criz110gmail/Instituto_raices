@@ -365,6 +365,16 @@ movimientos: sólo preparan una vista previa paginada, caducan en dos horas y se
 vez. Confirmar valida los registros marcados y revierte la ejecución si cambió la información;
 las filas desmarcadas siguen pendientes. No almacena nombres ni expedientes en el snapshot.
 
+24 bis. ConvenioPago [V54, ampliación V80]
+Ampliación V80: ConvenioPago distingue MONTO_ACORDADO y CONDONACION_TOTAL. La segunda
+conserva originales como CONVENIDO, guarda saldo pendiente/abonos previos, motivo y
+autorizador persistido (ID/nombre/instante), monto por pagar0 y estado CONDONADO_TOTAL.
+No crea cargos nuevos, pagos, ajustes comerciales ni movimientos. El monto condonado
+es sólo el saldo pendiente; cancelar con motivo restaura ese saldo, preserva abonos y
+libera la asociación activa sin borrar snapshots. Si cambian ajustes/abonos originales,
+la reversión se bloquea para no restaurar una deuda distinta. Un cargo puede conservar
+varios convenios históricos cancelados pero sólo uno activo, protegido por índice parcial.
+
 25. AjusteCargo [auxiliar propuesta]
 Desglosa becas, descuentos, recargos y correcciones con trazabilidad.
   cargoId : FK(Cargo) [R].
