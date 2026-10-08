@@ -1,5 +1,26 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V85 — dos cargos del mismo alumno confirmados — 2026-10-08
+
+- Propietario confirmó único pago1000 de INS-DOBLE-TEST600/MENS-DOBLE-TEST400 del
+  mismo alumno: cuenta aumentó1000, ambos pendientes desaparecieron en portal y adeudo
+  anterior400 permanece. No repetir capturas ni pagar el original anterior por tools.
+- Nueva guía CONFIRMADA, ocho etapas/cuatro acciones, campos reales, selección explícita,
+  modal de cuota/generación/registro/validación y verificaciones de distribución/portal/
+  banco/comprobante/Excel. Sólo contenido editorial, siete permisos existentes requeridos.
+  SQL validado BEGIN/ROLLBACK: ocho etapas; no otorgar roles ni modificar finanzas.
+- Pendiente humano de dos cargos del mismo alumno queda CONCLUIDO. Siguiente ejemplo
+  propuesto: otro cargo EXC-TEST300, recibido400/distribuido300/disponible100; validar
+  banco B+400; devolver parcialmente100 desde mismo banco, conserva abono300/saldo0,
+  banco B+300. Seleccionar abono300 en devolución PARCIAL100 permite vista300/0;
+  servicio usa disponible100 antes de liberar abonos. No marcar ese caso confirmado.
+- No habilitar aplicación posterior de anticipo que no tenga flujo existente. No cambiar
+  servicios ni diseño en esta petición editorial. Siguiente migración V86.
+- Verificado:659 pruebas Java sin fallos; Node devolución y cálculo disponible100/
+  devolver100/aplicado300/deuda0 aprobados. Sólo app reconstruida/recreada, salud UP;
+  lectura confirma V85 aplicada, guía CONFIRMADA/ocho etapas,16 guías/125 etapas.
+  Sin QA visual autenticada ni operaciones financieras por herramientas.
+
 ## V84 — condonación y reversión con abono previo confirmadas — 2026-10-08
 
 - Propietario confirmó pago parcial100 con TARJETA/cuenta bancaria sobre original500,

@@ -22,6 +22,12 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+V85 agrega la guía confirmada **Pagar inscripción y mensualidad del mismo alumno:
+$600 + $400**, ocho etapas desde conceptos/cuotas hasta un pago único $1,000 con
+tarjeta y cuenta bancaria. Se liquidan sólo los dos cargos seleccionados y el banco
+aumenta $1,000; el adeudo anterior de $400 sigue pendiente. Incluye comprobaciones de
+distribución, portal familiar, comprobante y Excel, sin repetir operaciones confirmadas.
+
 La guía **Condonar y reactivar $400 conservando un pago previo de $100** incorpora
 el caso completo confirmado por el propietario: adeudo $500, pago parcial con tarjeta
 $100 a banco, condonación $400 y cancelación del convenio. Nueve etapas detallan menús,

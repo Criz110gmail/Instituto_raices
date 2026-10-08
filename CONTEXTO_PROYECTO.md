@@ -1,5 +1,19 @@
 # Contexto del proyecto
 
+## V85 — guía de dos cargos del mismo alumno — 2026-10-08
+
+- Propietario confirmó pago1000 para inscripción600/mensualidad400 del mismo alumno,
+  banco+1000, portal sin estos pendientes y deuda anterior400 intacta.
+- Guía CONFIRMADA de ocho etapas/cuatro acciones; sólo contenido, siete permisos
+  requeridos sin asignar roles. SQL validado BEGIN/ROLLBACK, sin registros financieros.
+- Próximo caso propuesto pendiente: nuevo cargo300, recibido400, aplicado300, disponible100;
+  devolución PARCIAL100 del excedente conserva abono300/saldo0 y deja banco B+300.
+  Servicio comprobado usa primero disponible, no liberar aplicaciones para ese importe.
+- No repetir pruebas ya confirmadas; siguiente migración V86.
+- Verificado:659 pruebas Java sin fallos; Node devolución y cálculo de excedente100
+  conservando aplicado300/deuda0. Sólo app recreada, salud UP, V85 aplicada, guía
+  CONFIRMADA/ocho etapas y16 guías/125 etapas. Sin QA visual autenticada ni cambios financieros.
+
 ## V84 — guía de condonación con abono previo — 2026-10-08
 
 - Propietario confirmó abono100 TARJETA/banco sobre500, condonación400 y cancelación:
