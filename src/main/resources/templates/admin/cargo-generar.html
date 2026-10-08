@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title>Generar adeudos de alumnos · Nexo Escolar</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css?v=20261006-seleccion"><script src="/js/theme.js"></script><script src="/js/generation-preview.js" defer></script><script src="/js/generation-selection.js?v=20261006-1" defer></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css?v=20261008-navegacion"><script src="/js/theme.js"></script><script src="/js/generation-preview.js" defer></script><script src="/js/generation-selection.js?v=20261006-1" defer></script>
     <link rel="stylesheet" href="/css/money-input.css"><script src="/js/money-input.js" defer></script>
 </head>
 <body class="form-page">
@@ -25,7 +25,7 @@
         </form>
     </section>
 
-    <section id="vista-previa-cuotas" class="surcharge-preview-card generation-preview-target" data-generation-preview data-generation-selection th:attr="data-selection-id=${vistaPrevia.seleccionId},data-selection-total=${vistaPrevia.pagosPorGenerar},data-selection-amount=${vistaPrevia.importeNetoTotal}" th:if="${vistaPrevia}" aria-labelledby="titulo-cuotas-previas">
+    <section id="vista-previa-cuotas" class="surcharge-preview-card generation-preview-target charge-generation-preview" data-generation-preview data-generation-selection th:attr="data-selection-id=${vistaPrevia.seleccionId},data-selection-total=${vistaPrevia.pagosPorGenerar},data-selection-amount=${vistaPrevia.importeNetoTotal}" th:if="${vistaPrevia}" aria-labelledby="titulo-cuotas-previas">
         <header class="surcharge-preview-header"><div><span>2 · Verificar resultado</span><h2 id="titulo-cuotas-previas">Cuotas que generarán adeudos</h2><p th:if="${!vistaPrevia.pagina.empty}">Revisa cada periodo antes de confirmar la generación.</p><p th:if="${vistaPrevia.pagina.empty}">No existen adeudos programados pendientes para este corte.</p></div><span class="surcharge-preview-badge" th:text="${vistaPrevia.pagosPorGenerar+' adeudos por generar'}">0 adeudos</span></header>
         <div class="surcharge-summary charge-generation-summary" th:if="${!vistaPrevia.pagina.empty}">
             <article><span>Cuotas con pendientes</span><strong th:text="${vistaPrevia.cuotasConPendientes}">0</strong></article>
@@ -55,9 +55,10 @@
         <form class="surcharge-confirm" data-selection-confirm data-money-confirm="generacion-cargos" th:if="${!vistaPrevia.pagina.empty}" method="post" th:action="@{/admin/cargos/generar}">
             <input type="hidden" name="institucionId" th:value="${form.institucionId}"><input type="hidden" name="plantelId" th:value="${form.plantelId}"><input type="hidden" name="fechaCorte" th:value="${form.fechaCorte}"><input type="hidden" name="confirmacion" value="true">
             <input type="hidden" name="seleccionId" th:value="${vistaPrevia.seleccionId}"><span data-selection-hidden hidden></span>
-            <div><strong>Confirma únicamente si los periodos e importes son correctos</strong><p><strong data-selection-summary aria-live="polite">Revisa la selección antes de confirmar.</strong></p><p>Sólo se crearán los adeudos seleccionados de esta vista previa. Desmarcar no cancela la cuota: el periodo seguirá pendiente y aparecerá al volver a visualizar. La selección caduca en dos horas.</p></div><a class="detail-close-button" href="/admin/catalogos/cargos">Cancelar generación</a><button class="generation-confirm-button" type="submit" disabled>Confirmar y generar adeudos seleccionados</button>
+            <div><strong>Confirma únicamente si los periodos e importes son correctos</strong><p><strong data-selection-summary aria-live="polite">Revisa la selección antes de confirmar.</strong></p><p>Sólo se crearán los adeudos seleccionados de esta vista previa. Desmarcar no cancela la cuota: el periodo seguirá pendiente y aparecerá al volver a visualizar. La selección caduca en dos horas.</p></div><button class="generation-confirm-button" type="submit" disabled>Confirmar y generar adeudos seleccionados</button>
             <noscript><p>Activa JavaScript para revisar y confirmar la selección.</p></noscript>
         </form>
+        <footer class="generation-back-navigation" aria-label="Navegación de regreso"><a class="detail-close-button" href="/admin/catalogos/cargos">← Volver a adeudos de alumnos</a><p>Volver al listado no genera adeudos ni modifica tus cuotas.</p></footer>
     </section>
     <details id="cuotas-no-incluidas" class="cuota-advanced" th:if="${cuotasExcluidas != null}" th:open="${mostrarExcluidas == true}">
         <summary>Consultar cuotas no incluidas · sólo información, no se generarán cargos</summary>

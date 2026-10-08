@@ -8,6 +8,12 @@
 .generation-omitted td { opacity: .6; }
 .generation-omitted td:first-child { opacity: 1; }
 .generation-confirm-button:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+.charge-generation-preview .generation-selection-bar button { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:10px 16px; border:1px solid color-mix(in srgb,var(--blue) 35%,var(--line)); border-radius:11px; background:color-mix(in srgb,var(--blue) 9%,var(--surface)); color:var(--ink); font-size:.8rem; box-shadow:0 2px 5px #08172c08; }
+.charge-generation-preview .generation-selection-bar button:hover { border-color:var(--blue); background:color-mix(in srgb,var(--blue) 15%,var(--surface)); }
+.charge-generation-preview .generation-selection-bar button:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
+.generation-back-navigation { display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); }
+.generation-back-navigation p { flex:1 1 220px; margin:0; color:var(--muted); font-size:.8rem; line-height:1.5; }
+@media(max-width:600px) { .charge-generation-preview .generation-selection-bar button { flex:1 1 160px; } .generation-back-navigation .detail-close-button { width:100%; } }
 .entity-form .detail-close-button,.surcharge-preview-card .detail-close-button,.charge-tab-panel .detail-close-button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 16px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); color: var(--ink); font-weight: 800; text-decoration: none; box-sizing: border-box; max-width: 100%; text-align: center; }
 .detail-close-button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
 .entity-form fieldset:disabled { opacity: .85; }

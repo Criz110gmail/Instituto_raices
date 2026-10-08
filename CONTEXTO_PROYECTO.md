@@ -1,5 +1,71 @@
 # Contexto del proyecto
 
+## Confirmación para cancelar convenio sin pagos — 2026-10-08
+
+- Convenios → Ver → Gestión → Cancelar y reactivar adeudos abre modal compartido
+  money-input (cancelacion-convenio), no ejecuta al primer clic. Resume folio/tutor,
+  originales por cargo/alumno/saldo a reactivar y nuevos por cargo/alumno/importe a
+  cancelar; totales de origen/acuerdo/condonación, motivo literal y ningún efecto bancario.
+- Cancelar/Escape/fondo cierran sin enviar y conservan motivo/foco. Sólo Confirmar
+  cancelación del convenio usa requestSubmit original con validación, POST/version/CSRF
+  y aprobación de un envío. No se modifica servicio: pagos aplicados/estados/version/
+  alcance/bloqueos siguen siendo revalidados por el servidor. Metadata visual no autoriza.
+- Datos se renderizan desde DTO con atributos escapados y spans hidden sin nombres de
+  envío; no confiar en metadata recibida. CSS/JS del modal común, sin diseño paralelo.
+  Convenio cancelado no muestra formulario. Actualizado contrato estático de cuota por
+  nueva acción Cancelar, sin cambiar comportamiento de cuotas.
+- Verificado: 620 pruebas Java y13 suites Node sin fallos. Render Thymeleaf real cubre
+  metadata/escape/ruta/version y ausencia en cancelado; DOM300/200→240/160 con500/400/100
+  comprueba resumen, texto literal, cancelar/Escape/fondo/validación sin envío, foco y
+  confirmación única. App reconstruida/recreada, salud UP, diff limpio. Sin operación
+  financiera por herramientas ni QA visual autenticada; .env/base/volúmenes intactos.
+- Sin migración, V79 sigue disponible. Once guías/84 etapas; no publicar cancelación como
+  confirmada todavía. Propietario espera en paso7 de OTRO convenio sin pagos:
+  revisar primero Cancelar del modal y luego confirmar para comprobar originales300/200
+  reactivados, nuevos240/160 cancelados, bancoB y convenioCancelado/motivo. No tocar
+  convenio800 previamente liquidado. Documentar caso completo sólo tras resultado humano.
+
+
+## V78 — etiqueta clara del concepto del convenio — 2026-10-08
+
+- Formulario y modal usan Concepto de cobro del convenio en lugar de Concepto del nuevo
+  cargo. Placeholder Código o nombre del concepto de cobro; ayuda permanente field-help
+  vinculada con aria-describedby explica identifica nuevos adeudos, ejemplo Convenio de pago.
+  Ayuda separada del autocomplete-status para que búsquedas no la borren.
+- Conserva conceptoCobroId, autocompletado, alcance, permisos, selección y reglas financieras.
+  V78 sólo homologa nombre en una etapa editorial de la guía confirmada del convenio800;
+  no modificar migración V76 aplicada ni publicar cancelación como probada.
+- Verificado: 619 pruebas Java y13 suites Node sin fallos; SQL probado BEGIN/ROLLBACK,
+  V78 aplicada y lectura confirma etiqueta actualizada. Sólo app recreada, salud UP,
+  diff limpio. .env/volúmenes preservados y sin operaciones financieras por herramientas.
+- Siguiente V79. Propietario llegó al paso5 de cancelar OTRO convenio sin pagos:
+  originales300/200 → convenio400/condonado100/nuevos240/160. Elegir CONV-ACUERDO-TEST
+  como concepto del convenio y CONV-CANCEL-TEST identifica sólo los originales.
+  Cancelación todavía pendiente; no tocar convenio800 liquidado ni regenerar cuotas.
+
+
+## V77 — navegación separada de generación y botones de selección — 2026-10-08
+
+- Generar automáticos → vista previa cambia Cancelar generación por ← Volver a adeudos
+  de alumnos: enlace GET fuera del formulario POST, debajo de confirmación y con divisor/
+  ayuda Volver al listado no genera adeudos ni modifica tus cuotas. No cancela movimientos.
+- Seleccionar todos/Desmarcar todos usan borde/fondo tintado, altura44, hover y foco visibles
+  con variables comunes y adaptación móvil. CSS limitado a charge-generation-preview;
+  sin cambiar recargos, selección, paginación, modal, token, permisos ni reglas de generación.
+- V77 editorial homologa el nombre del regreso en seis guías existentes, sin publicar
+  prueba de cancelación de convenio como confirmada. Once guías/84 etapas conservadas.
+- Verificado: 619 pruebas Java sin fallos, contrato comprueba enlace fuera/después de POST
+  y estilos. SQL probado BEGIN/ROLLBACK (seis guías), V77 aplicada, salud UP y lectura
+  confirma cero nombres anteriores. App reconstruida/recreada, sin operaciones financieras
+  ni cambios de volúmenes/.env; diff limpio. Revisión visual autenticada pendiente.
+- Siguiente migración V78. Prueba humana de cancelar OTRO convenio sin pagos en curso:
+  dos cuotas originales300/200 con CONV-CANCEL-TEST ya visibles en paso3. Después generar
+  únicamente esos dos, acuerdo400/condonado100/nuevos240/160; cancelar sin pagar debe
+  restaurar originales300/200, cancelar nuevos y conservar bancoB.
+  No tocar convenio anterior800 ya liquidado. Tras recrear app, renovar vista previa/
+  login si es necesario: selección previa ligada a sesión puede dejar de ser válida.
+
+
 ## V76 — convenio familiar liquidado confirmado y botón Ver de pagos — 2026-10-08
 
 - Propietario confirmó que reportó y validó los dos cargos nuevos480/320 y todo funcionó

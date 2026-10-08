@@ -27,6 +27,12 @@ confirmado: originales $600/$400, convenio $800, condonación $200 y una transfe
 validada que liquida ambos cargos nuevos. Incluye diez etapas y todos los modales actuales.
 Se consulta en **Administración → Seguridad y soporte → Guía de procesos**.
 En **Pagos recibidos**, únicamente **Ver** adopta el botón con borde del diseño común.
+El formulario y modal de convenios usan **Concepto de cobro del convenio**: selecciona
+el concepto que identificará los nuevos adeudos del acuerdo, por ejemplo Convenio de pago.
+**Convenios de pago → Ver → Gestión → Cancelar y reactivar adeudos** abre una confirmación
+con folio, tutor, originales que se reactivarán, nuevos que se cancelarán y motivo.
+**Cancelar** conserva la captura; sólo **Confirmar cancelación del convenio** envía la
+operación. No mueve caja/bancos y el servidor conserva la prohibición de pagos aplicados.
 
 **Portal familiar → Reportar transferencia → Enviar transferencia a revisión** abre
 un modal con cargos por alumno, total, cuenta, fecha, referencia y nombres de los
@@ -43,7 +49,10 @@ a estar disponible. El envío y el servidor también rechazan IDs repetidos.
 El motivo de cancelación utiliza el formulario estándar; errores conservan captura y
 abren Gestión. Las métricas permanecen visibles y las reglas financieras no cambian.
 
-La vista previa de **Generar automáticos** permite **Cancelar generación** y confirma
+La vista previa de **Generar automáticos** tiene **← Volver a adeudos de alumnos**
+debajo de la confirmación y separado por un divisor: es navegación, no cancela ni genera
+registros. **Seleccionar todos** y **Desmarcar todos** muestran borde/fondo de botón.
+La generación confirma
 cantidad/importe seleccionados de todas las páginas en un modal antes de emitir adeudos.
 Cancelar el modal conserva la selección; sólo **Confirmar y generar adeudos** ejecuta.
 **Nuevo convenio** separa Resultados disponibles de Cargos agregados al convenio, con

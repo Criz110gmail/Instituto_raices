@@ -203,7 +203,7 @@
             };
             details.replaceChildren();
             const paymentDecision = ['validacion', 'rechazo', 'cancelacion'].includes(kind);
-            cancel.textContent = ['cuota', 'registro-pago', 'cancelacion-cargo', 'convenio', 'generacion-cargos', 'transferencia-familiar'].includes(kind) || paymentDecision ? 'Cancelar' : 'Volver a revisar';
+            cancel.textContent = ['cuota', 'registro-pago', 'cancelacion-cargo', 'convenio', 'generacion-cargos', 'transferencia-familiar', 'cancelacion-convenio'].includes(kind) || paymentDecision ? 'Cancelar' : 'Volver a revisar';
             accept.textContent = kind === 'cuota' ? 'Confirmar y crear cuota' : 'Confirmar operación';
             if (paymentDecision) {
                 if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
@@ -235,13 +235,30 @@
                 const date = form.querySelector('[name="fechaCorte"]')?.value || '';
                 add('Fecha de corte', date.split('-').reverse().join('/'));
                 note.textContent = 'Sólo se generarán los adeudos seleccionados, incluyendo la selección de otras páginas. No registra dinero recibido. Cancelar conserva tu selección sin generar; el servidor comprobará nuevamente su vigencia y los importes.';
+            } else if (kind === 'cancelacion-convenio') {
+                title.textContent = 'Confirmar cancelación del convenio';
+                accept.textContent = 'Confirmar cancelación del convenio';
+                add('Folio del convenio', form.dataset.confirmFolio);
+                add('Tutor responsable', form.dataset.confirmSubject);
+                form.querySelectorAll('[data-convenio-reactivar] span').forEach(row => {
+                    add('Adeudo original que se reactivará', row.dataset.label + ' · ' + money(row.dataset.amount));
+                });
+                add('Total original que volverá a ser exigible', money(form.dataset.confirmOriginal));
+                form.querySelectorAll('[data-convenio-cancelar] span').forEach(row => {
+                    add('Adeudo nuevo que se cancelará', row.dataset.label + ' · ' + money(row.dataset.amount));
+                });
+                add('Total de nuevos adeudos que se cancelarán', money(form.dataset.confirmAmount));
+                add('Condonación del acuerdo que dejará de aplicar', money(form.dataset.confirmCondoned));
+                add('Motivo de cancelación', form.querySelector('[name="motivo"]').value);
+                add('Efecto en caja y bancos', 'Ninguno · no registra ingresos, egresos ni devoluciones');
+                note.textContent = 'Se cancelará el convenio y sus cargos nuevos; los adeudos originales volverán a ser exigibles. El historial y el motivo se conservan. El servidor comprobará que no haya pagos aplicados y que los cargos sigan vigentes. Cancelar cierra esta ventana sin ejecutar y conserva el motivo.';
             } else if (kind === 'convenio') {
                 title.textContent = 'Confirmar convenio de pago';
                 accept.textContent = 'Confirmar y crear convenio';
                 const value = name => form.querySelector('[name="' + name + '"]')?.value || '';
                 const date = name => value(name).split('-').reverse().join('/');
                 add('Tutor responsable', form.querySelector('#tutor-busqueda')?.value || '');
-                add('Concepto del nuevo cargo', form.querySelector('#concepto-busqueda')?.value || '');
+                add('Concepto de cobro del convenio', form.querySelector('#concepto-busqueda')?.value || '');
                 form.querySelectorAll('#cargos-seleccionados article').forEach((row, index) => {
                     add('Adeudo original ' + (index + 1), row.querySelector('strong').textContent + ' · ' + row.querySelector('span').textContent);
                 });

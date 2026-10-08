@@ -287,4 +287,33 @@ assert.equal(form.submissions,9); assert.equal(receipt.files.length,1); assert.e
 submit();dialog.dispatchEvent({type:'cancel',preventDefault(){}});assert.equal(form.submissions,9);
 transferReference.value='TEST-CORREGIDO'; submit();assert.equal(rows()['Referencia bancaria'],'TEST-CORREGIDO');
 accept.dispatchEvent({type:'click'});accept.dispatchEvent({type:'click'});assert.equal(form.submissions,10);
-console.log('DOM: moneda y confirmaciones específicas, generación, convenio y reporte familiar; cancelar/Escape sin envío y confirmación única correctos.');
+// Cancelar convenio sin pagos: mostrar qué se reactiva/cancela, sin tocar saldos al cerrar.
+form.dataset = {moneyConfirm:'cancelacion-convenio',confirmFolio:'CV-CANCEL-TEST',confirmSubject:'Tutor <script>',
+    confirmOriginal:'500.00',confirmAmount:'400.00',confirmCondoned:'100.00',confirmCurrency:'MXN'};
+const originalCharges = [{dataset:{label:'#30 · Ana · Original',amount:'300.00'}},{dataset:{label:'#31 · Luis · Original',amount:'200.00'}}];
+const newCharges = [{dataset:{label:'#32 · Ana · Convenio',amount:'240.00'}},{dataset:{label:'#33 · Luis · Convenio',amount:'160.00'}}];
+const beforeCancelAll = form.querySelectorAll.bind(form);
+form.querySelectorAll = selector => selector === '[data-convenio-reactivar] span' ? originalCharges
+    : selector === '[data-convenio-cancelar] span' ? newCharges : beforeCancelAll(selector);
+submit();assert.equal(form.submissions,10);assert.equal(dialog.open,true);
+assert.equal(doc.querySelector('#money-confirm-title').textContent,'Confirmar cancelación del convenio');
+assert.equal(accept.textContent,'Confirmar cancelación del convenio');assert.equal(cancel.textContent,'Cancelar');
+assert.equal(rows()['Folio del convenio'],'CV-CANCEL-TEST');
+assert.equal(rows()['Tutor responsable'],'Tutor <script>');
+assert.equal(rows()['Total original que volverá a ser exigible'],'$500.00');
+assert.equal(rows()['Total de nuevos adeudos que se cancelarán'],'$400.00');
+assert.equal(rows()['Condonación del acuerdo que dejará de aplicar'],'$100.00');
+const detailsText = dialog.children[2].children.map(child=>child.textContent).join('\n');
+for (const expected of ['#30 · Ana · Original · $300.00','#31 · Luis · Original · $200.00',
+    '#32 · Ana · Convenio · $240.00','#33 · Luis · Convenio · $160.00']) assert.ok(detailsText.includes(expected));
+assert.match(rows()['Efecto en caja y bancos'],/Ninguno/);
+assert.match(doc.querySelector('#money-confirm-note').textContent,/no haya pagos aplicados/);
+cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,10);assert.equal(dialog.open,false);
+assert.equal(doc.activeElement,submitter);
+submit();dialog.dispatchEvent({type:'cancel',preventDefault(){}});assert.equal(form.submissions,10);
+submit();dialog.getBoundingClientRect=()=>({left:10,right:200,top:10,bottom:200});
+dialog.dispatchEvent({type:'click',target:dialog,clientX:0,clientY:0});assert.equal(dialog.open,false);assert.equal(form.submissions,10);
+const oldValidity=form.reportValidity;form.reportValidity=()=>false;submit();assert.equal(dialog.open,false);assert.equal(form.submissions,10);form.reportValidity=oldValidity;
+submit();accept.dispatchEvent({type:'click'});accept.dispatchEvent({type:'click'});assert.equal(form.submissions,11);
+assert.equal(originalCharges[0].dataset.amount,'300.00');
+console.log('DOM: confirmaciones compartidas, reporte familiar y cancelación de convenio; resumen500/400/100, cancelar/Escape/fondo preservados y envío único correctos.');
