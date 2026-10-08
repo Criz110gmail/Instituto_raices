@@ -1,5 +1,28 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V84 — condonación y reversión con abono previo confirmadas — 2026-10-08
+
+- Propietario confirmó pago parcial100 con TARJETA/cuenta bancaria sobre original500,
+  condonación400 y cancelación del convenio: portal vuelve a exigir400, conserva pago100
+  validado y comprobante, banco no cambia por condonar/cancelar. No fue pago en caja.
+- V84 publica guía CONFIRMADA Condonar y reactivar $400 conservando un pago previo de $100,
+  nueve etapas, cuatro acciones por etapa, menús/campos/modales y referencia bancaria B.
+  Diferencia dinero sin asignar0 de deuda400 e importes históricos400/0/400 del acuerdo
+  cancelado de deuda vigente. Actualiza referencia pendiente en guía V83 sin editarla.
+- Sólo contenido editorial y permisos existentes requeridos, sin otorgar roles ni
+  operaciones financieras. SQL validado BEGIN/ROLLBACK: nueve etapas/cinco permisos.
+- Pendiente humano de condonación con abono de los bloques anteriores queda CONCLUIDO.
+  No repetir pago/convenio ya cancelado; deuda400 queda abierta para otra prueba.
+- Próximas pruebas propuestas (no confirmadas): dos cargos del mismo alumno en un pago;
+  dinero adicional sin asignar y devolución del excedente; doble envío/selección y alcance
+  de tutor ajeno. Más adelante conciliación interna de caja/retiros, compras y portales
+  académicos, sin inferir que correcciones o pruebas automáticas sean aceptación humana.
+- Siguiente migración V85. No cambios en .env, PostgreSQL/volúmenes o reglas de pagos.
+- Verificado:657 pruebas Java sin fallos; sólo app reconstruida/recreada, salud UP.
+  No revisión visual autenticada ni operaciones financieras por herramientas.
+- Lectura tras despliegue confirma V84 aplicada, nueva guía CONFIRMADA/nueve etapas,
+  quince guías/117 etapas. Permisos sólo requisitos de lectura de guía, no otorgados.
+
 ## Saldo restante destacado en revisión del pago — 2026-10-08
 
 - Punto5 de Nuevo pago separa saldo actual, importe de este pago y Quedará por pagar

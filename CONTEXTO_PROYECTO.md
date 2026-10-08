@@ -1,5 +1,22 @@
 # Contexto del proyecto
 
+## V84 — guía de condonación con abono previo — 2026-10-08
+
+- Propietario confirmó abono100 TARJETA/banco sobre500, condonación400 y cancelación:
+  reaparece deuda400, conserva pago100 y comprobante, banco no cambia por el convenio.
+- Nueva guía CONFIRMADA de nueve etapas/cuatro acciones detalla menús, campos, modales,
+  dinero sin asignar0 frente a saldo400, referencia B y datos históricos del acuerdo
+  cancelado. V84 actualiza precaución de V83 sin editar migraciones aplicadas.
+- SQL editorial validado BEGIN/ROLLBACK (nueve etapas/cinco permisos existentes).
+  Caso humano queda concluido; no repetir operaciones ni pagar deuda400 mediante tools.
+- Próximas propuestas aún no confirmadas: dos cargos del mismo alumno en un pago,
+  dinero adicional sin asignar/devolución del excedente y doble envío/alcance familiar.
+  Siguiente migración V85; sin cambios de dominio ni movimientos financieros.
+- Verificado:657 pruebas Java sin fallos, sólo app reconstruida/recreada y salud UP.
+  Sin revisión visual autenticada ni escrituras financieras por herramientas.
+- Consulta de sólo lectura confirma V84 aplicada, guía CONFIRMADA de nueve etapas,
+  quince guías/117 etapas; sin asignar roles.
+
 ## Saldo restante destacado en revisión del pago — 2026-10-08
 
 - Nuevo pago, punto5: saldo actual, importe del pago y Quedará por pagar ahora son

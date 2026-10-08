@@ -22,6 +22,14 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+La guía **Condonar y reactivar $400 conservando un pago previo de $100** incorpora
+el caso completo confirmado por el propietario: adeudo $500, pago parcial con tarjeta
+$100 a banco, condonación $400 y cancelación del convenio. Nueve etapas detallan menús,
+captura, modales y verificaciones. El abono y comprobante permanecen; banco sólo aumenta
+$100 por el pago, no cambia con el convenio. Al cancelar, los $400 vuelven al portal;
+los importes del acuerdo cancelado son históricos, no una condonación vigente.
+Disponible en **Administración → Seguridad y soporte → Guía de procesos** (V84).
+
 **Pagos recibidos → Nuevo registro** sigue el orden Origen y responsable → Adeudos
 que se van a pagar → Datos del pago → Comprobantes y observaciones → Revisa y registra.
 El total se calcula desde los cargos/abonos seleccionados y se consulta al terminar
