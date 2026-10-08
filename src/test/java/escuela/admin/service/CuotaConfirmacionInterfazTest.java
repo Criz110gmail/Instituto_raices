@@ -10,7 +10,7 @@ class CuotaConfirmacionInterfazTest {
         assertThat(html).contains("data-money-confirm=${edicion ? null : 'cuota'}", "th:object=\"${form}\"",
                 "method=\"post\"", "th:action=", "/js/money-input.js", "/css/money-input.css");
         String js = Files.readString(Path.of("src/main/resources/static/js/money-input.js"));
-        assertThat(js).contains("Confirmar nueva cuota", "Confirmar y crear cuota", "['cuota', 'registro-pago', 'cancelacion-cargo'].includes(kind) || paymentDecision ? 'Cancelar'",
+        assertThat(js).contains("Confirmar nueva cuota", "Confirmar y crear cuota", "['cuota', 'registro-pago', 'cancelacion-cargo', 'convenio', 'generacion-cargos'].includes(kind) || paymentDecision ? 'Cancelar'",
                 "Alumno e inscripción", "Importe por mes", "Meses a cobrar", "Crear cargo al confirmar",
                 "form.reportValidity()", "form.requestSubmit(button || undefined)");
         assertThat(js).doesNotContain("innerHTML", "form.submit()");

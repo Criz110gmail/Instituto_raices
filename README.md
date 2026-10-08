@@ -9,6 +9,22 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+**Portal familiar → Reportar transferencia** no ofrece cargos seleccionados en otra fila.
+Una opción desactualizada se bloquea sin sumarla otra vez; al limpiar la selección vuelve
+a estar disponible. El envío y el servidor también rechazan IDs repetidos.
+
+**Convenios → Ver** usa el botón administrativo común y un detalle por pestañas:
+**Resumen** (fechas/acuerdo), **Adeudos** (originales y nuevos) y **Gestión** (cancelación).
+El motivo de cancelación utiliza el formulario estándar; errores conservan captura y
+abren Gestión. Las métricas permanecen visibles y las reglas financieras no cambian.
+
+La vista previa de **Generar automáticos** permite **Cancelar generación** y confirma
+cantidad/importe seleccionados de todas las páginas en un modal antes de emitir adeudos.
+Cancelar el modal conserva la selección; sólo **Confirmar y generar adeudos** ejecuta.
+**Nuevo convenio** separa Resultados disponibles de Cargos agregados al convenio, con
+contador y selección destacada en menta. **Confirmar convenio** abre el resumen del acuerdo;
+**Cancelar** conserva los datos y **Confirmar y crear convenio** guarda sin mover dinero.
+
 Guía de procesos incorpora tres casos de cancelación confirmados con $600: **pago pendiente**
 (caja B, deuda $600), **pago validado** (compensar ingreso, caja B y deuda $600) y **adeudo
 sin abonos vigentes** (deuda $0, caja B e historial conservado). Son guías separadas con

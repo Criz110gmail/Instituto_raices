@@ -20,6 +20,26 @@
     sincronizarCuentas();
     form?.addEventListener('input', actualizarResumen);
     form?.addEventListener('change', actualizarResumen);
+    form?.addEventListener('submit', evento => {
+        const vistos = new Set();
+        for (const fila of solicitudes.querySelectorAll('.portal-distribution-row')) {
+            const id = fila.querySelector('.portal-cargo-id')?.value;
+            if (!id) continue;
+            if (vistos.has(String(id))) {
+                evento.preventDefault();
+                fila.querySelector('.portal-cargo-status').textContent = 'Este adeudo ya está agregado al pago. Selecciona otro cargo o limpia esta selección.';
+                fila.querySelector('.portal-cargo-search').setAttribute('aria-invalid', 'true');
+                fila.scrollIntoView?.({behavior: 'smooth', block: 'center'});
+                return;
+            }
+            vistos.add(String(id));
+        }
+    });
+
+    function cargoEnOtraFila(cargoId, filaActual) {
+        return [...solicitudes.querySelectorAll('.portal-distribution-row')].some(fila =>
+            fila !== filaActual && String(fila.querySelector('.portal-cargo-id')?.value || '') === String(cargoId));
+    }
 
     agregar.addEventListener('click', () => {
         const indice = solicitudes.children.length;
@@ -109,6 +129,7 @@
             if (resultados.hidden) mostrarIniciales();
         });
         entrada.addEventListener('input', () => {
+            entrada.setAttribute('aria-invalid', 'false');
             if (entrada.value !== etiquetaSeleccionada) {
                 id.value = '';
                 importe.value = '';
@@ -131,6 +152,7 @@
             temporizador = setTimeout(() => buscar(consulta), 250);
         });
         limpiar.addEventListener('click', () => {
+            entrada.setAttribute('aria-invalid', 'false');
             entrada.value = '';
             id.value = '';
             importe.value = '';
@@ -165,7 +187,13 @@
                     estado.textContent = 'No hay cargos disponibles. Los vencidos requieren autorización y los pagos en revisión deben resolverse primero.';
                     return;
                 }
-                datos.resultados.forEach(opcion => {
+                const disponibles = datos.resultados.filter(opcion => !cargoEnOtraFila(opcion.id, fila));
+                if (!disponibles.length) {
+                    cerrar();
+                    estado.textContent = 'Los cargos de esta búsqueda ya están agregados al pago. Escribe al menos 3 caracteres para buscar otros.';
+                    return;
+                }
+                disponibles.forEach(opcion => {
                     const boton = document.createElement('button');
                     boton.type = 'button';
                     boton.className = 'portal-cargo-option';
@@ -177,6 +205,12 @@
                     boton.append(titulo, detalle);
                     boton.addEventListener('mousedown', evento => evento.preventDefault());
                     boton.addEventListener('click', () => {
+                        if (cargoEnOtraFila(opcion.id, fila)) {
+                            cerrar();
+                            estado.textContent = 'Este adeudo ya está agregado al pago. Selecciona otro cargo.';
+                            return;
+                        }
+                        entrada.setAttribute('aria-invalid', 'false');
                         entrada.value = opcion.titulo;
                         id.value = opcion.id;
                         importe.value = Number(opcion.monto).toFixed(2);
@@ -195,7 +229,7 @@
                 entrada.setAttribute('aria-expanded', 'true');
                 estado.textContent = datos.hayMas
                         ? 'Se muestran 10 cargos. Escribe 3 caracteres para precisar.'
-                        : `${datos.resultados.length} cargo${datos.resultados.length === 1 ? '' : 's'} disponible${datos.resultados.length === 1 ? '' : 's'}.`;
+                        : `${disponibles.length} cargo${disponibles.length === 1 ? '' : 's'} disponible${disponibles.length === 1 ? '' : 's'} sin repetir los agregados.`;
             } catch (error) {
                 if (error.name !== 'AbortError') estado.textContent = 'No fue posible consultar los cargos. Intenta nuevamente.';
             }

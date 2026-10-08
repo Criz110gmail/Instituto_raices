@@ -229,4 +229,27 @@ submit();dialog.dispatchEvent({type:'cancel',preventDefault(){}});assert.equal(f
 submit();assert.equal(accept.textContent,'Confirmar cancelación del adeudo');
 accept.dispatchEvent({type:'click'});accept.dispatchEvent({type:'click'});assert.equal(form.submissions,7);
 assert.match(doc.querySelector('#money-confirm-note').textContent,/no habilita su regeneración/);
-console.log('DOM: importes, cuotas, pagos y cancelación de adeudo; cancelar/Escape sin envío y confirmar una sola vez correctos.');
+const baseQuery=form.querySelector.bind(form);
+const selection=new Element();selection.textContent='2 registros seleccionados · $1,000.00';
+const cutoff=new Input();cutoff.name='fechaCorte';cutoff.value='2026-10-08';cutoff.form=form;
+form.querySelector=selector=>selector==='[data-selection-summary]'?selection:baseQuery(selector);
+form.dataset.moneyConfirm='generacion-cargos';submit();
+assert.equal(rows()['Selección de todas las páginas'],selection.textContent);
+assert.equal(rows()['Fecha de corte'],'08/10/2026');assert.equal(cancel.textContent,'Cancelar');
+cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,7);
+submit();accept.dispatchEvent({type:'click'});assert.equal(form.submissions,8);
+form.dataset.moneyConfirm='convenio';
+for(const [name,value] of [['montoAcordado','800.00'],['fechaAcuerdo','2026-10-08'],['fechaVencimiento','2026-10-20'],['descripcion','Acuerdo de prueba'],['condiciones','Liquidar antes del vencimiento']]) {
+ const el=new Input();el.name=name;el.value=value;el.form=form;
+}
+const originalTotal=new Element();originalTotal.id='saldo-original';originalTotal.textContent='$1,000.00';
+const condonation=new Element();condonation.id='monto-condonado';condonation.textContent='$200.00';
+const agreementRow=new Element();agreementRow.querySelector=selector=>({textContent:selector==='strong'?'Ana · A-1':'$600.00'});
+const allBefore=form.querySelectorAll.bind(form);
+form.querySelectorAll=selector=>selector==='#cargos-seleccionados article'?[agreementRow]:allBefore(selector);
+submit();assert.equal(doc.querySelector('#money-confirm-title').textContent,'Confirmar convenio de pago');
+assert.equal(rows()['Nuevo monto total'],'$800.00');assert.equal(rows()['Monto condonado estimado'],'$200.00');
+assert.equal(rows()['Adeudo original 1'],'Ana · A-1 · $600.00');assert.equal(rows()['Fecha del acuerdo'],'08/10/2026');
+cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,8);
+submit();accept.dispatchEvent({type:'click'});accept.dispatchEvent({type:'click'});assert.equal(form.submissions,9);
+console.log('DOM: moneda y confirmaciones específicas, generación y convenio; cancelar/Escape sin envío y confirmación única correctos.');

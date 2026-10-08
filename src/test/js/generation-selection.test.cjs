@@ -27,6 +27,11 @@ ui.form.listeners.submit({preventDefault(){throw new Error('Selección válida')
 assert.deepEqual(ui.hidden.children.map(e=>[e.name,e.value]),[['seleccionIndividual','true'],['incluidos','RECARGO:19']]);
 ui=run();assert.equal(ui.rows[0].checked,true);assert.equal(ui.rows[1].checked,false);
 ui.all.listeners.click();assert.match(ui.summary.textContent,/3 de 3.*180\.00/);
+ui=run();ui.all.listeners.click();ui.form.dataset.moneyConfirm='generacion-cargos';
+ui.form.listeners.submit({defaultPrevented:false,preventDefault(){throw new Error('Selección válida');}});
+assert.equal(ui.button.disabled,false); // Abrir/cancelar modal no deja el botón bloqueado.
+ui.form.listeners.submit({moneyConfirmed:true,defaultPrevented:false,preventDefault(){throw new Error('Confirmación válida');}});
+assert.equal(ui.button.disabled,true);assert.equal(ui.button.textContent,'Generando selección…');
 ui=run(undefined,{getItem:()=>'{malformed',setItem(){}});assert.equal(ui.button.disabled,true);
 ui=run(undefined,{getItem:()=>null,setItem(){throw new Error('No disponible');}});assert.equal(ui.button.disabled,true);
 console.log('Selección: todos, exclusiones entre páginas, sólo un registro, importe, cero selección y almacenamiento fallido correctos.');

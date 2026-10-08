@@ -1,5 +1,76 @@
 # Contexto del proyecto
 
+## Portal familiar sin cargos repetidos en un reporte — 2026-10-08
+
+- Ayudas del reporte filtran por ID los cargos elegidos en otras filas, sin excluir la
+  selección de la propia fila. Si queda vacía la consulta por selecciones previas, explica
+  que ya fueron agregados y cómo buscar otros; no dice que no exista deuda.
+- Guarda en clic: una opción de lista desactualizada no puede repetir cargo; mensaje
+  Este adeudo ya está agregado al pago y no modifica ID/importe/total/cuenta. Limpiar
+  una selección permite volver a ofrecerla al consultar. Mantiene foco/principio10 y búsqueda3.
+- Guarda adicional antes de submit bloquea duplicados restaurados/manipulados, muestra
+  aviso en fila con aria-invalid y la lleva a la vista. Backend mantiene HashSet y su
+  validación Un cargo sólo puede seleccionarse una vez; no se cambia servicio ni saldos.
+- Verificado: 601 pruebas Java sin fallos; contrato protege tres guardas y control servidor.
+  Doce suites Node pasan: prueba DOM320/480 → total800, selección propia, limpieza/liberación,
+  lista desactualizada y envío repetido. Sólo app recreada, salud UP y JS servido correcto.
+  Diff limpio; sin operaciones financieras ni cambios de base/volúmenes. Revisión visual
+  autenticada pendiente del propietario; no se reportó ni validó transferencia con tools.
+- Sin migración, V76 sigue disponible. Diez guías/74 etapas conservadas. Convenio creado
+  pendiente de pago familiar800 y validación, no publicar guía completa todavía.
+- Propietario recarga Reportar transferencia, selecciona cargo320 y en otra fila480;
+  el320 no debe ofrecerse en la segunda. No guardar/reportar/validar pagos mediante tools.
+
+## Detalle de convenio por pestañas y botones comunes — 2026-10-08
+
+- Propietario confirmó creación del convenio con importes del ejemplo; liquidación y
+  cancelación del convenio siguen pendientes. No publicar su guía como completa todavía.
+- Listado Convenios → Ver usa new-button, mismo borde/espaciado del sistema; detalle tiene
+  botón de volver común y navegador Resumen/Adeudos/Gestión del patrón de alumnos/pagos.
+  Folio/tutor/situación y métricas globales permanecen fuera de paneles.
+- Resumen presenta fechas/motivo/condiciones; Adeudos separa originales conservados y nuevos
+  por alumno; Gestión aloja cancelación y motivo histórico. Formulario de cancelar usa
+  entity-form/form-section/form-grid, textarea wide, ayuda neutra, validación requerida y
+  botón danger-button; permisos, rutas, CSRF y reglas de operación se mantienen.
+- Errores de captura/negocio abren Gestión y conservan motivo. Cancelación exitosa vuelve a
+  Gestión con mensaje/estado. Componente compartido conserva teclado/hash/temas/móvil.
+  Sólo cambio de presentación/controlador; sin migración, V76 sigue disponible.
+- Verificado: 600 pruebas Java sin fallos, incluido render Thymeleaf real vigente/cancelado,
+  campos/escape, pestañas y selección servidor, más contrato de botón/listado y errores.
+  Sólo app recreada, salud UP; diff limpio. Sin migración/operaciones financieras ni cambios
+  de PostgreSQL/volúmenes. Revisión visual autenticada a cargo del propietario.
+- Prueba en curso: volver al detalle del convenio → Adeudos, comprobar nuevos480/320; luego
+  reportar ambos desde portal familiar800 y validar → bancoB+800/saldos0/convenioCumplido.
+  No cancelar este convenio antes de liquidarlo; la cancelación se prueba con otro caso.
+  No ejecutar convenios/pagos/cancelaciones por herramientas.
+
+## V75 — confirmación de generación y captura clara de convenio — 2026-10-08
+
+- Adeudos → Generar automáticos → vista previa: botón Cancelar generación vuelve al listado
+  sin emitir; Confirmar y generar adeudos seleccionados abre modal con selección global de
+  todas las páginas/cantidad/importe y fecha corte. Cancelar en modal conserva selección;
+  sólo Confirmar y generar adeudos envía. Token/alcance/caducidad/revalidaciones intactos.
+- generation-selection prepara inputs en primer submit pero no bloquea botón hasta el envío
+  aprobado por modal. money-input marca ese evento sin mantener aprobación para envíos futuros.
+  Cancelar no deja Generando selección ni botón deshabilitado. Recargos sin modal conservan flujo.
+- Convenio separa Resultados disponibles (no incluidos) y Cargos agregados al convenio en
+  tarjetas con títulos/ayudas y contador; selección usa acento menta común, variante oscura,
+  tarjetas de superficie compartida y estado vacío. Agregar/quitar mantienen los IDs y montos.
+- Confirmar convenio abre resumen de tutor/concepto/originales/saldo seleccionado/nuevo monto/
+  condonación/fechas/descripción/motivo/condiciones. Cancelar/Escape no crean ni limpian captura;
+  Confirmar y crear convenio usa validación/CSRF/requestSubmit originales. Crear no mueve fondos.
+- V75 sólo actualiza seis pasos editoriales de guías confirmadas sobre generación, sin publicar
+  convenio como confirmado. Diez guías / 74 etapas. No se modifican servicios ni reglas financieras.
+- Verificado: 597 pruebas Java sin fallos, SQL probado BEGIN/ROLLBACK; once suites Node
+  correctas, incluyendo selección sin bloquear antes de modal, cancelación preservada,
+  envío aprobado y resumen de convenio $1000/$800/$200. Pruebas estructurales agregadas.
+  V75 aplicada, diez guías/74 etapas conservadas; sólo app recreada, salud UP; base/volúmenes
+  intactos, sin operaciones financieras. Diff limpio; revisión visual autenticada pendiente.
+- Siguiente V76. Propietario sigue preparando convenio de dos hijos: originales600/400,
+  acordado800, condonado200, nuevos480/320. Primero confirmar creación y luego pago familiar800
+  validado/bancoB+800/saldos0/convenioCumplido. Cancelación del convenio se prueba después en
+  otro caso. No crear convenios/cargos/pagos por herramientas.
+
 ## V74 — tres guías de cancelación confirmadas — 2026-10-07
 
 - Propietario confirmó la secuencia completa sobre $600: pendiente cancelado sin cambiar

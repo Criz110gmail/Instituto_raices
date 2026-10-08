@@ -169,6 +169,9 @@
         actions.append(cancel, accept); dialog.append(badge, title, details, note, actions); document.body.append(dialog);
         let pending, submitter;
         const approved = new WeakSet();
+        document.addEventListener('submit', event => {
+            if (approved.has(event.target)) event.moneyConfirmed = true;
+        }, true);
         function close() {
             dialog.close(); document.body.classList.remove('money-confirm-open');
             submitter?.focus(); pending = undefined; submitter = undefined;
@@ -192,7 +195,7 @@
             if (!kind || event.defaultPrevented || approved.has(form)) return;
             event.preventDefault();
             if (!form.reportValidity()) return;
-            const currency = (['cuota', 'registro-pago'].includes(kind) ? form.querySelector('#moneda')?.value : null) || form.dataset.confirmCurrency || form.dataset.currency || 'MXN';
+            const currency = (['cuota', 'registro-pago'].includes(kind) ? form.querySelector('#moneda')?.value : kind === 'convenio' ? form.querySelector('#institucion')?.selectedOptions?.[0]?.dataset?.moneda : null) || form.dataset.confirmCurrency || form.dataset.currency || 'MXN';
             const money = raw => formatMoney(parseMoney(raw).raw, currency) || 'Sin importe';
             const add = (label, value) => {
                 const dt = document.createElement('dt'), dd = document.createElement('dd');
@@ -200,13 +203,39 @@
             };
             details.replaceChildren();
             const paymentDecision = ['validacion', 'rechazo', 'cancelacion'].includes(kind);
-            cancel.textContent = ['cuota', 'registro-pago', 'cancelacion-cargo'].includes(kind) || paymentDecision ? 'Cancelar' : 'Volver a revisar';
+            cancel.textContent = ['cuota', 'registro-pago', 'cancelacion-cargo', 'convenio', 'generacion-cargos'].includes(kind) || paymentDecision ? 'Cancelar' : 'Volver a revisar';
             accept.textContent = kind === 'cuota' ? 'Confirmar y crear cuota' : 'Confirmar operación';
             if (paymentDecision) {
                 if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
                 if (form.dataset.confirmSubject) add('Titular del pago', form.dataset.confirmSubject);
             }
-            if (kind === 'registro-pago') {
+            if (kind === 'generacion-cargos') {
+                title.textContent = 'Confirmar generación de adeudos';
+                accept.textContent = 'Confirmar y generar adeudos';
+                add('Selección de todas las páginas', form.querySelector('[data-selection-summary]')?.textContent || 'Revisa la selección');
+                const date = form.querySelector('[name="fechaCorte"]')?.value || '';
+                add('Fecha de corte', date.split('-').reverse().join('/'));
+                note.textContent = 'Sólo se generarán los adeudos seleccionados, incluyendo la selección de otras páginas. No registra dinero recibido. Cancelar conserva tu selección sin generar; el servidor comprobará nuevamente su vigencia y los importes.';
+            } else if (kind === 'convenio') {
+                title.textContent = 'Confirmar convenio de pago';
+                accept.textContent = 'Confirmar y crear convenio';
+                const value = name => form.querySelector('[name="' + name + '"]')?.value || '';
+                const date = name => value(name).split('-').reverse().join('/');
+                add('Tutor responsable', form.querySelector('#tutor-busqueda')?.value || '');
+                add('Concepto del nuevo cargo', form.querySelector('#concepto-busqueda')?.value || '');
+                form.querySelectorAll('#cargos-seleccionados article').forEach((row, index) => {
+                    add('Adeudo original ' + (index + 1), row.querySelector('strong').textContent + ' · ' + row.querySelector('span').textContent);
+                });
+                add('Saldo pendiente seleccionado', form.querySelector('#saldo-original')?.textContent || '');
+                add('Nuevo monto total', money(value('montoAcordado')));
+                add('Monto condonado estimado', form.querySelector('#monto-condonado')?.textContent || '');
+                add('Fecha del acuerdo', date('fechaAcuerdo'));
+                add('Nueva fecha límite', date('fechaVencimiento'));
+                add('Descripción', value('descripcion'));
+                add('Motivo', value('motivo'));
+                if (value('condiciones')) add('Condiciones', value('condiciones'));
+                note.textContent = 'Los adeudos originales dejarán de ser exigibles sin borrarse y el nuevo monto se distribuirá proporcionalmente por alumno. No mueve dinero. Cancelar conserva la captura sin crear el convenio; el servidor volverá a comprobar los saldos.';
+            } else if (kind === 'registro-pago') {
                 title.textContent = 'Confirmar registro del pago';
                 accept.textContent = 'Confirmar y registrar como pendiente';
                 const value = selector => form.querySelector(selector)?.value || '';

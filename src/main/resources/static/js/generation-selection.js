@@ -51,7 +51,9 @@
     panel.querySelector('[data-selection-all]')?.addEventListener('click',()=>{mode='all';changes.clear();if(persist())render();});
     panel.querySelector('[data-selection-none]')?.addEventListener('click',()=>{mode='only';changes.clear();if(persist())render();});
     form.addEventListener('submit',event=>{
+        if(event.defaultPrevented)return;
         const t=totals();if(!ready||changes.size>5000||t.count<=0||t.amount<0){event.preventDefault();return;}
+        if(form.dataset.moneyConfirm&&!event.moneyConfirmed){inputs();return;}
         inputs();button.disabled=true;button.textContent='Generando selección…';
     });
 })();

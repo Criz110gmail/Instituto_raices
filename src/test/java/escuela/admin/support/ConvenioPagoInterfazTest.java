@@ -3,6 +3,12 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.*;
 import static org.assertj.core.api.Assertions.assertThat;
 class ConvenioPagoInterfazTest {
+ @Test void verTieneBotonComunYErroresAbrenGestion()throws Exception{
+  String listado=Files.readString(Path.of("src/main/resources/templates/admin/convenios-pago.html"));
+  assertThat(listado).contains("class=\"new-button\" th:href=\"@{/admin/convenios-pago/{id}");
+  String controller=Files.readString(Path.of("src/main/java/escuela/admin/controller/ConvenioPagoAdminController.java"));
+  assertThat(controller).contains("m.addAttribute(\"pestanaActiva\",\"gestion\")", "flash.addFlashAttribute(\"pestanaActiva\",\"gestion\")");
+ }
  @Test void buscadorDeCargosReutilizaInputsComunesEnAmbosTemas()throws Exception{
   String html=Files.readString(Path.of("src/main/resources/templates/admin/convenio-pago-form.html"));
   String css=Files.readString(Path.of("src/main/resources/static/css/admin.css"));
