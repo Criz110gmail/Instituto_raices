@@ -2,8 +2,13 @@
 
 Al cerrar sesión o caducar, cada portal vuelve a su acceso propio: familias
 `/familias`, maestros `/maestros/acceso` y administración `/login`.
-La duración predeterminada es 30 minutos sin peticiones al servidor; escribir en un
-formulario no renueva ese tiempo. Los permisos siguen protegiendo el acceso administrativo.
+La duración está configurada en `application.properties` mediante
+`server.servlet.session.timeout=30m`. Arriba de cada portal y formulario aparece
+**Sesión · mm:ss**. A los dos minutos restantes se abre un aviso: **Continuar sesión**
+renueva otros30 minutos sin recargar ni guardar la captura; **Cerrar sesión** termina
+el acceso. Escribir en un formulario no renueva el tiempo. Las consultas del contador
+tampoco mantienen viva la sesión; el servidor aplica la caducidad aunque haya sondeos.
+Los permisos siguen protegiendo el acceso administrativo.
 
 > Regla documental: los PDF, imágenes y documentos privados se abren en el visor del
 > navegador mediante endpoints autorizados (`inline`) y enlaces en una pestaña nueva.

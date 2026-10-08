@@ -1,5 +1,19 @@
 (() => {
     const root = document.documentElement;
+    // Componente global sólo en pantallas del sistema, nunca en los accesos públicos.
+    const ruta = location.pathname;
+    if ((/^\/(admin|portal)(\/|$)/.test(ruta) || /^\/maestros(\/|$)/.test(ruta))
+            && ruta !== '/maestros/acceso' && !document.querySelector('script[data-session-clock]')) {
+        const sessionStyles = document.createElement('link');
+        sessionStyles.rel = 'stylesheet';
+        sessionStyles.href = '/css/session.css';
+        document.head.appendChild(sessionStyles);
+        const sessionScript = document.createElement('script');
+        sessionScript.src = '/js/session-clock.js';
+        sessionScript.defer = true;
+        sessionScript.dataset.sessionClock = 'true';
+        document.head.appendChild(sessionScript);
+    }
     if (!document.querySelector('link[data-ui-polish]')) {
         const uiStyles = document.createElement('link');
         uiStyles.rel = 'stylesheet';

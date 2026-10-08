@@ -1,5 +1,36 @@
 # Contexto del proyecto
 
+## Contador y aviso de sesión con renovación explícita — 2026-10-08
+
+- application.properties fija server.servlet.session.timeout=30m. Componente global en
+  pantallas admin/familia/maestros (no login) muestra Sesión · mm:ss en cabecera, incluidos
+  formularios. A los120 segundos abre modal común, responsivo y claro/oscuro con tiempo
+  restante, Continuar sesión y Cerrar sesión. Renovar no recarga ni guarda formularios.
+- GET /sesion/estado devuelve reloj/vencimiento/duración y CSRF con no-store; no crea sesión
+  ni renueva actividad. POST /sesion/renovar exige autenticación y CSRF y renueva desde
+  ahora por la duración real de la sesión. Una sesión ya caducada nunca se resucita.
+- El contenedor toca lastAccess al consultar: filtro de seguridad posterior a CSRF mantiene
+  actividad lógica independiente y exige su plazo en TODAS las peticiones autenticadas.
+  Sondeos/renovación no se contabilizan automáticamente; sólo POST aceptado renueva.
+  Recursos css/js/favicon no renuevan; peticiones operativas siguen contando como actividad.
+  No registrar este filtro además como componente servlet, para evitar doble ejecución.
+- Contador usa diferencias de tiempo del servidor y performance.now; sincroniza fetch y
+  pestañas con BroadcastChannel, ignora respuestas antiguas y consulta al recuperar foco/
+  visibilidad o BFCache. Sondeo30s no renueva. Sin conexión no presume éxito ni reinicia
+  contador: permite reintentar; si servidor confirma caducidad va al acceso propio.
+- Cerrar sesión conserva POST/CSRF/origen, invalidación y redirecciones existentes.
+  Soporte dentro de rutas admin permanece administrativo. No se agregó autoguardado:
+  planeaciones conservan sus borradores existentes; no tocar cobranza ni saldos.
+- Verificado: 614 pruebas Java sin fallos y13 suites Node, incluyendo reloj/aviso2min/
+  renovación30min, expiración lógica pese al sondeo, respuestas viejas y acceso propio.
+  App reconstruida/recreada, salud UP; GET sin sesión401, POST sin CSRF redirige al acceso
+  sin ejecutar renovación. Todas las pantallas completas cargan theme.js. Diff limpio.
+  Sin revisión visual autenticada ni espera real30min; propietario debe confirmar diseño.
+- Sin migración ni operaciones financieras, .env no leído, PostgreSQL/volúmenes intactos.
+  V76 disponible, diez guías/74 etapas conservadas; convenio800 sigue pendiente de pago
+  familiar y validación administrativa antes de publicar su guía como confirmada.
+
+
 ## Sesión y cierre de sesión por portal — 2026-10-08
 
 - Caducidad y cierre voluntario redirigen directamente a /familias, /maestros/acceso
