@@ -12,6 +12,7 @@
     const vacio = document.querySelector('#distribution-empty');
     const archivos = document.querySelector('#comprobantes');
     const opcionesPlantel = [...plantel.options].slice(1);
+    const sinAsignar = document.querySelector('#allow-unassigned');
 
     if (!fecha.value) {
         const ahora = new Date(Date.now() - new Date().getTimezoneOffset() * 60000);
@@ -52,12 +53,28 @@
 
     lista.querySelectorAll('.distribution-row').forEach(conectarFila);
     reindexar();
+    if (sinAsignar) {
+        sinAsignar.checked = numero(monto.value) > totalDistribuido();
+        monto.readOnly = !sinAsignar.checked;
+        if (sinAsignar.checked) document.querySelector('#payment-unassigned-options').open = true;
+        sinAsignar.addEventListener('change', () => {
+            monto.readOnly = !sinAsignar.checked;
+            if (!sinAsignar.checked) sincronizarTotalConDistribucion();
+            actualizarTotales();
+        });
+    }
+    ['#tutorId','#cuentaDeclaradaId','#tutor-busqueda','#cuenta-busqueda','#fechaPago'].forEach(selector => {
+        const campo = document.querySelector(selector);
+        campo?.addEventListener('input', actualizarRevision);
+        campo?.addEventListener('change', actualizarRevision);
+    });
     monto.addEventListener('input', actualizarTotales);
     archivos.addEventListener('change', () => {
         const seleccionados = [...archivos.files];
         document.querySelector('#file-summary').textContent = seleccionados.length
             ? `${seleccionados.length} archivo(s): ${seleccionados.map(a => a.name).join(', ')}`
             : 'No se han seleccionado archivos.';
+        actualizarRevision();
     });
     metodo.addEventListener('change', () => {
         actualizarMetodo();
@@ -169,6 +186,7 @@
         const salida = document.querySelector('#total-restante');
         salida.textContent = formato.format(restante);
         salida.closest('.remaining').classList.toggle('over', restante < 0);
+        actualizarRevision();
     }
 
     function totalDistribuido() {
@@ -178,7 +196,7 @@
 
     function sincronizarTotalConDistribucion() {
         const distribuido = totalDistribuido();
-        monto.value = distribuido > 0 ? distribuido.toFixed(2) : '';
+        if (!sinAsignar?.checked) monto.value = distribuido > 0 ? distribuido.toFixed(2) : '';
         actualizarTotales();
     }
 
@@ -210,6 +228,51 @@
             ? 'Captura el código de autorización o referencia que entrega la terminal.'
             : transferencia ? 'Captura el folio o clave disponible en el comprobante bancario.'
                 : 'Opcional: anota el folio del recibo entregado en ventanilla.';
+        actualizarRevision();
+    }
+
+    function actualizarRevision() {
+        const salida = document.querySelector('#payment-review-charges');
+        if (!salida) return;
+        const formato = new Intl.NumberFormat('es-MX', {style:'currency',currency:moneda.value || 'MXN'});
+        salida.replaceChildren();
+        lista.querySelectorAll('.distribution-row').forEach(fila => {
+            if (!fila.querySelector('.cargo-id').value) return;
+            const articulo = document.createElement('article');
+            const titulo = document.createElement('strong');
+            titulo.textContent = fila.querySelector('input[type="search"]').value;
+            const detalle = document.createElement('div');
+            detalle.classList.add('payment-charge-review-metrics');
+            const aplicado = numero(fila.querySelector('.monto-solicitado').value);
+            const saldo = numero(fila.querySelector('.full-amount-reference').value);
+            const restante = Math.max(0,saldo-aplicado);
+            [['Saldo actual del adeudo',saldo],['Importe de este pago',aplicado],['Quedará por pagar',restante]].forEach(([etiqueta,importe],indice) => {
+                const bloque = document.createElement('div');
+                const nombre = document.createElement('small');
+                const cantidad = document.createElement('strong');
+                nombre.textContent = etiqueta;
+                cantidad.textContent = formato.format(importe);
+                if (indice === 2) bloque.classList.add('payment-charge-review-balance');
+                bloque.append(nombre,cantidad);
+                detalle.append(bloque);
+            });
+            const aviso = document.createElement('small');
+            aviso.textContent = restante > 0 ? 'Saldo estimado después de validar este pago. El alumno todavía deberá esta cantidad.' : 'Este pago cubrirá el saldo del adeudo cuando se valide.';
+            articulo.append(titulo,detalle,aviso); salida.append(articulo);
+        });
+        if (!salida.children.length) {
+            const aviso = document.createElement('p');
+            aviso.textContent = sinAsignar?.checked ? 'El dinero quedará pendiente de asignar; no se liquidará ningún adeudo con este registro.' : 'Todavía no has seleccionado adeudos.';
+            salida.append(aviso);
+        }
+        const poner = (id,texto) => { document.querySelector(id).textContent = texto; };
+        poner('#payment-review-tutor',tutorId.value ? document.querySelector('#tutor-busqueda')?.value || 'Sin seleccionar' : 'Sin seleccionar');
+        poner('#payment-review-total',formato.format(numero(monto.value)));
+        poner('#payment-review-method',metodo.value === 'EFECTIVO' ? 'Efectivo' : metodo.value === 'TARJETA' ? 'Tarjeta' : 'Transferencia');
+        poner('#payment-review-account',cuentaId.value ? document.querySelector('#cuenta-busqueda')?.value || 'Sin seleccionar' : 'Sin seleccionar');
+        const [dia,hora] = fecha.value.split('T');
+        poner('#payment-review-date',dia ? dia.split('-').reverse().join('/') + (hora ? ' · '+hora.slice(0,5)+' h' : '') : 'Sin capturar');
+        poner('#payment-review-files',archivos.files?.length ? Array.from(archivos.files,f=>f.name).join(', ') : 'Sin archivos');
     }
 
     function numero(valor) {
@@ -227,10 +290,16 @@
         const limpiar = contenedor.querySelector('.autocomplete-clear');
         let timer;
         let controlador;
+        let version = 0;
+        let pendienteConsulta = null;
+        let abierta = false;
         let etiqueta = entrada.value;
         const mostrarEstado = mensaje => { estado.textContent = mensaje; estado.hidden = !mensaje; };
         const reiniciarBusqueda = () => {
             clearTimeout(timer);
+            version++;
+            pendienteConsulta = null;
+            abierta = false;
             controlador?.abort();
             resultados.hidden = true;
             resultados.replaceChildren();
@@ -242,11 +311,20 @@
             return;
         }
 
-        entrada.addEventListener('focus', () => {
-            if (entrada.value.trim() || resultados.children.length || requisitos(tipo)) return;
+        function abrirOpciones() {
+            if (entrada.readOnly) return;
+            const requisito = requisitos(tipo);
+            if (requisito) { reiniciarBusqueda(); mostrarEstado(requisito); return; }
+            const texto = entrada.value.trim();
+            const consulta = texto.length >= 3 ? texto : '';
+            if (pendienteConsulta === endpoint(tipo, consulta) && abierta) return;
+            reiniciarBusqueda();
+            abierta = true;
             mostrarEstado('Cargando opciones…');
-            consultar('');
-        });
+            consultar(consulta);
+        }
+        entrada.addEventListener('focus', abrirOpciones);
+        entrada.addEventListener('click', abrirOpciones);
 
         entrada.addEventListener('input', () => {
             if (entrada.value !== etiqueta) { valor.value = ''; valor.dispatchEvent(new Event('change', {bubbles: true})); etiqueta = ''; }
@@ -254,22 +332,29 @@
             const requisito = requisitos(tipo);
             if (requisito) { mostrarEstado(requisito); return; }
             if (entrada.value.trim().length < 3) { mostrarEstado('Escribe al menos 3 caracteres.'); return; }
+            abierta = true;
             mostrarEstado('Buscando…');
             timer = setTimeout(() => consultar(entrada.value.trim()), 280);
         });
         async function consultar(consulta) {
+                const solicitud = ++version;
+                const url = endpoint(tipo, consulta);
+                pendienteConsulta = url;
                 controlador = new AbortController();
                 try {
-                    const respuesta = await fetch(endpoint(tipo, consulta), {headers: {'Accept': 'application/json'}, signal: controlador.signal});
+                    const respuesta = await fetch(url, {headers: {'Accept': 'application/json'}, signal: controlador.signal});
+                    if (solicitud !== version || !abierta || url !== endpoint(tipo, consulta)) return;
                     if (respuesta.redirected && new URL(respuesta.url).pathname === '/login') { location.assign('/login?sesionExpirada'); return; }
                     if (!respuesta.ok) throw new Error();
                     const datos = await respuesta.json();
+                    if (solicitud !== version || !abierta || url !== endpoint(tipo, consulta)) return;
                     resultados.replaceChildren();
                     (datos.resultados || []).forEach(opcion => {
                         const boton = document.createElement('button'); boton.type = 'button'; boton.className = 'autocomplete-option';
                         const titulo = document.createElement('strong'); titulo.textContent = opcion.titulo;
                         const detalle = document.createElement('small'); detalle.textContent = opcion.detalle || '';
                         boton.append(titulo, detalle); boton.addEventListener('click', () => {
+                            if (solicitud !== version || url !== endpoint(tipo, consulta)) return;
                             entrada.value = opcion.titulo; etiqueta = opcion.titulo; valor.value = opcion.id;
                             if (tipo === 'cargo' && opcion.monto != null) {
                                 const fila = contenedor.closest('.distribution-row');
@@ -278,13 +363,14 @@
                                 if (fila) protegerAsignacion(fila, opcion.monto);
                                 sincronizarTotalConDistribucion();
                             }
-                            valor.dispatchEvent(new Event('change', {bubbles: true})); resultados.hidden = true;
+                            valor.dispatchEvent(new Event('change', {bubbles: true})); resultados.hidden = true; abierta = false;
                             mostrarEstado('');
                         }); resultados.append(boton);
                     });
                     resultados.hidden = !resultados.children.length;
                     mostrarEstado(resultados.children.length ? `${resultados.children.length} coincidencia(s).` : 'No encontramos coincidencias disponibles.');
-                } catch (e) { if (e.name !== 'AbortError') mostrarEstado('No fue posible completar la búsqueda.'); }
+                } catch (e) { if (e.name !== 'AbortError' && solicitud === version && abierta) mostrarEstado('No fue posible completar la búsqueda.'); }
+                finally { if (solicitud === version) pendienteConsulta = null; }
         }
         limpiar.addEventListener('click', () => {
             entrada.value = ''; etiqueta = ''; valor.value = '';
@@ -293,13 +379,18 @@
             reiniciarBusqueda();
             mostrarEstado(requisitos(tipo) || 'Escribe al menos 3 caracteres.');
             entrada.focus();
+            abrirOpciones();
         });
         contenedor.addEventListener('payment-autocomplete-reset', () => {
             etiqueta = '';
             reiniciarBusqueda();
             mostrarEstado(requisitos(tipo) || 'Escribe al menos 3 caracteres.');
         });
-        document.addEventListener('click', e => { if (!contenedor.contains(e.target)) resultados.hidden = true; });
+        document.addEventListener('click', e => {
+            // Agregar cargo enfoca la nueva fila antes de que su clic llegue a document.
+            if (tipo === 'cargo' && document.activeElement === entrada && e.target.closest?.('#agregar-cargo')) return;
+            if (!contenedor.contains(e.target)) { resultados.hidden = true; abierta = false; }
+        });
     }
 
     function requisitos(tipo) {

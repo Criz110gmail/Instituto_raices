@@ -46,6 +46,13 @@ public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecific
               AND v.fecha_inicio <= CURRENT_DATE
               AND (v.fecha_fin IS NULL OR v.fecha_fin >= CURRENT_DATE)
               AND c.estado_registro = 'EMITIDO'
+              AND GREATEST(c.importe_original + COALESCE((
+                    SELECT SUM(CASE WHEN ac.efecto = 'AUMENTO' THEN ac.monto ELSE -ac.monto END)
+                    FROM ajuste_cargo ac WHERE ac.cargo_id = c.id
+                  ), 0), 0) - COALESCE((
+                    SELECT SUM(CASE WHEN ap.operacion = 'APLICAR' THEN ap.monto ELSE -ap.monto END)
+                    FROM aplicacion_pago ap WHERE ap.cargo_id = c.id
+                  ), 0) > 0
               AND (a.busqueda_autocomplete LIKE ('%' || lower(:texto) || '%')
                 OR cc.busqueda_autocomplete LIKE ('%' || lower(:texto) || '%'))
             ORDER BY c.fecha_vencimiento, c.id

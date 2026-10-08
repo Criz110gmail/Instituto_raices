@@ -22,6 +22,21 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+**Pagos recibidos → Nuevo registro** sigue el orden Origen y responsable → Adeudos
+que se van a pagar → Datos del pago → Comprobantes y observaciones → Revisa y registra.
+El total se calcula desde los cargos/abonos seleccionados y se consulta al terminar
+la distribución. Para dinero sin asignar o adicional, activa la alternativa explícita
+antes de capturar un total diferente. La revisión muestra por alumno saldo actual,
+importe de este pago y saldo estimado tras validar, además de tutor, método, cuenta,
+fecha y archivos. **Registrar como pendiente** abre el modal existente: Cancelar no
+guarda; sólo Confirmar y registrar como pendiente envía. No aplica saldos hasta validar.
+
+En **Pagos recibidos → Nuevo registro → Agregar cargo**, la ayuda consulta los primeros
+diez cargos con saldo pendiente del tutor seleccionado al recibir foco o clic. El saldo
+se filtra en SQL antes de paginar, para que cargos ya pagados o liquidados por ajustes
+no ocupen las primeras opciones y dejen una lista vacía. Mantiene búsqueda desde tres
+caracteres y contempla becas, recargos, abonos y devoluciones.
+
 **Cuotas por alumno, Adeudos de alumnos y Pagos recibidos** ofrecen Desde/Hasta
 incluidos y accesos Este mes, Mes anterior, Este año y Rango personalizado.
 Cuotas busca vencimientos previstos (también mensuales), no pagos o adeudos generados.

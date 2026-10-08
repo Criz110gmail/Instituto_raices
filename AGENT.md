@@ -1,5 +1,106 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Saldo restante destacado en revisión del pago — 2026-10-08
+
+- Punto5 de Nuevo pago separa saldo actual, importe de este pago y Quedará por pagar
+  en tres tarjetas; saldo restante tiene borde/fondo del tema y cifra mayor, adaptable
+  a móvil. Explica que el saldo es estimado después de validar, no dinero sin asignar.
+- Cálculos, permisos, servicio, importes enviados y modal conservados. Ejemplo500/100/400
+  cubierto en DOM; no registrar operaciones financieras mediante herramientas.
+- Prueba humana de abono100 antes de condonar400 sigue pendiente. Sin migración, V84 libre.
+- Verificado:655 pruebas Java y16 Node aprobadas; sólo app reconstruida/recreada.
+  Sin QA visual autenticada ni cambios de saldos, .env o volúmenes.
+
+## Captura de pagos ordenada y revisión previa — 2026-10-08
+
+- Propietario autorizó una pantalla con1 Origen y responsable,2 Adeudos que se van
+  a pagar,3 Datos del pago,4 Comprobantes y observaciones,5 Revisa y registra.
+  PagoForm conserva IDs/nombres/POST multipart/CSRF, importes y asociaciones.
+  Quien entrega dinero pasa a Datos y observaciones a Comprobantes; total distribuido
+  se ve al finalizar selección, antes de capturar método/cuenta/fecha/referencia.
+- Total recibido se calcula con cargos/abonos y queda protegido en flujo normal.
+  Alternativa desplegable explícita permite capturar total distinto para dinero adicional
+  o sin cargos. Checkbox sólo UI, no se envía: habilita total, preserva recibido manual
+  al cambiar distribución; desactivarlo vuelve al total distribuido. En devolución del
+  formulario con monto mayor al distribuido se recupera alternativa abierta/activada.
+  Backend y sus validaciones financieras no cambian.
+- Revisión final sólo consulta: cada cargo/alumno, saldo actual, importe de este pago,
+  saldo estimado restante, tutor/método/cuenta/fecha dd/MM/yyyy y archivos. Texto literal,
+  no HTML dinámico. Muestra Sin seleccionar si cuenta/tutor no tienen ID seleccionado.
+  Usa requested-list/payment-detail-grid/form-notice y estilos globales, móvil/temas;
+  CSS adicional sólo distribución local, sin otro diseño.
+- Registrar como pendiente YA tenía modal data-money-confirm=registro-pago y se
+  conserva: resumen, Cancelar sin guardar, Confirmar y registrar como pendiente.
+  No crear otro modal ni cambiar servicio. No modificar ayuda primeras10/saldo previo
+  a paginación ni pago rápido con primer cargo fijo (sigue sin opción parcial).
+- Verificado: 654 pruebas Java sin fallos y16 Node. Render Thymeleaf real normal/rápido,
+  contrato orden/IDs/confirmación, DOM abono500→100/saldo400/revisión, dinero extra150/
+  distribución100 y retorno a automático al desactivar; modal compartido sigue probado.
+  Sólo app recreada, salud UP y HTTP sirve revisión/alternativa. Sin operaciones de
+  pagos/adeudos, .env, volúmenes ni migración; V84 disponible,14 guías/108 etapas intactas.
+  Revisión visual autenticada no realizada por limitación de permisos previa.
+- Prueba humana pendiente sigue: Pagos recibidos → Nuevo registro → tutor → seleccionar
+  cargo500 → Registrar pago parcial100 → efectivo/caja → confirmar/validar. Verificar
+  pagado100/saldo400/caja+100 antes de condonar400 y revertir manteniendo100. No publicar
+  todavía ese escenario como guía confirmada.
+
+
+## Causa real de ayuda vacía: saldo filtrado después de LIMIT — 2026-10-08
+
+- Propietario volvió a reportar lista vacía aunque foco/clic JS ya estaba desplegado.
+  Lectura de base confirma institución1/tutor2:14 cargos EMITIDO, sólo1 con deuda;
+  cero pendientes entre primeros10 ordenados por vencimiento/id. Repository paginaba
+  emitidos incluyendo pagados y servicio descartaba saldos0 DESPUÉS: búsqueda vacía
+  no veía el único pendiente; escribir3 ampliaba tamaño20/afinaba búsqueda.
+- CargoRepository.buscarParaSolicitudPago ahora filtra saldo positivo en SQL ANTES
+  de ORDER/LIMIT: total=max(original+ajustes firmados,0) menos aplicaciones firmadas.
+  Becas/descuentos/recargos/reversas/devoluciones contemplados con subconsultas
+  independientes; no cambiar estados EMITIDO, permisos, responsabilidad financiera
+  ni orden. Servicio conserva comprobación final de saldo y alcance como defensa.
+  Consulta compartida de selección en convenios también deja de paginar liquidados.
+- Verificado: consulta real sólo lectura retorna1 opción pendiente entre primeras10
+  (antes0). Fixture CTE ficticia prueba12 pagados, descuento total, un pendiente y
+  otro con beca200/recargo80/abono880/devolución100: sólo IDs14/15, no cancelado/convenido.
+  Prefijo fixture en src/test/resources/sql/cargos_pago_saldo_fixture.sql se completa
+  con query real del Repository y LIMIT; ejecución READ ONLY/ROLLBACK, sin inserts reales.
+- 652 pruebas Java sin fallos, nuevo contrato SQL conserva alcance y saldo previo a
+  paginación;16 Node sin fallos. Sólo app recreada, salud UP. Sin migración, movimientos,
+  lectura .env ni cambios de volúmenes; V84 disponible, catorce guías/108 etapas.
+- Intento de revisión en Chrome bloqueado por permisos de Computer Use; no acceso
+  autenticado ni sesión prestada. Evidencia es SQL de datos reales y pruebas, no afirmar
+  QA visual autenticada. Corrección JS previa sola no resolvía esta causa de servidor.
+- Propietario debe recargar formulario y seleccionar institución/tutor → Agregar cargo
+  → cargo500 → Registrar pago parcial100, guardar/validar luego si coincide.
+  Caso abono100/condonar400/revertir400 conserva100 sigue sin confirmación humana.
+  No registrar pagos vía herramientas ni actualizar guía como confirmada todavía.
+
+
+## Ayuda de cargos en Pagos recibidos al recibir foco/clic — 2026-10-08
+
+- Usuario prueba abono100 sobre adeudo500 reactivado: desde Pagos recibidos → Nuevo
+  registro → Agregar cargo la fila dinámica no reabría opciones hasta escribir3.
+  JS sólo oía focus y descartaba apertura con resultados almacenados ocultos; el clic
+  de Agregar además podía cerrar la ayuda nueva al burbujear hasta document.
+- Componente local pago-form ahora consulta primeras opciones con texto vacío en foco
+  y clic (backend ya limita a10 disponibles, exige institución/tutor/alcance); búsqueda
+  escrita mantiene mínimo3 y debounce280ms. Permite reabrir lista oculta/limpiar en
+  input ya enfocado. Guarda de burbujeo mantiene abierta ayuda de nueva fila enfocada.
+- Evita duplicar petición pendiente de foco+clic por URL/contexto, aborta y versiona;
+  respuestas/opciones viejas no cambian selección al cambiar tutor/institución/método.
+  Fuera del control cierra; importes protegidos y acciones parciales no cambian.
+- Verificado: 651 pruebas Java sin fallos y16 Node. Nuevo DOM simula Agregar/foco/clic/
+  burbujeo/primeras10/búsqueda3/reapertura/limpiar/contexto y selección500 → parcial100,
+  total100/saldo400. Sólo app recreada; salud UP; HTTP sirve eventos nuevos y guardas.
+  Sin cambios de datos, .env, volúmenes ni migración; V84 sigue disponible.
+- IMPORTANTE para orientar prueba: pago rápido desde Adeudos → Registrar pago oculta
+  parcial para primer cargo fijo (HTML y JS); no se habilitó en esta tarea. Abono se
+  registra desde Administración → Finanzas → Pagos recibidos → Nuevo registro:
+  institución/plantel/tutor → Agregar cargo → seleccionar500 → Registrar pago parcial100
+  → guardar/validar. No buscar adeudo en tabla de pagos ni pedir tutor pagarlo primero.
+- Prueba humana de condonación con abono100 previo sigue pendiente. No incorporarla
+  aún como guía confirmada; catorce guías/108 etapas permanecen.
+
+
 ## V83 — cancelación de condonación total confirmada — 2026-10-08
 
 - Propietario confirmó cancelación del convenio y que el adeudo volvió a aparecer
