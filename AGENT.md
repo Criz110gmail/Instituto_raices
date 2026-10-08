@@ -1,5 +1,32 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V79 — cancelación de convenio sin pagos confirmada — 2026-10-08
+
+- Propietario confirmó ejemplo completo y reiteró que originales300/200 reaparecen en
+  el portal familiar tras Cancelar y reactivar adeudos. Caso nuevo400/condonado100/
+  cargos240/160 queda documentado, sin tocar convenio800 anterior ya liquidado.
+- V79 agrega guía CONFIRMADA Cancelar un convenio sin pagos: volver a adeudos de $300
+  y $200, ocho etapas detalladas: conceptos, cuotas300/200, generación500, bancoB,
+  acuerdo400, revisión sin pagar, modal cancelar/repetir/confirmar, verificación admin
+  y familiar. Explica cancelar acuerdo no condona originales y no registra movimientos.
+- Cinco permisos existentes requeridos sin asignar roles; sólo contenido editorial.
+  Verificado: 622 pruebas Java sin fallos; SQL probado BEGIN/ROLLBACK (ocho etapas).
+  V79 aplicada, salud UP, lectura confirma guía CONFIRMADA y doce guías/92 etapas.
+  Sólo app recreada, sin pagos/cancelaciones/movimientos vía herramientas; .env y
+  volúmenes preservados, diff limpio. Confirmación funcional proviene del propietario.
+- Siguiente migración V80. Nueva consulta del propietario: convenio sobre deuda500,
+  acordado0/condonado500 rechazado. No se implementó cambio: formulario DecimalMin0.01,
+  servicio acordado>0 y restricciones DB de convenio y cargos nuevos exigen positivos.
+  Condonar totalmente ya es posible mediante descuento manual del saldo si concepto
+  permite descuentos y total no queda debajo de abonos; no equivale a cancelar convenio.
+- Propuesta pendiente de decisión, NO implementada/autorizada: opción explícita
+  Condonación total dentro del flujo de convenio con motivo/auditoría y sin crear
+  nuevos adeudos0. Requiere diseñar estados, reversión, permisos y consistencia financiera,
+  no sólo bajar mínimo del input. No declarar escenario500/0 probado ni publicarlo
+  como guía confirmada. Siguiente conversación: elegir si usar ajuste existente o
+  implementar modalidad explícita en convenios.
+
+
 ## Confirmación para cancelar convenio sin pagos — 2026-10-08
 
 - Convenios → Ver → Gestión → Cancelar y reactivar adeudos abre modal compartido

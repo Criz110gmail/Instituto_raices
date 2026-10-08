@@ -26,6 +26,9 @@ La guía **Convenio de dos hijos y liquidación familiar: $480 + $320** document
 confirmado: originales $600/$400, convenio $800, condonación $200 y una transferencia
 validada que liquida ambos cargos nuevos. Incluye diez etapas y todos los modales actuales.
 Se consulta en **Administración → Seguridad y soporte → Guía de procesos**.
+La guía **Cancelar un convenio sin pagos: volver a adeudos de $300 y $200** documenta
+el acuerdo de $400, los nuevos $240/$160 y su cancelación: reactiva originales $300/$200
+en el portal familiar, conserva historial/motivo y no mueve caja/bancos. Incluye ocho etapas.
 En **Pagos recibidos**, únicamente **Ver** adopta el botón con borde del diseño común.
 El formulario y modal de convenios usan **Concepto de cobro del convenio**: selecciona
 el concepto que identificará los nuevos adeudos del acuerdo, por ejemplo Convenio de pago.
@@ -130,7 +133,7 @@ ofrece **Ver motivo del rechazo** junto al estado. El modal muestra el mensaje r
 por administración y cómo corregir el reporte, sin hacer otra transferencia bancaria si
 el dinero ya salió. El rechazo no disminuye la deuda ni registra un ingreso.
 
-Las once guías de cobranza incluyen recorridos explícitos en sus 84 etapas: categoría del
+Las doce guías de cobranza incluyen recorridos explícitos en sus 92 etapas: categoría del
 menú, módulo, registro a buscar, Aplicar filtros, acción Ver/Editar, campos, guardado y
 resultado. Cada cambio entre administración y portal se explica. Regla de documentación:
 no usar instrucciones como «abre el cargo» sin indicar desde dónde llegar e identificarlo.
