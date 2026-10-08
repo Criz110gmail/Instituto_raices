@@ -37,14 +37,21 @@ function fila(id, etiqueta, monto) {
     return { querySelector: selector => datos[selector] };
 }
 let consultas = 0;
-const context = vm.createContext({ document, Intl, AbortController, setTimeout, clearTimeout,
+const redirecciones = [];
+const context = vm.createContext({ document, Intl, URL, AbortController, setTimeout, clearTimeout,
+    window: { location: { assign: destino => redirecciones.push(destino) } },
     Option: function(text, value) { this.textContent = text; this.value = String(value); },
     fetch: async () => { consultas++; return { ok: true, json: async () => ({ resultados: [
         { id: 9, titulo: 'Banco de prueba', detalle: 'Plantel Centro' } ] }) }; },
 });
 let script = fs.readFileSync('src/main/resources/static/js/portal-pago.js', 'utf8');
-script = script.replace(/\}\)\(\);\s*$/, 'globalThis.flujo = { recalcularTotal, sincronizarCuentas }; })();');
+script = script.replace(/\}\)\(\);\s*$/, 'globalThis.flujo = { recalcularTotal, sincronizarCuentas, redirigirSiSesionCaducada }; })();');
 vm.runInContext(script, context);
+assert.equal(context.flujo.redirigirSiSesionCaducada({ redirected: false }), false);
+assert.equal(context.flujo.redirigirSiSesionCaducada({ redirected: true, url: 'http://localhost/familias?sesionExpirada' }), true);
+assert.equal(context.flujo.redirigirSiSesionCaducada({ redirected: true, url: 'http://localhost/nexo/login' }), true);
+assert.equal(context.flujo.redirigirSiSesionCaducada({ redirected: true, url: 'http://localhost/acceso-denegado' }), false);
+assert.deepEqual(redirecciones, ['/familias?sesionExpirada', '/nexo/familias?sesionExpirada']);
 assert.equal(campos.cuenta.disabled, true);
 assert.equal(consultas, 0);
 assert.match(campos['resumen-total'].textContent, /0\.00/);

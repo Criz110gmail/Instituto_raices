@@ -39,7 +39,7 @@ class SesionExpiradaAccessDeniedHandlerTest {
         handler.handle(request, response,
                 new InvalidCsrfTokenException(tokenEsperado, "token-anterior"));
 
-        assertThat(response.getRedirectedUrl()).isEqualTo("/login?origen=maestros&sesionExpirada");
+        assertThat(response.getRedirectedUrl()).isEqualTo("/maestros/acceso?sesionExpirada");
         assertThat(response.getCookie("JSESSIONID")).isNotNull();
         assertThat(response.getCookie("JSESSIONID").getMaxAge()).isZero();
     }
@@ -55,7 +55,41 @@ class SesionExpiradaAccessDeniedHandlerTest {
         handler.handle(request, response,
                 new InvalidCsrfTokenException(tokenEsperado, "token-anterior"));
 
-        assertThat(response.getRedirectedUrl()).isEqualTo("/login?origen=familias&sesionExpirada");
+        assertThat(response.getRedirectedUrl()).isEqualTo("/familias?sesionExpirada");
+    }
+
+    @Test
+    void conservaContextoYBorraCookieSeguraEnConsultaFamiliarCaducada() throws Exception {
+        var request = new MockHttpServletRequest("GET", "/nexo/portal/pagos");
+        request.setContextPath("/nexo");
+        request.setSecure(true);
+        var response = new MockHttpServletResponse();
+        handler.redirigir(request, response);
+        assertThat(response.getRedirectedUrl()).isEqualTo("/nexo/familias?sesionExpirada");
+        assertThat(response.getCookie("JSESSIONID").getPath()).isEqualTo("/nexo");
+        assertThat(response.getCookie("JSESSIONID").getSecure()).isTrue();
+        assertThat(response.getCookie("JSESSIONID").isHttpOnly()).isTrue();
+    }
+
+    @Test
+    void reconoceOrigenDeLogoutAunqueLaSesionYaHayaCaducado() throws Exception {
+        for (String origen : new String[]{"familias", "maestros", "desconocido"}) {
+            var request = new MockHttpServletRequest("POST", "/logout");
+            request.setParameter("origen", origen);
+            var response = new MockHttpServletResponse();
+            handler.redirigir(request, response);
+            String login = origen.equals("familias") ? "/familias" : origen.equals("maestros") ? "/maestros/acceso" : "/login";
+            assertThat(response.getRedirectedUrl()).isEqualTo(login + "?sesionExpirada");
+        }
+    }
+
+    @Test
+    void noPermiteQueParametroOrigenCambieElPortalDeUnaRutaAdministrativa() throws Exception {
+        var request = new MockHttpServletRequest("GET", "/admin/pagos");
+        request.setParameter("origen", "familias");
+        var response = new MockHttpServletResponse();
+        handler.redirigir(request, response);
+        assertThat(response.getRedirectedUrl()).isEqualTo("/login?sesionExpirada");
     }
 
     @Test

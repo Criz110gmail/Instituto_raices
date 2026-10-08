@@ -1,5 +1,10 @@
 # Sistema administrativo escolar
 
+Al cerrar sesión o caducar, cada portal vuelve a su acceso propio: familias
+`/familias`, maestros `/maestros/acceso` y administración `/login`.
+La duración predeterminada es 30 minutos sin peticiones al servidor; escribir en un
+formulario no renueva ese tiempo. Los permisos siguen protegiendo el acceso administrativo.
+
 > Regla documental: los PDF, imágenes y documentos privados se abren en el visor del
 > navegador mediante endpoints autorizados (`inline`) y enlaces en una pestaña nueva.
 > Las exportaciones Excel sí se entregan como descarga.

@@ -267,8 +267,8 @@ public class SeguridadConfig {
     }
 
     static String rutaDespuesDeCerrarSesion(String origen) {
-        if ("familias".equals(origen)) return "/login?origen=familias&logout";
-        if ("maestros".equals(origen)) return "/login?origen=maestros&logout";
+        if ("familias".equals(origen)) return "/familias?logout";
+        if ("maestros".equals(origen)) return "/maestros/acceso?logout";
         return "/login?logout";
     }
 }

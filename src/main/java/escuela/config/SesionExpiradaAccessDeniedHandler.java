@@ -36,12 +36,16 @@ public class SesionExpiradaAccessDeniedHandler implements AccessDeniedHandler {
 
     void redirigir(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String ruta = request.getRequestURI().substring(request.getContextPath().length());
-        String acceso = ruta.startsWith("/maestros") ? "/login?origen=maestros&sesionExpirada"
-                : ruta.startsWith("/portal") || ruta.startsWith("/familias")
-                ? "/login?origen=familias&sesionExpirada" : "/login?sesionExpirada";
+        boolean envioAcceso = ruta.equals("/logout") || ruta.equals("/login");
+        String origen = envioAcceso ? request.getParameter("origen") : null;
+        String acceso = ruta.equals("/maestros") || ruta.startsWith("/maestros/") || "maestros".equals(origen)
+                ? "/maestros/acceso?sesionExpirada"
+                : ruta.equals("/portal") || ruta.startsWith("/portal/") || ruta.equals("/familias") || "familias".equals(origen)
+                ? "/familias?sesionExpirada" : "/login?sesionExpirada";
         Cookie sesionCaducada = new Cookie("JSESSIONID", "");
         sesionCaducada.setPath(request.getContextPath().isBlank() ? "/" : request.getContextPath());
         sesionCaducada.setHttpOnly(true);
+        sesionCaducada.setSecure(request.isSecure());
         sesionCaducada.setMaxAge(0);
         response.addCookie(sesionCaducada);
         response.sendRedirect(request.getContextPath() + acceso);

@@ -15,6 +15,14 @@
     let consultaCuentas;
     if (!cuenta || !solicitudes || !montoTotal || !montoTotalVisible || !agregar) return;
 
+    function redirigirSiSesionCaducada(respuesta) {
+        if (!respuesta.redirected) return false;
+        const destino = new URL(respuesta.url);
+        if (!/\/(login|familias)$/.test(destino.pathname)) return false;
+        window.location.assign(destino.pathname.replace(/\/(login|familias)$/, '/familias') + '?sesionExpirada');
+        return true;
+    }
+
     solicitudes.querySelectorAll('[data-cargo-autocomplete]').forEach(inicializarCargo);
     recalcularTotal();
     sincronizarCuentas();
@@ -69,6 +77,7 @@
         try {
             const respuesta = await fetch(`${base}/cuentas?cargoId=${encodeURIComponent(cargoId)}`,
                     {headers: {Accept: 'application/json'}, signal: controlador.signal});
+            if (redirigirSiSesionCaducada(respuesta)) return;
             if (!respuesta.ok) throw new Error();
             const datos = await respuesta.json();
             if (controlador.signal.aborted) return;
@@ -175,10 +184,7 @@
             try {
                 const respuesta = await fetch(`${base}/cargos?q=${encodeURIComponent(consulta)}`,
                         {headers: {Accept: 'application/json'}, signal: solicitud.signal});
-                if (respuesta.redirected && new URL(respuesta.url).pathname === '/login') {
-                    window.location.assign('/login?sesionExpirada');
-                    return;
-                }
+                if (redirigirSiSesionCaducada(respuesta)) return;
                 if (!respuesta.ok) throw new Error();
                 const datos = await respuesta.json();
                 resultados.replaceChildren();

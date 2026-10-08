@@ -115,8 +115,8 @@
                     headers: {'Accept': 'application/json'},
                     signal: actual.signal
                 });
-                if (respuesta.redirected && new URL(respuesta.url).pathname === '/login') {
-                    window.location.assign('/login?sesionExpirada');
+                if (respuesta.redirected && /\/(login|familias|maestros\/acceso)$/.test(new URL(respuesta.url).pathname)) {
+                    window.location.assign(respuesta.url);
                     return;
                 }
                 if (!respuesta.ok) throw new Error('No fue posible consultar el catálogo');

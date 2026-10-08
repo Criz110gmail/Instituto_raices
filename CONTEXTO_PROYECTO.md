@@ -1,5 +1,24 @@
 # Contexto del proyecto
 
+## Sesión y cierre de sesión por portal — 2026-10-08
+
+- Caducidad y cierre voluntario redirigen directamente a /familias, /maestros/acceso
+  o /login según portal; usan sesionExpirada o logout respectivamente. POST con CSRF
+  caducado y /logout con origen familiar/docente conservan el acceso correspondiente.
+- Consultas AJAX familiares de cargos/cuentas y autocomplete compartido reconocen los
+  accesos propios, no fuerzan /login administrativo. Context path conservado; cookie
+  caducada eliminada con HttpOnly y Secure en HTTPS. Errores reales de permisos siguen403.
+- Login familiar ya no muestra enlace al acceso administrativo. Esto no vuelve secreta
+  la URL: POST de autenticación sigue /login; la seguridad sigue basada en permisos.
+- No se cambia duración: sin override en configuración del proyecto, Spring Boot usa
+  30 minutos de inactividad. Peticiones renuevan tiempo; escribir/mover mouse no lo hace.
+- Verificado: 604 pruebas Java y doce suites Node sin fallos; app reconstruida/recreada,
+  salud UP. Sin migración ni movimientos financieros; V76 disponible. Prueba visual de
+  cierre/caducidad con usuarios reales pendiente del propietario. No se leyó .env.
+- Convenio de dos hijos sigue pendiente de pago familiar800 y validación administrativa;
+  no publicar guía completa aún. Diez guías/74 etapas conservadas.
+
+
 ## Portal familiar sin cargos repetidos en un reporte — 2026-10-08
 
 - Ayudas del reporte filtran por ID los cargos elegidos en otras filas, sin excluir la
