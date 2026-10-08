@@ -22,6 +22,12 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+**Portal familiar → Reportar transferencia → Enviar transferencia a revisión** abre
+un modal con cargos por alumno, total, cuenta, fecha, referencia y nombres de los
+comprobantes. **Cancelar** o Escape conserva la captura y los archivos sin enviar;
+**Confirmar y enviar a revisión** registra el reporte para validación de la escuela.
+No realiza una transferencia bancaria ni aplica automáticamente el pago a los adeudos.
+
 **Portal familiar → Reportar transferencia** no ofrece cargos seleccionados en otra fila.
 Una opción desactualizada se bloquea sin sumarla otra vez; al limpiar la selección vuelve
 a estar disponible. El envío y el servidor también rechazan IDs repetidos.

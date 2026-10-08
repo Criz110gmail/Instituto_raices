@@ -252,4 +252,39 @@ assert.equal(rows()['Nuevo monto total'],'$800.00');assert.equal(rows()['Monto c
 assert.equal(rows()['Adeudo original 1'],'Ana · A-1 · $600.00');assert.equal(rows()['Fecha del acuerdo'],'08/10/2026');
 cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,8);
 submit();accept.dispatchEvent({type:'click'});accept.dispatchEvent({type:'click'});assert.equal(form.submissions,9);
-console.log('DOM: moneda y confirmaciones específicas, generación y convenio; cancelar/Escape sin envío y confirmación única correctos.');
+// Reporte familiar reutiliza el modal sin enviar ni perder archivos al cancelar.
+form.dataset = { moneyConfirm:'transferencia-familiar', confirmCurrency:'MXN' };
+const transferTotal = { value:'800.00' };
+const transferAccount = { selectedOptions:[{textContent:'Banco prueba · Plantel Centro'}] };
+const transferDate = { value:'2026-10-08T12:45' };
+const transferReference = { value:'TEST-FAMILIA-800' };
+const beforeTransferQuery = form.querySelector.bind(form);
+form.querySelector = selector => ({'.portal-total-value':transferTotal, '#cuenta':transferAccount,
+    '[name="fechaPago"]':transferDate, '[name="referencia"]':transferReference,
+    '[name="nombrePagador"]':{value:'María <script>'}, '[name="observaciones"]':{value:'Pago de dos hijos'}
+}[selector] || beforeTransferQuery(selector));
+const portalRows = [['Ana · Cargo A','480.00'],['Luis · Cargo B','320.00']].map(([name, amount]) => ({
+    querySelector: selector => ({value:selector === '.portal-cargo-search' ? name : amount})
+}));
+const beforeTransferAll = form.querySelectorAll.bind(form);
+form.querySelectorAll = selector => selector === '.portal-distribution-row' ? portalRows : beforeTransferAll(selector);
+submit();
+assert.equal(form.submissions,9);
+assert.equal(doc.querySelector('#money-confirm-title').textContent,'Confirmar envío de transferencia');
+assert.equal(rows()['Total reportado'],'$800.00');
+assert.equal(rows()['Cargo del alumno 1'],'Ana · Cargo A · $480.00');
+assert.equal(rows()['Cargo del alumno 2'],'Luis · Cargo B · $320.00');
+assert.equal(rows()['Cuenta destino'],'Banco prueba · Plantel Centro');
+assert.equal(rows()['Fecha y hora'],'08/10/2026 · 12:45 h');
+assert.equal(rows()['Referencia bancaria'],'TEST-FAMILIA-800');
+assert.equal(rows()['Quién realizó la transferencia'],'María <script>');
+assert.equal(rows()['Comprobantes adjuntos'],'Prueba <script>.pdf');
+assert.equal(cancel.textContent,'Cancelar');
+assert.equal(accept.textContent,'Confirmar y enviar a revisión');
+assert.match(doc.querySelector('#money-confirm-note').textContent,/no se hará un cargo a tu banco/);
+cancel.dispatchEvent({type:'click'});
+assert.equal(form.submissions,9); assert.equal(receipt.files.length,1); assert.equal(transferTotal.value,'800.00');
+submit();dialog.dispatchEvent({type:'cancel',preventDefault(){}});assert.equal(form.submissions,9);
+transferReference.value='TEST-CORREGIDO'; submit();assert.equal(rows()['Referencia bancaria'],'TEST-CORREGIDO');
+accept.dispatchEvent({type:'click'});accept.dispatchEvent({type:'click'});assert.equal(form.submissions,10);
+console.log('DOM: moneda y confirmaciones específicas, generación, convenio y reporte familiar; cancelar/Escape sin envío y confirmación única correctos.');

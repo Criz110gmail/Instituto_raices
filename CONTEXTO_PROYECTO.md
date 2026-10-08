@@ -1,5 +1,30 @@
 # Contexto del proyecto
 
+## Confirmar reporte familiar de transferencia antes de enviar — 2026-10-08
+
+- Portal familiar → Reportar transferencia → Enviar transferencia a revisión usa el
+  modal compartido money-input con acción transferencia-familiar. Resume cada cargo/
+  alumno/importe, total, cuenta, fecha dd/MM/yyyy/hora, referencia, pagador/observaciones
+  cuando existen y nombres de los comprobantes. Texto literal mediante textContent.
+- Cancelar/Escape/fondo no envían y conservan captura/archivos, restaurando foco.
+  Confirmar y enviar a revisión usa requestSubmit original, validación HTML, multipart
+  y CSRF; autorización del modal vale sólo un envío y doble clic de confirmación no repite.
+  Guardas contra cargos duplicados siguen ejecutándose antes del modal y antes del POST.
+- Aclara que reportar no ejecuta una transferencia bancaria: la escuela debe validar
+  antes de aplicar a adeudos y cuenta. Sin cambios de servicio, importes ni reglas.
+  CSS usa card/soft/mint/line del portal familiar, compatible con temas y móvil, sin
+  reutilizar colores administrativos fijos en esa pantalla. Soporte comparte formulario.
+- Verificado: 615 pruebas Java sin fallos y13 suites Node. DOM480/320 total800, fecha/
+  referencia/cuenta, archivos y texto literal, cancelar/Escape preservados y un envío.
+  Contrato conserva POST/multipart/CSRF y estilo; actualizado contrato estático de cuota
+  por ampliación de acciones Cancelar sin cambiar comportamiento de cuotas.
+  App reconstruida/recreada, salud UP, diff limpio. Sin QA visual autenticada ni reportes
+  reales mediante herramientas; propietario debe confirmar modal en su prueba en curso.
+- Sin migración; V76 disponible. .env/base/volúmenes/saldos intactos. Convenio800 sigue
+  pendiente de reporte familiar y validación. Antes de publicar guía completa confirmar
+  resultado con propietario; incorporar paso de este modal en recorridos familiares.
+
+
 ## Contador discreto sólo para administración y maestros — 2026-10-08
 
 - Portal familiar no adjunta el contador al DOM: mantiene reloj interno, aviso al quedar

@@ -10,6 +10,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PortalPagoInterfazTest {
 
     @Test
+    void reporteFamiliarConfirmaConModalComunSinCambiarMultipartNiCsrf() throws Exception {
+        String html = Files.readString(Path.of("src/main/resources/templates/portal/pago-form.html"));
+        String js = Files.readString(Path.of("src/main/resources/static/js/money-input.js"));
+        String css = Files.readString(Path.of("src/main/resources/static/css/portal-pago.css"));
+        assertThat(html).contains("data-money-confirm=\"transferencia-familiar\"", "data-confirm-currency=${moneda}",
+                "/js/money-input.js", "/css/money-input.css", "enctype=\"multipart/form-data\"",
+                "th:action=\"@{/portal/pagos/reportar}\"", "${_csrf.token}");
+        assertThat(js).contains("Confirmar envío de transferencia", "Confirmar y enviar a revisión",
+                "Comprobantes adjuntos", "Cancelar conserva tus datos", "form.requestSubmit(button || undefined)");
+        assertThat(css).contains(".portal-transfer-page .money-confirm-dialog", "background:var(--card)");
+    }
+
+    @Test
     void transferenciaSigueElOrdenDeCapturaYRevisaSinVolverArriba() throws Exception {
         String html = Files.readString(Path.of("src/main/resources/templates/portal/pago-form.html"));
         String css = Files.readString(Path.of("src/main/resources/static/css/portal-pago.css"));

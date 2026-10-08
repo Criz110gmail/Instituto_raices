@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#fff9f2"><title>Reportar transferencia · Nexo Escolar</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/portal.css"><link rel="stylesheet" href="/css/forms.css"><link rel="stylesheet" href="/css/portal-pago.css?v=62"><script src="/js/theme.js"></script><script src="/js/portal-pago.js?v=61" defer></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/portal.css"><link rel="stylesheet" href="/css/forms.css"><link rel="stylesheet" href="/css/money-input.css"><link rel="stylesheet" href="/css/portal-pago.css?v=63"><script src="/js/theme.js"></script><script src="/js/portal-pago.js?v=61" defer></script><script src="/js/money-input.js?v=transferencia" defer></script>
 </head>
 <body class="portal-transfer-page">
 <header class="family-bar"><a class="family-brand" href="/portal" aria-label="Volver al portal"><span class="brand-heart">♥</span><span><strong>Mi familia</strong><small>Reportar transferencia</small></span></a><div class="family-actions"><a class="sign-out" href="/portal">Volver <b>↩</b></a><form method="post" th:action="@{/logout}"><input type="hidden" name="origen" value="familias"><button class="sign-out" type="submit" aria-label="Cerrar sesión"><span>Cerrar sesión</span><b aria-hidden="true">↗</b></button></form></div></header>
@@ -12,7 +12,7 @@
     <section class="portal-payment-card">
         <div class="portal-payment-intro"><div><span>Proceso seguro</span><h2>Reporta tu transferencia paso a paso</h2><p>Primero elige los cargos; después selecciona la cuenta, captura los datos y adjunta el comprobante. Todo en esta pantalla.</p></div><div class="portal-step"><b>1</b><span>Captura y envía</span></div></div>
         <div class="portal-form-alert" role="alert" th:if="${error}" th:text="${error}"></div>
-        <form method="post" enctype="multipart/form-data" th:action="@{/portal/pagos/reportar}" th:object="${form}" class="portal-payment-form">
+        <form method="post" enctype="multipart/form-data" th:action="@{/portal/pagos/reportar}" th:object="${form}" class="portal-payment-form" data-money-confirm="transferencia-familiar" th:attr="data-confirm-currency=${moneda}">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
             <section class="portal-transfer-total" aria-labelledby="total-transferencia">
                 <div><span id="total-transferencia">Total a transferir</span><small id="total-cargos" aria-live="polite">Selecciona tus cargos para calcularlo</small></div>

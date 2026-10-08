@@ -203,13 +203,32 @@
             };
             details.replaceChildren();
             const paymentDecision = ['validacion', 'rechazo', 'cancelacion'].includes(kind);
-            cancel.textContent = ['cuota', 'registro-pago', 'cancelacion-cargo', 'convenio', 'generacion-cargos'].includes(kind) || paymentDecision ? 'Cancelar' : 'Volver a revisar';
+            cancel.textContent = ['cuota', 'registro-pago', 'cancelacion-cargo', 'convenio', 'generacion-cargos', 'transferencia-familiar'].includes(kind) || paymentDecision ? 'Cancelar' : 'Volver a revisar';
             accept.textContent = kind === 'cuota' ? 'Confirmar y crear cuota' : 'Confirmar operación';
             if (paymentDecision) {
                 if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
                 if (form.dataset.confirmSubject) add('Titular del pago', form.dataset.confirmSubject);
             }
-            if (kind === 'generacion-cargos') {
+            if (kind === 'transferencia-familiar') {
+                title.textContent = 'Confirmar envío de transferencia';
+                accept.textContent = 'Confirmar y enviar a revisión';
+                const value = selector => form.querySelector(selector)?.value || '';
+                form.querySelectorAll('.portal-distribution-row').forEach((row, index) => {
+                    add('Cargo del alumno ' + (index + 1),
+                        (row.querySelector('.portal-cargo-search')?.value || 'Sin cargo seleccionado') + ' · ' +
+                        money(row.querySelector('.portal-charge-amount')?.value || ''));
+                });
+                add('Total reportado', money(value('.portal-total-value')));
+                add('Cuenta destino', form.querySelector('#cuenta')?.selectedOptions?.[0]?.textContent || 'Sin seleccionar');
+                const [date, time] = value('[name="fechaPago"]').split('T');
+                add('Fecha y hora', date ? date.split('-').reverse().join('/') + (time ? ' · ' + time.slice(0,5) + ' h' : '') : 'Sin capturar');
+                add('Referencia bancaria', value('[name="referencia"]'));
+                if (value('[name="nombrePagador"]')) add('Quién realizó la transferencia', value('[name="nombrePagador"]'));
+                if (value('[name="observaciones"]')) add('Observaciones', value('[name="observaciones"]'));
+                const files = form.querySelector('#comprobantes')?.files;
+                add('Comprobantes adjuntos', files?.length ? Array.from(files, file => file.name).join('\n') : 'Sin archivos');
+                note.textContent = 'Sólo estás reportando una transferencia que ya realizaste; no se hará un cargo a tu banco. Quedará en revisión y se aplicará a los adeudos cuando la escuela la valide. Cancelar conserva tus datos y comprobantes sin enviar.';
+            } else if (kind === 'generacion-cargos') {
                 title.textContent = 'Confirmar generación de adeudos';
                 accept.textContent = 'Confirmar y generar adeudos';
                 add('Selección de todas las páginas', form.querySelector('[data-selection-summary]')?.textContent || 'Revisa la selección');
