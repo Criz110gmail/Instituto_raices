@@ -58,7 +58,11 @@ public class PagoServiceImpl implements PagoService {
 
     @Override
     public PagoResponse registrar(PagoRequest request, List<MultipartFile> archivosRecibidos) {
-        return registrar(request, archivosRecibidos, OrigenRegistroPago.ADMINISTRACION, null);
+        return registrar(request, archivosRecibidos, OrigenRegistroPago.ADMINISTRACION, null,null);
+    }
+    @Override public PagoResponse registrarAnticipado(PagoRequest request,List<MultipartFile> archivos,Long acuerdoId) {
+        if(acuerdoId==null)throw new ReglaNegocioException("Falta identificar el acuerdo anticipado");
+        return registrar(request,archivos,OrigenRegistroPago.ADMINISTRACION,null,acuerdoId);
     }
 
     @Override
@@ -77,11 +81,11 @@ public class PagoServiceImpl implements PagoService {
                     "El tutor del pago no corresponde a la cuenta familiar");
         }
         return registrar(request, archivosRecibidos, OrigenRegistroPago.PORTAL_FAMILIAR,
-                tutor.getUsuario());
+                tutor.getUsuario(),null);
     }
 
     private PagoResponse registrar(PagoRequest request, List<MultipartFile> archivosRecibidos,
-                                   OrigenRegistroPago origen, escuela.seguridad.entity.Usuario reportante) {
+                                   OrigenRegistroPago origen, escuela.seguridad.entity.Usuario reportante,Long acuerdoId) {
         List<MultipartFile> comprobantes = archivosRecibidos == null ? List.of()
                 : archivosRecibidos.stream().filter(a -> a != null && !a.isEmpty()).toList();
         if (comprobantes.size() > MAXIMO_COMPROBANTES) {
@@ -102,7 +106,7 @@ public class PagoServiceImpl implements PagoService {
 
         String folio = generarFolio(institucion);
 
-        List<CargoSolicitud> solicitudes = validarSolicitudes(request, institucion, tutor);
+        List<CargoSolicitud> solicitudes = validarSolicitudes(request, institucion, tutor,acuerdoId!=null);
         BigDecimal totalSolicitado = solicitudes.stream().map(CargoSolicitud::monto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         if (totalSolicitado.compareTo(request.monto()) > 0) {
@@ -110,6 +114,7 @@ public class PagoServiceImpl implements PagoService {
         }
 
         Pago pago = new Pago();
+        pago.setAcuerdoAnticipadoId(acuerdoId);
         pago.setInstitucion(institucion);
         pago.setPlantelRegistro(plantel);
         pago.setTutor(tutor);
@@ -239,7 +244,7 @@ public class PagoServiceImpl implements PagoService {
         return cuenta;
     }
 
-    private List<CargoSolicitud> validarSolicitudes(PagoRequest request, Institucion institucion, Tutor tutor) {
+    private List<CargoSolicitud> validarSolicitudes(PagoRequest request, Institucion institucion, Tutor tutor,boolean anticipado) {
         Set<Long> ids = new HashSet<>();
         LocalDate fechaLocal = request.fechaPago().atZone(ZoneId.of(institucion.getZonaHoraria())).toLocalDate();
         List<CargoSolicitud> resultado = new ArrayList<>();
@@ -262,7 +267,7 @@ public class PagoServiceImpl implements PagoService {
             }
             BigDecimal monto = solicitud.montoSolicitado().setScale(2, RoundingMode.UNNECESSARY);
             BigDecimal saldoActual = saldo(cargo);
-            if (monto.compareTo(saldoActual) > 0) {
+            if (!anticipado && monto.compareTo(saldoActual) > 0) {
                 throw new ReglaNegocioException("El monto solicitado para " + cargo.getDescripcion()
                         + " supera su saldo actual de " + formatear(saldoActual));
             }

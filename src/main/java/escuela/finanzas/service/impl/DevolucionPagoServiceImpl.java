@@ -44,6 +44,7 @@ public class DevolucionPagoServiceImpl implements DevolucionPagoService {
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcance;
     private final RegistroAuditoriaService auditoria;
+    private final escuela.cobranza.service.AnticipoLifecycleService anticipos;
 
     @Override
     public DevolucionPagoResponse ejecutar(DevolucionPagoRequest request) {
@@ -52,6 +53,7 @@ public class DevolucionPagoServiceImpl implements DevolucionPagoService {
         if (pago.getEstado() != EstadoPago.VALIDADO)
             throw new ReglaNegocioException("Sólo se puede devolver un pago validado");
         verificar(pago, request.pagoVersion(), "Pago");
+        if(pago.getAcuerdoAnticipadoId()!=null&&!request.revisionAcuerdoAnticipado())throw new ReglaNegocioException("Revisa las condiciones del acuerdo anticipado y confirma su revisión antes de devolver dinero");
 
         Long cuentaOriginalId = pago.getCuentaDestino() == null ? null : pago.getCuentaDestino().getId();
         boolean cuentaDistinta = !Objects.equals(cuentaOriginalId, request.cuentaOrigenId());
@@ -117,9 +119,11 @@ public class DevolucionPagoServiceImpl implements DevolucionPagoService {
         devolucion.setEstado(EstadoDevolucionPago.EJECUTADA);
         devolucion = devolucionRepository.saveAndFlush(devolucion);
 
+        if(pago.getAcuerdoAnticipadoId()!=null)seleccionadas.forEach(a->a.getCargo().getAplicaciones().size());
         List<AplicacionPago> ajustes = ajustarAplicaciones(pago, seleccionadas, porLiberar,
                 devolucion, fecha, request.motivo());
         if (!ajustes.isEmpty()) aplicacionRepository.saveAllAndFlush(ajustes);
+        if(pago.getAcuerdoAnticipadoId()!=null)ajustes.forEach(j->j.getCargo().getAplicaciones().add(j));
 
         motivoRepository.crearDevolucionPagoSiAusente(pago.getInstitucion().getId(), actor.getId());
         MotivoFinanciero motivo = motivoRepository
@@ -145,6 +149,11 @@ public class DevolucionPagoServiceImpl implements DevolucionPagoService {
         detalleAuditoria.put("motivoCambioCuenta", motivoCambio);
         detalleAuditoria.put("monto", monto); detalleAuditoria.put("moneda", pago.getMoneda());
         detalleAuditoria.put("aplicacionesAjustadas", ajustes.size());
+        if(pago.getAcuerdoAnticipadoId()!=null) {
+            detalleAuditoria.put("acuerdoAnticipadoId",pago.getAcuerdoAnticipadoId());
+            detalleAuditoria.put("revisionAcuerdoAnticipado",true);
+            if(devuelto.add(monto).compareTo(pago.getMonto())==0)anticipos.deshacer(pago,actor,motivoRegistrado);
+        }
         auditoria.registrar(pago.getInstitucion().getId(), AccionAuditoria.DEVOLUCION_EJECUTADA,
                 "DEVOLUCION_PAGO", devolucion.getId(), devolucion.getMotivo(),
                 detalleAuditoria);

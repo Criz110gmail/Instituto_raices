@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface PagoService {
     PagoResponse registrar(PagoRequest request, List<MultipartFile> comprobantes);
+    PagoResponse registrarAnticipado(PagoRequest request,List<MultipartFile> comprobantes,Long acuerdoId);
     PagoResponse registrarDesdePortal(PagoRequest request, List<MultipartFile> comprobantes,
                                       UsuarioPrincipal principal);
     PagoResponse obtener(Long id);

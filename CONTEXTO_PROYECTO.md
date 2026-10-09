@@ -1,5 +1,83 @@
 # Contexto del proyecto
 
+## Continuidad prioritaria para otra computadora — 2026-10-09
+
+Estado vigente: V89 implementada/desplegada, próxima migración V90. Ver primer bloque
+PUNTO EXACTO de AGENT.md para instrucciones completas; entradas anteriores son históricas.
+Propietario avanzó prueba de beca20% +10% adicional: dos mensualidades noviembre/diciembre
+2026 de1000, beca200 cada una, base neta1600, beneficio160, pago1440 con tarjeta.
+Inscripción inicia01/10/2026 sin fin; ciclo hasta15/06/2027, válido para estos meses.
+
+Lectura real: acuerdo1 ANT-20261009-000001 APLICADO; pago27 PAG-20261009-000024 VALIDADO
+1440, cuenta1 Cuenta principal BBVA Raices. Movimiento36/sec24 ingreso1440,
+saldo18290→19730; suma total coincide y no hay saltos. Usuario anotó18890 inicialmente,
+pero luego confirmó19730 y posible confusión de anotación. No compensar600 ni repetir pago.
+No operaciones financieras por herramientas, sólo diagnóstico de lectura.
+
+Punto detenido: usuario aún debe comprobar cada adeudo. Ruta Operación escolar → Cobranza
+escolar → Adeudos de alumnos → filtro Todos/Liquidado → buscar alumno/concepto
+ANTICIPO-TEST-01 → Ver noviembre → Resumen: original1000, descuentos/becas280,
+total ajustado720, abonos720, falta0; Historial: BECA200 y DESCUENTO80. Repetir diciembre.
+Confirmar portal familiar sin pendientes de esos meses/con comprobante1440 y beca20%
+activa. No declarar confirmados estos puntos hasta respuesta del propietario.
+Después documentar guía del caso según autorización y proponer cancelación del mismo
+pago (esperado banco18290, deuda800 por mes, beneficio80 reversado/beca200 conservada).
+No cancelar ni devolver por herramientas. Otras variantes/duplicados/two-tabs pendientes.
+Guías18/143 intactas; aún no publicar nueva guía como caso confirmado.
+
+Cambio de computadora: commit/push manual debe incluir archivos nuevos y modificados.
+No se hizo Git write. Git no lleva BD/volúmenes/archivos privados/.env: verificar conexión
+a la misma BD o restauración para continuar estos folios; no recrear datos automáticamente.
+Última suite completa685Java/17Node; ajuste visual render AnticipoRenderTest/18Node.
+Tarjetas con borde completo2px/fondo claro-oscuro; resumen con scroll/foco automático.
+Sólo aplicación actualizada, sin cambios de volumen ni QA visual autenticada.
+
+## Ajuste de tarjetas y navegación en propuesta anticipada — 2026-10-09
+
+Corrección posterior: borde visible de2px en los cuatro lados y fondo sólido completo
+en cada tarjeta; elimina acento sólo superior y dependencia de --surface indefinida.
+Tema oscuro explícito y prueba de regresión CSS; sin cambios de negocio.
+
+Mensualidades seleccionadas ahora son tarjetas responsivas del tema compartido, con
+alumno, concepto/periodo y saldo separados; Quitar sólo modifica selección. Visualizar
+acuerdo desplaza/focaliza automáticamente el resumen tras cargar, respetando movimiento
+reducido. Sin cambios financieros ni migraciones en el ajuste visual. La prueba humana
+posteriormente avanzó hasta pago1440 validado; ver continuidad prioritaria al inicio.
+Render real AnticipoRenderTest y18 pruebas Node sin fallos, JS/diff limpios. Empaquetado
+con imagen QA local; sólo app recreada, salud UP y recursos nuevos servidos. Sin QA
+visual autenticada ni operaciones financieras por herramientas.
+
+## V89 — acuerdos condicionados a pago anticipado completo — 2026-10-09
+
+Autorizado por propietario: mensualidad bonificada, porcentaje o monto fijo, conservar
+beca y sumar beneficio o sustituir sólo en meses seleccionados, fecha límite y sólo pago
+completo. Ruta administrativa desde Convenios → Acuerdos por pago anticipado. Propuesta
+no altera cargos/becas; al validar pago completo se publican ajustes y aplicaciones en la
+misma transacción. Snapshot/huella, actor, motivo, alcance, responsabilidad financiera y
+unicidad de mensualidades/pago activos. Beneficios usan base neta y centavos exactos.
+Mensualidades futuras se generan explícitamente por el generador existente; otras deudas
+no se incluyen, no se duplican cargos, no se elimina BecaAlumno. La variante anual se
+registra desde administración; familia consulta cargos, aplicaciones y comprobante existentes.
+
+Cancelación de pago revierte beneficio/compensación de beca; devolución parcial requiere
+revisión/motivo y conserva el beneficio, devolución acumulada total lo revierte. Cargos
+aplicados protegidos frente a ajuste/cancelación/sustitución separados. Propuestas vencidas
+no aceptan nuevos pagos; recepción en plazo pendiente puede validarse después. Pago real
+mayor comprobado conserva excedente V87. No reescribir historia ni generar otro ingreso.
+
+Mismos controles/temas/móvil, motivo, modales Cancelar/Confirmar por propuesta, pago y
+cancelación. Tabla con original/beca/otros ajustes/base/beneficio/pago. Filtros/paginación DB
+y Excel POI mismos criterios/bloques100. Ayuda foco10/texto3 excluye elegidos antes de LIMIT.
+V89 nueva, sin otorgar roles. Prueba humana pendiente;18 guías/143 etapas permanecen.
+Docker Hub504 impidió build normal; se reutiliza imagen local de QA para compilar/probar
+y el JAR verificado en base runtime vigente, sin cambiar Dockerfile normal/.env/volúmenes.
+Verificación final:685 Java/17 Node sin fallos, sintaxis JS/diff limpios; DDL y consulta
+final con EXPLAIN en BEGIN/ROLLBACK. Sólo app recreada, salud UP, V89 aplicada y scripts
+servidos por HTTP; al desplegar había cero acuerdos, posteriormente propietario creó y
+validó el acuerdo1. Sin operaciones financieras por herramientas, cambios de
+volúmenes ni QA visual autenticada. Temporales de empaquetado retirados. Siguiente V90;
+DUP-TEST200/two-tabs pendientes. Prueba humana anual sigue pendiente antes de su guía.
+
 ## V88 — guía confirmada del crédito entre hermanos — 2026-10-09
 
 Propietario confirmó aplicación100 al hermano, reversión100 y reaplicación100:

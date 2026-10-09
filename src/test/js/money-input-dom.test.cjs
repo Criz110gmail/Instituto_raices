@@ -345,3 +345,16 @@ form.dataset={moneyConfirm:'saldo-favor-reversion',confirmFolio:'PAG-ORIGEN',con
 submit();assert.equal(rows()['Importe que vuelve al saldo a favor'],'$60.00');
 assert.match(doc.querySelector('#money-confirm-note').textContent,/No devuelve dinero/);
 cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,12);
+const anticipoOldQuery=form.querySelector.bind(form),anticipoOldAll=form.querySelectorAll.bind(form);
+const anticipoFields={'[name=tipoBeneficio]':{value:'PORCENTAJE'},'[name=valor]':{value:'10'},'[name=politicaBeca]':{value:'CONSERVAR'},'[name=fechaLimite]':{value:'2026-10-20'},'[name=motivo]':{value:'Pago anual completo'},'[name=metodo]':{value:'TARJETA'},'#anticipo-cuenta':{value:'Banco de la escuela'},'[name=fecha]':{value:'2026-10-09T10:00'},'[name=referencia]':{value:'ANUAL-TEST'}};
+form.querySelector=s=>anticipoFields[s]||anticipoOldQuery(s);
+form.querySelectorAll=s=>s==='.anticipation-preview tbody tr'?[{querySelectorAll:()=>['Hermano · Octubre','$1,000.00','$200.00','$0.00','$800.00','$80.00','$720.00'].map(textContent=>({textContent}))}]:anticipoOldAll(s);
+form.dataset={moneyConfirm:'anticipo-propuesta',confirmAmount:'8640',currency:'MXN'};
+submitter.id='anticipation-save';submit();assert.equal(doc.querySelector('#money-confirm-title').textContent,'Confirmar propuesta por pago anticipado');assert.equal(rows()['Pago completo requerido'],'$8,640.00');assert.match(rows()['Política de beca'],/Conservar/);assert.equal(cancel.textContent,'Cancelar');cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,12);
+submit();accept.dispatchEvent({type:'click'});assert.equal(form.submissions,13);
+submitter.id='anticipation-preview';submit();assert.equal(form.submissions,14);assert.equal(dialog.open,false);
+form.dataset={moneyConfirm:'anticipo-pago',confirmAmount:'8640',currency:'MXN',confirmFolio:'ANT-TEST',confirmSubject:'Familia'};
+submit();assert.equal(rows()['Cuenta'],'Banco de la escuela');assert.equal(rows()['Método'],'TARJETA');assert.match(doc.querySelector('#money-confirm-note').textContent,/único pago pendiente/);cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,14);
+form.dataset={moneyConfirm:'anticipo-cancelar',confirmFolio:'ANT-TEST',confirmSubject:'Familia'};
+submit();assert.equal(rows()['Motivo'],'Pago anual completo');assert.match(doc.querySelector('#money-confirm-note').textContent,/No mueve dinero/);cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,14);
+console.log('Anticipados: propuesta, pago y cancelación con detalle, Cancelar sin enviar, confirmación única y vista previa sin modal verificados.');

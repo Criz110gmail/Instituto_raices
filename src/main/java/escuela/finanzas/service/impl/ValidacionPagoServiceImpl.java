@@ -46,6 +46,7 @@ public class ValidacionPagoServiceImpl implements ValidacionPagoService {
     private final UsuarioRepository usuarioRepository;
     private final PagoMapper mapper;
     private final RegistroAuditoriaService auditoria;
+    private final escuela.cobranza.service.AnticipoLifecycleService anticipos;
 
     @Override
     public PagoResponse validar(Long pagoId, ValidacionPagoRequest request) {
@@ -85,6 +86,7 @@ public class ValidacionPagoServiceImpl implements ValidacionPagoService {
         } else if (limpiar(request.motivoCambioMonto()) != null) {
             throw new ReglaNegocioException("Activa la captura del importe real e indica el monto recibido");
         }
+        if(pago.getAcuerdoAnticipadoId()!=null)anticipos.aplicar(pago,actor,solicitudes);
         BigDecimal disponible = pago.getMonto();
         Instant ahora = Instant.now();
         LocalDate hoyInstitucion = ahora.atZone(ZoneId.of(pago.getInstitucion().getZonaHoraria())).toLocalDate();

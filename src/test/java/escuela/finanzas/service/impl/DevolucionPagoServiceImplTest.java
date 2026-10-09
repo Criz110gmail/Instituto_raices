@@ -39,7 +39,7 @@ class DevolucionPagoServiceImplTest {
     private final AlcanceDatosService alcance = mock(AlcanceDatosService.class);
     private final RegistroAuditoriaService auditoria = mock(RegistroAuditoriaService.class);
     private final DevolucionPagoServiceImpl service = new DevolucionPagoServiceImpl(
-            pagos, devoluciones, aplicaciones, cuentas, movimientos, motivos, cargos, usuarios, alcance, auditoria);
+            pagos, devoluciones, aplicaciones, cuentas, movimientos, motivos, cargos, usuarios, alcance, auditoria,mock(escuela.cobranza.service.AnticipoLifecycleService.class));
 
     private Institucion institucion;
     private Pago pago;

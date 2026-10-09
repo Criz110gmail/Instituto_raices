@@ -193,6 +193,7 @@
         document.addEventListener('submit', event => {
             const form = event.target, kind = form.dataset.moneyConfirm;
             if (!kind || event.defaultPrevented || approved.has(form)) return;
+            if(kind==='anticipo-propuesta' && event.submitter?.id!=='anticipation-save')return;
             event.preventDefault();
             if (!form.reportValidity()) return;
             const currency = (['cuota', 'registro-pago'].includes(kind) ? form.querySelector('#moneda')?.value : kind === 'convenio' ? form.querySelector('#institucion')?.selectedOptions?.[0]?.dataset?.moneda : null) || form.dataset.confirmCurrency || form.dataset.currency || 'MXN';
@@ -209,7 +210,21 @@
                 if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
                 if (form.dataset.confirmSubject) add('Titular del pago', form.dataset.confirmSubject);
             }
-            if (kind === 'saldo-favor' || kind === 'saldo-favor-reversion') {
+            if(kind==='anticipo-propuesta'||kind==='anticipo-pago'||kind==='anticipo-cancelar') {
+                title.textContent=kind==='anticipo-propuesta'?'Confirmar propuesta por pago anticipado':kind==='anticipo-pago'?'Confirmar registro del pago completo':'Confirmar cancelación de la propuesta';
+                cancel.textContent='Cancelar';accept.textContent=kind==='anticipo-propuesta'?'Confirmar propuesta':kind==='anticipo-pago'?'Confirmar y registrar pendiente':'Confirmar cancelación';
+                if(kind==='anticipo-propuesta') {
+                    form.querySelectorAll('.anticipation-preview tbody tr').forEach((row,i)=>{const cells=[...row.querySelectorAll('td')].map(c=>c.textContent.trim());add('Mensualidad '+(i+1),cells[0]+'\nOriginal: '+cells[1]+' · Beca previa: '+cells[2]+' · Otros ajustes: '+cells[3]+'\nBase: '+cells[4]+' · Beneficio: '+cells[5]+' · Pago requerido: '+cells[6]);});
+                    const benefit=form.querySelector('[name=tipoBeneficio]').value;
+                    add('Beneficio autorizado',benefit==='MENSUALIDAD'?'Una mensualidad bonificada':benefit==='PORCENTAJE'?form.querySelector('[name=valor]').value+' % adicional':money(form.querySelector('[name=valor]').value)+' de cantidad fija');
+                    add('Política de beca',form.querySelector('[name=politicaBeca]').value==='CONSERVAR'?'Conservar beca y agregar beneficio':'Sustituir beca sólo en estas mensualidades');
+                    add('Fecha límite',form.querySelector('[name=fechaLimite]').value);add('Motivo y condiciones',form.querySelector('[name=motivo]').value);
+                }else {add('Acuerdo',form.dataset.confirmFolio);add('Familia',form.dataset.confirmSubject);}
+                if(kind==='anticipo-cancelar')add('Motivo',form.querySelector('[name=motivo]').value);
+                else add('Pago completo requerido',money(form.dataset.confirmAmount));
+                if(kind==='anticipo-pago'){add('Método',form.querySelector('[name=metodo]').value);add('Cuenta',form.querySelector('#anticipo-cuenta').value);add('Fecha y hora',form.querySelector('[name=fecha]').value);add('Referencia',form.querySelector('[name=referencia]').value);}
+                note.textContent=kind==='anticipo-propuesta'?'Sólo guarda la propuesta. No modifica becas, adeudos ni banco; el beneficio exige validar el pago completo.':kind==='anticipo-pago'?'Registra un único pago pendiente por el importe acordado. Los descuentos se aplicarán al validar, no al adjuntar un comprobante.':'Cancela sólo esta propuesta. No mueve dinero ni cambia las becas anteriores.';
+            } else if (kind === 'saldo-favor' || kind === 'saldo-favor-reversion') {
                 title.textContent = kind === 'saldo-favor' ? 'Confirmar aplicación del saldo a favor' : 'Confirmar reversión de saldo a favor';
                 cancel.textContent = 'Cancelar'; accept.textContent = 'Confirmar operación';
                 add('Pago de origen',form.dataset.confirmFolio);add('Titular o alumno',form.dataset.confirmSubject);

@@ -18,12 +18,15 @@ public record DevolucionPagoRequest(
         @NotBlank @Size(max = 120) String claveIdempotencia,
         Long pagoVersion,
         boolean cambiarCuentaOrigen,
-        @Size(max = 500) String motivoCambioCuenta) {
+        @Size(max = 500) String motivoCambioCuenta,boolean revisionAcuerdoAnticipado) {
+    public DevolucionPagoRequest(Long pagoId,Long cuentaOrigenId,LocalDateTime fecha,BigDecimal monto,String motivo,String beneficiario,String referencia,List<Long> aplicacionIdsRevertir,String claveIdempotencia,Long pagoVersion,boolean cambiarCuentaOrigen,String motivoCambioCuenta) {
+        this(pagoId,cuentaOrigenId,fecha,monto,motivo,beneficiario,referencia,aplicacionIdsRevertir,claveIdempotencia,pagoVersion,cambiarCuentaOrigen,motivoCambioCuenta,false);
+    }
     public DevolucionPagoRequest(Long pagoId, Long cuentaOrigenId, LocalDateTime fecha,
             BigDecimal monto, String motivo, String beneficiario, String referencia,
             List<Long> aplicacionIdsRevertir, String claveIdempotencia, Long pagoVersion) {
         this(pagoId, cuentaOrigenId, fecha, monto, motivo, beneficiario, referencia,
-                aplicacionIdsRevertir, claveIdempotencia, pagoVersion, false, null);
+                aplicacionIdsRevertir, claveIdempotencia, pagoVersion, false, null,false);
     }
     public DevolucionPagoRequest {
         aplicacionIdsRevertir = aplicacionIdsRevertir == null ? List.of() : List.copyOf(aplicacionIdsRevertir);

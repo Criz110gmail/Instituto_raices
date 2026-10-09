@@ -41,7 +41,7 @@ class ValidacionPagoServiceImplTest {
     private final UsuarioRepository usuarios = mock(UsuarioRepository.class);
     private final RegistroAuditoriaService auditoria = mock(RegistroAuditoriaService.class);
     private final ValidacionPagoServiceImpl service = new ValidacionPagoServiceImpl(pagos, cuentas, cargos,
-            solicitudes, aplicaciones, movimientos, motivos, vinculos, usuarios, new PagoMapper(), auditoria);
+            solicitudes, aplicaciones, movimientos, motivos, vinculos, usuarios, new PagoMapper(), auditoria,mock(escuela.cobranza.service.AnticipoLifecycleService.class));
 
     private Institucion institucion;
     private Plantel plantel;

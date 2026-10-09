@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface AjusteCargoRepository extends JpaRepository<AjusteCargo, Long>, JpaSpecificationExecutor<AjusteCargo> {
+    List<AjusteCargo> findAllByAcuerdoAnticipadoIdAndReversaDeIsNullOrderByIdAsc(Long id);
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select a from AjusteCargo a where a.id = :id")
     Optional<AjusteCargo> findByIdForUpdate(@Param("id") Long id);

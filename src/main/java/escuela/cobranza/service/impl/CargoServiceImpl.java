@@ -246,6 +246,7 @@ public class CargoServiceImpl implements CargoService {
     public CargoResponse cancelar(Long id, Long version, String motivo) {
         Cargo cargo = repository.findByIdForUpdate(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("el cargo", id));
+        if(repository.tieneBeneficioAnticipadoAplicado(id))throw new ReglaNegocioException("Este cargo pertenece a un acuerdo anticipado aplicado; revisa o cancela el pago asociado, no el cargo por separado");
         verificar(cargo, version, "Cargo");
         if (cargo.getEstadoRegistro() != EstadoRegistroCargo.EMITIDO) {
             throw new ReglaNegocioException(cargo.getEstadoRegistro() == EstadoRegistroCargo.CONVENIDO

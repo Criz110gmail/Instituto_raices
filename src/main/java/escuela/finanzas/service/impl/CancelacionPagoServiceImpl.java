@@ -44,6 +44,7 @@ public class CancelacionPagoServiceImpl implements CancelacionPagoService {
     private final AlcanceDatosService alcance;
     private final PagoMapper mapper;
     private final RegistroAuditoriaService auditoria;
+    private final escuela.cobranza.service.AnticipoLifecycleService anticipos;
 
     @Override
     public PagoResponse cancelar(Long pagoId, CancelacionPagoRequest request) {
@@ -91,6 +92,7 @@ public class CancelacionPagoServiceImpl implements CancelacionPagoService {
                     cargoRepository.findByIdForUpdate(id)
                             .orElseThrow(() -> new RecursoNoEncontradoException("el cargo", id)));
             List<AplicacionPago> reversas = new ArrayList<>();
+            if(pago.getAcuerdoAnticipadoId()!=null)activas.forEach(a->a.getCargo().getAplicaciones().size());
             for (AplicacionPago aplicacion : activas) {
                 if (aplicacion.isSaldoFavor() && aplicacion.getCargo().getEstadoRegistro() != escuela.cobranza.entity.EstadoRegistroCargo.EMITIDO)
                     throw new ReglaNegocioException("El saldo a favor se aplicó a un cargo cancelado o incluido en convenio; resuelve ese proceso antes de cancelar el pago");
@@ -106,7 +108,9 @@ public class CancelacionPagoServiceImpl implements CancelacionPagoService {
             }
             aplicacionRepository.saveAllAndFlush(reversas);
             pago.getAplicaciones().addAll(reversas);
+            if(pago.getAcuerdoAnticipadoId()!=null)reversas.forEach(r->r.getCargo().getAplicaciones().add(r));
             aplicacionesRevertidas = reversas.size();
+            if(pago.getAcuerdoAnticipadoId()!=null)anticipos.deshacer(pago,actor,motivo);
 
             MovimientoFinanciero anulacion = new MovimientoFinanciero();
             anulacion.setInstitucion(pago.getInstitucion()); anulacion.setCuenta(cuenta);

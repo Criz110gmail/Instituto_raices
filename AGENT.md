@@ -1,5 +1,150 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## PUNTO EXACTO PARA RETOMAR EN OTRA COMPUTADORA — 2026-10-09
+
+Esta sección es el estado vigente y prevalece sobre los siguientes pasos históricos
+de las entradas anteriores. Petición actual: guardar continuidad; sólo documentación,
+sin registrar pagos, cancelar, devolver, desplegar ni publicar una guía confirmada.
+
+### Prueba actual: beca20% + beneficio adicional10% por pago anticipado completo
+
+- Propietario usa alumno ya inscrito desde01/10/2026, sin fecha final de inscripción;
+  ciclo escolar01/10/2026–15/06/2027. Se explicó que el fin de ciclo limita la vigencia
+  cuando inscripción no tiene fecha final. No hace falta modificar inscripción.
+- Concepto del ejemplo ANTICIPO-TEST-01, Colegiatura prueba pago anticipado, categoría
+  COLEGIATURA, permite beca/descuento, sin recargo, activo. Propietario confirmó concepto
+  y beca20% registrados. Ejercicio indicado: cuota1000MXN/mes, noviembre y diciembre2026,
+  día límite20, vigencia01/11/2026–31/12/2026, automática; generar sólo esos dos cargos
+  con corte31/12/2026. Beca200 y saldo800 por mes antes del acuerdo.
+- Acuerdo conservar beca + porcentaje adicional10%, base1600, beneficio160, pago1440.
+  Fecha límite indicada20/10/2026; si fecha de nueva prueba cambia, revisar plazo vigente.
+  Propuesta no afecta banco/cargos; beneficio sólo al validar pago completo desde acuerdo.
+- Propietario ya guardó propuesta, registró y VALIDÓ pago completo con tarjeta/cuenta
+  bancaria. Lectura real de BD confirmó acuerdo id1, ANT-20261009-000001, APLICADO,
+  total_base1600, total_beneficio160, total_pagar1440; pago id27,
+  PAG-20261009-000024, VALIDADO, monto1440, cuenta_destino_id1.
+- Cuenta id1 Cuenta principal BBVA Raices: movimiento id36 INGRESO1440, secuencia24,
+  saldo_anterior18290, saldo_posterior19730. Suma saldo inicial+movimientos19730,
+  sin saltos de saldo. Propietario inicialmente anotó18890 y creyó ingreso840; consulta
+  no encontró saldo histórico18890 ni movimiento600 en esta cuenta. Posteriormente
+  confirmó19730 en Cuentas financieras y reconoció posible error al anotar saldo previo.
+  NO existe justificación para crear ajuste600, repetir pago o alterar movimientos.
+- Lo comprobado por herramientas fue sólo lectura; todas las operaciones de esta
+  prueba fueron hechas por propietario. No tomar resultados esperados como confirmados.
+
+### Próximo paso inmediato, antes de cancelar o devolver
+
+El último usuario preguntó dónde comprobar el saldo0 y desglose de beca/beneficio.
+Se le indicó Operación escolar → Cobranza escolar → Adeudos de alumnos:
+1. Buscar alumno y ANTICIPO-TEST-01; estado Todos o Liquidado para ver ya saldados.
+2. Abrir Ver de noviembre → Resumen: original1000; Descuentos y becas280;
+   Total del adeudo con ajustes720; Abonos vigentes720; Falta por pagar0.
+3. Historial → Historial de ajustes: BECA disminución200 y DESCUENTO por acuerdo80.
+4. Repetir con diciembre: mismos importes. Sólo consultar; NO aplicar ajuste manual.
+5. Confirmar también acuerdo Beneficio aplicado, beca20% aún activa, y Portal familiar
+   → Pagos sin esas mensualidades pendientes y con comprobante del pago1440.
+FALTA confirmación del propietario de estos puntos. No declarar caso completo ni
+publicar todavía su guía en el sistema (guías existentes18/143 de V88).
+
+Cuando confirme, documentar el caso según autorización y proponer prueba separada de
+cancelación del MISMO pago: esperado banco18290, cada mensualidad nuevamente800 por
+pagar, reversa del descuento80, beca200 conservada, acuerdo cancelado e historial intacto.
+No ejecutar por herramientas; guiar al propietario. Luego probar mensualidad bonificada,
+sustitución de beca y cantidad fija con nuevos cargos. DUP-TEST200/duplicados/modal Cancelar/
+validación mismo pago en dos pestañas siguen pausados hasta terminar estos escenarios.
+
+### Estado técnico y traslado
+
+- V89 aplicada en esta BD; V90 es la próxima migración libre. No editar V1–V89 aplicadas.
+- Implementación y documentación tienen archivos modificados y NUEVOS sin seguimiento;
+  no se hicieron commit/push. Usuario maneja Git manualmente: debe incluir ambos tipos,
+  en especial V89, servicios/templates/scripts/pruebas nuevos y documentación actual.
+- Git NO transporta registros de PostgreSQL, volúmenes, archivos privados subidos ni .env.
+  Folios/ids anteriores corresponden a esta BD: en otra computadora verificar si está
+  usando la misma BD/restauración; si faltan datos, pedir dirección, no recrear pagos
+  automáticamente ni asumir que git pull restaura la prueba. Nunca leer/exponer .env.
+- Última suite completa de implementación685Java/17Node; correcciones visuales después
+  verificadas con AnticipoRenderTest +18Node, sintaxis/diff limpios. Sólo app recreada,
+  salud UP. No QA visual autenticada por herramientas. Dockerfile normal sin cambios;
+  DockerHub504 previo se sorteó con imagen QA/runtime local, temporales retirados.
+- UI vigente: tarjetas de mensualidades con alumno/concepto/periodo/saldo, borde completo
+ 2px y fondo sólido claro/oscuro; Quitar sólo selección. Visualizar acuerdo baja y enfoca
+ resumen automáticamente tras carga, respeta movimiento reducido. Modales de propuesta,
+ pago y cancelación; controles responsivos y diseño común obligatorio.
+
+## Ajuste visual del acuerdo anticipado — 2026-10-09
+
+- Corrección solicitada: tarjeta con borde completo de2px, no sólo acento superior.
+  Fondo sólido con variable --white/fallback y fondo oscuro explícito, sin depender
+  de --surface sin definición en esta pantalla. Prueba CSS protege borde y ambos temas.
+
+- Petición del propietario: mensualidades seleccionadas como tarjetas y desplazamiento
+  automático a Así quedaría el acuerdo al visualizar. Tarjetas responsivas con tema común,
+  alumno/concepto/periodo/saldo separados y Quitar alineado; mismo contenido para selección
+  dinámica y render servidor. Vista previa con foco accesible, desplazamiento tras carga
+  y respeto de prefers-reduced-motion; sin desplazamiento en formulario inicial.
+- Sin cambios de cálculos, saldos, permisos ni migraciones. V90 sigue disponible.
+- Verificado render real AnticipoRenderTest y18 pruebas Node sin fallos; JS/diff limpios.
+  JAR empaquetado con QA local, sólo app recreada; recursos nuevos servidos y salud UP.
+  No QA visual autenticada ni movimientos financieros por herramientas.
+- Prueba humana de pago anticipado avanzó hasta validación1440 y banco19730 confirmado.
+  Falta revisión humana de ambos adeudos/portal/beca; ver PUNTO EXACTO al inicio.
+
+## V89 — acuerdos por pago anticipado — 2026-10-09
+
+- Usuario autorizó beneficio exclusivamente por pago completo, una mensualidad/porcentaje/
+  monto fijo, conservar o sustituir beca sólo en mensualidades seleccionadas, fecha límite,
+  responsables/motivos, vista previa, modales y diseño común en TODOS los controles.
+- Acceso: Operación escolar → Cobranza escolar → Convenios de pago → Acuerdos por pago
+  anticipado (/admin/convenios-pago/anticipados). No cambia convenios ordinarios ni
+  condonaciones anteriores. Propuesta propia por tutor/plantel/moneda, hasta100 mensualidades
+  sin abonos ni recargos activos, colegiaturas cuyo concepto admite descuento. Los demás
+  conceptos siguen por los procesos ordinarios. Mensualidades futuras se preparan con
+  Generar automáticos y sus claves existentes, sin crear cargos duplicados desde el acuerdo.
+- Propuesta no cambia cargos/becas. Vista previa y confirmación servidor con huella de
+  selección/importes/beca/versiones; motivo y cuenta administrativa identificable obligatorios.
+  Conservar suma beneficio sobre base neta; sustituir compensa la beca únicamente en las
+  filas seleccionadas, sin cancelar BecaAlumno ni modificar otros meses. Otros ajustes
+  previos permanecen y se muestran separados. Porcentaje/monto se reparten sin perder
+  centavos; mensualidad bonifica la fila explícitamente elegida. Total siempre positivo.
+- Registrar pago completo desde detalle administrativo: monto/distribución calculados,
+  efectivo/caja o tarjeta/transferencia/banco; transferencias requieren comprobante.
+  Pago pendiente no concede beneficio. Al validar se revalida contrato, plazo del pago,
+  alcance/responsabilidad/snapshots y distribución; publica ajustes y abonos atómicamente
+  con un único ingreso. Si administración verifica recibido mayor, cumple el pago completo
+  y el excedente conserva el saldo a favor V87; no aumenta el beneficio.
+- Cancelar pago validado restaura beneficio y beca de origen con reversas, no borra historia.
+  Devolución exige revisión administrativa explícita/motivo/modal: parcial conserva
+  beneficio; devolución acumulada total revierte beneficio y restaura beca. Cambios/abonos
+  posteriores bloquean restauración para revisión. Aplicados protegen ajustes/cancelación
+  de cargo/convenio sustitutivo. Propuesta puede cancelarse sin banco sólo tras resolver
+  cualquier pago pendiente; vencida no admite nuevos pagos con beneficio.
+- Listado/filtros de institución, estado real y texto paginados en DB; Excel POI con el
+  mismo filtro y bloques100, desglose y formato monetario. Ayuda foco10/texto3 excluye
+  ya seleccionados ANTES de LIMIT para encontrar meses11/12. Controles/tema/móvil compartidos;
+  modales independientes de propuesta, registro y cancelación. Validación/cancelación/
+  devolución del pago reutilizan sus modales y añaden contexto del beneficio.
+- V89 crea acuerdo_anticipado/cargo, folio por secuencia, relaciones Pago/AjusteCargo,
+  snapshots y unicidad parcial de cargo reservado/pago pendiente-validado; no otorga roles.
+  Sólo CONVENIO_PAGO_ADMINISTRAR administra propuestas; registrar también PAGO_REGISTRAR,
+  validar/cancelar/devolver mantienen permisos financieros. Recuperación no autoriza dinero.
+- Prueba humana del beneficio anual pendiente; NO publicar guía confirmada todavía.
+  Guías18/143 de V88 intactas. Próximo caso sugerido: dos mensualidades1000 con beca20%,
+  conservar +10% adicional: base1600/beneficio160/pago1440; antes de validar no cambia
+  deuda1600, después ambos720 aplicados y banco+1440; cancelar restaura800 por mes/bancoB.
+  Luego mensualidad bonificada y sustitución/fijo en otros cargos, sin repetir anteriores.
+- Docker Hub respondió504 en construcción normal. Se reutiliza imagen local de QA con
+  Maven/JDK21; monta sólo src/pom de lectura y target generado, nunca .env. El empaquetado
+  final usa temporalmente la imagen vigente como base y el JAR verificado; Dockerfile
+  normal permanece sin cambios para otras computadoras. Verificación final:685 pruebas
+  Java/17 Node sin fallos, sintaxis JS y diff limpios. DDL/consulta final verificados con
+  EXPLAIN en BEGIN/ROLLBACK. Sólo app recreada; salud UP, V89 aplicada y scripts nuevos
+  disponibles por HTTP. Al desplegar inicialmente había cero acuerdos; después propietario
+  creó/validó el acuerdo de prueba (ver continuidad al inicio). Sin operaciones financieras
+  por herramientas,
+  cambios de volúmenes ni QA visual autenticada. Archivos temporales de empaquetado
+  retirados. Siguiente migración V90. DUP-TEST200/two-tabs siguen pendientes.
+
 ## V88 — guía de saldo a favor entre hermanos confirmada — 2026-10-09
 
 - Propietario confirmó reporte300/recibido400/aplicación300 y saldo100; aplicación100

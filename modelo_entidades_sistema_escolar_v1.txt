@@ -801,3 +801,20 @@ idempotente única por pago. Las reversas y remanentes por devolución conservan
 Se permite repartir entre hermanos del mismo tutor/institución/plantel/moneda con
 responsabilidad financiera vigente; aplicación/reversión requieren motivo y auditoría.
 Familia tiene consulta solamente. Beneficio anual todavía pendiente de análisis.
+
+ACTUALIZACIÓN V89 — ACUERDO DE PAGO ANTICIPADO (2026-10-09)
+AcuerdoAnticipado y AcuerdoAnticipadoCargo pertenecen a institución/plantel/tutor/moneda.
+Conservan folio por secuencia, plazo, política CONSERVAR/SUSTITUIR beca, beneficio
+MENSUALIDAD/PORCENTAJE/MONTO con su valor/fila bonificada, motivo/condiciones/autor,
+base/beneficio/pago completo, estado PROPUESTO/APLICADO/CANCELADO y fechas/motivos.
+VENCIDO es derivado sin modificar el historial. Detalles guardan original, total previo,
+beca, base, beneficio, pagar y asociación activa única por cargo. No son nuevas deudas.
+Pago y AjusteCargo admiten acuerdo_anticipado_id opcional. Un pago pendiente-validado
+por acuerdo, hasta100 colegiaturas compatibles sin abonos/recargos; no modifica becas
+globales ni meses ajenos. Los meses futuros se preparan por generación existente.
+Propuesta no mueve saldos; al validar completo se añaden ajustes compensatorios de beca
+(si sustituye), descuentos y aplicaciones en la transacción del único ingreso. Excedente
+real conserva saldo a favor. Cancelación/restauración usa reversas; devolución parcial
+revisada conserva beneficio, devolución acumulada total lo revierte. Protege ajustes y
+cancelaciones aislados de cargos aplicados. Snapshot/alcance/actor/fecha/versiones se
+revalidan; auditado en acciones ANTICIPO_PROPUESTO/APLICADO/CANCELADO. Prueba humana pendiente.

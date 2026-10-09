@@ -17,6 +17,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecificationExecutor<Cargo> {
+    @Query(value="SELECT EXISTS(SELECT 1 FROM acuerdo_anticipado_cargo d JOIN acuerdo_anticipado a ON a.id=d.acuerdo_id WHERE d.cargo_id=:id AND d.activo AND a.estado='APLICADO')",nativeQuery=true)
+    boolean tieneBeneficioAnticipadoAplicado(@Param("id")Long id);
+
+    @Query(value="""
+      SELECT c.* FROM cargo c JOIN inscripcion i ON i.id=c.inscripcion_id JOIN alumno a ON a.id=i.alumno_id JOIN concepto_cobro cc ON cc.id=c.concepto_cobro_id
+      WHERE a.institucion_id=:institucion AND (:institucional OR i.plantel_id IN (:planteles))
+       AND a.activo AND i.estado IN ('ACTIVA','PREINSCRITA') AND c.estado_registro='EMITIDO' AND cc.categoria='COLEGIATURA' AND cc.permite_descuento
+       AND (:sinExclusiones OR c.id NOT IN (:excluir))
+       AND date_trunc('month',c.periodo_cobro_inicio)=date_trunc('month',c.periodo_cobro_fin)
+       AND NOT EXISTS(SELECT 1 FROM ajuste_cargo j WHERE j.cargo_id=c.id AND j.tipo='RECARGO' AND j.efecto='AUMENTO' AND j.reversa_de_id IS NULL AND NOT EXISTS(SELECT 1 FROM ajuste_cargo r WHERE r.reversa_de_id=j.id))
+       AND EXISTS(SELECT 1 FROM alumno_tutor v WHERE v.alumno_id=a.id AND v.tutor_id=:tutor AND v.activo AND v.es_responsable_financiero AND v.fecha_inicio<=:hoy AND (v.fecha_fin IS NULL OR v.fecha_fin>=:hoy))
+       AND c.importe_original + COALESCE((SELECT SUM(CASE WHEN j.efecto='AUMENTO' THEN j.monto ELSE -j.monto END) FROM ajuste_cargo j WHERE j.cargo_id=c.id),0)>0
+       AND COALESCE((SELECT SUM(CASE WHEN ap.operacion='APLICAR' THEN ap.monto ELSE -ap.monto END) FROM aplicacion_pago ap WHERE ap.cargo_id=c.id),0)=0
+       AND NOT EXISTS(SELECT 1 FROM acuerdo_anticipado_cargo d WHERE d.cargo_id=c.id AND d.activo)
+       AND NOT EXISTS(SELECT 1 FROM solicitud_aplicacion_pago s JOIN pago p ON p.id=s.pago_id WHERE s.cargo_id=c.id AND p.estado='PENDIENTE_VALIDACION')
+       AND (a.busqueda_autocomplete LIKE '%'||lower(:q)||'%' OR cc.busqueda_autocomplete LIKE '%'||lower(:q)||'%')
+      ORDER BY c.periodo_cobro_inicio,c.id
+      """,nativeQuery=true)
+    Slice<Cargo> buscarParaAnticipo(@Param("institucion")Long institucion,@Param("tutor")Long tutor,@Param("institucional")boolean institucional,@Param("planteles")java.util.Collection<Long> planteles,@Param("hoy")LocalDate hoy,@Param("q")String q,@Param("sinExclusiones")boolean sinExclusiones,@Param("excluir")java.util.Collection<Long> excluir,Pageable pagina);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select c from Cargo c where c.id = :id")
@@ -28,6 +47,8 @@ public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecific
 
     @Query("select count(s)>0 from SolicitudAplicacionPago s where s.cargo.id=:id and s.pago.estado='PENDIENTE_VALIDACION'")
     boolean tienePagoEnRevision(@Param("id") Long id);
+    @Query("select count(s)>0 from SolicitudAplicacionPago s where s.cargo.id=:id and s.pago.estado='PENDIENTE_VALIDACION' and (:pago is null or s.pago.id<>:pago)")
+    boolean tienePagoEnRevisionDistinto(@Param("id")Long id,@Param("pago")Long pago);
 
     @Query("select c.claveGeneracion from Cargo c where c.cuotaAlumno.id=:cuotaId")
     List<String> clavesGeneradasPorCuota(@Param("cuotaId") Long cuotaId);

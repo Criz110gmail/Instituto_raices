@@ -1,5 +1,18 @@
 # Sistema administrativo escolar
 
+## Retomar en otra computadora — 09/10/2026
+
+Antes de continuar, leer `AGENTS.md`, `AGENT.md` (primer bloque PUNTO EXACTO) y
+`CONTEXTO_PROYECTO.md`. V89 está implementada; la prueba de beca20% + beneficio10%
+ya tiene pago1440 validado y banco19730 confirmado. Falta revisar noviembre/diciembre
+en Adeudos de alumnos (saldo0, beca200 y descuento80 por mes), portal y beca activa.
+No repetir el pago ni cancelar hasta terminar esa comprobación. Aún no publicar la guía
+del caso como confirmado. El detalle de folios, estados y siguientes pruebas está en AGENT.md.
+
+Los cambios incluyen archivos nuevos y modificados: subirlos manualmente con Git antes
+de cambiar de equipo. Git no transporta PostgreSQL, volúmenes, adjuntos privados ni `.env`;
+para conservar los registros de prueba se necesita la misma BD o su restauración segura.
+
 Al cerrar sesión o caducar, cada portal vuelve a su acceso propio: familias
 `/familias`, maestros `/maestros/acceso` y administración `/login`.
 La duración está configurada en `application.properties` mediante
@@ -21,6 +34,30 @@ Base del sistema multi-plantel construida con Java 21, Spring Boot 4.1.1,
 Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
+
+### Acuerdos por pago anticipado (V89)
+
+En **Operación escolar → Cobranza escolar → Convenios de pago → Acuerdos por pago
+anticipado**, prepara una propuesta de mensualidad bonificada, porcentaje adicional
+o cantidad fija. Selecciona colegiaturas sin abonos/recargos activos, del mismo tutor,
+plantel y moneda. Para meses futuros usa primero Generar automáticos hasta el corte
+correspondiente; sus claves impiden duplicados. La vista previa separa importe original,
+beca previa, otros ajustes, base, beneficio y pago requerido por alumno/mensualidad.
+
+Puedes conservar la beca y sumar el beneficio, o sustituirla sólo en esas mensualidades.
+No se elimina la beca del alumno. La propuesta no afecta saldos: el descuento se publica
+únicamente al validar el pago completo registrado desde el detalle administrativo del
+acuerdo. Un pago menor se registra por el proceso normal, sin beneficio. Un recibido
+mayor verificado conserva su excedente a favor. Motivo, responsable, plazo y confirmación
+son obligatorios; no puede haber dos propuestas activas sobre la misma mensualidad.
+
+Cancelar el pago restaura los ajustes anteriores con trazabilidad. Devolver parcialmente
+exige revisión explícita y motivo, conserva beneficio y recupera sólo la deuda devuelta;
+devolver acumuladamente todo revierte también el beneficio. La cuenta cambia sólo por
+ingreso/cancelación/devolución reales, no por preparar o distribuir descuentos.
+Listado paginado y Excel POI respetan institución/estado/texto. Temas y controles compartidos,
+modales de propuesta/pago/cancelación y comprobantes PDF existentes en otra pestaña.
+Pruebas humanas pendientes; no se publica guía confirmada del beneficio anual todavía.
 
 ### Saldo a favor (V87)
 

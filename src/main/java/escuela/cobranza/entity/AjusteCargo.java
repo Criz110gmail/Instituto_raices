@@ -10,6 +10,7 @@ import java.time.LocalDate;
 
 @Getter @Setter @Entity @Table(name = "ajuste_cargo")
 public class AjusteCargo extends EntidadAuditable {
+    @Column(name="acuerdo_anticipado_id") private Long acuerdoAnticipadoId;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cargo_id", nullable = false) private Cargo cargo;
     @Enumerated(EnumType.STRING) @Column(nullable = false, length = 12) private TipoAjusteCargo tipo;

@@ -106,6 +106,7 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/conceptos-cobro/**").hasAuthority("CONCEPTO_COBRO_ADMINISTRAR")
                         .requestMatchers("/admin/cuotas-alumno/**").hasAuthority("CUOTA_ALUMNO_ADMINISTRAR")
                         .requestMatchers("/admin/cargos/**").hasAuthority("CARGO_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.POST,"/admin/convenios-pago/anticipados/*/pago").access(org.springframework.security.authorization.AuthorizationManagers.allOf(org.springframework.security.authorization.AuthorityAuthorizationManager.hasAuthority("CONVENIO_PAGO_ADMINISTRAR"),org.springframework.security.authorization.AuthorityAuthorizationManager.hasAuthority("PAGO_REGISTRAR")))
                         .requestMatchers("/admin/convenios-pago/**").hasAuthority("CONVENIO_PAGO_ADMINISTRAR")
                         .requestMatchers("/admin/tipos-beca/**").hasAuthority("TIPO_BECA_ADMINISTRAR")
                         .requestMatchers("/admin/becas-alumno/**").hasAuthority("BECA_ALUMNO_ADMINISTRAR")

@@ -41,7 +41,7 @@ class CancelacionPagoServiceImplTest {
     private final PagoMapper mapper = mock(PagoMapper.class);
     private final RegistroAuditoriaService auditoria = mock(RegistroAuditoriaService.class);
     private final CancelacionPagoServiceImpl service = new CancelacionPagoServiceImpl(pagos, devoluciones,
-            aplicaciones, cargos, cuentas, movimientos, usuarios, alcance, mapper, auditoria);
+            aplicaciones, cargos, cuentas, movimientos, usuarios, alcance, mapper, auditoria,mock(escuela.cobranza.service.AnticipoLifecycleService.class));
     private Pago pago;
     private CuentaFinanciera cuenta;
     private MovimientoFinanciero original;
