@@ -63,6 +63,27 @@ public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecific
                                          Pageable limite);
 
     String PORTAL_HOY = "(CURRENT_TIMESTAMP AT TIME ZONE inst.zona_horaria)::date";
+    @Query(value="""
+        SELECT c.* FROM cargo c JOIN inscripcion i ON i.id=c.inscripcion_id
+        JOIN alumno a ON a.id=i.alumno_id JOIN institucion inst ON inst.id=a.institucion_id
+        JOIN concepto_cobro cc ON cc.id=c.concepto_cobro_id
+        WHERE a.institucion_id=:institucionId AND i.plantel_id=:plantelId AND c.moneda=:moneda
+          AND c.estado_registro='EMITIDO' AND a.activo=true
+          AND EXISTS(SELECT 1 FROM alumno_tutor v JOIN tutor t ON t.id=v.tutor_id
+            WHERE v.alumno_id=a.id AND v.tutor_id=:tutorId AND v.activo=true AND t.activo=true
+            AND v.es_responsable_financiero=true
+            AND v.fecha_inicio <= (CURRENT_TIMESTAMP AT TIME ZONE inst.zona_horaria)::date
+            AND (v.fecha_fin IS NULL OR v.fecha_fin >= (CURRENT_TIMESTAMP AT TIME ZONE inst.zona_horaria)::date))
+          AND NOT EXISTS(SELECT 1 FROM solicitud_aplicacion_pago s JOIN pago p ON p.id=s.pago_id
+            WHERE s.cargo_id=c.id AND p.estado='PENDIENTE_VALIDACION')
+          AND GREATEST(c.importe_original+COALESCE((SELECT SUM(CASE WHEN aj.efecto='AUMENTO' THEN aj.monto ELSE -aj.monto END)
+            FROM ajuste_cargo aj WHERE aj.cargo_id=c.id),0),0)-COALESCE((SELECT SUM(CASE WHEN ap.operacion='APLICAR' THEN ap.monto ELSE -ap.monto END)
+            FROM aplicacion_pago ap WHERE ap.cargo_id=c.id),0)>0
+          AND (a.busqueda_autocomplete LIKE ('%'||lower(:texto)||'%') OR cc.busqueda_autocomplete LIKE ('%'||lower(:texto)||'%'))
+        ORDER BY c.fecha_vencimiento,c.id
+        """,nativeQuery=true)
+    Slice<Cargo> buscarParaSaldoFavor(@Param("institucionId")Long institucionId,@Param("tutorId")Long tutorId,
+       @Param("plantelId")Long plantelId,@Param("moneda")String moneda,@Param("texto")String texto,Pageable pagina);
     String PORTAL_BASE = """
             SELECT c.* FROM cargo c JOIN inscripcion i ON i.id=c.inscripcion_id
             JOIN alumno a ON a.id=i.alumno_id JOIN plantel pl ON pl.id=i.plantel_id

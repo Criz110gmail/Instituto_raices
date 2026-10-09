@@ -95,6 +95,35 @@
 .payment-detail-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1px; margin: 0 34px 28px; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--line); }
 .payment-detail-grid article { display: grid; gap: 6px; padding: 15px; background: var(--surface); }
 .payment-entry-review { margin: 14px 0; }
+.received-amount-review { display: grid; gap: 14px; margin: 18px 0; }
+.saldo-row label { display: grid; gap: 7px; margin-top: 12px; }
+.saldo-row label > span { font-size: .78rem; font-weight: 700; color: var(--ink); }
+.saldo-row input.credit-amount,.saldo-row input.money-entry { width: 100%; min-height:44px; box-sizing: border-box; border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px; background: var(--surface); color: var(--ink); font:inherit; }
+.payment-credit-card { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:24px; margin:20px 0; border:1px solid color-mix(in srgb,#159681 45%,var(--line)); border-radius:16px; background:color-mix(in srgb,var(--surface) 94%,#28b9a8 6%); }
+.payment-credit-copy { min-width:0; flex:1 1 320px; }
+.payment-credit-label { display:block; color:var(--muted); font-size:.75rem; font-weight:800; }
+.payment-credit-amount { display:inline-block; margin:9px 8px 0 0; color:var(--ink); font-size:clamp(1.9rem,4vw,2.6rem); line-height:1.15; overflow-wrap:anywhere; }
+.payment-credit-currency { color:var(--muted); font-size:.8rem; font-weight:750; }
+.payment-credit-copy p { margin:12px 0 0; color:var(--muted); font-size:.78rem; line-height:1.6; }
+.payment-credit-action { display:grid; gap:10px; flex:0 1 310px; min-width:0; text-align:center; }
+.payment-credit-action .detail-payment-button { text-align:center; }
+.payment-credit-action .field-help { margin:0; }
+.credit-management-card .credit-search-grid { margin:18px 0; }
+.credit-management-card .form-grid input:not([type=hidden]),.credit-management-card .form-grid textarea,.credit-management-card .form-grid select,.credit-management-card .credit-amount { background:var(--surface); color:var(--ink); border-color:var(--line); box-sizing:border-box; font:inherit; }
+.credit-management-card .saldo-row { align-items:flex-start; background:color-mix(in srgb,var(--surface) 94%,#28b9a8 6%); }
+.credit-management-card .saldo-row > div { flex:1; min-width:0; }
+.credit-management-card .credit-title { color:var(--ink); overflow-wrap:anywhere; }
+.credit-management-card .saldo-row label { max-width:320px; }
+.credit-management-card .credit-amount:focus,.credit-management-card .saldo-row .money-entry:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px #2979ff18; }
+.credit-management-card .form-actions .payment-cancel-button { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:10px 16px; border:1px solid var(--line); border-radius:11px; background:var(--surface); color:var(--ink); font-weight:800; }
+@media(max-width:720px) { .payment-credit-card { flex-direction:column; align-items:stretch; padding:20px; } .payment-credit-copy,.payment-credit-action { flex:auto; } .credit-management-card .saldo-row { flex-wrap:wrap; } .credit-management-card .saldo-row > div { flex-basis:100%; } .credit-management-card .saldo-row label { max-width:none; } }
+[data-money-confirm=saldo-favor-reversion] label { display: grid; gap: 7px; margin-bottom: 12px; }
+[data-money-confirm=saldo-favor-reversion] textarea { width: 100%; box-sizing: border-box; border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px; background: var(--surface); color: var(--ink); font: inherit; }
+.received-amount-review .distribution-total { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.received-amount-review .form-grid[hidden] { display: none; }
+.decision-card .received-amount-review label { display: grid; gap: 7px; }
+.decision-card .received-amount-review input,.decision-card .received-amount-review textarea { width: 100%; box-sizing: border-box; border: 1px solid var(--line); border-radius: 11px; padding: 12px; background: var(--surface); color: var(--ink); font: inherit; }
+@media(max-width:600px) { .received-amount-review .distribution-total { grid-template-columns: 1fr; } }
 .payment-entry-review-section .requested-list { margin: 14px 0; }
 .payment-entry-review-section .requested-list article { display: grid; gap: 6px; }
 .payment-entry-review-section .requested-list small { color: var(--muted); line-height: 1.6; }

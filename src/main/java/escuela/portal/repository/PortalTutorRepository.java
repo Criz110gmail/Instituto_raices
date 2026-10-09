@@ -13,6 +13,30 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class PortalTutorRepository {
+    private static final String SALDO_FAVOR_BASE="""
+        FROM pago p JOIN tutor t ON t.id=p.tutor_id JOIN institucion inst ON inst.id=p.institucion_id
+        JOIN plantel pl ON pl.id=p.plantel_registro_id
+        CROSS JOIN LATERAL (SELECT COALESCE(SUM(CASE WHEN a.operacion='APLICAR' THEN a.monto ELSE -a.monto END),0) AS aplicado
+          FROM aplicacion_pago a WHERE a.pago_id=p.id) ap
+        CROSS JOIN LATERAL (SELECT COALESCE(SUM(d.monto),0) AS devuelto FROM devolucion_pago d WHERE d.pago_id=p.id AND d.estado='EJECUTADA') dv
+        WHERE p.institucion_id=:institucionId AND t.usuario_id=:usuarioId AND t.institucion_id=:institucionId AND t.activo=true AND p.estado='VALIDADO'
+        AND EXISTS(SELECT 1 FROM alumno_tutor v JOIN alumno a ON a.id=v.alumno_id JOIN inscripcion i ON i.alumno_id=a.id
+          WHERE v.tutor_id=t.id AND v.activo=true AND v.es_responsable_financiero=true AND v.puede_ver_finanzas=true AND a.activo=true
+          AND a.institucion_id=p.institucion_id AND i.plantel_id=p.plantel_registro_id AND i.estado<>'CANCELADA'
+          AND v.fecha_inicio <= (CURRENT_TIMESTAMP AT TIME ZONE inst.zona_horaria)::date
+          AND (v.fecha_fin IS NULL OR v.fecha_fin >= (CURRENT_TIMESTAMP AT TIME ZONE inst.zona_horaria)::date))
+        AND (p.monto-ap.aplicado-dv.devuelto>0 OR p.monto_reportado IS NOT NULL
+          OR p.monto>COALESCE((SELECT SUM(s.monto_solicitado) FROM solicitud_aplicacion_pago s WHERE s.pago_id=p.id),0)
+          OR EXISTS(SELECT 1 FROM aplicacion_pago sf WHERE sf.pago_id=p.id AND sf.saldo_favor=true))
+        """;
+    public Page<PortalSaldoFavorFila> saldoFavor(Long usuarioId,Long institucionId,int pagina) {
+        int numero=Math.max(0,pagina);var parametros=new MapSqlParameterSource().addValue("usuarioId",usuarioId).addValue("institucionId",institucionId)
+            .addValue("limite",10).addValue("offset",(long)numero*10);
+        Long total=jdbc.queryForObject("SELECT COUNT(*) "+SALDO_FAVOR_BASE,parametros,Long.class);
+        var contenido=jdbc.query("SELECT p.folio,pl.nombre AS plantel,p.moneda,to_char(timezone(inst.zona_horaria,p.fecha_pago),'DD/MM/YYYY HH24:MI') AS fecha,p.monto,ap.aplicado,dv.devuelto,GREATEST(p.monto-ap.aplicado-dv.devuelto,0) AS disponible "+SALDO_FAVOR_BASE+" ORDER BY p.fecha_pago DESC,p.id DESC LIMIT :limite OFFSET :offset",parametros,
+          (rs,n)->new PortalSaldoFavorFila(rs.getString("folio"),rs.getString("plantel"),rs.getString("moneda"),rs.getString("fecha"),rs.getBigDecimal("monto"),rs.getBigDecimal("aplicado"),rs.getBigDecimal("devuelto"),rs.getBigDecimal("disponible")));
+        return new PageImpl<>(contenido,PageRequest.of(numero,10),total==null?0:total);
+    }
     private static final String EVENTOS_DESDE = """
             FROM evento_escolar e
             JOIN institucion inst ON inst.id = e.institucion_id
@@ -90,12 +114,18 @@ public class PortalTutorRepository {
                  FROM pago pa
                  JOIN tutor t ON t.id=pa.tutor_id
                  JOIN (
-                     SELECT sap.pago_id, SUM(sap.monto_solicitado) AS monto_alumno
-                     FROM solicitud_aplicacion_pago sap
-                     JOIN cargo c ON c.id=sap.cargo_id
-                     JOIN inscripcion i ON i.id=c.inscripcion_id
-                     WHERE i.alumno_id=:alumnoId
-                     GROUP BY sap.pago_id
+                     SELECT distribucion.pago_id, SUM(distribucion.monto) AS monto_alumno
+                     FROM (
+                         SELECT sap.pago_id,sap.monto_solicitado AS monto
+                         FROM solicitud_aplicacion_pago sap
+                         JOIN cargo c ON c.id=sap.cargo_id
+                         JOIN inscripcion i ON i.id=c.inscripcion_id WHERE i.alumno_id=:alumnoId
+                         UNION ALL
+                         SELECT a.pago_id,CASE WHEN a.operacion='APLICAR' THEN a.monto ELSE -a.monto END AS monto
+                         FROM aplicacion_pago a JOIN cargo c ON c.id=a.cargo_id
+                         JOIN inscripcion i ON i.id=c.inscripcion_id
+                         WHERE i.alumno_id=:alumnoId AND a.saldo_favor=true
+                     ) distribucion GROUP BY distribucion.pago_id HAVING SUM(distribucion.monto)>0
                  ) aplicado ON aplicado.pago_id=pa.id
                  WHERE t.usuario_id=:usuarioId AND pa.institucion_id=:institucionId
                 """ + filtros;
@@ -125,6 +155,10 @@ public class PortalTutorRepository {
                       JOIN cargo c ON c.id=sap.cargo_id
                       JOIN inscripcion i ON i.id=c.inscripcion_id
                       WHERE sap.pago_id=pa.id AND i.alumno_id=:alumnoId
+                      UNION ALL
+                      SELECT 1 FROM aplicacion_pago a JOIN cargo c ON c.id=a.cargo_id
+                      JOIN inscripcion i ON i.id=c.inscripcion_id
+                      WHERE a.pago_id=pa.id AND i.alumno_id=:alumnoId AND a.saldo_favor=true
                   )
                 ORDER BY anio DESC
                 """, new MapSqlParameterSource().addValue("usuarioId", usuarioId)

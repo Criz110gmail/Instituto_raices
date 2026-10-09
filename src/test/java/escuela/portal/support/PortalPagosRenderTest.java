@@ -78,6 +78,7 @@ class PortalPagosRenderTest {
         var context = new Context();
         context.setVariable("portal", portal); context.setVariable("seccion", "PAGOS");
         context.setVariable("soporte", soporte);
+        context.setVariable("saldoFavor", new PageImpl<>(List.of(new PortalSaldoFavorFila("PAG-SALDO", "Centro", "MXN", "09/10/2026 10:00", dinero("400"), dinero("300"), dinero("0"), dinero("100")))));
         context.setVariable("rutaInicio", soporte ? "/admin/portal-soporte/7" : "/portal");
         context.setVariable("rutaSeccion", soporte ? "/admin/portal-soporte/7/pagos" : "/portal/pagos");
         context.setVariable("aniosPago", List.of(2026)); context.setVariable("nombreMesPago", "Todos los meses");

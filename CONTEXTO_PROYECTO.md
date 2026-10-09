@@ -1,5 +1,60 @@
 # Contexto del proyecto
 
+## Diseño de saldo a favor — 2026-10-09
+
+Se corrige también el input monetario dinámico: el componente reemplaza el input
+visible por money-entry y deja credit-amount oculto; el CSS alcanza ahora el visible
+con diseño/foco del tema. Modal existente incluye total a aplicar además de cargos,
+disponible, restante y motivo; Cancelar sin guardar/Confirmar envío verificados en DOM.
+No cambios de negocio ni aplicaciones de crédito por herramientas.
+
+El propietario ya localizó los100 a favor en el portal. No ha aplicado el crédito
+al hermano. Se ajusta sólo presentación: tarjeta destacada/alineada en Distribución,
+buscador dentro de form-grid y controles compartidos del tema en gestión, móvil y
+botón Cancelar con borde. Sin operaciones financieras ni migración; V88 disponible.
+669 pruebas Java y17 Node sin fallos, render real de detalle/gestión verificado.
+Sólo app reconstruida/recreada, salud UP y estilos nuevos servidos por HTTP; sin
+operaciones de crédito ni QA visual autenticada. No publicar
+caso completo confirmado hasta prueba humana de aplicación al hermano.
+
+## V87 — saldo a favor entre hermanos — 2026-10-09
+
+El propietario autorizó registro/aplicación exclusivamente administrativa; familia consulta.
+Pago conserva reporte original si administración verifica un recibido mayor, con motivo.
+El ingreso usa el monto real una sola vez; aplicar/revertir saldo sólo crea aplicaciones
+auditadas, no movimientos bancarios. Se restringe por tutor, institución, plantel, moneda,
+responsabilidad financiera vigente y ausencia de pagos en revisión. Devoluciones y
+cancelaciones mantienen trazabilidad de las aplicaciones administrativas. Historial y
+resumen familiar paginados; Excel POI del historial respeta el filtro de operación.
+Diseño reutiliza componentes existentes, temas claro/oscuro y tablas móviles del portal.
+
+Prueba humana pendiente: cargo300 hijo A/reportado300/recibido400 → saldo a favor100;
+aplicar100 a cargo del hermano B → ambos liquidados, crédito0, banco conserva ingreso400.
+No se hizo ninguna operación financiera mediante herramientas. Guía no marcada como
+confirmada hasta que el propietario pruebe. Excedente anterior100 ya fue devuelto.
+Beneficio anual 12/pagar11 sigue en análisis; DUP-TEST200/two-tabs quedan pausados.
+Verificado:669 pruebas Java y17 pruebas Node sin fallos, render Thymeleaf real y
+consultas PostgreSQL con migración temporal revertida. Se recreó sólo app; V87 aplicada,
+salud UP y JavaScript nuevo servido por HTTP. No hubo QA visual autenticada ni cambios
+financieros mediante herramientas. Siguiente migración V88; guías siguen17/133.
+
+
+## V86 — guía de excedente y devolución sin reabrir deuda — 2026-10-08
+
+- Propietario confirmó completo: cargo300/pago400/aplicado300/disponible100;
+  devolver100 conserva abono300/saldo0 y banco B+300, deuda anterior400 intacta.
+- Guía CONFIRMADA de ocho etapas/cuatro acciones; sólo contenido editorial con ocho
+  permisos existentes requeridos, SQL probado BEGIN/ROLLBACK, sin operaciones financieras.
+- Próximo ejemplo humano pendiente: DUP-TEST200, rechazo de selección duplicada,
+  cancelar modal sin guardar y validar mismo pago desde dos pestañas; esperar sólo
+  un pago/abono/ingreso200. No confundir reintento del MISMO folio con nuevos registros
+  independientes: no se afirma deduplicación de todos los pagos con misma referencia.
+- Revisado código: IDs repetidos rechazados y pago ya VALIDADO retorna sin ingreso nuevo.
+  Siguiente migración V87; conservar datos del propietario y no realizar prueba por tools.
+- Verificado:661 pruebas Java sin fallos y Node de confirmaciones compartidas correcto.
+  Sólo app reconstruida/recreada, sin QA visual autenticada ni operaciones financieras.
+- Salud UP; lectura confirma V86 aplicada, guía CONFIRMADA/ocho etapas y17 guías/133 etapas.
+
 ## V85 — guía de dos cargos del mismo alumno — 2026-10-08
 
 - Propietario confirmó pago1000 para inscripción600/mensualidad400 del mismo alumno,

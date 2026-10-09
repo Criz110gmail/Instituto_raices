@@ -330,3 +330,18 @@ submit();assert.match(rows()['Cargos nuevos'],/No existen/);assert.ok(!('Total d
 assert.match(doc.querySelector('#money-confirm-note').textContent,/conservando los abonos anteriores/);
 cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,11);
 console.log('DOM: confirmaciones compartidas y condonación total; sin cargos nuevos, cancelación restauradora, cierre sin envío y confirmación única correctos.');
+form.dataset={moneyConfirm:'saldo-favor',confirmFolio:'PAG-ORIGEN',confirmSubject:'Familia',available:'100',confirmAmount:'60',currency:'MXN'};
+const creditRemaining=new Element();creditRemaining.id='credit-remaining';creditRemaining.textContent='$40.00';
+const creditRow=new Element();creditRow.querySelector=s=>s==='.credit-title'?{textContent:'Hermano · Mensualidad'}:{value:'60.00'};
+const oldCreditAll=form.querySelectorAll.bind(form);
+form.querySelectorAll=s=>s==='.saldo-row'?[creditRow]:oldCreditAll(s);
+submit();assert.equal(doc.querySelector('#money-confirm-title').textContent,'Confirmar aplicación del saldo a favor');
+assert.equal(rows()['Hermano · Mensualidad'],'$60.00');assert.equal(rows()['Seguirá a favor del tutor'],'$40.00');
+assert.equal(rows()['Total a aplicar'],'$60.00');assert.equal(cancel.textContent,'Cancelar');
+assert.match(doc.querySelector('#money-confirm-note').textContent,/No registra otro pago/);
+cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,11);
+submit();accept.dispatchEvent({type:'click'});assert.equal(form.submissions,12);
+form.dataset={moneyConfirm:'saldo-favor-reversion',confirmFolio:'PAG-ORIGEN',confirmSubject:'Hermano',confirmAmount:'60',currency:'MXN'};
+submit();assert.equal(rows()['Importe que vuelve al saldo a favor'],'$60.00');
+assert.match(doc.querySelector('#money-confirm-note').textContent,/No devuelve dinero/);
+cancel.dispatchEvent({type:'click'});assert.equal(form.submissions,12);

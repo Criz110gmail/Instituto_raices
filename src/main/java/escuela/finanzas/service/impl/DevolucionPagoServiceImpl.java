@@ -178,11 +178,17 @@ public class DevolucionPagoServiceImpl implements DevolucionPagoService {
         BigDecimal restante = porLiberar;
         for (AplicacionPago original : seleccionadas) {
             if (restante.signum() <= 0) break;
+            if (original.isSaldoFavor() && original.getCargo().getEstadoRegistro() != escuela.cobranza.entity.EstadoRegistroCargo.EMITIDO)
+                throw new ReglaNegocioException("La aplicación de saldo a favor pertenece a un cargo cancelado o incluido en convenio; resuelve ese proceso antes de liberar el abono");
             BigDecimal liberado = original.getMonto().min(restante);
             AplicacionPago reversa = new AplicacionPago();
             reversa.setPago(pago); reversa.setCargo(original.getCargo()); reversa.setMonto(original.getMonto());
             reversa.setOperacion(OperacionAplicacionPago.REVERTIR); reversa.setFechaAplicacion(fecha);
             reversa.setReversaDe(original); reversa.setMotivo(limpiar(motivo)); reversa.setDevolucionPago(devolucion);
+            if (original.isSaldoFavor()) {
+                reversa.setSaldoFavor(true); reversa.setMotivoSaldoFavor(limpiar(motivo));
+                reversa.setAutorizadoPor(devolucion.getAutorizadoPor());
+            }
             ajustes.add(reversa);
             BigDecimal remanente = original.getMonto().subtract(liberado);
             if (remanente.signum() > 0) {
@@ -190,6 +196,10 @@ public class DevolucionPagoServiceImpl implements DevolucionPagoService {
                 reaplicacion.setPago(pago); reaplicacion.setCargo(original.getCargo());
                 reaplicacion.setMonto(remanente); reaplicacion.setOperacion(OperacionAplicacionPago.APLICAR);
                 reaplicacion.setFechaAplicacion(fecha); reaplicacion.setDevolucionPago(devolucion);
+                if (original.isSaldoFavor()) {
+                    reaplicacion.setSaldoFavor(true); reaplicacion.setMotivoSaldoFavor(limpiar(motivo));
+                    reaplicacion.setAutorizadoPor(devolucion.getAutorizadoPor());
+                }
                 ajustes.add(reaplicacion);
             }
             restante = restante.subtract(liberado);

@@ -71,6 +71,20 @@ public class ValidacionPagoServiceImpl implements ValidacionPagoService {
 
         List<SolicitudAplicacionPago> solicitudes = solicitudRepository
                 .findAllByPagoIdOrderByCargoIdAsc(pagoId);
+        if (request.montoRecibido() != null) {
+            BigDecimal recibido = request.montoRecibido();
+            String motivo = limpiar(request.motivoCambioMonto());
+            if (recibido.signum() <= 0 || recibido.scale() > 2 || recibido.precision() - recibido.scale() > 17
+                    || recibido.compareTo(pago.getMonto()) <= 0)
+                throw new ReglaNegocioException("El importe real debe ser mayor al reportado, positivo y tener hasta dos decimales");
+            if (motivo == null || motivo.length() > 2000)
+                throw new ReglaNegocioException("Explica por qué el comprobante confirma un importe mayor al reportado");
+            pago.setMontoReportado(pago.getMonto());
+            pago.setMotivoCambioMonto(motivo);
+            pago.setMonto(recibido.setScale(2));
+        } else if (limpiar(request.motivoCambioMonto()) != null) {
+            throw new ReglaNegocioException("Activa la captura del importe real e indica el monto recibido");
+        }
         BigDecimal disponible = pago.getMonto();
         Instant ahora = Instant.now();
         LocalDate hoyInstitucion = ahora.atZone(ZoneId.of(pago.getInstitucion().getZonaHoraria())).toLocalDate();
@@ -111,6 +125,10 @@ public class ValidacionPagoServiceImpl implements ValidacionPagoService {
         Map<String, Object> cambios = new LinkedHashMap<>();
         cambios.put("folio", pago.getFolio());
         cambios.put("monto", pago.getMonto());
+        if (pago.getMontoReportado() != null) {
+            cambios.put("montoReportado", pago.getMontoReportado());
+            cambios.put("motivoCambioMonto", pago.getMotivoCambioMonto());
+        }
         cambios.put("moneda", pago.getMoneda());
         cambios.put("cuentaDeclaradaId", cuentaDeclaradaId);
         cambios.put("cuentaDestinoId", cuenta.getId());

@@ -790,3 +790,14 @@ datos. Excepciones centralizadas y DTO específicos para no exponer entidades
 ni campos privados directamente a Thymeleaf. Este documento no genera código.
 
 FIN DEL DOCUMENTO
+
+ACTUALIZACIÓN V87 — SALDO A FAVOR ADMINISTRATIVO (2026-10-09)
+Pago incorpora monto_reportado y motivo_cambio_monto para conservar la declaración
+original cuando administración verifica un recibido mayor. El monto real alimenta
+el único ingreso financiero. Disponible = monto - aplicaciones netas - devoluciones
+ejecutadas; no se duplica en una tabla adicional ni se crea otro ingreso al aplicarlo.
+AplicacionPago incorpora saldo_favor, motivo_saldo_favor, autorizado_por_id y clave
+idempotente única por pago. Las reversas y remanentes por devolución conservan origen.
+Se permite repartir entre hermanos del mismo tutor/institución/plantel/moneda con
+responsabilidad financiera vigente; aplicación/reversión requieren motivo y auditoría.
+Familia tiene consulta solamente. Beneficio anual todavía pendiente de análisis.

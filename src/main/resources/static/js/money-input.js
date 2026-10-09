@@ -209,7 +209,19 @@
                 if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
                 if (form.dataset.confirmSubject) add('Titular del pago', form.dataset.confirmSubject);
             }
-            if (kind === 'transferencia-familiar') {
+            if (kind === 'saldo-favor' || kind === 'saldo-favor-reversion') {
+                title.textContent = kind === 'saldo-favor' ? 'Confirmar aplicación del saldo a favor' : 'Confirmar reversión de saldo a favor';
+                cancel.textContent = 'Cancelar'; accept.textContent = 'Confirmar operación';
+                add('Pago de origen',form.dataset.confirmFolio);add('Titular o alumno',form.dataset.confirmSubject);
+                if(kind === 'saldo-favor') {
+                    add('Disponible de este pago',money(form.dataset.available));
+                    form.querySelectorAll('.saldo-row').forEach(row=>add(row.querySelector('.credit-title').textContent,money(row.querySelector('.credit-amount').value)));
+                    add('Total a aplicar',money(form.dataset.confirmAmount));
+                    add('Seguirá a favor del tutor',document.querySelector('#credit-remaining').textContent);
+                } else add('Importe que vuelve al saldo a favor',money(form.dataset.confirmAmount));
+                add('Motivo',form.querySelector('[name="motivo"]').value);
+                note.textContent = kind === 'saldo-favor' ? 'Reduce los adeudos seleccionados usando dinero ya recibido. No registra otro pago ni movimiento bancario.' : 'Libera este abono y recupera la deuda del cargo. No devuelve dinero ni mueve el banco.';
+            } else if (kind === 'transferencia-familiar') {
                 title.textContent = 'Confirmar envío de transferencia';
                 accept.textContent = 'Confirmar y enviar a revisión';
                 const value = selector => form.querySelector(selector)?.value || '';
@@ -392,6 +404,11 @@
                 title.textContent = 'Confirmar validación del pago';
                 accept.textContent = 'Confirmar validación';
                 add('Importe recibido', money(form.dataset.confirmAmount));
+                if(form.querySelector('#received-change-value')?.value === 'true') {
+                    add('Importe originalmente reportado',money(form.querySelector('.received-amount-review').dataset.reported));
+                    add('Motivo del importe real',form.querySelector('#received-reason').value);
+                    add('Saldo a favor estimado',document.querySelector('#received-credit').textContent);
+                }
                 add('Cuenta destino', form.querySelector('#cuentaDestinoBusqueda').value);
                 const reason = form.querySelector('[name="motivoCambioCuenta"]')?.value;
                 if (reason) add('Motivo del cambio de cuenta', reason);

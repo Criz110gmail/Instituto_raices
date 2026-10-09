@@ -75,6 +75,7 @@ public class PortalSoporteAdminController {
                       @RequestParam(defaultValue="0") int pagina,
                       @RequestParam(defaultValue="0") int paginaCargos,
                       @RequestParam(defaultValue="0") int paginaPagos,
+                      @RequestParam(defaultValue="0") int paginaSaldo,
                       @RequestParam(required=false) Integer mes,
                       @RequestParam(required=false) Integer anio,
                       @AuthenticationPrincipal UsuarioPrincipal admin, Model model) {
@@ -83,6 +84,7 @@ public class PortalSoporteAdminController {
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.NOT_FOUND);
         }
+        model.addAttribute("paginaSaldo", Math.max(0, paginaSaldo));
         return vista(tutorId, alumnoId, Set.of("AGENDA", "CALIFICACIONES", "BOLETAS").contains(destino) ? pagina : 0,
                 destino.equals("PAGOS") ? paginaCargos : 0,
                 destino.equals("AVISOS") ? pagina : 0,
@@ -119,6 +121,8 @@ public class PortalSoporteAdminController {
             model.addAttribute("rutaSeccion", "/admin/portal-soporte/" + tutorId + "/"
                     + seccion.toLowerCase(java.util.Locale.ROOT));
             if (seccion.equals("PAGOS")) {
+                int paginaSaldo = model.getAttribute("paginaSaldo") instanceof Integer numero ? numero : 0;
+                model.addAttribute("saldoFavor", portal.saldoFavor(vista, resultadoPortal.hijo() == null ? null : resultadoPortal.hijo().alumnoId(), paginaSaldo));
                 model.addAttribute("mesPago", mesPago);
                 model.addAttribute("anioPago", anioPago);
                 model.addAttribute("nombreMesPago", mesPago == null ? "Todos los meses"

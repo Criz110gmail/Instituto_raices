@@ -111,6 +111,12 @@ public class PortalTutorService {
                 hijo.alumnoId(), institucion.zonaHoraria());
     }
 
+    public org.springframework.data.domain.Page<PortalSaldoFavorFila> saldoFavor(UsuarioPrincipal principal,Long alumnoId,int pagina) {
+        if(alumnoId==null||!validarHijo(principal,alumnoId).accesoFinanciero())return org.springframework.data.domain.Page.empty();
+        return java.util.Optional.ofNullable(portalRepository.saldoFavor(principal.usuarioId(),principal.institucionId(),pagina))
+            .orElseGet(org.springframework.data.domain.Page::empty);
+    }
+
     private ResultadoEstadoCuentaAlumno estadoCuenta(PortalHijoResumen hijo, Long institucionId,
                                                        LocalDate hoy, ZoneId zona, String moneda,
                                                        int pagina) {

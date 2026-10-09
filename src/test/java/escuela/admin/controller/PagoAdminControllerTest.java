@@ -38,6 +38,7 @@ class PagoAdminControllerTest {
     @Mock private PagoService service;
     @Mock private ValidacionPagoService validacionService;
     @Mock private CancelacionPagoService cancelacionService;
+    @Mock private escuela.finanzas.service.SaldoFavorService saldoFavor;
     @Mock private InstitucionService institucionService;
     @Mock private PlantelService plantelService;
     @Mock private AlcanceDatosService alcance;
@@ -98,7 +99,7 @@ class PagoAdminControllerTest {
         when(respuesta.folio()).thenReturn("PAG-001");
         when(validacionService.validar(eq(50L), any())).thenReturn(respuesta);
 
-        String vista = controller.validar(50L, 8L, null, 2L, mock(Authentication.class),
+        String vista = controller.validar(50L, 8L, null, false, null, null, 2L, mock(Authentication.class),
                 new ExtendedModelMap(), new RedirectAttributesModelMap());
 
         verify(validacionService).validar(eq(50L), argThat(r -> r.cuentaDestinoId().equals(8L)

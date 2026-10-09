@@ -30,4 +30,8 @@ public class AplicacionPago extends EntidadAuditable {
     @Column(length = 2000) private String motivo;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "devolucion_pago_id") private DevolucionPago devolucionPago;
+    @Column(name="saldo_favor",nullable=false) private boolean saldoFavor;
+    @Column(name="motivo_saldo_favor",length=2000) private String motivoSaldoFavor;
+    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="autorizado_por_id") private escuela.seguridad.entity.Usuario autorizadoPor;
+    @Column(name="clave_saldo_favor",length=100) private String claveSaldoFavor;
 }

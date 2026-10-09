@@ -56,6 +56,7 @@ public class PagoAdminController {
     private final PlantelService plantelService;
     private final AlcanceDatosService alcance;
     private final JasperComprobantePagoService jasperComprobante;
+    private final escuela.finanzas.service.SaldoFavorService saldoFavor;
 
     @GetMapping("/nuevo")
     String nuevo(@RequestParam(required = false) Long cargoId,
@@ -103,12 +104,17 @@ public class PagoAdminController {
     @PostMapping("/{id}/validar")
     String validar(@PathVariable Long id, @RequestParam(required = false) Long cuentaDestinoId,
                    @RequestParam(required = false) String motivoCambioCuenta,
+                   @RequestParam(defaultValue="false") boolean cambiarMonto,
+                   @RequestParam(required=false) java.math.BigDecimal montoRecibido,
+                   @RequestParam(required=false) String motivoCambioMonto,
                    @RequestParam Long version, Authentication authentication,
                    Model model, RedirectAttributes flash) {
         alcance.validarRecurso(ModuloCatalogo.PAGOS, id);
         try {
+            if(cambiarMonto && montoRecibido == null) throw new ReglaNegocioException("Captura el importe realmente recibido");
             PagoResponse pago = validacionService.validar(id,
-                    new ValidacionPagoRequest(cuentaDestinoId, motivoCambioCuenta, version));
+                    new ValidacionPagoRequest(cuentaDestinoId, motivoCambioCuenta, version,
+                        cambiarMonto ? montoRecibido : null,cambiarMonto ? motivoCambioMonto : null));
             flash.addFlashAttribute("mensaje", "Pago " + pago.folio()
                     + " validado; el ingreso y sus aplicaciones quedaron publicados");
             return "redirect:/admin/pagos/" + id + "/editar";
@@ -116,6 +122,9 @@ public class PagoAdminController {
             prepararDetalle(model, service.obtener(id), authentication);
             model.addAttribute("errorOperacion", MensajeErrorFormulario.desde(excepcion));
             model.addAttribute("motivoCambioCuentaCapturado", motivoCambioCuenta);
+            model.addAttribute("cambiarMontoCapturado",cambiarMonto);
+            model.addAttribute("montoRecibidoCapturado",montoRecibido);
+            model.addAttribute("motivoCambioMontoCapturado",motivoCambioMonto);
             model.addAttribute("pestanaActiva", "gestion");
             return "admin/pago-detalle";
         }
@@ -190,6 +199,9 @@ public class PagoAdminController {
     private void prepararDetalle(Model model, PagoResponse pago, Authentication authentication,
                                   DevolucionPagoForm formCapturado) {
         model.addAttribute("pago", pago);
+        model.addAttribute("datosImporte",saldoFavor.datosValidacion(pago.id()));
+        model.addAttribute("puedeSaldoFavor",authentication!=null && authentication.getAuthorities().stream()
+          .anyMatch(a->a.getAuthority().equals("PAGO_VALIDAR")||a.getAuthority().equals("PAGO_CANCELAR")));
         String zona = institucionService.obtener(pago.institucionId()).zonaHoraria();
         model.addAttribute("fechaPagoLocal", DateTimeFormatter.ofPattern("dd MMM yyyy · HH:mm", new Locale("es", "MX"))
                 .withZone(java.time.ZoneId.of(zona)).format(pago.fechaPago()));

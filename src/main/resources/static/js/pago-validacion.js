@@ -73,3 +73,12 @@
         } catch (error) { if (error.name !== 'AbortError') mostrarEstado('No fue posible consultar las cuentas.'); }
     }
 })();
+
+(() => {
+ const panel=document.querySelector('.received-amount-review');if(!panel)return;
+ const form=document.querySelector('#validation-form'),state=document.querySelector('#received-change-value'),button=document.querySelector('#received-change'),fields=document.querySelector('#received-fields'),amount=document.querySelector('#received-amount'),reason=document.querySelector('#received-reason');
+ const reported=Number(panel.dataset.reported),requested=Number(panel.dataset.requested),currency=form.dataset.confirmCurrency||'MXN';
+ const money=n=>new Intl.NumberFormat('es-MX',{style:'currency',currency}).format(n);
+ function update(){const enabled=state.value==='true';fields.hidden=!enabled;amount.disabled=!enabled;reason.disabled=!enabled;amount.required=enabled;reason.required=enabled;button.setAttribute('aria-expanded',String(enabled));button.textContent=enabled?'Conservar importe reportado':'El importe recibido es mayor al reportado';const value=enabled?Number(amount.value):reported;amount.setCustomValidity(enabled&&(!Number.isFinite(value)||value<=reported)?'Captura un importe mayor al reportado.':'');document.querySelector('#received-total').textContent=money(value||0);document.querySelector('#received-credit').textContent=money(Math.max(0,(value||0)-requested));form.dataset.confirmAmount=String(value||0);}
+ button.addEventListener('click',()=>{state.value=state.value==='true'?'false':'true';if(state.value!=='true'){amount.value='';reason.value='';}update();});amount.addEventListener('input',update);update();
+})();

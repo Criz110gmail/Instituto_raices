@@ -92,10 +92,15 @@ public class CancelacionPagoServiceImpl implements CancelacionPagoService {
                             .orElseThrow(() -> new RecursoNoEncontradoException("el cargo", id)));
             List<AplicacionPago> reversas = new ArrayList<>();
             for (AplicacionPago aplicacion : activas) {
+                if (aplicacion.isSaldoFavor() && aplicacion.getCargo().getEstadoRegistro() != escuela.cobranza.entity.EstadoRegistroCargo.EMITIDO)
+                    throw new ReglaNegocioException("El saldo a favor se aplicó a un cargo cancelado o incluido en convenio; resuelve ese proceso antes de cancelar el pago");
                 AplicacionPago reversa = new AplicacionPago();
                 reversa.setPago(pago); reversa.setCargo(aplicacion.getCargo());
                 reversa.setMonto(aplicacion.getMonto()); reversa.setOperacion(OperacionAplicacionPago.REVERTIR);
                 reversa.setFechaAplicacion(ahora); reversa.setReversaDe(aplicacion); reversa.setMotivo(motivo);
+                if (aplicacion.isSaldoFavor()) {
+                    reversa.setSaldoFavor(true); reversa.setMotivoSaldoFavor(motivo); reversa.setAutorizadoPor(actor);
+                }
                 reversas.add(reversa);
                 aplicacion.setReversa(reversa);
             }

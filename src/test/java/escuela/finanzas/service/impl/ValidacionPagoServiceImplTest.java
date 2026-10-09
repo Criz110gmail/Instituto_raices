@@ -86,6 +86,36 @@ class ValidacionPagoServiceImplTest {
     void limpiar() { SecurityContextHolder.clearContext(); }
 
     @Test
+    void importeRealMayorConservaReporteYPublicaExcedenteUnaSolaVez() {
+        pago.setMonto(new BigDecimal("300.00"));
+        Cargo cargo = cargo(10L,"A-01","Ana","300.00");
+        when(solicitudes.findAllByPagoIdOrderByCargoIdAsc(50L)).thenReturn(List.of(solicitud(70L,cargo,"300.00")));
+        when(cargos.findByIdForUpdate(10L)).thenReturn(Optional.of(cargo));
+        var request = new ValidacionPagoRequest(8L,null,0L,new BigDecimal("400.00"),"El banco confirma 400");
+        var respuesta = service.validar(50L,request);
+        assertThat(pago.getMontoReportado()).isEqualByComparingTo("300");
+        assertThat(pago.getMotivoCambioMonto()).isEqualTo("El banco confirma 400");
+        assertThat(respuesta.montoAplicado()).isEqualByComparingTo("300");
+        assertThat(respuesta.montoDisponible()).isEqualByComparingTo("100");
+        assertThat(respuesta.movimiento().monto()).isEqualByComparingTo("400");
+        assertThat(respuesta.movimiento().saldoPosterior()).isEqualByComparingTo("500");
+        service.validar(50L,request);
+        verify(movimientos,times(1)).save(any());
+    }
+
+    @Test
+    void importeRealExigeMotivoYNoAceptaDisminucionODecimalesExtras() {
+        for (var monto : List.of(new BigDecimal("1000"),new BigDecimal("900"),new BigDecimal("1000.001"))) {
+            assertThatThrownBy(()->service.validar(50L,new ValidacionPagoRequest(8L,null,0L,monto,"Corrección")))
+                .hasMessageContaining("importe real");
+        }
+        assertThatThrownBy(()->service.validar(50L,new ValidacionPagoRequest(8L,null,0L,new BigDecimal("1100")," ")))
+            .hasMessageContaining("Explica");
+        verify(movimientos,never()).save(any());
+        assertThat(pago.getMontoReportado()).isNull();
+    }
+
+    @Test
     void validaUnaVezAjustandoCadaSolicitudAlSaldoVigente() {
         Cargo cargoA = cargo(10L, "A-01", "Ana", "1000.00");
         Cargo cargoB = cargo(11L, "B-01", "Bruno", "300.00");

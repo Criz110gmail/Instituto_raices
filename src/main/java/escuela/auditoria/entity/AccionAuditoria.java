@@ -2,6 +2,8 @@ package escuela.auditoria.entity;
 
 public enum AccionAuditoria {
     PAGO_VALIDADO,
+    SALDO_FAVOR_APLICADO,
+    SALDO_FAVOR_REVERTIDO,
     TRANSFERENCIA_VENCIDA_CONFIGURADA,
     TRANSFERENCIA_VENCIDA_AUTORIZADA,
     PAGO_RECHAZADO,

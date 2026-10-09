@@ -22,6 +22,32 @@ Thymeleaf, PostgreSQL, Flyway y Maven.
 
 ## Correcciones de cobranza
 
+### Saldo a favor (V87)
+
+En **Pagos recibidos → Ver → Distribución → Gestionar saldo a favor e historial**, el
+administrador aplica dinero disponible del pago original a cargos del tutor o sus otros
+hijos del mismo plantel y moneda. Selecciona cargos/importes, captura motivo obligatorio
+y confirma el modal. No se crea otro ingreso bancario ni otro pago. Puede revertirse
+una aplicación identificada con permiso de cancelar, motivo e historial; la devolución
+de dinero continúa por el proceso de Devoluciones existente.
+
+Si un comprobante confirma más dinero del reportado, **Gestión → Validar o rechazar →
+El importe recibido es mayor al reportado** permite declarar el importe real con motivo.
+Se conserva el original y se publica el ingreso real; el excedente queda disponible.
+El tutor ve **Saldo a favor de tu familia** en Pagos, sin controles para aplicarlo ni
+cambiar lo que debe reportar. Administración decide su aplicación o devolución.
+La ayuda abre diez cargos al foco y busca desde tres caracteres. Historial/resumen se
+paginan en base de datos; Excel del historial usa el mismo filtro de operación.
+Prueba humana de esta funcionalidad pendiente; no confundir con el excedente ya devuelto
+del ejemplo anterior. El beneficio de pago anual se analizará por separado.
+
+
+V86 agrega la guía confirmada **Recibir $400 para un cargo de $300 y devolver $100
+sin reabrir deuda**, ocho etapas detalladas. Pago con tarjeta: recibido400/aplicado300/
+disponible100; devolución parcial100 desde la misma cuenta consume el excedente,
+conserva aplicado300/saldo0 y deja banco B+300. La deuda anterior400 permanece intacta.
+El importe original400 y la devolución100 se conservan por separado en el historial.
+
 V85 agrega la guía confirmada **Pagar inscripción y mensualidad del mismo alumno:
 $600 + $400**, ocho etapas desde conceptos/cuotas hasta un pago único $1,000 con
 tarjeta y cuenta bancaria. Se liquidan sólo los dos cargos seleccionados y el banco

@@ -46,6 +46,11 @@ public class Pago extends EntidadAuditable {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal monto;
 
+    @Column(name = "monto_reportado", precision = 19, scale = 2)
+    private BigDecimal montoReportado;
+    @Column(name = "motivo_cambio_monto", length = 2000)
+    private String motivoCambioMonto;
+
     @Column(nullable = false, length = 3)
     private String moneda;
 

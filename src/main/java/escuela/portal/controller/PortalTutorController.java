@@ -73,6 +73,7 @@ public class PortalTutorController {
                  @RequestParam(defaultValue = "0") int paginaPagos,
                  @RequestParam(required = false) Integer mes,
                  @RequestParam(required = false) Integer anio,
+                 @RequestParam(defaultValue="0") int paginaSaldo,
                  @AuthenticationPrincipal UsuarioPrincipal principal, Model model) {
         PortalTutorResultado resultado = service.consultarPagos(principal, alumnoId, paginaCargos,
                 paginaPagos, mes, anio);
@@ -81,6 +82,7 @@ public class PortalTutorController {
         model.addAttribute("rutaInicio", "/portal");
         model.addAttribute("rutaSeccion", "/portal/pagos");
         agregarFiltrosPagos(model, principal, resultado, mes, anio);
+        model.addAttribute("saldoFavor",service.saldoFavor(principal,resultado.hijo()==null?null:resultado.hijo().alumnoId(),paginaSaldo));
         return "portal/seccion";
     }
 

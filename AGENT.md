@@ -1,5 +1,88 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Ajuste visual de saldo a favor — 2026-10-09
+
+- Corrección adicional: MoneyValues transforma credit-amount en hidden y crea
+  money-entry visible sin esa clase; el CSS ahora estiliza también money-entry
+  de la tarjeta seleccionada (borde, fondo del tema, altura44 y foco). No cambia
+  formato/envío numérico. Modal existente saldo-favor añade total a aplicar;
+  pruebas DOM verifican Cancelar sin guardar y Confirmar un envío. Prueba humana
+  sigue pendiente, no aplicar crédito mediante herramientas.
+
+- Propietario confirmó que ve los100 disponibles del pago PAG-20261009-000023 en
+  Tus pagos del portal familiar. Aplicación al hermano todavía NO confirmada.
+- Distribución muestra tarjeta de saldo a favor con cifra destacada y acción alineada;
+  gestión incorpora buscador al form-grid/autocompletado compartido, controles con
+  variables del tema, importes/filas responsivas y Cancelar con borde. Sin cambios
+  de cálculo, permisos, movimientos o migraciones; V88 sigue disponible.
+- Verificado:669 pruebas Java y17 Node sin fallos; render real del detalle validado
+  y gestión verifica tarjeta/acción y buscador compartido. Sólo app reconstruida/recreada;
+  salud UP y HTTP sirve estilos nuevos, sin cambios de PostgreSQL/volúmenes/.env.
+  revisión visual autenticada queda a cargo del propietario. No publicar aún guía
+  confirmada; no se ejecutaron aplicaciones de crédito mediante herramientas.
+
+## V87 — saldo a favor administrativo — 2026-10-09
+
+- Implementación: el dinero disponible conserva la fórmula de Pago menos aplicaciones
+  netas menos devoluciones ejecutadas; NO existe una segunda tabla de saldos ni otro
+  ingreso al aplicar crédito. En Pagos recibidos → Ver → Distribución se abre
+  **Gestionar saldo a favor e historial**.
+- PAGO_VALIDAR permite repartir saldo entre cargos de hermanos del mismo tutor,
+  institución, plantel y moneda, con responsabilidad financiera vigente, motivo obligatorio,
+  vista previa y confirmación. Bloquea importes excesivos, cargos duplicados y pagos en revisión.
+  PAGO_CANCELAR permite revertir una aplicación con motivo y confirmación, recuperando
+  deuda/disponible sin mover banco; no aplica sobre cargos cancelados o incluidos en convenio.
+- Al validar un pago pendiente, administración puede declarar un importe REAL mayor con
+  motivo; se conserva monto_reportado y se publica una sola entrada por el monto real.
+  Familia nunca edita su importe ni aplica saldo; sólo consulta su resumen familiar paginado.
+- Autocompletado primeras diez opciones al foco/clic; búsqueda desde tres caracteres.
+  Historial administrativo paginado y Excel POI respeta filtro de operación. Formularios,
+  modales y tablas reutilizan admin.css/forms.css y estilos familiares, con temas y móvil.
+- La migración V87 añade datos originales del reporte y metadatos auditables/idempotentes
+  de aplicaciones; devoluciones/cancelaciones conservan su procedencia. No altera los
+  registros financieros del propietario ni publica como confirmada una prueba no realizada.
+- SIGUIENTE prueba humana: crear cargo nuevo300 para hijo A, reportar transferencia300
+  con comprobante de400; admin valida recibido400, motivo obligatorio, banco B+400,
+  cargo A liquidado y saldo a favor100. Crear cargo100 del hermano B mismo plantel/moneda,
+  aplicar100 desde el pago original: B liquidado, disponible0, banco sigue B+400.
+  Verificar portal familiar, comprobante, historial/Excel y reversión administrativa opcional.
+  El excedente100 de EXC-TEST ya se devolvió: no está disponible para esta prueba.
+- Pendiente posterior: analizar beneficio por pago anual (12 mensualidades/pagar11).
+  La prueba DUP-TEST200 y validación desde dos pestañas queda pausada hasta terminar ambos
+  escenarios. Actualizar guía sólo cuando el propietario confirme resultados humanos.
+- Verificado:669 pruebas Java y17 pruebas Node sin fallos; render real de saldo a favor,
+  validación y sección familiar; contratos de foco/búsqueda, centavos, duplicados,
+  confirmación/cancelación. PostgreSQL validó migración y consultas con BEGIN/ROLLBACK.
+  Sólo app reconstruida/recreada, salud UP y lectura confirma V87 aplicada.
+  No hubo QA visual autenticada ni operaciones financieras por herramientas.
+  Siguiente migración V88. Guías siguen17/133; nueva prueba humana sigue pendiente.
+
+
+## V86 — devolución del excedente confirmada — 2026-10-08
+
+- Propietario confirmó todo el caso EXC-TEST300: recibido400/TARJETA/banco,
+  aplicado300/disponible100; devolución PARCIAL100 conserva abono300/saldo0, disponible0,
+  banco neto B+300 y deuda anterior400 intacta. Caso pendiente de V85 queda CONCLUIDO.
+- V86 publica guía CONFIRMADA de ocho etapas/cuatro acciones con conceptos/cuota/
+  selección/registro/validación/devolución/modal/verificaciones y precaución contra Total.
+  Sólo contenido editorial, ocho permisos existentes requeridos sin otorgar roles.
+  SQL validado BEGIN/ROLLBACK: ocho etapas; ninguna operación financiera por herramientas.
+- Siguiente ejemplo propuesto, aún NO confirmado: cargo nuevo DUP-TEST200 sin ajustes;
+  intentar seleccionar dos veces en Nuevo pago y comprobar rechazo de duplicados sin
+  guardar ingreso; quitar segunda fila, registrar único200 y cancelar modal primero;
+  abrir mismo pago pendiente en dos pestañas, validar primera y reintentar validación
+  desde vista vieja. Un pago/abono/ingreso200, banco B+200; otros cargos intactos.
+- Evidencia: PagoServiceImpl rechaza IDs repetidos en solicitudes; ValidacionPagoServiceImpl
+  bloquea pago y devuelve sin nuevo ingreso si ya VALIDADO. Modal confirma un envío.
+  No prometer deduplicación universal de dos formularios nuevos independientes ni referencias
+  repetidas; probar el MISMO folio. No eludir una ayuda que ya excluya el cargo seleccionado.
+- Siguiente migración V87; no cambios de negocio ni .env/volúmenes en esta petición.
+- Verificado:661 pruebas Java sin fallos; Node de modal compartido confirma Cancelar
+  sin enviar y un envío al confirmar. Sólo app reconstruida/recreada; sin QA visual
+  autenticada ni pruebas financieras realizadas por herramientas.
+- Salud UP; lectura confirma V86 aplicada, guía CONFIRMADA/ocho etapas y17 guías/133
+  etapas. Ninguna migración anterior editada; sólo nuevo contenido editorial.
+
 ## V85 — dos cargos del mismo alumno confirmados — 2026-10-08
 
 - Propietario confirmó único pago1000 de INS-DOBLE-TEST600/MENS-DOBLE-TEST400 del
