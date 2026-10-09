@@ -1,6 +1,28 @@
 # Contexto del proyecto
 
+## V88 — guía confirmada del crédito entre hermanos — 2026-10-09
+
+Propietario confirmó aplicación100 al hermano, reversión100 y reaplicación100:
+ambos cargos liquidados, crédito0 y banco B+400 sin movimientos por distribuir/revertir.
+V88 incorpora guía CONFIRMADA con diez etapas/cuatro acciones, pasos explícitos por
+módulo, filtros, motivos y modales. Sólo tablas editoriales y siete permisos existentes
+requeridos; no asigna roles ni toca tablas financieras. Validada BEGIN/ROLLBACK con
+diez etapas/siete permisos.671 Java/17 Node sin fallos, sólo app reconstruida/recreada,
+salud UP; lectura confirma V88 aplicada, guía CONFIRMADA/diez etapas y18 guías/143
+etapas. Sin operaciones financieras, QA visual autenticada, .env o cambios de volúmenes.
+Siguiente migración V89.
+Sigue análisis del beneficio anual12/pagar11, NO implementado; definir reglas con
+becas/pago parcial/cancelación antes de código. DUP-TEST200/two-tabs siguen pausados.
+
 ## Diseño de saldo a favor — 2026-10-09
+
+Propietario confirma aplicación100 al hermano, adeudo liquidado, cuenta sin cambios y
+portal sin disponible. Guía editorial del caso principal pendiente; reversión aún sin
+prueba humana. Historial ahora separa filtros de tarjetas con registro/alumno/concepto/
+monto/autor/fecha/motivo. Deshacer esta aplicación abre captura de motivo para ese
+registro y mantiene modal Cancelar/Confirmar. Filtrar sólo consulta, no elimina datos.
+Render con tres registros (activo/histórico/reversión) verifica una sola acción disponible
+y ruta individual;669 Java/17 Node sin fallos. Ningún cambio de saldos/permisos/migración.
 
 Se corrige también el input monetario dinámico: el componente reemplaza el input
 visible por money-entry y deja credit-amount oculto; el CSS alcanza ahora el visible
@@ -8,14 +30,14 @@ con diseño/foco del tema. Modal existente incluye total a aplicar además de ca
 disponible, restante y motivo; Cancelar sin guardar/Confirmar envío verificados en DOM.
 No cambios de negocio ni aplicaciones de crédito por herramientas.
 
-El propietario ya localizó los100 a favor en el portal. No ha aplicado el crédito
+El propietario localizó los100 a favor en el portal y después confirmó su aplicación
 al hermano. Se ajusta sólo presentación: tarjeta destacada/alineada en Distribución,
 buscador dentro de form-grid y controles compartidos del tema en gestión, móvil y
 botón Cancelar con borde. Sin operaciones financieras ni migración; V88 disponible.
 669 pruebas Java y17 Node sin fallos, render real de detalle/gestión verificado.
 Sólo app reconstruida/recreada, salud UP y estilos nuevos servidos por HTTP; sin
-operaciones de crédito ni QA visual autenticada. No publicar
-caso completo confirmado hasta prueba humana de aplicación al hermano.
+operaciones de crédito ni QA visual autenticada. Incorporación a guía del caso principal
+pendiente; no publicar reversión como confirmada hasta prueba humana específica.
 
 ## V87 — saldo a favor entre hermanos — 2026-10-09
 

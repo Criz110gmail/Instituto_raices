@@ -38,8 +38,11 @@ El tutor ve **Saldo a favor de tu familia** en Pagos, sin controles para aplicar
 cambiar lo que debe reportar. Administración decide su aplicación o devolución.
 La ayuda abre diez cargos al foco y busca desde tres caracteres. Historial/resumen se
 paginan en base de datos; Excel del historial usa el mismo filtro de operación.
-Prueba humana de esta funcionalidad pendiente; no confundir con el excedente ya devuelto
-del ejemplo anterior. El beneficio de pago anual se analizará por separado.
+V88 incorpora la guía confirmada **Saldo a favor entre hermanos: aplicar, deshacer y
+volver a aplicar $100**, con diez etapas detalladas y ejemplos. El propietario confirmó
+el caso completo: recibido400/aplicado300, crédito100 al hermano, reversión y reaplicación;
+banco sólo aumenta400 una vez y termina disponible0. El beneficio de pago anual se
+analizará por separado; no confundir este caso con el excedente anteriormente devuelto.
 
 
 V86 agrega la guía confirmada **Recibir $400 para un cargo de $300 y devolver $100

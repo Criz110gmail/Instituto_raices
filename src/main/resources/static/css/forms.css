@@ -116,6 +116,34 @@
 .credit-management-card .saldo-row label { max-width:320px; }
 .credit-management-card .credit-amount:focus,.credit-management-card .saldo-row .money-entry:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px #2979ff18; }
 .credit-management-card .form-actions .payment-cancel-button { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:10px 16px; border:1px solid var(--line); border-radius:11px; background:var(--surface); color:var(--ink); font-weight:800; }
+.credit-history { scroll-margin-top:24px; }
+.credit-history-filters.entity-form { display:flex; align-items:flex-end; flex-wrap:wrap; gap:18px; padding:18px; margin-bottom:24px; border:1px solid var(--line); border-radius:14px; background:var(--surface); }
+.credit-history-filters .form-grid { flex:1 1 270px; grid-template-columns:1fr; }
+.credit-history-filters .form-actions { flex:0 1 auto; flex-wrap:wrap; margin:0; padding:0; border:0; gap:10px; }
+.credit-history-list { display:grid; gap:18px; }
+.credit-history-item { min-width:0; padding:22px; border:1px solid var(--line); border-radius:15px; background:var(--surface); }
+.credit-history-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+.credit-history-heading > div { min-width:0; }
+.credit-history-kind { color:var(--muted); font-size:.72rem; font-weight:800; }
+.credit-history-heading h3 { margin:7px 0; color:var(--ink); font-size:1rem; overflow-wrap:anywhere; }
+.credit-history-heading p { margin:0; color:var(--muted); font-size:.8rem; overflow-wrap:anywhere; }
+.credit-history-value { flex-shrink:0; display:grid; gap:5px; text-align:right; }
+.credit-history-value strong { color:var(--ink); font-size:1.5rem; font-variant-numeric:tabular-nums; }
+.credit-history-value small { color:var(--muted); }
+.credit-history-meta { display:flex; flex-wrap:wrap; gap:8px 18px; margin:18px 0; color:var(--muted); font-size:.73rem; }
+.credit-history-reason { padding:14px; border:1px solid var(--line); border-radius:10px; background:var(--soft); }
+.credit-history-reason small { color:var(--muted); font-weight:700; }
+.credit-history-reason p { margin:6px 0 0; color:var(--ink); font-size:.8rem; line-height:1.6; white-space:pre-wrap; overflow-wrap:anywhere; }
+.credit-history-status { color:var(--muted); font-size:.78rem; line-height:1.6; }
+.credit-history-undo { margin-top:18px; padding-top:18px; border-top:1px solid var(--line); }
+.credit-history-undo summary { display:flex; align-items:center; justify-content:space-between; gap:12px; width:fit-content; max-width:100%; min-height:44px; box-sizing:border-box; padding:10px 16px; border:1px solid var(--line); border-radius:11px; background:color-mix(in srgb,var(--blue) 8%,var(--surface)); color:var(--ink); font-size:.8rem; font-weight:800; cursor:pointer; list-style:none; }
+.credit-history-undo summary::-webkit-details-marker { display:none; }
+.credit-history-undo summary:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
+.credit-history-undo[open] summary { border-color:var(--blue); }
+.credit-history-undo > p { color:var(--muted); font-size:.8rem; line-height:1.6; }
+.credit-history-undo .entity-form { display:grid; gap:12px; padding:0; }
+.credit-history-undo .field-help { margin:0; }
+@media(max-width:600px) { .credit-history-heading { flex-direction:column; gap:14px; } .credit-history-value { text-align:left; } .credit-history-item { padding:18px; } .credit-history-filters .form-actions { width:100%; } .credit-history-undo summary { width:100%; } }
 @media(max-width:720px) { .payment-credit-card { flex-direction:column; align-items:stretch; padding:20px; } .payment-credit-copy,.payment-credit-action { flex:auto; } .credit-management-card .saldo-row { flex-wrap:wrap; } .credit-management-card .saldo-row > div { flex-basis:100%; } .credit-management-card .saldo-row label { max-width:none; } }
 [data-money-confirm=saldo-favor-reversion] label { display: grid; gap: 7px; margin-bottom: 12px; }
 [data-money-confirm=saldo-favor-reversion] textarea { width: 100%; box-sizing: border-box; border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px; background: var(--surface); color: var(--ink); font: inherit; }

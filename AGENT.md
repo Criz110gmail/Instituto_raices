@@ -1,16 +1,52 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V88 — guía de saldo a favor entre hermanos confirmada — 2026-10-09
+
+- Propietario confirmó reporte300/recibido400/aplicación300 y saldo100; aplicación100
+  al hermano, reversión individual y reaplicación final. Banco no cambia por esas
+  operaciones, ambos adeudos terminan0 y disponible0. No repetir capturas existentes.
+- V88 publica guía CONFIRMADA de diez etapas/cuatro acciones cada una: preparación,
+  cuotas, selección/generación, reporte familiar, importe real validado, aplicación,
+  comprobación, deshacer individual y reaplicación. Incluye filtros sin efecto financiero,
+  motivos/modales, saldo familiar y banco B+400. No confundir reversión con Devoluciones.
+- Sólo INSERT de contenido y siete permisos existentes requeridos, sin otorgar roles
+  ni modificar registros financieros. SQL validado BEGIN/ROLLBACK: diez etapas/siete
+  permisos. La etapa familiar conserva /familias en instrucciones, ruta editorial NULL
+  porque los enlaces de guía sólo permiten rutas administrativas. V87 no se modifica.
+- Verificación:671 pruebas Java y17 Node sin fallos. Sólo app reconstruida/recreada;
+  salud UP y lectura confirma V88 aplicada, guía CONFIRMADA/diez etapas y18 guías/143
+  etapas. Sin operaciones financieras, .env ni cambios de PostgreSQL/volúmenes.
+  Sin QA visual autenticada. Siguiente migración V89.
+- SIGUIENTE: analizar beneficio por pago anual (12 mensualidades/pagar11), todavía
+  NO implementado ni autorizado en detalle. Definir selección de mensualidades,
+  relación con becas/descuentos, pago parcial/cancelación y trazabilidad antes de codificar.
+  DUP-TEST200/selección duplicada/modal Cancelar/validación del MISMO pago en dos pestañas
+  permanece pausado hasta terminar los escenarios acordados. No prometer prueba anual
+  con una funcionalidad no existente. No operaciones financieras mediante herramientas.
+
 ## Ajuste visual de saldo a favor — 2026-10-09
+
+- Propietario confirmó aplicación100 al hermano: adeudo desapareció, banco sin cambio
+  y portal sin disponible. Caso principal confirmado, incorporación editorial a guía
+  todavía pendiente. Ahora prueba reversión individual desde historial, NO Devoluciones.
+- Historial separa filtros de tarjetas por registro: alumno/concepto/monto/fecha/autor/
+  motivo y operación. Filtro sólo consulta; Aplicación/Reversión no significa revisión.
+  Deshacer esta aplicación despliega motivo y botón de reversión/modal para UN registro;
+  no borra historia, no revierte todos los resultados ni toca banco. Controles sólo
+  con permiso, aplicación reversible y pago validado, protección backend conservada.
+- Verificado ajuste del historial:669 Java/17 Node sin fallos; render cubre aplicación
+  reversible, aplicación histórica y reversión, sólo una acción individual con endpoint
+  propio. No se cambiaron permisos, saldos ni migraciones.
 
 - Corrección adicional: MoneyValues transforma credit-amount en hidden y crea
   money-entry visible sin esa clase; el CSS ahora estiliza también money-entry
   de la tarjeta seleccionada (borde, fondo del tema, altura44 y foco). No cambia
   formato/envío numérico. Modal existente saldo-favor añade total a aplicar;
   pruebas DOM verifican Cancelar sin guardar y Confirmar un envío. Prueba humana
-  sigue pendiente, no aplicar crédito mediante herramientas.
+  de reversión sigue pendiente, no aplicar crédito mediante herramientas.
 
 - Propietario confirmó que ve los100 disponibles del pago PAG-20261009-000023 en
-  Tus pagos del portal familiar. Aplicación al hermano todavía NO confirmada.
+  Tus pagos del portal familiar; después confirmó aplicación al hermano, como arriba.
 - Distribución muestra tarjeta de saldo a favor con cifra destacada y acción alineada;
   gestión incorpora buscador al form-grid/autocompletado compartido, controles con
   variables del tema, importes/filas responsivas y Cancelar con borde. Sin cambios
@@ -18,8 +54,8 @@
 - Verificado:669 pruebas Java y17 Node sin fallos; render real del detalle validado
   y gestión verifica tarjeta/acción y buscador compartido. Sólo app reconstruida/recreada;
   salud UP y HTTP sirve estilos nuevos, sin cambios de PostgreSQL/volúmenes/.env.
-  revisión visual autenticada queda a cargo del propietario. No publicar aún guía
-  confirmada; no se ejecutaron aplicaciones de crédito mediante herramientas.
+  revisión visual autenticada queda a cargo del propietario. Incorporación editorial
+  del caso principal pendiente; no se ejecutaron aplicaciones por herramientas.
 
 ## V87 — saldo a favor administrativo — 2026-10-09
 

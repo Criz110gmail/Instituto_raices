@@ -37,6 +37,9 @@ class SaldoFavorRenderTest {
         assertThat(response.getContentAsString()).contains("/css/forms.css","Saldo a favor del tutor","$100.00","Historial de aplicaciones",
             "data-money-confirm=\"saldo-favor\"","data-money-confirm=\"saldo-favor-reversion\"","Exportar Excel","Revertir aplicación","Administración",
             "credit-management-card","form-grid credit-search-grid","autocomplete-label","aria-describedby=\"credit-status\"");
+        assertThat(response.getContentAsString()).contains("credit-history-item","Deshacer esta aplicación","Qué operaciones quieres ver",
+            "Reversiones de aplicaciones","Este filtro sólo cambia la lista","No es una devolución de dinero","Registro #9","/saldo-favor/9/revertir");
+        assertThat(response.getContentAsString().split("<summary>",-1)).hasSize(2);
         var validacion=mvc.perform(get("/prueba/validacion")).andReturn().getResponse();
         assertThat(validacion.getStatus()).isEqualTo(200);
         assertThat(validacion.getContentAsString()).contains("received-fields","Importe realmente recibido","Saldo a favor estimado","name=\"montoRecibido\"","hidden");
@@ -61,7 +64,10 @@ class SaldoFavorRenderTest {
             m.addAttribute("accesoRecuperacion",false);m.addAttribute("puedeCancelar",false);m.addAttribute("puedeDevolver",false);
             m.addAttribute("puedeSaldoFavor",true);
             m.addAttribute("resumenDevolucion",new escuela.finanzas.dto.response.ResumenDevolucionPagoResponse(p.getMonto(),BigDecimal.ZERO,BigDecimal.ZERO,p.getMonto(),List.of(),List.of()));
-            m.addAttribute("historial",new PageImpl<>(List.of(new SaldoFavorService.DatoAplicacion(9L,"Hijo 2","Mensualidad",new BigDecimal("40"),"MXN","09/10/2026 10:00","APLICAR","Aplicar al hermano","Administración",true))));
+            m.addAttribute("historial",new PageImpl<>(List.of(
+                new SaldoFavorService.DatoAplicacion(9L,"Hijo 2","Mensualidad",new BigDecimal("40"),"MXN","09/10/2026 10:00","APLICAR","Aplicar al hermano","Administración",true),
+                new SaldoFavorService.DatoAplicacion(10L,"Hijo 1","Inscripción",new BigDecimal("60"),"MXN","09/10/2026 09:00","APLICAR","Aplicación anterior","Administración",false),
+                new SaldoFavorService.DatoAplicacion(11L,"Hijo 1","Inscripción",new BigDecimal("60"),"MXN","09/10/2026 09:30","REVERTIR","Corrección anterior","Administración",false))));
             return request.getRequestURI().endsWith("saldo")?"admin/saldo-favor-form":"admin/pago-detalle";
         }
     }
