@@ -1,5 +1,31 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## ESTADO VIGENTE — prueba anticipada confirmada y guía V90 — 2026-10-09
+
+- Este bloque prevalece sobre el punto de traslado anterior (histórico). Propietario
+  confirmó TODOS los puntos finales: ambos adeudos saldo0, beca200 y descuento80 por mes,
+  pago1440/comprobante familiar, sin esas deudas pendientes y beca20% aún activa.
+  Banco confirmado19730 desde18290. Caso conservar beca20% + beneficio10% CONCLUIDO.
+  No repetir registros ni continuar pidiendo estas comprobaciones como pendientes.
+- V90__guia_pago_anticipado_beca.sql publica sólo contenido editorial: guía CONFIRMADA
+  pago-anticipado-beca-porcentaje con10 etapas,4 acciones cada una,9 permisos existentes
+  requeridos sin otorgar roles. Rutas/módulos/botones, fechas, modales, cálculo por mes,
+  banco/comprobante/portal y precauciones de no duplicar. Validada BEGIN/ROLLBACK.
+  No modifica tablas financieras ni los pagos existentes. No editar V1–V90 aplicadas.
+- Verificación final:687 Java/18 Node sin fallos; diff limpio. Sólo app recreada,
+  salud UP; lectura confirma V90 aplicada, guía CONFIRMADA/10 etapas y19 guías/153 etapas.
+  Pago27 permanece VALIDADO1440 y banco19730; sin operaciones financieras por herramientas,
+  QA visual autenticada ni cambios de volúmenes/.env. Temporales de empaquetado retirados.
+- Guía publicada desde Seguridad y soporte → Guía de procesos.
+  Próxima migración V91. Prueba siguiente propuesta: cancelar el MISMO pago validado
+  id27/PAG-20261009-000024 desde Pagos recibidos → Ver → Gestión → Cancelar pago
+  registrado por error, motivo y modal (NO cancelar cargo, NO devolución). Esperado
+  banco18290, deuda800 por mes, beneficio80 reversado y beca200 conservada, acuerdo1
+  cancelado; trazabilidad completa. Todavía NO realizada ni confirmada por propietario.
+  No ejecutar operaciones financieras por herramientas ni publicar esa cancelación
+  como escenario confirmado. Mensualidad gratis, sustitución/fijo y DUP-TEST200/two-tabs
+  permanecen pendientes. Traslado/Git/BD conserva precauciones del bloque anterior.
+
 ## PUNTO EXACTO PARA RETOMAR EN OTRA COMPUTADORA — 2026-10-09
 
 Esta sección es el estado vigente y prevalece sobre los siguientes pasos históricos

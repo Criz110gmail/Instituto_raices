@@ -2,6 +2,13 @@
 
 ## Retomar en otra computadora — 09/10/2026
 
+Actualización: el propietario ya confirmó todos los resultados del pago anticipado.
+V90 incorpora la guía “Pago anticipado completo: conservar beca del 20% y agregar
+beneficio del 10%”. No repetir el caso. Lo siguiente propuesto es una prueba separada
+de cancelación del mismo pago; todavía no se ha realizado. Consultar el bloque
+ESTADO VIGENTE al inicio de AGENT.md, que prevalece sobre la referencia histórica siguiente.
+Guía publicada, V90 aplicada:19 guías/153 etapas; verificación687Java/18Node sin fallos.
+
 Antes de continuar, leer `AGENTS.md`, `AGENT.md` (primer bloque PUNTO EXACTO) y
 `CONTEXTO_PROYECTO.md`. V89 está implementada; la prueba de beca20% + beneficio10%
 ya tiene pago1440 validado y banco19730 confirmado. Falta revisar noviembre/diciembre

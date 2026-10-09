@@ -1,5 +1,21 @@
 # Contexto del proyecto
 
+## Estado vigente: caso de pago anticipado confirmado — 2026-10-09
+
+El propietario confirmó todos los puntos: dos adeudos0, BECA200/DESCUENTO80 por mes,
+beca20% activa, pago1440/comprobante en portal y sin esos meses pendientes. Banco19730
+desde18290. Caso V89 conservar20%+adicional10% concluido; bloques siguientes históricos.
+V90 añade guía CONFIRMADA pago-anticipado-beca-porcentaje,10 etapas/4 acciones,9 permisos
+requeridos sin asignar roles; sólo contenido editorial, validado BEGIN/ROLLBACK.
+Verificación687 Java/18 Node sin fallos; sólo app recreada, salud UP. V90 aplicada,
+guía CONFIRMADA/10 etapas,19 guías/153 etapas. Pago27 VALIDADO1440/banco19730 intactos.
+Sin operaciones financieras por herramientas, cambios de volumen/.env ni QA visual
+autenticada. Temporales retirados; siguiente V91, no editar V1–V90 aplicadas.
+Siguiente ensayo propuesto (no realizado): cancelar pago27/PAG-20261009-000024,
+no cargo ni devolución, esperado banco18290/deudas800 cada mes/beca200 conservada/
+descuento80 reversado/acuerdo cancelado. No operaciones por herramientas.
+
+
 ## Continuidad prioritaria para otra computadora — 2026-10-09
 
 Estado vigente: V89 implementada/desplegada, próxima migración V90. Ver primer bloque
