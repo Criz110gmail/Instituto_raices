@@ -1,5 +1,13 @@
 # Sistema administrativo escolar
 
+V92 incorpora tres guías confirmadas de pago anticipado: **una mensualidad bonificada
+con beca20% (pago800)**, **sustituir beca sólo en meses seleccionados (pago1800)** y
+**beneficio fijo total200 conservando beca (pago1400)**. Cada una incluye preparación,
+captura, vista previa/modales y comprobaciones de adeudos, banco y portal. No repetir
+pagos ya terminados. Devoluciones del pago1400 y seguridad siguen pendientes.
+Consultar ESTADO VIGENTE de AGENT.md; las referencias siguientes son históricas.
+V92 aplicada:23 guías/195 etapas. Verificación701 Java/19 Node sin fallos; aplicación UP.
+
 Accesos en pestañas abiertas: antes de enviar credenciales los tres logins actualizan
 el token CSRF de la sesión actual; si cambió la sesión, recuperan el acceso del mismo
 portal con un aviso, sin desactivar protección CSRF ni almacenar credenciales.

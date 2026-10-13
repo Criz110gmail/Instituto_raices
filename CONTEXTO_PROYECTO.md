@@ -1,5 +1,23 @@
 # Contexto del proyecto
 
+## Tres variantes anticipadas confirmadas y guías V92 — 2026-10-13
+
+Propietario confirmó05 completo: beca20%, dos bases800, beneficio fijo200TOTAL repartido
+100 por mes, pago1400/abonos700+700/saldos0, banco+1400 y portal/comprobante/beca activa.
+03 mensualidad bonificada pago800 y04 sustitución beca/pago1800 ya confirmados. No repetir.
+V92 agrega tres guías independientes CONFIRMADAS de10 etapas/4 acciones y9 permisos
+requeridos cada una: bonificada, sustituir-beca y beneficio-fijo. Sólo contenido editorial;
+referencias pendientes V90/V91 se actualizan por V92, no se editan migraciones previas.
+SQL comprobado BEGIN/ROLLBACK;701 Java/19 Node sin fallos, sólo app recreada y salud UP.
+Lectura confirma V92 aplicada, tres guías CONFIRMADAS de10 etapas y23 guías/195 etapas.
+Temporales retirados, sin cambios de volumen/.env, QA visual autenticada u operaciones
+financieras por herramientas. Siguiente V93; no editar V1–V92 aplicadas.
+Pendientes: devolver100 parcial de pago05 manteniendo beneficio (noviembre600 abono/
+deuda100; diciembre700/deuda0; banco B+1300), luego restante1300 (abonos600+700),
+devuelto acumulado1400/bancoB/deudas800 por mes/beca200 conservada/beneficio reversado.
+No cancelar pago05, ni dar por hechas devoluciones. Identificar folio vigente en esta BD.
+Duplicados/modal/two-tabs siguen pendientes; no inferir prueba de seguridad por validar05.
+
 ## Meses bonificados visibles en pago validado — 2026-10-13
 
 Error de vista: desglose anterior quedaba oculto porque padre sólo renderizaba pago

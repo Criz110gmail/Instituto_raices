@@ -1,5 +1,36 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## ESTADO VIGENTE — tres variantes confirmadas y guías V92 — 2026-10-13
+
+- Propietario confirmó completo05: dos originales1000/beca200 por mes, conservar beca
+  y beneficio fijo200TOTAL (100 por mes), un pago1400, abonos700+700, ambos saldos0,
+  banco+1400, beca20% activa y comprobante familiar.03 (bonificar diciembre/pago800)
+  y04 (sustituir beca20% por beneficio10%/pago1800) ya estaban confirmadas.
+  No repetir los tres pagos ni seguir pidiendo sus comprobaciones como pendientes.
+- V92__guias_variantes_pago_anticipado.sql publica TRES guías CONFIRMADAS independientes:
+  anticipo-mensualidad-bonificada, anticipo-sustituir-beca y anticipo-beneficio-fijo,
+ 10 etapas/4 acciones cada una,9 permisos existentes requeridos por guía sin asignar roles.
+  Preparación completa por alumno/concepto/beca/cuota/generación, selección aislada,
+  plazo, política, vista previa, modales, pago, validación, desglose y banco/portal/recibo.
+ 03 explica diciembre0 sin aplicación ficticia;04 compensación de beca sólo meses elegidos;
+ 05 fijo200TOTAL, no por mes. Actualiza referencias editoriales pendientes en V90/V91
+  mediante nueva migración, sin modificar archivos aplicados ni datos financieros.
+- SQL comprobado BEGIN/ROLLBACK: tres guías10 etapas/9 permisos. Verificación final:
+ 701 Java/19 Node sin fallos, diff limpio; sólo app recreada, salud UP. Lectura confirma
+ V92 aplicada, tres guías CONFIRMADAS/10 etapas cada una,23 guías/195 etapas totales.
+ Sin operaciones financieras, cambios de volúmenes/.env ni QA visual autenticada por
+ herramientas. Temporales de empaquetado retirados. Próxima V93; no editar V1–V92.
+- SIGUIENTE: devolución parcial100 del MISMO pago1400 de05, manteniendo beneficio,
+  seleccionar sólo abono de noviembre700 → queda abono600/deuda100, diciembre700/deuda0,
+  banco B+1300 (B anterior al pago05). Luego devolver restante1300 de ese mismo pago,
+  seleccionando abonos vigentes600+700, devuelve acumulado1400 y restaura banco B,
+  beca200 por mes y deudas800 por mes, beneficio100 reversado/acuerdo cancelado.
+  NO se han realizado ni confirmado estas devoluciones; no publicarlas como guías
+  confirmadas ni ejecutarlas por herramientas. Confirmar folio/estado/saldo actual de05
+  antes de orientar; no asumir ids o saldo absoluto de otra BD. No cancelar el pago05.
+  DUP-TEST200/duplicados/modal y validación del MISMO folio desde dos pestañas siguen
+  pendientes; cancelar modal sin guardar durante05 no confirma idempotencia en dos pestañas.
+
 ## Distribución03: dos meses visibles también después de validar — 2026-10-13
 
 - Propietario precisó Pagos recibidos → Ver → Distribución, pago800 de03, sólo veía
