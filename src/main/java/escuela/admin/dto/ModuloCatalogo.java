@@ -30,7 +30,7 @@ public enum ModuloCatalogo {
     POLITICAS_RECARGO("politicas-recargo", "Políticas de recargo", List.of("Concepto", "Institución", "Recargo", "Gracia", "Periodicidad", "Límite", "Generación")),
     AVISOS("avisos", "Avisos escolares", List.of()),
     EVENTOS_ESCOLARES("eventos-escolares", "Eventos escolares", List.of()),
-    PAGOS("pagos", "Pagos recibidos", List.of("Folio", "Tutor", "Plantel de registro", "Fecha", "Método", "Origen", "Total recibido", "Distribución", "Total de cargos vinculados", "Saldo actual por pagar", "Comprobantes")),
+    PAGOS("pagos", "Pagos recibidos", List.of("Folio", "Tutor", "Plantel de registro", "Fecha", "Método", "Origen", "Total recibido", "Distribución", "Total de cargos vinculados", "Saldo actual por pagar", "Comprobantes", "Cobertura por alumno / año", "Beneficio anual pactado")),
     MOTIVOS_FINANCIEROS("motivos-financieros", "Motivos financieros", List.of("Código", "Motivo", "Institución", "Naturaleza", "Categoría")),
     CUENTAS_FINANCIERAS("cuentas-financieras", "Cuentas financieras", List.of("Código", "Cuenta", "Alcance", "Tipo", "Institución financiera", "Identificador", "Saldo inicial", "Saldo actual", "Fecha inicial")),
     MOVIMIENTOS_FINANCIEROS("movimientos-financieros", "Movimientos financieros", List.of()),

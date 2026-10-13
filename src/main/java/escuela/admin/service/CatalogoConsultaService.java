@@ -95,6 +95,7 @@ public class CatalogoConsultaService {
     private final CuentaFinancieraRepository cuentaFinancieraRepository;
     private final escuela.finanzas.service.SaldoCuentaFinancieraService saldoCuentaService;
     private final PagoRepository pagoRepository;
+    private final escuela.finanzas.service.CoberturaAnualPagoService coberturaAnual;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
     private final AlcanceDatosService alcanceDatosService;
@@ -186,8 +187,7 @@ public class CatalogoConsultaService {
                             etiqueta(e.getCategoria())));
             case CUENTAS_FINANCIERAS -> consultar(modulo, cuentaFinancieraRepository,
                     textoCuentaFinanciera(f), activo(f), pagina, this::filaCuentaFinanciera);
-            case PAGOS -> consultar(modulo, pagoRepository, textoPago(f).and(escuela.admin.support.RangoFechasCatalogo.pagos(f)),
-                    estado(f, "estado"), pagina, this::filaPago);
+            case PAGOS -> consultarPagos(f,pagina);
             case RETIROS_FONDO, MOVIMIENTOS_FINANCIEROS -> throw new IllegalArgumentException(
                     "Los movimientos usan su consulta especializada");
             case REPORTES_FINANCIEROS -> throw new IllegalArgumentException(
@@ -600,7 +600,16 @@ public class CatalogoConsultaService {
                 FECHA.format(cuenta.getFechaSaldoInicial()));
     }
 
-    private FilaCatalogo filaPago(Pago pago) {
+    private Page<FilaCatalogo> consultarPagos(FiltroCatalogo f,Pageable pagina){
+        var registros=pagoRepository.findAll(textoPago(f).and(escuela.admin.support.RangoFechasCatalogo.pagos(f))
+                .and(estado(f,"estado")).and(alcanceDatosService.especificacion(ModuloCatalogo.PAGOS))
+                .and(escuela.finanzas.service.CoberturaAnualPagoService.filtro(f)),pagina);
+        var coberturas=coberturaAnual.lote(registros.getContent().stream().map(Pago::getId).toList());
+        return registros.map(p->filaPago(p,coberturas.getOrDefault(p.getId(),List.of()).stream()
+                .filter(c->f.anioCobertura()==null||f.anioCobertura().equals(c.anio())).toList()));
+    }
+
+    private FilaCatalogo filaPago(Pago pago,List<escuela.finanzas.dto.response.CoberturaAnualPagoResponse> coberturas) {
         var cargosVinculados = java.util.stream.Stream.concat(
                 pago.getSolicitudes().stream().map(escuela.finanzas.entity.SolicitudAplicacionPago::getCargo),
                 pago.getAplicaciones().stream().map(escuela.finanzas.entity.AplicacionPago::getCargo))
@@ -646,7 +655,9 @@ public class CatalogoConsultaService {
                 formatear(pago.getMonto()), distribucion,
                 cargosVinculados.isEmpty() ? "—" : formatear(totalCargos),
                 cargosVinculados.isEmpty() ? "—" : formatear(saldoCargos),
-                String.valueOf(pago.getComprobantes().size())), estado, tono);
+                String.valueOf(pago.getComprobantes().size()),
+                coberturas.isEmpty()?"Sin año completo":coberturas.stream().map(escuela.finanzas.dto.response.CoberturaAnualPagoResponse::resumen).collect(java.util.stream.Collectors.joining(" | ")),
+                formatear(coberturas.stream().map(escuela.finanzas.dto.response.CoberturaAnualPagoResponse::beneficio).reduce(java.math.BigDecimal.ZERO,java.math.BigDecimal::add))), estado, tono);
     }
 
     private String enmascarar(String valor) {

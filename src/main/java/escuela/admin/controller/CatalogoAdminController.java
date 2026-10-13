@@ -48,6 +48,8 @@ public class CatalogoAdminController {
                     @RequestParam(defaultValue = "VENCIMIENTO") String tipoFecha,
                     @RequestParam(defaultValue = "0") int pagina,
                     @RequestParam(defaultValue = "25") int tamanio,
+                    @RequestParam(defaultValue = "TODOS") String cobertura,
+                    @RequestParam(required = false) Integer anioCobertura,
                     Authentication authentication,
                     Model model) {
         ModuloCatalogo modulo = ModuloCatalogo.desde(slug);
@@ -60,9 +62,10 @@ public class CatalogoAdminController {
         }
         List<ModuloCatalogo> modulos = modulosVisibles(authentication);
         validarPermiso(modulo, modulos);
-        FiltroCatalogo filtro = new FiltroCatalogo(q, estado, fecha, pagina, tamanio, desde, hasta, tipoFecha).normalizado();
+        FiltroCatalogo filtro = new FiltroCatalogo(q, estado, fecha, pagina, tamanio, desde, hasta, tipoFecha,cobertura,anioCobertura).normalizado();
         try {
             filtro.validarRango();
+            if(modulo==ModuloCatalogo.PAGOS)filtro.validarCobertura();
             model.addAttribute("resultado", consultaService.consultar(modulo, filtro));
         } catch (escuela.common.exception.ReglaNegocioException e) {
             model.addAttribute("errorFiltro", e.getMessage());
@@ -80,6 +83,9 @@ public class CatalogoAdminController {
                     Authentication authentication, Model model) {
         return catalogo(slug, q, estado, null, null, null, "VENCIMIENTO", pagina, tamanio, authentication, model);
     }
+    String catalogo(String slug,String q,String estado,LocalDate fecha,LocalDate desde,LocalDate hasta,String tipoFecha,int pagina,int tamanio,Authentication authentication,Model model){
+        return catalogo(slug,q,estado,fecha,desde,hasta,tipoFecha,pagina,tamanio,"TODOS",null,authentication,model);
+    }
 
     @GetMapping("/admin/catalogos/{slug}/excel")
     void excel(@PathVariable String slug,
@@ -89,16 +95,22 @@ public class CatalogoAdminController {
                @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso=org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate desde,
                @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso=org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate hasta,
                @RequestParam(defaultValue = "VENCIMIENTO") String tipoFecha,
+               @RequestParam(defaultValue = "TODOS") String cobertura,
+               @RequestParam(required = false) Integer anioCobertura,
                Authentication authentication,
                HttpServletResponse response) throws IOException {
         ModuloCatalogo modulo = ModuloCatalogo.desde(slug);
         validarPermiso(modulo, modulosVisibles(authentication));
-        FiltroCatalogo filtro=new FiltroCatalogo(q,estado,fecha,0,100,desde,hasta,tipoFecha).normalizado();
+        FiltroCatalogo filtro=new FiltroCatalogo(q,estado,fecha,0,100,desde,hasta,tipoFecha,cobertura,anioCobertura).normalizado();
         filtro.validarRango();
+        if(modulo==ModuloCatalogo.PAGOS)filtro.validarCobertura();
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         String nombre = URLEncoder.encode(modulo.slug() + "-filtrado.xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + nombre);
         excelService.exportar(modulo, filtro, response.getOutputStream());
+    }
+    void excel(String slug,String q,String estado,LocalDate fecha,LocalDate desde,LocalDate hasta,String tipoFecha,Authentication authentication,HttpServletResponse response)throws IOException{
+        excel(slug,q,estado,fecha,desde,hasta,tipoFecha,"TODOS",null,authentication,response);
     }
 
     private List<ModuloCatalogo> modulosVisibles(Authentication authentication) {

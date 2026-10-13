@@ -16,11 +16,13 @@ public class ExcelCatalogoService {
     private final CatalogoConsultaService consultaService;
 
     public void exportar(ModuloCatalogo modulo, FiltroCatalogo filtro, OutputStream salida) throws IOException {
-        filtro.validarRango();
+        filtro=filtro.normalizado();filtro.validarRango();if(modulo==ModuloCatalogo.PAGOS)filtro.validarCobertura();
         try (SXSSFWorkbook libro = new SXSSFWorkbook(200)) {
             libro.setCompressTempFiles(true);
             Sheet hoja = libro.createSheet(modulo.titulo());
             CellStyle encabezado = encabezado(libro);
+            CellStyle coberturaEstilo=libro.createCellStyle();coberturaEstilo.setWrapText(true);
+            CellStyle beneficioEstilo=libro.createCellStyle();beneficioEstilo.setDataFormat(libro.createDataFormat().getFormat("#,##0.00"));
             Row filaEncabezado = hoja.createRow(0);
             int columna = 0;
             for (String titulo : modulo.columnas()) {
@@ -37,17 +39,23 @@ public class ExcelCatalogoService {
             ResultadoCatalogo bloque;
             do {
                 bloque = consultaService.consultar(modulo,
-                        new FiltroCatalogo(filtro.q(), filtro.estado(), filtro.fecha(), pagina++, 100, filtro.desde(), filtro.hasta(), filtro.tipoFecha()));
+                        new FiltroCatalogo(filtro.q(), filtro.estado(), filtro.fecha(), pagina++, 100, filtro.desde(), filtro.hasta(), filtro.tipoFecha(),filtro.cobertura(),filtro.anioCobertura()));
                 for (FilaCatalogo dato : bloque.pagina().getContent()) {
                     Row fila = hoja.createRow(numeroFila++);
                     int c = 0;
-                    for (String valor : dato.celdas()) fila.createCell(c++).setCellValue(valor);
+                    for (String valor : dato.celdas()) {
+                        Cell celda=fila.createCell(c);
+                        if(modulo==ModuloCatalogo.PAGOS&&c==12){celda.setCellValue(new java.math.BigDecimal(valor.replace("$","").replace(",","").trim()).doubleValue());celda.setCellStyle(beneficioEstilo);}
+                        else {celda.setCellValue(valor);if(modulo==ModuloCatalogo.PAGOS&&c==11){celda.setCellStyle(coberturaEstilo);fila.setHeightInPoints(60);}}
+                        c++;
+                    }
                     fila.createCell(c).setCellValue(dato.estado());
                 }
             } while (pagina < bloque.pagina().getTotalPages());
 
             hoja.createFreezePane(0, 1);
             for (int i = 0; i <= modulo.columnas().size(); i++) hoja.setColumnWidth(i, 22 * 256);
+            if(modulo==ModuloCatalogo.PAGOS)hoja.setColumnWidth(11,60*256);
             libro.write(salida);
             libro.dispose();
         }

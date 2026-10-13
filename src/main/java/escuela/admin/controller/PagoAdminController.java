@@ -58,6 +58,7 @@ public class PagoAdminController {
     private final JasperComprobantePagoService jasperComprobante;
     private final escuela.finanzas.service.SaldoFavorService saldoFavor;
     private final escuela.cobranza.service.AcuerdoAnticipadoService anticipos;
+    private final escuela.finanzas.service.CoberturaAnualPagoService coberturaAnual;
 
     @GetMapping("/nuevo")
     String nuevo(@RequestParam(required = false) Long cargoId,
@@ -202,6 +203,7 @@ public class PagoAdminController {
         model.addAttribute("pago", pago);
         model.addAttribute("datosImporte",saldoFavor.datosValidacion(pago.id()));
         model.addAttribute("anticipo",anticipos.obtenerPorPago(pago.id()));
+        model.addAttribute("coberturasAnuales",coberturaAnual.dePago(pago.id()));
         model.addAttribute("puedeSaldoFavor",authentication!=null && authentication.getAuthorities().stream()
           .anyMatch(a->a.getAuthority().equals("PAGO_VALIDAR")||a.getAuthority().equals("PAGO_CANCELAR")));
         String zona = institucionService.obtener(pago.institucionId()).zonaHoraria();

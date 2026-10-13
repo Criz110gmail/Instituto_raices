@@ -128,6 +128,14 @@
 .anticipation-payment-followup { display:grid; justify-items:start; gap:12px; margin-top:20px; padding-top:18px; border-top:1px solid var(--line); min-width:0; }
 .anticipation-payment-followup .payment-list-button { max-width:100%; white-space:normal; overflow-wrap:anywhere; text-align:center; }
 .anticipation-payment-followup .field-help { margin:0; line-height:1.6; }
+.annual-payment-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr)); }
+.annual-payment-card { padding:20px; border:1px solid var(--line); border-radius:16px; background:var(--white,#fff); min-width:0; overflow-wrap:anywhere; }
+.annual-payment-card h3 { margin:12px 0; }
+.annual-coverage-summary { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:18px; }
+.annual-coverage-summary button { max-width:100%; white-space:normal; text-align:left; cursor:pointer; }
+.annual-coverage-summary button>span:first-child { display:grid; gap:4px; min-width:0; overflow-wrap:anywhere; }
+.annual-coverage-summary small { font-size:.74rem; font-weight:500; }
+[data-theme=dark] .annual-payment-card { background:#0e1d31; }
 .anticipo-file-input { border:1px solid var(--line); border-radius:10px; padding:12px; background:var(--surface); color:var(--ink); }
 .anticipo-file-input::file-selector-button { border:1px solid var(--line); border-radius:8px; padding:8px 12px; margin-right:12px; background:var(--soft); color:var(--ink); font:inherit; cursor:pointer; }
 .form-grid #bonus-month-field[hidden],.form-grid #bonus-value-field[hidden] { display:none; }
@@ -433,6 +441,22 @@
 .payment-principle:after { content: ''; position: absolute; right: -42px; bottom: -62px; width: 170px; height: 170px; border-radius: 50%; background: color-mix(in srgb,#159c8d 10%,transparent); pointer-events: none; }
 .payment-status-heading { position: relative; z-index: 1; display: flex; align-items: center; gap: 13px; }
 .payment-status-heading > div { min-width: 0; }
+.payment-identity { display:flex; align-items:center; justify-content:space-between; gap:16px 24px; flex-wrap:wrap; }
+.payment-identity .payment-status-heading { flex:1 1 260px; min-width:0; overflow-wrap:anywhere; }
+.payment-identity-amount { position:relative; z-index:1; min-width:0; text-align:right; }
+.payment-identity .payment-identity-amount strong { font-size:clamp(1.4rem,3vw,1.9rem); overflow-wrap:anywhere; }
+.payment-resolution-note { margin-bottom:18px; }
+#panel-pago-resumen { --payment-summary-gutter:34px; }
+#panel-pago-resumen > .form-intro { padding-inline:var(--payment-summary-gutter); text-align:left; }
+#panel-pago-resumen > .payment-resolution-note { margin:18px var(--payment-summary-gutter); }
+#panel-pago-resumen > .detail-section { padding-inline:var(--payment-summary-gutter); }
+#panel-pago-resumen > .annual-coverage-summary { margin:18px var(--payment-summary-gutter); }
+#panel-pago-resumen .form-notice p { margin:8px 0 0; line-height:1.6; color:var(--muted); font-size:.82rem; }
+#panel-pago-resumen .form-notice > .payment-list-button { margin-top:16px; }
+#panel-pago-resumen .payment-list-button { justify-content:flex-start; box-sizing:border-box; max-width:100%; font-family:inherit; font-size:.8rem; line-height:1.45; white-space:normal; text-align:left; }
+#panel-pago-resumen .annual-coverage-summary button > span:last-child { margin-left:auto; }
+@media(max-width:720px) { #panel-pago-resumen { --payment-summary-gutter:20px; } #panel-pago-resumen .annual-coverage-summary button { width:100%; } }
+@media(max-width:600px) { .payment-identity-amount { flex:1 1 100%; text-align:left; } }
 .payment-status-icon { display: grid!important; flex: 0 0 42px; width: 42px; height: 42px; place-items: center; border-radius: 13px; background: #dff4ef; color: #08785f!important; font-size: 1.15rem!important; letter-spacing: 0!important; }
 .payment-principle.resolved-success { border-color: #55c7a5; background: linear-gradient(135deg,#e9fbf4,#f5fffb); }
 .payment-principle.resolved-success .payment-status-icon { background: #ccefe3; color: #06745b!important; }

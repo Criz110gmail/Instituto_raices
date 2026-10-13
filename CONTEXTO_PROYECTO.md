@@ -1,5 +1,96 @@
 # Contexto del proyecto
 
+## Márgenes y botones de Resumen alineados — 2026-10-13
+
+Se corrigen bloques que quedaron sin margen al mover expediente al panel: intro,
+explicación, acuerdo y acceso Año completo comparten34px escritorio/20px móvil.
+Párrafos y botones del acuerdo/año con tipografía/espaciado uniformes y alineación
+izquierda, ancho adaptable. Sólo CSS local de Resumen, sin operaciones financieras.
+3Java de render y1Node de pestañas aprobados, diff limpio; sólo app actualizada,
+salud UP. Sin QA visual autenticada. V94 libre; pruebas pendientes no cambian.
+
+## Detalle de pago organizado dentro de sus pestañas — 2026-10-13
+
+Expediente financiero y aviso del acuerdo anticipado se trasladan a Resumen junto
+con tutor/plantel, explicación del estado, datos y movimiento. Encima del navegador
+sólo quedan folio, estado e importe recibido registrado en encabezado compacto y
+responsivo; se conservan colores compartidos. Sin pestaña redundante ni cambios a
+Distribución/Gestión/Devoluciones/Comprobantes/Cobertura anual o sus operaciones.
+Render verifica cuatro estados con/sin acuerdo y contenido dentro del panel:
+11Java específicos y1Node de pestañas sin fallos, diff limpio; sólo app recreada,
+salud UP. Temporales retirados, sin QA visual autenticada ni cambios financieros.
+V94 libre; anual humano, devoluciones05 y seguridad siguen pendientes.
+
+## Pestaña Cobertura anual en detalle de pago — 2026-10-13
+
+Se mueve información anual extensa a panel propio del nav compartido; sólo visible
+si pago tiene cobertura anual. Resumen conserva botón compacto año/estado/alumno/concepto
+que abre pestaña y transfiere foco. Hash #cobertura-anual-pago, teclado/flechas compartidos;
+sin tab/panel/acceso para pagos no anuales. Distribución mensual no cambia ni finanzas.
+Render nav/panel/resumen condicionales y prueba DOM:710Java/20Node sin fallos,
+JS/diff limpios; sólo app recreada, saludUP y CSS servido. Sin QA visual autenticada.
+V94 libre, guía anual requiere confirmación humana; devoluciones05/seguridad pendientes.
+
+## Alineación de filtros de pagos — 2026-10-13
+
+Por página vuelve a primera fila junto Buscar/Estado; cobertura y año alineados en
+bloque propio, fechas en otro y acciones al final. Clase local filters-payments,
+campos44px/gaps uniformes, tema compartido, tablet2columnas y móvil1. No afecta otros
+módulos ni criterios DB/Excel. Sin migración o movimientos, V94 libre.
+CatalogoRangosRenderTest aprobado, diff limpio; sólo app recreada, salud UP/CSS servido.
+Sin QA visual autenticada ni operaciones financieras; anual humano y devoluciones05/
+seguridad pendientes.
+
+## Recuperación silenciosa del acceso con cookie caducada — 2026-10-13
+
+Diagnóstico reproducido: tokenGET con cookie caducada devuelve302/login?sesionExpirada;
+frontend anterior lo mostraba como error de conexión. Ahora consultaGET se reintenta
+una vez sólo para ese redirect mismo origen. Máximo2 GET y1 POST/login; no reenvía
+credenciales ni modifica CSRF. Errores de red/servicio/sesión diferenciados y sin envío.
+Tres portales, sin backend/migración/movimientos.16Java de sesión/CSRF y19Node sin
+fallos; JS/diff limpios. Sólo app recreada, salud UP; HTTP con cookie ficticia confirma
+redirect302 y segundoGET correcto sin credenciales. Temporales retirados, sin QA visual
+autenticada ni movimientos financieros.
+V94 libre, anual humano y devoluciones05/seguridad siguen pendientes.
+
+## Cobertura anual derivada y filtros V93 — 2026-10-13
+
+Autorizado: etiqueta año completo por alumno/concepto/moneda/plantel/año del MISMO pago,
+12 meses distintos y12 cargos de colegiatura, incluye bonificado0 de acuerdo. No mezcla
+hermanos, conceptos, años o cargos duplicados. V93 vista/función de consulta, no escribe
+registros financieros ni concede roles. Reconoce también pago ordinario de12 meses.
+Estado derivado pendiente/liquidado/no vigente/no liquidado; liquida sólo si abonos propios
+y ajustes cubren cada cargo emitido, con pago validado/acuerdo aplicado. Devoluciones
+que reabren deuda dejan de ser anual liquidado, historial conservado.
+Pagos recibidos: columnas cobertura/beneficio pactado, filtros tipo/año cubierto antes
+de paginación DB, alcance vigente; enlaces/paginación/Excel mantienen filtros. Año del
+pago2026 puede cubrir2027. Detalle: tarjetas12/12, meses pagados/bonificados, estado,
+beneficio y aplicaciones actuales. Excel POI por100, beneficio numérico y texto ajustado.
+Consulta de desglose por lote, no N+1 por pago; recurso individual valida alcance.
+Pruebas SQL aisladas con10 escenarios ficticios, PostgreSQL sin red/volúmenes retirado;
+no operaciones financieras en BD real. DDL real BEGIN/ROLLBACK.709Java/19Node sin fallos,
+diff limpio; sólo app recreada, salud UP, V93 aplicada. Cobertura2027 sigue PENDIENTE,
+12 meses/1bonificado, sin validar por herramientas. Temporales retirados, sin QA visual
+autenticada. Guías23/195 intactas.
+Guías23/195 intactas; anual humano no confirmado,05 devoluciones/seguridad pendientes.
+Próxima V94; no editar V1–V93 aplicadas ni inventar movimiento0.
+
+## Ejemplo anual y propuesta de identificación — 2026-10-13
+
+Propietario revisa pago anual antes de validar: ejemplo enero–diciembre2027 sin beca,
+12x1000/bonificación diciembre1000/pago11000; no confirmado, sin guía anual aprobada.
+Se explicó cobertura de inscripción/ciclo (el conocido termina15/06/2027, insuficiente
+para todo2027). No falsear fechas ni suponer datos nuevos de inscripción/BD.
+Se formatean periodos del acuerdo en dd/MM/uuuu para Distribución y detalle, ayudas,
+vista previa y Excel; sólo presentación. Regresión enero/diciembre y febrero bisiesto.
+Propuesta pendiente de autorizar: etiqueta Año completo por alumno/concepto y12 meses
+distintos mismo año, incluido mes bonificado; estado propuesto/validado/cancelado/devuelto
+sin fingir liquidación. Filtros cobertura/año cubierto, no sólo fecha del pago (2026
+puede cubrir2027), reporte tutor/alumno/meses/importe/beneficio con paginación y Excel.
+No implementada clasificación anual ni nuevos filtros en este turno. V93 libre.
+Formato verificado703 Java/19 Node sin fallos, diff limpio; sólo app recreada y salud UP.
+Sin operaciones financieras ni QA visual autenticada; clasificación anual aún propuesta.
+
 ## Tres variantes anticipadas confirmadas y guías V92 — 2026-10-13
 
 Propietario confirmó05 completo: beca20%, dos bases800, beneficio fijo200TOTAL repartido

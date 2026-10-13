@@ -8,26 +8,46 @@
 <link rel="stylesheet" href="/css/money-input.css"><script src="/js/money-input.js" defer></script></head>
 <body class="form-page"><main class="form-shell payment-shell">
 <header class="form-top"><a class="payment-back-link" href="/admin/catalogos/pagos"><span aria-hidden="true">←</span> Volver al listado</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
-<div class="finance-principle payment-principle" th:classappend="${pago.estado.name() == 'VALIDADO'} ? ' resolved-success' : (${pago.estado.name() == 'RECHAZADO' or pago.estado.name() == 'CANCELADO'} ? ' resolved-rejected' : '')">
+<div th:fragment="paymentIdentity" class="finance-principle payment-principle payment-identity" th:classappend="${pago.estado.name() == 'VALIDADO'} ? ' resolved-success' : (${pago.estado.name() == 'RECHAZADO' or pago.estado.name() == 'CANCELADO'} ? ' resolved-rejected' : '')">
     <div class="payment-status-heading"><span class="payment-status-icon" aria-hidden="true" th:text="${pago.estado.name() == 'VALIDADO'} ? '✓' : (${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? '…' : '×')">…</span><div><span th:text="${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? 'Recepción pendiente' : (${pago.estado.name() == 'VALIDADO'} ? 'Ingreso confirmado' : (${pago.estado.name() == 'CANCELADO'} ? 'Pago cancelado' : 'Recepción rechazada'))">Estado</span><strong th:text="${pago.folio}">Folio</strong></div></div>
-    <p th:if="${pago.estado.name() == 'PENDIENTE_VALIDACION'}">Revisa la cuenta destino y la distribución antes de confirmar. La operación se publicará completa o no se guardará.</p>
-    <p th:if="${pago.estado.name() == 'VALIDADO'}">El ingreso y las aplicaciones por alumno quedaron publicados de forma indivisible.</p>
-    <p th:if="${pago.estado.name() == 'RECHAZADO'}">El comprobante se conserva para trazabilidad; no se afectaron cargos ni cuentas.</p>
-    <p th:if="${pago.estado.name() == 'CANCELADO'}">Este pago se registró por error. Su historial permanece visible y, si había sido validado, se compensaron el ingreso y sus aplicaciones.</p>
+    <div class="payment-identity-amount"><span>Importe recibido registrado</span><strong th:text="${@formatoMoneda.pesos(pago.monto)}">Monto</strong></div>
 </div>
 <section class="form-card payment-card">
     <div class="flash" th:if="${mensaje}" th:text="${mensaje}"></div>
     <div class="form-error operation-error" th:if="${errorOperacion}" th:text="${errorOperacion}"></div>
-    <div class="form-intro finance-intro"><span>Expediente financiero</span><h1 th:text="${@formatoMoneda.pesos(pago.monto)}">Monto</h1><p th:text="${pago.tutorNombre + ' · ' + pago.plantelRegistroNombre}">Tutor</p></div>
-    <section class="detail-section" th:if="${anticipo != null}"><div class="form-notice"><strong>Pago completo de un acuerdo anticipado</strong><p th:text="${anticipo.folio+' · beneficio '+@formatoMoneda.pesos(anticipo.beneficio)+' · total acordado '+@formatoMoneda.pesos(anticipo.pagar)}"></p><p>El beneficio y cualquier sustitución de beca se hacen efectivos únicamente al validar el importe completo. Cancelar el pago restaura las condiciones anteriores; una devolución parcial requiere revisión y conserva el beneficio, mientras devolver todo lo revierte.</p><a class="payment-list-button" th:href="@{/admin/convenios-pago/anticipados/{id}(id=${anticipo.id})}">Ver acuerdo y mensualidades</a></div></section>
-    <nav class="student-tablist standalone-record-tabs payment-record-tabs" role="tablist" aria-label="Secciones del expediente del pago" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'resumen' : pestanaActiva}">
+    <nav th:fragment="paymentNavigation" class="student-tablist standalone-record-tabs payment-record-tabs" role="tablist" aria-label="Secciones del expediente del pago" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'resumen' : pestanaActiva}">
         <button type="button" role="tab" id="tab-pago-resumen" aria-controls="panel-pago-resumen" data-student-tab="resumen" data-tab-hash="#resumen-pago"><span aria-hidden="true">01</span><strong>Resumen</strong><small>Datos y movimiento</small></button>
         <button type="button" role="tab" id="tab-pago-distribucion" aria-controls="panel-pago-distribucion" data-student-tab="distribucion" data-tab-hash="#distribucion-pago"><span aria-hidden="true">02</span><strong>Distribución</strong><small>Cargos y alumnos</small></button>
         <button type="button" role="tab" id="tab-pago-gestion" aria-controls="panel-pago-gestion" data-student-tab="gestion" data-tab-hash="#gestion-pago"><span aria-hidden="true">03</span><strong>Gestión</strong><small>Validar o corregir</small></button>
         <button th:if="${pago.estado.name() == 'VALIDADO'}" type="button" role="tab" id="tab-pago-devoluciones" aria-controls="panel-pago-devoluciones" data-student-tab="devoluciones" data-tab-hash="#devoluciones-pago"><span aria-hidden="true">04</span><strong>Devoluciones</strong><small>Historial y registro</small></button>
         <button type="button" role="tab" id="tab-pago-comprobantes" aria-controls="panel-pago-comprobantes" data-student-tab="comprobantes" data-tab-hash="#comprobantes-pago"><span aria-hidden="true" th:text="${pago.estado.name() == 'VALIDADO' ? '05' : '04'}">05</span><strong>Comprobantes</strong><small>Archivos y PDF</small></button>
+        <button th:if="${coberturasAnuales != null and !coberturasAnuales.empty}" type="button" role="tab" id="tab-pago-anual" aria-controls="panel-pago-anual" data-student-tab="anual" data-tab-hash="#cobertura-anual-pago"><span aria-hidden="true" th:text="${pago.estado.name() == 'VALIDADO' ? '06' : '05'}">06</span><strong>Cobertura anual</strong><small>Año y mensualidades</small></button>
     </nav>
-    <div id="panel-pago-resumen" class="payment-tab-panel student-tab-panel" data-student-panel="resumen" role="tabpanel" aria-labelledby="tab-pago-resumen">
+    <div id="panel-pago-anual" th:fragment="annualCoveragePanel" class="payment-tab-panel student-tab-panel" data-student-panel="anual" role="tabpanel" aria-labelledby="tab-pago-anual" th:if="${coberturasAnuales != null and !coberturasAnuales.empty}" hidden>
+    <section class="detail-section" th:fragment="annualCoverage" th:if="${coberturasAnuales != null and !coberturasAnuales.empty}">
+        <div class="section-heading"><div><span>Cobertura anual por alumno</span><h2>Años completos incluidos en este pago</h2></div></div>
+        <div class="annual-payment-grid"><article class="annual-payment-card" th:each="anual : ${coberturasAnuales}">
+            <span class="status" th:classappend="${anual.estado=='LIQUIDADO'?' positivo':(anual.estado=='NO_VIGENTE'?' cancelado':' aviso')}" th:text="${anual.estadoTexto}"></span>
+            <h3 th:text="${'Año completo '+anual.anio+' · 12/12 meses'}"></h3>
+            <strong th:text="${anual.alumno+' · '+anual.matricula}"></strong><p th:text="${anual.concepto}"></p>
+            <div class="distribution-total"><span><small>Meses pagados completos</small><strong th:text="${anual.mesesPagados}"></strong></span><span><small>Meses bonificados pactados</small><strong th:text="${anual.mesesBonificados}"></strong></span><span><small>Beneficio anual pactado</small><strong th:text="${@formatoMoneda.pesos(anual.beneficio)}"></strong></span></div>
+            <p class="field-help" th:text="${'Abonos vigentes de este pago a estas mensualidades: '+@formatoMoneda.pesos(anual.aplicado)+' '+anual.moneda}"></p>
+            <p class="field-help">El estado se calcula con los abonos vigentes y las condiciones del acuerdo; una propuesta no es un año liquidado. Las bonificaciones pactadas de un acuerdo cancelado sólo son históricas.</p>
+        </article></div>
+    </section>
+    </div>
+    <div id="panel-pago-resumen" th:fragment="paymentSummary" class="payment-tab-panel student-tab-panel" data-student-panel="resumen" role="tabpanel" aria-labelledby="tab-pago-resumen">
+    <div class="form-intro finance-intro"><span>Expediente financiero</span><h1>Resumen del pago</h1><p th:text="${pago.tutorNombre + ' · ' + pago.plantelRegistroNombre}">Tutor</p></div>
+    <div class="form-notice payment-resolution-note">
+        <p th:if="${pago.estado.name() == 'PENDIENTE_VALIDACION'}">Revisa la cuenta destino y la distribución antes de confirmar. La operación se publicará completa o no se guardará.</p>
+        <p th:if="${pago.estado.name() == 'VALIDADO'}">El ingreso y las aplicaciones por alumno quedaron publicados de forma indivisible.</p>
+        <p th:if="${pago.estado.name() == 'RECHAZADO'}">El comprobante se conserva para trazabilidad; no se afectaron cargos ni cuentas.</p>
+        <p th:if="${pago.estado.name() == 'CANCELADO'}">Este pago se registró por error. Su historial permanece visible y, si había sido validado, se compensaron el ingreso y sus aplicaciones.</p>
+    </div>
+    <section class="detail-section" th:if="${anticipo != null}"><div class="form-notice"><strong>Pago completo de un acuerdo anticipado</strong><p th:text="${anticipo.folio+' · beneficio '+@formatoMoneda.pesos(anticipo.beneficio)+' · total acordado '+@formatoMoneda.pesos(anticipo.pagar)}"></p><p>El beneficio y cualquier sustitución de beca se hacen efectivos únicamente al validar el importe completo. Cancelar el pago restaura las condiciones anteriores; una devolución parcial requiere revisión y conserva el beneficio, mientras devolver todo lo revierte.</p><a class="payment-list-button" th:href="@{/admin/convenios-pago/anticipados/{id}(id=${anticipo.id})}">Ver acuerdo y mensualidades</a></div></section>
+    <div class="annual-coverage-summary" th:fragment="annualSummary" th:if="${coberturasAnuales != null and !coberturasAnuales.empty}">
+        <button type="button" class="payment-list-button" th:each="anual : ${coberturasAnuales}" data-open-student-tab="anual" data-focus-student-tab="true" aria-controls="panel-pago-anual"><span><strong th:text="${'Año completo '+anual.anio+' · '+anual.estadoTexto}"></strong><small th:text="${anual.alumno+' · '+anual.concepto}"></small></span><span aria-hidden="true">→</span></button>
+    </div>
     <div class="payment-detail-grid">
         <article><small>Estado</small><strong class="pending-badge" th:classappend="${pago.estado.name() == 'VALIDADO'} ? ' success' : (${pago.estado.name() == 'RECHAZADO' or pago.estado.name() == 'CANCELADO'} ? ' rejected' : '')" th:text="${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? 'Pendiente de validación' : (${pago.estado.name() == 'VALIDADO'} ? 'Validado' : (${pago.estado.name() == 'CANCELADO'} ? 'Cancelado' : 'Rechazado'))">Estado</strong></article>
         <article><small>Fecha del pago</small><strong th:text="${fechaPagoLocal}">Fecha</strong></article>

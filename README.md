@@ -1,5 +1,20 @@
 # Sistema administrativo escolar
 
+## Identificar pagos que cubren todo el año (V93)
+
+En **Administración → Finanzas → Pagos recibidos**, selecciona **Tipo de cobertura →
+Año completo — liquidado**, captura **Año cubierto**, por ejemplo2027, y pulsa Aplicar
+filtros. La consulta exige enero–diciembre del mismo alumno y concepto en ese pago,
+incluye mensualidades bonificadas, y distingue pendiente/cancelado/no liquidado. No basta
+tener12 cargos mezclados de varios hijos o conceptos. El rango de fechas del pago es
+independiente: puedes recibir en2026 dinero para cubrir2027. Exportar Excel mantiene
+todos los criterios y agrega cobertura por alumno/año y beneficio anual pactado.
+
+En **Ver** del pago aparece una tarjeta por año completo con alumno, concepto, estado,
+meses pagados/bonificados y abonos actuales. Una devolución que reabre deuda ya no
+aparece como anual liquidado. Las condiciones canceladas siguen como historia, no
+como dinero recibido. La clasificación es automática y de consulta; no mueve saldos.
+
 V92 incorpora tres guías confirmadas de pago anticipado: **una mensualidad bonificada
 con beca20% (pago800)**, **sustituir beca sólo en meses seleccionados (pago1800)** y
 **beneficio fijo total200 conservando beca (pago1400)**. Cada una incluye preparación,
@@ -11,6 +26,9 @@ V92 aplicada:23 guías/195 etapas. Verificación701 Java/19 Node sin fallos; apl
 Accesos en pestañas abiertas: antes de enviar credenciales los tres logins actualizan
 el token CSRF de la sesión actual; si cambió la sesión, recuperan el acceso del mismo
 portal con un aviso, sin desactivar protección CSRF ni almacenar credenciales.
+Si esa consulta detecta una cookie caducada y el servidor renueva el acceso, se repite
+automáticamente una sola vez; las credenciales se envían únicamente después de obtener
+el token correcto. Fallos reales distinguen conexión, servicio o cambio repetido de sesión.
 En Distribución de pagos anticipados, el desglose del acuerdo incluye mensualidades
 bonificadas sin abono; los abonos reales no incluyen aplicaciones ficticias de importe0.
 

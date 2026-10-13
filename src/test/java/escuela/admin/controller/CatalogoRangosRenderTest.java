@@ -29,10 +29,16 @@ class CatalogoRangosRenderTest {
         var mvc=MockMvcBuilders.standaloneSetup(new CatalogoAdminController(consulta,mock(ExcelCatalogoService.class))).setViewResolvers(views).build();
         var auth=new TestingAuthenticationToken("admin","","CARGO_LEER","CUOTA_ALUMNO_LEER","PAGO_LEER");
         for(String slug:new String[]{"cargos","cuotas-alumno","pagos"}) {
-            var response=mvc.perform(get("/admin/catalogos/"+slug).principal(auth).param("desde","2026-10-01").param("hasta","2026-10-31").param("tipoFecha","REGISTRO").param("tamanio","10")).andReturn().getResponse();
+            var response=mvc.perform(get("/admin/catalogos/"+slug).principal(auth).param("desde","2026-10-01").param("hasta","2026-10-31").param("tipoFecha","REGISTRO").param("tamanio","10").param("cobertura","ANUAL_LIQUIDADO").param("anioCobertura","2027")).andReturn().getResponse();
             assertThat(response.getStatus()).isEqualTo(200);
             assertThat(response.getContentAsString()).contains("Filtrar por fechas","Mes anterior","desde=2026-10-01","hasta=2026-10-31","tipoFecha=REGISTRO","pagina=1");
             assertThat(response.getContentAsString()).contains("class=\"catalogo-filter-actions\"");
+            if(slug.equals("pagos"))assertThat(response.getContentAsString()).contains("Tipo de cobertura","Año cubierto","anioCobertura=2027","cobertura=ANUAL_LIQUIDADO");
+            if(slug.equals("pagos")){
+                var html=response.getContentAsString();
+                assertThat(html).contains("filters-payments");
+                assertThat(html.indexOf("Por página")).isLessThan(html.indexOf("Cobertura de mensualidades"));
+            }else assertThat(response.getContentAsString()).doesNotContain("filters-payments");
         }
         verify(consulta,times(3)).consultar(any(),argThat(f->LocalDate.of(2026,10,1).equals(f.desde())&&LocalDate.of(2026,10,31).equals(f.hasta())));
     }

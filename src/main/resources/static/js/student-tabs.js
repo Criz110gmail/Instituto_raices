@@ -50,7 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.querySelectorAll('[data-open-student-tab]').forEach(link => {
-        link.addEventListener('click', () => activate(link.dataset.openStudentTab, false));
+        link.addEventListener('click', () => {
+            activate(link.dataset.openStudentTab, false);
+            if (link.dataset.focusStudentTab === 'true')
+                tabs.find(tab => tab.dataset.studentTab === link.dataset.openStudentTab)?.focus();
+        });
     });
 
     const panelWithErrors = panels.find(panel => [...panel.querySelectorAll('small[id$="errors"],.field-error')]

@@ -818,3 +818,15 @@ real conserva saldo a favor. Cancelación/restauración usa reversas; devolució
 revisada conserva beneficio, devolución acumulada total lo revierte. Protege ajustes y
 cancelaciones aislados de cargos aplicados. Snapshot/alcance/actor/fecha/versiones se
 revalidan; auditado en acciones ANTICIPO_PROPUESTO/APLICADO/CANCELADO. Prueba humana pendiente.
+
+ACTUALIZACIÓN V93 — COBERTURA ANUAL DE PAGOS (2026-10-13)
+Reporte derivado de Pago, Cargo, solicitudes/aplicaciones y detalles de acuerdo, sin
+nueva entidad mutable ni bandera editable. Año completo requiere12 meses distintos,
+12 cargos de colegiatura del mismo alumno/concepto/plantel/moneda/año en el mismo pago.
+Puede atravesar inscripciones compatibles y debe incluir mensualidad bonificada sin
+aplicación0 ficticia. Pago ordinario también puede cubrir el año. Estado de liquidación
+depende de abonos netos propios y cargos emitidos/ajustes vigentes, pago validado y
+acuerdo aplicado cuando exista; devolución que reabre deuda elimina clasificación
+LIQUIDADO sin borrar historia. Consulta por alcance de pago, filtros en DB y lotes por
+página; año cubierto difiere del año de recepción. Excel conserva filtros y no duplica
+el ingreso por cada alumno o año cubierto. V93 sólo crea vista y función de consulta.

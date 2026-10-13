@@ -8,3 +8,21 @@
 .catalogo-rango-error{margin:0 26px 16px;padding:12px 16px;border:1px solid currentColor;border-radius:10px;color:#c64242;font-size:.85rem}
 [data-theme=dark] .catalogo-rango-error{color:#ff9999}
 @media(max-width:560px){.filters .catalogo-rango{grid-template-columns:1fr}.catalogo-rango-error{margin-inline:18px}}
+
+/* Pagos: tres filas alineadas, sin cambiar los controles y colores compartidos. */
+.filters.filters-payments{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:end}
+.filters.filters-payments>label{grid-column:auto;min-width:0}
+.filters.filters-payments label{min-width:0;display:flex;flex-direction:column;gap:7px}
+.filters.filters-payments label>span{margin:0;line-height:1.4}
+.filters.filters-payments .search-field>div{height:44px;min-width:0}
+.filters.filters-payments label>input,.filters.filters-payments select{height:44px;min-width:0;padding:0 12px;border:1px solid #ccd8e5;border-radius:10px}
+.filters.filters-payments .search-field input{min-width:0;height:42px}
+.filters.filters-payments input:focus,.filters.filters-payments select:focus{border-color:var(--blue)}
+.filters.filters-payments .catalogo-rango{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:0;padding-top:20px}
+.filters.filters-payments .catalogo-cobertura>label:first-of-type{grid-column:span 2}
+.filters.filters-payments .catalogo-rango legend{padding-right:12px;line-height:1.5}
+.filters.filters-payments .catalogo-filter-actions{padding-top:4px}
+[data-theme=dark] .filters.filters-payments label>input,[data-theme=dark] .filters.filters-payments select{border-color:#344a63}
+[data-theme=dark] .filters.filters-payments input:focus,[data-theme=dark] .filters.filters-payments select:focus{border-color:var(--blue)}
+@media(max-width:900px){.filters.filters-payments{grid-template-columns:repeat(2,minmax(0,1fr))}.filters.filters-payments>.search-field{grid-column:1/-1}.filters.filters-payments .catalogo-rango{grid-template-columns:repeat(2,minmax(0,1fr))}.filters.filters-payments .catalogo-cobertura>label:first-of-type{grid-column:auto}}
+@media(max-width:560px){.filters.filters-payments,.filters.filters-payments .catalogo-rango{grid-template-columns:minmax(0,1fr)}.filters.filters-payments>label,.filters.filters-payments .catalogo-cobertura>label:first-of-type{grid-column:1}.filters.filters-payments .catalogo-filter-actions{justify-content:flex-start}}

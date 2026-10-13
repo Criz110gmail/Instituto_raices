@@ -40,6 +40,7 @@ class PagoAdminControllerTest {
     @Mock private CancelacionPagoService cancelacionService;
     @Mock private escuela.finanzas.service.SaldoFavorService saldoFavor;
     @Mock private escuela.cobranza.service.AcuerdoAnticipadoService anticipos;
+    @Mock private escuela.finanzas.service.CoberturaAnualPagoService coberturaAnual;
     @Mock private InstitucionService institucionService;
     @Mock private PlantelService plantelService;
     @Mock private AlcanceDatosService alcance;
