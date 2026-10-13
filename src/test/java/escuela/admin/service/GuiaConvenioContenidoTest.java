@@ -34,7 +34,7 @@ class GuiaConvenioContenidoTest {
     }
     @Test void soloVerDePagosUsaBotonComun() throws Exception {
         var html = Files.readString(Path.of("src/main/resources/templates/admin/catalogo.html"));
-        assertThat(html).contains("th:class=\"${resultado.modulo.name() == 'PAGOS' ? 'new-button' : 'edit-link'}\"",
+        assertThat(html).contains("th:class=\"${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'AJUSTES_CARGO' ? 'new-button' : 'edit-link'}\"",
                 "resultado.modulo.rutaMantenimiento() + '/' + fila.id + '/editar'");
     }
 }

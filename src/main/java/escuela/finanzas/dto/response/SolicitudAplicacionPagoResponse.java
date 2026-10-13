@@ -7,5 +7,8 @@ public record SolicitudAplicacionPagoResponse(Long id, Long cargoId, String alum
                                               String descripcionCargo,
                                               BigDecimal montoSolicitado, String moneda,
                                               BigDecimal saldoCargoActual,
-                                              BigDecimal saldoEstimadoTrasValidacion) {
+                                              BigDecimal saldoEstimadoTrasValidacion,
+                                              boolean acuerdoAnticipado,
+                                              BigDecimal beneficioAnticipado,
+                                              BigDecimal becaSustituida) {
 }

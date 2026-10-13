@@ -20,6 +20,9 @@ import java.util.List;
 @Table(name = "pago")
 public class Pago extends EntidadAuditable {
     @Column(name="acuerdo_anticipado_id") private Long acuerdoAnticipadoId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "acuerdo_anticipado_id", insertable = false, updatable = false)
+    private escuela.cobranza.entity.AcuerdoAnticipado acuerdoAnticipado;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "institucion_id", nullable = false)
     private Institucion institucion;

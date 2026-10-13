@@ -1,5 +1,44 @@
 # Contexto del proyecto
 
+## Caso de cancelación anticipada confirmado y guía V91 — 2026-10-09
+
+Propietario completó el nuevo ensayo ANTICIPO-TEST-02: validación1440 con dos abonos720,
+beneficio80 y beca200 por mes; comprobó adeudos0, banco+1440, acuerdo aplicado, beca20%
+activa y comprobante familiar. Después confirmó cancelación y todos los controles;
+aclaró portal con dos cargos800: correcto, deuda total1600 conservando beca sin beneficio.
+Lectura de BD confirma pago PAG-20261009-000002 CANCELADO1440 y acuerdo
+ANT-20261010-000002 CANCELADO; intento incompleto anterior720 cancelado y conservado.
+No repetir estas operaciones ni reutilizar folios de la otra computadora.
+V91 añade una guía CONFIRMADA completa de12 etapas/cuatro acciones y10 permisos
+requeridos sin asignar roles; sólo contenido editorial. Explica preparación, corrección
+de captura incompleta/fechas, proyección del beneficio, validación/cancelación y banco B.
+Actualiza las referencias pendientes de la guía V90 sin editar migraciones aplicadas.
+Ver del Historial de ajustes reutiliza new-button, y Ver cargo del detalle reutiliza
+detail-close-button. Permisos, rutas y operaciones de ajustes conservados.
+Verificación final:693 pruebas Java sin fallos y SQL editorial en BEGIN/ROLLBACK.
+Sólo app actualizada, salud UP y V91 aplicada; guía CONFIRMADA/12 etapas,20 guías/165
+etapas totales. Consultas finales conservan pagos720/1440 cancelados. Sin QA visual
+autenticada ni escrituras financieras por herramientas. Siguiente migración V92.
+Siguen pendientes mensualidad bonificada, sustitución/fijo, devoluciones de anticipos y
+DUP-TEST200/two-tabs. No se ejecutaron operaciones financieras por herramientas.
+
+## Ensayo nuevo y vista previa de beneficio anticipado — 2026-10-09
+
+Propietario inició ANTICIPO-TEST-02 y detectó que el detalle del pago pendiente mostraba
+800 de saldo,720 solicitados y80 de deuda estimada, omitiendo el beneficio del acuerdo.
+Se corrigió sólo la proyección: conservar beca800-80-720=0; sustituir beca añade su
+compensación antes de restar beneficio y pago. Relación Pago→Acuerdo de sólo lectura sobre
+la columna existente, sin migración. Pagos ordinarios/resueltos mantienen sus reglas.
+La plantilla muestra beneficio condicionado y compensación de beca si procede; no usa
+la advertencia genérica de pago ordinario para filas del acuerdo. La validación mantiene
+sus comprobaciones transaccionales; la vista previa no crea ajustes ni abonos.
+691 pruebas Java aprobadas, incluida regresión de mapper y render Thymeleaf real.
+Sólo app reconstruida/recreada, salud UP y última migración local V90; V91 sigue libre.
+Sin operaciones financieras mediante herramientas ni nueva guía confirmada. Propietario
+debe recargar el mismo pago pendiente, verificar0 estimado por mes y continuar validación
+y cancelación desde pantallas. Folios nuevos todavía no informados; no reutilizar los
+ids/folios del caso histórico de la otra computadora.
+
 ## Estado vigente: caso de pago anticipado confirmado — 2026-10-09
 
 El propietario confirmó todos los puntos: dos adeudos0, BECA200/DESCUENTO80 por mes,

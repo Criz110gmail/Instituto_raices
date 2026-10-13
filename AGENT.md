@@ -1,5 +1,54 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## ESTADO VIGENTE — cancelación anticipada confirmada y guía V91 — 2026-10-09
+
+- Propietario confirmó el ensayo nuevo ANTICIPO-TEST-02: dos mensualidades originales
+ 1000, beca200 y beneficio80 por mes; validó1440 y comprobó banco, adeudos0, beca activa,
+ acuerdo aplicado y comprobante familiar. Después canceló el MISMO pago y confirmó todos
+ los controles: banco resta1440, acuerdo/pago cancelados, beneficio reversado, beca20%
+ conservada y portal con noviembre800/diciembre800. Caso CONCLUIDO, no repetirlo.
+- Consulta de sólo lectura confirma PAG-20261009-000002 CANCELADO1440 y acuerdo
+ ANT-20261010-000002 CANCELADO. Primer intento incompleto720 también cancelado;
+ se conservan ambos historiales. No confundir con ids/folios del ensayo de otra BD.
+- V91 publica guía CONFIRMADA de12 etapas/cuatro acciones por etapa y10 permisos
+ existentes requeridos, sin otorgar roles. Incluye captura completa, apertura de cuenta,
+ selección de ambos meses, pago único1440, beneficio condicionado, validación, cancelación
+ y verificaciones admin/familia/banco. Actualiza referencias editoriales de V90 mediante
+ la migración nueva; no modifica V1–V90 ni registros financieros.
+- Historial de ajustes: Ver del catálogo reutiliza new-button como Pagos; Ver cargo
+ del detalle usa detail-close-button de forms.css. Sin estilos paralelos ni cambio de rutas.
+- Verificación final:693 pruebas Java aprobadas; SQL editorial comprobado en BEGIN/ROLLBACK.
+ Sólo app reconstruida/recreada, salud UP; lectura confirma V91 aplicada, guía CONFIRMADA
+ de12 etapas y20 guías/165 etapas totales. Ambos pagos cancelados720/1440 permanecen
+ intactos. Sin QA visual autenticada ni escrituras financieras por herramientas.
+ Próxima migración V92; no editar V1–V91 aplicadas. Cambios sin commit/push del agente.
+- Próximos ensayos humanos: mensualidad bonificada, sustitución de beca/cantidad fija,
+ devoluciones anticipadas y DUP-TEST200/validación del mismo pago desde dos pestañas.
+ No dar estas variantes por confirmadas ni realizar operaciones financieras con herramientas.
+
+## Vista previa de pagos anticipados corregida — 2026-10-09
+
+- El propietario inició un ensayo nuevo ANTICIPO-TEST-02 con dos mensualidades1000,
+  beca20% y beneficio adicional10%. En Pagos recibidos, aún pendiente de validación,
+  reportó saldo800/pago720/restante80 y una advertencia propia de pagos ordinarios.
+- PagoMapper ahora consulta la relación de sólo lectura con el acuerdo existente:
+  para pagos pendientes con propuesta activa calcula saldo + beca sustituida - beneficio
+  anticipado - abono. Conservando beca:800-80-720=0; sustituyendo:800+200-80-920=0.
+  Los pagos ordinarios conservan su cálculo; pagos resueltos y acuerdos cancelados no
+  proyectan beneficios. La vista previa no publica ajustes ni modifica cargos.
+- Distribución explica el beneficio condicionado al pago completo y vigente, muestra
+  su importe y, cuando aplica, la beca que se sustituirá. Omite la advertencia genérica
+  de diferencia para estas filas del acuerdo. La validación financiera sigue revalidando
+  todas las condiciones y no cambió.
+- Verificación:691 pruebas Java sin fallos, incluida regresión de cálculo y render real
+  de pago pendiente anticipado. Sólo app reconstruida/recreada; salud UP y BD local V90.
+  No requiere migración, V91 sigue disponible. No se validaron/cancelaron pagos mediante
+  herramientas ni se publicó una guía nueva como confirmada.
+- Continuar el MISMO pago pendiente del ensayo: recargar, comprobar beneficio80/saldo
+  estimado0 por mes, validar desde pantalla y comprobar resultados. Luego cancelar ese
+  mismo pago por el flujo de Gestión y confirmar banco/saldos/beca/historial antes de
+  documentar la guía de cancelación. Los folios del nuevo ensayo aún no se comunicaron.
+
 ## ESTADO VIGENTE — prueba anticipada confirmada y guía V90 — 2026-10-09
 
 - Este bloque prevalece sobre el punto de traslado anterior (histórico). Propietario

@@ -46,19 +46,39 @@ class SaldoFavorRenderTest {
         var distribucion=mvc.perform(get("/prueba/distribucion")).andReturn().getResponse();
         assertThat(distribucion.getStatus()).isEqualTo(200);
         assertThat(distribucion.getContentAsString()).contains("payment-credit-card","payment-credit-amount","payment-credit-action","Gestionar saldo a favor e historial");
+        var anticipo=mvc.perform(get("/prueba/anticipo")).andReturn().getResponse();
+        assertThat(anticipo.getStatus()).isEqualTo(200);
+        assertThat(anticipo.getContentAsString()).contains("Pago ligado a un acuerdo anticipado",
+            "Beneficio al validar el pago completo","$80.00","$720.00","$0.00")
+            .doesNotContain("El importe reportado es diferente del saldo actual");
         try(var css=getClass().getResourceAsStream("/static/css/forms.css")) {
             assertThat(new String(css.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8))
                 .contains(".saldo-row input.money-entry",".credit-management-card .saldo-row .money-entry:focus");
         }
     }
     @Controller static class PantallaPrueba {
-        @GetMapping({"/prueba/saldo","/prueba/validacion","/prueba/distribucion"}) String mostrar(jakarta.servlet.http.HttpServletRequest request,@ModelAttribute("form")SaldoFavorForm f,Model m) {
+        @GetMapping({"/prueba/saldo","/prueba/validacion","/prueba/distribucion","/prueba/anticipo"}) String mostrar(jakarta.servlet.http.HttpServletRequest request,@ModelAttribute("form")SaldoFavorForm f,Model m) {
             var inst=new Institucion();inst.setId(1L);inst.setNombre("Escuela");
             var plantel=new Plantel();plantel.setId(2L);plantel.setNombre("Centro");
             var tutor=new Tutor();tutor.setId(3L);tutor.setNombres("Familia");
             var p=new Pago();p.setId(50L);p.setInstitucion(inst);p.setPlantelRegistro(plantel);p.setTutor(tutor);p.setFolio("PAG-TEST");
             p.setMonto(new BigDecimal("100"));p.setMoneda("MXN");p.setVersion(0L);p.setFechaPago(Instant.now());p.setMetodo(MetodoPago.TRANSFERENCIA);
-            boolean validacion=request.getRequestURI().endsWith("validacion");p.setEstado(validacion?EstadoPago.PENDIENTE_VALIDACION:EstadoPago.VALIDADO);
+            boolean anticipo=request.getRequestURI().endsWith("anticipo");
+            boolean validacion=request.getRequestURI().endsWith("validacion") || anticipo;p.setEstado(validacion?EstadoPago.PENDIENTE_VALIDACION:EstadoPago.VALIDADO);
+            if(anticipo) {
+                var alumno=new escuela.alumno.entity.Alumno();alumno.setNombres("Martha");alumno.setMatricula("ALUM-TEST");
+                var inscripcion=new escuela.inscripcion.entity.Inscripcion();inscripcion.setAlumno(alumno);
+                var concepto=new escuela.cobranza.entity.ConceptoCobro();concepto.setNombre("Colegiatura");
+                var cargo=new escuela.cobranza.entity.Cargo();cargo.setId(7L);cargo.setInscripcion(inscripcion);cargo.setConceptoCobro(concepto);
+                cargo.setImporteOriginal(new BigDecimal("1000.00"));cargo.setMoneda("MXN");
+                var beca=new escuela.cobranza.entity.AjusteCargo();beca.setTipo(escuela.cobranza.entity.TipoAjusteCargo.BECA);
+                beca.setEfecto(escuela.cobranza.entity.EfectoAjusteCargo.DISMINUCION);beca.setMonto(new BigDecimal("200.00"));cargo.getAjustes().add(beca);
+                var acuerdo=new escuela.cobranza.entity.AcuerdoAnticipado();acuerdo.setId(8L);acuerdo.setEstado("PROPUESTO");acuerdo.setPoliticaBeca("CONSERVAR");
+                var fila=new escuela.cobranza.entity.AcuerdoAnticipadoCargo();fila.setCargo(cargo);fila.setAcuerdo(acuerdo);
+                fila.setBeca(new BigDecimal("200.00"));fila.setBeneficio(new BigDecimal("80.00"));acuerdo.getCargos().add(fila);
+                p.setAcuerdoAnticipadoId(8L);p.setAcuerdoAnticipado(acuerdo);p.setMonto(new BigDecimal("720.00"));
+                var solicitud=new SolicitudAplicacionPago();solicitud.setCargo(cargo);solicitud.setMontoSolicitado(p.getMonto());p.getSolicitudes().add(solicitud);
+            }
             m.addAttribute("pago",new PagoMapper().respuesta(p));f.setVersion(0L);m.addAttribute("usuarioSesion","Administración");
             m.addAttribute("puedeAplicar",true);m.addAttribute("puedeRevertir",true);m.addAttribute("operacion","");m.addAttribute("puedeValidar",true);
             m.addAttribute("accesoRecuperacion",false);m.addAttribute("puedeCancelar",false);m.addAttribute("puedeDevolver",false);

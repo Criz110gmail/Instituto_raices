@@ -40,7 +40,7 @@ public class PagoMapper {
                 pago.getComprobantes().stream().map(c -> new ComprobantePagoResponse(c.getId(),
                         c.getArchivo().getNombreOriginal(), c.getArchivo().getTipoMime(),
                         c.getArchivo().getTamanoBytes(), c.getCreadoEn())).toList(),
-                pago.getSolicitudes().stream().map(this::solicitud).toList(),
+                pago.getSolicitudes().stream().map(s -> solicitud(pago, s)).toList(),
                 pago.getAplicaciones().stream()
                         .filter(a -> a.getOperacion() == OperacionAplicacionPago.APLICAR && a.getReversa() == null)
                         .map(this::aplicacion).toList(), solicitado, pago.getMonto().subtract(solicitado), aplicado,
@@ -78,17 +78,28 @@ public class PagoMapper {
                 ? saldo(cargo) : new BigDecimal("0.00");
     }
 
-    private SolicitudAplicacionPagoResponse solicitud(SolicitudAplicacionPago solicitud) {
+    private SolicitudAplicacionPagoResponse solicitud(Pago pago, SolicitudAplicacionPago solicitud) {
         var cargo = solicitud.getCargo();
         var alumno = cargo.getInscripcion().getAlumno();
         BigDecimal saldoActual = saldoExigible(cargo);
-        BigDecimal saldoEstimado = saldoActual.subtract(solicitud.getMontoSolicitado())
+        var acuerdo = pago.getEstado() == EstadoPago.PENDIENTE_VALIDACION
+                && pago.getAcuerdoAnticipadoId() != null ? pago.getAcuerdoAnticipado() : null;
+        var fila = acuerdo != null && "PROPUESTO".equals(acuerdo.getEstado())
+                && pago.getAcuerdoAnticipadoId().equals(acuerdo.getId())
+                ? acuerdo.getCargos().stream().filter(d -> d.isActivo()
+                    && cargo.getId().equals(d.getCargo().getId())).findFirst().orElse(null) : null;
+        BigDecimal beneficio = fila == null ? BigDecimal.ZERO : fila.getBeneficio();
+        BigDecimal becaSustituida = fila != null && "SUSTITUIR".equals(acuerdo.getPoliticaBeca())
+                ? fila.getBeca() : BigDecimal.ZERO;
+        BigDecimal saldoEstimado = saldoActual.add(becaSustituida).subtract(beneficio)
+                .subtract(solicitud.getMontoSolicitado())
                 .max(BigDecimal.ZERO).setScale(2);
         return new SolicitudAplicacionPagoResponse(solicitud.getId(), cargo.getId(),
                 Stream.of(alumno.getNombres(), alumno.getPrimerApellido(), alumno.getSegundoApellido())
                         .filter(v -> v != null && !v.isBlank()).collect(java.util.stream.Collectors.joining(" ")),
                 alumno.getMatricula(), cargo.getConceptoCobro().getNombre(), cargo.getDescripcion(),
-                solicitud.getMontoSolicitado(), cargo.getMoneda(), saldoActual, saldoEstimado);
+                solicitud.getMontoSolicitado(), cargo.getMoneda(), saldoActual, saldoEstimado,
+                fila != null, beneficio.setScale(2), becaSustituida.setScale(2));
     }
 
     private String nombreTutor(Tutor tutor) {
