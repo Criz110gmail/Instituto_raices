@@ -13,6 +13,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SesionControllerTest {
     private final SesionController controller = new SesionController();
+    @Test void tokenDeAccesoActualNoRequiereAutenticacionNiExponeCredenciales() {
+        var request = new MockHttpServletRequest();
+        request.setAttribute(CsrfToken.class.getName(),new DefaultCsrfToken("X-CSRF-TOKEN","_csrf","token-actual"));
+        var respuesta=controller.tokenAcceso(request);
+        assertThat(respuesta.getStatusCode().value()).isEqualTo(200);
+        assertThat(respuesta.getBody().parametro()).isEqualTo("_csrf");
+        assertThat(respuesta.getBody().token()).isEqualTo("token-actual");
+        assertThat(respuesta.getHeaders().getFirst("Cache-Control")).isEqualTo("no-store");
+        assertThat(request.getSession(false)).isNull();
+    }
+    @Test void noOfreceUnTokenVacioSiFaltaElFiltroDeSeguridad() {
+        assertThat(controller.tokenAcceso(new MockHttpServletRequest()).getStatusCode().value()).isEqualTo(503);
+    }
     @AfterEach void limpiar() { SecurityContextHolder.clearContext(); }
     private MockHttpServletRequest request(long ultima) {
         var request = new MockHttpServletRequest();

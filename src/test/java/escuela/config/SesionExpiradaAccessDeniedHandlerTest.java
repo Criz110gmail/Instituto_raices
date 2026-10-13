@@ -13,6 +13,25 @@ class SesionExpiradaAccessDeniedHandlerTest {
 
     private final SesionExpiradaAccessDeniedHandler handler =
             new SesionExpiradaAccessDeniedHandler();
+    @Test void loginConTokenViejoRecuperaCadaPortalAunqueLaCookieNuevaSeaValida() throws Exception {
+        for(String origen:new String[]{"familias","maestros","admin"}) {
+            var request=new MockHttpServletRequest("POST","/nexo/login");
+            request.setContextPath("/nexo");request.setParameter("origen",origen);
+            request.setRequestedSessionId("sesion-nueva");request.setRequestedSessionIdValid(true);
+            var response=new MockHttpServletResponse();
+            handler.handle(request,response,new InvalidCsrfTokenException(new DefaultCsrfToken("X-CSRF-TOKEN","_csrf","nuevo"),"viejo"));
+            String acceso=origen.equals("familias")?"/familias":origen.equals("maestros")?"/maestros/acceso":"/login";
+            assertThat(response.getRedirectedUrl()).isEqualTo("/nexo"+acceso+"?accesoActualizado");
+            assertThat(response.getForwardedUrl()).isNull();
+            assertThat(response.getCookie("JSESSIONID")).isNull();
+        }
+    }
+    @Test void loginSinCookieConTokenDeOtraPestanaNoMuestraPaginaDeError() throws Exception {
+        var request=new MockHttpServletRequest("POST","/login");request.setParameter("origen","familias");
+        var response=new MockHttpServletResponse();
+        handler.handle(request,response,new InvalidCsrfTokenException(new DefaultCsrfToken("X-CSRF-TOKEN","_csrf","nuevo"),"anterior"));
+        assertThat(response.getRedirectedUrl()).isEqualTo("/familias?accesoActualizado");
+    }
 
     @Test
     void redirigeAlLoginCuandoElCsrfPerteneceAUnaSesionCaducada() throws Exception {

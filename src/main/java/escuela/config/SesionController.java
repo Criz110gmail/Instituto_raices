@@ -12,6 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SesionController {
     public record Estado(long ahora, long vence, int duracionSegundos, String csrfCabecera, String csrfToken) {}
+    public record TokenAcceso(String parametro, String token) {}
+    @GetMapping("/acceso/csrf")
+    public ResponseEntity<TokenAcceso> tokenAcceso(HttpServletRequest request) {
+        var csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+        if (csrf == null) return ResponseEntity.status(503).header("Cache-Control", "no-store").build();
+        return ResponseEntity.ok().header("Cache-Control", "no-store")
+                .body(new TokenAcceso(csrf.getParameterName(), csrf.getToken()));
+    }
     @GetMapping("/sesion/estado")
     public ResponseEntity<Estado> estado(HttpServletRequest request) { return responder(request, false); }
     @PostMapping("/sesion/renovar")

@@ -4,7 +4,7 @@
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#35205f">
     <title>Portal docente · Nexo Escolar</title><link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/login.css"><link rel="stylesheet" href="/css/session.css"><link rel="stylesheet" href="/css/login-portals.css"><link rel="stylesheet" href="/css/maestros-login.css">
-    <script src="/js/theme.js"></script>
+    <script src="/js/theme.js"></script><script src="/js/login-session.js" defer></script>
 </head>
 <body class="teacher-login-page">
 <button class="theme-toggle" type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button>
@@ -22,7 +22,8 @@
         <div class="alert error" role="alert" th:if="${param.error}">El usuario o la contraseña no son correctos.</div>
         <div class="alert warning" role="alert" th:if="${param.sesionExpirada}"><strong>Tu sesión caducó</strong><span>Por seguridad, inicia sesión nuevamente para continuar.</span></div>
         <div class="alert success" role="status" th:if="${param.logout}">Tu sesión se cerró correctamente.</div>
-        <form method="post" th:action="@{/login}">
+        <div class="alert warning" role="status" th:if="${param.accesoActualizado}"><strong>Acceso actualizado</strong><span>La sesión cambió en otra pestaña. Inicia sesión nuevamente desde esta pantalla.</span></div>
+        <form data-login-refresh="maestros" th:attr="data-csrf-url=@{/acceso/csrf}" method="post" th:action="@{/login}">
             <input type="hidden" name="origen" value="maestros">
             <label><span>Usuario docente</span><input name="username" autocomplete="username" required autofocus placeholder="tu.usuario"></label>
             <label><span>Contraseña</span><input type="password" name="password" autocomplete="current-password" required placeholder="••••••••••••"></label>

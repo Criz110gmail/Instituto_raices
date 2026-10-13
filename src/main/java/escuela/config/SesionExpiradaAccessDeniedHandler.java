@@ -27,6 +27,17 @@ public class SesionExpiradaAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException excepcion) throws IOException, ServletException {
+        String ruta = request.getRequestURI().substring(request.getContextPath().length());
+        if (ruta.equals("/login") && (excepcion instanceof InvalidCsrfTokenException
+                || excepcion instanceof MissingCsrfTokenException)) {
+            String origen = request.getParameter("origen");
+            String acceso = "familias".equals(origen) ? "/familias"
+                    : "maestros".equals(origen) ? "/maestros/acceso" : "/login";
+            // Un login abierto en otra pestaña conserva un token viejo incluso si
+            // la cookie ya corresponde a una sesión nueva y válida. No borrarla.
+            response.sendRedirect(request.getContextPath() + acceso + "?accesoActualizado");
+            return;
+        }
         if (esTokenDeSesionCaducada(request, excepcion)) {
             redirigir(request, response);
             return;

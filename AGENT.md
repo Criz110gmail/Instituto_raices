@@ -1,5 +1,72 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Distribución03: dos meses visibles también después de validar — 2026-10-13
+
+- Propietario precisó Pagos recibidos → Ver → Distribución, pago800 de03, sólo veía
+  una fila. Causa encontrada: desglose se había incluido dentro de la sección exclusiva
+  de PENDIENTE_VALIDACION. Se mueve al panel común, visible en validados y como historia
+  en cancelados. No volver a probar solamente el fragmento aislado: regresión renderiza
+  paymentDistribution completa con pago VALIDADO/anticipoAPLICADO y CANCELADO.
+- Lista principal ahora incluye abono real de noviembre800 y tarjeta de diciembre0
+  etiquetada mensualidad bonificada, sin dinero recibido; bonificación800 separada.
+  No INSERT de aplicación0 ni movimiento bancario. Totales siguen aplicados800, banco800.
+  Tarjeta bonificada sólo con acuerdoAPLICADO/pagar0; historia no finge beneficio vigente.
+- Sin cambios financieros ni migración; V92 libre. Dos pruebas Java de render
+  (panel completo validado/cancelado y acuerdo) sin fallos, diff limpio; JAR empaquetado,
+  sólo app recreada y salud UP. Sin QA visual autenticada ni operaciones financieras.
+
+## ESTADO VIGENTE — prueba04 confirmada, acceso entre pestañas y desglose bonificado — 2026-10-13
+
+- Propietario confirmó completo ANTICIPO-TEST-04: sustitución de beca20% sólo en
+  noviembre/diciembre por beneficio10%, base2000/beneficio200/pago1800,900 por mes,
+  ambos saldos0, banco+1800, beca general activa y comprobante/portal correctos.
+  No repetir pago04. Guías03 y04 pendientes de incorporación editorial; V92 sigue libre.
+- Próximo ejemplo05: conservar beca20% + cantidad fija200TOTAL,100 por mes, pago1400;
+  después devolución parcial100 y restante1300, y seguridad duplicados/modal/dos pestañas.
+  No confirmar esos escenarios sin prueba humana.
+- Corrección del acceso: logout en una pestaña deja login de otro portal con tokenCSRF
+  viejo aunque cookie ya sea nueva/válida o no exista. Nuevo GET /acceso/csrf público
+  sólo devuelve token protegido de sesión actual, sin credenciales, Cache-Control:no-store.
+  Los tres logins usan login-session.js: consulta antes de enviar y reemplaza _csrf,
+  conserva origen/contexto; fallo no envía credenciales. CSRF sigue habilitado.
+  Si falla CSRF POST/login, handler redirige al acceso propio con accesoActualizado
+  sin borrar cookie válida ni reenviar al error POST; aviso usa diseño de cada portal.
+  Permisos y errores ordinarios fuera de login mantienen protección existente.
+- En pago03 Distribución había un abono800 sólo para noviembre: CORRECTO, diciembre
+  bonificado no recibe dinero y no se debe inventar aplicación0. Nuevo desglose histórico
+  Mensualidades incluidas en el acuerdo muestra AMBOS meses/base/beneficio/pago acordado,
+  diciembre Bonificada, sin abono cuando aplicado; pendiente/cancelado etiqueta condiciones
+  históricas sin fingir ingreso o saldo actual. Abonos reales permanecen separados.
+- No se modifican pagos, aplicaciones, saldos ni migraciones con estas correcciones.
+  Regresión con filtroCSRF real, acceso de tres portales, JS único envío, recuperación
+  sincookie/cookieválida y render bonificado/histórico.699 Java/19 Node sin fallos,
+  sintaxis/diff limpios. Sólo app recreada, salud UP, endpoint/token y login familiar
+  verificados por HTTP sin exponer token. POST/login sin credenciales con token viejo
+  redirige302 a acceso propio, sin Whitelabel. Sin QA visual autenticada ni operaciones
+  financieras por herramientas; confirmar intercambio real de sesiones con propietario.
+
+## ESTADO VIGENTE — mensualidad bonificada confirmada — 2026-10-13
+
+- Propietario confirmó prueba completa ANTICIPO-TEST-03: noviembre/diciembre originales
+  1000 con beca200 cada mes; conservar beca y bonificar diciembre800; pago completo800.
+  Noviembre abono800/saldo0; diciembre sin abono, descuento800/saldo0; banco+800,
+  beca20% conservada, acuerdo aplicado y comprobante/portal correctos según confirmación.
+  Folio comunicado PAG-20261013-000025; no asumir id ni saldo absoluto de otra BD.
+- Se generaron seis cargos (dos por concepto03/04/05);04 y05 siguen destinados a sus
+  pruebas,800 por mes antes de acuerdos. No incluirlos en acuerdo03 ni repetir pago03.
+- Ajuste solicitado: botón Ver pago separado de totales y leyenda mediante bloque
+  anticipation-payment-followup, espaciado/borde y texto fluido móvil, botón compartido.
+  Verificado AnticipoRenderTest/18Node sin fallos, diff limpio; sólo app recreada,
+  salud UP y CSS servido por HTTP. Sin QA visual autenticada ni operaciones financieras.
+  Sin cambios de cálculos, permisos ni movimientos. Guía de03 aún pendiente de incorporar;
+  no se crea migración en esta corrección. V92 sigue libre, no editar V1–V91 aplicadas.
+- Siguiente ensayo: ANTICIPO-TEST-04, SUSTITUIR beca sólo noviembre/diciembre +10%.
+  Original1000/beca previa200/base acordada1000/beneficio100/pago900 por mes; total1800.
+  La beca general sigue activa; al validar se compensa200 y descuenta100 por cargo.
+  Anotar saldo bancario B real antes, esperado B+1800 y ambos saldos0. No confirmado aún.
+  Después05 conservar beca+cantidad fija200total (100 por mes), pago1400 y devoluciones
+  parcial100/restante1300; bloque seguridad duplicados/modal/dos pestañas pendiente.
+
 ## ESTADO VIGENTE — cancelación anticipada confirmada y guía V91 — 2026-10-09
 
 - Propietario confirmó el ensayo nuevo ANTICIPO-TEST-02: dos mensualidades originales

@@ -1,5 +1,11 @@
 # Sistema administrativo escolar
 
+Accesos en pestañas abiertas: antes de enviar credenciales los tres logins actualizan
+el token CSRF de la sesión actual; si cambió la sesión, recuperan el acceso del mismo
+portal con un aviso, sin desactivar protección CSRF ni almacenar credenciales.
+En Distribución de pagos anticipados, el desglose del acuerdo incluye mensualidades
+bonificadas sin abono; los abonos reales no incluyen aplicaciones ficticias de importe0.
+
 ## Retomar en otra computadora — 09/10/2026
 
 Actualización: el propietario confirmó el nuevo ensayo de validación y cancelación del

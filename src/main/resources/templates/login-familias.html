@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#fff9f2"><title>Familias · Nexo Escolar</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/familias-login.css"><script src="/js/theme.js"></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/familias-login.css"><script src="/js/theme.js"></script><script src="/js/login-session.js" defer></script>
 </head>
 <body>
 <button class="family-theme" type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button>
@@ -20,7 +20,8 @@
         <div class="family-alert error" role="alert" th:if="${param.error}"><strong>No pudimos ingresar</strong><span>Revisa tu usuario y contraseña e inténtalo nuevamente.</span></div>
         <div class="family-alert error" role="alert" th:if="${param.sesionExpirada}"><strong>Tu sesión caducó</strong><span>Por seguridad, inicia sesión nuevamente para continuar.</span></div>
         <div class="family-alert success" role="status" th:if="${param.logout}"><strong>Sesión cerrada</strong><span>Tu información quedó protegida. Vuelve cuando quieras.</span></div>
-        <form method="post" th:action="@{/login}">
+        <div class="family-alert success" role="status" th:if="${param.accesoActualizado}"><strong>Acceso actualizado</strong><span>La sesión cambió en otra pestaña. Inicia sesión nuevamente desde esta pantalla.</span></div>
+        <form data-login-refresh="familias" th:attr="data-csrf-url=@{/acceso/csrf}" method="post" th:action="@{/login}">
             <input type="hidden" name="origen" value="familias">
             <label><span>Tu usuario</span><input name="username" autocomplete="username" required autofocus placeholder="Escribe tu usuario"></label>
             <label><span>Tu contraseña</span><input type="password" name="password" autocomplete="current-password" required placeholder="••••••••••••"></label>

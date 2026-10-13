@@ -1,5 +1,48 @@
 # Contexto del proyecto
 
+## Meses bonificados visibles en pago validado — 2026-10-13
+
+Error de vista: desglose anterior quedaba oculto porque padre sólo renderizaba pago
+pendiente. Ahora está fuera de esa condición. Lista principal del validado800 incluye
+noviembre800 y diciembre0 bonificado/beneficio800; sin aplicación ni ingreso ficticio0.
+Regresión renderiza panel completo, no sólo fragmento: dos tarjetas en VALIDADO y
+desglose histórico en cancelado. Sin migración ni cambio financiero; V92 libre.
+Dos pruebas Java de render sin fallos, panel completo validado/cancelado y acuerdo;
+diff limpio, sólo app recreada y salud UP. Sin QA visual autenticada ni operaciones
+financieras por herramientas.
+
+## Prueba04 confirmada y corrección de acceso/desglose — 2026-10-13
+
+Propietario confirmó sustitución20% por beneficio10% en concepto04, pago1800/900 por mes,
+ambos saldos0, beca general activa, banco+1800 y portal/comprobante. No repetir03 ni04.
+Guías de ambas variantes pendientes; siguiente05 fijo200TOTAL con beca, pago1400,
+devoluciones100/restante1300 y bloque seguridad. V92 libre, V1–V91 intactas.
+Login entre pestañas actualiza CSRF desde GET/acceso/csrf antes del envío; no-store,
+origen preservado y sin desactivarCSRF. Handler recupera POST/login con token viejo
+en cookie nueva/válida/sin cookie, al login propio con aviso accesoActualizado y sin
+borrar cookie válida. Fallo consulta token no manda credenciales.
+Distribución del pago03 conserva abono real800 sólo noviembre. Nuevo desglose histórico
+del acuerdo incluye diciembre con beneficio800 y pago acordado0, Bonificada, sin abono;
+pendientes/cancelados se identifican como condiciones no aplicadas actualmente.
+No aplicaciones0 ficticias, ajustes ni movimientos.699 Java/19 Node sin fallos,
+sólo app recreada, salud UP y token/login verificados por HTTP. Sin credenciales,
+POST/login con token viejo recupera portal propio302. Sin QA visual autenticada ni
+operaciones financieras; confirmar navegación real entre sesiones con propietario.
+
+## Mensualidad bonificada03 confirmada y separación de Ver pago — 2026-10-13
+
+Propietario confirmó prueba03 completa: noviembre800 pagados, diciembre800 bonificados,
+ambos saldos0, beca200 por mes conservada, banco+800, acuerdo aplicado y comprobante
+familiar; folio comunicado PAG-20261013-000025. No asumir id o saldo de otra BD.
+Hay seis cargos generados03/04/05; sólo03 se usó en este acuerdo.04/05 pendientes.
+Botón Ver pago ahora en bloque independiente separado de totales/leyenda, controles
+compartidos y texto adaptable. Sin cambio financiero ni migración. Guía03 pendiente de
+incorporar. Verificado AnticipoRenderTest/18Node sin fallos, sólo app recreada,
+salud UP y CSS servido; sin QA visual autenticada ni operaciones financieras. Próxima V92.
+Siguiente prueba04: sustituir beca20% por beneficio10% sólo
+en meses elegidos, base2000/beneficio200/pago1800; beca general activa. Luego05 fijo200
+con beca conservada, pago1400, devoluciones100+1300 y seguridad. No marcar confirmadas.
+
 ## Caso de cancelación anticipada confirmado y guía V91 — 2026-10-09
 
 Propietario completó el nuevo ensayo ANTICIPO-TEST-02: validación1440 con dos abonos720,
