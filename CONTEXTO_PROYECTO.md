@@ -1,5 +1,23 @@
 # Contexto del proyecto
 
+## Pago anual confirmado por propietario y documentado V94 — 2026-10-13
+
+Verificación:713Java/20Node sin fallos, diff limpio. SQL editorial BEGIN/ROLLBACK;
+sólo app recreada/salud UP. Lectura confirma V94/guíaCONFIRMADA/12etapas y24guías/
+207etapas. Temporales retirados; sin QA visual autenticada ni operaciones financieras.
+Siguiente migración V95; preservar V94 aplicada.
+
+Confirmado:enero–diciembre2027,12x1000 sin beca, diciembre bonificado1000/abono0,
+un pago11000, cuenta+11000, doce saldos0, coberturaLIQUIDADO/11pagados/1bonificado,
+comprobante familiar. Ya no es prueba pendiente; no repetir ni asumir folio/método/IDs.
+V94 agrega guía anual CONFIRMADA de12 etapas/4acciones/10permisos existentes, sólo
+contenido editorial. Detalla módulos/botones/capturas/ejemplos y todos los controles,
+incluido ciclo/inscripción que cubra cada mensualidad, propuesta sin efectos hasta
+validar, bancoB y diciembre sin ingreso0 ficticio. Consultas de filtros/Excel son
+complementarias disponibles, no otra prueba humana atribuida. No modifica finanzas.
+Pendientes:devolver100 parcial del otro pago1400 de05 y luego restante1300; identificar
+folio vigente antes de orientar. Duplicados/modal/dos pestañas siguen pendientes.
+
 ## Márgenes y botones de Resumen alineados — 2026-10-13
 
 Se corrigen bloques que quedaron sin margen al mover expediente al panel: intro,

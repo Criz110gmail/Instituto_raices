@@ -1,5 +1,18 @@
 # Sistema administrativo escolar
 
+## Guía confirmada: pago anual con diciembre bonificado (V94)
+
+En **Seguridad y soporte → Guía de procesos** busca **Pagar enero a diciembre:
+diciembre bonificado y un pago de $11,000**. Son doce etapas detalladas desde preparar
+las mensualidades hasta validar y revisar banco, adeudos, cobertura anual y comprobante.
+Caso confirmado el13/10/2026: doce originales de$1,000, sin beca; diciembre bonificado
+$1,000 y once meses pagados, un ingreso$11,000 y doce saldos cero. No repetir registros
+del caso ya terminado. Las vigencias deben cubrir cada mes de2027; un ciclo que termina
+en junio no cubre todo el año. La consulta de filtros y Excel es una sección complementaria.
+V94 sólo publica documentación; no modifica saldos. Devoluciones del pago$1,400 de05
+y pruebas de seguridad siguen pendientes. Ver estado vigente en AGENT.md.
+V94 aplicada:24 guías/207 etapas;713 pruebas Java y20 Node aprobadas, aplicación UP.
+
 ## Identificar pagos que cubren todo el año (V93)
 
 En **Administración → Finanzas → Pagos recibidos**, selecciona **Tipo de cobertura →

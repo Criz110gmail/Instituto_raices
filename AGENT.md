@@ -1,5 +1,34 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## ESTADO VIGENTE — pago anual confirmado y guía V94 — 2026-10-13
+
+- Verificación final:713Java/20Node sin fallos, diff limpio. SQL editorial validado
+  BEGIN/ROLLBACK; sólo app recreada y salud UP. Lectura confirma V94 aplicada y guía
+  CONFIRMADA/12etapas;24guías/207etapas. Temporales de empaquetado retirados, sin QA
+  visual autenticada ni operaciones financieras. Próxima migración V95; no editar V94.
+
+- Propietario confirmó terminado el ejemplo enero–diciembre2027:12 originales1000,
+  sin beca, diciembre bonificado1000/pago0, enero–noviembre1000 cada uno, un pago11000,
+  cuenta B+11000, doce saldos0, Cobertura anual LIQUIDADO/11 pagados/1bonificado y
+  comprobante familiar disponible. No seguir tratándolo como pendiente ni repetir pago.
+  No suponer folio, alumno, método o saldo absoluto que no comunicó.
+- V94__guia_pago_anual_diciembre_bonificado.sql agrega guía CONFIRMADA de12 etapas,
+  cuatro acciones cada una y10 permisos existentes requeridos, sin conceder roles.
+  Recorrido por inscripciones/ciclos, familia, cuentaB, concepto, cuotas, generación
+  seleccionada, acuerdo, vista previa/modales, pago único, Gestión/validación, Resumen/
+  Distribución/Cobertura anual, banco/adeudos/portal/PDF. Consulta de filtros/Excel como
+  paso complementario, no atribuida como nueva prueba humana confirmada.
+- Fechas/plazo/código del ensayo son ilustrativos; ciclo hasta15/06/2027 no cubre todo
+  año. Puede atravesar inscripciones compatibles sin falsear fechas. Año de pago y año
+  cubierto se distinguen. Diciembre0 no crea abono ni ingreso ficticio. No tocar V1–V93.
+- SIGUIENTE: retomar devoluciones del MISMO pago1400 de ANTICIPO-TEST-05, primero100
+  parcial sólo noviembre700 → abono600/deuda100, diciembre700/deuda0, bancoB+1300.
+  Después devolver restante1300 (600+700) → devuelto1400, bancoB, beca200 por mes
+  conservada, beneficio100 por mes reversado, deudas800 por mes/acuerdo cancelado.
+  Confirmar folio/estado/cuenta actuales antes de orientar, no asumir IDs de otra BD.
+  No cancelar ese pago ni ejecutar finanzas por herramientas. Seguridad duplicados/
+  modal/validación MISMO folio desde dos pestañas también sigue pendiente.
+
 ## Alineación interna de Resumen de pago — 2026-10-13
 
 - Ajuste CSS exclusivo de panel-pago-resumen: margen común34px escritorio/20px móvil
