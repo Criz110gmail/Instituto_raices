@@ -4,10 +4,10 @@
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title>Detalle del cargo al alumno · Nexo Escolar</title>
     <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
-<link rel="stylesheet" href="/css/money-input.css"><script src="/js/student-tabs.js" defer></script><script src="/js/money-input.js" defer></script><script src="/js/cargo-ajuste-preview.js" defer></script></head>
-<body class="form-page">
+<link rel="stylesheet" href="/css/money-input.css"><script src="/js/student-tabs.js" defer></script><script src="/js/money-input.js" defer></script><script src="/js/cargo-ajuste-preview.js" defer></script><script src="/js/retorno-listado.js" defer></script></head>
+<body th:attr="data-retorno-listado=${retornoListado}" class="form-page">
 <main class="form-shell finance-shell">
-    <header class="form-top"><a class="detail-close-button" href="/admin/catalogos/cargos">← Volver a adeudos de alumnos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <header class="form-top"><a class="detail-close-button" th:href="${retornoListado ?: '/admin/catalogos/cargos'}">← Volver a adeudos de alumnos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <div class="finance-principle"><span th:text="${cargo.situacionCobro}">Pendiente</span><strong th:text="${cargo.descripcion}">Cargo al alumno</strong><p>Consulta el saldo, revisa transferencias o ajusta el cargo desde su sección. Ajustar la deuda no equivale a recibir ni devolver dinero.</p></div>
     <section class="form-card">
         <div class="form-intro finance-intro charge-summary-header"><div><span th:text="${cargo.claveGeneracion}">Clave</span><h1 th:text="${cargo.alumnoMatricula + ' · ' + cargo.alumnoNombre}">Alumno</h1><p th:text="${cargo.numeroInscripcion + ' · ' + cargo.plantelNombre}">Inscripción</p></div><div class="charge-current-balance"><span>Saldo pendiente actual</span><strong th:text="${@formatoMoneda.pesos(cargo.saldoPendiente)}">$0.00</strong><small th:text="${cargo.moneda}">MXN</small></div></div>

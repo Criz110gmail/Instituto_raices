@@ -4,10 +4,10 @@
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title th:text="${edicion ? 'Editar cuota del alumno' : 'Nueva cuota del alumno'} + ' · Nexo Escolar'">Cuota del alumno</title>
     <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script><script src="/js/autocomplete.js" defer></script>
-<link rel="stylesheet" href="/css/money-input.css"><script src="/js/money-input.js" defer></script></head>
-<body class="form-page">
+<link rel="stylesheet" href="/css/money-input.css"><script src="/js/money-input.js" defer></script><script src="/js/retorno-listado.js" defer></script></head>
+<body th:attr="data-retorno-listado=${retornoListado}" class="form-page">
 <main class="form-shell finance-shell">
-    <header class="form-top"><a th:href="${modoAsistido ? '/admin/inscripciones/' + form.retornoInscripcionId + '/editar#cobranza-inscripcion' : '/admin/catalogos/cuotas-alumno'}" th:text="${modoAsistido ? '← Volver a la inscripción' : '← Volver a cuotas'}">← Volver a cuotas</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+    <header class="form-top"><a th:href="${modoAsistido ? '/admin/inscripciones/' + form.retornoInscripcionId + '/editar#cobranza-inscripcion'  : (retornoListado ?: '/admin/catalogos/cuotas-alumno')}" th:text="${modoAsistido ? '← Volver a la inscripción' : '← Volver a cuotas'}">← Volver a cuotas</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <div class="finance-principle" th:if="${modoAsistido}"><span>Asistente de cobranza</span><strong>La inscripción ya está seleccionada</strong><p>El sistema completó alumno, plantel, ciclo, moneda y vigencia. Sólo selecciona el concepto, confirma el importe y ajusta el vencimiento si es necesario.</p></div>
     <div class="finance-principle"><span>Control individual</span><strong>Un pago familiar, saldos separados por alumno</strong><p>Cada cuota y cada cargo pertenecen a una inscripción. Cuando un pago cubra varios hijos, se distribuirá en aplicaciones independientes para conservar el control de cada alumno.</p></div>
     <section class="form-card">
@@ -54,7 +54,7 @@
                 <p id="vigencia-ayuda" class="field-help" aria-live="polite">Selecciona una inscripción para consultar el rango permitido.</p>
             </details>
             <section class="charge-period-summary" aria-live="polite" aria-atomic="true"><span aria-hidden="true">✓</span><div><small>Así quedará la cuota</small><strong id="cuota-resumen">Completa el importe y el calendario.</strong><p id="cuota-resumen-generacion">Guardar configura una cuota; no registra dinero recibido.</p></div></section>
-            <footer class="form-actions"><a th:href="${modoAsistido ? '/admin/inscripciones/' + form.retornoInscripcionId + '/editar#cobranza-inscripcion' : '/admin/catalogos/cuotas-alumno'}">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar configuración' : (modoAsistido ? 'Preparar cobro' : 'Crear cuota')}">Guardar</button></footer>
+            <footer class="form-actions"><a th:href="${modoAsistido ? '/admin/inscripciones/' + form.retornoInscripcionId + '/editar#cobranza-inscripcion'  : (retornoListado ?: '/admin/catalogos/cuotas-alumno')}">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar configuración' : (modoAsistido ? 'Preparar cobro' : 'Crear cuota')}">Guardar</button></footer>
         </form>
     </section>
 </main>

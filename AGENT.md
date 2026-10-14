@@ -1,5 +1,23 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Regreso a listados de cobranza conserva contexto — 2026-10-14
+
+- Verificación:723Java completos sin fallos y3 pruebas finales render/interceptor,
+  21Node aprobados (incluye hiddenPOST local/sin duplicación). Diff limpio, sólo app
+  recreada/salud UP; temporales retirados, sin QA visual autenticada ni finanzas.
+
+- Ver/Editar desde Pagos/Adeudos/Cuotas lleva retorno explícito codificado con q,
+  conceptoCobro, estado, fechas/tipo, cobertura/año, página y tamaño. Backlinks del
+  detalle y Cancelar cuota usan ese destino, sin modificar diseño. Abrir en otra
+  pestaña conserva origen; no guardar búsquedas compartidas en sesión/localStorage.
+- RetornoListadoCobranza genera URL y sólo admite ruta relativa exacta del listado
+  correspondiente; rechaza externos, otra categoría, fragmentos/rutas codificadas.
+  Interceptor aplica a los tres módulos, añade modelo en detalles/errores y conserva
+  contexto en redirects de acciones. Guardar cuota que vuelve al listado devuelve
+  filtros originales. Script inserta hidden retorno sólo en formulariosPOST locales.
+  Entradas directas sin retorno siguen con enlaces predeterminados; no afecta permisos.
+- Sin migración ni finanzas, V95 libre. Devoluciones05/seguridad pendientes.
+
 ## Concepto de cobro en Cuotas y Adeudos — 2026-10-14
 
 - Verificación721Java/20Node sin fallos: render/enlaces de tres módulos, Excel dos

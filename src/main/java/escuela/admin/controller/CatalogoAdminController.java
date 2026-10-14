@@ -74,6 +74,7 @@ public class CatalogoAdminController {
         }
         model.addAttribute("hoyFiltros",LocalDate.now(java.time.ZoneId.of("America/Mexico_City")));
         model.addAttribute("filtro", filtro);
+        model.addAttribute("retornoListado",escuela.admin.support.RetornoListadoCobranza.listado(modulo,filtro));
         model.addAttribute("modulos", modulos);
         model.addAttribute("puedeRegistrarPago", authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("PAGO_REGISTRAR")));

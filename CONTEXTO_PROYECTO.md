@@ -1,5 +1,17 @@
 # Contexto del proyecto
 
+## Filtros persistentes al volver de un detalle — 2026-10-14
+
+723Java completos/3pruebas finales render-interceptor y21Node sin fallos, diff limpio;
+sólo app recreada/salud UP. Temporales retirados; sin QA visual autenticada ni finanzas.
+
+Pagos/Adeudos/Cuotas transportan retorno explícito desde cada enlace Ver/Editar con
+todos los filtros/página/tamaño. Backlinks/Cancelar y redirects de operaciones lo
+conservan; camposhiddenPOST locales. Sin almacenamiento compartido entre pestañas.
+Servidor valida ruta interna exacta del listado correspondiente, sin open redirect;
+entradas directas conservan destino estándar. Sin cambios financieros/migración.
+V95 libre; devoluciones05/seguridad pendientes.
+
 ## Buscar alumno y cobro por separado en Cuotas/Adeudos — 2026-10-14
 
 721Java/20Node aprobados: criterios, render/enlaces, Excel y compilación SQL Hibernate

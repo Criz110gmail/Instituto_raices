@@ -33,6 +33,7 @@ class CatalogoRangosRenderTest {
             assertThat(response.getStatus()).isEqualTo(200);
             assertThat(response.getContentAsString()).contains("Filtrar por fechas","Mes anterior","desde=2026-10-01","hasta=2026-10-31","tipoFecha=REGISTRO","pagina=1");
             assertThat(response.getContentAsString()).contains("class=\"catalogo-filter-actions\"");
+            assertThat(response.getContentAsString()).contains("/editar?retorno=","conceptoCobro%3DANTICIPO-TEST-05","pagina%3D0");
             if(slug.equals("pagos"))assertThat(response.getContentAsString()).contains("Tipo de cobertura","Año cubierto","anioCobertura=2027","cobertura=ANUAL_LIQUIDADO");
             if(slug.equals("pagos")){
                 var html=response.getContentAsString();

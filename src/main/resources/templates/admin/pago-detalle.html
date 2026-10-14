@@ -5,9 +5,9 @@
     <meta name="theme-color" content="#0b1930"><title th:text="${pago.folio + ' · Pago · Nexo Escolar'}">Pago</title>
     <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css">
     <script src="/js/theme.js"></script><script src="/js/student-tabs.js" defer></script>
-<link rel="stylesheet" href="/css/money-input.css"><script src="/js/money-input.js" defer></script></head>
-<body class="form-page"><main class="form-shell payment-shell">
-<header class="form-top"><a class="payment-back-link" href="/admin/catalogos/pagos"><span aria-hidden="true">←</span> Volver al listado</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+<link rel="stylesheet" href="/css/money-input.css"><script src="/js/money-input.js" defer></script><script src="/js/retorno-listado.js" defer></script></head>
+<body th:attr="data-retorno-listado=${retornoListado}" class="form-page"><main class="form-shell payment-shell">
+<header class="form-top"><a class="payment-back-link" th:href="${retornoListado ?: '/admin/catalogos/pagos'}"><span aria-hidden="true">←</span> Volver al listado</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
 <div th:fragment="paymentIdentity" class="finance-principle payment-principle payment-identity" th:classappend="${pago.estado.name() == 'VALIDADO'} ? ' resolved-success' : (${pago.estado.name() == 'RECHAZADO' or pago.estado.name() == 'CANCELADO'} ? ' resolved-rejected' : '')">
     <div class="payment-status-heading"><span class="payment-status-icon" aria-hidden="true" th:text="${pago.estado.name() == 'VALIDADO'} ? '✓' : (${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? '…' : '×')">…</span><div><span th:text="${pago.estado.name() == 'PENDIENTE_VALIDACION'} ? 'Recepción pendiente' : (${pago.estado.name() == 'VALIDADO'} ? 'Ingreso confirmado' : (${pago.estado.name() == 'CANCELADO'} ? 'Pago cancelado' : 'Recepción rechazada'))">Estado</span><strong th:text="${pago.folio}">Folio</strong></div></div>
     <div class="payment-identity-amount"><span>Importe recibido registrado</span><strong th:text="${@formatoMoneda.pesos(pago.monto)}">Monto</strong></div>
@@ -168,5 +168,5 @@
     <div class="receipt-list official-payment-receipt" th:if="${pago.estado.name() == 'VALIDADO'}"><a target="_blank" rel="noopener" th:href="@{/admin/pagos/{id}/comprobante-pago(id=${pago.id})}"><span>PDF</span><div><strong>Comprobante oficial de pago</strong><small>Abrir en otra pestaña · Desde el visor puedes descargarlo</small></div></a></div>
     <section class="detail-section"><div class="section-heading"><div><span>Archivos privados</span><h2>Comprobantes</h2></div><p>Se abrirán en una pestaña nueva para revisarlos sin descargar archivos automáticamente.</p></div><div class="receipt-list" th:if="${!pago.comprobantes.empty}"><a th:each="c : ${pago.comprobantes}" target="_blank" rel="noopener" th:href="@{/admin/pagos/{p}/comprobantes/{c}(p=${pago.id},c=${c.id})}"><span>↗</span><div><strong th:text="${c.nombreOriginal}">Archivo</strong><small th:text="${c.tipoMime + ' · ' + c.tamanoBytes + ' bytes · Abrir visor'}">Tipo</small></div></a></div><div class="distribution-empty" th:if="${pago.comprobantes.empty}"><strong>Sin comprobantes</strong><p>Los pagos en efectivo pueden registrarse sin archivo.</p></div></section>
     </div>
-    <footer class="form-actions payment-detail-footer"><a class="payment-list-button" href="/admin/catalogos/pagos"><span aria-hidden="true">←</span> Volver a pagos recibidos</a></footer>
+    <footer class="form-actions payment-detail-footer"><a class="payment-list-button" th:href="${retornoListado ?: '/admin/catalogos/pagos'}"><span aria-hidden="true">←</span> Volver a pagos recibidos</a></footer>
 </section></main><script src="/js/autocomplete.js"></script><script src="/js/pago-validacion.js"></script><script src="/js/pago-devolucion.js"></script></body></html>
