@@ -10,8 +10,22 @@
 @media(max-width:560px){.filters .catalogo-rango{grid-template-columns:1fr}.catalogo-rango-error{margin-inline:18px}}
 
 /* Pagos: tres filas alineadas, sin cambiar los controles y colores compartidos. */
+.filters.filters-billing{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:end}
+.filters.filters-billing>label{grid-column:auto;min-width:0}
+.filters.filters-billing>.payment-concept-filter{grid-column:1/-1}
+.filters.filters-billing label{min-width:0;display:flex;flex-direction:column;gap:7px}
+.filters.filters-billing label>span{margin:0;line-height:1.4}
+.filters.filters-billing .search-field>div{height:44px;min-width:0}
+.filters.filters-billing label>input,.filters.filters-billing select{height:44px;min-width:0;padding:0 12px;border:1px solid #ccd8e5;border-radius:10px}
+.filters.filters-billing .search-field input{min-width:0;height:42px}
+.filters.filters-billing input:focus,.filters.filters-billing select:focus{border-color:var(--blue)}
+[data-theme=dark] .filters.filters-billing label>input,[data-theme=dark] .filters.filters-billing select{border-color:#344a63}
+[data-theme=dark] .filters.filters-billing input:focus,[data-theme=dark] .filters.filters-billing select:focus{border-color:var(--blue)}
+@media(max-width:900px){.filters.filters-billing{grid-template-columns:repeat(2,minmax(0,1fr))}.filters.filters-billing>.search-field{grid-column:1/-1}}
+@media(max-width:560px){.filters.filters-billing{grid-template-columns:minmax(0,1fr)}.filters.filters-billing>label{grid-column:1}.filters.filters-billing .catalogo-filter-actions{justify-content:flex-start}}
 .filters.filters-payments{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:end}
 .filters.filters-payments>label{grid-column:auto;min-width:0}
+.filters.filters-payments>.payment-concept-filter{grid-column:1/-1}
 .filters.filters-payments label{min-width:0;display:flex;flex-direction:column;gap:7px}
 .filters.filters-payments label>span{margin:0;line-height:1.4}
 .filters.filters-payments .search-field>div{height:44px;min-width:0}

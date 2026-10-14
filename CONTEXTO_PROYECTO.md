@@ -1,5 +1,40 @@
 # Contexto del proyecto
 
+## Buscar alumno y cobro por separado en Cuotas/Adeudos — 2026-10-14
+
+721Java/20Node aprobados: criterios, render/enlaces, Excel y compilación SQL Hibernate
+PostgreSQL interceptada antes de conectar. Diff limpio; sólo app recreada/salud UP,
+temporales retirados. Sin QA visual autenticada ni operaciones financieras.
+
+Concepto de cobro ahora visible en Cuotas por alumno y Adeudos de alumnos, combina
+nombre/matrícula de Buscar con código/nombre del concepto, estados y fechas. Filtro
+DB previo a paginación y alcance conservado; enlaces/Excel compartidos lo mantienen.
+Diseño local filters-billing con controles44px, márgenes uniformes y temas/móvil;
+sin finanzas/migración, V95 libre. Devoluciones05 y seguridad pendientes.
+
+## Controles de selección de devoluciones — 2026-10-14
+
+12Java específicos/20Node aprobados, diff limpio; sólo app recreada/salud UP,
+temporales retirados. Sin QA visual autenticada ni operaciones financieras.
+
+Abonos con checkbox24px, marca clara, tarjeta resaltada y texto Seleccionado; autorización
+de beneficio en tarjeta alineada con ayuda. Nombres/datos/required y lógica intactos,
+teclado/foco/forced-colors y móvil contemplados. Estilos locales/temas compartidos.
+Sin finanzas/migración; V95 libre. Prueba05 de devoluciones y seguridad pendientes.
+
+## Búsqueda de pagos por concepto de cobro — 2026-10-14
+
+Verificado716Java/20Node sin fallos, criterios/normalización/render/enlaces/Excel;
+diff limpio, sólo app recreada y salud UP. Temporales retirados; sin QA visual
+autenticada ni operaciones financieras. V95 libre.
+
+Nuevo filtro independiente Concepto de cobro (código/nombre) sólo en Pagos recibidos;
+general anterior no consultaba conceptos. EXISTS sobre solicitudes, aplicaciones y
+detalle de acuerdo, incluye historial/bonificados0, no duplica pagos por mensualidad.
+Alcance conservado y filtro DB antes de paginar. FiltroCatalogo/controlador/enlaces/
+Excel por bloques preservan conceptoCobro; estilos compartidos/fila ancha responsive.
+Sin finanzas/migración/permisos; V95 libre. Devoluciones05 y seguridad pendientes.
+
 ## Pago anual confirmado por propietario y documentado V94 — 2026-10-13
 
 Verificación:713Java/20Node sin fallos, diff limpio. SQL editorial BEGIN/ROLLBACK;

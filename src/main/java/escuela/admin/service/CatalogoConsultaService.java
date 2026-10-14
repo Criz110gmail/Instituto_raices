@@ -160,7 +160,8 @@ public class CatalogoConsultaService {
                             e.getInstitucion().getNombre(), etiqueta(e.getCategoria().name()),
                             reglas(e)));
             case CUOTAS_ALUMNO -> consultar(modulo, cuotaAlumnoRepository,
-                    textoCuota(f).and(escuela.admin.support.RangoFechasCatalogo.cuotas(f)), estado(f, "estado"), pagina,
+                    textoCuota(f).and(escuela.admin.support.RangoFechasCatalogo.cuotas(f))
+                            .and(escuela.admin.support.FiltroConceptoCobro.especificacion(f)), estado(f, "estado"), pagina,
                     e -> filaEstadoCuota(e,
                             e.getInscripcion().getAlumno().getMatricula() + " · "
                                     + nombreAlumno(e.getInscripcion().getAlumno()),
@@ -168,7 +169,8 @@ public class CatalogoConsultaService {
                             formatear(e.getImporteBase()),
                             etiqueta(e.getFrecuencia().name()), vencimiento(e),
                             e.isGeneracionAutomatica() ? "Automática" : "Manual"));
-            case CARGOS -> consultar(modulo, cargoRepository, textoCargo(f).and(escuela.admin.support.RangoFechasCatalogo.cargos(f)),
+            case CARGOS -> consultar(modulo, cargoRepository, textoCargo(f).and(escuela.admin.support.RangoFechasCatalogo.cargos(f))
+                            .and(escuela.admin.support.FiltroConceptoCobro.especificacion(f)),
                     escuela.cobranza.support.SituacionAdeudo.filtro(f.estado(), LocalDate.now()), pagina, this::filaCargo);
             case TIPOS_BECA -> consultar(modulo, tipoBecaRepository,
                     texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
@@ -603,7 +605,8 @@ public class CatalogoConsultaService {
     private Page<FilaCatalogo> consultarPagos(FiltroCatalogo f,Pageable pagina){
         var registros=pagoRepository.findAll(textoPago(f).and(escuela.admin.support.RangoFechasCatalogo.pagos(f))
                 .and(estado(f,"estado")).and(alcanceDatosService.especificacion(ModuloCatalogo.PAGOS))
-                .and(escuela.finanzas.service.CoberturaAnualPagoService.filtro(f)),pagina);
+                .and(escuela.finanzas.service.CoberturaAnualPagoService.filtro(f))
+                .and(escuela.admin.support.FiltroConceptoPago.especificacion(f)),pagina);
         var coberturas=coberturaAnual.lote(registros.getContent().stream().map(Pago::getId).toList());
         return registros.map(p->filaPago(p,coberturas.getOrDefault(p.getId(),List.of()).stream()
                 .filter(c->f.anioCobertura()==null||f.anioCobertura().equals(c.anio())).toList()));

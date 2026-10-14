@@ -39,7 +39,7 @@ public class ExcelCatalogoService {
             ResultadoCatalogo bloque;
             do {
                 bloque = consultaService.consultar(modulo,
-                        new FiltroCatalogo(filtro.q(), filtro.estado(), filtro.fecha(), pagina++, 100, filtro.desde(), filtro.hasta(), filtro.tipoFecha(),filtro.cobertura(),filtro.anioCobertura()));
+                        new FiltroCatalogo(filtro.q(), filtro.estado(), filtro.fecha(), pagina++, 100, filtro.desde(), filtro.hasta(), filtro.tipoFecha(),filtro.cobertura(),filtro.anioCobertura(),filtro.conceptoCobro()));
                 for (FilaCatalogo dato : bloque.pagina().getContent()) {
                     Row fila = hoja.createRow(numeroFila++);
                     int c = 0;

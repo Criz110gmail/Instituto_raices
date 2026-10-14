@@ -578,6 +578,23 @@
 .refund-applications > label strong { font-size: .78rem; }
 .refund-applications > label small { color: var(--muted); font-size: .7rem; }
 .refund-applications > label b { white-space: nowrap; font-size: .78rem; }
+/* Selección de devoluciones: checkbox real, tarjeta completa y estado visible. */
+.refund-applications > label,.refund-benefit-consent { min-height:64px; box-sizing:border-box; background:var(--surface); color:var(--ink); transition:border-color .18s ease,background .18s ease; }
+.refund-applications > label:hover,.refund-benefit-consent:hover { border-color:var(--blue); }
+.refund-applications > label:has(input:checked),.refund-benefit-consent:has(input:checked) { border-color:var(--blue); background:color-mix(in srgb,var(--surface) 91%,var(--blue) 9%); box-shadow:inset 3px 0 0 var(--blue); }
+.refund-applications input[type=checkbox],.refund-benefit-consent input[type=checkbox] { appearance:none; -webkit-appearance:none; display:block; flex:0 0 24px; width:24px; height:24px; margin:0; padding:0; border:2px solid color-mix(in srgb,var(--muted) 65%,var(--line)); border-radius:7px; background:var(--surface); cursor:pointer; }
+.refund-applications input[type=checkbox]:checked,.refund-benefit-consent input[type=checkbox]:checked { border-color:var(--blue); background-color:var(--blue); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m5 12 4 4 10-10' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-size:20px; background-position:center; background-repeat:no-repeat; }
+.refund-applications input[type=checkbox]:focus-visible,.refund-benefit-consent input[type=checkbox]:focus-visible { outline:3px solid var(--blue); outline-offset:4px; }
+.refund-applications > label span { min-width:0; overflow-wrap:anywhere; }
+.refund-applications > label b { text-align:right; font-variant-numeric:tabular-nums; }
+.refund-applications > label:has(input:checked) b:after { content:'Seleccionado'; display:block; margin-top:5px; font-size:.65rem; color:var(--blue); font-weight:700; }
+.refund-agreement-review > p { color:var(--muted); font-size:.8rem; line-height:1.6; }
+.refund-benefit-consent { display:flex; align-items:center; gap:14px; padding:16px; margin-top:16px; border:1px solid var(--line); border-radius:12px; cursor:pointer; }
+.refund-benefit-consent > span { display:grid; gap:6px; min-width:0; }
+.refund-benefit-consent strong { font-size:.82rem; line-height:1.5; }
+.refund-benefit-consent small { color:var(--muted); font-size:.74rem; line-height:1.5; }
+@media(max-width:560px) { .refund-applications > label { grid-template-columns:24px minmax(0,1fr); gap:12px; padding:15px; } .refund-applications > label b { grid-column:2; justify-self:start; text-align:left; } .refund-benefit-consent { align-items:flex-start; } }
+@media(forced-colors:active) { .refund-applications input[type=checkbox],.refund-benefit-consent input[type=checkbox] { appearance:auto; -webkit-appearance:auto; } }
 .refund-warning { display: flex; gap: 8px; padding: 13px 15px; border: 1px solid #efc4c8; border-radius: 11px; background: #fff3f4; color: #8c2935; font-size: .76rem; }
 .refund-button { max-width: 390px; justify-self: end; }
 [data-theme=dark] .payment-principle.resolved-success { background: linear-gradient(135deg,#0d3029,#0b1b2c); }

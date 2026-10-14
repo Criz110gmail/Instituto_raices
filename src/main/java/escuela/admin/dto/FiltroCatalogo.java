@@ -3,7 +3,8 @@ package escuela.admin.dto;
 import java.time.LocalDate;
 
 public record FiltroCatalogo(String q, String estado, LocalDate fecha, int pagina, int tamanio,
-                             LocalDate desde, LocalDate hasta, String tipoFecha,String cobertura,Integer anioCobertura) {
+                             LocalDate desde, LocalDate hasta, String tipoFecha,String cobertura,Integer anioCobertura,String conceptoCobro) {
+    public FiltroCatalogo(String q,String estado,LocalDate fecha,int pagina,int tamanio,LocalDate desde,LocalDate hasta,String tipoFecha,String cobertura,Integer anioCobertura){this(q,estado,fecha,pagina,tamanio,desde,hasta,tipoFecha,cobertura,anioCobertura,"");}
     public FiltroCatalogo(String q,String estado,LocalDate fecha,int pagina,int tamanio,LocalDate desde,LocalDate hasta,String tipoFecha){this(q,estado,fecha,pagina,tamanio,desde,hasta,tipoFecha,"TODOS",null);}
 
     public FiltroCatalogo(String q, String estado, LocalDate fecha, int pagina, int tamanio) {
@@ -18,11 +19,11 @@ public record FiltroCatalogo(String q, String estado, LocalDate fecha, int pagin
         return new FiltroCatalogo(q == null ? "" : q.trim(),
                 estado == null ? "TODOS" : estado.trim().toUpperCase(), fecha,
                 Math.max(0, pagina), Math.max(10, Math.min(100, tamanio)), desde, hasta,
-                "REGISTRO".equals(tipoFecha) ? "REGISTRO" : "VENCIMIENTO",cobertura==null?"TODOS":cobertura.trim().toUpperCase(java.util.Locale.ROOT),anioCobertura);
+                "REGISTRO".equals(tipoFecha) ? "REGISTRO" : "VENCIMIENTO",cobertura==null?"TODOS":cobertura.trim().toUpperCase(java.util.Locale.ROOT),anioCobertura,conceptoCobro==null?"":conceptoCobro.trim());
     }
 
     public FiltroCatalogo conPagina(int nuevaPagina) {
-        return new FiltroCatalogo(q, estado, fecha, nuevaPagina, tamanio, desde, hasta, tipoFecha,cobertura,anioCobertura);
+        return new FiltroCatalogo(q, estado, fecha, nuevaPagina, tamanio, desde, hasta, tipoFecha,cobertura,anioCobertura,conceptoCobro);
     }
 
     public boolean tieneRango() { return desde != null || hasta != null; }

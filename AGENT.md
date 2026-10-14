@@ -1,5 +1,60 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Concepto de cobro en Cuotas y Adeudos — 2026-10-14
+
+- Verificación721Java/20Node sin fallos: render/enlaces de tres módulos, Excel dos
+  bloques de Cuotas/Adeudos, criterios vacíos/literales, SQL PostgreSQL real generado
+  por Hibernate para select/conteo de Cuotas/Adeudos/Pagos e interceptado antes de
+  conectar. Diff limpio; sólo app recreada/salud UP, temporales retirados. Sin QA
+  visual autenticada ni operaciones financieras. V95 libre.
+
+- Se extiende filtro conceptoCobro a CUOTAS_ALUMNO y CARGOS: código/nombre parcial
+  sin distinguir mayúsculas, caracteres%/_/backslash literales. Se combina mediante
+  AND con Buscar (alumno/matrícula), estado, fechas y alcance vigente, antes de paginar.
+  Filtro vacío no limita. Relación directa conceptoCobro evita duplicar filas.
+- DTO/controladores/enlaces/Excel ya compartían conceptoCobro; ambos módulos ahora
+  muestran input en fila propia, arriba Buscar/Estado/Por página alineados44px/gap18,
+  clase local filters-billing, colores compartidos y adaptación tablet/móvil. Pagos
+  mantiene su diseño y otros módulos no reciben filtros nuevos. Sin migración ni
+  movimientos, V95 libre; devoluciones05/seguridad siguen pendientes.
+
+## Selección de abonos y autorización de devoluciones — 2026-10-14
+
+- Verificación:12Java específicos/20Node sin fallos, diff limpio; sólo app recreada
+  y salud UP, temporales retirados. Sin QA visual autenticada ni operaciones financieras.
+
+- Diseño solicitado antes de prueba05: checkbox reales24px con marca clara, tarjeta
+  seleccionada con borde/fondo del tema y etiqueta Seleccionado junto al monto.
+  Autorización de beneficio usa refund-benefit-consent en tarjeta con texto principal
+  y ayuda secundaria. Mantiene required/name/th:field/datos de abonos, sin alterar
+  cálculos ni consentimiento. Teclado/foco visible y fallback forced-colors nativo;
+  móvil pone importe debajo del alumno. Estilos locales, no cambia otros checks.
+- Devoluciones05 y seguridad siguen pendientes; no marcar prueba confirmada ni
+  ejecutar finanzas por herramientas. Sin migración/permisos, V95 libre.
+
+## Filtro independiente por concepto en Pagos recibidos — 2026-10-14
+
+- Verificado:716Java/20Node sin fallos, incluye criterio tres EXISTS/vacío/literales,
+  render filtro/enlaces sólo PAGOS y Excel dos bloques con mismo concepto. Diff limpio;
+  sólo app recreada, salud UP, temporales retirados. Sin QA visual autenticada ni
+  operaciones financieras por herramientas. V95 libre.
+
+- Propietario no encontraba ANTICIPO-TEST-05: búsqueda general sólo consulta folio,
+  pagador/tutor, referencia y plantel. Se agrega campo Concepto de cobro por código
+  o nombre, independiente/combinable con búsqueda general/estado/fechas/cobertura/año.
+- FiltroCatalogo incorpora conceptoCobro con constructores previos compatibles,
+  normalización y conPagina preservándolo. Controller listado/Excel, enlaces de
+  paginación/exportación y bloques POI conservan el valor. Input sólo en PAGOS,
+  fila ancha propia con controles/colores compartidos y responsive existente.
+- FiltroConceptoPago usa tres EXISTS correlacionados: solicitudes, aplicaciones
+  (incluye historial) y cargos del acuerdo anticipado (incluye bonificados0). Código/
+  nombre sin distinguir mayúsculas, porcentaje/guion bajo/backslash literales.
+  Consulta antes de paginar con alcance existente, sin cargar todos los pagos ni
+  multiplicar filas por mensualidad. Filtro vacío no agrega subconsultas.
+- Sin cambio financiero/esquema/permisos; V95 libre. Para probar: Pagos recibidos →
+  Limpiar → Concepto de cobro ANTICIPO-TEST-05 → Aplicar filtros. Confirmar folio del
+  pago1400 antes de devolver100; las devoluciones05 y seguridad siguen pendientes.
+
 ## ESTADO VIGENTE — pago anual confirmado y guía V94 — 2026-10-13
 
 - Verificación final:713Java/20Node sin fallos, diff limpio. SQL editorial validado
