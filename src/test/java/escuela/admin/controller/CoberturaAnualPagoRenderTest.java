@@ -59,6 +59,13 @@ class CoberturaAnualPagoRenderTest {
   var beforeNav=source.substring(0,source.indexOf("<nav th:fragment=\"paymentNavigation\""));
   assertThat(beforeNav).doesNotContain("Expediente financiero","Pago completo de un acuerdo anticipado");
  }
+ @Test void avisoDeRepeticionSeRenderizaComoEstadoInformativoSoloCuandoExiste()throws Exception{
+  var mvc=mvc();
+  var con=mvc.perform(get("/prueba/cobertura-anual").param("estado","LIQUIDADO").param("vista","notice")).andReturn().getResponse().getContentAsString();
+  assertThat(con).contains("payment-repeat-notice","role=\"status\"","Este pago ya estaba validado","No se realizó ningún movimiento adicional.");
+  var sin=mvc.perform(get("/prueba/cobertura-anual").param("estado","LIQUIDADO").param("vista","notice").param("tiene","false")).andReturn().getResponse().getContentAsString();
+  assertThat(sin).doesNotContain("payment-repeat-notice");
+ }
  @Controller static class Pantalla{
   @GetMapping("/prueba/cobertura-anual")String mostrar(@RequestParam String estado,@RequestParam(defaultValue="card")String vista,@RequestParam(defaultValue="true")boolean tiene,@RequestParam(defaultValue="VALIDADO")EstadoPago estadoPago,@RequestParam(defaultValue="false")boolean acuerdo,Model model){
    model.addAttribute("coberturasAnuales",tiene?List.of(new CoberturaAnualPagoResponse(1L,2L,"Alumno","A-01","Colegiatura",2027,12,11,1,new BigDecimal("1000"),new BigDecimal("11000"),"MXN",estado)):List.of());
@@ -68,8 +75,9 @@ class CoberturaAnualPagoRenderTest {
    when(pago.metodo()).thenReturn(escuela.finanzas.entity.MetodoPago.TARJETA);
    when(pago.origenRegistro()).thenReturn(escuela.finanzas.entity.OrigenRegistroPago.ADMINISTRACION);
    model.addAttribute("pago",pago);
+   if(tiene)model.addAttribute("avisoOperacion","Este pago ya fue validado desde otra pestaña o por otro usuario. No se realizó ningún movimiento adicional.");
    if(acuerdo)model.addAttribute("anticipo",new escuela.cobranza.service.AcuerdoAnticipadoService.Vista(1L,0L,"ANT-PRUEBA","Tutor","Plantel","MXN",java.time.LocalDate.of(2027,1,1),"CONSERVAR","MENSUALIDAD","Prueba","Admin","APLICADO",new BigDecimal("12000"),new BigDecimal("1000"),new BigDecimal("11000"),List.of(),1L,"PAG-PRUEBA",null,1L,1L,"Diciembre bonificado",false));
-   return "admin/pago-detalle :: "+switch(vista){case "nav"->"paymentNavigation";case "panel"->"annualCoveragePanel";case "summary"->"annualSummary";case "expediente"->"paymentSummary";case "identity"->"paymentIdentity";default->"annualCoverage";};
+   return "admin/pago-detalle :: "+switch(vista){case "notice"->"repeatedValidationNotice";case "nav"->"paymentNavigation";case "panel"->"annualCoveragePanel";case "summary"->"annualSummary";case "expediente"->"paymentSummary";case "identity"->"paymentIdentity";default->"annualCoverage";};
   }
  }
 }

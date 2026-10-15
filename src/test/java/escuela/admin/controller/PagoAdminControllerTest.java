@@ -99,14 +99,24 @@ class PagoAdminControllerTest {
     void validaPagoYRedirigeAlExpediente() {
         PagoResponse respuesta = mock(PagoResponse.class);
         when(respuesta.folio()).thenReturn("PAG-001");
-        when(validacionService.validar(eq(50L), any())).thenReturn(respuesta);
+        when(validacionService.validarConResultado(eq(50L), any())).thenReturn(new escuela.finanzas.service.ValidacionPagoService.ResultadoValidacion(respuesta,false));
 
         String vista = controller.validar(50L, 8L, null, false, null, null, 2L, mock(Authentication.class),
                 new ExtendedModelMap(), new RedirectAttributesModelMap());
 
-        verify(validacionService).validar(eq(50L), argThat(r -> r.cuentaDestinoId().equals(8L)
+        verify(validacionService).validarConResultado(eq(50L), argThat(r -> r.cuentaDestinoId().equals(8L)
                 && r.motivoCambioCuenta() == null && r.version().equals(2L)));
         assertThat(vista).isEqualTo("redirect:/admin/pagos/50/editar");
+    }
+
+    @Test
+    void segundaValidacionMuestraAvisoEnLugarDeOtroExito() {
+        PagoResponse pago=mock(PagoResponse.class);
+        when(validacionService.validarConResultado(eq(50L),any())).thenReturn(new escuela.finanzas.service.ValidacionPagoService.ResultadoValidacion(pago,true));
+        var flash=new RedirectAttributesModelMap();
+        assertThat(controller.validar(50L,8L,null,false,null,null,0L,mock(Authentication.class),new ExtendedModelMap(),flash)).isEqualTo("redirect:/admin/pagos/50/editar");
+        assertThat(flash.getFlashAttributes().get("avisoOperacion")).isEqualTo("Este pago ya fue validado desde otra pestaña o por otro usuario. No se realizó ningún movimiento adicional.");
+        assertThat(flash.getFlashAttributes()).doesNotContainKey("mensaje");
     }
 
     @Test

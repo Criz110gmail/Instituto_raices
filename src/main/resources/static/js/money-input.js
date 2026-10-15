@@ -210,7 +210,18 @@
                 if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
                 if (form.dataset.confirmSubject) add('Titular del pago', form.dataset.confirmSubject);
             }
-            if(kind==='anticipo-propuesta'||kind==='anticipo-pago'||kind==='anticipo-cancelar') {
+            if(kind==='concepto-cobro') {
+                title.textContent='Confirmar creación del concepto de cobro';
+                cancel.textContent='Cancelar';accept.textContent='Confirmar y crear concepto';
+                const texto=name=>form.querySelector('[name="'+name+'"]').value.trim();
+                const opcion=name=>form.querySelector('[name="'+name+'"]').selectedOptions[0]?.textContent.trim() || 'Sin seleccionar';
+                add('Institución',opcion('institucionId'));add('Código',texto('codigo'));
+                add('Nombre',texto('nombre'));add('Categoría',opcion('categoria'));
+                add('Descripción',texto('descripcion')||'Sin descripción');
+                for(const [name,label] of [['permiteBeca','Permite beca'],['permiteDescuento','Permite descuento'],['permiteRecargo','Permite recargo'],['activo','Concepto activo']])
+                    add(label,form.querySelector('input[type="checkbox"][name="'+name+'"]').checked?'Sí':'No');
+                note.textContent='Se creará únicamente el concepto. No se generan adeudos, pagos ni ajustes automáticos; el importe se configura después en Cuotas por alumno. Cancelar conserva tu captura sin guardar.';
+            } else if(kind==='anticipo-propuesta'||kind==='anticipo-pago'||kind==='anticipo-cancelar') {
                 title.textContent=kind==='anticipo-propuesta'?'Confirmar propuesta por pago anticipado':kind==='anticipo-pago'?'Confirmar registro del pago completo':'Confirmar cancelación de la propuesta';
                 cancel.textContent='Cancelar';accept.textContent=kind==='anticipo-propuesta'?'Confirmar propuesta':kind==='anticipo-pago'?'Confirmar y registrar pendiente':'Confirmar cancelación';
                 if(kind==='anticipo-propuesta') {

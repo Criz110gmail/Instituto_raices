@@ -55,7 +55,7 @@ public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecific
 
     List<Cargo> findAllByInscripcionIdOrderByFechaVencimientoDescIdDesc(Long inscripcionId);
 
-    @Query(value = """
+    String BUSQUEDA_SOLICITUD_PAGO = """
             SELECT DISTINCT c.* FROM cargo c
             JOIN inscripcion i ON i.id = c.inscripcion_id
             JOIN alumno a ON a.id = i.alumno_id
@@ -76,11 +76,18 @@ public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecific
                   ), 0) > 0
               AND (a.busqueda_autocomplete LIKE ('%' || lower(:texto) || '%')
                 OR cc.busqueda_autocomplete LIKE ('%' || lower(:texto) || '%'))
-            ORDER BY c.fecha_vencimiento, c.id
-            """, nativeQuery = true)
+                        """;
+    @Query(value = BUSQUEDA_SOLICITUD_PAGO + " ORDER BY c.fecha_vencimiento, c.id", nativeQuery = true)
     Slice<Cargo> buscarParaSolicitudPago(@Param("institucionId") Long institucionId,
                                          @Param("tutorId") Long tutorId,
                                          @Param("texto") String texto,
+                                         Pageable limite);
+
+    @Query(value = BUSQUEDA_SOLICITUD_PAGO + " AND c.id NOT IN (:excluirIds) ORDER BY c.fecha_vencimiento, c.id", nativeQuery = true)
+    Slice<Cargo> buscarParaSolicitudPagoExcluyendo(@Param("institucionId") Long institucionId,
+                                         @Param("tutorId") Long tutorId,
+                                         @Param("texto") String texto,
+                                         @Param("excluirIds") java.util.Collection<Long> excluirIds,
                                          Pageable limite);
 
     String PORTAL_HOY = "(CURRENT_TIMESTAMP AT TIME ZONE inst.zona_horaria)::date";

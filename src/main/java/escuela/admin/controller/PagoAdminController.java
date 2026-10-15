@@ -114,10 +114,13 @@ public class PagoAdminController {
         alcance.validarRecurso(ModuloCatalogo.PAGOS, id);
         try {
             if(cambiarMonto && montoRecibido == null) throw new ReglaNegocioException("Captura el importe realmente recibido");
-            PagoResponse pago = validacionService.validar(id,
+            var resultado = validacionService.validarConResultado(id,
                     new ValidacionPagoRequest(cuentaDestinoId, motivoCambioCuenta, version,
                         cambiarMonto ? montoRecibido : null,cambiarMonto ? motivoCambioMonto : null));
-            flash.addFlashAttribute("mensaje", "Pago " + pago.folio()
+            PagoResponse pago=resultado.pago();
+            if(resultado.yaValidado())flash.addFlashAttribute("avisoOperacion",
+                    "Este pago ya fue validado desde otra pestaña o por otro usuario. No se realizó ningún movimiento adicional.");
+            else flash.addFlashAttribute("mensaje", "Pago " + pago.folio()
                     + " validado; el ingreso y sus aplicaciones quedaron publicados");
             return "redirect:/admin/pagos/" + id + "/editar";
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {

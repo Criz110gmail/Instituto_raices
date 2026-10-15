@@ -50,8 +50,13 @@ public class ValidacionPagoServiceImpl implements ValidacionPagoService {
 
     @Override
     public PagoResponse validar(Long pagoId, ValidacionPagoRequest request) {
+        return validarConResultado(pagoId,request).pago();
+    }
+
+    @Override
+    public ResultadoValidacion validarConResultado(Long pagoId, ValidacionPagoRequest request) {
         Pago pago = buscarBloqueado(pagoId);
-        if (pago.getEstado() == EstadoPago.VALIDADO) return mapper.respuesta(pago);
+        if (pago.getEstado() == EstadoPago.VALIDADO) return new ResultadoValidacion(mapper.respuesta(pago),true);
         exigirPendiente(pago);
         verificar(pago, request.version(), "Pago");
         Usuario actor = actorPersistido(pago);
@@ -140,7 +145,7 @@ public class ValidacionPagoServiceImpl implements ValidacionPagoService {
         cambios.put("montoDisponible", respuesta.montoDisponible());
         auditoria.registrar(pago.getInstitucion().getId(), AccionAuditoria.PAGO_VALIDADO,
                 "PAGO", pago.getId(), cambioCuenta ? motivoCambioCuenta : null, cambios);
-        return respuesta;
+        return new ResultadoValidacion(respuesta,false);
     }
 
     @Override

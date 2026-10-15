@@ -349,11 +349,14 @@
                     const datos = await respuesta.json();
                     if (solicitud !== version || !abierta || url !== endpoint(tipo, consulta)) return;
                     resultados.replaceChildren();
-                    (datos.resultados || []).forEach(opcion => {
+                    (datos.resultados || []).filter(opcion => tipo !== 'cargo' || !cargoYaIncluido(opcion.id,valor)).forEach(opcion => {
                         const boton = document.createElement('button'); boton.type = 'button'; boton.className = 'autocomplete-option';
                         const titulo = document.createElement('strong'); titulo.textContent = opcion.titulo;
                         const detalle = document.createElement('small'); detalle.textContent = opcion.detalle || '';
                         boton.append(titulo, detalle); boton.addEventListener('click', () => {
+                            if(tipo==='cargo' && cargoYaIncluido(opcion.id,valor)) {
+                                reiniciarBusqueda();mostrarEstado('Este adeudo ya está incluido en el pago. Selecciona otro o elimina la fila adicional.');return;
+                            }
                             if (solicitud !== version || url !== endpoint(tipo, consulta)) return;
                             entrada.value = opcion.titulo; etiqueta = opcion.titulo; valor.value = opcion.id;
                             if (tipo === 'cargo' && opcion.monto != null) {
@@ -368,7 +371,7 @@
                         }); resultados.append(boton);
                     });
                     resultados.hidden = !resultados.children.length;
-                    mostrarEstado(resultados.children.length ? `${resultados.children.length} coincidencia(s).` : 'No encontramos coincidencias disponibles.');
+                    mostrarEstado(resultados.children.length ? `${resultados.children.length} coincidencia(s).` : tipo==='cargo'&&cargosSeleccionados().length ? 'No hay otros adeudos con esta búsqueda. Los ya agregados no se repiten.' : 'No encontramos coincidencias disponibles.');
                 } catch (e) { if (e.name !== 'AbortError' && solicitud === version && abierta) mostrarEstado('No fue posible completar la búsqueda.'); }
                 finally { if (solicitud === version) pendienteConsulta = null; }
         }
@@ -400,11 +403,19 @@
         return '';
     }
 
+    function cargosSeleccionados(excepto) {
+        return [...new Set([...lista.querySelectorAll('.distribution-row')].map(f=>f.querySelector('.cargo-id'))
+            .filter(campo=>campo!==excepto&&campo.value).map(campo=>String(campo.value)))];
+    }
+
+    function cargoYaIncluido(id,excepto) { return cargosSeleccionados(excepto).includes(String(id)); }
+
     function endpoint(tipo, consulta) {
         const p = new URLSearchParams({q: consulta, institucionId: institucion.value});
         if (tipo === 'tutor') return `/admin/autocompletado/tutores?${p}`;
         if (tipo === 'cuenta') { p.set('plantelId', plantel.value); p.set('metodo', metodo.value); return `/admin/autocompletado/cuentas-pago?${p}`; }
-        p.set('tutorId', tutorId.value); return `/admin/autocompletado/cargos-pago?${p}`;
+        p.set('tutorId', tutorId.value); cargosSeleccionados().forEach(id=>p.append('excluirIds',id));
+        return `/admin/autocompletado/cargos-pago?${p}`;
     }
 
     function limpiarAutocompletado(contenedor) {

@@ -72,5 +72,19 @@ function responder(i,datos){requests[i].resolve({ok:true,redirected:false,json:a
  click(creada.entrada);assert.equal(requests.length,5);assert.equal(new URL(requests[4].url,'http://test').searchParams.get('tutorId'),'9');
  responder(4,[{id:21,titulo:'Tutor actual',monto:200}]);await flush();assert.equal(creada.resultados.children.length,1);
  ids['#tutorId'].value='';click(creada.entrada);assert.match(creada.estado.textContent,/Selecciona primero un tutor/);assert.equal(requests.length,5);
+ // Excluir antes de consultar y bloquear una opción vieja aunque siga visible.
+ ids['#tutorId'].value='9';click(creada.entrada);responder(5,[{id:21,titulo:'DUP-TEST',monto:200}]);await flush();
+ const primera=creada;click(primera.resultados.children[0]);assert.equal(primera.id.value,21);
+ click(ids['#agregar-cargo']);const segunda=creada;
+ assert.deepEqual(new URL(requests[6].url,'http://test').searchParams.getAll('excluirIds'),['21']);
+ responder(6,[{id:21,titulo:'DUP-TEST repetido',monto:200},{id:22,titulo:'Otro cargo',monto:300}]);await flush();
+ assert.equal(segunda.resultados.children.length,1);assert.equal(segunda.resultados.children[0].children[0].textContent,'Otro cargo');
+ click(primera.limpiar); // Libera21: vuelve a poder consultarse.
+ responder(7,[{id:21,titulo:'DUP-TEST',monto:200}]);await flush();
+ click(segunda.entrada);responder(8,[{id:21,titulo:'DUP-TEST',monto:200}]);await flush();
+ const opcionAntigua=segunda.resultados.children[0];
+ click(primera.resultados.children[0]);assert.equal(primera.id.value,21);
+ click(opcionAntigua);assert.match(segunda.estado.textContent,/Este adeudo ya está incluido/);
+ assert.equal(segunda.id.value,'');assert.equal(ids['#monto'].value,'200.00');
  console.log('Pagos: primeras10/foco/clic/búsqueda3/alcance; revisión500/abono100/saldo400 y dinero extra explícito correctos.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

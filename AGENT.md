@@ -1,5 +1,105 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Tres pruebas de seguridad confirmadas y aviso ámbar — 2026-10-15
+
+- Verificado23Java de render/controller/validación y22Node sin fallos, diff limpio;
+  contraste calculado texto/fondo claro≥6.2 y oscuro≥9.7. Sólo app recreada/salud UP,
+  temporales retirados; sin QA visual autenticada ni movimientos financieros.
+
+- Propietario confirmó nueva pruebaDUP-TEST-02: segundo intento mostró Este pago ya
+  estaba validado / No se realizó ningún movimiento adicional y cuenta sólo+200.
+  Antes ya confirmó duplicado no seleccionable y Cancelar modal sin pago. Las TRES
+  pruebas humanas de esta ronda están concluidas, no seguir pidiéndolas pendientes.
+  Falta incorporarlas a guía publicada (V96 disponible); no se creó migración en
+  este ajuste de diseño. No asumir folio del segundo ensayo ni cancelar pagos200.
+- Solicitud visual: aviso repetido cambia azul por ámbar, borde izquierdo destacado,
+  icono y textos legibles, variante oscura específica y móvil existente. Sin lógica,
+  montos o permisos. Este mensaje es informativo, no otro éxito ni error financiero.
+
+## Validación repetida: aviso sin repetir movimientos — 2026-10-15
+
+- Verificado732Java/22Node sin fallos, diff limpio; pruebas primera/segunda bajo
+  mismo lock con un ingreso/abono/save/auditoría y controller sin flash de éxito
+  repetido, render aviso condicional role=status. Sólo app recreada/salud UP,
+  temporales retirados. Sin QA visual autenticada ni operaciones financieras.
+
+- Usuario confirmó cargo duplicado bloqueado y Cancelar modal sin registrar pago.
+  Después validó mismo folio desde dos pestañas y ambas mostraron éxito. Lectura
+  acotada deDUP-TEST200 confirmaPAG-20261015-000029 VALIDADO, UN movimiento200 y
+  UNA aplicación200. No doble ingreso. No cancelar/reparar/revertir ese pago.
+- Causa: servicio bajo lock devolvía pago yaVALIDADO idempotente y controller siempre
+  mostraba éxito. Nuevo ResultadoValidacion(pago,yaValidado) se decide tras el mismo
+  bloqueo; validar anterior mantiene contrato idempotente para otros consumidores.
+  Controller usa validarConResultado: primera mensaje habitual, repetición aviso
+  Este pago ya fue validado desde otra pestaña o por otro usuario. No se realizó
+  ningún movimiento adicional. Flashinformativo con diseño propio/temas/móvil, no rojo.
+- No cambios a montos/abonos/roles/esquema. V96 libre. Finanzas prueba dos pestañas
+  comprobadas por lectura; aviso nuevo pendiente de confirmación humana. No publicar
+  guía de seguridad completa comoCONFIRMADA todavía. Si ya no queda pestaña antigua
+  pendiente, para repetir haría falta OTRO ensayo200; no reutilizar ni cancelar pago29.
+
+## Evitar cargos duplicados durante captura de pagos — 2026-10-15
+
+- Verificado727Java completos y15Java finales de buscador/saldo/exclusiones,22Node
+  sin fallos; DOM cubre excluir21/filtrar respuesta/liberar/rechazar opción vieja
+  sin aumentar200. Servicio prueba permisos/deduplicación/límite, SQLbase igual.
+  JS/diff limpios, sólo app recreada/salud UP, temporales retirados. Sin QA visual
+  autenticada ni operaciones financieras. V96 libre.
+
+- Usuario probóDUP-TEST200 y sí podía seleccionar mismo cargo dos veces; pidió
+  corregir antes de guardar. No hay pago/validación nueva confirmada por esta prueba.
+- Pago-form envía excluirIds de cargos ya seleccionados; endpoint opcional recibe
+  lista y servicio deduplica/omite null con máximo200. Repositorio excluyeNOT IN antes
+  de ORDER/LIMIT, conserva institución/tutor/vínculo/estado/saldo; sin exclusiones usa
+  consulta previa. Constante SQL base compartida evita divergencia de reglas.
+- UI filtra también respuesta y revalida al pulsar una opción antigua; avisa Este
+  adeudo ya está incluido en el pago sin asignar importe ni aumentar total. Limpiar/
+  quitar fila libera ID para próximas consultas. Validación backend de guardar ya
+  existente permanece. Sin migración/finanzas, V96 libre; pruebas humanas pendientes.
+- Seguir: recargar Nuevo registro, mismoDUP-TEST200 una vez, Agregar cargo y buscarlo
+  otra vez: ya no debe aparecer. Quitar fila vacía y dejar sólo200; después probar
+  Cancelar modal sin guardar y usar un único pago200 para validación dos pestañas.
+
+## Confirmación al crear conceptos de cobro — 2026-10-15
+
+- Verificado726Java/22Node sin fallos, JS/diff limpios. DOM prueba resumen y reglas,
+  cancelar sin guardar, corregir/reabrir y confirmar una vez. Sólo app recreada,
+  salud UP, temporales retirados; sin QA visual autenticada ni creación de conceptos
+  o movimientos financieros por herramientas. V96 libre.
+
+- Antes de continuar DUP-TEST, propietario pidió modal en Crear concepto.
+  Alta usa data-money-confirm=concepto-cobro y motor/estilo money-input compartido.
+  Resumen vivo: institución/código/nombre/categoría/descripción/permitebeca/descuento/
+  recargo/activo, Sí/No para reglas. Cancelar conserva captura sinPOST; Confirmar y
+  crear concepto envía una vez. textContent evita interpretar texto comoHTML.
+  Aclara que concepto no genera adeudos/pagos/ajustes ni fija importe individual.
+- Edición y desactivación no cambian; endpoints/backend/permisos intactos. Sin
+  migración/finanzas, V96 libre. Pruebas humanas DUP-TEST/confirmcancel/dospestañas
+  siguen pendientes; no se creó concepto por herramientas.
+
+## ESTADO VIGENTE — devoluciones05 confirmadas y guía V95 — 2026-10-14
+
+- Verificado725Java/21Node sin fallos, diff limpio. SQL editorial BEGIN/ROLLBACK;
+  sólo app recreada/salud UP. Lectura confirma V95 aplicada, guíaCONFIRMADA10etapas,
+  25guías/217etapas. Temporales retirados, sin QA visual autenticada ni movimientos
+  financieros por herramientas. Siguiente V96; preservar V1–V95 aplicadas.
+
+- Propietario confirmó ambas: parcial100 sólo noviembre → abono600/deuda100,
+  diciembre700/deuda0, beneficio100 por mes conservado, cuenta−100, portal100.
+  Los400 del portal eran otro adeudo del otro hijo; no error ni efecto del ensayo.
+  Después restante1300(600+700) → devuelto acumulado1400, cuenta otros−1300,
+  acuerdo cancelado, beneficio100 por mes reversado, beca200 por mes conservada,
+  sin abonos vigentes, adeudos800+800 y portal igual. No repetir ni tratar pendiente.
+- V95 guía CONFIRMADA devolver-acuerdo-anticipado de10 etapas/4acciones y5permisos
+  existentes requeridos, sin otorgar roles. Localización por concepto, cuentaS,
+  selección/consentimiento/modales, parcial y restante, vista de abonos liberados vs
+  reversión adicional de beneficio, banco/adeudos/portal/historial y otro hermano400.
+  Actualiza referencias editoriales de guías previas con nueva migración, sin tocar
+  V1–V94 ni registros financieros. No inferir folio/método/saldo absoluto.
+- SIGUIENTE: tres ensayos de seguridad pendientes: cargo duplicado, cancelar modal
+  sin guardar y validar MISMO folio desde dos pestañas sin duplicar ingreso/abonos.
+  Usar otro cargo/controladoDUP-TEST200, no el anual ni pagar deudas800 para ensayarlos.
+
 ## Regreso a listados de cobranza conserva contexto — 2026-10-14
 
 - Verificación:723Java completos sin fallos y3 pruebas finales render/interceptor,

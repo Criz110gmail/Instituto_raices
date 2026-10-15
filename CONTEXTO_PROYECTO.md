@@ -1,5 +1,72 @@
 # Contexto del proyecto
 
+## Seguridad confirmada y aviso de repetición más visible — 2026-10-15
+
+23Java específicos/22Node aprobados, diff limpio; contraste texto claro≥6.2/oscuro≥9.7.
+Sólo app recreada/salud UP, temporales retirados; sin QA visual autenticada ni finanzas.
+
+Usuario confirmó segundo ensayoDUP-TEST-02: aviso correcto y cuenta+200 una vez.
+Junto con duplicado bloqueado y modalCancelarsinPOST, concluyen las tres pruebas de
+seguridad de esta ronda. Pendiente publicar guía de seguridad; V96 libre. No repetir
+ni cancelar pagos existentes. Nuevo ajuste sóloCSS: aviso ámbar/borde destacado,
+contraste claro/oscuro y móvil, sin cambiar reglas o movimientos financieros.
+
+## Segundo intento de validar mismo pago — 2026-10-15
+
+732Java/22Node aprobados, diff limpio; regresión ingreso/abono/auditoría únicos,
+controller y render aviso condicional. Sólo app recreada/salud UP; temporales
+retirados, sin QA visual autenticada ni operaciones financieras por herramientas.
+
+Cargo duplicado y Cancelar modal confirmados por usuario. Dos pestañas mostraron
+éxito pero lecturaDUP-TEST200/PAG-20261015-000029 confirma un movimiento200 y un
+abono200, sin doble ingreso. Causa mensaje de éxito incluso en retorno idempotente.
+ResultadoValidacion autoritativo bajo lock distingue repetición, controller muestra
+aviso informativo: ya validado/no movimientos adicionales. API anterior idempotente
+preservada, sin finanzas/migración/roles. V96 libre; falta confirmación humana del aviso
+antes de publicar guía seguridad completa. No cancelar/duplicar pago29 ya validado.
+
+## Exclusión de cargos ya elegidos en Pagos recibidos — 2026-10-15
+
+727Java completos/15Java finales y22Node aprobados; DOM de exclusión/limpiar/opción
+vieja sin aumentar total, permisos/limites/SQLbase conservados. JS/diff limpios;
+sólo app recreada/salud UP, temporales retirados, sin QA visual autenticada ni finanzas.
+
+Usuario encontró DUP-TEST seleccionable dos veces, aún no confirmó guardar/validar.
+Se envían excluirIds a consulta paginada, se excluyen en SQL antes de ordenar/limitar
+y se mantiene alcance/saldo. UI omite opciones ya agregadas y bloquea listas antiguas
+con aviso específico, sin cambiar monto. Limpiar/quitar libera selección, backend
+de registro conserva rechazo de duplicados. Sin finanzas/migración; V96 libre.
+Tres pruebas humanas de seguridad siguen pendientes; continuar con único cargo200,
+sin tocar deudas800 ni pago anual.
+
+## Alta de concepto con modal de confirmación — 2026-10-15
+
+726Java/22Node aprobados, JS/diff limpios; prueba DOM de cancelar/corregir/confirmar
+único envío. Sólo app recreada/salud UP, temporales retirados. Sin QA visual
+autenticada ni creación de conceptos/movimientos financieros por herramientas.
+
+Crear concepto de cobro reutiliza modal común: institución, código, nombre, categoría,
+descripción y cuatro reglas Sí/No. Cancelar sinPOST/conserva captura; confirmar crea
+una vez. Nota distingue concepto de cuota/adeudo/pago, sin monto individual en catálogo.
+Sólo alta; edición/desactivación/endpoints/permisos intactos. V96 libre, sin finanzas.
+Usuario está preparandoDUP-TEST; tres pruebas de seguridad siguen pendientes.
+
+## Ambas devoluciones del beneficio fijo confirmadas — 2026-10-14
+
+725Java/21Node aprobados, diff limpio; SQL editorial BEGIN/ROLLBACK, sólo app
+recreada/salud UP. Lectura confirma V95 aplicada, guíaCONFIRMADA10etapas y25guías/
+217etapas. Temporales retirados, sin QA visual autenticada ni finanzas por herramientas.
+Siguiente V96; no editar V1–V95 aplicadas.
+
+Confirmado por usuario:100parcial sobre noviembre700 deja600/deuda100, diciembre700/
+deuda0, mantiene beneficio100 por mes y cuenta−100. Otros400 del portal pertenecían
+a otro hijo. Luego1300 restante deja devuelto1400, cuenta−1400 respecto a antes de
+ambas, acuerdo cancelado, beneficio100 por mes reversado/beca200 conservada, cargos
+800+800 sin abonos vigentes y portal coherente. No repetir operaciones ni marcarlas
+pendientes. V95 guía independiente10etapas/4acciones/5permisos existentes; sólo
+editorial, actualiza referencias de guías anteriores sin editar migraciones aplicadas.
+Pendientes: tres pruebas de seguridad (duplicado, cancelar modal y validar dos pestañas).
+
 ## Filtros persistentes al volver de un detalle — 2026-10-14
 
 723Java completos/3pruebas finales render-interceptor y21Node sin fallos, diff limpio;

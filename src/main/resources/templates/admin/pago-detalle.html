@@ -14,6 +14,7 @@
 </div>
 <section class="form-card payment-card">
     <div class="flash" th:if="${mensaje}" th:text="${mensaje}"></div>
+    <aside th:fragment="repeatedValidationNotice" class="payment-repeat-notice" role="status" th:if="${avisoOperacion}"><span aria-hidden="true">i</span><div><strong>Este pago ya estaba validado</strong><p th:text="${avisoOperacion}"></p></div></aside>
     <div class="form-error operation-error" th:if="${errorOperacion}" th:text="${errorOperacion}"></div>
     <nav th:fragment="paymentNavigation" class="student-tablist standalone-record-tabs payment-record-tabs" role="tablist" aria-label="Secciones del expediente del pago" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'resumen' : pestanaActiva}">
         <button type="button" role="tab" id="tab-pago-resumen" aria-controls="panel-pago-resumen" data-student-tab="resumen" data-tab-hash="#resumen-pago"><span aria-hidden="true">01</span><strong>Resumen</strong><small>Datos y movimiento</small></button>

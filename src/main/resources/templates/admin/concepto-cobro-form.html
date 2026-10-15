@@ -4,13 +4,14 @@
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title th:text="${edicion ? 'Editar concepto de cobro' : 'Nuevo concepto de cobro'} + ' · Nexo Escolar'">Concepto de cobro</title>
     <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script>
+    <link rel="stylesheet" href="/css/money-input.css"><script src="/js/money-input.js" defer></script>
 </head>
 <body class="form-page">
 <main class="form-shell finance-shell">
     <header class="form-top"><a href="/admin/catalogos/conceptos-cobro">← Volver a conceptos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <section class="form-card">
         <div class="form-intro finance-intro"><span>Catálogo financiero</span><h1 th:text="${edicion ? 'Editar concepto de cobro' : 'Crear concepto de cobro'}">Crear concepto</h1><p>Define qué se cobra y qué ajustes podrá admitir. El importe particular se configura después para cada alumno.</p></div>
-        <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/conceptos-cobro/' + id : '/admin/conceptos-cobro'}">
+        <form class="entity-form" th:attr="data-money-confirm=${edicion ? null : 'concepto-cobro'}" th:object="${form}" method="post" th:action="${edicion ? '/admin/conceptos-cobro/' + id : '/admin/conceptos-cobro'}">
             <input type="hidden" th:field="*{version}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
             <fieldset class="form-section"><legend>Identidad del concepto</legend><div class="form-grid">

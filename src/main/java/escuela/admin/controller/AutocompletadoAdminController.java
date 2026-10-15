@@ -137,8 +137,9 @@ public class AutocompletadoAdminController {
     @GetMapping("/cargos-pago")
     ResultadoAutocompletado cargosPago(@RequestParam Long institucionId,
                                        @RequestParam Long tutorId,
-                                       @RequestParam(defaultValue = "") String q) {
-        return service.cargosParaPago(institucionId, tutorId, q);
+                                       @RequestParam(defaultValue = "") String q,
+                                       @RequestParam(required = false) java.util.List<Long> excluirIds) {
+        return service.cargosParaPago(institucionId, tutorId, q,excluirIds);
     }
 
     @GetMapping("/cuentas-movimiento")

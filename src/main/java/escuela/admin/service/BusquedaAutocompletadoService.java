@@ -410,12 +410,19 @@ public class BusquedaAutocompletadoService {
     }
 
     public ResultadoAutocompletado cargosParaPago(Long institucionId, Long tutorId, String consulta) {
+        return cargosParaPago(institucionId,tutorId,consulta,java.util.List.of());
+    }
+
+    public ResultadoAutocompletado cargosParaPago(Long institucionId, Long tutorId, String consulta,java.util.List<Long> excluirIds) {
         alcance.validarInstitucion(institucionId);
         alcance.validarRecurso(ModuloCatalogo.TUTORES, tutorId);
         String texto = normalizar(consulta);
         if (texto == null) return ResultadoAutocompletado.vacio();
-        Slice<Cargo> resultado = cargoRepository.buscarParaSolicitudPago(
-                institucionId, tutorId, texto, PageRequest.of(0, tamano(consulta)));
+        var excluidos=excluirIds==null?java.util.List.<Long>of():excluirIds.stream().filter(java.util.Objects::nonNull).distinct().toList();
+        if(excluidos.size()>200)throw new escuela.common.exception.ReglaNegocioException("Selecciona como máximo 200 adeudos por pago.");
+        Slice<Cargo> resultado = excluidos.isEmpty()?cargoRepository.buscarParaSolicitudPago(
+                institucionId, tutorId, texto, PageRequest.of(0, tamano(consulta))):cargoRepository.buscarParaSolicitudPagoExcluyendo(
+                institucionId,tutorId,texto,excluidos,PageRequest.of(0,tamano(consulta)));
         var permitidos = resultado.getContent().stream().filter(cargo -> {
             try {
                 alcance.validarRecurso(ModuloCatalogo.CARGOS, cargo.getId());

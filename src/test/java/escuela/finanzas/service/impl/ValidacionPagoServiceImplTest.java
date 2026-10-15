@@ -86,6 +86,24 @@ class ValidacionPagoServiceImplTest {
     void limpiar() { SecurityContextHolder.clearContext(); }
 
     @Test
+    void segundaPestanaRecibeResultadoYaValidadoSinRepetirIngresoAbonoOAuditoria() {
+        pago.setMonto(new BigDecimal("200.00"));
+        Cargo cargo=cargo(10L,"A-01","Ana","200.00");
+        when(solicitudes.findAllByPagoIdOrderByCargoIdAsc(50L)).thenReturn(List.of(solicitud(70L,cargo,"200.00")));
+        when(cargos.findByIdForUpdate(10L)).thenReturn(Optional.of(cargo));
+        var request=new ValidacionPagoRequest(8L,null,0L);
+        var primera=service.validarConResultado(50L,request);
+        var segunda=service.validarConResultado(50L,request);
+        assertThat(primera.yaValidado()).isFalse();assertThat(segunda.yaValidado()).isTrue();
+        assertThat(segunda.pago().estado()).isEqualTo(EstadoPago.VALIDADO);
+        assertThat(segunda.pago().montoAplicado()).isEqualByComparingTo("200");
+        assertThat(segunda.pago().movimiento().monto()).isEqualByComparingTo("200");
+        verify(movimientos,times(1)).save(any());verify(aplicaciones,times(1)).save(any());
+        verify(pagos,times(1)).saveAndFlush(any());verify(cuentas,times(1)).findByIdForUpdate(8L);
+        verify(auditoria,times(1)).registrar(any(),eq(escuela.auditoria.entity.AccionAuditoria.PAGO_VALIDADO),any(),any(),any(),any());
+    }
+
+    @Test
     void importeRealMayorConservaReporteYPublicaExcedenteUnaSolaVez() {
         pago.setMonto(new BigDecimal("300.00"));
         Cargo cargo = cargo(10L,"A-01","Ana","300.00");

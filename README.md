@@ -1,5 +1,16 @@
 # Sistema administrativo escolar
 
+## Devoluciones del acuerdo anticipado confirmadas (V95)
+
+En **Seguridad y soporte → Guía de procesos**, consulta **Devolver un acuerdo
+anticipado: $100 parcial y $1,300 restantes**. Explica el caso ANTICIPO-TEST-05:
+la primera devolución conserva el beneficio; al devolver todo el pago se revierte
+el beneficio adicional y se conserva la beca. Resultado final: devuelto$1,400,
+cuenta−$1,400, acuerdo cancelado y dos adeudos de$800. Confirmado el14/10/2026;
+no repetir el pago ya devuelto. Sólo quedan los tres ensayos de seguridad de esta ronda.
+V95 publica contenido editorial y no ejecuta movimientos financieros.
+V95 aplicada:25guías/217etapas;725Java/21Node aprobados y aplicación UP.
+
 ## Guía confirmada: pago anual con diciembre bonificado (V94)
 
 En **Seguridad y soporte → Guía de procesos** busca **Pagar enero a diciembre:

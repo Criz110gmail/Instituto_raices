@@ -54,12 +54,13 @@ class BusquedaAutocompletadoServiceTest {
     private final MaestroRepository maestroRepository = mock(MaestroRepository.class);
     private final CuentaFinancieraRepository cuentaFinancieraRepository = mock(CuentaFinancieraRepository.class);
     private final AlcanceDatosService alcance = mock(AlcanceDatosService.class);
+    private final CargoRepository cargoRepository = mock(CargoRepository.class);
     private final BusquedaAutocompletadoService service = new BusquedaAutocompletadoService(
             alumnoRepository, tutorRepository, usuarioRepository, inscripcionRepository,
             conceptoCobroRepository, mock(PeriodoAcademicoRepository.class),
             mock(GradoRepository.class),
             grupoRepository, maestroRepository, mock(MateriaGradoRepository.class),
-            mock(TipoBecaRepository.class), mock(CargoRepository.class),
+            mock(TipoBecaRepository.class), cargoRepository,
             cuentaFinancieraRepository, alcance);
 
     @Test
@@ -244,6 +245,24 @@ class BusquedaAutocompletadoServiceTest {
         verify(grupoRepository).findAll(any(org.springframework.data.jpa.domain.Specification.class),
                 org.mockito.ArgumentMatchers.<org.springframework.data.domain.Pageable>argThat(
                         pagina -> pagina.getPageSize() == 11));
+    }
+
+    @Test void cargosExcluyenIdsAntesDePaginarYConservanAutorizacion() {
+        when(cargoRepository.buscarParaSolicitudPagoExcluyendo(any(),any(),any(),any(),any()))
+                .thenReturn(new org.springframework.data.domain.SliceImpl<>(List.of()));
+        assertThat(service.cargosParaPago(1L,3L,"",java.util.Arrays.asList(21L,21L,null)).resultados()).isEmpty();
+        verify(alcance).validarInstitucion(1L);verify(alcance).validarRecurso(ModuloCatalogo.TUTORES,3L);
+        verify(cargoRepository).buscarParaSolicitudPagoExcluyendo(org.mockito.ArgumentMatchers.eq(1L),org.mockito.ArgumentMatchers.eq(3L),org.mockito.ArgumentMatchers.eq(""),org.mockito.ArgumentMatchers.eq(List.of(21L)),org.mockito.ArgumentMatchers.argThat(p->p.getPageNumber()==0&&p.getPageSize()==10));
+        verify(cargoRepository,never()).buscarParaSolicitudPago(any(),any(),any(),any());
+    }
+
+    @Test void cargosSinExclusionesConservanConsultaOriginalYLimiteDeSolicitud() {
+        when(cargoRepository.buscarParaSolicitudPago(any(),any(),any(),any())).thenReturn(new org.springframework.data.domain.SliceImpl<>(List.of()));
+        assertThat(service.cargosParaPago(1L,3L,"").resultados()).isEmpty();
+        verify(cargoRepository).buscarParaSolicitudPago(org.mockito.ArgumentMatchers.eq(1L),org.mockito.ArgumentMatchers.eq(3L),org.mockito.ArgumentMatchers.eq(""),any());
+        org.assertj.core.api.Assertions.assertThatThrownBy(()->service.cargosParaPago(1L,3L,"",java.util.stream.LongStream.rangeClosed(1,201).boxed().toList()))
+                .isInstanceOf(escuela.common.exception.ReglaNegocioException.class);
+        verify(cargoRepository,never()).buscarParaSolicitudPagoExcluyendo(any(),any(),any(),any(),any());
     }
 
     private Alumno alumno() {
