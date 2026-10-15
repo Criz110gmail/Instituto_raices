@@ -1,5 +1,48 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Detalle del corte con pestañas y faltante confirmado — 2026-10-15
+
+- Verificado15Java específicos y27Node sin fallos, diff limpio. Render de página
+  completa abierto/cerrado con/sin permiso, error operacional/tab, cero movimientos;
+  DOM compartido cubre resumen/hash/teclado/acceso/errores. Sólo app recreada/salud UP,
+  temporales retirados; sin QA visual autenticada ni operaciones financieras.
+
+- Usuario confirmó rechazo sin justificación y, tras instrucciones, cierre correcto
+  con justificación: esperado1150/declarado1149/diferencia−1/cuenta sigue1150. Caso
+  faltante1 CONCLUIDO según respuesta, no repetir cierre ni registrar un egreso1.
+  Falta publicar su guía y adaptar pasos de la V97 a pestañas/modal de apertura;
+  V98 disponible. Sobrante/reportes siguen sin confirmar.
+- Detalle ahora usa exactamente student-tablist/payment-record-tabs + student-tabs.js:
+  Resumen inicial con estado/caja/saldo inicial y, cerrado, esperado/declarado/diferencia;
+  Apertura con fecha/actor/saldo/folio/notas; Conteo y cierre si abierto o Cierre y
+  conciliación si cerrado, con formulario o registro/ingresos/egresos/justificación.
+  Nav/hash/teclado/acceso desde Resumen compartidos, sin JS paralelo. Error operativo
+  fuerza pestaña cierre y errores de campos la activan automáticamente.
+- Footer historial/movimientos fuera de paneles para ambos estados; permisos/formulario/
+  POST/CSRF/version/idempotencia/modal se conservan. Abierto no expone esperado/diferencia.
+  Cero movimientos muestra Sin movimientos registrados durante este corte en lugar de
+  rango invertido. Estilos son contenedores/espaciado locales con variables/temas/móvil
+  compartidos, sin cambios de reglas financieras, permisos ni migración.
+
+## Modal antes de abrir corte — 2026-10-15
+
+- Verificado14Java específicos/26Node sin fallos, sintaxis/diff limpios. Render
+  conserva POST/clave/campos/escape y botón. DOM valida cancelar/Escape/resumen
+  actualizado/confirmación única. Sólo app recreada/salud UP, temporales retirados;
+  sin QA visual autenticada ni operaciones financieras por herramientas.
+
+- Abrir corte usa confirmación compartida apertura-caja: institución, caja seleccionada
+  y observaciones, Cancelar conserva captura sin POST y Confirmar y abrir corte envía
+  una vez. No precalcula saldo de apertura en navegador: servidor toma saldo/folio
+  vigentes al confirmar. Validaciones, alcance, usuario, unicidad e idempotencia intactas.
+- Cancelar exterior lleva detail-close-button común; navega al historial, no abre ni
+  cierra cortes. Sin migración ni finanzas. V98 disponible; V97 aplicada no se edita.
+- Prueba de faltante1 en pausa ANTES de nueva apertura; no hay segundo corte confirmado.
+  Recargar/iniciar sesión si procede, misma CAJA-CORTE-TEST saldo1150, abrir otro corte
+  sólo si no existe ya abierto; luego declarar1149 sin motivo → debe rechazar. No
+  repetir movimientos200/50. La guía V97 conserva recorrido de apertura; próxima
+  actualización editorial podrá detallar nuevo modal junto al ensayo de diferencia.
+
 ## V97 — corte sin diferencia confirmado y guía — 2026-10-15
 
 - Verificado745Java completos/25Node sin fallos, diff limpio. SQL editorial validado

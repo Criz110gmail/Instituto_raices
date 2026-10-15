@@ -210,7 +210,15 @@
                 if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
                 if (form.dataset.confirmSubject) add('Titular del pago', form.dataset.confirmSubject);
             }
-            if(kind==='cierre-caja') {
+            if(kind==='apertura-caja') {
+                title.textContent='Confirmar apertura de corte de caja';
+                cancel.textContent='Cancelar';accept.textContent='Confirmar y abrir corte';
+                const valor=name=>form.querySelector('[name="'+name+'"]').value.trim();
+                add('Institución',form.querySelector('[name="institucionId"]').selectedOptions[0]?.textContent.trim()||'Sin seleccionar');
+                add('Caja',valor('cuentaId')?valor('cuentaTexto'):'Sin seleccionar');
+                add('Observaciones de apertura',valor('observaciones')||'Sin observaciones');
+                note.textContent='Se abrirá un corte con el saldo y último folio vigentes de esta caja. Sólo puede existir un corte abierto por caja. No registra ingresos ni egresos. Cancelar conserva tu captura sin abrir el corte.';
+            } else if(kind==='cierre-caja') {
                 title.textContent='Confirmar cierre de caja';
                 cancel.textContent='Cancelar';accept.textContent='Confirmar y cerrar caja';
                 const valor=name=>form.querySelector('[name="'+name+'"]').value.trim();

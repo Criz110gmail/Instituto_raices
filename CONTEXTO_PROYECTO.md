@@ -1,5 +1,34 @@
 # Contexto del proyecto
 
+## Navegación del detalle de corte y prueba de faltante — 2026-10-15
+
+15Java específicos/27Node aprobados, diff limpio. Render página completa con estados/
+permisos/error/cero movimientos, DOM nav/hash/teclado/acceso/errores. Sólo app recreada,
+salud UP, temporales retirados; sin QA visual autenticada ni operaciones financieras.
+
+Usuario confirmó bloqueo sin motivo y cierre justificado correcto (esperado1150,
+declarado1149/diferencia−1/cuenta1150); faltante1 concluido, no repetir operaciones.
+Pendiente incorporar guía de este caso y actualizar V97 por nueva migración V98,
+sin editar aplicada. Sobrante/reportes no confirmados.
+Detalle se organiza con pestañas compartidas Resumen/Apertura/Conteo y cierre
+(Cierre y conciliación si cerrado), footer de navegación fuera de paneles. Resumen
+inicial, hash/teclado/acceso rápido y errores abren conteo con script existente.
+Permisos/conteo ciego/form/modal/POST/version/idempotencia preservados. Cero movimientos
+no muestra rango de folios invertido. Diseño compartido/temas/móvil, sin finanzas/migración.
+
+## Confirmación de apertura de corte — 2026-10-15
+
+14Java específicos/26Node aprobados, sintaxis/diff limpios; render y DOM de resumen,
+cancelar/Escape/confirmación única. Sólo app recreada/salud UP, temporales retirados;
+sin QA visual autenticada ni operaciones financieras por herramientas.
+
+Abrir corte muestra modal común con institución/caja/observaciones, Cancelar sin
+POST conserva captura, Confirmar y abrir corte envía una vez. Saldo/folio iniciales
+se toman en servidor al confirmar, sin montos obsoletos del navegador. Cancelar
+exterior es botón del tema y vuelve al historial. Backend/permisos/finanzas intactos,
+sin migración; V98 libre, no editar V97 aplicada. Prueba de faltante1 aún antes de
+abrir segundo corte: no repetir200/50, reutilizar abierto si ya existe.
+
 ## V97 — guía del corte sin diferencia y siguiente prueba — 2026-10-15
 
 745Java completos/25Node aprobados, diff limpio; SQL probado BEGIN/ROLLBACK.

@@ -74,6 +74,18 @@
 .cash-closed-summary .cash-close-record { grid-template-columns:repeat(2,minmax(0,1fr)); }
 .cash-closed-summary .detail-notes { overflow-wrap:anywhere; }
 .cash-closed-summary .form-actions { flex-wrap:wrap; gap:12px; }
+.cash-cut-panel { margin:0 34px 24px; border:1px solid var(--line); border-top:0; border-radius:0 0 17px 17px; overflow:hidden; }
+.cash-cut-panel .payment-detail-grid { margin:0 24px 24px; }
+.cash-cut-panel .detail-section { padding:24px; }
+.cash-cut-panel > .detail-section:first-child { border-top:0; }
+.cash-cut-panel .section-heading { margin-bottom:12px; }
+.cash-cut-panel .payment-detail-grid p { margin:0; color:var(--muted); font-size:.78rem; line-height:1.6; overflow-wrap:anywhere; }
+.cash-cut-panel .cash-close-record { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.cash-cut-panel .detail-section.cash-opening-note { margin:0 24px 24px; }
+.cash-cut-panel .entity-form { padding:24px; }
+.cash-cut-panel > .form-error { margin:24px; }
+.cash-cut-footer { border-top:1px solid var(--line); flex-wrap:wrap; gap:12px; }
+@media(max-width:720px) { .cash-cut-panel { margin:0 20px 20px; } .cash-cut-panel .payment-detail-grid,.cash-cut-panel .detail-section.cash-opening-note { margin:0 16px 20px; } .cash-cut-panel .detail-section,.cash-cut-panel .entity-form { padding:20px 16px; } .cash-cut-panel > .form-error { margin:20px 16px; } .cash-cut-panel .cash-close-record { grid-template-columns:1fr; } .cash-cut-footer a { width:100%; box-sizing:border-box; } }
 @media(max-width:720px) { .cash-closed-summary .cash-close-record { grid-template-columns:1fr; } .cash-closed-summary .form-actions a { width:100%; box-sizing:border-box; } }
 @media(max-width:720px) { .detail-section.cash-opening-note { margin:0 20px 20px; padding:16px; } }
 .payment-repeat-notice { display:flex; align-items:flex-start; gap:14px; margin:20px 34px; padding:18px 20px; border:1px solid #d89d23; border-left:5px solid #b36a08; border-radius:12px; background:#fff4d6; color:#754409; box-shadow:0 5px 16px #b36a0810; }
