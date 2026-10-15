@@ -11,6 +11,7 @@
         const estado = contenedor.querySelector('.autocomplete-status');
         const limpiar = contenedor.querySelector('.autocomplete-clear');
         const alcance = document.getElementById(contenedor.dataset.scopeInput || contenedor.dataset.institutionInput);
+        const adicional = contenedor.dataset.extraInput ? document.getElementById(contenedor.dataset.extraInput) : null;
         const sinAlcance = contenedor.hasAttribute('data-no-scope');
         const parametroAlcance = contenedor.dataset.scopeParam || 'institucionId';
         const etiquetaAlcance = contenedor.dataset.scopeLabel || 'una institución';
@@ -21,6 +22,7 @@
         let opciones = [];
         let indiceActivo = -1;
         let etiquetaSeleccionada = entrada.value;
+        let clavePendiente = null;
 
         actualizarLimpiar();
         contenedor.addEventListener('autocomplete:restore', () => {
@@ -30,10 +32,25 @@
             mostrarEstado(entrada.readOnly ? 'Cuenta donde se recibió el pago. Protegida para evitar cambios accidentales.' : 'Selecciona la cuenta de donde saldrá el dinero.');
         });
         entrada.addEventListener('focus', () => {
+            if(contenedor.dataset.refreshOnFocus==='true'){abrirIniciales();return;}
             if (entrada.readOnly) return;
             if ((!sinAlcance && !alcance.value) || entrada.value.trim() || opciones.length) return;
             mostrarEstado('Cargando opciones…');
             buscar('');
+        });
+        if(contenedor.dataset.refreshOnFocus==='true')entrada.addEventListener('click',abrirIniciales);
+        function abrirIniciales(){
+            if(entrada.readOnly||valor.value||(!sinAlcance&&!alcance.value))return;
+            const texto=entrada.value.trim(),q=texto.length>=MINIMO?texto:'';
+            const clave=parametros(q).toString();
+            if(clavePendiente===clave||(!lista.hidden&&opciones.length))return;
+            mostrarEstado('Cargando opciones…');buscar(q);
+        }
+        adicional?.addEventListener('change',()=>{
+            clearTimeout(temporizador);solicitud?.abort();clavePendiente=null;
+            entrada.value='';valor.value='';etiquetaSeleccionada='';
+            valor.dispatchEvent(new Event('change',{bubbles:true}));cerrarLista();actualizarLimpiar();
+            mostrarEstado('Selecciona un motivo compatible con el tipo de movimiento.');
         });
         entrada.addEventListener('input', () => {
             if (entrada.readOnly) return;
@@ -89,6 +106,7 @@
         });
 
         alcance?.addEventListener('change', () => {
+            clearTimeout(temporizador);solicitud?.abort();clavePendiente=null;
             entrada.value = '';
             valor.value = '';
             valor.dispatchEvent(new Event('change', {bubbles: true}));
@@ -104,14 +122,21 @@
             if (!contenedor.contains(evento.target)) cerrarLista();
         });
 
+        function parametros(consulta){
+            const p=new URLSearchParams({q:consulta});
+            if(!sinAlcance)p.set(parametroAlcance,alcance.value);
+            if(contenedor.dataset.excludeId)p.set('tutorId',contenedor.dataset.excludeId);
+            if(adicional)p.set(contenedor.dataset.extraParam,adicional.value);
+            return p;
+        }
         async function buscar(consulta) {
+            solicitud?.abort();
             const actual = new AbortController();
             solicitud = actual;
-            const parametros = new URLSearchParams({q: consulta});
-            if (!sinAlcance) parametros.set(parametroAlcance, alcance.value);
-            if (contenedor.dataset.excludeId) parametros.set('tutorId', contenedor.dataset.excludeId);
+            const parametrosConsulta=parametros(consulta);
+            clavePendiente=parametrosConsulta.toString();
             try {
-                const respuesta = await fetch(`${contenedor.dataset.endpoint}?${parametros}`, {
+                const respuesta = await fetch(`${contenedor.dataset.endpoint}?${parametrosConsulta}`, {
                     headers: {'Accept': 'application/json'},
                     signal: actual.signal
                 });
@@ -126,7 +151,7 @@
             } catch (error) {
                 if (error.name !== 'AbortError' && !entrada.readOnly && solicitud === actual)
                     mostrarEstado('No se pudo completar la búsqueda. Intenta nuevamente.');
-            }
+            }finally{if(solicitud===actual)clavePendiente=null;}
         }
 
         function renderizar(resultados, hayMas) {

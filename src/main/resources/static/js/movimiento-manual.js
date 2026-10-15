@@ -1,16 +1,7 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const direccion = document.getElementById('direccion');
-    const motivos = document.getElementById('motivoFinancieroId');
-    if (!direccion || !motivos) return;
-    const filtrar = () => {
-        Array.from(motivos.options).forEach(option => {
-            if (!option.value) return;
-            const naturaleza = option.dataset.naturaleza;
-            option.hidden = naturaleza !== 'AMBOS' && naturaleza !== direccion.value;
-            option.disabled = option.hidden;
-        });
-        if (motivos.selectedOptions[0]?.disabled) motivos.value = '';
-    };
-    direccion.addEventListener('change', filtrar);
-    filtrar();
+document.addEventListener('DOMContentLoaded',()=>{
+    const id=document.getElementById('motivoFinancieroId');
+    const texto=document.getElementById('motivoTexto');
+    if(!id||!texto)return;
+    const validar=()=>texto.setCustomValidity(id.value?'':'Selecciona un motivo de la lista de resultados.');
+    id.addEventListener('change',validar);validar();
 });

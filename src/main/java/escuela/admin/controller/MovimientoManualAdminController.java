@@ -70,7 +70,16 @@ public class MovimientoManualAdminController {
         model.addAttribute("instituciones", instituciones);
         model.addAttribute("planteles", alcance.filtrarPlanteles(plantelService.listar()));
         model.addAttribute("direcciones", DireccionMovimiento.values());
-        model.addAttribute("motivos", form.getInstitucionId() == null ? List.of()
-                : motivoService.listarActivos(form.getInstitucionId()));
+        form.setMotivoTexto("");
+        if(form.getMotivoFinancieroId()!=null) {
+            try {
+                var motivo=motivoService.obtener(form.getMotivoFinancieroId());
+                if(motivo.institucionId().equals(form.getInstitucionId())&&motivo.activo()
+                        &&(motivo.naturaleza()==escuela.finanzas.entity.NaturalezaMotivoFinanciero.AMBOS
+                        ||motivo.naturaleza().name().equals(String.valueOf(form.getDireccion()))))
+                    form.setMotivoTexto(motivo.codigo()+" · "+motivo.nombre());
+                else form.setMotivoFinancieroId(null);
+            }catch(escuela.common.exception.RecursoNoEncontradoException e){form.setMotivoFinancieroId(null);}
+        }
     }
 }

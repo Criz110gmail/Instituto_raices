@@ -58,6 +58,24 @@
 .account-opening-balance strong { color: #fff; }
 @media(max-width:720px) { .account-balance-summary { grid-template-columns: 1fr; } .account-balance-summary article { padding: 20px; } }
 .payment-card { overflow: visible; }
+.cash-cut-action { min-height:42px; font-size:.78rem; line-height:1.4; white-space:nowrap; }
+.cash-cut-action:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
+.cash-cut-action.cash-cut-action-view { background:var(--surface); color:var(--ink)!important; border-color:var(--line); box-shadow:none; }
+.cash-cut-action-view:hover { background:var(--soft); }
+.detail-section.cash-opening-note { margin:0 34px 24px; padding:20px; border:1px solid var(--line); border-radius:14px; background:var(--soft); }
+.cash-opening-note .section-heading { margin-bottom:12px; }
+.cash-opening-note .section-heading h2 { font-size:1.05rem; }
+.cash-opening-note .detail-notes { margin:0 0 12px; color:var(--ink); font-size:.86rem; line-height:1.7; white-space:pre-wrap; overflow-wrap:anywhere; }
+.cash-opening-note .field-help { display:block; margin:0; }
+.cash-closed-summary .section-heading { margin-bottom:12px; }
+.cash-closed-summary .payment-detail-grid p { margin:0; color:var(--muted); font-size:.78rem; line-height:1.6; overflow-wrap:anywhere; }
+.cash-closed-summary .cash-close-totals strong { color:var(--ink); font-size:clamp(1.4rem,3vw,1.9rem); line-height:1.3; }
+.cash-closed-summary .cash-close-difference { background:var(--soft); box-shadow:inset 0 3px var(--blue); }
+.cash-closed-summary .cash-close-record { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.cash-closed-summary .detail-notes { overflow-wrap:anywhere; }
+.cash-closed-summary .form-actions { flex-wrap:wrap; gap:12px; }
+@media(max-width:720px) { .cash-closed-summary .cash-close-record { grid-template-columns:1fr; } .cash-closed-summary .form-actions a { width:100%; box-sizing:border-box; } }
+@media(max-width:720px) { .detail-section.cash-opening-note { margin:0 20px 20px; padding:16px; } }
 .payment-repeat-notice { display:flex; align-items:flex-start; gap:14px; margin:20px 34px; padding:18px 20px; border:1px solid #d89d23; border-left:5px solid #b36a08; border-radius:12px; background:#fff4d6; color:#754409; box-shadow:0 5px 16px #b36a0810; }
 .payment-repeat-notice > span { display:grid; place-items:center; flex:0 0 30px; height:30px; border-radius:50%; background:#b36a08; color:#fff; font-weight:800; }
 .payment-repeat-notice strong { font-size:.94rem; line-height:1.5; }

@@ -1,5 +1,18 @@
 # Sistema administrativo escolar
 
+## Corte de caja sin diferencia confirmado (V97)
+
+En **Administración → Seguridad y soporte → Guía de procesos**, busca
+**Cerrar caja sin diferencia: de $1,000 a $1,150**. Diez etapas explican preparar
+la caja y motivos, abrir antes de los movimientos, registrar ingreso$200/egreso$50,
+declarar$1,150, revisar el modal, cerrar y comprobar historial y saldo actual.
+El propietario confirmó dos movimientos, diferencia$0 y saldo actual$1,150.
+No repetir el cierre ni sus movimientos. Cancelar modal y exportar Excel figuran
+como controles adicionales recomendados. V97 sólo publica contenido editorial.
+Siguiente prueba pendiente: faltante de$1 con justificación obligatoria, sin ajuste
+automático del saldo de la cuenta. Reportes financieros siguen pendientes.
+V97 aplicada:27guías/239etapas;745Java/25Node aprobados y aplicación UP.
+
 ## Ronda de cobranza concluida: controles de seguridad (V96)
 
 En **Seguridad y soporte → Guía de procesos**, busca **Registrar y validar sin

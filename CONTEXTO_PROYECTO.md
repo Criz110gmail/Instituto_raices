@@ -1,5 +1,96 @@
 # Contexto del proyecto
 
+## V97 — guía del corte sin diferencia y siguiente prueba — 2026-10-15
+
+745Java completos/25Node aprobados, diff limpio; SQL probado BEGIN/ROLLBACK.
+Sólo app recreada/salud UP. LecturaV97 aplicada/guíaCONFIRMADA10etapas y27guías/
+239etapas. Temporales retirados, sin QA visual autenticada ni operaciones financieras.
+Próxima V98, no editar V1–V97.
+
+Propietario confirmó saldo actual1150; prueba inicial1000/+200/−50/cierre1150/
+diferencia0 está CONCLUIDA. No repetir movimientos ni cierre. V97 agrega guía
+CONFIRMADA10etapas/4acciones/8permisos existentes, sólo contenido editorial y ajuste
+de referencia final de guía de seguridad. Cancelar modal/Excel son controles
+recomendados, no aceptación humana adicional. README actualizado.
+Siguiente propuesto, NO ejecutado: otro corte misma caja1150/sin movimientos,
+declarar1149 sin justificación debe rechazar/mantener abierto; motivo obligatorio
+permite cierre con diferencia−1/cuenta1150 sin ajuste automático. Faltante/sobrante/
+reportes no confirmados. Próxima V98 tras aplicar V97, preservar historial aplicado.
+
+## Historial de cortes: diferencia explícita — 2026-10-15
+
+13Java aprobadas, render cero/positivo/negativo/pendiente, diff limpio. Sólo app
+recreada/salud UP y temporales retirados; sin QA visual autenticada ni finanzas.
+
+Resultado se renombra Diferencia del cierre, también en móvil; diferencia0 se
+presenta Sin diferencia · $0.00 con Esperado1150 debajo. Abierto sigue Pendiente,
+sin exponer saldo esperado. Sólo presentación, sin migración/finanzas (V97 libre).
+Usuario reiteró prueba correcta, no repetir operaciones.
+
+## Presentación del corte cerrado y resultado confirmado — 2026-10-15
+
+12 Java específicas/25 Node aprobadas, diff limpio. Render prueba diferencia0,
+faltante/sobrante, importes, escape, enlaces y condición cerrado. Sólo app recreada,
+salud UP, temporales retirados; sin QA visual autenticada ni finanzas por herramientas.
+
+Usuario confirmó cierre: dos movimientos/folios1–2, ingreso200/egreso50,
+esperado1150/declarado1150/diferencia0 y observación Prueba de cierre sin diferencia,
+por criz15oct2026 15:53. No repetir cierre; consulta separada de cuenta1150 no
+confirmada aún. Guía aún sin publicar; diferencia1/reportes siguen pendientes.
+Se corrige detail-grid anidado sin estilo con tarjetas payment-detail-grid comunes,
+montos destacados, explicación del resultado y notas/registro separados. Botones
+historial/movimientos con diseño existente y adaptación móvil/temas; ningún cambio
+financiero, de permisos o migración (V97 disponible).
+
+## Modal de conciliación y cierre de caja — 2026-10-15
+
+11 pruebas Java específicas y 25 Node aprobadas; sintaxis/diff limpios. Sólo app
+recreada, salud UP, temporales retirados; sin QA visual autenticada ni finanzas.
+
+Conciliar y cerrar muestra resumen corte/caja/plantel, efectivo declarado,
+justificación y observaciones; Cancelar/Escape cierran sin POST conservando captura,
+confirmación envía una vez. Mismo diseño money-input compartido y conteo ciego sin
+revelar saldo esperado/diferencia antes de procesar cierre. Cerrar después es botón
+secundario al historial. Backend, permisos, versión/idempotencia y finanzas intactos.
+Sin migración, V97 libre; prueba humana cierre1150 aún pendiente, no repetir movimientos.
+
+## Buscador de motivos y modal de movimiento — 2026-10-15
+
+Verificación: 739 pruebas Java completas, 8 Java específicas finales y 24 Node
+aprobadas; diff sin errores. Sólo app actualizada, salud UP, temporales retirados.
+Sin QA visual autenticada ni operaciones financieras por herramientas.
+
+Motivo pasa a autocompletado remoto10iniciales/búsqueda3 por código/nombre/categoría,
+filtro institución/activo/dirección oAMBOS antes de paginar, permiso de registrar
+movimientos existente. Preparar formulario no carga listarActivos; etiqueta se
+reconstruye porID tras errores. Cambio institución/tipo limpia selección/aborta
+consultas viejas, requiere opción válida; validación backend/idempotencia intactas.
+Registrar movimiento abre modal común con resumen/efecto yCancelar sinPOST; Cancelar
+externo tiene diseño compartido. Sin finanzas/migración; V97 libre. Corte1150 aún
+pendiente del usuario; no repetir ingreso200 ni egreso50 si ya guardados, no abrir otro.
+
+## Acción de conteo y cierre con botón administrativo — 2026-10-15
+
+10Java específicos/22Node aprobados, diff limpio, render de estados/permisos;
+sólo app recreada/salud UP. Temporales retirados, sin QA visual autenticada ni finanzas.
+
+En Cortes de caja, Contar y cerrar pasa a botón azul común con flecha/foco visible,
+Ver detalle secundario con borde. Misma URL y permiso/estado; abre detalle, no cierra.
+Sin datos/finanzas/migración, V97 libre. Prueba de corte1150 sigue pendiente de usuario.
+
+## Inicio de prueba de corte y diseño de observaciones — 2026-10-15
+
+9Java específicos/22Node aprobados, diff limpio; render escapado/readonly/condicional.
+Sólo app recreada/salud UP, temporales retirados, sin QA visual autenticada ni finanzas.
+
+Ejemplo acordado:caja nueva de prueba1000, abrir corte, ingreso manual200/egreso50,
+declarar1150 para2movimientos/diferencia0. Usuario revisa detalle de apertura y pidió
+presentación de observaciones; ahora tarjeta de consulta con título/márgenes/temas/
+móvil y texto escapado. Sin cambios de datos o corte abierto. Se indicó no capturar
+cierre todavía: registrar primero movimientos y después1150. No duplicar pago200
+previo ni abrir otro corte al recargar. Pendientes confirmar movimientos/cierre,
+luego diferencia1 y reportes; no guía confirmada aún. V97 libre.
+
 ## Ronda de cobranza concluida y guía de seguridad V96 — 2026-10-15
 
 734Java/22Node aprobados, diff limpio; SQL editorial BEGIN/ROLLBACK. Sólo app

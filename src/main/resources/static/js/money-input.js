@@ -210,7 +210,29 @@
                 if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
                 if (form.dataset.confirmSubject) add('Titular del pago', form.dataset.confirmSubject);
             }
-            if(kind==='concepto-cobro') {
+            if(kind==='cierre-caja') {
+                title.textContent='Confirmar cierre de caja';
+                cancel.textContent='Cancelar';accept.textContent='Confirmar y cerrar caja';
+                const valor=name=>form.querySelector('[name="'+name+'"]').value.trim();
+                add('Corte', '#'+form.dataset.confirmCorte);
+                add('Caja',form.dataset.confirmAccount);add('Plantel',form.dataset.confirmPlantel);
+                add('Efectivo declarado',money(valor('efectivoDeclarado')));
+                add('Justificación de diferencia',valor('justificacionDiferencia')||'Sin justificación capturada');
+                add('Observaciones de cierre',valor('observaciones')||'Sin observaciones');
+                note.textContent='Al confirmar se conciliará el efectivo declarado y se intentará cerrar este corte. El saldo esperado y la diferencia se revelarán al procesar el cierre; si existe diferencia, será obligatoria una justificación. Este cierre no registra ingresos ni egresos. Cancelar conserva tu captura y mantiene el corte abierto.';
+            } else if(kind==='movimiento-manual') {
+                title.textContent='Confirmar movimiento financiero';cancel.textContent='Cancelar';accept.textContent='Confirmar y registrar movimiento';
+                const valor=name=>form.querySelector('[name="'+name+'"]').value.trim();
+                const tipo=valor('direccion');
+                add('Institución',form.querySelector('[name="institucionId"]').selectedOptions[0]?.textContent.trim()||'Sin seleccionar');
+                add('Cuenta financiera',valor('cuentaTexto'));add('Tipo',tipo==='INGRESO'?'Ingreso':'Egreso');
+                add('Motivo',valor('motivoTexto'));add('Monto',money(valor('monto')));
+                const [dia,hora]=valor('fechaOperacion').split('T');
+                add('Fecha y hora',dia.split('-').reverse().join('/')+' · '+hora);
+                add('Concepto',valor('concepto'));add('Referencia',valor('referencia')||'Sin referencia');
+                add('Tercero',valor('terceroNombre')||'Sin tercero');
+                note.textContent=tipo==='INGRESO'?'Se sumará este importe a la cuenta. Cancelar conserva la captura sin registrar.':'Se descontará este importe de la cuenta. Cancelar conserva la captura sin registrar.';
+            } else if(kind==='concepto-cobro') {
                 title.textContent='Confirmar creación del concepto de cobro';
                 cancel.textContent='Cancelar';accept.textContent='Confirmar y crear concepto';
                 const texto=name=>form.querySelector('[name="'+name+'"]').value.trim();

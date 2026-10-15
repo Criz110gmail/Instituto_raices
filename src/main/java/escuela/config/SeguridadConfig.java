@@ -134,6 +134,8 @@ public class SeguridadConfig {
                         .hasAnyAuthority("VINCULO_TUTOR_ADMINISTRAR", "TUTOR_ADMINISTRAR", "PAGO_REGISTRAR", "CONVENIO_PAGO_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/cuentas-pago", "/admin/autocompletado/cargos-pago")
                         .hasAnyAuthority("PAGO_REGISTRAR", "PAGO_VALIDAR")
+                        .requestMatchers("/admin/autocompletado/motivos-movimiento")
+                        .hasAuthority("MOVIMIENTO_FINANCIERO_REGISTRAR")
                         .requestMatchers("/admin/autocompletado/cuentas-movimiento")
                         .hasAnyAuthority("MOVIMIENTO_FINANCIERO_LEER", "MOVIMIENTO_FINANCIERO_REGISTRAR",
                                 "TRANSFERENCIA_CUENTA_REGISTRAR", "PAGO_DEVOLVER",

@@ -21,6 +21,7 @@ public class MovimientoManualForm {
     @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") private LocalDateTime fechaOperacion;
     @NotNull private DireccionMovimiento direccion;
     @NotNull private Long motivoFinancieroId;
+    @Size(max=260) private String motivoTexto;
     @NotNull @DecimalMin("0.01") @Digits(integer = 17, fraction = 2) private BigDecimal monto;
     @NotBlank @Size(max = 250) private String concepto;
     @Size(max = 150) private String referencia;
