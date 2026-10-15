@@ -1,5 +1,17 @@
 # Sistema administrativo escolar
 
+## Guías de caja actualizadas: faltante justificado y pestañas (V98)
+
+En **Administración → Seguridad y soporte → Guía de procesos**, busca
+**Cerrar caja con un faltante de $1 justificado**. Ocho etapas explican abrir el
+segundo corte con saldo$1,150, declarar$1,149 sin motivo, comprobar el rechazo,
+justificar y cerrar con diferencia−$1. La cuenta sigue$1,150: el cierre no crea
+un egreso automático. Caso confirmado; no repetir cortes ni movimientos.
+La guía del cierre sin diferencia también indica Resumen/Apertura/Conteo y cierre
+o Cierre y conciliación, el modal de apertura y los botones al pie.
+V98 sólo actualiza contenido editorial. Sobrante y reportes financieros siguen pendientes.
+V98 aplicada:28guías/247etapas;750Java/27Node aprobados y aplicación UP.
+
 ## Corte de caja sin diferencia confirmado (V97)
 
 En **Administración → Seguridad y soporte → Guía de procesos**, busca

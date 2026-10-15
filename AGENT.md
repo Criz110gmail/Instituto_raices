@@ -1,5 +1,26 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V98 — guía de faltante y recorridos con pestañas — 2026-10-15
+
+- Verificado750Java completos/27Node sin fallos, diff limpio. SQL editorial validado
+  BEGIN/ROLLBACK; sólo app recreada/salud UP. Lectura confirma V98 aplicada,
+  faltanteCONFIRMADA8etapas y sin-diferencia versión2/10etapas,28guías/247etapas.
+  Temporales retirados, sin QA visual autenticada ni operaciones financieras.
+  Próxima V99; no editar V1–V98. Corrección de numeración evita interpretar el50
+  final de una observación como otra acción de la guía.
+
+- Autorizado actualizar guía: V98 publica corte-caja-faltante-1 CONFIRMADA8etapas/
+  4acciones por etapa,4permisos existentes requeridos sin otorgar roles. Relata caso
+  confirmado: nuevo corte1150/sin movimientos/declarado1149 sin motivo→rechazo;
+  motivo obligatorio→cerrado/diferencia−1/cuenta1150. Saldo inicial de CUENTA sigue1000,
+  saldo inicial del NUEVO CORTE1150. No repetir operaciones; no egreso1 automático.
+- Actualiza seis etapas de corte-caja-sin-diferencia y dos precauciones por nav
+  Resumen/Apertura/Conteo y cierre o Cierre y conciliación, modal Confirmar y abrir
+  corte y footer. Quita referencias a faltante pendiente en esa guía y seguridad.
+  Cancelar modal/Excel siguen controles recomendados, no aceptación humana adicional.
+  Sólo tablas guía; no modifica migraciones anteriores ni finanzas. Próxima V99
+  tras aplicar V98. Siguiente PROPUESTO no ejecutado: sobrante1 y después reportes.
+
 ## Detalle del corte con pestañas y faltante confirmado — 2026-10-15
 
 - Verificado15Java específicos y27Node sin fallos, diff limpio. Render de página

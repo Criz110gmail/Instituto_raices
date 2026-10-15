@@ -1,5 +1,21 @@
 # Contexto del proyecto
 
+## V98 — documentación de faltante y navegación actual — 2026-10-15
+
+750Java completos/27Node aprobados, diff limpio; SQL probado BEGIN/ROLLBACK.
+Sólo app recreada/salud UP. Lectura confirma V98 aplicada, faltanteCONFIRMADA8etapas,
+sin-diferencia versión2/10etapas y28guías/247etapas. Temporales retirados, sin QA
+visual autenticada ni operaciones financieras; próxima V99, preservar V1–V98.
+
+Guía CONFIRMADA corte-caja-faltante-1:8etapas/4acciones y4permisos existentes,
+sin asignaciones. Explica rechazo sin justificación, cierre justificado con esperado
+1150/declarado1149/diferencia−1/cuenta1150 y cero movimientos nuevos, distingue saldo
+inicial CUENTA1000 de NUEVO CORTE1150. No repetir casos confirmados.
+Actualiza seis etapas y precauciones de cierre sin diferencia para pestañas/modal
+de apertura/footer, más referencia final de guía seguridad. Sólo contenido editorial,
+no editar migraciones previas ni operaciones financieras. Cancelar modal y Excel son
+controles adicionales. Próxima V99 tras V98; sobrante y reportes siguen pendientes.
+
 ## Navegación del detalle de corte y prueba de faltante — 2026-10-15
 
 15Java específicos/27Node aprobados, diff limpio. Render página completa con estados/
