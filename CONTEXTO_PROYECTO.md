@@ -1,5 +1,18 @@
 # Contexto del proyecto
 
+## Ronda de cobranza concluida y guía de seguridad V96 — 2026-10-15
+
+734Java/22Node aprobados, diff limpio; SQL editorial BEGIN/ROLLBACK. Sólo app
+recreada/salud UP; lecturaV96/guíaCONFIRMADA12etapas y26guías/229etapas. Temporales
+retirados, sin QA visual autenticada ni finanzas por herramientas. Siguiente V97.
+
+Tres controles confirmados y autorizados para guía: duplicado excluido, cancelar
+confirmación sin guardar, dos pestañas/mismofolioun ingreso200/abono200/avisoámbar.
+V96 agrega guíaCONFIRMADA12etapas/4acciones/9permisos existentes y actualiza referencias
+editoriales antiguas sin modificar finanzas o migraciones aplicadas. No repetir pagos.
+Ronda terminada, no todas las combinaciones posibles del sistema. Siguiente sugerido:
+probar corte/cierre de caja y reportes financieros; no ejecutado ni capturas autorizadas.
+
 ## Seguridad confirmada y aviso de repetición más visible — 2026-10-15
 
 23Java específicos/22Node aprobados, diff limpio; contraste texto claro≥6.2/oscuro≥9.7.

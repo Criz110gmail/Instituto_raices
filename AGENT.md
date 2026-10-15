@@ -1,5 +1,27 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## ESTADO VIGENTE — guía de seguridad V96 y ronda concluida — 2026-10-15
+
+- Verificado734Java/22Node sin fallos, diff limpio; SQL editorial BEGIN/ROLLBACK.
+  Sólo app recreada/salud UP. Lectura confirma V96 aplicada, guíaCONFIRMADA12etapas,
+  26guías/229etapas. Temporales retirados; sin QA visual autenticada ni operaciones
+  financieras por herramientas. Siguiente migración V97, preservar V1–V96 aplicadas.
+
+- Usuario autorizó publicar tres pruebas confirmadas: selección duplicada bloqueada,
+  Cancelar modal sin crear pago y mismo folio validado desde dos pestañas con sólo
+  un ingreso/abono200 y aviso ámbar. NO seguir marcándolas pendientes ni repetir pagos.
+- V96 agrega seguridad-registro-validacion-pagos CONFIRMADA,12etapas/4acciones cada
+  una/9permisos existentes requeridos sin asignar roles. Recorrido completo concepto/
+  cuota/cargo200/duplicado/modalCancelar/pagoúnico/dospestañas/aviso/cajaS+200.
+  Diferencia casos humanosDUP-TEST yDUP-TEST-02 de nuevo códigoilustrativoSEG-PAGO-TEST;
+  no inventa folio del segundo ensayo. Actualiza referencias editoriales de siete
+  guías previas vía nueva migración, sin tocar V1–V95 ni registros financieros.
+- Esta ronda de cobranza queda concluida; no afirmar cobertura de toda combinación.
+  SIGUIENTE PROPUESTO, no autorizado/ejecutado aún: validar corte/cierre de caja y
+  reportes financieros (efectivo separado de banco/tarjeta, saldo esperado vs contado,
+  diferencia controlada y coincidencia con Excel/PDF). Esperar elección del propietario
+  antes de realizar nuevas capturas. No implementar más módulos por inferencia.
+
 ## Tres pruebas de seguridad confirmadas y aviso ámbar — 2026-10-15
 
 - Verificado23Java de render/controller/validación y22Node sin fallos, diff limpio;

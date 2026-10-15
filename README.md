@@ -1,5 +1,16 @@
 # Sistema administrativo escolar
 
+## Ronda de cobranza concluida: controles de seguridad (V96)
+
+En **Seguridad y soporte → Guía de procesos**, busca **Registrar y validar sin
+duplicados: cargo único, cancelar modal y dos pestañas**. Doce etapas documentan
+las tres pruebas confirmadas: cargo no repetible, cancelar sin guardar y validar
+el mismo folio sin duplicar ingreso/abono, con aviso ámbar. Cuenta S+$200, no S+$400.
+No repetir los pagos de ensayo ya terminados. V96 sólo publica contenido editorial.
+Esta ronda queda concluida; siguiente propuesta: corte de caja y reportes financieros,
+pendiente de acordar con el propietario. Ver estado vigente de AGENT.md.
+V96 aplicada:26 guías/229 etapas;734Java/22Node aprobados y aplicación UP.
+
 ## Devoluciones del acuerdo anticipado confirmadas (V95)
 
 En **Seguridad y soporte → Guía de procesos**, consulta **Devolver un acuerdo
