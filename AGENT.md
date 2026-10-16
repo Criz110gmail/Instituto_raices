@@ -1,5 +1,80 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Reinicio: redirección automática y carrera de cookies reproducida/corregida — 2026-10-16
+
+- Usuario reportó que la vista privada seguía abierta tras reiniciar y que el primer
+ login devolvía Acceso actualizado. La corrección anterior no cubría solicitudes
+ privadas atrasadas; no dar ese caso por confirmado por sólo ver cambio de interfaz.
+- REPRODUCIDO HTTP con datos ficticios: GET/acceso/csrf crea sesión/token nuevos;
+ GET/admin con cookie anterior emitía otra JSESSIONID desde redirigir(getSession(true));
+ al sobrescribir la cookie nueva, POST/login rechazaba el token con accesoActualizado.
+ Se retiró creación/borrado de cookies en redirecciones caducadas. No basta reintentar
+ login ni borrar cookies desde esas respuestas; podrían llegar después de otro acceso.
+- SesionInvalidaPostFilter antes de CsrfFilter rechaza envíos con ID inválido y sin
+ sesión existente, sin crear otra cookie. Login viejo redirige al acceso propio;
+ renovar caducada devuelve401. Sesiones existentes siguen por CSRF normal; no concede
+ autenticación ni permite registrar acciones. SesionInvalidaFilter conserva GET privado
+ y público como antes. Logout válido sigue invalidando y borrando cookies.
+- session-clock.js consulta cada5s con pestaña visible, al foco/volver; límite4s para
+ no quedar bloqueado si servidor no responde. No renueva actividad por sondeo.
+ Confirma401/redirect con otro GET actual antes de salir, y verifica mensajes de cierre
+ de otra pestaña en vez de cerrar una sesión nueva por un aviso viejo. Nunca repite
+ POST/credenciales; evita redirecciones/broadcast duplicados. Mientras servidor esté
+ caído muestra sin conexión; al volver y confirmar401 regresa al acceso de ese portal.
+- Verificado764Java/28Node sin fallos, incluidas solicitudes privadas GET/POST sin
+ creación de sesión, login único, CSRF/fijación/logout, pérdida sin clic cada5s,
+ desconexión/reconexión y mensajes/respuestas anteriores a una nueva sesión.
+- QA navegador aislado con script real y backend ficticio confirmó regreso automático
+ /admin→/login, /portal→/familias, /maestros→/maestros/acceso, con sesionExpirada.
+ Login real abierto antes del reinicio, envío de usuario inexistente una vez llegó
+ a error de credenciales (esperado para datos ficticios), no accesoActualizado.
+ HTTP real repitió carreraGET/POST:302 sin Set-Cookie y primer login llegó a validar
+ credenciales. No se usaron usuarios/contraseñas reales ni se leyó .env.
+- App reconstruida/recreada/salud UP; servidor de QA detenido. Sin migración ni
+ operaciones financieras, V100 libre. Preservar cambios de filtro Alumno pendientes.
+- Próximo usuario: RECARGAR UNA VEZ para cargar detector nuevo (las vistas ya abiertas
+ conservan JS anterior), probar reinicio y acceso normal en un intento. Detección
+ periódica, no push instantáneo; servidor debe responder y pestaña activa o retomada.
+ Después retomar Pagos recibidos→Martha→Aplicar filtros y estado del alumno; no repetir500.
+
+## Pagos recibidos: filtro por alumno y pruebas de tesorería — 2026-10-16
+
+- Propietario confirmó Tesorería de CAJA-SOBRANTE-TEST sin movimientos en pantalla/
+ Excel/PDF. También BBVA_COBROS,01/10/2026–16/10/2026: apertura1000, pago1440 y
+ cancelación PAG-20261009-000002/1440, cierre1000. Después registró por sí mismo nuevo
+ pago500 para Martha Martinez Rodriguez, cuenta1500. Confirmó Tesorería diaria2filas
+ y mensual1fila/3movimientos/ingresos1940/egresos1440/neto500/traspasos0; Excel/PDF
+ coinciden, PDF apertura1000/cierre1500 y $0.00 de traspasos completo, sin recorte.
+ FechaHasta16 fue filtro elegido, no defecto. No confundir pagos con movimientos:
+ cancelación es movimiento reverso del mismo pago, no un segundo pago recibido.
+- Solicitó filtro Alumno en Pagos recibidos antes de seguir revisando su estado de
+ cuenta. Implementado autocompletado por nombre/matrícula, selección ID y botón quitar;
+ foco hasta10 sugerencias, desde3 caracteres hasta20, más1 para detectar hayMas. Usa
+ columna generada/indexada de V8, sólo lectura, sin COUNT ni cargar todos los alumnos.
+- Endpoint /admin/autocompletado/alumnos-pagos exige PAGO_LEER (no permisos de alumnos
+ ni reportes). AlcanceDatosService limita sugerencias a alumnos con pagos consultables
+ de la institución/planteles de la sesión; incluye alumnos inactivos con historial.
+- FiltroAlumnoPago usa EXISTS sobre solicitudes, aplicaciones históricas y cargos de
+ anticipos. Incluye pendientes/cancelados según Estado seleccionado; un pago de varios
+ alumnos aparece una vez por consulta, conservando su importe total. No se atribuye
+ todo el importe al alumno ni se filtra sólo por tutor. Mantiene alcance normal de Pagos.
+- alumnoId/alumnoTexto se conservan en listado/normalización/paginación/Excel por bloques
+ y retorno de detalle. Si escriben nombre sin seleccionar sugerencia, error visible,
+ no consulta silenciosa de todos los pagos. Ayuda contextual específica y diseño
+ claro/oscuro responsive; mensaje vacío no excluye por error a alumnos inactivos.
+- Verificado764Java/28Node, incluidos EXISTS, límites/escape, alcance institucional/
+ plantel, permiso PAGO_LEER, render/paginación/retorno y Excel multipágina. QA visual
+ de página renderizada con datos ficticios en escritorio/móvil390 y claro/oscuro; no
+ sesión autenticada ni pruebas de búsqueda sobre registros reales por herramientas.
+ App reconstruida/recreada, salud UP; temporales Docker QA retirados. Sin migración,
+ cambios financieros ni lectura .env. V100 libre; el usuario realiza commit/push.
+- Próximo usuario: Pagos recibidos → Alumno → escribir Martha, seleccionar sugerencia
+ y Aplicar filtros, revisar detalle/volver/paginación/Excel. No arrastrar cobertura anual
+ o concepto de otro ensayo: usar Todos/todas las coberturas si busca su historial completo.
+ Después retomar Estado de cuenta del alumno Martha para verificar aplicación del nuevo
+ pago500 y efecto del pago cancelado en sus adeudos; aún no confirmado ese reporte.
+ No repetir cobro500 ni publicar guía adicional automáticamente.
+
 ## Acceso tras reiniciar: cookie antigua y token CSRF — 2026-10-16
 
 - Propietario reportó primer intento Acceso actualizado y después La sesión volvió a

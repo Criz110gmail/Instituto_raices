@@ -12,6 +12,8 @@
     <script th:src="@{/js/navigation.js}" defer></script>
     <link rel="stylesheet" th:href="@{/css/catalogo-rangos.css}">
     <script th:src="@{/js/catalogo-rangos.js}" defer></script>
+    <link rel="stylesheet" th:if="${resultado.modulo.name() == 'PAGOS'}" th:href="@{/css/autocomplete-filter.css}">
+    <script th:if="${resultado.modulo.name() == 'PAGOS'}" th:src="@{/js/autocomplete.js}" defer></script>
 </head>
 <body>
 <input class="nav-toggle" type="checkbox" id="nav-toggle">
@@ -49,7 +51,7 @@
         <div class="flash" th:if="${mensaje}" th:text="${mensaje}">Operación completada</div>
         <div class="panel-heading">
             <div><h2 th:text="${resultado.modulo.name() == 'AJUSTES_CARGO' ? 'Movimientos registrados' : 'Directorio'}">Directorio</h2><p th:text="${resultado.modulo.name() == 'AJUSTES_CARGO' ? 'Consulta el historial aquí. Para modificar una obligación, abre el registro correspondiente en Adeudos de alumnos.' : 'Refina la consulta sin cargar el catálogo completo.'}">Refina la consulta sin cargar el catálogo completo.</p></div>
-            <div class="panel-actions"><a class="export-button" th:if="${resultado.modulo.name() == 'CARGOS'}" href="/admin/cargos/generar">Generar automáticos</a><a class="export-button" th:if="${resultado.modulo.name() == 'POLITICAS_RECARGO'}" href="/admin/politicas-recargo/generar">Generar recargos</a><a class="new-button" th:if="${resultado.modulo.mantenimientoDisponible() and resultado.modulo.name() != 'AJUSTES_CARGO' and (resultado.modulo.name() != 'PAGOS' or puedeRegistrarPago)}" th:href="${resultado.modulo.rutaMantenimiento() + resultado.modulo.segmentoNuevo()}">+ Nuevo registro</a><a class="export-button" th:href="@{/admin/catalogos/{slug}/excel(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado},fecha=${filtro.fecha},desde=${filtro.desde},hasta=${filtro.hasta},tipoFecha=${filtro.tipoFecha},cobertura=${filtro.cobertura},anioCobertura=${filtro.anioCobertura},conceptoCobro=${filtro.conceptoCobro})}">
+            <div class="panel-actions"><a class="export-button" th:if="${resultado.modulo.name() == 'CARGOS'}" href="/admin/cargos/generar">Generar automáticos</a><a class="export-button" th:if="${resultado.modulo.name() == 'POLITICAS_RECARGO'}" href="/admin/politicas-recargo/generar">Generar recargos</a><a class="new-button" th:if="${resultado.modulo.mantenimientoDisponible() and resultado.modulo.name() != 'AJUSTES_CARGO' and (resultado.modulo.name() != 'PAGOS' or puedeRegistrarPago)}" th:href="${resultado.modulo.rutaMantenimiento() + resultado.modulo.segmentoNuevo()}">+ Nuevo registro</a><a class="export-button" th:href="@{/admin/catalogos/{slug}/excel(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado},fecha=${filtro.fecha},desde=${filtro.desde},hasta=${filtro.hasta},tipoFecha=${filtro.tipoFecha},cobertura=${filtro.cobertura},anioCobertura=${filtro.anioCobertura},conceptoCobro=${filtro.conceptoCobro},alumnoId=${filtro.alumnoId},alumnoTexto=${filtro.alumnoTexto})}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
                 Exportar Excel
             </a></div>
@@ -65,6 +67,13 @@
             <label><span>Por página</span><select name="tamanio">
                 <option th:each="n : ${ {10, 25, 50, 100} }" th:value="${n}" th:text="${n}" th:selected="${filtro.tamanio == n}">25</option>
             </select></label>
+            <div class="autocomplete payment-student-filter" th:if="${resultado.modulo.name() == 'PAGOS'}" data-autocomplete data-no-scope data-refresh-on-focus="true" data-empty-message="No encontramos alumnos con pagos relacionados dentro de tu alcance." data-endpoint="/admin/autocompletado/alumnos-pagos">
+                <label for="alumnoTexto"><span>Alumno</span></label>
+                <div class="autocomplete-control"><input class="autocomplete-input" id="alumnoTexto" name="alumnoTexto" th:value="${filtro.alumnoTexto}" placeholder="Nombre o matrícula · Ej. Martha" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="alumnos-pagos-resultados"><button class="autocomplete-clear" type="button" aria-label="Quitar filtro de alumno">×</button></div>
+                <input class="autocomplete-value" type="hidden" name="alumnoId" th:value="${filtro.alumnoId}">
+                <div class="autocomplete-results" id="alumnos-pagos-resultados" role="listbox" hidden></div>
+                <small class="autocomplete-status">Selecciona un alumno con pagos relacionados. Incluye su historial, aunque esté inactivo.</small>
+            </div>
             <label class="payment-concept-filter" th:if="${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'CUOTAS_ALUMNO'}"><span>Concepto de cobro</span><input type="search" name="conceptoCobro" th:value="${filtro.conceptoCobro}" placeholder="Código o nombre · Ej. ANTICIPO-TEST-05"></label>
             <fieldset class="catalogo-rango catalogo-cobertura" th:if="${resultado.modulo.name() == 'PAGOS'}">
                 <legend>Cobertura de mensualidades</legend>
@@ -114,9 +123,9 @@
         <footer class="pagination" th:if="${resultado.pagina.totalPages > 0}">
             <p><strong th:text="${resultado.pagina.number * resultado.pagina.size + 1}">1</strong>–<strong th:text="${resultado.pagina.number * resultado.pagina.size + resultado.pagina.numberOfElements}">25</strong> de <strong th:text="${resultado.pagina.totalElements}">100</strong></p>
             <div>
-                <a th:classappend="${resultado.pagina.first} ? ' disabled'" th:href="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado},fecha=${filtro.fecha},desde=${filtro.desde},hasta=${filtro.hasta},tipoFecha=${filtro.tipoFecha},cobertura=${filtro.cobertura},anioCobertura=${filtro.anioCobertura},conceptoCobro=${filtro.conceptoCobro},tamanio=${filtro.tamanio},pagina=${resultado.pagina.number - 1})}">Anterior</a>
+                <a th:classappend="${resultado.pagina.first} ? ' disabled'" th:href="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado},fecha=${filtro.fecha},desde=${filtro.desde},hasta=${filtro.hasta},tipoFecha=${filtro.tipoFecha},cobertura=${filtro.cobertura},anioCobertura=${filtro.anioCobertura},conceptoCobro=${filtro.conceptoCobro},alumnoId=${filtro.alumnoId},alumnoTexto=${filtro.alumnoTexto},tamanio=${filtro.tamanio},pagina=${resultado.pagina.number - 1})}">Anterior</a>
                 <span th:text="${resultado.pagina.number + 1}">1</span>
-                <a th:classappend="${resultado.pagina.last} ? ' disabled'" th:href="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado},fecha=${filtro.fecha},desde=${filtro.desde},hasta=${filtro.hasta},tipoFecha=${filtro.tipoFecha},cobertura=${filtro.cobertura},anioCobertura=${filtro.anioCobertura},conceptoCobro=${filtro.conceptoCobro},tamanio=${filtro.tamanio},pagina=${resultado.pagina.number + 1})}">Siguiente</a>
+                <a th:classappend="${resultado.pagina.last} ? ' disabled'" th:href="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug},q=${filtro.q},estado=${filtro.estado},fecha=${filtro.fecha},desde=${filtro.desde},hasta=${filtro.hasta},tipoFecha=${filtro.tipoFecha},cobertura=${filtro.cobertura},anioCobertura=${filtro.anioCobertura},conceptoCobro=${filtro.conceptoCobro},alumnoId=${filtro.alumnoId},alumnoTexto=${filtro.alumnoTexto},tamanio=${filtro.tamanio},pagina=${resultado.pagina.number + 1})}">Siguiente</a>
             </div>
         </footer>
     </section>

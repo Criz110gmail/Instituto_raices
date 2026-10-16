@@ -20,6 +20,9 @@ import java.time.LocalDate;
 @Table(name = "alumno")
 public class Alumno extends EntidadAuditable {
 
+    @Column(name = "busqueda_autocomplete", insertable = false, updatable = false)
+    private String busquedaAutocomplete;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "institucion_id", nullable = false)
     private Institucion institucion;

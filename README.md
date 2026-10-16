@@ -1,5 +1,24 @@
 # Sistema administrativo escolar
 
+## Sesión tras reinicio: solicitudes atrasadas — 16/10/2026
+
+Corregida carrera de cookies que provocaba Acceso actualizado en el primer intento.
+Las solicitudes privadas caducadas no reemplazan la sesión del nuevo acceso. Detector
+automático cada5s con pestaña visible; al confirmar sesión perdida vuelve al login del
+portal correspondiente. Caída de conexión no equivale por sí sola a cierre de sesión.
+Recarga una vez para cargar el detector nuevo.764Java/28Node aprobados; aplicación UP,
+sin migración ni operaciones financieras. Ver continuidad y pruebas en AGENT.md.
+
+## Pagos recibidos: buscar por alumno — 16/10/2026
+
+Nuevo filtro **Alumno** con autocompletado por nombre o matrícula. Selecciona una
+sugerencia y pulsa **Aplicar filtros**. Conserva la selección al exportar Excel,
+cambiar de página y volver del detalle. Incluye historial de alumnos inactivos,
+respetando permisos y alcance; pagos familiares aparecen sin duplicarse.
+764 pruebas Java y28Node aprobadas; aplicación actualizada, sin migración nueva.
+Siguiente prueba: filtrar Martha Martinez Rodriguez y revisar su nuevo pago500;
+Tesorería BBVA_COBROS ya confirmada en pantalla/Excel/PDF con saldo final1500.
+
 ## Acceso tras reiniciar — 16/10/2026
 
 Corregido el tratamiento de cookies caducadas para que no bloquee el login, sus recursos

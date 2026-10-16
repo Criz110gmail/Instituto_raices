@@ -159,6 +159,25 @@ public class AlcanceDatosService {
         };
     }
 
+    /** Sólo alumnos relacionados con pagos que la sesión tiene permitido consultar. */
+    public Specification<escuela.alumno.entity.Alumno> alumnosConPagos() {
+        UsuarioPrincipal principal = principal();
+        return (alumno, query, cb) -> {
+            var pagos = query.subquery(Integer.class);
+            var pago = pagos.from(escuela.finanzas.entity.Pago.class);
+            var alcance = cb.conjunction();
+            if (!principal.accesoRecuperacion()) {
+                alcance = cb.equal(pago.get("institucion").get("id"), principal.institucionId());
+                if (!principal.alcanceInstitucional()) alcance = cb.and(alcance,
+                        pago.get("plantelRegistro").get("id").in(principal.plantelIds()));
+            }
+            pagos.select(cb.literal(1)).where(alcance,
+                    cb.equal(pago.get("institucion"), alumno.get("institucion")),
+                    escuela.admin.support.FiltroAlumnoPago.coincide(pago, pagos, cb, alumno.get("id")));
+            return cb.exists(pagos);
+        };
+    }
+
     /** Alcance especializado: los cortes institucionales sólo son visibles con alcance institucional. */
     public Specification<CorteCaja> especificacionCortesCaja() {
         UsuarioPrincipal principal = principal();

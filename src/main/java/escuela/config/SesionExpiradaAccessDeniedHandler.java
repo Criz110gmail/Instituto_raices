@@ -29,12 +29,9 @@ public class SesionExpiradaAccessDeniedHandler implements AccessDeniedHandler {
         String ruta = request.getRequestURI().substring(request.getContextPath().length());
         if (ruta.equals("/login") && (excepcion instanceof InvalidCsrfTokenException
                 || excepcion instanceof MissingCsrfTokenException)) {
-            String origen = request.getParameter("origen");
-            String acceso = "familias".equals(origen) ? "/familias"
-                    : "maestros".equals(origen) ? "/maestros/acceso" : "/login";
             // Un login abierto en otra pestaña conserva un token viejo incluso si
             // la cookie ya corresponde a una sesión nueva y válida. No borrarla.
-            response.sendRedirect(request.getContextPath() + acceso + "?accesoActualizado");
+            accesoActualizado(request, response);
             return;
         }
         if (esTokenDeSesionCaducada(request, excepcion)) {
@@ -52,11 +49,17 @@ public class SesionExpiradaAccessDeniedHandler implements AccessDeniedHandler {
                 ? "/maestros/acceso?sesionExpirada"
                 : ruta.equals("/portal") || ruta.startsWith("/portal/") || ruta.equals("/familias") || "familias".equals(origen)
                 ? "/familias?sesionExpirada" : "/login?sesionExpirada";
-        // El filtro CSRF puede haber emitido ya una sesión anónima nueva. No borrar
-        // su cookie con una segunda cabecera Set-Cookie en esta misma respuesta.
-        // Nunca recupera la autenticación anterior; el logout sigue borrando cookies.
-        request.getSession(true);
+        // No crear ni borrar cookies desde solicitudes privadas atrasadas: podrían
+        // sobrescribir la sesión que otra pestaña acaba de iniciar. El acceso público
+        // obtiene su propia sesión sólo cuando necesita un token CSRF.
         response.sendRedirect(request.getContextPath() + acceso);
+    }
+
+    void accesoActualizado(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String origen = request.getParameter("origen");
+        String acceso = "familias".equals(origen) ? "/familias"
+                : "maestros".equals(origen) ? "/maestros/acceso" : "/login";
+        response.sendRedirect(request.getContextPath() + acceso + "?accesoActualizado");
     }
 
     private boolean esTokenDeSesionCaducada(HttpServletRequest request,

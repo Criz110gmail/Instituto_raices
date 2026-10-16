@@ -235,6 +235,7 @@
     };
 
     const MODULE_FIELD = {
+        'Pagos recibidos:alumnotexto': ['Filtra los pagos relacionados con los cargos de un alumno, incluidos pendientes y cancelados. Si un pago cubre a varios alumnos se muestra una sola vez y conserva su importe total.', 'Escribe Martha o su matrícula, selecciona la sugerencia y pulsa Aplicar filtros.'],
         'Instituciones:codigo': ['Es la nomenclatura única de la institución. Se utiliza para diferenciarla, formar referencias y resolver accesos cuando un usuario se repite en otra institución.', 'IRAICES'],
         'Planteles:codigo': ['Clave corta y única del plantel dentro de su institución. Facilita búsquedas, reportes y referencias internas.', 'CENTRO'],
         'Niveles educativos:codigo': ['Clave breve del nivel educativo dentro de la institución.', 'PRIM'],

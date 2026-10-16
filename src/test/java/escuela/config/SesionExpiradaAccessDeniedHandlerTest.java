@@ -60,7 +60,7 @@ class SesionExpiradaAccessDeniedHandlerTest {
 
         assertThat(response.getRedirectedUrl()).isEqualTo("/maestros/acceso?sesionExpirada");
         assertThat(response.getCookie("JSESSIONID")).isNull();
-        assertThat(request.getSession(false)).isNotNull();
+        assertThat(request.getSession(false)).isNull();
     }
 
     @Test

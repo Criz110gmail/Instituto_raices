@@ -22,7 +22,9 @@ public class RetornoListadoCobranza implements HandlerInterceptor,WebMvcConfigur
             .queryParamIfPresent("hasta",java.util.Optional.ofNullable(f.hasta()))
             .queryParam("tipoFecha",f.tipoFecha()).queryParam("cobertura",f.cobertura())
             .queryParamIfPresent("anioCobertura",java.util.Optional.ofNullable(f.anioCobertura()))
-            .queryParam("conceptoCobro",f.conceptoCobro()).build().encode().toUriString().replace("+","%2B");
+            .queryParam("conceptoCobro",f.conceptoCobro())
+            .queryParamIfPresent("alumnoId",java.util.Optional.ofNullable(f.alumnoId()))
+            .queryParam("alumnoTexto",f.alumnoTexto()).build().encode().toUriString().replace("+","%2B");
     }
     static String validar(String valor,String rutaSolicitud) {
         if(valor==null||valor.length()>6000)return null;

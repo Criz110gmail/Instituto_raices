@@ -7,7 +7,7 @@
         const origen = familia ? 'familias' : maestro ? 'maestros' : 'admin';
         const fetchOriginal = window.fetch.bind(window);
         let vence = 0, csrfCabecera, csrfToken, consultando = false, renovando = false;
-        let avisoPara = 0, ultimaSincronizacion = 0, ultimoServidor = 0;
+        let avisoPara = 0, ultimaSincronizacion = 0, ultimoServidor = 0, saliendo = false;
         const canal = typeof BroadcastChannel === 'function' ? new BroadcastChannel('nexo-session-clock') : null;
         const indicador = document.createElement('button');
         indicador.type = 'button';
@@ -75,12 +75,16 @@
             if (!segundos && !consultando && performance.now() - ultimaSincronizacion > 30000) consultar();
         }
         function caducada() {
+            if (saliendo) return;
+            saliendo = true;
             canal?.postMessage({ cerrada: true });
             window.location.assign(acceso + '?sesionExpirada');
         }
         async function consultar(renovar = false) {
-            if (consultando) return;
+            if (consultando || saliendo) return;
             consultando = true;
+            const control = new AbortController();
+            const limiteConsulta = setTimeout(() => control.abort(), 4000);
             continuar.disabled = true;
             if (renovar) { renovando = true; continuar.disabled = true; mensaje.textContent = 'Renovando sesión…'; }
             try {
@@ -89,10 +93,16 @@
                     if (!csrfCabecera || !csrfToken) throw new Error('No se pudo confirmar la sesión. Intenta de nuevo.');
                     headers[csrfCabecera] = csrfToken;
                 }
-                const response = await fetchOriginal('/sesion/' + (renovar ? 'renovar' : 'estado'), {
-                    method: renovar ? 'POST' : 'GET', headers, credentials: 'same-origin', cache: 'no-store'
+                let response = await fetchOriginal('/sesion/' + (renovar ? 'renovar' : 'estado'), {
+                    method: renovar ? 'POST' : 'GET', headers, credentials: 'same-origin', cache: 'no-store', signal: control.signal
                 });
-                if (response.status === 401 || response.redirected) { caducada(); return; }
+                // Una respuesta vieja puede llegar después de iniciar sesión en otra
+                // pestaña. Confirmar con GET actual; nunca repetir POST ni credenciales.
+                if (response.status === 401 || response.redirected) {
+                    response = await fetchOriginal('/sesion/estado', { method: 'GET',
+                        headers: { Accept: 'application/json' }, credentials: 'same-origin', cache: 'no-store', signal: control.signal });
+                    if (response.status === 401 || response.redirected) { caducada(); return; }
+                }
                 if (!response.ok) throw new Error('No se pudo confirmar la sesión. Intenta de nuevo.');
                 const estado = await response.json();
                 csrfCabecera = estado.csrfCabecera; csrfToken = estado.csrfToken;
@@ -102,7 +112,7 @@
                 mensaje.textContent = 'No pudimos consultar el servidor. Revisa tu conexión y pulsa Continuar sesión para intentar de nuevo.';
                 indicador.textContent = 'Sesión · sin conexión';
                 ultimaSincronizacion = performance.now();
-            } finally { consultando = false; renovando = false; continuar.disabled = false; }
+            } finally { clearTimeout(limiteConsulta); consultando = false; renovando = false; continuar.disabled = false; }
         }
         // Las peticiones normales renuevan en el servidor; sólo observamos su respuesta.
         window.fetch = async (...args) => {
@@ -110,10 +120,11 @@
             const ahora = response.headers.get('X-Session-Now');
             const fin = response.headers.get('X-Session-Expires');
             if (ahora && fin) sincronizar(Number(ahora), Number(fin));
+            if (response.status === 401) consultar();
             return response;
         };
         canal?.addEventListener('message', event => {
-            if (event.data?.cerrada) window.location.assign(acceso + '?sesionExpirada');
+            if (event.data?.cerrada) consultar();
             else if (event.data) sincronizar(event.data.ahora, event.data.fin, false);
         });
         indicador.addEventListener('click', () => { abrir(); consultar(); });
@@ -132,7 +143,7 @@
         window.addEventListener('focus', () => consultar());
         window.addEventListener('pageshow', event => { if (event.persisted) consultar(); });
         setInterval(actualizar, 1000);
-        setInterval(() => { if (!document.hidden) consultar(); }, 30000);
+        setInterval(() => { if (!document.hidden && !saliendo) consultar(); }, 5000);
         consultar();
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);

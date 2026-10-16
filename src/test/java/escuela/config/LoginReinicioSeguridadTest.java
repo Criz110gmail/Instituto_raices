@@ -20,6 +20,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 class LoginReinicioSeguridadTest {
+    @Test void filtroAlumnoPagoRequiereLecturaDePagosSinExigirAdministrarAlumnos() throws Exception {
+        try (var context = new AnnotationConfigWebApplicationContext()) {
+            context.setServletContext(new MockServletContext());
+            context.register(Config.class,SeguridadConfig.class,SesionExpiradaAccessDeniedHandler.class,SesionController.class,Paginas.class);
+            context.refresh();
+            var mvc=MockMvcBuilders.webAppContextSetup(context).addFilters(context.getBean(FilterChainProxy.class)).build();
+            for(String permiso:new String[]{"PAGO_LEER","ALUMNO_ADMINISTRAR"}) {
+                var sesion=new MockHttpSession();
+                var auth=org.springframework.security.authentication.UsernamePasswordAuthenticationToken.authenticated("qa","",java.util.List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority(permiso)));
+                sesion.setAttribute("SPRING_SECURITY_CONTEXT",new org.springframework.security.core.context.SecurityContextImpl(auth));
+                var resultado=mvc.perform(get("/admin/autocompletado/alumnos-pagos").session(sesion)).andReturn().getResponse();
+                assertThat(resultado.getStatus()).isEqualTo(permiso.equals("PAGO_LEER")?200:403);
+            }
+        }
+    }
     @Test void cookieDeAntesDelReinicioPermiteTokenNuevoYUnSoloEnvioEnLosTresPortales() throws Exception {
         try (var context = new AnnotationConfigWebApplicationContext()) {
             context.setServletContext(new MockServletContext());
@@ -67,9 +82,17 @@ class LoginReinicioSeguridadTest {
                 assertThat(salida.getRedirectedUrl()).isEqualTo(acceso + "?logout");
                 assertThat(salida.getCookie("JSESSIONID").getMaxAge()).isZero();
                 assertThat(sesion.isInvalid()).isTrue();
-                var privado = mvc.perform(get("/admin").with(LoginReinicioSeguridadTest::cookieVieja)).andReturn().getResponse();
+                var solicitudPrivada = mvc.perform(get("/admin").with(LoginReinicioSeguridadTest::cookieVieja)).andReturn();
+                assertThat(solicitudPrivada.getRequest().getSession(false)).isNull();
+                var privado = solicitudPrivada.getResponse();
                 assertThat(privado.getRedirectedUrl()).isEqualTo("/login?sesionExpirada");
                 assertThat(privado.getCookie("JSESSIONID")).isNull();
+                // Solicitud atrasada: no debe emitir otra sesión que pise la del login.
+                var atrasada = mvc.perform(post("/admin/pagos/999/validar")
+                        .with(LoginReinicioSeguridadTest::cookieVieja)).andReturn();
+                assertThat(atrasada.getRequest().getSession(false)).isNull();
+                assertThat(atrasada.getResponse().getCookie("JSESSIONID")).isNull();
+                assertThat(atrasada.getResponse().getRedirectedUrl()).isEqualTo("/login?sesionExpirada");
                 var sinCsrf = mvc.perform(post("/login").param("username", "usuario-qa").param("password", "clave-qa"))
                         .andReturn().getResponse();
                 assertThat(sinCsrf.getRedirectedUrl()).isEqualTo("/login?accesoActualizado");
@@ -96,6 +119,7 @@ class LoginReinicioSeguridadTest {
         }
     }
     @RestController static class Paginas {
+        @GetMapping("/admin/autocompletado/alumnos-pagos") String alumnosPagos() { return "sugerencias de prueba"; }
         @GetMapping({"/login", "/familias", "/maestros/acceso", "/js/login-session.js", "/css/admin.css"})
         String publica() { return "acceso público de prueba"; }
     }

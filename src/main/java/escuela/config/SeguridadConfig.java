@@ -25,6 +25,7 @@ public class SeguridadConfig {
                                             SesionExpiradaAccessDeniedHandler accesoDenegadoHandler)
             throws Exception {
         return http
+                .addFilterBefore(new SesionInvalidaPostFilter(accesoDenegadoHandler), CsrfFilter.class)
                 .addFilterAfter(new SesionActividadFilter(accesoDenegadoHandler), CsrfFilter.class)
                 .addFilterAfter(new SesionInvalidaFilter(accesoDenegadoHandler), AnonymousAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
@@ -132,6 +133,8 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/pagos/**").hasAuthority("PAGO_REGISTRAR")
                         .requestMatchers("/admin/autocompletado/alumnos")
                         .hasAnyAuthority("VINCULO_TUTOR_ADMINISTRAR", "ALUMNO_ADMINISTRAR", "INSCRIPCION_ADMINISTRAR")
+                        .requestMatchers("/admin/autocompletado/alumnos-pagos")
+                        .hasAuthority("PAGO_LEER")
                         .requestMatchers("/admin/autocompletado/tutores")
                         .hasAnyAuthority("VINCULO_TUTOR_ADMINISTRAR", "TUTOR_ADMINISTRAR", "PAGO_REGISTRAR", "CONVENIO_PAGO_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/cuentas-pago", "/admin/autocompletado/cargos-pago")

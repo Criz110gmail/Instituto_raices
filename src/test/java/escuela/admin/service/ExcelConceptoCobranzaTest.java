@@ -10,6 +10,17 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ExcelConceptoCobranzaTest {
+    @Test void pagosConservanAlumnoEnTodosLosBloquesDeLaExportacion() throws Exception {
+        var consulta=mock(CatalogoConsultaService.class);
+        when(consulta.consultar(eq(ModuloCatalogo.PAGOS),any())).thenAnswer(i->{
+            FiltroCatalogo f=i.getArgument(1);
+            var fila=new FilaCatalogo(1L,List.of("PAG-PRUEBA"),"Validado","activo");
+            return new ResultadoCatalogo(ModuloCatalogo.PAGOS,ModuloCatalogo.PAGOS.columnas(),new PageImpl<>(List.of(fila),PageRequest.of(f.pagina(),100),101));
+        });
+        var filtro=new FiltroCatalogo("","TODOS",null,0,25,null,null,"REGISTRO","TODOS",null,"",2L,"Martha");
+        new ExcelCatalogoService(consulta).exportar(ModuloCatalogo.PAGOS,filtro,new ByteArrayOutputStream());
+        verify(consulta,times(2)).consultar(eq(ModuloCatalogo.PAGOS),argThat(f->Long.valueOf(2).equals(f.alumnoId())&&f.alumnoTexto().equals("Martha")&&f.tamanio()==100));
+    }
     @Test void alumnoYCobroSeConservanEnCadaBloqueDeCuotasYAdeudos() throws Exception {
         for(var modulo:new ModuloCatalogo[]{ModuloCatalogo.CARGOS,ModuloCatalogo.CUOTAS_ALUMNO}) {
             var consulta=mock(CatalogoConsultaService.class);

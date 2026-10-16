@@ -603,10 +603,12 @@ public class CatalogoConsultaService {
     }
 
     private Page<FilaCatalogo> consultarPagos(FiltroCatalogo f,Pageable pagina){
+        f.validarCobertura();
         var registros=pagoRepository.findAll(textoPago(f).and(escuela.admin.support.RangoFechasCatalogo.pagos(f))
                 .and(estado(f,"estado")).and(alcanceDatosService.especificacion(ModuloCatalogo.PAGOS))
                 .and(escuela.finanzas.service.CoberturaAnualPagoService.filtro(f))
-                .and(escuela.admin.support.FiltroConceptoPago.especificacion(f)),pagina);
+                .and(escuela.admin.support.FiltroConceptoPago.especificacion(f))
+                .and(escuela.admin.support.FiltroAlumnoPago.especificacion(f.alumnoId())),pagina);
         var coberturas=coberturaAnual.lote(registros.getContent().stream().map(Pago::getId).toList());
         return registros.map(p->filaPago(p,coberturas.getOrDefault(p.getId(),List.of()).stream()
                 .filter(c->f.anioCobertura()==null||f.anioCobertura().equals(c.anio())).toList()));

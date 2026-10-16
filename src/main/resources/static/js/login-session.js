@@ -7,7 +7,7 @@
    if(response.redirected){
     let caducada=false;
     try{const url=new URL(response.url);caducada=url.origin===location.origin&&url.searchParams.has('sesionExpirada');}catch(error){}
-    // Repetir sólo GET: la redirección eliminó la cookie caducada.
+    // Compatibilidad con accesos abiertos antes de actualizar la app: repetir sólo GET.
     if(caducada&&intento===0)continue;
     throw new Error(caducada?'sesion':'servicio');
    }

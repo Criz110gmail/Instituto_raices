@@ -160,7 +160,7 @@
             indiceActivo = -1;
             if (!resultados.length) {
                 cerrarLista();
-                mostrarEstado('No encontramos coincidencias activas.');
+                mostrarEstado(contenedor.dataset.emptyMessage || 'No encontramos coincidencias activas.');
                 return;
             }
             resultados.forEach((opcion, indice) => {

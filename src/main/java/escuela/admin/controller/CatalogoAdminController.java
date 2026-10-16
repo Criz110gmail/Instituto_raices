@@ -51,6 +51,8 @@ public class CatalogoAdminController {
                     @RequestParam(defaultValue = "TODOS") String cobertura,
                     @RequestParam(required = false) Integer anioCobertura,
                     @RequestParam(defaultValue = "") String conceptoCobro,
+                    @RequestParam(required = false) Long alumnoId,
+                    @RequestParam(defaultValue = "") String alumnoTexto,
                     Authentication authentication,
                     Model model) {
         ModuloCatalogo modulo = ModuloCatalogo.desde(slug);
@@ -63,7 +65,7 @@ public class CatalogoAdminController {
         }
         List<ModuloCatalogo> modulos = modulosVisibles(authentication);
         validarPermiso(modulo, modulos);
-        FiltroCatalogo filtro = new FiltroCatalogo(q, estado, fecha, pagina, tamanio, desde, hasta, tipoFecha,cobertura,anioCobertura,conceptoCobro).normalizado();
+        FiltroCatalogo filtro = new FiltroCatalogo(q, estado, fecha, pagina, tamanio, desde, hasta, tipoFecha,cobertura,anioCobertura,conceptoCobro,alumnoId,alumnoTexto).normalizado();
         try {
             filtro.validarRango();
             if(modulo==ModuloCatalogo.PAGOS)filtro.validarCobertura();
@@ -81,6 +83,9 @@ public class CatalogoAdminController {
         return "admin/catalogo";
     }
 
+    String catalogo(String slug,String q,String estado,LocalDate fecha,LocalDate desde,LocalDate hasta,String tipoFecha,int pagina,int tamanio,String cobertura,Integer anioCobertura,String conceptoCobro,Authentication authentication,Model model){
+        return catalogo(slug,q,estado,fecha,desde,hasta,tipoFecha,pagina,tamanio,cobertura,anioCobertura,conceptoCobro,null,"",authentication,model);
+    }
     String catalogo(String slug,String q,String estado,LocalDate fecha,LocalDate desde,LocalDate hasta,String tipoFecha,int pagina,int tamanio,String cobertura,Integer anioCobertura,Authentication authentication,Model model){
         return catalogo(slug,q,estado,fecha,desde,hasta,tipoFecha,pagina,tamanio,cobertura,anioCobertura,"",authentication,model);
     }
@@ -103,17 +108,22 @@ public class CatalogoAdminController {
                @RequestParam(defaultValue = "TODOS") String cobertura,
                @RequestParam(required = false) Integer anioCobertura,
                @RequestParam(defaultValue = "") String conceptoCobro,
+               @RequestParam(required = false) Long alumnoId,
+               @RequestParam(defaultValue = "") String alumnoTexto,
                Authentication authentication,
                HttpServletResponse response) throws IOException {
         ModuloCatalogo modulo = ModuloCatalogo.desde(slug);
         validarPermiso(modulo, modulosVisibles(authentication));
-        FiltroCatalogo filtro=new FiltroCatalogo(q,estado,fecha,0,100,desde,hasta,tipoFecha,cobertura,anioCobertura,conceptoCobro).normalizado();
+        FiltroCatalogo filtro=new FiltroCatalogo(q,estado,fecha,0,100,desde,hasta,tipoFecha,cobertura,anioCobertura,conceptoCobro,alumnoId,alumnoTexto).normalizado();
         filtro.validarRango();
         if(modulo==ModuloCatalogo.PAGOS)filtro.validarCobertura();
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         String nombre = URLEncoder.encode(modulo.slug() + "-filtrado.xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + nombre);
         excelService.exportar(modulo, filtro, response.getOutputStream());
+    }
+    void excel(String slug,String q,String estado,LocalDate fecha,LocalDate desde,LocalDate hasta,String tipoFecha,String cobertura,Integer anioCobertura,String conceptoCobro,Authentication authentication,HttpServletResponse response)throws IOException{
+        excel(slug,q,estado,fecha,desde,hasta,tipoFecha,cobertura,anioCobertura,conceptoCobro,null,"",authentication,response);
     }
     void excel(String slug,String q,String estado,LocalDate fecha,LocalDate desde,LocalDate hasta,String tipoFecha,String cobertura,Integer anioCobertura,Authentication authentication,HttpServletResponse response)throws IOException{
         excel(slug,q,estado,fecha,desde,hasta,tipoFecha,cobertura,anioCobertura,"",authentication,response);

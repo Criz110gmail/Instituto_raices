@@ -1,5 +1,43 @@
 # Contexto del proyecto
 
+## Reinicio y solicitudes atrasadas: causa reproducida — 2026-10-16
+
+Usuario seguía viendo vista privada hasta pulsar botón y recibía accesoActualizado al
+entrar. HTTP ficticio reprodujo GET privado anterior emitiendo JSESSIONID nueva después
+de obtener token de login, sobrescribiendo su sesión y causando rechazoCSRF. Redirigir
+ya no crea ni borra cookies. Filtro temprano evita que POST de ID inválido/sin sesión
+llegue a generar otra cookie en CSRF; sesiones existentes mantienen protección normal.
+No reenvía credenciales ni operaciones. Logout válido permanece protegido/invalida.
+Detector visible cada5s/límite4s, foco/retorno, confirma cierre con GET actual; mensajes
+viejos entre pestañas no cierran sesiones nuevas. Desconexión sola no implica caducidad.
+764Java/28Node aprobados. Navegador aislado/script real confirmó tres destinos correctos
+sin clic adicional; login real previo al reinicio con datos ficticios llega a validación
+de credenciales en un envío. HTTP real repitió carreraGET/POST sin Set-Cookie y sin
+accesoActualizado. No usuarios/contraseñas reales, .env ni operaciones financieras.
+App actualizada/saludUP; QA detenido, V100 libre. Pendiente usuario recargar una vez para
+cargar JS nuevo y probar reinicio/acceso; luego retomar filtro Martha y estado del alumno.
+
+## Filtro de alumno en Pagos recibidos — 2026-10-16
+
+Usuario confirmó Tesorería sin movimientos de caja y BBVA_COBROS: pago1440/cancelación
+PAG-20261009-000002, apertura/cierre1000. Luego creó nuevo pago500 para Martha Martinez
+Rodriguez, saldo1500. Tesorería diaria2filas/mensual1fila,3movimientos, ingresos1940,
+egresos1440/neto500/traspasos0; confirmó Excel/PDF, cierre1500 y $0.00 completo.
+FiltroHasta16/10/2026 fue intencional. No confundir dos pagos con tres movimientos.
+
+Antes de revisar estado del alumno solicitó filtro específico en Pagos. Ahora usa
+autocompletado nombre/matrícula y alumnoId, hasta10 al foco/20 desde3letras, consulta
+limitada sin COUNT sobre columna indexada existenteV8. Sólo alumnos relacionados con
+pagos visibles por institución/plantel; incluye historial inactivo. Endpoint exige
+PAGO_LEER, no permiso de alumnos. EXISTS solicitudes/aplicaciones/anticipos evita
+duplicados por varios cargos/hijos. El importe mostrado sigue siendo total del pago.
+Conserva selección en Excel/paginación/retorno; texto sin ID seleccionado muestra error.
+Ayuda, botón quitar, vacío específico y estilo claro/oscuro/móvil revisados en muestra.
+764Java/28Node aprobados y app actualizada/saludUP; sin QA autenticada, migración ni
+operaciones financieras. V100 libre. Pendiente usuario probar Martha en Pagos, regresar
+del detalle/exportar; luego Estado de cuenta de Martha y aplicación del pago500.
+No repetir el cobro500 ni publicar nueva guía sin indicación.
+
 ## Login después de reiniciar corregido — 2026-10-16
 
 Avisos reportados: primero Acceso actualizado y luego La sesión volvió a cambiar durante

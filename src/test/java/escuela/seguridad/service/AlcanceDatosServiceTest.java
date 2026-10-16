@@ -101,6 +101,22 @@ class AlcanceDatosServiceTest {
         SecurityContextHolder.clearContext();
     }
 
+    @Test void alumnosDelFiltroDePagosConservanInstitucionYPlantelesDeLosPagos() {
+        for (boolean institucional : List.of(false,true)) {
+            autenticar(new UsuarioPrincipal(7L,1L,Set.of(3L),institucional,false,"admin","hash",List.of()));
+            var cb=org.mockito.Mockito.mock(jakarta.persistence.criteria.CriteriaBuilder.class,org.mockito.Mockito.RETURNS_DEEP_STUBS);
+            var query=org.mockito.Mockito.mock(jakarta.persistence.criteria.CriteriaQuery.class,org.mockito.Mockito.RETURNS_DEEP_STUBS);
+            var alumno=org.mockito.Mockito.mock(jakarta.persistence.criteria.Root.class,org.mockito.Mockito.RETURNS_DEEP_STUBS);
+            service.alumnosConPagos().toPredicate(alumno,query,cb);
+            var pagos=query.subquery(Integer.class);
+            var pago=pagos.from(escuela.finanzas.entity.Pago.class);
+            org.mockito.Mockito.verify(cb).equal(pago.get("institucion").get("id"),1L);
+            if(!institucional) org.mockito.Mockito.verify(pago.get("plantelRegistro").get("id")).in(Set.of(3L));
+            else org.mockito.Mockito.verify(pago,org.mockito.Mockito.never()).get("plantelRegistro");
+            org.mockito.Mockito.verify(cb).exists(pagos);
+        }
+    }
+
     @Test
     void limitaInstitucionesALaDelUsuario() {
         autenticar(new UsuarioPrincipal(7L, 1L, Set.of(), true, false,

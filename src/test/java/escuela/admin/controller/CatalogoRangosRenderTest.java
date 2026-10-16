@@ -29,7 +29,9 @@ class CatalogoRangosRenderTest {
         var mvc=MockMvcBuilders.standaloneSetup(new CatalogoAdminController(consulta,mock(ExcelCatalogoService.class))).setViewResolvers(views).build();
         var auth=new TestingAuthenticationToken("admin","","CARGO_LEER","CUOTA_ALUMNO_LEER","PAGO_LEER");
         for(String slug:new String[]{"cargos","cuotas-alumno","pagos"}) {
-            var response=mvc.perform(get("/admin/catalogos/"+slug).principal(auth).param("desde","2026-10-01").param("hasta","2026-10-31").param("tipoFecha","REGISTRO").param("tamanio","10").param("cobertura","ANUAL_LIQUIDADO").param("anioCobertura","2027").param("conceptoCobro","ANTICIPO-TEST-05")).andReturn().getResponse();
+            var request=get("/admin/catalogos/"+slug).principal(auth).param("desde","2026-10-01").param("hasta","2026-10-31").param("tipoFecha","REGISTRO").param("tamanio","10").param("cobertura","ANUAL_LIQUIDADO").param("anioCobertura","2027").param("conceptoCobro","ANTICIPO-TEST-05");
+            if(slug.equals("pagos"))request.param("alumnoId","2").param("alumnoTexto","Martha Martinez Rodriguez");
+            var response=mvc.perform(request).andReturn().getResponse();
             assertThat(response.getStatus()).isEqualTo(200);
             assertThat(response.getContentAsString()).contains("Filtrar por fechas","Mes anterior","desde=2026-10-01","hasta=2026-10-31","tipoFecha=REGISTRO","pagina=1");
             assertThat(response.getContentAsString()).contains("class=\"catalogo-filter-actions\"");
@@ -37,6 +39,10 @@ class CatalogoRangosRenderTest {
             if(slug.equals("pagos"))assertThat(response.getContentAsString()).contains("Tipo de cobertura","Año cubierto","anioCobertura=2027","cobertura=ANUAL_LIQUIDADO");
             if(slug.equals("pagos")){
                 var html=response.getContentAsString();
+                var qa=java.nio.file.Path.of("target/qa-pagos/catalogo.html");
+                java.nio.file.Files.createDirectories(qa.getParent());
+                java.nio.file.Files.writeString(qa,html);
+                assertThat(html).contains("name=\"alumnoId\" value=\"2\"", "alumnoId=2", "alumnoId%3D2", "Martha Martinez Rodriguez", "/admin/autocompletado/alumnos-pagos");
                 assertThat(html).contains("filters-payments","Concepto de cobro","name=\"conceptoCobro\"","value=\"ANTICIPO-TEST-05\"","conceptoCobro=ANTICIPO-TEST-05");
                 assertThat(html.indexOf("Por página")).isLessThan(html.indexOf("Cobertura de mensualidades"));
             }else assertThat(response.getContentAsString()).doesNotContain("filters-payments").contains("filters-billing","Concepto de cobro","name=\"conceptoCobro\"","value=\"ANTICIPO-TEST-05\"","conceptoCobro=ANTICIPO-TEST-05");
