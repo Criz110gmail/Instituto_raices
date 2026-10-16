@@ -1,5 +1,27 @@
 # Contexto del proyecto
 
+## Históricos del alumno y concentrado aceptados — V103 — 2026-10-16
+
+Propietario confirmó estado ALUM-2026-002, Situación Todas, corte 15/10/2026 en
+pantalla/Excel/PDF: noviembre/diciembre de $800.00, dos cargos, importe/saldo $1,600.00,
+aplicado $0.00, sin material emitido el 16. Original $1,000.00 y ajuste -$200.00 por
+cargo; emisión 10/10, vencimientos 20/11 y 20/12; formato dd/mm/yyyy.
+También confirmó concentrado por concepto al 15/10, filtro Todos autorizados:
+una fila ANTICIPO-TEST-02, dos cargos, importe/por cobrar $1,600.00 y cobrado/vencido
+$0.00, MXN, sin MATERIAL. Pantalla, PDF y Resumen/Concentrado del Excel coinciden.
+V103 incorpora cuatro etapas a las dos guías existentes y corrige referencias previas
+de pendientes. Sólo contenido editorial; no modifica V1–V102 ni registros financieros.
+782 pruebas Java aprobadas, SQL validado con reversión y diff sin errores. App actualizada,
+salud UP, V103 aplicada: 33 guías / 279 etapas; alumno CONFIRMADA versión 2 con siete
+etapas y concentrado CONFIRMADA versión 3 con seis. Sin lectura de .env ni commit;
+PostgreSQL no reiniciado. V104 queda disponible.
+
+Queda cerrada esta ronda básica, no toda la aceptación financiera. Siguiente propuesta:
+probar permisos con un usuario controlado sin Reportes financieros (menú y rutas
+directas/Excel/PDF) y posteriormente alcance por plantel si existen datos de varios.
+No alterar permisos del administrador ni crear cuentas sin autorización; propietario
+elige usuario de prueba, sin compartir contraseñas. Esas pruebas aún no están confirmadas.
+
 ## Consulta histórica de Tesorería aceptada — V102 — 2026-10-16
 
 Propietario confirmó pantalla, Excel y Balanza PDF de BBVA_COBROS, rango 01/10–15/10/2026,

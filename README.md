@@ -1,5 +1,16 @@
 # Sistema administrativo escolar
 
+## Históricos del alumno y concentrado confirmados — 16/10/2026
+
+V103 documenta las dos pruebas al corte 15/10/2026: estado del alumno con dos
+colegiaturas de $800.00 y concentrado por concepto con dos cargos, importe/saldo
+$1,600.00 y cobrado $0.00. Pantalla, Excel y PDF coinciden y excluyen el material
+emitido el día 16. Sólo contenido de guía, sin cambios financieros.
+782 pruebas Java aprobadas; aplicación actualizada, salud UP y V103 aplicada.
+
+La siguiente ronda propuesta es verificar permisos y alcance con cuentas de prueba,
+sin modificar los derechos del administrador principal. No está confirmada todavía.
+
 ## Consulta histórica de Tesorería confirmada — 16/10/2026
 
 V102 incorpora a la guía el rango 01/10/2026–15/10/2026 de BBVA_COBROS, confirmado

@@ -1,5 +1,36 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Cortes históricos de alumno y cobranza confirmados — V103 — 2026-10-16
+
+- Propietario confirmó estado de ALUM-2026-002 con Situación Todas y corte 15/10/2026
+ en pantalla, Excel y PDF: únicamente noviembre/diciembre, dos cargos de $800.00,
+ importe/saldo $1,600.00 y aplicado $0.00. Original $1,000.00 y ajuste -$200.00 por
+ cargo; emisión 10/10, vencimientos 20/11 y 20/12, fechas dd/mm/yyyy. Material emitido
+ el 16/10 excluido. No repetir pagos, ajustes ni cancelaciones para recrear el ejemplo.
+- Confirmó concentrado histórico por Concepto de cobro al 15/10/2026, institución
+ instituto Raices y filtro Plantel Todos autorizados: una fila ANTICIPO-TEST-02,
+ 2 cargos, importe/por cobrar $1,600.00, cobrado/vencido $0.00, MXN. Coinciden pantalla,
+ PDF y las dos hojas Excel Resumen/Concentrado; MATERIAL no aparece.
+- V103 agrega cuatro etapas: alumno 6/7 (guía versión 2, siete etapas) y concentrado
+ 5/6 (versión 3, seis etapas), conservando CONFIRMADA. Actualiza referencias en guías
+ de Tesorería y Excel. V1–V102 se preservan; sólo contenido editorial, sin cambios
+ de permisos, dominio ni operaciones financieras.
+- Verificado SQL con BEGIN/ROLLBACK, 782 pruebas Java y diff sin errores. Sólo app
+ reconstruida/recreada, salud UP y V103 aplicada: 33 guías / 279 etapas. Ambas guías
+ siguen CONFIRMADAS con las versiones/etapas indicadas. Sin lectura de .env ni commit;
+ PostgreSQL no reiniciado. Siguiente migración disponible V104.
+- Ronda básica de reportes revisada: Tesorería actual/histórica, cuenta sin movimientos,
+ alumno con filtros y corte histórico, concentrado por tres agrupaciones al 16 y por
+ concepto al 15. No atribuir aceptación humana de corte histórico por plantel/ciclo,
+ permisos restringidos, grandes volúmenes o estados vacíos fuera del ensayo descrito.
+- Próxima ronda PROPUESTA: permisos y alcance. Con una cuenta de prueba SIN módulo
+ Reportes financieros verificar menú oculto y rechazo de rutas directas/Excel/PDF.
+ Después, si hay cuentas y datos de varios planteles, comprobar el alcance de una
+ cuenta limitada a un plantel. No retirar permisos al administrador principal ni
+ crear usuarios/asignar roles automáticamente. Solicitar al propietario qué cuenta
+ controlada puede usar; nunca pedir contraseñas. Primer login tras reinicio continúa
+ sin confirmación humana explícita. No publicar la ronda de permisos como confirmada.
+
 ## Tesorería histórica confirmada — V102 — 2026-10-16
 
 - Propietario confirmó Tesorería BBVA_COBROS, Plantel de operación Todos, agrupación
