@@ -39,9 +39,9 @@ function entorno(pathname) {
         const actualStatus=pendingStatuses.length?pendingStatuses.shift():status;
         return { status:actualStatus, ok: actualStatus === 200, redirected: false, json: async () => state,
             headers: { get: name => name === 'X-Session-Now' ? String(state.ahora) : name === 'X-Session-Expires' ? String(state.vence) : null } };
-    }, location: { assign: url => redirects.push(url) }, addEventListener: (name, fn) => { listeners[name] = fn; } };
+    }, location: { href: 'http://localhost:8080'+pathname, assign: url => redirects.push(url) }, addEventListener: (name, fn) => { listeners[name] = fn; } };
     vm.runInNewContext(source, { document, window, location: { pathname }, performance: { now: () => now },
-        BroadcastChannel: function() { return channel; }, AbortController, setTimeout, clearTimeout,
+        BroadcastChannel: function() { return channel; }, AbortController, URL, setTimeout, clearTimeout,
         setInterval: (fn,ms) => {intervals.push(fn);intervalDelays.push(ms);} });
     return { body, header, controls, theme, logout, intervals, intervalDelays, requests, redirects, listeners, window, channel,
         avanzar: ms => { now += ms; }, estado: value => { state = value; }, caducar: () => { status = 401; },
@@ -49,6 +49,18 @@ function entorno(pathname) {
 }
 const flush = () => new Promise(resolve => setImmediate(resolve));
 (async () => {
+    const salida=entorno('/admin');
+    const consulta=salida.requests[0];
+    salida.listeners.submit({target:{method:'post',action:'/logout'}});
+    assert.equal(consulta.options.signal.aborted,true);
+    await flush();
+    salida.intervals.forEach(fn=>fn());salida.listeners.focus();
+    await flush();
+    assert.equal(salida.requests.length,1);assert.equal(salida.redirects.length,0);
+    const vuelve=entorno('/portal');await flush();
+    vuelve.listeners.pagehide();vuelve.intervals[1]();await flush();
+    assert.equal(vuelve.requests.length,1);
+    vuelve.listeners.pageshow({persisted:true});await flush();assert.equal(vuelve.requests.length,2);
     const e = entorno('/admin/pagos');
     await flush();
     const badge = e.controls.children.find(child => child.dataset.sessionIndicator), modal = e.body.children[0];

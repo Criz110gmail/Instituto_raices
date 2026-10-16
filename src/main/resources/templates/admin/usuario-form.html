@@ -7,37 +7,35 @@
     <title th:text="${edicion ? 'Administrar usuario' : 'Nuevo usuario'} + ' · Nexo Escolar'">Usuario</title>
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/admin.css">
-    <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/forms.css?v=usuarios-5">
     <script src="/js/theme.js"></script>
+    <script src="/js/student-tabs.js" defer></script>
 </head>
 <body class="form-page">
 <main class="form-shell user-shell">
     <header class="form-top"><a href="/admin/catalogos/usuarios">← Volver a usuarios</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
 
     <div class="flash" th:if="${mensaje}" th:text="${mensaje}">Operación completada</div>
-    <section class="invitation-result" th:if="${invitacionEnlace}">
-        <div><span>Enlace de un solo uso</span><strong>Copia esta invitación ahora</strong><p>Al generar otra invitación, ésta quedará revocada.</p></div>
-        <div class="copy-row"><input id="invitation-link" readonly th:value="${invitacionEnlace}"><button type="button" data-copy-invitation>Copiar enlace</button></div>
-        <small th:text="${'Vence: ' + #temporals.format(invitacionExpira, 'dd/MM/yyyy HH:mm')}">Vencimiento</small>
-    </section>
-    <section class="invitation-result" th:if="${recuperacionEnlace}">
-        <div><span>Recuperación de contraseña</span><strong>Copia este enlace ahora</strong><p>Vence en 30 minutos, sólo funciona una vez y otro enlace revocará éste.</p></div>
-        <div class="copy-row"><input id="recovery-link" readonly th:value="${recuperacionEnlace}"><button type="button" data-copy-recovery>Copiar enlace</button></div>
-        <small th:text="${'Vence: ' + #temporals.format(recuperacionExpira, 'dd/MM/yyyy HH:mm')}">Vencimiento</small>
-    </section>
 
     <section class="form-card">
         <div class="form-intro">
             <span th:text="${edicion ? 'Identidad y acceso' : 'Nuevo acceso'}">Nuevo acceso</span>
             <h1 th:text="${edicion ? 'Administrar usuario' : 'Crear usuario invitado'}">Crear usuario</h1>
             <p th:if="${!edicion}">Crea primero la identidad. Después podrás asignarle roles y generar su invitación.</p>
-            <p th:if="${edicion}">Actualiza su identidad, estado, roles y alcances sin mezclar instituciones.</p>
+            <p th:if="${edicion}">Revisa la identidad, asigna sus roles y alcances y, al final, genera la invitación para activar su acceso.</p>
             <div class="identity-status" th:if="${edicion}">
                 <span class="status" th:classappend="${usuario.estado.name() == 'ACTIVO' ? 'positivo' : (usuario.estado.name() == 'INVITADO' ? 'aviso' : 'neutro')}" th:text="${usuario.estado}">INVITADO</span>
                 <small th:text="${usuario.credencialConfigurada ? 'Contraseña configurada' : 'Pendiente de establecer contraseña'}">Credencial</small>
             </div>
         </div>
 
+        <nav th:if="${edicion}" class="student-tablist user-record-tabs" role="tablist" aria-label="Secciones del usuario" data-student-tabs data-active-tab="identidad" th:attr="data-force-active-tab=${errorAsignacion != null ? 'autorizacion' : pestanaActiva}">
+            <button type="button" role="tab" id="tab-usuario-identidad" aria-controls="identidad-usuario" data-student-tab="identidad" data-tab-hash="#identidad-usuario"><span aria-hidden="true">01</span><strong>Identidad</strong><small>Datos y fotografía</small></button>
+            <button type="button" role="tab" id="tab-usuario-autorizacion" aria-controls="autorizacion-usuario" data-student-tab="autorizacion" data-tab-hash="#autorizacion-usuario"><span aria-hidden="true">02</span><strong>Autorización</strong><small>Roles y alcances</small></button>
+            <button type="button" role="tab" id="tab-usuario-activacion" aria-controls="activacion" data-student-tab="activacion" data-tab-hash="#activacion"><span aria-hidden="true">03</span><strong>Estado y activación</strong><small>Cuenta e invitación</small></button>
+        </nav>
+        <div class="form-error user-operation-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo completar la operación</strong><p th:text="${errorOperacion}"></p></div>
+        <section id="identidad-usuario" class="student-tab-panel" th:attr="data-student-panel=${edicion ? 'identidad' : null},role=${edicion ? 'tabpanel' : null},aria-labelledby=${edicion ? 'tab-usuario-identidad' : null}">
         <section class="user-photo-section" th:if="${edicion}">
             <div class="user-photo-preview">
                 <img th:src="${'/admin/usuarios/' + id + '/fotografia'}"
@@ -58,8 +56,8 @@
         </section>
 
         <form class="entity-form" th:object="${form}" method="post" th:action="${edicion ? '/admin/usuarios/' + id : '/admin/usuarios'}">
+            <div class="section-heading"><div><span>Paso 1 · Identidad</span><h2>Datos del usuario</h2></div><p>Guarda la identidad antes de configurar sus autorizaciones.</p></div>
             <input type="hidden" th:field="*{version}">
-            <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo completar la operación</strong><p th:text="${errorOperacion}">Revisa los datos.</p></div>
             <div class="form-grid">
                 <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="item : ${instituciones}" th:value="${item.id}" th:text="${item.codigo + ' · ' + item.nombre}">Institución</option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small class="field-error" th:errors="*{institucionId}"></small></label>
                 <label><span>Usuario *</span><input th:field="*{username}" maxlength="80" autocomplete="off" placeholder="nombre.apellido"><small class="field-error" th:errors="*{username}"></small></label>
@@ -68,20 +66,9 @@
             <footer class="form-actions"><a href="/admin/catalogos/usuarios">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar identidad' : 'Crear usuario'}">Guardar</button></footer>
         </form>
 
-        <section class="access-actions" th:if="${edicion}">
-            <div class="section-heading"><div><span>Estado y activación</span><h2>Control de cuenta</h2></div><p>Las invitaciones vencen en 48 horas y el enlace sólo se muestra al generarlo.</p></div>
-            <div class="account-buttons">
-                <form th:if="${usuario.estado.name() == 'INVITADO'}" method="post" th:action="@{/admin/usuarios/{id}/invitacion(id=${id})}"><button class="primary-action" type="submit">Generar invitación</button></form>
-                <form th:if="${usuario.estado.name() == 'ACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/recuperacion-password(id=${id})}"><button class="primary-action" type="submit">Generar recuperación</button></form>
-                <form th:if="${usuario.estado.name() == 'ACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" value="BLOQUEADO"><button type="submit">Bloquear acceso</button></form>
-                <form th:if="${usuario.estado.name() == 'BLOQUEADO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" value="ACTIVO"><button class="primary-action" type="submit">Desbloquear</button></form>
-                <form th:if="${usuario.estado.name() == 'INACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" th:value="${usuario.credencialConfigurada ? 'ACTIVO' : 'INVITADO'}"><button class="primary-action" type="submit">Reactivar cuenta</button></form>
-                <form th:if="${usuario.estado.name() != 'INACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}" onsubmit="return confirm('¿Inactivar este usuario? Sus asignaciones se conservarán sin conceder acceso.');"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" value="INACTIVO"><button class="danger-action" type="submit">Inactivar usuario</button></form>
-            </div>
         </section>
-
-        <section class="role-assignment" th:if="${edicion}">
-            <div class="section-heading"><div><span>Autorización</span><h2>Roles y alcances</h2></div><p>Un rol institucional aplica a toda la institución; un rol de plantel exige elegir uno.</p></div>
+        <section class="role-assignment student-tab-panel" id="autorizacion-usuario" data-student-panel="autorizacion" role="tabpanel" aria-labelledby="tab-usuario-autorizacion" th:if="${edicion}">
+            <div class="section-heading"><div><span>Paso 2 · Autorización</span><h2>Roles y alcances</h2></div><p>Asigna los permisos antes de generar la invitación. Un rol institucional aplica a toda la institución; un rol de plantel exige elegir uno.</p></div>
             <div class="form-error" role="alert" th:if="${errorAsignacion}"><strong>No se pudo asignar el rol</strong><p th:text="${errorAsignacion}">Revisa los datos.</p></div>
 
             <div class="assignment-list" th:if="${!asignaciones.empty}">
@@ -99,6 +86,37 @@
                 <label id="plantel-field"><span>Plantel *</span><select th:field="*{plantelId}" id="assignment-campus"><option value="">Selecciona un plantel</option><option th:each="plantel : ${planteles}" th:if="${plantel.activo}" th:value="${plantel.id}" th:text="${plantel.codigo + ' · ' + plantel.nombre}" th:attr="data-institucion=${plantel.institucionId}">Plantel</option></select><small class="field-error" th:errors="*{plantelId}"></small></label>
                 <button type="submit">Asignar rol</button>
             </form>
+        </section>
+        <section class="access-actions student-tab-panel" id="activacion" data-student-panel="activacion" role="tabpanel" aria-labelledby="tab-usuario-activacion" th:if="${edicion}">
+            <div class="section-heading"><div><span>Paso 3 · Estado y activación</span><h2>Control de cuenta e invitación</h2></div><p>Comprueba los roles asignados antes de entregar el acceso. Generar una invitación no concede permisos adicionales.</p></div>
+            <div class="user-access-grid">
+            <section class="user-access-card"><h3>Estado del acceso</h3><p>Puedes bloquear o inactivar esta cuenta sin eliminar su historial.</p><div class="account-buttons">
+                <form th:if="${usuario.estado.name() == 'ACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" value="BLOQUEADO"><button type="submit">Bloquear acceso</button></form>
+                <form th:if="${usuario.estado.name() == 'BLOQUEADO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" value="ACTIVO"><button class="primary-action" type="submit">Desbloquear</button></form>
+                <form th:if="${usuario.estado.name() == 'INACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" th:value="${usuario.credencialConfigurada ? 'ACTIVO' : 'INVITADO'}"><button class="primary-action" type="submit">Reactivar cuenta</button></form>
+                <form th:if="${usuario.estado.name() != 'INACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/estado(id=${id})}" onsubmit="return confirm('¿Inactivar este usuario? Sus asignaciones se conservarán sin conceder acceso.');"><input type="hidden" name="version" th:value="${usuario.auditoria.version}"><input type="hidden" name="estado" value="INACTIVO"><button class="danger-action" type="submit">Inactivar usuario</button></form>
+            </div>
+            </section>
+            <section class="user-access-card"><h3 th:text="${usuario.estado.name() == 'INVITADO' ? 'Invitar al usuario' : 'Contraseña y recuperación'}">Invitación</h3>
+            <p class="field-help" th:if="${usuario.estado.name() == 'INVITADO'}">La invitación vence en 48 horas y es de un solo uso. Copia el enlace al generarlo; una nueva invitación revoca la anterior.</p>
+            <p class="field-help" th:if="${usuario.estado.name() == 'ACTIVO'}">El enlace de recuperación vence en 30 minutos y es de un solo uso. Una nueva recuperación revoca la anterior.</p>
+            <p class="field-help" th:if="${usuario.estado.name() == 'INACTIVO' or usuario.estado.name() == 'BLOQUEADO'}">Primero reactiva o desbloquea la cuenta para gestionar su contraseña.</p>
+            <div class="account-buttons">
+                <form th:if="${usuario.estado.name() == 'ACTIVO'}" method="post" th:action="@{/admin/usuarios/{id}/recuperacion-password(id=${id})}"><button class="primary-action" type="submit">Generar recuperación</button></form>
+                <form th:if="${usuario.estado.name() == 'INVITADO'}" method="post" th:action="@{/admin/usuarios/{id}/invitacion(id=${id})}"><button class="primary-action" type="submit">Generar invitación</button></form>
+            </div>
+            </section>
+            </div>
+            <section class="invitation-result" th:if="${invitacionEnlace}">
+                <div><span>Enlace de un solo uso</span><strong>Copia esta invitación ahora</strong><p>Al generar otra invitación, ésta quedará revocada.</p></div>
+                <div class="copy-row"><input id="invitation-link" readonly th:value="${invitacionEnlace}"><button type="button" data-copy-invitation>Copiar enlace</button></div>
+                <small th:text="${'Vence: ' + #temporals.format(invitacionExpira, 'dd/MM/yyyy HH:mm')}">Vencimiento</small>
+            </section>
+            <section class="invitation-result" th:if="${recuperacionEnlace}">
+                <div><span>Recuperación de contraseña</span><strong>Copia este enlace ahora</strong><p>Vence en 30 minutos, sólo funciona una vez y otro enlace revocará éste.</p></div>
+                <div class="copy-row"><input id="recovery-link" readonly th:value="${recuperacionEnlace}"><button type="button" data-copy-recovery>Copiar enlace</button></div>
+                <small th:text="${'Vence: ' + #temporals.format(recuperacionExpira, 'dd/MM/yyyy HH:mm')}">Vencimiento</small>
+            </section>
         </section>
     </section>
 </main>

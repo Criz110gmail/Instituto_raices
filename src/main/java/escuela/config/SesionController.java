@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class SesionController {
     public record Estado(long ahora, long vence, int duracionSegundos, String csrfCabecera, String csrfToken) {}
     public record TokenAcceso(String parametro, String token) {}
+    /** Este POST atraviesa CSRF: confirma la cookie antes de enviar credenciales. */
+    @PostMapping("/acceso/comprobar")
+    public ResponseEntity<Void> comprobarAcceso() {
+        return ResponseEntity.noContent().header("Cache-Control", "no-store").build();
+    }
     @GetMapping("/acceso/csrf")
     public ResponseEntity<TokenAcceso> tokenAcceso(HttpServletRequest request) {
         var csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());

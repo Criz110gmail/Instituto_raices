@@ -21,7 +21,8 @@ public class SesionInvalidaPostFilter extends OncePerRequestFilter {
                 && request.getRequestedSessionId() != null && !request.isRequestedSessionIdValid()
                 && request.getSession(false) == null) {
             String ruta = request.getRequestURI().substring(request.getContextPath().length());
-            if (ruta.equals("/login")) expiracion.accesoActualizado(request, response);
+            if (ruta.equals("/acceso/comprobar")) expiracion.preparacionRechazada(request, response);
+            else if (ruta.equals("/login")) expiracion.accesoActualizado(request, response);
             else if (ruta.equals("/sesion/renovar")) {
                 response.setStatus(401);
                 response.setHeader("Cache-Control", "no-store");

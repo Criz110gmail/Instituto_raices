@@ -1,7 +1,7 @@
 (() => {
  const form=document.querySelector('[data-login-refresh]');if(!form)return;
  const button=form.querySelector('button[type=submit]');
- let ready=false,busy=false;
+ let busy=false;
  async function tokenActual(){
   for(let intento=0;intento<2;intento++){
    const response=await fetch(form.dataset.csrfUrl,{credentials:'same-origin',cache:'no-store',headers:{Accept:'application/json'}});
@@ -18,16 +18,35 @@
    return data;
   }
  }
+ async function prepararAcceso(){
+  for(let intento=0;intento<3;intento++){
+   const data=await tokenActual();
+   // Comprobar que el servidor recibe la cookie ligada al token. Sin usuario/contraseña.
+   const response=await fetch(form.dataset.checkUrl||form.dataset.csrfUrl.replace(/\/csrf$/,'/comprobar'),{method:'POST',credentials:'same-origin',cache:'no-store',
+    headers:{Accept:'application/json','Content-Type':'application/x-www-form-urlencoded'},
+    body:new URLSearchParams({[data.parametro]:data.token})});
+   if(!response.redirected&&response.status===204)return data;
+   if(response.status===409)continue;
+   if(response.redirected){
+    let local=false;try{const url=new URL(response.url);local=url.origin===location.origin&&url.searchParams.has('sesionExpirada');}catch(error){}
+    if(local)continue;
+   }
+   throw new Error('servicio');
+  }
+  throw new Error('sesion');
+ }
  form.addEventListener('submit',async event=>{
-  if(ready){ready=false;return;}
   event.preventDefault();if(busy)return;busy=true;
   if(button)button.disabled=true;
   const old=form.querySelector('[data-login-refresh-error]');if(old)old.remove();
   try {
-   const data=await tokenActual();
+   const data=await prepararAcceso();
    let input=form.querySelector('input[name="_csrf"]');
    if(!input){input=document.createElement('input');input.type='hidden';input.name=data.parametro;form.append(input);}
-   input.value=data.token;ready=true;form.requestSubmit();
+   input.value=data.token;
+   if(!form.reportValidity()){busy=false;return;}
+   // Un único envío nativo; no disparar un segundo evento submit ni reusar token de otro controlador.
+   HTMLFormElement.prototype.submit.call(form);
   }catch(error){
    const notice=document.createElement('div');notice.className=form.dataset.loginRefresh==='familias'?'family-alert error':'alert warning';
    notice.dataset.loginRefreshError='';notice.setAttribute('role','alert');

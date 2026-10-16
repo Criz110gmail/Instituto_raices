@@ -115,7 +115,7 @@ class UsuarioAdminControllerTest {
         verify(accesoService).asignarRol(request.capture());
         assertThat(request.getValue().usuarioId()).isEqualTo(7L);
         assertThat(request.getValue().plantelId()).isEqualTo(5L);
-        assertThat(vista).isEqualTo("redirect:/admin/usuarios/7/editar");
+        assertThat(vista).isEqualTo("redirect:/admin/usuarios/7/editar#autorizacion-usuario");
     }
 
     @Test
@@ -137,7 +137,7 @@ class UsuarioAdminControllerTest {
         verify(recuperacionPasswordService).emitir(7L, Duration.ofMinutes(30));
         assertThat(flash.getFlashAttributes().get("recuperacionEnlace"))
                 .isEqualTo("https://nexo.example/restablecer-password?token=token-seguro");
-        assertThat(vista).isEqualTo("redirect:/admin/usuarios/7/editar");
+        assertThat(vista).isEqualTo("redirect:/admin/usuarios/7/editar#activacion");
     }
 
     @Test

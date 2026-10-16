@@ -1,5 +1,56 @@
 # Contexto del proyecto
 
+## Acceso preparado y pestañas de Usuarios — 2026-10-16
+
+ACEPTACIÓN POSTERIOR: el propietario respondió «si ya se corrigio» tras probar la
+versión desplegada con preparación de sesión/token. Primer reingreso ya confirmado;
+las observaciones de fallo siguientes describen el antecedente, no el estado vigente.
+
+Propietario reportó de nuevo accesoActualizado en primer intento tras logout; la
+corrección anterior NO está aceptada. Nueva prueba con Tomcat/cookies HTTP reales,
+usuarios en memoria y tres portales; navegador aislado también entró al primer envío
+después de salir. No demuestra la causa del fallo del navegador del propietario.
+
+Se refuerza login con GET de CSRF + POST /acceso/comprobar, sin credenciales:204 tras
+CSRF válido;409 si cambió cookie/token. Sólo se reintenta preparación hasta tres veces,
+no contraseñas. Envío final nativo único con validación, sin duplicar evento submit.
+Diagnóstico de rechazos limitado a booleanos sin valores sensibles. Script versionado
+en admin/familias/maestros. No se desactiva CSRF ni se relajan permisos.
+Usuarios se divide en tres pestañas y paso3 en tarjetas separadas de estado e invitación,
+con enlace aparte. Retornos y errores conservan la sección correspondiente.
+791 Java / 28 Node aprobados; prueba HTTP con cookies reales y navegador aislado,
+acceso y primer reingreso válidos con usuario en memoria. QA final claro/oscuro,
+móvil390/escritorio1280: pestañas y tarjetas del paso3 sin superposiciones. CSS versionado
+y prioridad móvil corregida para ver las tres pestañas. App actualizada y salud UP;
+temporales de QA retirados, sin migración ni datos reales modificados. V104 libre.
+Pendiente revisión del propietario de pestañas/paso3; después rutas financieras directas
+denegadas. Login confirmado; no repetir operaciones financieras ni crear otro usuario.
+
+## Nuevo caso de sesión atrasada y orden de Usuarios — 2026-10-16
+
+Propietario confirmó login de prueba.sinreportes y menú únicamente Guía de procesos;
+las rutas financieras directas/Excel/PDF siguen sin ensayarse. Reportó primer acceso
+tras logout con accesoActualizado y segundo exitoso. Reproducción secuencial HTTP con
+datos ficticios no falló, pero regresión de vista privada invalidada antes del render
+sí mostró que CSRF diferido creaba otra sesión. Correcciones anteriores sólo cubrían
+solicitudes que ya llegaban inválidas, no una sesión invalidada durante la respuesta.
+
+SesionCsrfTokenRepository restringe creación anónima a GET de token/activación/recuperación;
+una respuesta privada no recrea sesión cerrada. Mantiene CSRF, aleatoriedad estándar y
+enmascarado. NullRequestCache evita creación al guardar destinos antiguos; éxito sigue
+dirigiendo al portal correspondiente. Reloj aborta consulta y detiene sondeo al salir,
+sin reenvío de POST/contraseñas; restauración de pestaña consulta estado nuevamente.
+Usuarios ahora presenta Identidad → Autorización → Estado/activación; invitación,
+recuperación y enlaces al final con redirect #activacion. No autoasigna ni modifica roles.
+Se verifican regresión de render y primer POST siguiente, nueve ciclos en tres portales,
+repositorio, JS y orden de plantilla en tres estados. QA visual usa sólo datos ficticios.
+789 Java / 28 Node aprobados. App actualizada y salud UP; tres ciclos HTTP reales con
+usuario inexistente llegan a error de credenciales esperado, no accesoActualizado.
+Esto no sustituye aceptación humana de login válido. V103 permanece aplicada, V104 libre;
+sin operaciones financieras, lectura de .env ni commit. Temporales Docker/servidor retirados.
+Pendiente humano: recargar e intentar ciclos de salir/entrar una sola vez; no confirmar
+solución por el segundo intento. Después continuar rutas directas financieras denegadas.
+
 ## Históricos del alumno y concentrado aceptados — V103 — 2026-10-16
 
 Propietario confirmó estado ALUM-2026-002, Situación Todas, corte 15/10/2026 en

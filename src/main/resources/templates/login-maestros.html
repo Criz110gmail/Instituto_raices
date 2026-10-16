@@ -4,7 +4,7 @@
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#35205f">
     <title>Portal docente · Nexo Escolar</title><link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/login.css"><link rel="stylesheet" href="/css/session.css"><link rel="stylesheet" href="/css/login-portals.css"><link rel="stylesheet" href="/css/maestros-login.css">
-    <script src="/js/theme.js"></script><script src="/js/login-session.js" defer></script>
+    <script src="/js/theme.js"></script><script src="/js/login-session.js?v=2" defer></script>
 </head>
 <body class="teacher-login-page">
 <button class="theme-toggle" type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button>
@@ -24,7 +24,7 @@
         <div class="alert success" role="status" th:if="${param.logout}">Tu sesión se cerró correctamente.</div>
         <div class="alert warning" role="status" th:if="${param.accesoActualizado}"><strong>Acceso actualizado</strong><span>La sesión cambió en otra pestaña. Inicia sesión nuevamente desde esta pantalla.</span></div>
         <!-- Sólo el acceso obtiene CSRF al enviar: cargar otra pestaña no crea una cookie de sesión. -->
-        <form data-login-refresh="maestros" th:attr="data-csrf-url=@{/acceso/csrf},action=@{/login}" method="post">
+        <form data-login-refresh="maestros" th:attr="data-csrf-url=@{/acceso/csrf},data-check-url=@{/acceso/comprobar},action=@{/login}" method="post">
             <input type="hidden" name="_csrf" value="">
             <noscript><p role="alert">Activa JavaScript para iniciar sesión de forma segura.</p></noscript>
             <input type="hidden" name="origen" value="maestros">

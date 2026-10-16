@@ -1,5 +1,27 @@
 # Sistema administrativo escolar
 
+## Preparación del acceso y Usuarios por pestañas — 16/10/2026
+
+El login comprueba sesión/token antes de enviar las credenciales; sólo se repite esa
+preparación si cambia la sesión, nunca la contraseña. CSRF sigue obligatorio. Hay
+diagnóstico de rechazo sin valores sensibles. El propietario confirmó el primer reingreso correcto.
+Usuarios ahora separa Identidad, Autorización y Estado/activación en pestañas. El último
+bloque usa tarjetas para estado e invitación/recuperación y un área propia para el enlace.
+791 pruebas Java / 28 JavaScript aprobadas; diseño revisado en escritorio/móvil y ambos
+temas. Aplicación actualizada con salud UP; sin migración ni cambios financieros.
+
+## Sesión tras cerrar y orden de Usuarios — 16/10/2026
+
+Corregida una carrera reproducida donde una pantalla privada atrasada creaba otra
+sesión después de logout al renderizar CSRF. El repositorio evita esa recreación y
+el reloj detiene consultas al salir. CSRF permanece activo; no se reenvían contraseñas.
+Pendiente confirmar el primer acceso real tras recargar y cerrar/volver a entrar.
+
+Usuarios presenta **Identidad → Autorización → Estado y activación**. Generar invitación
+y su enlace quedan al final; al generarlo se abre ese bloque. Sin cambios de permisos.
+El usuario de prueba sólo ve Guía de procesos; falta comprobar rutas directas denegadas.
+789 pruebas Java / 28 JavaScript aprobadas; app actualizada y salud UP, sin migración.
+
 ## Históricos del alumno y concentrado confirmados — 16/10/2026
 
 V103 documenta las dos pruebas al corte 15/10/2026: estado del alumno con dos

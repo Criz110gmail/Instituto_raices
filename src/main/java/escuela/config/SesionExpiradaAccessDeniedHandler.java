@@ -14,6 +14,7 @@ import java.io.IOException;
 
 @Component
 public class SesionExpiradaAccessDeniedHandler implements AccessDeniedHandler {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SesionExpiradaAccessDeniedHandler.class);
 
     private final AccessDeniedHandler accesoDenegado;
 
@@ -27,6 +28,11 @@ public class SesionExpiradaAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response,
                        AccessDeniedException excepcion) throws IOException, ServletException {
         String ruta = request.getRequestURI().substring(request.getContextPath().length());
+        if (ruta.equals("/acceso/comprobar") && (excepcion instanceof InvalidCsrfTokenException
+                || excepcion instanceof MissingCsrfTokenException)) {
+            preparacionRechazada(request, response);
+            return;
+        }
         if (ruta.equals("/login") && (excepcion instanceof InvalidCsrfTokenException
                 || excepcion instanceof MissingCsrfTokenException)) {
             // Un login abierto en otra pestaña conserva un token viejo incluso si
@@ -56,10 +62,25 @@ public class SesionExpiradaAccessDeniedHandler implements AccessDeniedHandler {
     }
 
     void accesoActualizado(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        registrarRechazo(request, "login");
         String origen = request.getParameter("origen");
         String acceso = "familias".equals(origen) ? "/familias"
                 : "maestros".equals(origen) ? "/maestros/acceso" : "/login";
         response.sendRedirect(request.getContextPath() + acceso + "?accesoActualizado");
+    }
+
+    void preparacionRechazada(HttpServletRequest request, HttpServletResponse response) {
+        registrarRechazo(request, "preparacion");
+        response.setStatus(409);
+        response.setHeader("Cache-Control", "no-store");
+    }
+
+    private void registrarRechazo(HttpServletRequest request, String fase) {
+        // Sólo indicadores; nunca valores, identificadores, tokens, cookies o credenciales.
+        LOG.warn("Acceso rechazado fase={} cookieSesion={} sesionValida={} sesionExistente={} campoCsrf={} cabeceraCsrf={}",
+                fase, request.isRequestedSessionIdFromCookie(), request.isRequestedSessionIdValid(),
+                request.getSession(false) != null, request.getParameter("_csrf") != null,
+                request.getHeader("X-CSRF-TOKEN") != null);
     }
 
     private boolean esTokenDeSesionCaducada(HttpServletRequest request,

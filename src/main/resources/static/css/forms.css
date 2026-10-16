@@ -1056,6 +1056,17 @@
 }
 
 .user-shell { max-width: 1040px; }
+.user-record-tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); overflow:visible; }
+.user-access-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; align-items:start; }
+.user-access-card { min-width:0; padding:22px; border:1px solid var(--line); border-radius:16px; background:var(--surface); }
+.user-access-card h3 { margin:0 0 12px; font-size:1rem; color:var(--ink); }
+.user-access-card p { margin:0 0 20px; color:var(--muted); font-size:.82rem; line-height:1.65; }
+.user-access-card .account-buttons { gap:12px; }
+.user-access-card .account-buttons form { margin:0; min-width:0; }
+.user-access-card .account-buttons button { min-height:44px; white-space:normal; }
+.user-operation-error { margin:20px 28px; }
+@media(max-width:700px) { .student-tablist.user-record-tabs button strong { width:100%; max-width:100%; font-size:.68rem; white-space:normal; overflow-wrap:normal; word-break:normal; text-overflow:clip; } }
+@media(max-width:700px) { .user-access-grid { grid-template-columns:minmax(0,1fr); } .user-record-tabs { grid-template-columns:repeat(3,minmax(0,1fr)); } .user-record-tabs button { display:flex; flex-direction:column; justify-content:center; align-items:center; min-width:0; padding:14px 8px; text-align:center; } .user-record-tabs small,.user-record-tabs button > span { display:none; } .user-record-tabs strong { font-size:.75rem; white-space:normal; text-overflow:clip; overflow-wrap:anywhere; } .user-access-card { padding:18px; } }
 .user-shell > .flash { margin: 0 0 16px; }
 .identity-status { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
 .identity-status small { color: var(--muted); }
@@ -1096,6 +1107,7 @@
 .assignment-list article form label { display: grid; gap: 5px; color: var(--muted); font-size: .7rem; }
 .assignment-list article form input { min-height: 36px; border: 1px solid #ccd8e5; border-radius: 8px; background: #fff; color: var(--ink); padding: 6px 8px; }
 .invitation-result { margin-bottom: 16px; padding: 20px 22px; border: 1px solid #8dd9c9; border-radius: 16px; background: #edfbf7; box-shadow: var(--shadow); }
+.access-actions .invitation-result { margin-top: 18px; }
 .invitation-result > div:first-child span,.invitation-result > div:first-child strong { display: block; }
 .invitation-result > div:first-child span { color: #08785f; font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .invitation-result > div:first-child strong { margin-top: 4px; }
@@ -1108,6 +1120,8 @@
 [data-theme=dark] .continuity-banner { background: #0d2928; border-color: #216b61; }
 [data-theme=dark] .assignment-form select,[data-theme=dark] .account-buttons button,[data-theme=dark] .assignment-list button { background: #0e1d31; color: #eef5fd; border-color: #344a63; }
 [data-theme=dark] .invitation-result { background: #0d2928; border-color: #216b61; }
+[data-theme=dark] .invitation-result > div:first-child span { color: #89d6c5; }
+[data-theme=dark] .invitation-result p,[data-theme=dark] .invitation-result > small { color: #b3d2ca; }
 [data-theme=dark] .copy-row input { background: #091d1d; color: #d8fff8; border-color: #216b61; }
 
 @media (max-width: 850px) {

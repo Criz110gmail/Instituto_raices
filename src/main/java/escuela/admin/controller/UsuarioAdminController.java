@@ -132,6 +132,7 @@ public class UsuarioAdminController {
     String cambiarEstado(@PathVariable Long id, @RequestParam Long version,
                          @RequestParam EstadoUsuario estado, Model model,
                          RedirectAttributes flash) {
+        model.addAttribute("pestanaActiva", "activacion");
         alcance.validarRecurso(ModuloCatalogo.USUARIOS, id);
         alcance.validarAdministracionInstitucional(service.obtener(id).institucionId());
         try {
@@ -144,7 +145,7 @@ public class UsuarioAdminController {
             return "admin/usuario-form";
         }
         flash.addFlashAttribute("mensaje", "Estado del usuario actualizado correctamente");
-        return "redirect:/admin/usuarios/" + id + "/editar";
+        return "redirect:/admin/usuarios/" + id + "/editar#activacion";
     }
 
     @PostMapping("/{id}/fotografia")
@@ -203,7 +204,7 @@ public class UsuarioAdminController {
             return "admin/usuario-form";
         }
         flash.addFlashAttribute("mensaje", "Rol asignado correctamente");
-        return "redirect:/admin/usuarios/" + id + "/editar";
+        return "redirect:/admin/usuarios/" + id + "/editar#autorizacion-usuario";
     }
 
     @PostMapping("/{usuarioId}/roles/{asignacionId}/desactivar")
@@ -221,11 +222,12 @@ public class UsuarioAdminController {
             return "admin/usuario-form";
         }
         flash.addFlashAttribute("mensaje", "Asignación desactivada correctamente");
-        return "redirect:/admin/usuarios/" + usuarioId + "/editar";
+        return "redirect:/admin/usuarios/" + usuarioId + "/editar#autorizacion-usuario";
     }
 
     @PostMapping("/{id}/invitacion")
     String emitirInvitacion(@PathVariable Long id, Model model, RedirectAttributes flash) {
+        model.addAttribute("pestanaActiva", "activacion");
         alcance.validarRecurso(ModuloCatalogo.USUARIOS, id);
         alcance.validarAdministracionInstitucional(service.obtener(id).institucionId());
         try {
@@ -236,7 +238,7 @@ public class UsuarioAdminController {
             flash.addFlashAttribute("invitacionEnlace", enlace);
             flash.addFlashAttribute("invitacionExpira", invitacion.expiraEn());
             flash.addFlashAttribute("mensaje", "Invitación generada. Copia el enlace antes de salir de la pantalla");
-            return "redirect:/admin/usuarios/" + id + "/editar";
+            return "redirect:/admin/usuarios/" + id + "/editar#activacion";
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
             UsuarioResponse usuario = service.obtener(id);
             prepararEdicion(model, UsuarioForm.desde(usuario), usuario, new AsignacionRolForm());
@@ -248,6 +250,7 @@ public class UsuarioAdminController {
     @PostMapping("/{id}/recuperacion-password")
     String emitirRecuperacionPassword(@PathVariable Long id, Model model,
                                       RedirectAttributes flash) {
+        model.addAttribute("pestanaActiva", "activacion");
         alcance.validarRecurso(ModuloCatalogo.USUARIOS, id);
         alcance.validarAdministracionInstitucional(service.obtener(id).institucionId());
         try {
@@ -259,7 +262,7 @@ public class UsuarioAdminController {
             flash.addFlashAttribute("recuperacionEnlace", enlace);
             flash.addFlashAttribute("recuperacionExpira", recuperacion.expiraEn());
             flash.addFlashAttribute("mensaje", "Enlace de recuperación generado. Cópialo antes de salir de la pantalla");
-            return "redirect:/admin/usuarios/" + id + "/editar";
+            return "redirect:/admin/usuarios/" + id + "/editar#activacion";
         } catch (ReglaNegocioException | DataIntegrityViolationException excepcion) {
             UsuarioResponse usuario = service.obtener(id);
             prepararEdicion(model, UsuarioForm.desde(usuario), usuario, new AsignacionRolForm());

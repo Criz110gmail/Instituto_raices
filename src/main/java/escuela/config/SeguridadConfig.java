@@ -25,11 +25,15 @@ public class SeguridadConfig {
                                             SesionExpiradaAccessDeniedHandler accesoDenegadoHandler)
             throws Exception {
         return http
+                .csrf(csrf -> csrf.csrfTokenRepository(new SesionCsrfTokenRepository()))
+                // El éxito ya determina el portal; no guardar peticiones antiguas en sesiones nuevas.
+                .requestCache(cache -> cache.requestCache(new org.springframework.security.web.savedrequest.NullRequestCache()))
                 .addFilterBefore(new SesionInvalidaPostFilter(accesoDenegadoHandler), CsrfFilter.class)
                 .addFilterAfter(new SesionActividadFilter(accesoDenegadoHandler), CsrfFilter.class)
                 .addFilterAfter(new SesionInvalidaFilter(accesoDenegadoHandler), AnonymousAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/sesion/estado", "/acceso/csrf").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/acceso/comprobar").permitAll()
                         .requestMatchers(HttpMethod.POST, "/sesion/renovar").authenticated()
                         .requestMatchers("/", "/login", "/familias", "/maestros/acceso", "/activar-cuenta", "/restablecer-password", "/acceso-denegado", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
                         .requestMatchers("/maestros/**").hasAuthority("PORTAL_MAESTRO_ACCEDER")

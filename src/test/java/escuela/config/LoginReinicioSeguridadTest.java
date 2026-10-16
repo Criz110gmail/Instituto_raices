@@ -20,6 +20,47 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 class LoginReinicioSeguridadTest {
+    @Test void preparacionCompruebaCsrfSinCredencialesYRechazaCookieCambiada() throws Exception {
+        try(var context=new AnnotationConfigWebApplicationContext()) {
+            context.setServletContext(new MockServletContext());
+            context.register(Config.class,SeguridadConfig.class,SesionExpiradaAccessDeniedHandler.class,SesionController.class,Paginas.class);context.refresh();
+            var mvc=MockMvcBuilders.webAppContextSetup(context).addFilters(context.getBean(FilterChainProxy.class)).build();
+            var t=mvc.perform(get("/acceso/csrf")).andReturn();var sesion=(MockHttpSession)t.getRequest().getSession(false);
+            var token=java.util.regex.Pattern.compile("\"token\":\"([^\"]+)\"").matcher(t.getResponse().getContentAsString());assertThat(token.find()).isTrue();
+            assertThat(mvc.perform(post("/acceso/comprobar").session(sesion).param("_csrf",token.group(1))).andReturn().getResponse().getStatus()).isEqualTo(204);
+            var sinCookie=mvc.perform(post("/acceso/comprobar").param("_csrf",token.group(1))).andReturn();
+            assertThat(sinCookie.getResponse().getStatus()).isEqualTo(409);assertThat(sinCookie.getRequest().getSession(false)).isNull();
+            assertThat(mvc.perform(post("/acceso/comprobar").session(sesion).param("_csrf","no-valido")).andReturn().getResponse().getStatus()).isEqualTo(409);
+            assertThat(context.getBean(AtomicInteger.class).get()).isZero();
+            assertThat(sesion.getAttribute("SPRING_SECURITY_CONTEXT")).isNull();
+        }
+    }
+    @Test void tresCiclosDeEntrarSalirYVolverAEntrarPorPortalFuncionanAlPrimerPost() throws Exception {
+        try(var context=new AnnotationConfigWebApplicationContext()) {
+            context.setServletContext(new MockServletContext());
+            context.register(Config.class,SeguridadConfig.class,SesionExpiradaAccessDeniedHandler.class,SesionController.class,Paginas.class);
+            context.refresh();
+            var mvc=MockMvcBuilders.webAppContextSetup(context).addFilters(context.getBean(FilterChainProxy.class)).build();
+            for(String origen:new String[]{"admin","familias","maestros"})for(int ciclo=0;ciclo<3;ciclo++) {
+                var t=mvc.perform(get("/acceso/csrf")).andReturn();
+                var sesion=(MockHttpSession)t.getRequest().getSession(false);
+                var token=java.util.regex.Pattern.compile("\"token\":\"([^\"]+)\"").matcher(t.getResponse().getContentAsString());assertThat(token.find()).isTrue();
+                String id=sesion.getId();int antes=context.getBean(AtomicInteger.class).get();
+                var login=mvc.perform(post("/login").session(sesion).param("_csrf",token.group(1)).param("origen",origen)
+                        .param("username","usuario-qa").param("password","clave-qa")).andReturn().getResponse();
+                assertThat(login.getRedirectedUrl()).isEqualTo(origen.equals("admin")?"/admin":origen.equals("familias")?"/portal":"/maestros");
+                assertThat(context.getBean(AtomicInteger.class).get()).isEqualTo(antes+1);
+                assertThat(sesion.getId()).isNotEqualTo(id);
+                var salidaToken=mvc.perform(get("/acceso/csrf").session(sesion)).andReturn();
+                var s=java.util.regex.Pattern.compile("\"token\":\"([^\"]+)\"").matcher(salidaToken.getResponse().getContentAsString());assertThat(s.find()).isTrue();
+                var logout=mvc.perform(post("/logout").session(sesion).param("_csrf",s.group(1)).param("origen",origen)).andReturn();
+                assertThat(logout.getResponse().getRedirectedUrl()).isEqualTo(SeguridadConfig.rutaDespuesDeCerrarSesion(origen));
+                assertThat(sesion.isInvalid()).isTrue();
+                var reloj=mvc.perform(get("/sesion/estado").with(LoginReinicioSeguridadTest::cookieVieja)).andReturn();
+                assertThat(reloj.getResponse().getStatus()).isEqualTo(401);assertThat(reloj.getRequest().getSession(false)).isNull();
+            }
+        }
+    }
     @Test void filtroAlumnoPagoRequiereLecturaDePagosSinExigirAdministrarAlumnos() throws Exception {
         try (var context = new AnnotationConfigWebApplicationContext()) {
             context.setServletContext(new MockServletContext());

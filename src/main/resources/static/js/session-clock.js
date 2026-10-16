@@ -8,6 +8,18 @@
         const fetchOriginal = window.fetch.bind(window);
         let vence = 0, csrfCabecera, csrfToken, consultando = false, renovando = false;
         let avisoPara = 0, ultimaSincronizacion = 0, ultimoServidor = 0, saliendo = false;
+        let consultaEnCurso;
+        function detenerPorSalida() {
+            saliendo = true;
+            consultaEnCurso?.abort();
+        }
+        // No dejar un sondeo/renovación en vuelo mientras logout invalida la sesión.
+        document.addEventListener('submit', event => {
+            const form = event.target;
+            if (!event.defaultPrevented && form?.method?.toLowerCase() === 'post'
+                    && new URL(form.action, window.location.href).pathname.endsWith('/logout')) detenerPorSalida();
+        });
+        window.addEventListener('pagehide', detenerPorSalida);
         const canal = typeof BroadcastChannel === 'function' ? new BroadcastChannel('nexo-session-clock') : null;
         const indicador = document.createElement('button');
         indicador.type = 'button';
@@ -64,7 +76,7 @@
             actualizar();
         }
         function actualizar() {
-            if (!vence) return;
+            if (saliendo || !vence) return;
             const segundos = Math.max(0, Math.ceil((vence - performance.now()) / 1000));
             indicador.textContent = 'Sesión · ' + formato(segundos);
             indicador.classList.toggle('session-indicator-warning', segundos <= 120);
@@ -84,6 +96,7 @@
             if (consultando || saliendo) return;
             consultando = true;
             const control = new AbortController();
+            consultaEnCurso = control;
             const limiteConsulta = setTimeout(() => control.abort(), 4000);
             continuar.disabled = true;
             if (renovar) { renovando = true; continuar.disabled = true; mensaje.textContent = 'Renovando sesión…'; }
@@ -96,23 +109,27 @@
                 let response = await fetchOriginal('/sesion/' + (renovar ? 'renovar' : 'estado'), {
                     method: renovar ? 'POST' : 'GET', headers, credentials: 'same-origin', cache: 'no-store', signal: control.signal
                 });
+                if (saliendo) return;
                 // Una respuesta vieja puede llegar después de iniciar sesión en otra
                 // pestaña. Confirmar con GET actual; nunca repetir POST ni credenciales.
                 if (response.status === 401 || response.redirected) {
                     response = await fetchOriginal('/sesion/estado', { method: 'GET',
                         headers: { Accept: 'application/json' }, credentials: 'same-origin', cache: 'no-store', signal: control.signal });
+                    if (saliendo) return;
                     if (response.status === 401 || response.redirected) { caducada(); return; }
                 }
                 if (!response.ok) throw new Error('No se pudo confirmar la sesión. Intenta de nuevo.');
                 const estado = await response.json();
+                if (saliendo) return;
                 csrfCabecera = estado.csrfCabecera; csrfToken = estado.csrfToken;
                 sincronizar(estado.ahora, estado.vence);
                 mensaje.textContent = '';
             } catch (error) {
+                if (saliendo) return;
                 mensaje.textContent = 'No pudimos consultar el servidor. Revisa tu conexión y pulsa Continuar sesión para intentar de nuevo.';
                 indicador.textContent = 'Sesión · sin conexión';
                 ultimaSincronizacion = performance.now();
-            } finally { clearTimeout(limiteConsulta); consultando = false; renovando = false; continuar.disabled = false; }
+            } finally { clearTimeout(limiteConsulta); consultaEnCurso = null; consultando = false; renovando = false; continuar.disabled = false; }
         }
         // Las peticiones normales renuevan en el servidor; sólo observamos su respuesta.
         window.fetch = async (...args) => {
@@ -137,11 +154,11 @@
                 const input = document.createElement('input'); input.type = 'hidden'; input.name = name; input.value = value;
                 form.appendChild(input);
             }
-            document.body.appendChild(form); form.submit();
+            document.body.appendChild(form); detenerPorSalida(); form.submit();
         });
         document.addEventListener('visibilitychange', () => { if (!document.hidden) consultar(); });
         window.addEventListener('focus', () => consultar());
-        window.addEventListener('pageshow', event => { if (event.persisted) consultar(); });
+        window.addEventListener('pageshow', event => { if (event.persisted) { saliendo = false; consultar(); } });
         setInterval(actualizar, 1000);
         setInterval(() => { if (!document.hidden && !saliendo) consultar(); }, 5000);
         consultar();

@@ -1,5 +1,91 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Primer acceso confirmado; preparación verificada y Usuarios con pestañas — 2026-10-16
+
+- ACEPTACIÓN MÁS RECIENTE: después de publicar la preparación verificada, el propietario
+ respondió «si ya se corrigio» al ciclo recargar/entrar/cerrar/volver a entrar una vez.
+ Esto sustituye el pendiente del primer acceso de las entradas anteriores. No confundir
+ con aceptación de permisos financieros por URL, que todavía no ha realizado.
+
+- Propietario volvió a confirmar fallo al primer login después de logout; segundo
+ funciona. La corrección de la entrada anterior NO quedó aceptada. No atribuir ahora
+ causa definitiva al navegador sin su secuencia real: el ciclo aislado sí funcionó.
+- Añadido LoginCookieHttpTest: Tomcat y cookies HTTP reales, seguridad/plantillas
+ reales y cuentas sólo en memoria; nueve ciclos por tres portales. Instancia opcional
+ qa.browser únicamente de prueba en localhost:18082, sin PostgreSQL ni .env. Navegador
+ aislado reprodujo salida y primer acceso correctamente incluso antes del refuerzo nuevo.
+- Nuevo POST /acceso/comprobar público pero protegido por CSRF, 204 sólo al pasar
+ su filtro; token inválido/cookie ausente o caducada devuelve409/no-store, sin crear
+ sesión ni autenticar. login-session.js hace GET de token y esta comprobación ANTES
+ de enviar credenciales. Ante409 sólo repite preparación, hasta tres intentos; nunca
+ reenvía usuario/contraseña. Envío final nativo único sin segundo evento submit,
+ conservando validación HTML; script versionado en los tres accesos.
+- Diagnóstico del rechazo sólo registra booleanos: fase, cookie de sesión presente,
+ sesión válida/existente, campo/cabecera CSRF presentes. No valores de tokens/cookies,
+ identificadores de sesión, nombres, contraseñas ni cuerpo del formulario. Si sigue
+ fallando, pedir al propietario un ciclo y revisar esas líneas acotadas, no logs con
+ credenciales ni desactivar CSRF. No dar por resuelto hasta aceptación humana.
+- Usuarios ahora tiene pestañas Identidad, Autorización y Estado y activación, mediante
+ student-tabs.js y estilos comunes. Paso3 separa tarjetas de estado y contraseña/
+ invitación, con márgenes, ajuste móvil y enlace en bloque aparte. Sin acciones
+ superpuestas. Alta mantiene identidad primero; roles e invitación requieren registro.
+ Errores de asignación abren Autorización; gestión/errores de cuenta abren Activación.
+ Hashes conservan sección tras asignar rol o generar invitación/recuperación.
+- Verificado 791 Java / 28 Node, cookies HTTP reales y navegador aislado: acceso y
+ primer reingreso con cuenta ficticia en memoria correctos. QA visual final en claro/
+ oscuro y móvil390/escritorio1280: tres pestañas visibles, tarjetas y enlace sin solapar;
+ se corrigieron caché de CSS y prioridad de estilos móviles, sin ocultar navegación.
+ App reconstruida/recreada y salud UP; temporales QA retirados. Sin migración, V104
+ libre; no lectura de .env, escrituras financieras, usuarios/permisos reales ni commit.
+- Próximo humano: recargar Usuarios y revisar pestañas/paso3. Después continuar rutas
+ financieras prohibidas con prueba.sinreportes; menú restringido confirmado, rutas no.
+ Si vuelve a fallar el login, capturar diagnóstico de fase sin pedir contraseñas.
+
+## Logout y primer acceso: respuesta privada atrasada; orden de Usuarios — 2026-10-16
+
+- Propietario creó prueba.sinreportes, ingresó y confirmó que únicamente ve Guía de
+ procesos. NO confirmó rechazo por rutas directas/Excel/PDF ni alcance multiplantel.
+ No modificar roles ni usuarios por herramientas para completar esa prueba.
+- Reportó que cerrar sesión y volver a entrar sigue produciendo accesoActualizado
+ en el primer intento, aunque el segundo funciona. Las correcciones anteriores no
+ bastaron. Ciclo HTTP secuencial con datos ficticios no falló; no confundirlo con
+ reproducción exacta de su navegador. Se reprodujo una carrera adicional: solicitud
+ privada autorizada antes de logout, sesión invalidada antes de renderizar th:action,
+ token CSRF diferido crea OTRA sesión desde la respuesta atrasada. Regresión falló
+ con el repositorio predeterminado; los filtros de entrada no cubrían esta fase.
+- SesionCsrfTokenRepository conserva tokens en sesión, generación aleatoria estándar,
+ enmascarado y comprobación normales de Spring Security. Sólo GET/acceso/csrf,
+ /activar-cuenta y /restablecer-password pueden crear una sesión anónima para CSRF.
+ Una respuesta privada que pierde su sesión nunca pide otra al guardar el token.
+ Revocar tokens no crea sesiones. No omite CSRF ni reenvía contraseñas.
+- NullRequestCache evita que peticiones privadas antiguas creen sesiones para guardar
+ destinos; successHandler ya determina admin/familias/maestros. No afecta sus destinos.
+ session-clock.js detiene sondeos/renovación al submit de logout, salida del modal y
+ pagehide; aborta consulta en curso e ignora respuesta posterior. pageshow persisted
+ reanuda consulta para comprobar sesión al volver. Mantener redirección del portal propio.
+- Usuarios conserva alta en dos tiempos: crear identidad, después asignar roles/alcance.
+ Orden de edición: Paso 1 Identidad → Paso 2 Autorización → Paso 3 Estado y activación.
+ Generar invitación/recuperación y sus enlaces quedan al final, no antes de los roles.
+ Redirect tras generar termina #activacion para no perder el enlace. Se preservan
+ validaciones, POST/CSRF, permisos, estados y expiraciones; no se autoasignan roles
+ ni se impone nueva regla de negocio que bloquee invitaciones sin roles.
+- Regresiones: vista privada invalidada durante render no crea sesión y el siguiente
+ login válido entra con un POST; nueve ciclos login/logout en tres portales con usuarios
+ en memoria, rotación de ID y consulta401 sin sesión; repositorio y JS abortado/salida.
+ Plantilla Usuarios renderizada INVITADO/ACTIVO/INACTIVO, orden y enlaces comprobados.
+ QA visual de datos ficticios en escritorio/móvil390 y claro/oscuro; no usuarios reales.
+- Verificado 789 Java / 28 Node sin fallos y diff limpio. App reconstruida/recreada,
+ salud UP; HTTP real con usuario inexistente, tres ciclos: primer POST llega a error
+ de credenciales esperado, no accesoActualizado. Esto NO confirma login humano válido.
+ Flyway permanece V103, V104 libre. PostgreSQL no reiniciado, sin operaciones financieras,
+ lectura de .env ni commit. Servidor/contenedor/etiqueta de QA temporal retirados;
+ pantallas ficticias conservadas en target ignorado. Contraste oscuro del enlace mejorado.
+- Pendiente propietario: recargar login y vistas privadas para cargar scripts nuevos;
+ entrar, cerrar sesión, volver a entrar una sola vez (repetir un par de ciclos).
+ La aceptación humana del primer intento aún NO está confirmada. Si persiste,
+ capturar secuencia/portal/pestañas sin contraseñas: no dar por resuelto sólo porque
+ el segundo intento funciona. Después retomar prueba de enlaces financieros prohibidos.
+
 ## Cortes históricos de alumno y cobranza confirmados — V103 — 2026-10-16
 
 - Propietario confirmó estado de ALUM-2026-002 con Situación Todas y corte 15/10/2026
