@@ -1,5 +1,48 @@
 # Contexto del proyecto
 
+## Permisos y alcance aceptados e incorporados a guía — V104 — 2026-10-16
+
+Propietario confirmó que Excel/PDF del plantel2 prohibido ahora muestran acceso denegado
+sin500. Con la misma cuenta prueba.reportes.parian confirmó Parian permitido: pantalla,
+PDF y ambas hojas Excel al 16/10/2026 por concepto, tres cargos/$2,100.00, cobrado$500.00,
+pendiente$1,600.00 y vencido$0.00, MXN; dos filas ANTICIPO-TEST-02 y MATERIAL.
+Junto con el menú y rutas bloqueadas de prueba.sinreportes y el filtro/consulta restringidos,
+se incorpora reportes-permisos-alcance CONFIRMADA con nueve etapas en V104.
+Guía administrativa protegida por sus requisitos existentes, sin conceder roles ni crear
+usuarios, planteles o registros financieros. V1–V103 intactas; referencia del concentrado actualizada.
+796 pruebas Java aprobadas y SQL validado con reversión. Sólo app actualizada, salud UP;
+V104 aplicada: guía CONFIRMADA con nueve etapas, 34 guías / 288 etapas totales.
+Sin reinicio PostgreSQL, lectura de .env, cambios operativos ni commit; V105 disponible.
+
+La aceptación se limita a esos casos: segundo plantel vacío, no demuestra separación
+de datos financieros de dos planteles poblados. No afirmar cobertura de todos los
+reportes/instituciones ni grandes volúmenes. Errores400 iniciales por URLs incompletas
+y fallo500 corregido documentados como antecedentes, no como prueba exitosa.
+Siguiente: consultar guía con administrador y acordar ensayo adicional, sin generar
+datos ni repetir pagos/cargos. El propietario realiza commit/push, no el agente.
+
+## Alcance de reportes: fallo 500 al exportar plantel prohibido — 2026-10-16
+
+Propietario confirmó prueba.sinreportes sin menú financiero y rechazo de rutas directas
+Tesorería/Excel/PDF. Con prueba.reportes.parian (Reportes financieros, sólo Parian),
+creó segundo plantel de prueba id2, institución id1; filtro sólo ofrece Parian y
+consulta manipulada a plantel2 rechaza derechos. Segundo plantel vacío: no demuestra
+aislamiento entre registros financieros de dos planteles. No crear dinero para probar.
+
+Excel/PDF incompletos sin institucionId devolvieron400, no prueba válida de permisos.
+Con URLs completas devolvieron500. Logs muestran colisión getOutputStream/getWriter:
+la salida binaria se abría antes de validar alcance y bloqueaba el HTML403 del advice.
+SalidaArchivoHttp difiere stream/cabeceras hasta primer byte en ocho exportaciones;
+mantiene streaming, autorización, formatos y descarga/inline, sin buffer de archivo completo.
+Regresión HTTP real verifica ocho denegaciones y ocho respuestas binarias autorizadas,
+con servicios simulados y cuentas en memoria, sin BD real. Repetir con usuario limitado
+las dos URLs completas y después el caso Parian permitido. Guía integrada pendiente:
+el propietario pidió terminar el ejemplo antes de incorporarlo. No afirmar aceptación
+humana de Excel/PDF por alcance hasta que los repita y confirme.
+794 pruebas Java aprobadas, dieciséis casos HTTP y diff sin errores. App actualizada,
+salud UP; sin reinicio PostgreSQL, migración, operaciones financieras, .env ni commit.
+La siguiente migración continúa siendo V104.
+
 ## Acceso preparado y pestañas de Usuarios — 2026-10-16
 
 ACEPTACIÓN POSTERIOR: el propietario respondió «si ya se corrigio» tras probar la

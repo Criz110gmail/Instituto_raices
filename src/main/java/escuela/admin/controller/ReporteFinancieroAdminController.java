@@ -104,8 +104,7 @@ public class ReporteFinancieroAdminController {
                                  HttpServletResponse response) throws IOException {
         var filtro = estadoCuentaCuenta.normalizar(new FiltroEstadoCuentaCuenta(institucionId, cuentaId,
                 cuentaTexto, periodo, anio, mes, 0, 100));
-        prepararExcel(response, "estado-cuenta-" + filtro.periodo().toLowerCase() + "-" + filtro.anio() + ".xlsx");
-        excelCuenta.exportar(filtro, response.getOutputStream());
+        excelCuenta.exportar(filtro, prepararExcel(response, "estado-cuenta-" + filtro.periodo().toLowerCase() + "-" + filtro.anio() + ".xlsx"));
     }
 
     @GetMapping("/estado-cuenta-cuenta/pdf")
@@ -116,11 +115,7 @@ public class ReporteFinancieroAdminController {
                                HttpServletResponse response) throws IOException {
         var filtro = estadoCuentaCuenta.normalizar(new FiltroEstadoCuentaCuenta(institucionId, cuentaId,
                 cuentaTexto, periodo, anio, mes, 0, 100));
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "inline; filename*=UTF-8''" +
-                URLEncoder.encode("estado-cuenta-" + filtro.periodo().toLowerCase() + "-" + filtro.anio() + ".pdf",
-                        StandardCharsets.UTF_8));
-        jasper.estadoCuenta(filtro, response.getOutputStream());
+        jasper.estadoCuenta(filtro, prepararPdf(response,"estado-cuenta-" + filtro.periodo().toLowerCase() + "-" + filtro.anio() + ".pdf"));
     }
 
     @GetMapping("/tesoreria/excel")
@@ -132,7 +127,7 @@ public class ReporteFinancieroAdminController {
                         HttpServletResponse response) throws IOException {
         var filtro = consulta.normalizar(new FiltroReporteTesoreria(institucionId, cuentaId, cuentaTexto,
                 plantelId, agrupacion, fechaDesde, fechaHasta, 0, 100));
-        prepararExcel(response, "reporte-tesoreria.xlsx"); excel.tesoreria(filtro, response.getOutputStream());
+        excel.tesoreria(filtro, prepararExcel(response, "reporte-tesoreria.xlsx"));
     }
 
     @GetMapping("/tesoreria/pdf")
@@ -144,8 +139,7 @@ public class ReporteFinancieroAdminController {
                       HttpServletResponse response) throws IOException {
         var filtro = consulta.normalizar(new FiltroReporteTesoreria(institucionId, cuentaId, cuentaTexto,
                 plantelId, agrupacion, fechaDesde, fechaHasta, 0, 100));
-        prepararPdf(response, "balanza-movimientos-saldos.pdf");
-        jasper.tesoreria(filtro, response.getOutputStream());
+        jasper.tesoreria(filtro, prepararPdf(response, "balanza-movimientos-saldos.pdf"));
     }
 
     @GetMapping("/estado-cuenta")
@@ -203,7 +197,7 @@ public class ReporteFinancieroAdminController {
                                 @RequestParam(defaultValue="CONCEPTO") String agrupacion,
                                 @RequestParam LocalDate fechaCorte,HttpServletResponse response) throws IOException {
         var filtro=consulta.normalizar(new FiltroConcentradoCobranza(institucionId,plantelId,agrupacion,fechaCorte,0,100));
-        prepararPdf(response,"concentrado-cobranza.pdf");jasper.concentradoCobranza(filtro,response.getOutputStream());
+        jasper.concentradoCobranza(filtro,prepararPdf(response,"concentrado-cobranza.pdf"));
     }
 
     @GetMapping("/concentrado-cobranza/excel")
@@ -212,8 +206,7 @@ public class ReporteFinancieroAdminController {
                                  @RequestParam(defaultValue="CONCEPTO") String agrupacion,
                                  @RequestParam LocalDate fechaCorte,HttpServletResponse response) throws IOException {
         var filtro=consulta.normalizar(new FiltroConcentradoCobranza(institucionId,plantelId,agrupacion,fechaCorte,0,100));
-        prepararExcel(response,"concentrado-cobranza.xlsx");
-        excelConcentrado.exportar(filtro,response.getOutputStream());
+        excelConcentrado.exportar(filtro,prepararExcel(response,"concentrado-cobranza.xlsx"));
     }
 
     @GetMapping("/estado-cuenta/excel")
@@ -224,7 +217,7 @@ public class ReporteFinancieroAdminController {
                            @RequestParam LocalDate fechaCorte, HttpServletResponse response) throws IOException {
         var filtro = consulta.normalizar(new FiltroEstadoCuentaAlumno(institucionId, alumnoId, alumnoTexto,
                 plantelId, situacion, fechaCorte, 0, 100));
-        prepararExcel(response, "estado-cuenta-alumno.xlsx"); excel.estadoCuenta(filtro, response.getOutputStream());
+        excel.estadoCuenta(filtro, prepararExcel(response, "estado-cuenta-alumno.xlsx"));
     }
 
     @GetMapping("/estado-cuenta/pdf")
@@ -235,8 +228,7 @@ public class ReporteFinancieroAdminController {
                          @RequestParam LocalDate fechaCorte, HttpServletResponse response) throws IOException {
         var filtro = consulta.normalizar(new FiltroEstadoCuentaAlumno(institucionId, alumnoId, alumnoTexto,
                 plantelId, situacion, fechaCorte, 0, 100));
-        prepararPdf(response, "estado-cuenta-alumno.pdf");
-        jasper.estadoAlumno(filtro, response.getOutputStream());
+        jasper.estadoAlumno(filtro, prepararPdf(response, "estado-cuenta-alumno.pdf"));
     }
 
     private void comunes(Model model, Authentication authentication, List<InstitucionResponse> instituciones) {
@@ -252,15 +244,14 @@ public class ReporteFinancieroAdminController {
         return alcance.filtrarInstituciones(institucionService.listar());
     }
 
-    private void prepararExcel(HttpServletResponse response, String archivo) {
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''"
-                + URLEncoder.encode(archivo, StandardCharsets.UTF_8));
+    private java.io.OutputStream prepararExcel(HttpServletResponse response, String archivo) {
+        return new escuela.common.support.SalidaArchivoHttp(response,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "attachment; filename*=UTF-8''" + URLEncoder.encode(archivo, StandardCharsets.UTF_8));
     }
 
-    private void prepararPdf(HttpServletResponse response, String archivo) {
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "inline; filename*=UTF-8''"
-                + URLEncoder.encode(archivo, StandardCharsets.UTF_8));
+    private java.io.OutputStream prepararPdf(HttpServletResponse response, String archivo) {
+        return new escuela.common.support.SalidaArchivoHttp(response,"application/pdf",
+                "inline; filename*=UTF-8''" + URLEncoder.encode(archivo, StandardCharsets.UTF_8));
     }
 }

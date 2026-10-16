@@ -24,6 +24,7 @@ class ConcentradoExcelWebTest {
     @Test void rutaExportaConLosCuatroFiltrosYNombreXlsx() throws Exception {
         var consulta=mock(ReporteFinancieroConsultaService.class);
         var excel=mock(ExcelConcentradoCobranzaService.class);
+        doAnswer(i->{((java.io.OutputStream)i.getArgument(1)).write(new byte[]{'P','K'});return null;}).when(excel).exportar(any(),any());
         when(consulta.normalizar(any(FiltroConcentradoCobranza.class))).thenAnswer(i->i.getArgument(0));
         var controlador=new ReporteFinancieroAdminController(consulta,mock(ExcelReporteFinancieroService.class),excel,
                 mock(EstadoCuentaCuentaService.class),mock(ExcelEstadoCuentaCuentaService.class),mock(JasperReporteFinancieroService.class),

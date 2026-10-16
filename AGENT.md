@@ -1,5 +1,66 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Guía confirmada de permisos y alcance de reportes — V104 — 2026-10-16
+
+- Propietario repitió URLs completas del concentrado para institución1/plantel2 con
+ prueba.reportes.parian: Excel y PDF ya muestran No tienes acceso a esta información,
+ no500. Después confirmó caso permitido de Parian, Concepto de cobro y corte16/10/2026:
+ pantalla, Resumen y Concentrado del Excel y PDF coinciden. Tres cargos, importe
+ $2,100.00, cobrado $500.00, por cobrar $1,600.00 y vencido $0.00, MXN; dos filas:
+ ANTICIPO-TEST-02 (2/$1,600.00 pendiente) y MATERIAL (1/$500.00 pagado).
+- V104 incorpora guía reportes-permisos-alcance CONFIRMADA con nueve etapas: preparación
+ controlada, cuenta sin módulo, cuenta limitada, filtro/consulta, rechazo de exportaciones
+ y caso autorizado en pantalla/Excel/PDF. Conserva V1–V103 y actualiza referencia desde
+ concentrado. Sólo contenido editorial; no crea ni modifica usuarios, roles, planteles,
+ cargos, pagos ni movimientos. Los permisos asociados limitan lectura de la guía al
+ administrador que puede seguirla; no se otorgan derechos a ningún rol.
+- Verificado SQL con BEGIN/ROLLBACK, 796 pruebas Java y diff sin errores. App
+ reconstruida/recreada, salud UP y V104 aplicada: guía CONFIRMADA, nueve etapas,
+ 34 guías / 288 etapas totales. PostgreSQL no reiniciado; sin lectura de .env,
+ cambios operativos ni commit automático. Siguiente migración disponible V105.
+- Limitación explícita: segundo plantel vacío. Aceptación de filtro y rechazo por ID,
+ no separación de registros financieros de dos planteles con movimientos, otros reportes,
+ otras instituciones o grandes volúmenes. Los errores400 por enlaces incompletos y
+ el500 inicial son antecedentes, NO resultados aceptados. El reensayo correcto sí lo es.
+- Próximo: el propietario consulta la guía con su administrador; no necesita volver
+ a crear cuentas ni repetir operaciones. Acordar después el siguiente ensayo adicional;
+ no generar datos en el segundo plantel automáticamente. Conservar pruebas y cambios
+ de SalidaArchivoHttp pendientes de commit del propietario.
+
+## Permisos por plantel: exportaciones rechazadas terminaban en 500 — 2026-10-16
+
+- Propietario confirmó prueba.sinreportes: menú sólo Guía de procesos y rechazo de
+ Tesorería directa y Excel/PDF del concentrado sin permiso del módulo. No se cambió
+ su cuenta por herramientas. Después creó prueba.reportes.parian con Reportes
+ financieros y alcance sólo Parian, y el plantel de prueba CAMPUS-PRUEBA-02 (id2),
+ institución id1. No hay datos financieros del segundo plantel; no atribuir prueba
+ de separación de registros reales entre planteles, sólo filtro y rechazo explícito.
+- Confirmado por propietario: filtro sólo ofrece Parian; consulta manipulada con
+ plantelId=2 rechaza derechos. Primeras URLs Excel/PDF incompletas devolvieron400
+ por faltar institucionId: NO son prueba de alcance. URLs completas con institución1,
+ plantel2 y corte 16/10/2026 devolvieron500; repetir después de esta corrección.
+- Causa comprobada en logs: getOutputStream() has already been called for this response.
+ El controlador abría la salida binaria y fijaba cabeceras antes de que el servicio
+ validara alcance; al denegar, ManejadorGlobalExcepciones intentaba renderizar HTML
+ mediante getWriter. La autorización no se relaja: se corrige el transporte del error.
+- SalidaArchivoHttp abre stream/cabeceras sólo al primer byte. Las ocho exportaciones
+ de ReporteFinancieroAdminController lo usan; errores previos conservan HTML/403 sin
+ Content-Disposition ni descarga. Escritura directa al servlet, sin acumular el archivo
+ completo en memoria; flush/close sin bytes no abren respuesta. Excel autorizado sigue
+ attachment y PDF inline, no-store; servicios mantienen validaciones y paginación.
+- Regresión HTTP con Tomcat/seguridad/plantilla/advice reales y servicios simulados:
+ los ocho rechazos deben ser HTML403 sin descarga, los ocho casos autorizados conservan
+ tipo/disposición/cuerpo. Usuarios sólo en memoria, sin consultas a BD ni datos reales.
+- Verificado 794 Java sin fallos, incluida la regresión HTTP de los dieciséis casos,
+ y git diff --check. Sólo app reconstruida/recreada, salud UP; PostgreSQL no reiniciado.
+ Sin migración, cambios financieros, lectura de .env ni commit. V104 sigue disponible.
+- Próximo propietario: con prueba.reportes.parian, repetir Excel y PDF del concentrado
+ con institucionId=1, plantelId=2, agrupacion=CONCEPTO, fechaCorte=2026-10-16. Ambos
+ deben mostrar No tienes acceso a esta información, no500 ni archivo. Después volver
+ a consultar/exportar Parian para comprobar acceso permitido. No modificar permisos
+ ni crear pagos/cargos para completar el ensayo. Guía integrada pendiente hasta terminar
+ el ejemplo por petición del propietario; no publicar aceptación aún no recibida.
+
 ## Primer acceso confirmado; preparación verificada y Usuarios con pestañas — 2026-10-16
 
 - ACEPTACIÓN MÁS RECIENTE: después de publicar la preparación verificada, el propietario

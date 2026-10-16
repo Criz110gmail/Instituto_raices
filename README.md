@@ -1,5 +1,21 @@
 # Sistema administrativo escolar
 
+## Guía de permisos de reportes confirmada — 16/10/2026
+
+V104 agrega **Comprobar permisos y alcance por plantel en Reportes financieros**, con
+nueve etapas y estado Confirmada. Documenta rechazo sin módulo, plantel ajeno bloqueado
+y Parian autorizado en pantalla, ambas hojas Excel y PDF. No crea cuentas ni movimientos.
+El segundo plantel está vacío: no se afirma separación de datos entre dos planteles poblados.
+796 pruebas Java aprobadas; V104 aplicada y aplicación con salud UP.
+
+## Exportaciones financieras y acceso denegado — 16/10/2026
+
+Corregido el fallo 500 al exportar un plantel fuera del alcance: la salida Excel/PDF
+se abre sólo al escribir el archivo, permitiendo mostrar antes el rechazo HTML403.
+Se aplica a las ocho exportaciones financieras y conserva streaming, permisos y formatos.
+Pendiente repetir Excel/PDF del concentrado con la cuenta limitada al otro plantel.
+794 pruebas Java aprobadas; aplicación actualizada y salud UP, sin cambios financieros.
+
 ## Preparación del acceso y Usuarios por pestañas — 16/10/2026
 
 El login comprueba sesión/token antes de enviar las credenciales; sólo se repite esa
