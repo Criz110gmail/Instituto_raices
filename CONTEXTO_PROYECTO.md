@@ -1,5 +1,23 @@
 # Contexto del proyecto
 
+## Consulta histórica de Tesorería aceptada — V102 — 2026-10-16
+
+Propietario confirmó pantalla, Excel y Balanza PDF de BBVA_COBROS, rango 01/10–15/10/2026,
+plantel Todos, agrupación MENSUAL: dos movimientos, ingresos/egresos $1,440.00 cada uno,
+neto y traspasos cero, apertura/cierre $1,000.00. Cobro $500.00 del día 16 excluido.
+V102 agrega etapas 7/8 a la guía reportes-cuentas-tesoreria (versión 2) y corrige
+referencias de pendientes. Sólo contenido editorial; no se modifican datos financieros.
+No atribuir esta aceptación al estado del alumno ni al concentrado con corte histórico.
+780 pruebas Java aprobadas y SQL validado con reversión; sólo app actualizada y salud UP.
+V102 aplicada: guía CONFIRMADA versión 2 con ocho etapas; 33 guías / 275 etapas totales.
+Sin lectura de .env, cambios financieros ni commit automático; V103 queda disponible.
+
+Siguiente prueba propuesta: estado de cuenta de ALUM-2026-002, Situación Todas,
+corte 15/10/2026 y alcance habitual. Esperamos dos colegiaturas de $800.00, total/saldo
+$1,600.00 y aplicado $0.00, sin el material emitido el 16/10. Comparar pantalla/Excel/PDF;
+si hay diferencias, revisar fechas efectivas, sin repetir ni modificar operaciones.
+La prueba del alumno al corte del 15 sigue pendiente de aceptación humana.
+
 ## Aceptación del Excel del concentrado — V101 — 2026-10-16
 
 Propietario confirmó ambas hojas por concepto, plantel y ciclo escolar: 3 cargos,

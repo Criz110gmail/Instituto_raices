@@ -1,5 +1,16 @@
 # Sistema administrativo escolar
 
+## Consulta histórica de Tesorería confirmada — 16/10/2026
+
+V102 incorpora a la guía el rango 01/10/2026–15/10/2026 de BBVA_COBROS, confirmado
+en pantalla, Excel y PDF: dos movimientos, ingresos y egresos de $1,440.00, neto cero
+y saldo final $1,000.00. El cobro de $500.00 del día 16 queda fuera de ese periodo.
+No modifica pagos, movimientos ni saldo actual.
+780 pruebas Java aprobadas; V102 aplicada y aplicación con salud UP.
+
+Siguiente prueba propuesta: estado de cuenta del alumno del ensayo al 15/10/2026,
+con Situación Todas, para verificar que excluye el material emitido el día 16.
+
 ## Excel del concentrado confirmado — 16/10/2026
 
 V101 registra la aceptación de las hojas Resumen y Concentrado por concepto, plantel

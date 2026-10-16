@@ -1,5 +1,30 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Tesorería histórica confirmada — V102 — 2026-10-16
+
+- Propietario confirmó Tesorería BBVA_COBROS, Plantel de operación Todos, agrupación
+ MENSUAL y rango 01/10/2026–15/10/2026 en pantalla, Excel y Balanza PDF: 2 movimientos,
+ ingresos/egresos $1,440.00 cada uno, neto/traspasos $0.00, saldo inicial/final $1,000.00.
+ El cobro de $500.00 del día 16 queda excluido sin modificar el saldo actual de la cuenta.
+- V102 agrega etapas 7 y 8 a reportes-cuentas-tesoreria (versión 2), conserva CONFIRMADA
+ y actualiza las referencias que decían pendiente la consulta histórica de Tesorería.
+ No extiende esa aceptación al corte histórico del estado del alumno o concentrado.
+ V1–V101 permanecen intactas. Sólo guía, sin permisos nuevos ni operaciones financieras.
+- Verificado SQL con BEGIN/ROLLBACK, 780 pruebas Java sin fallos y diff sin errores.
+ Sólo app reconstruida/recreada y salud UP; V102 aplicada, guía CONFIRMADA versión 2
+ con 8 etapas, 33 guías / 275 etapas totales. Sin lectura de .env ni commit automático.
+ PostgreSQL no reiniciado; siguiente migración disponible V103.
+- Próxima prueba PROPUESTA: Estado de cuenta del alumno ALUM-2026-002, Situación Todas,
+ mismo alcance autorizado y Fecha de corte 15/10/2026 → Generar estado. Por los datos
+ del ensayo esperamos sólo noviembre/diciembre $800.00 cada uno: 2 cargos, importe y
+ saldo $1,600.00, aplicado $0.00. Material de $500.00 tiene emisión 16/10 y no debe
+ aparecer al corte del 15. Comparar pantalla y archivos nuevos Excel/PDF antes de
+ documentarlo como confirmado; si difiere, revisar fechas efectivas de ajustes/abonos.
+ No registrar pagos, cambiar fechas ni cancelar operaciones para forzar cifras.
+- El Excel del concentrado por las tres agrupaciones sigue confirmado por V101.
+ Primer login real tras reinicio aún sin confirmación explícita. Las notas anteriores
+ se conservan debajo como historial y no sustituyen este siguiente paso.
+
 ## Excel del concentrado aceptado — V101 — 2026-10-16
 
 - El propietario confirmó pantalla y las dos hojas del Excel (Resumen/Concentrado)
