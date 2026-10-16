@@ -1,5 +1,75 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Excel del concentrado aceptado — V101 — 2026-10-16
+
+- El propietario confirmó pantalla y las dos hojas del Excel (Resumen/Concentrado)
+ por concepto, plantel y ciclo escolar. Corte 16/10/2026, institución instituto Raices
+ y filtro Plantel Todos autorizados. No afirmar que seleccionó un plantel individual:
+ Plantel parian es la fila agrupada del resultado, no el valor del filtro utilizado.
+- Las tres agrupaciones coinciden: 3 cargos, importe $2,100.00, cobrado $500.00,
+ por cobrar $1,600.00, vencido $0.00, MXN. Concepto: dos filas (colegiatura 2/$1,600.00
+ pendiente y material 1/$500.00 pagado). Plantel parian y Ciclo Escolar 2026-2027:
+ una fila cada uno, mismos totales.
+- V101 confirma reporte-concentrado-excel, versión 2, conservando sus tres etapas.
+ Actualiza requisitos, ejemplo, acciones/resultados y referencias desde agrupaciones
+ y guías de caja. V100 y sus pruebas se preservan como historial; no editar migraciones
+ ya aplicadas. Sólo contenido editorial; sin cambios de dominio, permisos o dinero.
+- Verificado: SQL en BEGIN/ROLLBACK, 778 pruebas Java sin fallos y git diff --check.
+ Sólo app reconstruida/recreada, salud UP y V101 aplicada: guía CONFIRMADA versión 2,
+ totales conservados de 33 guías / 273 etapas. PostgreSQL no reiniciado; sin lectura
+ de .env, operaciones financieras ni commit automático. Siguiente migración libre V102.
+- Siguiente prueba PROPUESTA, todavía no confirmada: Tesorería, cuenta BBVA_COBROS,
+ Plantel de operación Todos, Agrupación MENSUAL, Desde 01/10/2026, Hasta 15/10/2026.
+ Esperado por el ensayo previo: dos movimientos (pago/cancelación), ingresos y egresos
+ $1,440.00 cada uno, neto $0.00, apertura/cierre $1,000.00; excluir cobro $500.00 del 16.
+ Contrastar pantalla, Excel y Balanza PDF. La cuenta actual conserva $1,500.00 si no
+ hubo otras operaciones; no confundir saldo actual con saldo al corte histórico.
+ No crear pagos, modificar fechas ni repetir cancelaciones para forzar la prueba.
+- La aceptación humana de login tras reinicio sigue sin confirmación explícita.
+ Las entradas siguientes se conservan como historial; el Excel ya NO está pendiente.
+
+## Reportes confirmados y Excel del concentrado — 2026-10-16
+
+- Estado vigente: propietario confirmó fechas dd/mm/yyyy y filtros PAGADO/PENDIENTE
+ en pantalla, Excel y PDF del estado del alumno. ALUM-2026-002: tres cargos por
+ $2,100.00, aplicado $500.00, saldo $1,600.00. Material pagado $500.00; noviembre y
+ diciembre pendientes $800.00 cada uno. No repetir el cobro de material ni la cancelación.
+- Concentrado confirmado en pantalla/PDF al 16/10/2026: concepto dos filas (colegiatura
+ 2/$1,600.00 sin cobro y material 1/$500.00 cobrado); plantel y ciclo una fila cada uno.
+ Totales: 3 cargos, importe $2,100.00, cobrado $500.00, por cobrar $1,600.00, vencido $0.00.
+- V100 agrega cuatro guías (18 etapas): cuentas/tesorería, estado del alumno y
+ agrupaciones del concentrado CONFIRMADAS; Excel del concentrado PENDIENTE de revisión
+ humana. Actualiza enlaces de continuidad de las guías de caja sin repetir operaciones.
+ Sólo contenido editorial, permisos de consulta existentes; no crea movimientos ni
+ otorga derechos a roles. Los datos del ensayo NO viajan con git pull.
+- BBVA_COBROS: apertura $1,000.00, pago y cancelación $1,440.00 cada uno; después
+ cobro vigente $500.00. Tesorería 01/10–16/10/2026 confirmada pantalla/Excel/PDF:
+ tres movimientos, ingresos $1,940.00, egresos $1,440.00, neto $500.00 y cierre $1,500.00.
+ DIARIA dos filas; MENSUAL una. Cuenta CAJA-SOBRANTE-TEST sin movimientos: cierre
+ $1,150.00, ingresos/egresos cero, apertura del periodo cero y aviso de inicio dentro
+ del mes. El sobrante justificado de $1 no generó ingreso automático.
+- Nuevo GET /admin/reportes-financieros/concentrado-cobranza/excel y botón Exportar Excel.
+ Conserva institución, plantel, agrupación y corte, con los mismos permisos/alcance.
+ ExcelConcentradoCobranzaService usa transacción de sólo lectura REPEATABLE_READ,
+ SXSSF por bloques de 100 y estilos reutilizados; exporta todas las páginas, no sólo
+ la visible. Hoja inicial Resumen con filtros/totales; Concentrado con filas agrupadas,
+ filtros de columna y cabecera fija. Fechas reales dd/mm/yyyy, importes numéricos en
+ pesos con centavos; sin cartera conserva resumen y mensaje, no libro vacío.
+- Verificaciones: pruebas Java de las tres agrupaciones, más de una página, sin datos,
+ acceso denegado, endpoint y render de enlace con filtros; prueba de contenido V100.
+ SQL validado con BEGIN/ROLLBACK; XLSX ficticios reabiertos e inspeccionados/renderizados
+ con la guía de hojas de cálculo, sin recortes en las tres agrupaciones.
+- Compilación completa: 776 pruebas Java sin fallos. Sólo app reconstruida/recreada;
+ salud HTTP UP y PostgreSQL no reiniciado. V100 aplicada; 33 guías / 273 etapas.
+ No se leyó .env ni se efectuaron operaciones financieras; sin commit automático.
+- Siguiente prueba del propietario: recargar Concentrado, corte 16/10/2026 y mismo plantel;
+ descargar Excel por CONCEPTO (dos filas), PLANTEL y CICLO (una fila cada uno).
+ Comparar Resumen y Concentrado con 3 / $2,100.00 / $500.00 / $1,600.00 / $0.00.
+ Sólo tras aceptación humana confirmar la guía Excel mediante una migración posterior.
+ La reconstrucción con corte histórico anterior al nuevo pago sigue sin ensayarse.
+ La aceptación humana del login tras la última corrección tampoco fue explícita;
+ no inferirla de haber retomado reportes. Las notas anteriores son historial, no pendientes vigentes.
+
 ## Login público atrasado también reemplazaba cookies — 2026-10-16
 
 - Usuario volvió a admin y sí fue redirigido al acceso al recuperar visibilidad, pero

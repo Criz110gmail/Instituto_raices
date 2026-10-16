@@ -1,5 +1,53 @@
 # Contexto del proyecto
 
+## Aceptación del Excel del concentrado — V101 — 2026-10-16
+
+Propietario confirmó ambas hojas por concepto, plantel y ciclo escolar: 3 cargos,
+importe $2,100.00, cobrado $500.00, por cobrar $1,600.00, vencido $0.00, MXN.
+Concepto tiene dos filas; Plantel parian y Ciclo Escolar 2026-2027 una fila cada uno.
+Filtro real Plantel Todos autorizados, corte 16/10/2026 e institución instituto Raices.
+V101 marca reporte-concentrado-excel CONFIRMADA (versión 2) y actualiza sus tres etapas
+y las referencias editoriales; no altera V100, permisos ni operaciones financieras.
+No confundir plantel agrupado con filtro individual confirmado.
+Verificado SQL con reversión, 778 pruebas Java y diff sin errores. Sólo app actualizada,
+salud UP y V101 aplicada; guía CONFIRMADA versión 2, 33 guías / 273 etapas.
+Sin operaciones financieras, lectura de .env ni commit; V102 queda disponible.
+
+Próxima prueba propuesta (aún sin aceptación): Tesorería BBVA_COBROS con Plantel Todos,
+agrupación MENSUAL y rango 01/10/2026–15/10/2026. Debe excluir cobro $500.00 del día 16
+y mostrar dos movimientos, ingresos/egresos $1,440.00 cada uno, neto cero y cierre
+$1,000.00 en pantalla/Excel/PDF. No repetir pagos ni cancelaciones. El saldo actual
+de la cuenta puede seguir siendo $1,500.00; no equivale al corte histórico.
+Las entradas siguientes conservan el historial anterior a esta aceptación.
+
+## Reportes documentados y exportación Excel del concentrado — 2026-10-16
+
+Propietario confirmó estado del alumno con fechas dd/mm/yyyy y exportaciones que
+respetan PAGADO/PENDIENTE. Tres cargos: material pagado $500.00, noviembre/diciembre
+$800.00 pendientes cada uno; total $2,100.00, aplicado $500.00 y saldo $1,600.00.
+Concentrado confirmado en pantalla y PDF por concepto (dos filas), plantel y ciclo
+(una fila cada uno), corte 16/10/2026: 3 cargos, importe $2,100.00, cobrado $500.00,
+por cobrar $1,600.00 y vencido $0.00. No repetir pago ni cancelación existentes.
+
+V100 publica tres guías CONFIRMADAS (cuentas/tesorería, alumno/filtros y agrupaciones)
+y una PENDIENTE para el nuevo Excel: 18 etapas, sin operaciones financieras ni
+concesión de permisos a roles. Conserva explicación de CAJA-SOBRANTE-TEST sin movimientos,
+pago cancelado BBVA_COBROS y nuevo cobro $500.00: Tesorería confirmada con 3 movimientos,
+ingresos $1,940.00, egresos $1,440.00, neto $500.00 y cierre $1,500.00.
+
+Nuevo botón Exportar Excel en Concentrado de cobranza, con los cuatro filtros activos.
+Libro Resumen + Concentrado, importes numéricos en pesos, corte real dd/mm/yyyy,
+cabeceras fijas y exportación de todas las páginas en bloques de 100 bajo REPEATABLE_READ.
+Pruebas cubren agrupaciones, paginación, vacío, alcance, endpoint/enlace y guías.
+SQL probado con reversión; XLSX ficticios inspeccionados y renderizados visualmente.
+776 pruebas Java aprobadas; app reconstruida/recreada y salud UP. V100 aplicada:
+33 guías / 273 etapas; las cuatro nuevas tienen tres CONFIRMADAS y una PENDIENTE.
+PostgreSQL no reiniciado, sin operaciones financieras, sin lectura de .env ni commit.
+Siguiente: propietario descarga las tres agrupaciones y confirma ambas hojas/totales;
+la aceptación de ese Excel aún NO está confirmada. Corte histórico anterior al cobro
+vigente y primer login real tras última corrección siguen sin confirmación explícita.
+Consultar AGENT.md para continuidad vigente; las entradas siguientes son historial.
+
 ## Acceso actualizado persistía: login público emitía otra sesión — 2026-10-16
 
 Propietario confirmó redirección al volver a pestaña, NO login exitoso: primer intento

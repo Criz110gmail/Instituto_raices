@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 public class ReporteFinancieroAdminController {
     private final ReporteFinancieroConsultaService consulta;
     private final ExcelReporteFinancieroService excel;
+    private final ExcelConcentradoCobranzaService excelConcentrado;
     private final EstadoCuentaCuentaService estadoCuentaCuenta;
     private final ExcelEstadoCuentaCuentaService excelCuenta;
     private final JasperReporteFinancieroService jasper;
@@ -203,6 +204,16 @@ public class ReporteFinancieroAdminController {
                                 @RequestParam LocalDate fechaCorte,HttpServletResponse response) throws IOException {
         var filtro=consulta.normalizar(new FiltroConcentradoCobranza(institucionId,plantelId,agrupacion,fechaCorte,0,100));
         prepararPdf(response,"concentrado-cobranza.pdf");jasper.concentradoCobranza(filtro,response.getOutputStream());
+    }
+
+    @GetMapping("/concentrado-cobranza/excel")
+    void concentradoCobranzaExcel(@RequestParam Long institucionId,
+                                 @RequestParam(required=false) Long plantelId,
+                                 @RequestParam(defaultValue="CONCEPTO") String agrupacion,
+                                 @RequestParam LocalDate fechaCorte,HttpServletResponse response) throws IOException {
+        var filtro=consulta.normalizar(new FiltroConcentradoCobranza(institucionId,plantelId,agrupacion,fechaCorte,0,100));
+        prepararExcel(response,"concentrado-cobranza.xlsx");
+        excelConcentrado.exportar(filtro,response.getOutputStream());
     }
 
     @GetMapping("/estado-cuenta/excel")

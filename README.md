@@ -1,5 +1,31 @@
 # Sistema administrativo escolar
 
+## Excel del concentrado confirmado — 16/10/2026
+
+V101 registra la aceptación de las hojas Resumen y Concentrado por concepto, plantel
+y ciclo escolar, con filtro Todos autorizados y corte 16/10/2026: 3 cargos, $2,100.00
+de importe, $500.00 cobrado, $1,600.00 por cobrar y $0.00 vencido. La guía pasa a
+Confirmada, sin modificar pagos ni saldos.
+778 pruebas Java aprobadas; aplicación actualizada, salud UP y V101 aplicada.
+
+Próxima prueba propuesta: Tesorería de BBVA_COBROS hasta el 15/10/2026 para comprobar
+que excluye el cobro del día 16 y conserva el saldo histórico de $1,000.00. Sólo consulta;
+no crear movimientos para repetir el ensayo.
+
+## Concentrado de cobranza en Excel y guía — 16/10/2026
+
+Reportes financieros → Concentrado de cobranza ahora ofrece **Exportar Excel**,
+conservando institución, plantel, agrupación y fecha de corte. El archivo contiene
+**Resumen** y **Concentrado**, fechas dd/mm/yyyy e importes numéricos con pesos y centavos.
+Incluye todas las páginas del resultado y mantiene los permisos existentes.
+
+V100 incorpora a Guía de procesos los reportes ya confirmados de cuentas/tesorería,
+estado del alumno y concentrado por concepto, plantel y ciclo. El recorrido de la nueva
+exportación Excel permanece pendiente de aceptación humana. Próxima comprobación:
+descargar las tres agrupaciones al 16/10/2026 y contrastar 3 cargos, $2,100.00 de importe,
+$500.00 cobrado, $1,600.00 por cobrar y $0.00 vencido. No repetir cobros de prueba.
+776 pruebas Java aprobadas; aplicación actualizada y salud UP, V100 aplicada.
+
 ## Login sin sesión al cargar — 16/10/2026
 
 Corregido otro caso de Acceso actualizado: cargar un login antiguo ya no reemplaza la
