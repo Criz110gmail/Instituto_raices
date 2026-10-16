@@ -1,5 +1,17 @@
 # Sistema administrativo escolar
 
+## Sobrante de caja confirmado (V99)
+
+En **Administración → Seguridad y soporte → Guía de procesos**, busca
+**Cerrar caja con un sobrante de $1 justificado**. Ocho etapas documentan la caja nueva
+CAJA-SOBRANTE-TEST con inicial$1,150, rechazo de declarado$1,151 sin justificación y
+cierre al justificar, diferencia+$1 y cuenta$1,150 sin ingreso automático. No repetir
+el caso confirmado. Incluye acceso administrativo, buscador y navegación vigente.
+V99 sólo actualiza contenido editorial. Siguiente prueba propuesta: **Reportes financieros
+→ Estado de cuenta por cuenta**, misma caja y octubre2026; comparar pantalla, Excel y
+PDF sin crear movimientos nuevos. Ver el estado vigente de AGENT.md.
+V99 aplicada:29guías/255etapas;753 pruebas Java aprobadas y aplicación UP. Próxima V100.
+
 ## Guías de caja actualizadas: faltante justificado y pestañas (V98)
 
 En **Administración → Seguridad y soporte → Guía de procesos**, busca

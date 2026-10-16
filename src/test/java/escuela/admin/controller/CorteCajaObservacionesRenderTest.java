@@ -14,6 +14,18 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 class CorteCajaObservacionesRenderTest {
+    @Test void aperturaExplicaRecuperacionSinOfrecerOperacionFinanciera()throws Exception {
+        var resolver=new ClassLoaderTemplateResolver();resolver.setPrefix("templates/");resolver.setSuffix(".html");resolver.setCharacterEncoding("UTF-8");
+        var engine=new SpringTemplateEngine();engine.setTemplateResolver(resolver);
+        var views=new ThymeleafViewResolver();views.setTemplateEngine(engine);views.setCharacterEncoding("UTF-8");
+        var mvc=MockMvcBuilders.standaloneSetup(new Pantalla()).setViewResolvers(views).build();
+        var recovery=mvc.perform(get("/prueba/corte-apertura").param("recuperacion","true")).andReturn().getResponse().getContentAsString();
+        assertThat(recovery).contains("Inicia sesión con tu usuario administrativo",
+            "El acceso temporal de recuperación no puede consultar cajas","disabled=\"disabled\"");
+        var normal=mvc.perform(get("/prueba/corte-apertura")).andReturn().getResponse().getContentAsString();
+        assertThat(normal).contains("data-refresh-on-focus=\"true\"")
+            .doesNotContain("El acceso temporal de recuperación no puede consultar cajas","disabled=\"disabled\"");
+    }
     @Test void observacionesSonTarjetaDeConsultaConTextoEscapadoYSinFormularioDeCierre()throws Exception {
         var resolver=new ClassLoaderTemplateResolver();resolver.setPrefix("templates/");resolver.setSuffix(".html");resolver.setCharacterEncoding("UTF-8");
         var engine=new SpringTemplateEngine();engine.setTemplateResolver(resolver);
@@ -26,11 +38,12 @@ class CorteCajaObservacionesRenderTest {
         assertThat(vacio).doesNotContain("cash-opening-note");
     }
     @Controller static class Pantalla {
-        @GetMapping("/prueba/corte-apertura")String apertura(Model model){
+        @GetMapping("/prueba/corte-apertura")String apertura(@RequestParam(defaultValue="false")boolean recuperacion,Model model){
             var form=new escuela.admin.dto.AperturaCorteCajaForm();
             form.setInstitucionId(1L);form.setCuentaId(2L);form.setCuentaTexto("CAJA-CORTE-TEST");
             form.setObservaciones("Prueba de apertura <script>literal</script>");
             model.addAttribute("form",form);model.addAttribute("instituciones",java.util.List.of());
+            model.addAttribute("accesoRecuperacion",recuperacion);
             return "admin/corte-caja-apertura-form :: openingForm";
         }
         @GetMapping("/prueba/corte-diferencia")String diferencia(@RequestParam(defaultValue="0")String diferencia,Model model){

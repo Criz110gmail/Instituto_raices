@@ -1,5 +1,43 @@
 # Contexto del proyecto
 
+## V99 — sobrante de caja confirmado y reportes como siguiente prueba — 2026-10-16
+
+Usuario confirmó bloqueo al omitir justificación y cierre al agregarla, con cuenta1150.
+Lectura verifica corte1 de CAJA-SOBRANTE-TEST CERRADO, inicial/esperado1150, declarado1151,
+diferencia+1, movimientos0/ingresos0/egresos0 y justificación conservada. Caso concluido;
+no repetir cortes ni registrar ingreso1. La caja se creó aquí con inicial1150, distinta
+de la caja anterior de otra BD con inicial1000. No asumir traslado de registros por Git.
+V99 publica guía CONFIRMADA8etapas/4acciones,5 permisos requeridos sin otorgar roles;
+preparación, acceso admin frente a recuperación, foco/búsqueda, modales/pestañas, rechazo,
+justificación, cierre, historial y saldo. Cancelar modal/Excel sólo controles adicionales.
+Actualiza referencias editoriales en guías de faltante/sin diferencia/seguridad; sólo
+tablas guía. No editar migraciones aplicadas ni operar finanzas mediante herramientas.
+Verificado753Java completos sin fallos, diff limpio, SQL en BEGIN/ROLLBACK; sólo app
+recreada/salud UP. V99 aplicada, guía CONFIRMADA8etapas y29guías/255etapas. Corte cerrado
+intacto, sin QA visual autenticada ni operaciones financieras. Próxima V100.
+Siguiente propuesto: Reportes financieros → Estado de cuenta por cuenta → misma caja,
+Mensual/octubre2026; comparar pantalla/Excel/PDF con cierre1150/ingresos0/egresos0/
+movimientos0 y apertura registrada en periodo si corresponde. Sin nuevas capturas.
+Luego tesorería/agrupaciones, casos con movimientos, separación efectivo/banco/tarjeta y
+reportes de alumno/cobranza. Reportes todavía no confirmados por propietario.
+
+## Retoma local, sobrante pendiente y acceso de recuperación — 2026-10-16
+
+Entorno local reconstruido en V98, salud UP;750Java/27Node aprobados al iniciar.
+No estaban CAJA-CORTE-TEST ni sus cortes. Propietario creó CAJA-SOBRANTE-TEST con1150;
+consulta confirma CAJA activa institución1/plantel1, sin corte abierto. Siguiente ensayo
+sigue pendiente: declarar1151 sin motivo debe rechazar; justificar y cerrar con+1,
+cuenta conserva1150. No repetir movimientos de la otra computadora ni operar por tools.
+Propietario usa criz: comprobación booleana confirma usuario de recuperación. Su alcance
+financiero restringido explica resultados vacíos aunque existan cajas. Debe usar usuario
+administrativo persistido; chris tiene alcance institucional en esta BD. No se alteraron
+roles ni credenciales. Apertura ahora explica ese bloqueo y deshabilita captura/envío.
+Además apertura y filtros de cortes usan refresh-on-focus compartido para consultar10
+iniciales al foco/clic y reabrir opciones; búsqueda desde3, institución y permisos intactos.
+Sin migración; próxima V99. Ensayo de sobrante aún no confirmado ni guía nueva publicada.
+Verificación final751Java/28Node sin fallos; render normal/recuperación y DOM de
+buscador cubiertos. Sólo app reconstruida/recreada, salud UP; sin QA visual autenticada.
+
 ## V98 — documentación de faltante y navegación actual — 2026-10-15
 
 750Java completos/27Node aprobados, diff limpio; SQL probado BEGIN/ROLLBACK.

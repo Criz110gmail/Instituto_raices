@@ -46,6 +46,14 @@ public class CorteCajaAdminController {
     private final InstitucionService institucionService;
     private final AlcanceDatosService alcance;
 
+    @ModelAttribute("accesoRecuperacion")
+    boolean accesoRecuperacion() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null
+                && authentication.getPrincipal() instanceof escuela.seguridad.service.UsuarioPrincipal principal
+                && principal.accesoRecuperacion();
+    }
+
     @GetMapping
     String listado(@RequestParam(required = false) Long institucionId,
                    @RequestParam(required = false) Long cuentaId,

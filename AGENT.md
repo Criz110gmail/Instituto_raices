@@ -1,5 +1,52 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## ESTADO VIGENTE — sobrante justificado confirmado, guía V99 — 2026-10-16
+
+- Propietario confirmó rechazo sin justificación y cierre al capturarla; también confirmó
+ saldo actual de CAJA-SOBRANTE-TEST1150 después del cierre. Lectura de esta BD verifica
+ corte1 CERRADO, inicial/esperado1150, declarado1151, diferencia+1, cero movimientos,
+ ingresos/egresos0 y motivo conservado. Caso CONCLUIDO: no repetir apertura/cierre ni
+ registrar ingreso1. No confundir con CAJA-CORTE-TEST ni sus registros de otra computadora.
+- V99 publica corte-caja-sobrante-1 CONFIRMADA8etapas/4acciones y5 permisos existentes
+ requeridos sin otorgar roles. Incluye preparación de cuenta nueva1150, usuario admin
+ persistido (no recuperación), autocompletado foco10/búsqueda3, apertura/modal/pestañas,
+ rechazo, corrección, cierre y cuenta sin ajuste automático. Cancelar modal/Excel son
+ controles recomendados, no nuevas aceptaciones humanas atribuidas.
+- Actualiza referencias de faltante, cierre sin diferencia y seguridad mediante V99;
+ no editar V1–V98. Sólo contenido editorial, sin escrituras financieras por herramientas.
+- Verificación final:753Java completos sin fallos, diff limpio y SQL editorial validado
+ BEGIN/ROLLBACK. Sólo app reconstruida/recreada, salud UP; lectura confirma V99 aplicada,
+ guía CONFIRMADA8etapas y29guías/255etapas. Corte1 conserva CERRADO/1150/1151/+1/0mov.
+ No QA visual autenticada ni operaciones financieras. Próxima V100; preservar V1–V99.
+- SIGUIENTE PROPUESTO: Reportes financieros → Estado de cuenta por cuenta, misma caja,
+ Mensual/octubre2026. Comparar pantalla/Excel/PDF: cierre1150, ingresos/egresos0,
+ movimientos0; sobrante del corte no es ingreso. Revisar saldo inicial registrado en
+ periodo por separado si la cuenta abrió dentro de octubre. No crear movimientos para
+ este primer control. Después contrastar tesorería/agrupaciones y casos con movimientos,
+ efectivo frente a banco/tarjeta y reportes de alumno/cobranza. Aún NO confirmados.
+
+## Retoma local y buscador de cajas — 2026-10-16
+
+- Se levantó la versión descargada con volúmenes existentes: V98 aplicada, salud UP,
+ 750Java/27Node aprobados en esta computadora. No existía CAJA-CORTE-TEST ni sus cortes;
+ no asumir que Git transporta los datos de la otra computadora.
+- Propietario creó CAJA-SOBRANTE-TEST, tipo CAJA activa, institución1/plantel1,
+ saldo inicial1150, sin corte abierto al consultar. Ensayo de sobrante pendiente:
+ abrir corte sin movimientos, declarar1151 sin justificación→rechazo; luego justificar,
+ cerrar con diferencia+1 y cuenta1150, sin ingreso automático. No operar por herramientas.
+- Lista vacía: propietario confirmó sesión criz; comprobación booleana identifica ese
+ usuario como recuperación, que no puede operar cortes. En esta BD chris es el usuario
+ administrativo institucional; no cambiar permisos ni leer/exponer credenciales.
+- Apertura y filtro de cortes optan por refresh-on-focus del autocompletado compartido:
+ foco/clic consultan hasta10 cajas permitidas, reabren al volver y buscan desde3 letras,
+ sin duplicar petición foco+clic ni perder institución/selección. Sin ampliar alcance.
+- Apertura informa explícitamente si la sesión es de recuperación y deshabilita captura
+ y envío; evita presentar ese caso como una caja inexistente. Backend conserva controles.
+- Sin migración, V99 sigue libre. Sobrante aún NO confirmado ni publicado como guía.
+- Verificación final del cambio:751Java/28Node aprobados, incluye render de apertura
+ normal/recuperación y DOM de foco/clic/reapertura/institución/búsqueda3. Sólo app
+ reconstruida/recreada; salud UP. Sin QA visual autenticada ni operaciones financieras.
+
 ## V98 — guía de faltante y recorridos con pestañas — 2026-10-15
 
 - Verificado750Java completos/27Node sin fallos, diff limpio. SQL editorial validado
