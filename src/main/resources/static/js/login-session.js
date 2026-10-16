@@ -1,5 +1,6 @@
 (() => {
  const form=document.querySelector('[data-login-refresh]');if(!form)return;
+ const button=form.querySelector('button[type=submit]');
  let ready=false,busy=false;
  async function tokenActual(){
   for(let intento=0;intento<2;intento++){
@@ -20,7 +21,7 @@
  form.addEventListener('submit',async event=>{
   if(ready){ready=false;return;}
   event.preventDefault();if(busy)return;busy=true;
-  const button=form.querySelector('button[type=submit]');if(button)button.disabled=true;
+  if(button)button.disabled=true;
   const old=form.querySelector('[data-login-refresh-error]');if(old)old.remove();
   try {
    const data=await tokenActual();
@@ -34,4 +35,6 @@
    form.prepend(notice);busy=false;
   }finally{if(button)button.disabled=false;}
  });
+ // Sin el controlador listo no enviar un formulario con token vacío o antiguo.
+ if(button)button.disabled=false;
 })();

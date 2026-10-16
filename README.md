@@ -1,5 +1,18 @@
 # Sistema administrativo escolar
 
+## Login sin sesión al cargar — 16/10/2026
+
+Corregido otro caso de Acceso actualizado: cargar un login antiguo ya no reemplaza la
+sesión del nuevo acceso. Los tres portales obtienen CSRF sólo al pulsar Entrar, sin
+repetir credenciales; JavaScript requerido.768Java/28Node aprobados y appUP. Pendiente
+confirmación del propietario con recarga y un intento; ver excepción técnica en AGENT.md.
+
+## Estado de cuenta del alumno: fechas — 16/10/2026
+
+Pantalla y Excel muestran fechas **dd/mm/yyyy**, con año completo. Excel conserva fechas
+reales para ordenar/filtrar; PDF ya utilizaba ese formato. Sin cambios de importes,
+filtros ni datos.767 pruebas Java aprobadas. Recarga el reporte y descarga un Excel nuevo.
+
 ## Sesión tras reinicio: solicitudes atrasadas — 16/10/2026
 
 Corregida carrera de cookies que provocaba Acceso actualizado en el primer intento.

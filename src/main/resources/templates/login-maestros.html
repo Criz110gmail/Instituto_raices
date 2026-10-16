@@ -23,12 +23,15 @@
         <div class="alert warning" role="alert" th:if="${param.sesionExpirada}"><strong>Tu sesión caducó</strong><span>Por seguridad, inicia sesión nuevamente para continuar.</span></div>
         <div class="alert success" role="status" th:if="${param.logout}">Tu sesión se cerró correctamente.</div>
         <div class="alert warning" role="status" th:if="${param.accesoActualizado}"><strong>Acceso actualizado</strong><span>La sesión cambió en otra pestaña. Inicia sesión nuevamente desde esta pantalla.</span></div>
-        <form data-login-refresh="maestros" th:attr="data-csrf-url=@{/acceso/csrf}" method="post" th:action="@{/login}">
+        <!-- Sólo el acceso obtiene CSRF al enviar: cargar otra pestaña no crea una cookie de sesión. -->
+        <form data-login-refresh="maestros" th:attr="data-csrf-url=@{/acceso/csrf},action=@{/login}" method="post">
+            <input type="hidden" name="_csrf" value="">
+            <noscript><p role="alert">Activa JavaScript para iniciar sesión de forma segura.</p></noscript>
             <input type="hidden" name="origen" value="maestros">
             <label><span>Usuario docente</span><input name="username" autocomplete="username" required autofocus placeholder="tu.usuario"></label>
             <label><span>Contraseña</span><input type="password" name="password" autocomplete="current-password" required placeholder="••••••••••••"></label>
             <div class="form-meta"><span>Verás únicamente los grupos y materias que tienes asignados.</span></div>
-            <button type="submit">Entrar a Nexo Docente <span>→</span></button>
+            <button type="submit" disabled>Entrar a Nexo Docente <span>→</span></button>
         </form>
         <p class="support"><a href="/">← Volver a los accesos</a><br>¿No puedes entrar? Contacta a la administración de tu institución.</p>
     </section>

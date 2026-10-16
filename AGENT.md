@@ -1,5 +1,58 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Login público atrasado también reemplazaba cookies — 2026-10-16
+
+- Usuario volvió a admin y sí fue redirigido al acceso al recuperar visibilidad, pero
+ primer login SIGUIÓ mostrando accesoActualizado. No confundir detección de caducidad
+ confirmada con inicio de sesión aceptado. Chrome mostró ERR_INVALID_RESPONSE al abrir
+ /sesion/estado; HTTP sin sesión devuelve401 vacío y appUP, no demuestra caída del servicio.
+- NUEVA reproducción exacta con datos ficticios: obtener token y sesión nuevos,
+ GET/login?sesionExpirada con cookie antigua genera OTRA sesión por th:action/CSRF
+ de la plantilla; su cookie pisa la nueva y POST/login falla accesoActualizado. La
+ corrección de GET/POST privados no cubría estas cargas de accesos públicos.
+- EXCEPCIÓN deliberada SOLO en login, login-familias y login-maestros: acción se resuelve
+ con th:attr (action=@{/login}), no th:action, para no materializar CSRF/sesión al render.
+ Campo _csrf vacío explícito y botón inicialmente disabled; login-session.js registra
+ controlador y habilita botón. Al Entrar obtiene token actual con GET/acceso/csrf y
+ envía una vez por POST nativo. Servidor conserva CSRF normal; token vacío se rechaza.
+ JavaScript requerido, noscript lo explica; no enviar credenciales si falla obtención
+ del token. No extrapolar excepción a formularios de negocio: éstos usan th:action.
+- LoginRenderSinSesionTest ahora usa plantillas/controlador REALES con cadena de
+ seguridad: cinco rutas de acceso antiguo no crean sesión, y token permite un solo
+ login correcto en cada portal con usuarios sólo en memoria. Mantiene origen y rutas.
+ Actualizado contrato estático docente por excepción justificada, no relajación de CSRF.
+- Verificado768Java/28Node completos sin fallos. HTTP real confirma cinco accesos200
+ sin Set-Cookie tras obtener token; primerPOST con usuario ficticio llega a error de
+ credenciales esperado, no accesoActualizado. Navegador real de prueba desde
+ login?sesionExpirada verificó habilitación JS y un envío con el mismo resultado.
+ No se usaron contraseñas/usuarios reales ni .env. No atribuir aceptación humana todavía.
+- Sólo app reconstruida/recreada, saludUP; sin migración/operaciones financieras,V100
+ libre. Preservar cambio de fechas del estado de alumno aún sin commit del propietario.
+- Próximo: usuario RECARGA login con Cmd+Shift+R e intenta entrar una vez; informar
+ si realmente llega a admin. No seguir marcando acceso resuelto sólo por contador o
+ redirección. Después volver a fechas/reporte del alumno; no repetir pago500.
+
+## Estado del alumno: fechas dd/MM/yyyy — 2026-10-16
+
+- Usuario confirmó Estado de cuenta de Martha Martinez Rodriguez:3cargos, total2100,
+ aplicado500 y pendiente1600. Material500 pagado; noviembre/diciembre800 cada uno,
+ sin abonos después de cancelar PAG-20261009-000002. PDF/Excel coinciden numéricamente.
+ Solicitó uniformar fechas: Excel mostraba ISO y pantalla mezclaba ISO/año corto.
+- Pantalla ahora formatea fecha de corte/emisión/vencimiento explícitamente dd/MM/yyyy.
+ Mantiene ISO para input type=date y parámetros HTTP, sin cambiar interpretación de fechas.
+- ExcelReporteFinancieroService.estadoCuenta exporta emisión/vencimiento como fechas
+ reales de Excel con estilo dd/mm/yyyy (año4dígitos), no cadenas ISO. Reutiliza estilo
+ y mantiene streaming/bloques100/importes/filtros/permisos. Otros reportes no modificados.
+- PDF ya usaba dd/MM/yyyy; no se cambió Jasper. Regresión comprueba corte/vencimientos,
+ totales y PNG del PDF generado con datos ficticios revisado sin recortes.
+- Verificado767Java completos sin fallos: fechas XLSX reabiertas/valores y visualización
+ en dos bloques, render de pantalla e ISO de transporte, PDF real. No operaciones
+ financieras ni consultas de credenciales/.env. Sin migración; V100 sigue libre.
+- App reconstruida/recreada/salud UP; temporales Docker QA retirados. Próximo usuario:
+ recargar Estado de cuenta del alumno y descargar Excel nuevo; ver16/10/2026,
+ 20/10/2026,20/11/2026,20/12/2026. Confirmación visual del cambio pendiente. No repetir
+ cobro500 ni cancelar de nuevo; luego acordar siguiente ensayo/actualización de guía.
+
 ## Reinicio: redirección automática y carrera de cookies reproducida/corregida — 2026-10-16
 
 - Usuario reportó que la vista privada seguía abierta tras reiniciar y que el primer

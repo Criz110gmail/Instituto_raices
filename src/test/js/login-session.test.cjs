@@ -4,7 +4,7 @@ const fresh={ok:true,redirected:false,json:async()=>({parametro:'_csrf',token:'a
 const expired={ok:true,redirected:true,url:'http://localhost:18080/login?sesionExpirada'};
 async function run(responses,expectedPosts,expectedRequests,message){
  let handler,posts=0,requests=0,prevented=0,token={value:'anterior'},notice;
- const button={disabled:false};
+ const button={disabled:true};
  const form={dataset:{csrfUrl:'/acceso/csrf',loginRefresh:'familias'},addEventListener(k,f){handler=f;},
   querySelector(s){return s==='button[type=submit]'?button:s==='input[name="_csrf"]'?token:null;},
   prepend(n){notice=n;},requestSubmit(){handler({preventDefault(){prevented++;}});posts++;}};
@@ -13,6 +13,7 @@ async function run(responses,expectedPosts,expectedRequests,message){
   assert.equal(u,'/acceso/csrf');assert.equal(o.cache,'no-store');assert.equal(o.credentials,'same-origin');assert.equal(o.body,undefined);
   const response=responses[requests++];if(response instanceof Error)throw response;return response;
  }});
+ assert.equal(button.disabled,false);assert.equal(requests,0);assert.equal(posts,0);
  await handler({preventDefault(){prevented++;}});
  assert.equal(prevented,1);assert.equal(button.disabled,false);assert.equal(requests,expectedRequests);assert.equal(posts,expectedPosts);
  if(expectedPosts){assert.equal(token.value,'actual');assert.equal(notice,undefined);}

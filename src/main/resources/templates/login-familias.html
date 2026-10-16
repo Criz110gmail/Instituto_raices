@@ -21,11 +21,14 @@
         <div class="family-alert error" role="alert" th:if="${param.sesionExpirada}"><strong>Tu sesión caducó</strong><span>Por seguridad, inicia sesión nuevamente para continuar.</span></div>
         <div class="family-alert success" role="status" th:if="${param.logout}"><strong>Sesión cerrada</strong><span>Tu información quedó protegida. Vuelve cuando quieras.</span></div>
         <div class="family-alert success" role="status" th:if="${param.accesoActualizado}"><strong>Acceso actualizado</strong><span>La sesión cambió en otra pestaña. Inicia sesión nuevamente desde esta pantalla.</span></div>
-        <form data-login-refresh="familias" th:attr="data-csrf-url=@{/acceso/csrf}" method="post" th:action="@{/login}">
+        <!-- Sólo el acceso obtiene CSRF al enviar: cargar otra pestaña no crea una cookie de sesión. -->
+        <form data-login-refresh="familias" th:attr="data-csrf-url=@{/acceso/csrf},action=@{/login}" method="post">
+            <input type="hidden" name="_csrf" value="">
+            <noscript><p role="alert">Activa JavaScript para iniciar sesión de forma segura.</p></noscript>
             <input type="hidden" name="origen" value="familias">
             <label><span>Tu usuario</span><input name="username" autocomplete="username" required autofocus placeholder="Escribe tu usuario"></label>
             <label><span>Tu contraseña</span><input type="password" name="password" autocomplete="current-password" required placeholder="••••••••••••"></label>
-            <button type="submit">Entrar a mi familia <span>→</span></button>
+            <button type="submit" disabled>Entrar a mi familia <span>→</span></button>
         </form>
         <p class="family-help">¿No puedes entrar? Comunícate con la administración de tu escuela.</p>
     </section>

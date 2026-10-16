@@ -22,11 +22,14 @@
         <div class="alert error" th:if="${param.error}">El usuario o la contraseña no son correctos.</div>
         <div class="alert success" th:if="${param.logout}">Tu sesión se cerró correctamente.</div>
         <div class="alert warning" role="status" th:if="${param.accesoActualizado}"><strong>Acceso actualizado</strong><span>La sesión cambió en otra pestaña. Inicia sesión nuevamente desde esta pantalla.</span></div>
-        <form data-login-refresh="admin" th:attr="data-csrf-url=@{/acceso/csrf}" method="post" th:action="@{/login}">
+        <!-- Sólo el acceso obtiene CSRF al enviar: cargar otra pestaña no crea una cookie de sesión. -->
+        <form data-login-refresh="admin" th:attr="data-csrf-url=@{/acceso/csrf},action=@{/login}" method="post">
+            <input type="hidden" name="_csrf" value="">
+            <noscript><p role="alert">Activa JavaScript para iniciar sesión de forma segura.</p></noscript>
             <label><span>Usuario</span><input name="username" autocomplete="username" required autofocus placeholder="tu.usuario"></label>
             <label><span>Contraseña</span><input type="password" name="password" autocomplete="current-password" required placeholder="••••••••••••"></label>
             <div class="form-meta"><span>Si el usuario se repite, usa CÓDIGO_INSTITUCIÓN\usuario</span></div>
-            <button type="submit">Entrar al sistema <span>→</span></button>
+            <button type="submit" disabled>Entrar al sistema <span>→</span></button>
         </form>
         <p class="support">¿Problemas para ingresar? Contacta al administrador de tu institución.</p>
     </section>

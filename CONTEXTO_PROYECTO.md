@@ -1,5 +1,33 @@
 # Contexto del proyecto
 
+## Acceso actualizado persistía: login público emitía otra sesión — 2026-10-16
+
+Propietario confirmó redirección al volver a pestaña, NO login exitoso: primer intento
+mostró otra vez accesoActualizado. Reproducción HTTP identificó GET del propio login
+con cookie vieja generando sesión por CSRF/th:action y pisando token recién obtenido.
+Ahora tres logins cargan sin crear sesión: action vía th:attr, _csrf explícito vacío,
+botón disabled hasta registrar login-session.js, noscript explicativo. Sólo al Entrar
+GET de token y un POST nativo. CSRF servidor no se omite; demás formularios mantienen
+th:action. Es excepción deliberada para evitar carreras de carga de pantallas públicas.
+768Java/28Node aprobados; regresión con plantillas/controlador reales, cinco rutas
+atrasadas sin sesión y login correcto en tres portales con usuarios en memoria.
+HTTP real y navegador de prueba confirmaron que un primer envío ficticio llega a
+validación de credenciales, no accesoActualizado. Sin cuentas reales/.env/finanzas.
+App actualizada/saludUP, sin migración,V100 libre. Pendiente prueba humana con recarga
+del login y un intento; después retomar reporte de alumno/fechas, no duplicar pago500.
+
+## Estado del alumno: fechas unificadas — 2026-10-16
+
+Propietario confirmó pantalla/PDF/Excel de Martha:3cargos/2100, aplicado500/saldo1600;
+material pagado y noviembre/diciembre800 cada uno sin abonos. No repetir pagos/cancelación.
+Pidió fechas dd/mm/yyyy: pantalla tenía ISO/año corto y Excel ISO. Ahora corte/emisión/
+vencimiento visibles se formatean con año4; XLSX emisión/vencimiento son fechas reales
+con estilo dd/mm/yyyy, manteniendo importes y exportación por bloques. Input date/URLs
+conservan ISO para transporte. PDF ya era correcto; se verificó sin cambiar Jasper.
+767Java aprobados, XLSX real reabierto/dos bloques, render completo y PDF/PNG ficticio
+revisado sin recortes. App actualizada/saludUP, temporales Docker retirados. Sin migración
+ni operaciones financieras;V100 libre. Pendiente usuario recargar y descargar Excel nuevo.
+
 ## Reinicio y solicitudes atrasadas: causa reproducida — 2026-10-16
 
 Usuario seguía viendo vista privada hasta pulsar botón y recibía accesoActualizado al

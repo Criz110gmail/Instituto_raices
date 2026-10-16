@@ -17,6 +17,8 @@ public class ExcelReporteFinancieroService {
     public void estadoCuenta(FiltroEstadoCuentaAlumno filtro, OutputStream salida) throws IOException {
         try (SXSSFWorkbook libro = libro()) {
             Sheet hoja = libro.createSheet("Estado de cuenta");
+            CellStyle fecha = libro.createCellStyle();
+            fecha.setDataFormat(libro.createDataFormat().getFormat("dd/mm/yyyy"));
             encabezado(hoja, libro, "Cargo", "Plantel", "Ciclo", "Concepto", "Descripción",
                     "Emisión", "Vencimiento", "Original", "Ajustes", "Total", "Aplicado",
                     "Saldo", "Situación", "Moneda");
@@ -28,8 +30,9 @@ public class ExcelReporteFinancieroService {
                     Row r = hoja.createRow(fila++);
                     r.createCell(0).setCellValue(dato.cargoId()); r.createCell(1).setCellValue(dato.plantel());
                     r.createCell(2).setCellValue(dato.ciclo()); r.createCell(3).setCellValue(dato.concepto());
-                    r.createCell(4).setCellValue(dato.descripcion()); r.createCell(5).setCellValue(dato.fechaEmision().toString());
-                    r.createCell(6).setCellValue(dato.fechaVencimiento().toString()); numero(r, 7, dato.importeOriginal());
+                    r.createCell(4).setCellValue(dato.descripcion());
+                    fecha(r, 5, dato.fechaEmision(), fecha);
+                    fecha(r, 6, dato.fechaVencimiento(), fecha); numero(r, 7, dato.importeOriginal());
                     numero(r, 8, dato.ajustes()); numero(r, 9, dato.importeTotal()); numero(r, 10, dato.aplicado());
                     numero(r, 11, dato.saldo()); r.createCell(12).setCellValue(dato.situacion());
                     r.createCell(13).setCellValue(dato.moneda());
@@ -71,5 +74,10 @@ public class ExcelReporteFinancieroService {
         Row r = hoja.createRow(0); for (int i=0;i<columnas.length;i++) { Cell c=r.createCell(i);c.setCellValue(columnas[i]);c.setCellStyle(estilo); }
     }
     private void numero(Row fila, int indice, BigDecimal valor) { fila.createCell(indice).setCellValue(valor.doubleValue()); }
+    private void fecha(Row fila, int indice, java.time.LocalDate valor, CellStyle estilo) {
+        Cell celda = fila.createCell(indice);
+        celda.setCellValue(valor);
+        celda.setCellStyle(estilo);
+    }
     private void terminar(Sheet hoja, int columnas) { hoja.createFreezePane(0,1); for(int i=0;i<columnas;i++) hoja.setColumnWidth(i,(i==4?32:20)*256); }
 }

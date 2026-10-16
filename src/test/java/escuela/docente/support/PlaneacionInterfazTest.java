@@ -8,7 +8,7 @@ class PlaneacionInterfazTest {
     @Test void conservaCsrfFiltrosExcelPdfYAccesoResponsivo() throws Exception {
         assertThat(recurso("templates/login-maestros.html"))
                 .contains("/css/login.css", "/css/login-portals.css", "/css/maestros-login.css",
-                        "teacher-login-page", "Nexo Docente", "th:action=\"@{/login}\"",
+                        "teacher-login-page", "Nexo Docente", "action=@{/login}", "name=\"_csrf\" value=\"\"", "data-login-refresh=\"maestros\"", "/js/login-session.js",
                         "name=\"origen\" value=\"maestros\"");
         assertThat(recurso("templates/admin/maestro-form.html"))
                 .contains("class=\"entity-form\"", "<fieldset class=\"form-section\"><legend>Identidad institucional</legend>",
