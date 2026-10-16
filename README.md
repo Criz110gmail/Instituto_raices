@@ -1,5 +1,30 @@
 # Sistema administrativo escolar
 
+## Acceso tras reiniciar — 16/10/2026
+
+Corregido el tratamiento de cookies caducadas para que no bloquee el login, sus recursos
+ni la actualización del token de seguridad. Los tres portales conservan CSRF, autorización
+y cierre de sesión.756 pruebas Java y28Node aprobadas; app actualizada y salud UP.
+Pendiente prueba del propietario: dejar login abierto, reiniciar app e iniciar sesión
+con un solo clic. Sin migración ni cambios financieros; V100 libre.
+
+## Reportes financieros: navegación renovada — 16/10/2026
+
+Las cuatro opciones están agrupadas bajo **Selecciona un reporte**, con descripción,
+bordes y reporte activo destacado; se adaptan a móvil y tema oscuro. El aviso del saldo
+inicial queda alineado, con título y explicación separados. Sin cambios financieros.
+Propietario confirmó Excel/PDF del caso sin movimientos.755 pruebas Java aprobadas;
+revisión visual de muestras, app actualizada y salud UP. Próximo: confirmar diseño y
+acordar una prueba con movimientos existentes. Sin migración nueva (V100 libre).
+
+## Estado por cuenta sin movimientos — corrección del 16/10/2026
+
+Excel abre la hoja Resumen y explica el detalle vacío; PDF conserva cuenta, periodo,
+saldos y mensaje Sin movimientos. El saldo inicial de una cuenta abierta en el periodo
+se explica por separado, sin tratarlo como ingreso. Verificación754Java y revisión visual
+del PDF correctas; no requiere migración (V100 libre). Falta confirmación del propietario
+al descargar nuevamente Excel y PDF de CAJA-SOBRANTE-TEST para octubre2026.
+
 ## Sobrante de caja confirmado (V99)
 
 En **Administración → Seguridad y soporte → Guía de procesos**, busca

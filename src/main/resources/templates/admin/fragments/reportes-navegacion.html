@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<section class="report-navigation" th:fragment="navigation(active)">
+    <div class="report-navigation-heading"><h2>Selecciona un reporte</h2><p>Cambia de reporte con las opciones de abajo.</p></div>
+    <nav class="report-tabs" aria-label="Tipos de reporte">
+        <a href="/admin/reportes-financieros/tesoreria" th:classappend="${active == 'tesoreria'} ? 'active'" th:attr="aria-current=${active == 'tesoreria' ? 'page' : null}"><span class="report-tab-number" aria-hidden="true">01</span><span><strong>Tesorería</strong><small>Ingresos, egresos y saldos</small></span></a>
+        <a href="/admin/reportes-financieros/estado-cuenta-cuenta" th:classappend="${active == 'cuenta'} ? 'active'" th:attr="aria-current=${active == 'cuenta' ? 'page' : null}"><span class="report-tab-number" aria-hidden="true">02</span><span><strong>Estado de cuenta por cuenta</strong><small>Historial de una cuenta financiera</small></span></a>
+        <a href="/admin/reportes-financieros/estado-cuenta" th:classappend="${active == 'alumno'} ? 'active'" th:attr="aria-current=${active == 'alumno' ? 'page' : null}"><span class="report-tab-number" aria-hidden="true">03</span><span><strong>Estado de cuenta del alumno</strong><small>Adeudos y pagos del alumno</small></span></a>
+        <a href="/admin/reportes-financieros/concentrado-cobranza" th:classappend="${active == 'cobranza'} ? 'active'" th:attr="aria-current=${active == 'cobranza' ? 'page' : null}"><span class="report-tab-number" aria-hidden="true">04</span><span><strong>Concentrado de cobranza</strong><small>Resumen de adeudos y recuperación</small></span></a>
+    </nav>
+</section>
+</body>
+</html>

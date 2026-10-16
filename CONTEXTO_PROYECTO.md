@@ -1,5 +1,47 @@
 # Contexto del proyecto
 
+## Login después de reiniciar corregido — 2026-10-16
+
+Avisos reportados: primero Acceso actualizado y luego La sesión volvió a cambiar durante
+el acceso. La estrategia global de sesión inválida también redirigía login/JS/CSS/token
+con cookie antigua, y el handler podía borrar una cookie nueva emitida por CSRF.
+Ahora SesionInvalidaFilter permite renderizar recursos/accesos públicos sin interceptarlos,
+mantiene redirecciones para páginas privadas y401 para reloj caducado. Autorización y
+CSRF intactos; redirección conserva/crea sesión anónima, nunca recupera autenticación.
+Logout sigue invalidando y borrando cookies. No se reenvían automáticamente credenciales.
+756Java/28Node aprobados; prueba cadena completa con usuarios en memoria verifica tres
+portales, un envío, rotación de sesión, rechazo sin CSRF y logout. App actualizada, salud
+UP; HTTP con cookie ficticia confirma login/recursos/token200, privados302 y reloj401.
+Sin .env/credenciales reales, migración ni operaciones financieras. Pendiente confirmación
+humana de un solo intento tras reiniciar; después seguir revisión de reportes. V100 libre.
+
+## Reportes: exportaciones aceptadas y navegación visible — 2026-10-16
+
+Propietario confirmó que Excel y PDF ya muestran los datos del estado por cuenta sin
+movimientos. Se sustituye la aceptación pendiente anterior, limitada a ese caso.
+Los cuatro reportes usan navegación compartida con título Selecciona un reporte,
+descripciones y opción actual destacada. El aviso de inicial1150 tiene título/texto
+separados, icono informativo y alineación con el contenido. Rutas, permisos y cálculos
+sin cambios. Claro/oscuro y dos columnas en móvil;755Java sin fallos y revisión visual
+de muestras con CSS real (no sesión autenticada). App actualizada, salud UP; sin migración,
+V100 libre. Pendiente aceptación visual del propietario y luego acordar reporte de una
+cuenta con movimientos existentes; no repetir cierre de caja ni operar finanzas por herramientas.
+
+## Exportaciones sin movimientos corregidas, aceptación pendiente — 2026-10-16
+
+Propietario localizó Estado de cuenta por cuenta y confirmó pantalla cierre1150,
+ingresos0/egresos0; reportó Excel/PDF vacíos. Regresión probó Excel activo en detalle vacío
+aunque Resumen fuera primera hoja. Ahora abre Resumen y detalle explica ausencia de
+movimientos; fechas dd/MM/yyyy y formato monetario manteniendo valores numéricos/streaming.
+Jasper no tenía configurado el caso sin filas: ahora conserva cabecera/resumen/pie y
+mensaje vacío. Estado por cuenta explica1150 de saldo inicial registrado dentro del
+periodo, separado de ingresos; no presentar apertura0/cierre1150 como falta de conciliación.
+754Java completos aprobados, XLSX reabierto y PDF real una página con texto/cifras/periodo;
+PNG revisado sin recortes. Contenedor/etiqueta temporal QA retirados; sin QA autenticada.
+Sólo app reconstruida/recreada; salud UP, sin cambios de PostgreSQL ni volúmenes.
+Sin migración ni operaciones financieras, V100 libre. Retomar mismo reporte/caja/octubre,
+descargar archivos nuevos y pedir confirmación humana antes de publicar guía de reportes.
+
 ## V99 — sobrante de caja confirmado y reportes como siguiente prueba — 2026-10-16
 
 Usuario confirmó bloqueo al omitir justificación y cierre al agregarla, con cuenta1150.

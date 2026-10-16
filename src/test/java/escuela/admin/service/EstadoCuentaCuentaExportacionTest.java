@@ -31,6 +31,45 @@ class EstadoCuentaCuentaExportacionTest {
             "CTA · Caja", "MENSUAL", 2026, 9, 0, 100);
 
     @Test
+    void cuentaSinMovimientosConservaResumenVisibleEnExcelYPdf() throws Exception {
+        var filtroVacio=new FiltroEstadoCuentaCuenta(1L,3L,"CAJA-SOBRANTE-TEST","MENSUAL",2026,10,0,100);
+        var cuenta=new ResumenCuentaFinanciera(3L,"CAJA-SOBRANTE-TEST","CAJA","Centro","MXN",new BigDecimal("1150.00"),0);
+        var resumen=new ResumenTesoreria(0,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,
+            BigDecimal.ZERO,BigDecimal.ZERO,new BigDecimal("1150.00"),true,"MXN");
+        var resultado=new ResultadoEstadoCuentaCuenta(cuenta,resumen,org.springframework.data.domain.Page.empty());
+        when(consulta.normalizar(any())).thenReturn(filtroVacio);
+        when(consulta.consultar(any())).thenReturn(resultado);
+        when(instituciones.obtener(1L)).thenReturn(new InstitucionResponse(1L,"RAICES","Instituto Raíces",
+            "Instituto Raíces","Instituto Raíces",null,null,null,null,null,null,null,null,"México",
+            null,"America/Mexico_City","MXN",true,null));
+
+        var xlsx=new ByteArrayOutputStream();
+        new ExcelEstadoCuentaCuentaService(consulta).exportar(filtroVacio,xlsx);
+        try(var libro=WorkbookFactory.create(new ByteArrayInputStream(xlsx.toByteArray()))) {
+            assertThat(libro.getSheetAt(libro.getActiveSheetIndex()).getSheetName()).isEqualTo("Resumen");
+            assertThat(libro.getSheet("Resumen").getRow(7).getCell(1).getNumericCellValue()).isEqualTo(1150.0);
+            assertThat(libro.getSheet("Resumen").getRow(5).getCell(1).getNumericCellValue()).isZero();
+            assertThat(libro.getSheet("Resumen").getRow(6).getCell(1).getNumericCellValue()).isZero();
+            assertThat(libro.getSheet("Resumen").getRow(8).getCell(1).getNumericCellValue()).isEqualTo(1150.0);
+            assertThat(libro.getSheet("Estado de cuenta").getRow(1).getCell(0).getStringCellValue()).contains("Sin movimientos");
+            assertThat(libro.getSheet("Resumen").getRow(1).getCell(1).getStringCellValue()).isEqualTo("01/10/2026 al 31/10/2026");
+        }
+        var pdf=new ByteArrayOutputStream();
+        new JasperReporteFinancieroService(reportes,consulta,instituciones).estadoCuenta(filtroVacio,pdf);
+        try(var documento=Loader.loadPDF(pdf.toByteArray())) {
+            assertThat(documento.getNumberOfPages()).isEqualTo(1);
+            assertThat(new PDFTextStripper().getText(documento)).contains("Estado de cuenta financiera",
+                "CAJA-SOBRANTE-TEST","01/10/2026","31/10/2026","$1,150.00","$0.00",
+                "Sin movimientos","Saldo inicial registrado en el periodo","No es un ingreso por movimiento");
+            Path carpeta=Path.of("target","jasper-qa");Files.createDirectories(carpeta);
+            Files.write(carpeta.resolve("estado-cuenta-sin-movimientos.pdf"),pdf.toByteArray());
+            Files.write(carpeta.resolve("estado-cuenta-sin-movimientos.xlsx"),xlsx.toByteArray());
+            ImageIO.write(new PDFRenderer(documento).renderImageWithDPI(0,120),"png",
+                carpeta.resolve("estado-cuenta-sin-movimientos.png").toFile());
+        }
+    }
+
+    @Test
     void excelYpdfUsanMismoPeriodoYDetalle() throws Exception {
         var cuenta = new ResumenCuentaFinanciera(2L, "CTA · Caja", "CAJA", "Centro", "MXN",
                 new BigDecimal("1250.00"), 1);

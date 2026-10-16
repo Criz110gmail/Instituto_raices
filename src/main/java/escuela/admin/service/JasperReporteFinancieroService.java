@@ -87,11 +87,15 @@ public class JasperReporteFinancieroService {
                 "ingreso", "INGRESO".equals(fila.direccion()) ? moneda(fila.monto()) : "-",
                 "egreso", "EGRESO".equals(fila.direccion()) ? moneda(fila.monto()) : "-",
                 "saldo", moneda(fila.saldoPosterior())));
-        exportar("Estado de cuenta financiera", parametros(filtro.institucionId(),
+        Map<String, Object> parametros = parametros(filtro.institucionId(),
                 primero.cuenta().etiqueta() + " | " + filtro.desde().format(FECHA) + " al " + filtro.hasta().format(FECHA),
-                "Saldo inicial", moneda(r.saldoApertura()), "Ingresos", moneda(r.ingresosOperativos().add(r.traspasosEntrada())),
-                "Egresos", moneda(r.egresosOperativos().add(r.traspasosSalida())), "Saldo final", moneda(r.saldoCierre())),
-                columnas, datos, salida);
+                "Saldo de apertura", moneda(r.saldoApertura()), "Ingresos", moneda(r.ingresosOperativos().add(r.traspasosEntrada())),
+                "Egresos", moneda(r.egresosOperativos().add(r.traspasosSalida())), "Saldo al cierre", moneda(r.saldoCierre()));
+        parametros.put("sinDatos", "Sin movimientos registrados en este periodo.");
+        if (primero.aperturaRegistradaEnPeriodo().signum() != 0) parametros.put("notaApertura",
+                "Saldo inicial registrado en el periodo: " + moneda(primero.aperturaRegistradaEnPeriodo())
+                        + ". No es un ingreso por movimiento.");
+        exportar("Estado de cuenta financiera", parametros, columnas, datos, salida);
     }
 
     public void estadoAlumno(FiltroEstadoCuentaAlumno original, OutputStream salida) {
@@ -157,6 +161,8 @@ public class JasperReporteFinancieroService {
                           JRDataSource datos, OutputStream salida) {
         try {
             parametros.put("titulo", titulo);
+            parametros.putIfAbsent("sinDatos", "Sin registros para los filtros seleccionados.");
+            parametros.putIfAbsent("notaApertura", "");
             JasperReport reporte = JasperCompileManager.compileReport(diseno(columnas));
             JasperPrint impresion = JasperFillManager.fillReport(reporte, parametros, datos);
             JasperExportManager.exportReportToPdfStream(impresion, salida);
@@ -170,11 +176,12 @@ public class JasperReporteFinancieroService {
         d.setName("reporte_financiero_" + UUID.randomUUID()); d.setPageWidth(842); d.setPageHeight(595);
         d.setOrientation(OrientationEnum.LANDSCAPE); d.setLeftMargin(28); d.setRightMargin(28);
         d.setTopMargin(24); d.setBottomMargin(24); d.setColumnWidth(786);
+        d.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
         for (String p : List.of("titulo", "institucion", "subtitulo", "generado",
-                "r1t", "r1v", "r2t", "r2v", "r3t", "r3v", "r4t", "r4v")) parametro(d, p);
+                "r1t", "r1v", "r2t", "r2v", "r3t", "r3v", "r4t", "r4v", "sinDatos", "notaApertura")) parametro(d, p);
         for (Columna c : columnas) { JRDesignField f = new JRDesignField(); f.setName(c.campo()); f.setValueClass(String.class); d.addField(f); }
 
-        JRDesignBand title = new JRDesignBand(); title.setHeight(112);
+        JRDesignBand title = new JRDesignBand(); title.setHeight(136);
         title.addElement(textoExpresion("$P{institucion}", 0, 0, 786, 20, 15, true, Color.WHITE, AZUL, HorizontalTextAlignEnum.LEFT));
         title.addElement(textoExpresion("$P{titulo}", 0, 20, 786, 30, 21, true, Color.WHITE, AZUL, HorizontalTextAlignEnum.LEFT));
         title.addElement(textoExpresion("$P{subtitulo}", 0, 50, 786, 18, 10, false, Color.WHITE, AZUL, HorizontalTextAlignEnum.LEFT));
@@ -183,6 +190,7 @@ public class JasperReporteFinancieroService {
             title.addElement(textoExpresion("$P{r"+(i+1)+"t}", x, 76, 190, 13, 8, false, GRIS, AZUL_CLARO, HorizontalTextAlignEnum.LEFT));
             title.addElement(textoExpresion("$P{r"+(i+1)+"v}", x, 89, 190, 19, 12, true, AZUL, AZUL_CLARO, HorizontalTextAlignEnum.LEFT));
         }
+        title.addElement(textoExpresion("$P{notaApertura}",0,112,786,20,9,false,GRIS,Color.WHITE,HorizontalTextAlignEnum.LEFT));
         d.setTitle(title);
 
         JRDesignBand cabecera = new JRDesignBand(); cabecera.setHeight(23); int x=0;
@@ -191,6 +199,10 @@ public class JasperReporteFinancieroService {
         JRDesignBand detail = new JRDesignBand(); detail.setHeight(22); x=0;
         for (Columna c:columnas) { detail.addElement(textoExpresion("$F{"+c.campo()+"}",x,0,c.ancho(),22,8,false,new Color(35,48,58),Color.WHITE,c.alineacion())); x+=c.ancho(); }
         ((JRDesignSection)d.getDetailSection()).addBand(detail);
+        JRDesignBand vacio = new JRDesignBand(); vacio.setHeight(30);
+        vacio.setPrintWhenExpression(new JRDesignExpression("$V{REPORT_COUNT}.intValue() == 0"));
+        vacio.addElement(textoExpresion("$P{sinDatos}",0,0,786,26,10,false,GRIS,AZUL_CLARO,HorizontalTextAlignEnum.LEFT));
+        d.setSummary(vacio);
         JRDesignBand footer = new JRDesignBand(); footer.setHeight(22);
         footer.addElement(textoExpresion("$P{generado}",0,5,620,15,8,false,GRIS,Color.WHITE,HorizontalTextAlignEnum.LEFT));
         footer.addElement(textoExpresion("\"Página \" + $V{PAGE_NUMBER}",650,5,136,15,8,false,GRIS,Color.WHITE,HorizontalTextAlignEnum.RIGHT));

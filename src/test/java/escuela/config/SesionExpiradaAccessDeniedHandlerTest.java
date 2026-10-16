@@ -59,8 +59,8 @@ class SesionExpiradaAccessDeniedHandlerTest {
                 new InvalidCsrfTokenException(tokenEsperado, "token-anterior"));
 
         assertThat(response.getRedirectedUrl()).isEqualTo("/maestros/acceso?sesionExpirada");
-        assertThat(response.getCookie("JSESSIONID")).isNotNull();
-        assertThat(response.getCookie("JSESSIONID").getMaxAge()).isZero();
+        assertThat(response.getCookie("JSESSIONID")).isNull();
+        assertThat(request.getSession(false)).isNotNull();
     }
 
     @Test
@@ -78,16 +78,16 @@ class SesionExpiradaAccessDeniedHandlerTest {
     }
 
     @Test
-    void conservaContextoYBorraCookieSeguraEnConsultaFamiliarCaducada() throws Exception {
+    void conservaContextoYLaSesionAnonimaNuevaEnConsultaFamiliarCaducada() throws Exception {
         var request = new MockHttpServletRequest("GET", "/nexo/portal/pagos");
         request.setContextPath("/nexo");
         request.setSecure(true);
+        var nueva = request.getSession();
         var response = new MockHttpServletResponse();
         handler.redirigir(request, response);
         assertThat(response.getRedirectedUrl()).isEqualTo("/nexo/familias?sesionExpirada");
-        assertThat(response.getCookie("JSESSIONID").getPath()).isEqualTo("/nexo");
-        assertThat(response.getCookie("JSESSIONID").getSecure()).isTrue();
-        assertThat(response.getCookie("JSESSIONID").isHttpOnly()).isTrue();
+        assertThat(response.getCookie("JSESSIONID")).isNull();
+        assertThat(request.getSession(false)).isSameAs(nueva);
     }
 
     @Test

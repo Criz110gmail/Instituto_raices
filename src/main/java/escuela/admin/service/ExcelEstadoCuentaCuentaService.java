@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,8 @@ public class ExcelEstadoCuentaCuentaService {
             libro.setCompressTempFiles(true);
             Sheet hoja = libro.createSheet("Estado de cuenta");
             CellStyle titulo = libro.createCellStyle();
+            CellStyle dinero = libro.createCellStyle();
+            dinero.setDataFormat(libro.createDataFormat().getFormat("\"$\"#,##0.00"));
             titulo.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
             titulo.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             Font fuente = libro.createFont(); fuente.setBold(true); fuente.setColor(IndexedColors.WHITE.getIndex());
@@ -49,16 +52,20 @@ public class ExcelEstadoCuentaCuentaService {
                     r.createCell(6).setCellValue(m.folioPago());
                     numero(r, 7, m.direccion().equals("INGRESO") ? m.monto() : BigDecimal.ZERO);
                     numero(r, 8, m.direccion().equals("EGRESO") ? m.monto() : BigDecimal.ZERO);
+                    r.getCell(7).setCellStyle(dinero); r.getCell(8).setCellStyle(dinero);
                     r.createCell(9).setCellValue(m.moneda());
                 }
                 pagina++;
                 if (pagina < bloque.movimientos().getTotalPages())
                     bloque = consulta.consultar(filtro.conPagina(pagina, 100));
             } while (pagina < bloque.movimientos().getTotalPages());
+            if (fila == 1) hoja.createRow(1).createCell(0)
+                    .setCellValue("Sin movimientos registrados en este periodo.");
             hoja.createFreezePane(0, 1);
             Sheet resumen = libro.createSheet("Resumen");
             linea(resumen, 0, "Estado de cuenta interno", inicial.cuenta().etiqueta());
-            linea(resumen, 1, "Periodo", filtro.desde() + " al " + filtro.hasta());
+            DateTimeFormatter fecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            linea(resumen, 1, "Periodo", filtro.desde().format(fecha) + " al " + filtro.hasta().format(fecha));
             linea(resumen, 2, "Moneda", inicial.cuenta().moneda());
             linea(resumen, 3, "Movimientos", Long.toString(inicial.resumen().movimientos()));
             importe(resumen, 4, "Saldo de apertura", inicial.resumen().saldoApertura());
@@ -67,8 +74,13 @@ public class ExcelEstadoCuentaCuentaService {
             importe(resumen, 7, "Saldo de cierre", inicial.resumen().saldoCierre());
             importe(resumen, 8, "Saldo inicial de cuenta registrado en el periodo", inicial.aperturaRegistradaEnPeriodo());
             linea(resumen, 10, "Origen", "Movimientos registrados en Nexo Escolar; no es un estado bancario.");
-            resumen.setColumnWidth(0, 24 * 256); resumen.setColumnWidth(1, 72 * 256);
+            resumen.setColumnWidth(0, 48 * 256); resumen.setColumnWidth(1, 72 * 256);
+            for (int numero = 4; numero <= 8; numero++) resumen.getRow(numero).getCell(1).setCellStyle(dinero);
             libro.setSheetOrder("Resumen", 0);
+            hoja.setSelected(false);
+            resumen.setSelected(true);
+            libro.setActiveSheet(0);
+            libro.setSelectedTab(0);
             libro.write(salida); libro.dispose();
         }
     }

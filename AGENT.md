@@ -1,5 +1,75 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Acceso tras reiniciar: cookie antigua y token CSRF — 2026-10-16
+
+- Propietario reportó primer intento Acceso actualizado y después La sesión volvió a
+ cambiar durante el acceso. No asumir contraseña incorrecta ni usuario bloqueado.
+- El invalidSessionStrategy global interceptaba incluso GET públicos (login, JS/CSS,
+ /acceso/csrf). HTTP con cookie ficticia anterior reprodujo302 en /acceso/csrf; scripts
+ o token podían recibir HTML de login en lugar de su contenido. Además redirigir borraba
+ JSESSIONID aunque CSRF ya hubiera generado una sesión anónima nueva.
+- Sustituido por SesionInvalidaFilter después de AnonymousAuthenticationFilter: deja
+ continuar accesos públicos GET/HEAD y recursos; las páginas privadas con cookie inválida
+ siguen redirigiendo al acceso de su portal con sesionExpirada. Reloj caducado responde401
+ sin crear sesión. La autorización de Spring Security y CSRF siguen activos.
+- Redirigir establece/conserva sesión anónima nueva en vez de borrarle la cookie; no
+ recupera autenticación previa. Logout conserva POST/CSRF, invalidación y borrado de cookies.
+ Login JS conserva actualización previa de token y un solo envío de credenciales; no
+ hay reenvío automático de contraseñas ni relajación de permisos.
+- Regresión con cadena de seguridad completa y usuarios exclusivamente en memoria:
+ tres portales, cookie antigua, token200/no-store, un intento de autenticación, rotación
+ del identificador de sesión, rechazo sin CSRF y logout.756Java y28Node aprobados.
+- App reconstruida/recreada, salud UP. HTTP real con cookie FICTICIA: tres logins,
+ JS/CSS/token200; /admin, /portal y /maestros302; /sesion/estado401. No se usaron
+ credenciales reales ni se leyó .env; sin migración ni operaciones financieras.
+- Pendiente usuario: dejar acceso abierto, reiniciar la app, capturar credenciales y
+ pulsar Entrar una sola vez (repetir en portales que use). No atribuir aceptación humana
+ todavía. Después retomar revisión visual de reportes y pruebas financieras acordadas.
+ V100 libre; conservar cambios previos de reportes/exportaciones y documentación.
+
+## Navegación de reportes y aviso de apertura — 2026-10-16
+
+- Propietario confirmó que Excel y PDF de Estado de cuenta por cuenta ya muestran la
+ información del caso CAJA-SOBRANTE-TEST/octubre2026 sin movimientos. Esta aceptación
+ sustituye la pendiente de la entrada anterior; no implica validar reportes con movimientos.
+- Los cuatro reportes comparten ahora el fragmento reportes-navegacion: título visible
+ Selecciona un reporte, cuatro opciones con descripción, bordes y selección destacada,
+ aria-current de página y foco visible. Conserva rutas y permisos; no son paneles JS.
+ Dos columnas en pantallas estrechas, sin ocultar opciones por desplazamiento horizontal.
+- Aviso Cuenta iniciada en este periodo alineado con las métricas y el panel, icono
+ informativo no interactivo, título separado del texto e importe destacado. Claro/oscuro.
+ No altera cálculo ni trata inicial1150 como ingreso.
+- Verificado755 pruebas Java sin fallos, incluida renderización de los cuatro estados de
+ navegación; revisión visual de muestras estáticas con CSS real en escritorio, móvil390
+ y oscuro, no sesión autenticada. Sólo app reconstruida/recreada, salud UP.
+ Sin migración ni cambios financieros, V100 sigue libre. Preservar cambios previos de
+ exportaciones. Próximo: usuario recarga reportes y confirma navegación/aviso; después
+ acordar ensayo de reporte de una cuenta con movimientos existentes y comparar pantalla,
+ Excel/PDF. No crear movimientos, reabrir cortes ni publicar guía adicional automáticamente.
+
+## Estado de cuenta sin movimientos: Excel y PDF — 2026-10-16
+
+- Propietario encontró el reporte desde la pestaña superior de Reportes financieros;
+ la ruta directa /admin/reportes-financieros/estado-cuenta-cuenta también funciona.
+ Confirmó en pantalla cierre1150/ingresos0/egresos0 para CAJA-SOBRANTE-TEST, pero reportó
+ Excel/PDF vacíos. El ensayo de comparación de exportaciones sigue pendiente de aceptación.
+- Regresión reprodujo que Excel abría Estado de cuenta aunque Resumen estuviera primero:
+ setSheetOrder no cambia la hoja activa. Ahora activa/selecciona Resumen explícitamente,
+ detalle vacío explica Sin movimientos registrados en este periodo, fechas dd/MM/yyyy
+ e importes numéricos con formato de pesos. Conserva consulta/filtros y streaming por bloques.
+- Jasper compartido ahora imprime cabecera/resumen/pie sin filas (ALL_SECTIONS_NO_DETAIL)
+ y un estado vacío explícito. Estado por cuenta añade explicación del saldo inicial
+ registrado dentro del periodo:1150 no es ingreso por movimiento; apertura de octubre0
+ y cierre1150 son compatibles con una cuenta iniciada16/10/2026. No alterar saldos.
+- Verificado754Java completos sin fallos, incluido XLSX reabierto/hoja activa/cifras y
+ PDF real de una página con periodo/cuenta/importes/estado vacío. PNG revisado visualmente
+ sin recortes. Temporales Docker de revisión retirados; sin QA visual autenticada.
+- Sólo presentación/exportación, sin migración ni operaciones financieras. V100 libre,
+ app reconstruida/recreada y salud UP; no se modificaron PostgreSQL ni volúmenes.
+ preservar V1–V99. Próximo: recargar reporte y descargar NUEVOS Excel/PDF de octubre;
+ contrastar cierre1150/ingresos0/egresos0 y resumen de apertura, sin crear movimientos.
+ No publicar la prueba de reportes como CONFIRMADA hasta que el propietario compruebe ambos.
+
 ## ESTADO VIGENTE — sobrante justificado confirmado, guía V99 — 2026-10-16
 
 - Propietario confirmó rechazo sin justificación y cierre al capturarla; también confirmó

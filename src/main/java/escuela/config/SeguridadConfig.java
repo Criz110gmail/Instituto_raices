@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +26,7 @@ public class SeguridadConfig {
             throws Exception {
         return http
                 .addFilterAfter(new SesionActividadFilter(accesoDenegadoHandler), CsrfFilter.class)
+                .addFilterAfter(new SesionInvalidaFilter(accesoDenegadoHandler), AnonymousAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/sesion/estado", "/acceso/csrf").permitAll()
                         .requestMatchers(HttpMethod.POST, "/sesion/renovar").authenticated()
@@ -256,8 +258,6 @@ public class SeguridadConfig {
                                         ? "/maestros/acceso?error" : "/login?error")))
                         .permitAll())
                 .httpBasic(Customizer.withDefaults())
-                .sessionManagement(sesion -> sesion.invalidSessionStrategy(
-                        accesoDenegadoHandler::redirigir))
                 .exceptionHandling(excepciones -> excepciones
                         .defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint("/familias"),
                                 request -> request.getRequestURI().startsWith(

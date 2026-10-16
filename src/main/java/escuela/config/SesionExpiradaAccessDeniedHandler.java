@@ -1,7 +1,6 @@
 package escuela.config;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.AccessDeniedException;
@@ -53,12 +52,10 @@ public class SesionExpiradaAccessDeniedHandler implements AccessDeniedHandler {
                 ? "/maestros/acceso?sesionExpirada"
                 : ruta.equals("/portal") || ruta.startsWith("/portal/") || ruta.equals("/familias") || "familias".equals(origen)
                 ? "/familias?sesionExpirada" : "/login?sesionExpirada";
-        Cookie sesionCaducada = new Cookie("JSESSIONID", "");
-        sesionCaducada.setPath(request.getContextPath().isBlank() ? "/" : request.getContextPath());
-        sesionCaducada.setHttpOnly(true);
-        sesionCaducada.setSecure(request.isSecure());
-        sesionCaducada.setMaxAge(0);
-        response.addCookie(sesionCaducada);
+        // El filtro CSRF puede haber emitido ya una sesión anónima nueva. No borrar
+        // su cookie con una segunda cabecera Set-Cookie en esta misma respuesta.
+        // Nunca recupera la autenticación anterior; el logout sigue borrando cookies.
+        request.getSession(true);
         response.sendRedirect(request.getContextPath() + acceso);
     }
 
