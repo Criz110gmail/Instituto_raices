@@ -1,5 +1,168 @@
 # Contexto del proyecto
 
+## Guía de compra/reversa V105 y presentación del Excel — 2026-10-16
+
+Propietario aceptó filtros, diseño y contenido del Excel: COM-00000001 por406,
+Cancelada, Movimiento4, documento TICKET-PRUEBA-001, proveedor Papelería Prueba Raíces
+sin RFC, Plantel prueba de permisos y Cuenta de prueba de compras. Se supera el estado
+pendiente de esas pruebas que describen entradas anteriores. El formato nuevo todavía
+requiere su descarga/aceptación visual: fecha16/10/2026 17:58 e importe $406.00.
+
+Exportador conserva streaming/páginas100/filtros; fecha nativa numérica con formato
+dd/mm/yyyy hh:mm y zona institucional, total numérico con "$"#,##0.00. Estilos
+compartidos y anchos adecuados para fecha/importe; no cambia dinero ni fechas fuente.
+Tres pruebas nuevas cubren formato/tipos/contenido, millón con centavos, cambio de día,
+paginación y ausencia de resultados. Revisión visual de fixture ficticia mediante
+habilidad de hojas de cálculo: fecha e importe correctos, sin recorte.
+
+V105 editorial publica guía compras-confirmacion-reversa, CONFIRMADA, ocho etapas:
+preparación, cuenta institucional2000, borrador350+56=406, egreso original #4/saldo1594,
+cancelación por modal, reverso406/Compensa #4/saldo2000, filtros y Excel. No se conoce
+ID del reverso; #1/#2 de la tabla son secuencias. Plantel prueba de permisos ya tiene
+actividad de compra: la observación «vacío» en V104 es histórica. Sólo se documentan
+aceptaciones recibidas; formato nuevo sigue con verificación técnica, no humana.
+
+815 pruebas Java y41 Node sin fallos; git diff --check correcto. SQL validado mediante
+BEGIN/ROLLBACK antes del despliegue; Flyway V105 aplicada,35 guías/296 etapas. Sólo app
+reconstruida/recreada y salud UP en8080; no se reinició PostgreSQL ni tocaron volúmenes.
+Sin .env, datos operativos, roles ni commit. Contenedor/etiqueta QA retirados;
+fixture/renderizaciones ignoradas en target. Próxima migración V106.
+
+Siguiente humano: descargar Excel otra vez sin repetir compra/reversa para confirmar
+fecha/moneda. Después proponer un ensayo aislado de Movimientos financieros → Transferir
+entre cuentas (ejemplo300), con dos cuentas autorizadas, saldos previamente anotados,
+dos movimientos ligados y reportes que separen traspaso de ingreso/egreso operativo.
+No está ejecutado ni confirmado; acordar primero datos del ejemplo.
+
+## Ajuste reforzado de filtros y opciones legibles — 2026-10-16
+
+Propietario reportó desalineación y palabras encimadas después del ajuste previo; éste
+NO quedó aceptado visualmente. Se ordenan cuatro filtros principales, controles44px y
+títulos uniformes, segunda fila con resto y acciones separadas. Responsive dos/una columna.
+Opciones de proveedor/cuenta son columna flexible con alto automático, nombre y detalle
+en bloques separados y texto largo envolvente. Estilos locales superan alturas/cuadrículas
+heredadas; panel sin recorte y CSS versionado. Consultas/IDs/permisos/Excel intactos.
+Verificado:810 Java/41 Node sin fallos. QA ficticio de nombres largos: diez opciones
+sin recorte/encimado, ancho380px en escritorio y contenido en390 móvil. Controles
+principales con alturas44px y anchos iguales medidos en1280/900/390, sin desbordar.
+Se corrigió span3 de mayor prioridad que creaba columnas implícitas y desalineación móvil.
+Claro/oscuro y fechas completas revisados. Sólo app reconstruida/recreada, salud UP;
+PostgreSQL/volúmenes intactos, QA retirado y viewport restaurado. Sin migración, .env,
+operaciones financieras ni commit; no repetir cancelación/compra. Aceptación humana del
+nuevo diseño y filtros/Excel continúa pendiente; recargar listado para revisar.
+
+## Autocompletados en filtros de Compras — 2026-10-16
+
+Proveedor/Cuenta del historial ahora son buscadores remotos: diez al enfocar, consulta
+desde tres caracteres, límite en servidor y etiquetas puntuales al recargar/paginar.
+No se cargan catálogos completos al abrir listado. IDs y criterios conservados en Excel.
+Endpoints de filtros exigen COMPRA_LEER; captura conserva ADMINISTRAR/activos. Historial
+admite inactivos identificados. Cuenta con plantel Todos abarca las cuentas autorizadas;
+con plantel específico admite las de éste y compartidas, no las de otro plantel.
+Vacío conserva Todos/Todas y texto sin selección obliga a elegir/borrar antes de consultar.
+Cambiar alcance limpia selecciones correspondientes y descarta respuestas antiguas.
+Verificado:810 Java y41 Node sin fallos; seguridad/alcance/límites y controlador real
+con selecciones conservadas y envío de mismos criterios a Excel. QA ficticio de foco10
+por buscador; se corrigió compresión de opciones por estilos generales de filtros,
+resultados anclados al input y textos sin encimarse. Sólo app reconstruida/recreada,
+salud UP; PostgreSQL/volúmenes intactos y QA temporal retirado. Sin migración, .env,
+operaciones financieras ni commit.
+Filtros/Excel todavía pendientes de aceptación humana. No repetir compra ni reversa;
+formato ISO/moneda del Excel sigue como pendiente ya señalado, fuera de este ajuste.
+
+## Cancelación aceptada y motivo alineado debajo — 2026-10-16
+
+Propietario confirmó modal correcto, COM-00000001 Cancelada y saldo2000. Movimientos:
+egreso406 original id4 marcado Revertido y ingreso406 REVERSO, Compensa #4, de1594 a2000.
+No se conoce ID de reversa; #1/#2 visibles son secuencia por cuenta. Reversa aceptada,
+no repetir operaciones. Cuenta Institucional y operación en Plantel prueba de permisos.
+
+Motivo obligatorio se reubica debajo de explicación, alineado a la izquierda, una columna
+en todos los tamaños; textarea completo con altura120px y botón inferior, completo móvil.
+No cambia proceso/permiso/validación/modal/dinero. Verificado:805 Java y39 Node sin fallos,
+QA ficticio escritorio/móvil390×844, motivo y botón sin desbordar. Sólo app reconstruida/
+recreada, salud UP; PostgreSQL/volúmenes intactos y temporales QA retirados.
+Próximo propuesto, aún NO aceptado: filtros y Excel de compra cancelada por folio/cuenta/
+proveedor/plantel/fecha16oct; estado Confirmada sin coincidencias; Todas y referencia
+TICKET-PRUEBA-001 recupera fila. No crear otra compra para comprobar diseño ni publicar
+estos resultados como confirmados. Sin migración, .env ni commit; V105 libre.
+Observación de código para revisar después: Excel de Compras aún escribe fecha ISO y
+total sin estilo monetario. Homologación de presentación pendiente; no declarar aceptada.
+
+## Modal antes de la reversa de compra — 2026-10-16
+
+Propietario solicitó confirmación antes de probar la cancelación. Cancelar mediante
+reversa muestra folio/proveedor/cuenta/plantel/referencia/movimiento original/importe y
+motivo actual. Volver sin cancelar o Escape cierran conservando motivo sin enviar;
+Confirmar cancelación envía POST original con versión/CSRF y mismas reglas del servidor.
+Verificado:805 Java y39 Node sin fallos, render y cierre/Escape sin POST, motivo vigente
+y confirmación única. Navegador ficticio comprobó modal406 y Volver conservando motivo.
+Sólo app reconstruida/recreada, salud UP; PostgreSQL/volúmenes intactos y QA retirado.
+Sin migración, .env, commit ni operaciones financieras.
+Última aceptación humana sigue siendo egreso id4 de406 en COM-00000001 y saldo1594;
+cancelación todavía NO aceptada. Próximo: recargar Gestión, probar cierre del modal y
+después confirmar una vez para comprobar CANCELADA, ingreso406 y saldo2000. No revertir
+también desde Movimientos financieros ni registrar reversas por herramientas.
+
+## Compra confirmada y vistas organizadas por pestañas — 2026-10-16
+
+Propietario confirmó COM-00000001, Papelería Prueba Raíces/TICKET-PRUEBA-001:
+movimiento id4, EGRESO406 y cuenta BANCO-COMPRAS-TEST de2000 a1594. No repetir egreso.
+La cuenta id4 es Institucional y el movimiento pertenece a Plantel prueba de permisos,
+NO a Parian como en el ejemplo propuesto. Segundo plantel ahora tiene actividad financiera;
+no tratarlo como vacío en futuros ensayos. Las aceptaciones V104 eran de su estado anterior.
+Todavía no hay aceptación de cancelación/reversa.
+
+Captura y edición de compra con pestañas Datos/Productos; detalle con Resumen/Productos/
+Gestión. Cancelación controlada queda independiente de la lista de partidas. Navegación
+común conserva hashes, teclado, errores y acceso directo; validación HTML abre la pestaña
+del primer campo inválido. Cancelar y Ver compra tienen diseño de botón en claro/oscuro.
+Verificado:805 Java y38 Node sin fallos. Render de tres estados y permisos; navegador
+ficticio confirma pestañas/Gestión/botones y validación que abre y enfoca el campo oculto.
+Cancelación con texto y formulario separados, botón legible sin apilar palabras. Sólo
+app reconstruida/recreada; PostgreSQL/volúmenes intactos, QA temporal retirado. Sin
+migración, .env, cambios financieros ni commit.
+Próximo humano: revisar diseño y después cancelar controladamente la compra confirmada,
+con motivo, para comprobar ingreso compensatorio406 y saldo2000. No se ejecuta por herramientas.
+
+## Borrador guardado; contador y confirmación del egreso — 2026-10-16
+
+Propietario confirmó que guardó el borrador y ve dos partidas en detalle, pero NO ha
+registrado el egreso. Se corrige contraste del contador claro/oscuro y se agrega modal
+al botón Confirmar y registrar egreso: resumen completo, Cancelar/Escape sin envío y
+aceptación mediante POST original, sin omitir versión/CSRF/validaciones financieras.
+Verificado:805 Java y36 Node sin fallos; render condicional por estado/permiso y resumen
+con Cancelar/Escape sin envío. QA ficticio de navegador confirma contador claro/oscuro
+y detalle del modal. Sólo app reconstruida/recreada; PostgreSQL/volúmenes intactos y QA
+temporal retirado. Sin migración ni operaciones financieras por herramientas.
+Próximo: recargar detalle y revisar contador/modal/cancelación antes de confirmar compra.
+
+## Compras: error de alta y mejoras de captura — 2026-10-16
+
+Ensayo propuesto: compra ficticia de $406.00 en cuenta separada de $2,000.00; no está
+aceptado aún. Al guardar, propietario recibió error de integridad. Logs muestran22001
+por varchar40: folio TEMP- más UUID de36 caracteres sumaba41. Se elimina el guionado
+del UUID temporal, conservando sus128 bits; folio provisional37 y definitivo por ID.
+No cambia el esquema ni migraciones aplicadas; guardar sigue sin publicar movimientos.
+
+Alta/edición de proveedor y compra agregan modal con resumen y Cancelar sin envío.
+Compra consulta proveedores/cuentas/categorías mediante autocompletado remoto limitado,
+foco inicial10 y búsqueda desde3. Cuentas se restringen por institución/plantel/alcance;
+motivos sólo EGRESO/AMBOS; endpoints requieren COMPRA_ADMINISTRAR. Rehidrata selecciones
+puntuales al editar/error sin precargar catálogos completos del formulario. Cantidad
+conserva tres decimales para servicios/medidas con ayuda explicativa; cálculo visual
+por partida coincide con redondeo de Java a centavos. Listado conserva filtros previos.
+
+Verificado:804 Java y35 Node sin fallos; render de alta/edición real, autorización HTTP,
+alcance/paginación y pruebas de foco/búsqueda/respuestas obsoletas y confirmación única.
+Navegador con datos ficticios verificó resumen claro/oscuro y Cancelar sin perder captura.
+Sólo app reconstruida/recreada, salud UP y104 migraciones validadas; PostgreSQL y
+volúmenes intactos. QA temporal retirado.
+Sin operaciones financieras, .env ni commit por herramientas; V105 libre.
+Próximo humano: recargar, revisar resúmenes/cancelación y
+guardar borrador del ejemplo:350+56=406, cuenta todavía2000. Confirmación y reversa se
+realizan después con el propietario; no documentarlas todavía como aceptación humana.
+
 ## Permisos y alcance aceptados e incorporados a guía — V104 — 2026-10-16
 
 Propietario confirmó que Excel/PDF del plantel2 prohibido ahora muestran acceso denegado

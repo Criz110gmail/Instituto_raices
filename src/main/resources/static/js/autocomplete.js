@@ -50,7 +50,9 @@
             clearTimeout(temporizador);solicitud?.abort();clavePendiente=null;
             entrada.value='';valor.value='';etiquetaSeleccionada='';
             valor.dispatchEvent(new Event('change',{bubbles:true}));cerrarLista();actualizarLimpiar();
-            mostrarEstado('Selecciona un motivo compatible con el tipo de movimiento.');
+            mostrarEstado(contenedor.dataset.extraParam === 'plantelId'
+                ? 'Selecciona una cuenta compatible con el plantel de la compra.'
+                : 'Selecciona un motivo compatible con el tipo de movimiento.');
         });
         entrada.addEventListener('input', () => {
             if (entrada.readOnly) return;

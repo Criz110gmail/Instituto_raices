@@ -20,6 +20,7 @@ class ComprasInterfazTest {
         assertTrue(html.contains("pagina=${resultado.number+1}"));
         assertTrue(html.contains("class=\"filters purchase-filters\""));
         assertTrue(html.contains("class=\"filter-actions\""));
+        assertTrue(html.contains("class=\"purchase-view-button\""));
     }
 
     @Test
@@ -56,6 +57,8 @@ class ComprasInterfazTest {
         assertTrue(html.contains("/{id}/cancelar"));
         assertTrue(html.contains("ingreso compensatorio"));
         assertTrue(html.contains("th:errors=\"*{motivo}\""));
+        assertTrue(html.contains("data-student-tab=\"gestion\""));
+        assertTrue(html.contains("data-student-panel=\"gestion\""));
     }
 
     @Test

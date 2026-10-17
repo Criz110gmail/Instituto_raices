@@ -240,6 +240,53 @@
                 add('Concepto',valor('concepto'));add('Referencia',valor('referencia')||'Sin referencia');
                 add('Tercero',valor('terceroNombre')||'Sin tercero');
                 note.textContent=tipo==='INGRESO'?'Se sumará este importe a la cuenta. Cancelar conserva la captura sin registrar.':'Se descontará este importe de la cuenta. Cancelar conserva la captura sin registrar.';
+            } else if(kind==='compra-cancelacion') {
+                title.textContent='Confirmar cancelación de compra';
+                cancel.textContent='Volver sin cancelar';accept.textContent='Confirmar cancelación';
+                add('Folio de compra',form.dataset.confirmFolio);
+                add('Proveedor',form.dataset.confirmSupplier);add('Cuenta que recibirá el reintegro',form.dataset.confirmAccount);
+                add('Plantel',form.dataset.confirmPlantel);
+                add('Factura, ticket o referencia',form.dataset.confirmReference||'Sin referencia');
+                if(form.dataset.confirmMovement)add('Movimiento original que se conservará','#'+form.dataset.confirmMovement);
+                add('Importe a reintegrar a la cuenta',money(form.dataset.confirmAmount));
+                add('Motivo de cancelación',form.querySelector('[name="motivo"]').value.trim());
+                note.textContent='Al confirmar se cancelará esta compra mediante un ingreso compensatorio en la misma cuenta. El egreso original y el motivo quedarán en el historial; no se borran. Volver sin cancelar o pulsar Escape sólo cierra este resumen y conserva tu motivo, sin registrar la reversa.';
+            } else if(kind==='compra-egreso') {
+                title.textContent='Confirmar y registrar egreso';
+                cancel.textContent='Cancelar';accept.textContent='Confirmar y registrar egreso';
+                add('Folio de compra',form.dataset.confirmFolio);
+                add('Proveedor',form.dataset.confirmSupplier);add('Cuenta de donde saldrá el dinero',form.dataset.confirmAccount);
+                add('Plantel',form.dataset.confirmPlantel);add('Categoría del egreso',form.dataset.confirmCategory);
+                add('Factura, ticket o referencia',form.dataset.confirmReference||'Sin referencia');
+                document.getElementById(form.dataset.confirmLines)?.querySelectorAll('article').forEach((row,i)=>{
+                    add('Partida '+(i+1),row.querySelector('div strong').textContent+'\n'+row.querySelector('small').textContent+'\nTotal: '+row.querySelector('article > span').textContent);
+                });
+                add('Subtotal',money(form.dataset.confirmSubtotal));add('Impuestos',money(form.dataset.confirmTax));
+                add('Total que se descontará',money(form.dataset.confirmAmount));
+                note.textContent='Al confirmar se registrará el egreso y se descontará este total de la cuenta indicada. La compra dejará de ser editable como borrador. Cancelar sólo cierra este resumen: no registra el egreso ni modifica el borrador.';
+            } else if(kind==='proveedor' || kind==='compra-borrador') {
+                cancel.textContent='Cancelar';accept.textContent=kind==='proveedor'?'Confirmar y guardar proveedor':'Confirmar y guardar borrador';
+                const texto=name=>form.querySelector('[name="'+name+'"]').value.trim();
+                const opcion=name=>form.querySelector('select[name="'+name+'"]').selectedOptions[0]?.textContent.trim()||'Sin seleccionar';
+                title.textContent=kind==='proveedor'?'Confirmar datos del proveedor':'Confirmar borrador de compra';
+                add('Institución',opcion('institucionId'));
+                if(kind==='proveedor') {
+                    for(const [name,label] of [['razonSocial','Razón social'],['nombreComercial','Nombre comercial'],['rfc','RFC'],['contactoNombre','Persona de contacto'],['telefono','Teléfono'],['correo','Correo'],['direccion','Dirección'],['notas','Notas']])add(label,texto(name)||'Sin capturar');
+                    add('Proveedor activo',form.querySelector('input[type="checkbox"][name="activo"]').checked?'Sí':'No');
+                    note.textContent='Se guardarán los datos del proveedor. No registra compras ni movimientos financieros. Cancelar conserva tu captura sin guardar.';
+                } else {
+                    add('Plantel',opcion('plantelId'));add('Proveedor',texto('proveedorTexto'));
+                    add('Cuenta financiera',texto('cuentaTexto'));add('Categoría del egreso',texto('motivoTexto'));
+                    const [dia,hora]=texto('fechaOperacion').split('T');
+                    add('Fecha y hora',dia.split('-').reverse().join('/')+' · '+hora);
+                    add('Factura, ticket o referencia',texto('documentoReferencia')||'Sin referencia');
+                    add('Observaciones',texto('observaciones')||'Sin observaciones');
+                    form.querySelectorAll('[data-lines] .line-item').forEach((row,i)=>{
+                        add('Partida '+(i+1),row.querySelector('.line-description input').value+'\nCantidad: '+row.querySelector('[data-quantity]').value+' · Precio unitario: '+money(row.querySelector('[data-price]').value)+' · Impuesto: '+row.querySelector('[data-tax]').value+' %\nTotal: '+row.querySelector('[data-line-total]').textContent);
+                    });
+                    for(const [key,label] of [['subtotal','Subtotal'],['taxes','Impuestos'],['grand-total','Total de compra']])add(label,form.querySelector('[data-'+key+']').textContent);
+                    note.textContent='Sólo se guardará el borrador. No se descontará dinero ni se registrará un egreso hasta confirmar desde el detalle de la compra. Cancelar conserva tu captura sin guardar.';
+                }
             } else if(kind==='concepto-cobro') {
                 title.textContent='Confirmar creación del concepto de cobro';
                 cancel.textContent='Cancelar';accept.textContent='Confirmar y crear concepto';
