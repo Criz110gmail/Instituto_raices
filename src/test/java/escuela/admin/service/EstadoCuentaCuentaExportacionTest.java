@@ -46,17 +46,20 @@ class EstadoCuentaCuentaExportacionTest {
         var xlsx=new ByteArrayOutputStream();
         new ExcelEstadoCuentaCuentaService(consulta).exportar(filtroVacio,xlsx);
         try(var libro=WorkbookFactory.create(new ByteArrayInputStream(xlsx.toByteArray()))) {
+            assertThat(libro.getAllPictures()).hasSize(1);
+            for(var hoja:libro)assertThat(((org.apache.poi.xssf.usermodel.XSSFSheet)hoja).getDrawingPatriarch().getShapes()).hasSize(1);
             assertThat(libro.getSheetAt(libro.getActiveSheetIndex()).getSheetName()).isEqualTo("Resumen");
-            assertThat(libro.getSheet("Resumen").getRow(7).getCell(1).getNumericCellValue()).isEqualTo(1150.0);
-            assertThat(libro.getSheet("Resumen").getRow(5).getCell(1).getNumericCellValue()).isZero();
-            assertThat(libro.getSheet("Resumen").getRow(6).getCell(1).getNumericCellValue()).isZero();
-            assertThat(libro.getSheet("Resumen").getRow(8).getCell(1).getNumericCellValue()).isEqualTo(1150.0);
-            assertThat(libro.getSheet("Estado de cuenta").getRow(1).getCell(0).getStringCellValue()).contains("Sin movimientos");
-            assertThat(libro.getSheet("Resumen").getRow(1).getCell(1).getStringCellValue()).isEqualTo("01/10/2026 al 31/10/2026");
+            assertThat(libro.getSheet("Resumen").getRow(7+MarcaReporteFinanciero.FILAS).getCell(1).getNumericCellValue()).isEqualTo(1150.0);
+            assertThat(libro.getSheet("Resumen").getRow(5+MarcaReporteFinanciero.FILAS).getCell(1).getNumericCellValue()).isZero();
+            assertThat(libro.getSheet("Resumen").getRow(6+MarcaReporteFinanciero.FILAS).getCell(1).getNumericCellValue()).isZero();
+            assertThat(libro.getSheet("Resumen").getRow(8+MarcaReporteFinanciero.FILAS).getCell(1).getNumericCellValue()).isEqualTo(1150.0);
+            assertThat(libro.getSheet("Estado de cuenta").getRow(1+MarcaReporteFinanciero.FILAS).getCell(0).getStringCellValue()).contains("Sin movimientos");
+            assertThat(libro.getSheet("Resumen").getRow(1+MarcaReporteFinanciero.FILAS).getCell(1).getStringCellValue()).isEqualTo("01/10/2026 al 31/10/2026");
         }
         var pdf=new ByteArrayOutputStream();
         new JasperReporteFinancieroService(reportes,consulta,instituciones).estadoCuenta(filtroVacio,pdf);
         try(var documento=Loader.loadPDF(pdf.toByteArray())) {
+            assertThat(documento.getPage(0).getResources().getXObjectNames()).isNotEmpty();
             assertThat(documento.getNumberOfPages()).isEqualTo(1);
             assertThat(new PDFTextStripper().getText(documento)).contains("Estado de cuenta financiera",
                 "CAJA-SOBRANTE-TEST","01/10/2026","31/10/2026","$1,150.00","$0.00",
@@ -92,8 +95,8 @@ class EstadoCuentaCuentaExportacionTest {
         new ExcelEstadoCuentaCuentaService(consulta).exportar(filtro, xlsx);
         assertThat(xlsx.toByteArray()).startsWith((byte) 0x50, (byte) 0x4b);
         try (var libro = WorkbookFactory.create(new ByteArrayInputStream(xlsx.toByteArray()))) {
-            assertThat(libro.getSheet("Resumen").getRow(7).getCell(1).getNumericCellValue()).isEqualTo(1250.0);
-            assertThat(libro.getSheet("Estado de cuenta").getRow(1).getCell(4).getStringCellValue())
+            assertThat(libro.getSheet("Resumen").getRow(7+MarcaReporteFinanciero.FILAS).getCell(1).getNumericCellValue()).isEqualTo(1250.0);
+            assertThat(libro.getSheet("Estado de cuenta").getRow(1+MarcaReporteFinanciero.FILAS).getCell(4).getStringCellValue())
                     .isEqualTo("Colegiatura septiembre");
         }
 

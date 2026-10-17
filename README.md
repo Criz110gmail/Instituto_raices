@@ -1,5 +1,42 @@
 # Sistema administrativo escolar
 
+## Reportes del traspaso confirmados — 17/10/2026
+
+V107 incorpora la guía **Comprobar un traspaso en Tesorería y estados de cuenta**:
+pantalla, PDF y Excel aceptados para TRASPASO-TEST-001 de $300.00. Tesorería separa
+traspasos de operación; estado mensual de octubre confirma origen $1,700.00 y destino
+$300.00. Se actualiza el pendiente anterior de la guía de transferencia sin reescribir
+V106. No mueve dinero ni concede permisos. Reversión sigue como siguiente prueba pendiente.
+V107 aplicada,37 guías/308 etapas;832 Java/49 JavaScript correctas y aplicación saludable.
+
+## Cabecera de Excel financiero — 17/10/2026
+
+Los cuatro reportes incluyen logo a la izquierda y título azul centrado junto a él.
+El fondo blanco elimina las líneas sólo en las cuatro filas de cabecera, conservando
+el diseño existente de las tablas. Logo proporcional y datos sin cambios; PDF intacto.
+830 pruebas Java/49 JavaScript correctas; seis hojas revisadas con datos ficticios.
+Descargar un Excel nuevo para revisar el diseño actualizado.
+Aplicación actualizada y saludable en8080, sin cambios de base de datos.
+
+## Logo de Excel sin deformación — 17/10/2026
+
+El logo de Reportes financieros se exporta más grande y con anclaje absoluto/tamaño
+proporcional, independiente del ancho de columnas. Las cuatro filas de cabecera tienen
+30pt cada una para mostrarlo completo, sin mover las tablas a otras filas. PDF sin cambios.
+829 pruebas Java/49 JavaScript correctas y seis hojas revisadas con muestras ficticias.
+App actualizada; descargar un Excel nuevo para confirmar el resultado en el equipo.
+
+## Logo en Reportes financieros — 17/10/2026
+
+Tesorería, Estado de cuenta por cuenta, Estado del alumno y Concentrado de cobranza
+incluyen el logo provisional en PDF y en todas las hojas de Excel, sin cambiar cifras
+ni filtros. En Excel se reservan cuatro filas de cabecera y se conservan tablas/tipos.
+Para sustituirlo, reemplaza `src/main/resources/reports/assets/logo-institucion-ejemplo.png`
+por el nuevo PNG conservando la ruta, y reconstruye/recrea la app. Es el recurso de
+respaldo que comparten otros reportes; no es el escudo de `static/images/logo.png`.
+828 pruebas Java/49 JavaScript aprobadas; cuatro PDF y seis hojas revisados visualmente
+con datos ficticios. App actualizada con salud UP, sin migraciones ni cambios financieros.
+
 ## Foto ampliable y transferencia confirmada — 16/10/2026
 
 Dentro del perfil de sesión, pulsa la fotografía para abrir una vista previa amplia,

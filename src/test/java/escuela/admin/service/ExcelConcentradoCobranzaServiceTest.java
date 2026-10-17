@@ -40,19 +40,19 @@ class ExcelConcentradoCobranzaServiceTest {
             try(var libro=WorkbookFactory.create(new ByteArrayInputStream(bytes.toByteArray()))) {
                 assertThat(libro.getNumberOfSheets()).isEqualTo(2);assertThat(libro.getActiveSheetIndex()).isZero();
                 var r=libro.getSheet("Resumen");var formato=new DataFormatter(Locale.US);
-                assertThat(formato.formatCellValue(r.getRow(2).getCell(1))).isEqualTo("16/10/2026");
-                assertThat(DateUtil.isCellDateFormatted(r.getRow(2).getCell(1))).isTrue();
-                assertThat(r.getRow(3).getCell(1).getStringCellValue()).isEqualTo("Instituto prueba");
-                assertThat(r.getRow(4).getCell(1).getStringCellValue()).isEqualTo("Plantel prueba");
-                assertThat(r.getRow(8).getCell(1).getNumericCellValue()).isEqualTo(3);
-                assertThat(r.getRow(9).getCell(1).getNumericCellValue()).isEqualTo(2100);
-                assertThat(formato.formatCellValue(r.getRow(9).getCell(1))).isEqualTo("$2,100.00");
-                assertThat(r.getRow(10).getCell(1).getNumericCellValue()).isEqualTo(500);
-                assertThat(r.getRow(11).getCell(1).getNumericCellValue()).isEqualTo(1600);
-                assertThat(r.getRow(12).getCell(1).getNumericCellValue()).isZero();
-                var d=libro.getSheet("Concentrado");assertThat(d.getLastRowNum()).isEqualTo(filas.size());
-                assertThat(d.getRow(0).getCell(0).getStringCellValue()).isEqualTo(grupo.equals("CONCEPTO")?"Concepto de cobro":grupo.equals("PLANTEL")?"Plantel":"Ciclo escolar");
-                assertThat(d.getRow(1).getCell(2).getCellType()).isEqualTo(CellType.NUMERIC);
+                assertThat(formato.formatCellValue(r.getRow(2+MarcaReporteFinanciero.FILAS).getCell(1))).isEqualTo("16/10/2026");
+                assertThat(DateUtil.isCellDateFormatted(r.getRow(2+MarcaReporteFinanciero.FILAS).getCell(1))).isTrue();
+                assertThat(r.getRow(3+MarcaReporteFinanciero.FILAS).getCell(1).getStringCellValue()).isEqualTo("Instituto prueba");
+                assertThat(r.getRow(4+MarcaReporteFinanciero.FILAS).getCell(1).getStringCellValue()).isEqualTo("Plantel prueba");
+                assertThat(r.getRow(8+MarcaReporteFinanciero.FILAS).getCell(1).getNumericCellValue()).isEqualTo(3);
+                assertThat(r.getRow(9+MarcaReporteFinanciero.FILAS).getCell(1).getNumericCellValue()).isEqualTo(2100);
+                assertThat(formato.formatCellValue(r.getRow(9+MarcaReporteFinanciero.FILAS).getCell(1))).isEqualTo("$2,100.00");
+                assertThat(r.getRow(10+MarcaReporteFinanciero.FILAS).getCell(1).getNumericCellValue()).isEqualTo(500);
+                assertThat(r.getRow(11+MarcaReporteFinanciero.FILAS).getCell(1).getNumericCellValue()).isEqualTo(1600);
+                assertThat(r.getRow(12+MarcaReporteFinanciero.FILAS).getCell(1).getNumericCellValue()).isZero();
+                var d=libro.getSheet("Concentrado");assertThat(d.getLastRowNum()).isEqualTo(filas.size()+MarcaReporteFinanciero.FILAS);
+                assertThat(d.getRow(0+MarcaReporteFinanciero.FILAS).getCell(0).getStringCellValue()).isEqualTo(grupo.equals("CONCEPTO")?"Concepto de cobro":grupo.equals("PLANTEL")?"Plantel":"Ciclo escolar");
+                assertThat(d.getRow(1+MarcaReporteFinanciero.FILAS).getCell(2).getCellType()).isEqualTo(CellType.NUMERIC);
             }
             var carpeta=Path.of("target/qa-concentrado");Files.createDirectories(carpeta);Files.write(carpeta.resolve(grupo.toLowerCase()+".xlsx"),bytes.toByteArray());
             verify(consulta).concentradoCobranza(argThat(f->f.agrupacion().equals(grupo)&&f.institucionId().equals(1L)&&f.plantelId().equals(3L)&&f.fechaCorte().equals(LocalDate.of(2026,10,16))&&f.pagina()==0&&f.tamanio()==100));
@@ -67,10 +67,10 @@ class ExcelConcentradoCobranzaServiceTest {
         });
         var bytes=new ByteArrayOutputStream();servicio.exportar(filtro("CONCEPTO"),bytes);
         try(var libro=WorkbookFactory.create(new ByteArrayInputStream(bytes.toByteArray()))) {
-            var d=libro.getSheet("Concentrado");assertThat(d.getLastRowNum()).isEqualTo(101);
-            assertThat(d.getRow(1).getCell(0).getStringCellValue()).isEqualTo("Grupo 0");
-            assertThat(d.getRow(101).getCell(0).getStringCellValue()).isEqualTo("Grupo 100");
-            assertThat(libro.getSheet("Resumen").getRow(9).getCell(1).getNumericCellValue()).isEqualTo(2100);
+            var d=libro.getSheet("Concentrado");assertThat(d.getLastRowNum()).isEqualTo(101+MarcaReporteFinanciero.FILAS);
+            assertThat(d.getRow(1+MarcaReporteFinanciero.FILAS).getCell(0).getStringCellValue()).isEqualTo("Grupo 0");
+            assertThat(d.getRow(101+MarcaReporteFinanciero.FILAS).getCell(0).getStringCellValue()).isEqualTo("Grupo 100");
+            assertThat(libro.getSheet("Resumen").getRow(9+MarcaReporteFinanciero.FILAS).getCell(1).getNumericCellValue()).isEqualTo(2100);
         }
         verify(consulta,times(2)).concentradoCobranza(argThat(f->f.institucionId().equals(1L)&&f.plantelId().equals(3L)&&f.tamanio()==100));
     }
@@ -78,9 +78,9 @@ class ExcelConcentradoCobranzaServiceTest {
         preparar();when(consulta.concentradoCobranza(any())).thenReturn(new ResultadoConcentradoCobranza(Page.empty(),ResumenEstadoCuenta.vacio("MXN")));
         var bytes=new ByteArrayOutputStream();servicio.exportar(new FiltroConcentradoCobranza(1L,null,"CICLO",LocalDate.of(2026,10,16),0,100),bytes);
         try(var libro=WorkbookFactory.create(new ByteArrayInputStream(bytes.toByteArray()))) {
-            assertThat(libro.getSheet("Resumen").getRow(4).getCell(1).getStringCellValue()).isEqualTo("Todos autorizados");
-            assertThat(libro.getSheet("Resumen").getRow(8).getCell(1).getNumericCellValue()).isZero();
-            assertThat(libro.getSheet("Concentrado").getRow(1).getCell(0).getStringCellValue()).contains("Sin cartera");
+            assertThat(libro.getSheet("Resumen").getRow(4+MarcaReporteFinanciero.FILAS).getCell(1).getStringCellValue()).isEqualTo("Todos autorizados");
+            assertThat(libro.getSheet("Resumen").getRow(8+MarcaReporteFinanciero.FILAS).getCell(1).getNumericCellValue()).isZero();
+            assertThat(libro.getSheet("Concentrado").getRow(1+MarcaReporteFinanciero.FILAS).getCell(0).getStringCellValue()).contains("Sin cartera");
         }
         verifyNoInteractions(planteles);
     }

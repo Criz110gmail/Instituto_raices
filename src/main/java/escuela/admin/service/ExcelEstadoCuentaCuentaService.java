@@ -23,6 +23,7 @@ public class ExcelEstadoCuentaCuentaService {
         try (SXSSFWorkbook libro = new SXSSFWorkbook(200)) {
             libro.setCompressTempFiles(true);
             Sheet hoja = libro.createSheet("Estado de cuenta");
+            MarcaReporteFinanciero.excel(libro, hoja, 10, "Estado de cuenta financiera");
             CellStyle titulo = libro.createCellStyle();
             CellStyle dinero = libro.createCellStyle();
             dinero.setDataFormat(libro.createDataFormat().getFormat("\"$\"#,##0.00"));
@@ -30,14 +31,14 @@ public class ExcelEstadoCuentaCuentaService {
             titulo.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             Font fuente = libro.createFont(); fuente.setBold(true); fuente.setColor(IndexedColors.WHITE.getIndex());
             titulo.setFont(fuente);
-            Row cabecera = hoja.createRow(0);
+            Row cabecera = hoja.createRow(MarcaReporteFinanciero.FILAS);
             String[] columnas = {"Fecha", "Secuencia", "Plantel", "Clase", "Concepto", "Referencia",
                     "Folio pago", "Ingreso", "Egreso", "Moneda"};
             for (int c = 0; c < columnas.length; c++) {
                 Cell celda = cabecera.createCell(c); celda.setCellValue(columnas[c]); celda.setCellStyle(titulo);
                 hoja.setColumnWidth(c, (c == 4 ? 34 : 20) * 256);
             }
-            int fila = 1;
+            int fila = MarcaReporteFinanciero.FILAS + 1;
             ResultadoEstadoCuentaCuenta bloque = inicial;
             int pagina = 0;
             do {
@@ -59,10 +60,11 @@ public class ExcelEstadoCuentaCuentaService {
                 if (pagina < bloque.movimientos().getTotalPages())
                     bloque = consulta.consultar(filtro.conPagina(pagina, 100));
             } while (pagina < bloque.movimientos().getTotalPages());
-            if (fila == 1) hoja.createRow(1).createCell(0)
+            if (fila == MarcaReporteFinanciero.FILAS + 1) hoja.createRow(MarcaReporteFinanciero.FILAS + 1).createCell(0)
                     .setCellValue("Sin movimientos registrados en este periodo.");
-            hoja.createFreezePane(0, 1);
+            hoja.createFreezePane(0, MarcaReporteFinanciero.FILAS + 1);
             Sheet resumen = libro.createSheet("Resumen");
+            MarcaReporteFinanciero.excel(libro, resumen, 2, "Estado de cuenta financiera");
             linea(resumen, 0, "Estado de cuenta interno", inicial.cuenta().etiqueta());
             DateTimeFormatter fecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             linea(resumen, 1, "Periodo", filtro.desde().format(fecha) + " al " + filtro.hasta().format(fecha));
@@ -75,7 +77,7 @@ public class ExcelEstadoCuentaCuentaService {
             importe(resumen, 8, "Saldo inicial de cuenta registrado en el periodo", inicial.aperturaRegistradaEnPeriodo());
             linea(resumen, 10, "Origen", "Movimientos registrados en Nexo Escolar; no es un estado bancario.");
             resumen.setColumnWidth(0, 48 * 256); resumen.setColumnWidth(1, 72 * 256);
-            for (int numero = 4; numero <= 8; numero++) resumen.getRow(numero).getCell(1).setCellStyle(dinero);
+            for (int numero = 4; numero <= 8; numero++) resumen.getRow(numero + MarcaReporteFinanciero.FILAS).getCell(1).setCellStyle(dinero);
             libro.setSheetOrder("Resumen", 0);
             hoja.setSelected(false);
             resumen.setSelected(true);
@@ -89,11 +91,11 @@ public class ExcelEstadoCuentaCuentaService {
         fila.createCell(columna).setCellValue(valor.doubleValue());
     }
     private void linea(Sheet hoja, int numero, String etiqueta, String valor) {
-        Row fila = hoja.createRow(numero); fila.createCell(0).setCellValue(etiqueta);
+        Row fila = hoja.createRow(numero + MarcaReporteFinanciero.FILAS); fila.createCell(0).setCellValue(etiqueta);
         fila.createCell(1).setCellValue(valor);
     }
     private void importe(Sheet hoja, int numero, String etiqueta, BigDecimal valor) {
-        Row fila = hoja.createRow(numero); fila.createCell(0).setCellValue(etiqueta);
+        Row fila = hoja.createRow(numero + MarcaReporteFinanciero.FILAS); fila.createCell(0).setCellValue(etiqueta);
         numero(fila, 1, valor);
     }
 }

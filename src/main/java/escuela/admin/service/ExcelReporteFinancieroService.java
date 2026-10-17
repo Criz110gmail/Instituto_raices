@@ -19,10 +19,10 @@ public class ExcelReporteFinancieroService {
             Sheet hoja = libro.createSheet("Estado de cuenta");
             CellStyle fecha = libro.createCellStyle();
             fecha.setDataFormat(libro.createDataFormat().getFormat("dd/mm/yyyy"));
-            encabezado(hoja, libro, "Cargo", "Plantel", "Ciclo", "Concepto", "Descripción",
+            encabezado(hoja, libro, "Estado de cuenta del alumno", "Cargo", "Plantel", "Ciclo", "Concepto", "Descripción",
                     "Emisión", "Vencimiento", "Original", "Ajustes", "Total", "Aplicado",
                     "Saldo", "Situación", "Moneda");
-            int fila = 1, pagina = 0;
+            int fila = MarcaReporteFinanciero.FILAS + 1, pagina = 0;
             ResultadoEstadoCuentaAlumno bloque;
             do {
                 bloque = consulta.estadoCuenta(filtro.conPagina(pagina++, 100));
@@ -45,10 +45,10 @@ public class ExcelReporteFinancieroService {
     public void tesoreria(FiltroReporteTesoreria filtro, OutputStream salida) throws IOException {
         try (SXSSFWorkbook libro = libro()) {
             Sheet hoja = libro.createSheet("Tesorería");
-            encabezado(hoja, libro, "Periodo", "Cuenta", "Tipo", "Alcance", "Movimientos",
+            encabezado(hoja, libro, "Balanza de movimientos y saldos", "Periodo", "Cuenta", "Tipo", "Alcance", "Movimientos",
                     "Ingresos operativos", "Egresos operativos", "Neto operativo",
                     "Traspasos entrada", "Traspasos salida", "Moneda");
-            int fila = 1, pagina = 0;
+            int fila = MarcaReporteFinanciero.FILAS + 1, pagina = 0;
             ResultadoReporteTesoreria bloque;
             do {
                 bloque = consulta.tesoreria(filtro.conPagina(pagina++, 100));
@@ -67,11 +67,12 @@ public class ExcelReporteFinancieroService {
     }
 
     private SXSSFWorkbook libro() { SXSSFWorkbook l = new SXSSFWorkbook(200); l.setCompressTempFiles(true); return l; }
-    private void encabezado(Sheet hoja, Workbook libro, String... columnas) {
+    private void encabezado(Sheet hoja, Workbook libro, String titulo, String... columnas) {
+        MarcaReporteFinanciero.excel(libro, hoja, columnas.length, titulo);
         CellStyle estilo = libro.createCellStyle(); estilo.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
         estilo.setFillPattern(FillPatternType.SOLID_FOREGROUND); Font f = libro.createFont();
         f.setBold(true); f.setColor(IndexedColors.WHITE.getIndex()); estilo.setFont(f);
-        Row r = hoja.createRow(0); for (int i=0;i<columnas.length;i++) { Cell c=r.createCell(i);c.setCellValue(columnas[i]);c.setCellStyle(estilo); }
+        Row r = hoja.createRow(MarcaReporteFinanciero.FILAS); for (int i=0;i<columnas.length;i++) { Cell c=r.createCell(i);c.setCellValue(columnas[i]);c.setCellStyle(estilo); }
     }
     private void numero(Row fila, int indice, BigDecimal valor) { fila.createCell(indice).setCellValue(valor.doubleValue()); }
     private void fecha(Row fila, int indice, java.time.LocalDate valor, CellStyle estilo) {
@@ -79,5 +80,5 @@ public class ExcelReporteFinancieroService {
         celda.setCellValue(valor);
         celda.setCellStyle(estilo);
     }
-    private void terminar(Sheet hoja, int columnas) { hoja.createFreezePane(0,1); for(int i=0;i<columnas;i++) hoja.setColumnWidth(i,(i==4?32:20)*256); }
+    private void terminar(Sheet hoja, int columnas) { hoja.createFreezePane(0,MarcaReporteFinanciero.FILAS+1); for(int i=0;i<columnas;i++) hoja.setColumnWidth(i,(i==4?32:20)*256); }
 }

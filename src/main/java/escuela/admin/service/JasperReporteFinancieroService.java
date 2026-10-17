@@ -147,6 +147,7 @@ public class JasperReporteFinancieroService {
     private Map<String, Object> parametros(Long institucionId, String subtitulo, String... resumen) {
         Map<String, Object> p = new HashMap<>();
         p.put("institucion", instituciones.obtener(institucionId).nombre());
+        p.put("logoSistema", MarcaReporteFinanciero.imagen());
         p.put("subtitulo", subtitulo);
         p.put("generado", "Generado por " + usuario() + " | " + java.time.LocalDateTime.now().format(
                 DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
@@ -179,12 +180,18 @@ public class JasperReporteFinancieroService {
         d.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
         for (String p : List.of("titulo", "institucion", "subtitulo", "generado",
                 "r1t", "r1v", "r2t", "r2v", "r3t", "r3v", "r4t", "r4v", "sinDatos", "notaApertura")) parametro(d, p);
+        JRDesignParameter logoParametro = new JRDesignParameter();
+        logoParametro.setName("logoSistema"); logoParametro.setValueClass(java.awt.Image.class); d.addParameter(logoParametro);
         for (Columna c : columnas) { JRDesignField f = new JRDesignField(); f.setName(c.campo()); f.setValueClass(String.class); d.addField(f); }
 
         JRDesignBand title = new JRDesignBand(); title.setHeight(136);
-        title.addElement(textoExpresion("$P{institucion}", 0, 0, 786, 20, 15, true, Color.WHITE, AZUL, HorizontalTextAlignEnum.LEFT));
-        title.addElement(textoExpresion("$P{titulo}", 0, 20, 786, 30, 21, true, Color.WHITE, AZUL, HorizontalTextAlignEnum.LEFT));
-        title.addElement(textoExpresion("$P{subtitulo}", 0, 50, 786, 18, 10, false, Color.WHITE, AZUL, HorizontalTextAlignEnum.LEFT));
+        title.addElement(textoExpresion("$P{institucion}", 108, 0, 678, 20, 15, true, Color.WHITE, AZUL, HorizontalTextAlignEnum.LEFT));
+        title.addElement(textoExpresion("$P{titulo}", 108, 20, 678, 30, 20, true, Color.WHITE, AZUL, HorizontalTextAlignEnum.LEFT));
+        title.addElement(textoExpresion("$P{subtitulo}", 108, 50, 678, 18, 10, false, Color.WHITE, AZUL, HorizontalTextAlignEnum.LEFT));
+        JRDesignImage logo = new JRDesignImage(d); logo.setX(0); logo.setY(0); logo.setWidth(100); logo.setHeight(68);
+        logo.setScaleImage(ScaleImageEnum.RETAIN_SHAPE); logo.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
+        logo.setVerticalImageAlign(VerticalImageAlignEnum.MIDDLE); logo.setExpression(new JRDesignExpression("$P{logoSistema}"));
+        logo.setBackcolor(Color.WHITE); logo.setMode(ModeEnum.OPAQUE); title.addElement(logo);
         for (int i=0;i<4;i++) {
             int x=i*196;
             title.addElement(textoExpresion("$P{r"+(i+1)+"t}", x, 76, 190, 13, 8, false, GRIS, AZUL_CLARO, HorizontalTextAlignEnum.LEFT));

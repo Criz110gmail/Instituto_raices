@@ -48,17 +48,20 @@ class EstadoCuentaAlumnoFechasTest {
                     new PageImpl<>(r.pagina().getContent(),PageRequest.of(f.pagina(),100),101),r.resumen());
         });
         var salida=new ByteArrayOutputStream();new ExcelReporteFinancieroService(consulta).estadoCuenta(filtro(),salida);
+        var carpetaExcel=Path.of("target/qa-logo-financiero");Files.createDirectories(carpetaExcel);
+        Files.write(carpetaExcel.resolve("estado-alumno.xlsx"),salida.toByteArray());
         try(var libro=WorkbookFactory.create(new ByteArrayInputStream(salida.toByteArray()))) {
+            assertThat(libro.getAllPictures()).hasSize(1);
             var hoja=libro.getSheetAt(0);var formato=new DataFormatter(Locale.US);
-            assertThat(hoja.getLastRowNum()).isEqualTo(6);
+            assertThat(hoja.getLastRowNum()).isEqualTo(6+MarcaReporteFinanciero.FILAS);
             for(int inicio:new int[]{1,4}) {
-                var fila=hoja.getRow(inicio);
+                var fila=hoja.getRow(inicio+MarcaReporteFinanciero.FILAS);
                 assertThat(DateUtil.isCellDateFormatted(fila.getCell(5))).isTrue();
                 assertThat(fila.getCell(5).getLocalDateTimeCellValue().toLocalDate()).isEqualTo(LocalDate.of(2026,10,16));
                 assertThat(formato.formatCellValue(fila.getCell(5))).isEqualTo("16/10/2026");
                 assertThat(formato.formatCellValue(fila.getCell(6))).isEqualTo("20/10/2026");
-                assertThat(formato.formatCellValue(hoja.getRow(inicio+1).getCell(6))).isEqualTo("20/11/2026");
-                assertThat(formato.formatCellValue(hoja.getRow(inicio+2).getCell(6))).isEqualTo("20/12/2026");
+                assertThat(formato.formatCellValue(hoja.getRow(inicio+1+MarcaReporteFinanciero.FILAS).getCell(6))).isEqualTo("20/11/2026");
+                assertThat(formato.formatCellValue(hoja.getRow(inicio+2+MarcaReporteFinanciero.FILAS).getCell(6))).isEqualTo("20/12/2026");
                 assertThat(fila.getCell(10).getNumericCellValue()).isEqualTo(500);
                 assertThat(fila.getCell(11).getNumericCellValue()).isZero();
             }
@@ -88,6 +91,7 @@ class EstadoCuentaAlumnoFechasTest {
         var salida=new ByteArrayOutputStream();
         new JasperReporteFinancieroService(consulta,mock(EstadoCuentaCuentaService.class),instituciones).estadoAlumno(filtro(),salida);
         try(var pdf=Loader.loadPDF(salida.toByteArray())) {
+            assertThat(pdf.getPage(0).getResources().getXObjectNames()).isNotEmpty();
             assertThat(new PDFTextStripper().getText(pdf)).contains("16/10/2026","20/10/2026","20/11/2026","20/12/2026","$2,100.00","$500.00","$1,600.00");
             var carpeta=Path.of("target/qa-fechas-alumno");Files.createDirectories(carpeta);
             ImageIO.write(new PDFRenderer(pdf).renderImageWithDPI(0,120),"png",carpeta.resolve("pdf-fechas.png").toFile());

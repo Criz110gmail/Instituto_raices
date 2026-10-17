@@ -1,5 +1,112 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Reportes del traspaso aceptados por propietario — 2026-10-17
+
+- Evidencia humana nueva: Tesorería diaria16/10/2026, todas las cuentas autorizadas:
+ BBVA_COBROS1mov/ingreso500; BANCO-COMPRAS-TEST3mov/ingreso406/egreso406/neto0,
+ traspasos entrada0/salida300; BANCO-TRASPASO-TEST1mov/operación0/entrada300/salida0.
+ Excel coincide. Balanza PDF apertura4650/ingresos906/egresos406/cierre5150; traspasos
+ netos0,-300,+300 por fila. No confundir compra/reversa406 con transferencia300.
+- Estado por cuenta usa corte Mensual/año2026/mesOctubre, NO Desde/Hasta. Origen:
+ tres movimientos #3traspaso egreso300, #2reversa ingreso406, #1compra egreso406.
+ PDF/Resumen Excel: apertura0, saldo inicial registrado en periodo2000 (no ingreso),
+ ingresos406, egresos706, cierre1700. Detalle Excel coincide. Destino: una entrada300
+ claseTRASPASO, referenciaTRASPASO-TEST-001, apertura0, ingresos300/egresos0/cierre300,
+ inicial registrado0; pantalla/PDF/ambas hojas Excel confirmados. Secuencias no son IDs.
+- V107 sólo editorial crea reportes-traspaso-confirmados, CONFIRMADA, seis etapas de
+ cuatro acciones, permiso REPORTE_FINANCIERO_CONSULTAR sin conceder roles. Actualiza
+ resumen y paso6 de guía V106 para retirar pendiente de reportes, sin editar V106.
+ No declara aceptación visual separada de logo ni reversa. SQL validado BEGIN/ROLLBACK.
+- Verificado832 Java/49 Node sin fallos, diff correcto. V107 aplicada por Flyway:
+ guía nueva CONFIRMADA/v1, transferencia previa CONFIRMADA/v2;37 guías/308 etapas.
+ Sólo app reconstruida/recreada, salud UP8080, PostgreSQL/volúmenes intactos. Etiqueta
+ QA retirada. Sin .env, usuarios/roles, datos financieros ni commit. Siguiente V108.
+- Próximo ensayo humano: reversión de transferencia1 desde libro con enlace
+ /admin/reversiones/transferencias/1/nueva. Identificar referencia/cuentas/300, fecha
+ real no futura ni anterior a original; motivo obligatorio. Pantalla actual NO tiene
+ modal adicional: Confirmar reversa trazable envía la operación. No prometer modal.
+ Si no hay otras operaciones, origen1700→2000, destino300→0, dos movimientos REVERSO
+ ligados a originales conservados. Fecha de reversa actual puede caer el17, no el16:
+ reportes diarios del16 NO deben cambiar. Nunca aplicar por herramientas.
+
+## Cabecera de Excel con título centrado — 2026-10-17
+
+- Los cuatro exportadores de Reportes financieros y sus seis hojas conservan logo
+ izquierdo proporcional/ancla absoluta. Se agrega título específico del reporte en
+ azul,18pt, centrado horizontal/vertical en bloque combinado a la derecha del logo.
+ Las cuatro filas existentes llevan relleno blanco sólido: oculta cuadrícula sólo
+ en cabecera, sin alterar preferencia de cuadrícula del resto de cada hoja. Concentrado
+ conserva su preferencia anterior sin cuadrícula global. PDF y recurso PNG intactos.
+- Sin mover tablas, resúmenes, fechas/importes, filtros, congelación, paginación ni
+ permisos.830 Java/49 Node correctos; prueba nueva guarda/reabre XLSX streaming de301
+ filas y comprueba título, combinación, fondo blanco limitado y cuadrícula preservada.
+ Habilidad de hojas de cálculo aplicada a revisión de sólo lectura de seis hojas
+ ficticias; títulos legibles, sin cubrir imagen/datos. No sustituye aceptación humana:
+ descargar Excel nuevo. Muestras técnicas ignoradas en target/qa-logo-financiero.
+- Sin .env, cambios financieros, roles, commit ni migración;106 vigente/V107 libre.
+ App reconstruida/recreada únicamente, salud UP en8080 y106 migraciones validadas.
+ PostgreSQL/volúmenes intactos. Contenedor y etiqueta temporales QA retirados.
+ Continúan pendientes reportes operativos del traspaso y posterior ensayo de reversa.
+
+## Excel: logo mayor y ancla absoluta contra deformación — 2026-10-17
+
+- Propietario reportó logo estirado al abrir Excel: NO considerar aceptada la apariencia
+ anterior sólo por las muestras renderizadas. Ajuste exclusivo a Excel; PDF y PNG fuente
+ permanecen sin cambios. Debe descargar un archivo nuevo, los anteriores no se actualizan.
+- MarcaReporteFinanciero reserva las mismas cuatro filas, ahora30pt cada una. Imagen
+ máxima192×128px (antes aprox96×64), calculada por dimensiones nativas para conservar
+ proporción y dar margen a logos futuros. Tablas siguen en las mismas filas que tras
+ la cabecera anterior: no cambian datos, filtros ni congelación/autofiltro.
+- Se reemplaza twoCellAnchor/editAs=oneCell con dos offsets dentro de la misma celda
+ (incluido extremo fuera de su altura) por xdr:absoluteAnchor real. Posición y tamaño
+ explícitos en EMU, mismo tamaño en transformación gráfica y bloqueo noChangeAspect;
+ se retira el ancla provisional. No depende del ancho de columnas ni altura de filas.
+ Se conserva copia única del PNG por libro, válida con SXSSF y XSSF.
+- Verificado:829 Java/49 Node sin fallos, diff correcto. Prueba nueva guarda/reabre un
+ XLSX después de cambiar anchuras/alturas y verifica ancla absoluta, tamaño/proporción,
+ bloqueo y transformación coherente. Exportaciones y datos anteriores conservados.
+ Habilidad de hojas de cálculo usada para QA de sólo lectura: las seis hojas ficticias
+ importadas/renderizadas con logo mayor, proporcionado y sin cubrir tablas; XML final
+ inspeccionado. Esto NO sustituye aceptación en el Excel del propietario, aún pendiente.
+- App reconstruida/recreada, salud UP en8080;106 migraciones, V107 libre. PostgreSQL/
+ volúmenes intactos; sin .env, cambios financieros, usuarios/roles ni commit. Contenedor
+ y etiqueta temporales retirados; muestras ignoradas en target/qa-logo-financiero.
+ Próximo humano: descargar de nuevo el Excel y confirmar tamaño/proporción. Prueba
+ operativa de reportes del traspaso y su reversa continúan pendientes.
+
+## Logo provisional en PDF y Excel de Reportes financieros — 2026-10-17
+
+- Solicitud del propietario: usar el logo provisional existente y poder sustituirlo
+ después. Se usa reports/assets/logo-institucion-ejemplo.png (libro azul/turquesa con
+ hojas doradas, ya utilizado por fichas/comprobantes); NO static/images/logo.png
+ (escudo verde/marrón de Instituto Raíces). Ninguna imagen fuente fue modificada.
+ Referencia única para finanzas en MarcaReporteFinanciero.RECURSO. Para cambiarlo:
+ reemplazar ese PNG conservando nombre/ruta y reconstruir/recrear app; recurso y caché
+ forman parte del JAR. Otros reportes que usan ese mismo logo de respaldo lo compartirán.
+- Cuatro PDF Jasper: Tesorería/balanza, Estado de cuenta por cuenta, Estado del alumno
+ y Concentrado de cobranza. Imagen conservando proporción en bloque blanco izquierdo
+ de la cabecera, textos a la derecha; mantiene institución/título/subtítulo/resúmenes.
+ Sin consultas, alcances, permisos, filtros, totales o transacciones nuevos.
+- Cuatro Excel y sus seis hojas (incluidos ambos Resumen) llevan el mismo PNG nativo.
+ Reserva cuatro filas superiores sin texto decorativo ni combinaciones; tablas/datos
+ originales desplazados cuatro filas, con congelación y autofiltro ajustados. Logo de
+ tamaño fijo/proporcional y una sola copia binaria por libro, reutilizada entre hojas.
+ Conserva hojas/orden/hoja inicial, streaming por100, números/fechas y estados vacíos.
+ No se amplía a compras, proveedores u otros Excel fuera de Reportes financieros.
+- Verificado:828 Java y49 Node sin fallos, diff correcto. Pruebas de imagen PDF/Excel,
+ proporción/reutilización y conservación de fechas/importes/filtros/paginación/vacíos;
+ tests existentes ajustan sólo posiciones por cabecera. Habilidades PDF/hojas de cálculo
+ usadas para QA de muestras ficticias, no para sustituir Jasper/POI. PDFBox renderizó
+ los cuatro PDF y Artifact Tool importó/renderizó las seis hojas sin reescribir archivos.
+ Revisión visual final sin logo sobre datos; muestras ignoradas en target/qa-logo-financiero.
+- App reconstruida/recreada y salud UP en8080;106 migraciones validadas, sin nueva
+ migración (V107 libre). PostgreSQL/volúmenes intactos, sin .env, usuarios, roles,
+ operaciones financieras ni commit. Contenedores y etiquetas temporales de pruebas
+ retirados, no datos operativos. Logo nuevo y aceptación visual humana aún pendientes.
+- Próximo: propietario descarga PDF/Excel de Reportes financieros para revisar logo.
+ Continúa pendiente probar el traspaso confirmado en reportes con datos de instalación;
+ estas muestras son técnicas/ficticias, NO aceptación de reportes ni de reversa del caso.
+
 ## Traspaso aceptado, guía V106 y foto ampliable de sesión — 2026-10-16
 
 - Propietario confirmó modal y aplicación de300 MXN, referencia TRASPASO-TEST-001,
