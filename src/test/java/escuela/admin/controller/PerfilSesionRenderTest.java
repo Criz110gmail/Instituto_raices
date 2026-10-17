@@ -21,7 +21,8 @@ class PerfilSesionRenderTest {
   var response=mvc.perform(get("/qa/perfil")).andReturn().getResponse();
   assertThat(response.getStatus()).isEqualTo(200);var html=response.getContentAsString();
   assertThat(html).contains("data-session-profile-open","aria-haspopup=\"dialog\"","id=\"session-profile\"",
-   "data-session-profile-close","/css/session-profile.css?v=20261016-perfil","/js/session-profile.js?v=20261016-perfil",
+   "data-session-profile-close","/css/session-profile.css?v=20261016-foto","/js/session-profile.js?v=20261016-foto",
+   "data-session-photo-open","id=\"session-photo-preview\"","data-session-photo-close","data-session-photo-image",
    "&lt;usuario.prueba&gt;","/admin/perfil/fotografia","method=\"post\"");
   assertThat(html).doesNotContain("<usuario.prueba>","password","data-money-confirm");
   assertThat(html.split("id=\"session-profile\"",-1)).hasSize(2);

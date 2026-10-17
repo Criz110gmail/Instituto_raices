@@ -1,5 +1,26 @@
 # Sistema administrativo escolar
 
+## Foto ampliable y transferencia confirmada — 16/10/2026
+
+Dentro del perfil de sesión, pulsa la fotografía para abrir una vista previa amplia,
+sin recortar, con Cerrar vista previa para regresar a la ficha. Compatible con móvil,
+claro/oscuro y foto privada existente; no permite modificarla.
+
+V106 incorpora la guía confirmada del traspaso TRASPASO-TEST-001 por $300.00: origen
+$2,000.00→$1,700.00, destino $0.00→$300.00 y dos movimientos TRASPASO relacionados.
+Reversa y reportes del caso continúan pendientes; no repetir la transferencia.
+826 Java/49 JavaScript aprobadas; revisión visual ficticia completada y salud UP.
+V106 aplicada,36 guías/302 etapas; siguiente V107. Sin cambios operativos por herramientas.
+
+## Confirmación de transferencias entre cuentas — 16/10/2026
+
+Aplicar transferencia muestra el resumen común antes de enviar: institución, cuentas,
+importe, fecha, referencia y observaciones. Cancelar/Escape conservan la captura sin
+traspasar; confirmar utiliza la acción original protegida por CSRF e idempotencia.
+Cancelar del formulario tiene diseño secundario y el modal mantiene acciones visibles
+en móvil.824 Java/47 JavaScript aprobadas, con revisión visual ficticia claro/oscuro.
+La transferencia operativa de prueba sigue pendiente; no se movió dinero por herramientas.
+
 ## Perfil rápido de la sesión administrativa — 16/10/2026
 
 Al pulsar la foto o el nombre del encabezado se abre una ficha de sólo lectura con

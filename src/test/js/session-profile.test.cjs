@@ -2,21 +2,25 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 function setup(fetcher) {
  class E {
   constructor(){this.dataset={};this.listeners={};this.textContent='';this.hidden=false;this.classList={add(){},remove(){}};this.attrs={};}
-  setAttribute(k,v){this.attrs[k]=v;}addEventListener(n,f){(this.listeners[n]??=[]).push(f);}
+  setAttribute(k,v){this.attrs[k]=v;}getAttribute(k){return this.attrs[k];}addEventListener(n,f){(this.listeners[n]??=[]).push(f);}
   fire(n,e={}){return Promise.all((this.listeners[n]||[]).map(f=>f(e)));}
   focus(){this.focused=true;}showModal(){this.open=true;}close(){this.open=false;this.fire('close');}
  }
  const trigger=new E(),dialog=new E(),button=new E(),status=new E(),details=new E();
+ const photoButton=new E(),thumb=new E(),preview=new E(),photo=new E(),photoStatus=new E(),previewClose=new E();
+ thumb.setAttribute('src','/admin/perfil/fotografia');photoButton.querySelector=()=>thumb;
+ preview.querySelector=q=>({'[data-session-photo-image]':photo,'[data-session-photo-status]':photoStatus,'[data-session-photo-close]':previewClose}[q]);
+ preview.getBoundingClientRect=()=>({left:20,right:400,top:20,bottom:700});
  const fields=['usuario','correo','institucion','acceso','alcance'].map(k=>{const f=new E();f.dataset.profileField=k;return f;});
  const document=new E();document.readyState='complete';document.body=new E();document.body.append=()=>{};
- document.querySelector=q=>q==='[data-session-profile]'?dialog:trigger;
- dialog.querySelector=q=>({'[data-session-profile-close]':button,'[data-profile-status]':status,'[data-profile-details]':details}[q]);
+ document.querySelector=q=>({'[data-session-profile]':dialog,'[data-session-profile-open]':trigger,'[data-session-photo-preview]':preview}[q]);
+ dialog.querySelector=q=>({'[data-session-profile-close]':button,'[data-profile-status]':status,'[data-profile-details]':details,'[data-session-photo-open]':photoButton}[q]);
  dialog.querySelectorAll=()=>fields;dialog.getBoundingClientRect=()=>({left:20,right:400,top:20,bottom:700});
  const calls=[];
  vm.runInNewContext(fs.readFileSync('src/main/resources/static/js/session-profile.js','utf8'),{
   document,AbortController,fetch:(...args)=>{calls.push(args);return fetcher(...args);}
  });
- return {trigger,dialog,button,status,details,fields,calls};
+ return {trigger,dialog,button,status,details,fields,calls,photoButton,preview,photo,photoStatus,previewClose};
 }
 const response=data=>({ok:true,redirected:false,headers:{get:()=> 'application/json'},json:async()=>data});
 test('perfil sólo consulta al pulsar, muestra texto literal y cierra sin enviar formularios',async()=>{
@@ -48,4 +52,24 @@ test('cerrar aborta la consulta; respuestas atrasadas no reemplazan la nueva ape
  const second=ui.trigger.fire('click');resolvers[1](response({usuario:'vigente'}));await second;
  resolvers[0](response({usuario:'anterior'}));await first;assert.equal(ui.fields[0].textContent,'vigente');
  await ui.trigger.fire('click');assert.equal(ui.calls.length,2);
+});
+test('ampliar sólo la foto propia conserva la ficha y regresa a ella al cerrar o pulsar Escape',async()=>{
+ const ui=setup(async()=>response({usuario:'qa'}));
+ await ui.photoButton.fire('click');assert.ok(!ui.preview.open);
+ await ui.trigger.fire('click');await ui.photoButton.fire('click');
+ assert.equal(ui.preview.open,true);assert.equal(ui.dialog.open,true);
+ assert.equal(ui.photo.src,'/admin/perfil/fotografia');assert.equal(ui.calls.length,1);
+ assert.equal(ui.photoButton.attrs['aria-expanded'],'true');
+ await ui.previewClose.fire('click');assert.equal(ui.preview.open,false);assert.equal(ui.dialog.open,true);
+ assert.equal(ui.photoButton.focused,true);assert.equal(ui.photoButton.attrs['aria-expanded'],'false');
+ await ui.photoButton.fire('click');await ui.preview.fire('cancel',{preventDefault(){}});
+ assert.equal(ui.preview.open,false);assert.equal(ui.fields[0].textContent,'qa');
+ await ui.photoButton.fire('click');await ui.preview.fire('click',{target:ui.preview,clientX:1,clientY:1});
+ assert.equal(ui.preview.open,false);assert.equal(ui.dialog.open,true);
+});
+test('fallo de imagen mantiene cierre; cerrar la ficha también cierra la vista ampliada',async()=>{
+ const ui=setup(async()=>response({usuario:'qa'}));await ui.trigger.fire('click');await ui.photoButton.fire('click');
+ await ui.photo.fire('error');assert.equal(ui.photo.hidden,true);assert.equal(ui.photoStatus.hidden,false);
+ await ui.photo.fire('load');assert.equal(ui.photo.hidden,false);assert.equal(ui.photoStatus.hidden,true);
+ await ui.button.fire('click');assert.equal(ui.preview.open,false);assert.equal(ui.dialog.open,false);
 });

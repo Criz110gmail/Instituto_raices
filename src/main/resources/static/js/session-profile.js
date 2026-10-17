@@ -10,7 +10,47 @@
         const status = dialog.querySelector('[data-profile-status]');
         const details = dialog.querySelector('[data-profile-details]');
         const fields = [...dialog.querySelectorAll('[data-profile-field]')];
+        const photoButton = dialog.querySelector('[data-session-photo-open]');
+        const preview = document.querySelector('[data-session-photo-preview]');
         let pending;
+
+        if (photoButton && preview) {
+            document.body.append(preview);
+            const image = preview.querySelector('[data-session-photo-image]');
+            const photoStatus = preview.querySelector('[data-session-photo-status]');
+            const previewClose = preview.querySelector('[data-session-photo-close]');
+            function closePreview() { if (preview.open) preview.close(); }
+            photoButton.addEventListener('click', () => {
+                if (!dialog.open || preview.open) return;
+                // Reutilizar la ruta privada de la foto propia; sin IDs ni modificarla.
+                image.src = photoButton.querySelector('img').getAttribute('src');
+                image.hidden = false;
+                photoStatus.hidden = true;
+                preview.showModal();
+                photoButton.setAttribute('aria-expanded', 'true');
+                previewClose.focus();
+            });
+            previewClose.addEventListener('click', closePreview);
+            preview.addEventListener('cancel', event => { event.preventDefault(); closePreview(); });
+            preview.addEventListener('close', () => {
+                photoButton.setAttribute('aria-expanded', 'false');
+                if (dialog.open) photoButton.focus();
+            });
+            preview.addEventListener('click', event => {
+                if (event.target !== preview) return;
+                const bounds = preview.getBoundingClientRect();
+                if (event.clientX < bounds.left || event.clientX > bounds.right
+                        || event.clientY < bounds.top || event.clientY > bounds.bottom) closePreview();
+            });
+            image.addEventListener('error', () => {
+                if (!preview.open) return;
+                image.hidden = true; photoStatus.hidden = false;
+            });
+            image.addEventListener('load', () => {
+                if (!preview.open) return;
+                image.hidden = false; photoStatus.hidden = true;
+            });
+        }
 
         function reset() {
             details.hidden = true;
@@ -20,6 +60,7 @@
             status.classList.remove('is-error');
         }
         function closed() {
+            if (preview?.open) preview.close();
             pending?.abort();
             pending = undefined;
             document.body.classList.remove('session-profile-open');

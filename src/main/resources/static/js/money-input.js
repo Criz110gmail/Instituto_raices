@@ -196,6 +196,7 @@
             if(kind==='anticipo-propuesta' && event.submitter?.id!=='anticipation-save')return;
             event.preventDefault();
             if (!form.reportValidity()) return;
+            dialog.setAttribute('data-confirm-kind', kind);
             const currency = (['cuota', 'registro-pago'].includes(kind) ? form.querySelector('#moneda')?.value : kind === 'convenio' ? form.querySelector('#institucion')?.selectedOptions?.[0]?.dataset?.moneda : null) || form.dataset.confirmCurrency || form.dataset.currency || 'MXN';
             const money = raw => formatMoney(parseMoney(raw).raw, currency) || 'Sin importe';
             const add = (label, value) => {
@@ -240,6 +241,19 @@
                 add('Concepto',valor('concepto'));add('Referencia',valor('referencia')||'Sin referencia');
                 add('Tercero',valor('terceroNombre')||'Sin tercero');
                 note.textContent=tipo==='INGRESO'?'Se sumará este importe a la cuenta. Cancelar conserva la captura sin registrar.':'Se descontará este importe de la cuenta. Cancelar conserva la captura sin registrar.';
+            } else if(kind==='transferencia-cuentas') {
+                title.textContent='Confirmar transferencia entre cuentas';
+                cancel.textContent='Cancelar';accept.textContent='Confirmar y aplicar transferencia';
+                const valor=name=>form.querySelector('[name="'+name+'"]').value.trim();
+                add('Institución',form.querySelector('[name="institucionId"]').selectedOptions[0]?.textContent.trim()||'Sin seleccionar');
+                add('Cuenta de origen · salida',valor('cuentaOrigenId')?valor('cuentaOrigenTexto'):'Sin seleccionar');
+                add('Cuenta de destino · entrada',valor('cuentaDestinoId')?valor('cuentaDestinoTexto'):'Sin seleccionar');
+                add('Importe a transferir',money(valor('monto')));
+                const [dia,hora]=valor('fecha').split('T');
+                add('Fecha y hora',dia.split('-').reverse().join('/')+' · '+hora);
+                add('Referencia',valor('referencia')||'Sin referencia');
+                add('Observaciones',valor('observaciones')||'Sin observaciones');
+                note.textContent='Se descontará este importe de la cuenta de origen y se sumará a la de destino, registrando ambas operaciones juntas. Es un traspaso interno, no un ingreso ni gasto operativo consolidado, y no envía dinero al banco. Cancelar conserva tu captura sin aplicar la transferencia.';
             } else if(kind==='compra-cancelacion') {
                 title.textContent='Confirmar cancelación de compra';
                 cancel.textContent='Volver sin cancelar';accept.textContent='Confirmar cancelación';
@@ -520,6 +534,7 @@
             pending = form; submitter = event.submitter;
             accept.disabled = false;
             document.body.classList.add('money-confirm-open'); dialog.showModal(); cancel.focus();
+            if(kind==='transferencia-cuentas')dialog.scrollTop=0;
         });
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);

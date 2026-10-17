@@ -2,8 +2,8 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <body>
 <div class="form-session-actions" th:fragment="controls">
-    <link rel="stylesheet" th:href="@{/css/session-profile.css(v='20261016-perfil')}">
-    <script th:src="@{/js/session-profile.js(v='20261016-perfil')}" defer></script>
+    <link rel="stylesheet" th:href="@{/css/session-profile.css(v='20261016-foto')}">
+    <script th:src="@{/js/session-profile.js(v='20261016-foto')}" defer></script>
     <button class="session-identity session-profile-trigger" type="button" data-session-profile-open aria-haspopup="dialog" aria-controls="session-profile" aria-expanded="false" aria-label="Ver mi perfil" title="Ver mi perfil">
         <img th:src="@{/admin/perfil/fotografia}" alt="Foto del usuario con sesión activa">
         <span><small>Sesión iniciada como</small><strong th:text="${usuarioSesion}">usuario</strong></span>
@@ -15,7 +15,7 @@
     <dialog id="session-profile" class="session-profile-dialog" aria-labelledby="session-profile-title" aria-describedby="session-profile-description" data-session-profile>
         <div class="session-profile-cover" aria-hidden="true"><span>NEXO ESCOLAR</span><span class="session-profile-cover-mark">N</span></div>
         <div class="session-profile-content">
-            <div class="session-profile-portrait"><img th:src="@{/admin/perfil/fotografia}" alt="Tu fotografía de perfil" width="112" height="112" loading="lazy"><span aria-hidden="true">✓</span></div>
+            <div class="session-profile-portrait"><button class="session-profile-photo-button" type="button" data-session-photo-open aria-haspopup="dialog" aria-controls="session-photo-preview" aria-expanded="false" aria-label="Ampliar mi fotografía" title="Ampliar mi fotografía"><img th:src="@{/admin/perfil/fotografia}" alt="Tu fotografía de perfil" width="112" height="112" loading="lazy"></button><span aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5M7 10h6m-3-3v6"/></svg></span></div>
             <span class="session-profile-eyebrow">Tu espacio en Nexo</span>
             <h2 id="session-profile-title" th:text="${usuarioSesion}">Mi perfil</h2>
             <p id="session-profile-description">Tu información, a la mano.</p>
@@ -29,6 +29,11 @@
             </dl>
         </div>
         <footer class="session-profile-footer"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6Z"/><path d="m8 12 3 3 5-6"/></svg>Sólo tú, en tu sesión</span><button type="button" data-session-profile-close autofocus>Cerrar</button></footer>
+    </dialog>
+    <dialog id="session-photo-preview" class="session-photo-preview" aria-labelledby="session-photo-title" data-session-photo-preview>
+        <header class="session-photo-heading"><span>Tu imagen en Nexo</span><h2 id="session-photo-title">Fotografía de perfil</h2><p th:text="${usuarioSesion}">usuario</p></header>
+        <div class="session-photo-canvas"><img data-session-photo-image alt="Tu fotografía de perfil ampliada"><p data-session-photo-status role="status" hidden>No pudimos mostrar la fotografía. Cierra esta vista y vuelve a intentarlo.</p></div>
+        <footer class="session-photo-footer"><span>Vista previa · Sólo lectura</span><button type="button" data-session-photo-close autofocus>Cerrar vista previa</button></footer>
     </dialog>
 </div>
 </body>

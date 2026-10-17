@@ -1,5 +1,56 @@
 # Contexto del proyecto
 
+## Transferencia300 confirmada y fotografía ampliable del perfil — 2026-10-16
+
+Propietario confirmó modal y traspaso TRASPASO-TEST-001 a20:01: origen institucional
+BANCO-COMPRAS-TEST/cuenta4 de2000 a1700; destino BANCO-TRASPASO-TEST/cuenta5 de0 a300.
+Libro muestra EGRESO e INGRESO TRASPASO300, misma referencia y enlaces de reversión de
+transferencia1. #3/#1 son secuencias por cuenta, no IDs de movimiento proporcionados.
+No repetir ni revertir por herramientas. V106 publica guía editorial confirmada con
+seis etapas, tres permisos de consulta y límites de aceptación: reversa/reportes todavía
+pendientes. Cancelar/Escape sólo aceptados técnicamente.36 guías/302 etapas; próxima V107.
+
+Dentro del perfil rápido la fotografía ahora tiene lupa y abre una vista previa nativa
+grande con imagen completa (contain), cabecera y Cerrar vista previa. Ruta privada propia
+existente, sin upload, nuevo endpoint ni cambio de imagen. Cierre/Escape/fondo restauran
+perfil y foco en foto; cerrar perfil cierra también la vista. Fallo de imagen conserva
+aviso/cierre. Claro/oscuro y móvil; assets versionados 20261016-foto. No se considera
+aceptada visualmente por el propietario todavía.
+
+826 Java/49 Node correctos; render y comportamiento de ambos dialogs y error de imagen.
+Navegador ficticio en escritorio claro y390×844 oscuro sin recorte/desborde, cierre visible
+y regreso correcto. Referencia ignorada target/qa-perfil/foto-ampliada.png. SQL validado
+BEGIN/ROLLBACK antes de Flyway V106; salud UP tras recrear sólo app. PostgreSQL/volúmenes
+intactos. Limpieza temporal anterior y actual completada, servidor/pestaña QA retirados y
+viewport restaurado. Sin .env, cambios de saldos, usuarios, roles ni commit.
+
+Próximo: aceptación humana de la foto ampliada y revisión del traspaso en Tesorería,
+estado de cuenta y exportaciones. Distinguir clase TRASPASO de movimientos operativos:
+origen conserva además compra/reversa históricas, no afirmar cero de operación para toda
+la cuenta. Reversa se probará sólo después de acordarla como caso independiente.
+
+## Modal antes de aplicar un traspaso entre cuentas — 2026-10-16
+
+Propietario confirmó2000 en BANCO-COMPRAS-TEST y creó destino del ejemplo. Transferencia
+todavía NO aplicada ni aceptada. Aplicar transferencia ahora abre confirmación común con
+institución/origen/destino/importe/fecha dd/MM/yyyy HH:mm/referencia/observaciones.
+Cancelar, Escape y fondo conservan captura sin enviar; confirmar usa POST/CSRF/clave
+de idempotencia originales. No se modifican servicio, permisos, saldo ni transacción.
+Cancelar del formulario reutiliza botón secundario detail-close-button y vuelve al libro.
+
+Acciones fijas y apertura al inicio sólo para este tipo de modal corrigen desplazamiento
+automático que escondía el título en teléfono; estilos/colores comunes conservados.
+824 Java y47 Node correctos: render/CSRF, resumen actualizado y literal, validación,
+campos opcionales, Cancelar/Escape sin POST y envío único. Navegador con fixture ficticia,
+POST bloqueado, escritorio claro y390×844 oscuro: título/acciones visibles, sin desborde,
+cierre/foco/captura correctos. Evidencia ignorada en target/qa-transferencia/confirmacion.png.
+
+Siguiente: propietario recarga y prueba Cancelar del modal; después reabre y confirma
+una vez300, origen2000 y destino0 (verificar éste), referencia TRASPASO-TEST-001, hora
+real no futura y compatible con aperturas. Esperado1700/300 y dos movimientos ligados
+de TRASPASO. No repetir compras/reversa ni crear otra cuenta. No documentar aceptación
+financiera antes de recibir resultado humano.
+
 ## Perfil de sesión en modal administrativo — 2026-10-16
 
 Foto/nombre del encabezado administrativo ahora es botón Ver mi perfil. Abre dialog

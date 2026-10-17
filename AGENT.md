@@ -1,5 +1,69 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Traspaso aceptado, guía V106 y foto ampliable de sesión — 2026-10-16
+
+- Propietario confirmó modal y aplicación de300 MXN, referencia TRASPASO-TEST-001,
+ 16/10/2026 a20:01 institucional. BANCO-COMPRAS-TEST/cuenta4 pasó2000→1700;
+ BANCO-TRASPASO-TEST/cuenta5 pasó0→300. Dos movimientos institucionales: EGRESO TRASPASO
+ desde origen e INGRESO TRASPASO en destino. Ambos enlaces de reversión apuntan a
+ transferencia1. #3/#1 junto a fecha son secuencias por cuenta; no inventar IDs de los
+ movimientos. No repetir la transferencia ni revertirla sin acordar el siguiente ensayo.
+- V106 sólo editorial añade transferencia-entre-cuentas-confirmada, CONFIRMADA, seis
+ etapas/cuatro acciones cada una. Tres permisos asociados limitan su lectura sin
+ otorgar derechos. Documenta exactamente evidencia anterior; reversa y reportes de
+ este traspaso NO están aceptados. Cancelar/Escape del resumen tienen verificación
+ técnica, no confirmación humana separada. V1–V105 intactas. Guía36/302 etapas totales,
+ V106 aplicada; siguiente migración V107. Supera notas previas de traspaso pendiente.
+- Solicitud nueva: clic en foto dentro de la ficha rápida abre una segunda vista previa
+ nativa, amplia y de sólo lectura, sin recortar (object-fit contain). Reutiliza la ruta
+ privada de fotografía propia y avatar genérico existentes. Botón de foto con lupa,
+ foco visible y aria-expanded; assets del fragmento versionados 20261016-foto.
+ Cerrar vista previa/Escape/fondo vuelven al perfil con sus datos y foco en la foto,
+ sin cerrar la sesión, navegar ni modificarla. Si cierra la ficha principal también
+ cierra la foto. Error de imagen muestra aviso local y conserva cierre. Sin endpoints,
+ carga de archivos, cambios de usuario, nuevos permisos ni almacenamiento adicional.
+- Verificado:826 Java y49 Node sin fallos; render real de ambos dialogs, seguridad
+ previa conservada, reapertura/cierre/Escape/fondo, foto privada propia, fallo de imagen
+ y conservación del perfil. Navegador ficticio claro escritorio y390×844 oscuro:
+ imagen completa, sin desbordamiento, cierre visible y foco restaurado. Referencia
+ visual ignorada en target/qa-perfil/foto-ampliada.png. No implica aceptación humana
+ de la nueva ampliación. SQL V106 validado primero en BEGIN/ROLLBACK y luego aplicado
+ por Flyway. Sólo app recreada, salud UP en8080; PostgreSQL/volúmenes intactos.
+ Limpieza pendiente de QA anterior completada; contenedor/etiqueta actuales y servidor/
+ pestaña temporales retirados, viewport restaurado. Sin .env, cambios operativos ni commit.
+- Próximo humano: recargar, abrir Sesión iniciada como → pulsar foto → Cerrar vista
+ previa para comprobar retorno. Después revisar este traspaso en Tesorería y estados
+ de cuenta/exportaciones, separando entradas/salidas de TRASPASO de operación. Origen
+ también tiene compra/reversa históricas: no atribuirlas a este traspaso ni afirmar
+ ingresos/egresos operativos cero para toda la cuenta. Reversa será ensayo independiente.
+
+## Transferencias entre cuentas: confirmación previa — 2026-10-16
+
+- Propietario confirmó saldo2000 de BANCO-COMPRAS-TEST y que creó la cuenta destino
+ del ejemplo. No se ha aplicado ni aceptado un traspaso; no crear otra cuenta ni mover
+ dinero por herramientas. Antes de confirmar300, comprobar que destino parte de0.
+- Aplicar transferencia abre modal común money-input (transferencia-cuentas), con
+ institución, origen/salida, destino/entrada, importe monetario, fecha dd/MM/yyyy HH:mm,
+ referencia y observaciones vigentes. Cancelar/Escape/fondo sólo cierran y conservan
+ captura; Confirmar y aplicar transferencia usa el POST original con CSRF y clave de
+ idempotencia, sin cambiar servicios, alcance ni transacciones. Resumen usa textContent.
+- Cancelar al lado de Aplicar transferencia tiene estilo secundario común
+ detail-close-button, conservando su enlace al libro. Assets monetarios versionados en
+ esta pantalla. Acciones del modal de traspaso permanecen visibles al desplazar y abre
+ desde el inicio: excepción local al modal común para evitar que el foco inicial en
+ Cancelar esconda el título en teléfonos. Los demás tipos de confirmación no cambian.
+- Verificaciones:824 Java/47 Node sin fallos, git diff --check. Render real Thymeleaf,
+ contrato th:action/CSRF, resumen vigente, datos literales, validación, campos opcionales,
+ Cancelar/Escape sin envío y confirmación única. Navegador ficticio con POST bloqueado
+ en escritorio claro y390×844 oscuro: modal legible, sin desborde, título al abrir,
+ acciones visibles, cierre conserva captura/foco. Referencia ignorada en
+ target/qa-transferencia/confirmacion.png. Prueba operativa permanece pendiente.
+- Próximo humano: recargar Transferir entre cuentas; origen BANCO-COMPRAS-TEST2000,
+ destino BANCO-TRASPASO-TEST0, monto300, referencia TRASPASO-TEST-001 y fecha/hora real
+ no futura ni anterior a aperturas. Abrir resumen y Cancelar primero: no cambia dinero.
+ Reabrir, revisar y confirmar UNA vez. Esperado1700 origen y300 destino, dos movimientos
+ ligados de TRASPASO. Pedir evidencia antes de incorporar a guía como confirmado.
+
 ## Ficha rápida del usuario desde su foto de sesión — 2026-10-16
 
 - Petición previa a probar transferencias: clic en foto/nombre de «Sesión iniciada como»
