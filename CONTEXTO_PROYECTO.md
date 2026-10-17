@@ -1,5 +1,36 @@
 # Contexto del proyecto
 
+## Perfil de sesión en modal administrativo — 2026-10-16
+
+Foto/nombre del encabezado administrativo ahora es botón Ver mi perfil. Abre dialog
+nativo de consulta, foto ampliada, usuario, correo, institución, tipo de acceso y alcance,
+con portada azul/turquesa y tarjeta adaptable claro/oscuro. Sólo botón Cerrar, además de
+Escape/fondo; devuelve foco sin salir ni perder captura. Pie siempre visible y scroll
+interno en teléfono pequeño. Encabezados independientes de portales no se modifican.
+
+Nuevo GET /admin/perfil/resumen toma identidad únicamente del principal: sin selector ID,
+servicio readonly, valida usuario activo/institución y devuelve cinco textos, nunca
+principal/entidad/contraseñas/tokens. Recuperación tiene presentación limitada sin consulta
+de usuario. Sin permiso de gestión de usuarios para consultar el propio perfil. Foto usa
+endpoint privado existente; datos bajo demanda/no-store/textContent, cierre aborta petición
+y respuestas atrasadas no pisan una apertura nueva. Error local conserva botón Cerrar.
+
+Verificación:823 Java y45 Node correctos; seguridad HTTP/render real/unitarias y navegador
+con datos ficticios en1280,390×844 oscuro/textos largos y320×568 claro. Sin encimados ni
+desbordamiento horizontal, botón único visible incluso con scroll, Escape/foco y error
+comprobados. Sólo app actualizada, salud UP y endpoint JSON anónimo401.105 migraciones
+validadas; sin migración nueva (V106 libre), .env, roles, datos financieros ni commit.
+PostgreSQL/volúmenes intactos; servidor/pestaña/contenedor/etiqueta QA retirados y viewport
+restaurado. Referencia visual en target/qa-perfil/perfil-vista.png, ignorada por Git.
+Aceptación humana de esta ficha pendiente; transferencia todavía no realizada.
+
+Próximo: propietario revisa foto/datos/cierre del modal. Ensayo de transferencias propuesto:
+origen institucional BANCO-COMPRAS-TEST saldo2000; destino nuevo BANCO-TRASPASO-TEST
+institucional/MXN/apertura0;300, referencia TRASPASO-TEST-001, fecha/hora real no futura ni
+anterior a aperturas. Esperado1700+300=2000, egreso/ingreso ligados de TRASPASO y sin neto
+operativo consolidado. No tocar BBVA_COBROS/cajas ni repetir compra/reversa. Es ejemplo,
+no aceptación ni registro financiero; pedir evidencia antes de incorporarlo a la guía.
+
 ## Guía de compra/reversa V105 y presentación del Excel — 2026-10-16
 
 Propietario aceptó filtros, diseño y contenido del Excel: COM-00000001 por406,

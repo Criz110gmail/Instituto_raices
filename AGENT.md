@@ -1,5 +1,46 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Ficha rápida del usuario desde su foto de sesión — 2026-10-16
+
+- Petición previa a probar transferencias: clic en foto/nombre de «Sesión iniciada como»
+ abre perfil de sólo lectura, sin navegar ni perder la captura. Implementado en fragmento
+ session-actions compartido por listados y formularios administrativos. No modifica los
+ encabezados propios de familias/maestros. Único botón del modal: Cerrar; Escape y fondo
+ también cierran, devuelven foco y no cierran sesión ni envían formularios.
+- Diseño aislado en session-profile.css/js: foto112px con marco, portada azul tinta y
+ turquesa, usuario/correo/institución/tipo de acceso/alcance en tarjeta; dos columnas
+ escritorio y una móvil, temas claro/oscuro. Modal nativo dialog (foco contenido), ancho
+ máximo520 y altura limitada al viewport, desplazamiento interno y pie fijo al fondo.
+ Loading/error visibles con cierre disponible; aborta al cerrar y descarta respuestas
+ atrasadas al reabrir. Datos escritos como texto, no HTML; no guarda perfil en caché local.
+- GET /admin/perfil/resumen consulta sólo el usuario del principal autenticado, nunca
+ recibe un ID seleccionable. Servicio transaccional readonly y DTO explícito de cinco
+ textos: no devuelve entidades, password/hash, tokens, lista de permisos ni archivos.
+ Valida institución y estado activo; acceso de recuperación usa presentación limitada
+ sin consultar BD. No exige USUARIO_ADMINISTRAR para ver la propia ficha. Alcance limitado
+ muestra cantidad de planteles autorizados sin cargar catálogos. Foto conserva endpoint
+ privado existente /admin/perfil/fotografia y avatar genérico cuando no está configurada.
+- Verificado:823 Java/45 Node sin fallos; pruebas de DTO, alcance, recuperación, rechazo
+ de usuario ausente/inactivo/otra institución, HTTP sólo propio y no-store, parámetros ID
+ ignorados, render Thymeleaf real con nombre escapado, carga bajo demanda, cierre/Escape/
+ fondo, error/redirección y carreras de respuestas. Navegador con fixture ficticia en
+1280 escritorio,390×844 oscuro/textos largos y320×568 claro: sin desborde horizontal,
+ un solo botón Cerrar visible, foco restaurado y error local sin navegación. Captura
+ de referencia ignorada en target/qa-perfil/perfil-vista.png. Aceptación humana pendiente.
+- Sólo app reconstruida/recreada, salud UP en8080; consulta real anónima JSON devuelve401.
+ Flyway valida105 migraciones, sin nueva migración; V106 libre. PostgreSQL/volúmenes no
+ reiniciados, sin .env, roles, operaciones financieras ni commit. Servidor, pestaña,
+ contenedor y etiqueta de imagen temporales retirados; viewport restaurado.
+- Siguiente propietario: recargar una pantalla administrativa, pulsar foto/nombre y
+ comprobar foto/datos/Cerrar sin perder captura. Después ensayo propuesto, NO ejecutado:
+ banco institucional BANCO-COMPRAS-TEST con2000 → banco institucional nuevo
+ BANCO-TRASPASO-TEST con apertura0, misma institución/MXN, transferencia300 una sola vez
+ (referencia TRASPASO-TEST-001). Esperado origen1700, destino300, dos movimientos de
+ TRASPASO relacionados, total combinado2000 y sin ingreso/gasto operativo consolidado.
+ Usar fecha real no futura y no anterior a la apertura; no reutilizar cajas, BBVA_COBROS
+ ni repetir compra/reversa. Si las cuentas tienen otro saldo, acordar el ejemplo antes.
+ No documentar la transferencia como confirmada hasta recibir evidencia del propietario.
+
 ## Compras aceptadas, Excel con formato y guía V105 — 2026-10-16
 
 - Propietario confirmó que filtros/diseño funcionan correctamente y compartió Excel:

@@ -2,14 +2,34 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <body>
 <div class="form-session-actions" th:fragment="controls">
-    <div class="session-identity" title="Usuario con sesión activa">
+    <link rel="stylesheet" th:href="@{/css/session-profile.css(v='20261016-perfil')}">
+    <script th:src="@{/js/session-profile.js(v='20261016-perfil')}" defer></script>
+    <button class="session-identity session-profile-trigger" type="button" data-session-profile-open aria-haspopup="dialog" aria-controls="session-profile" aria-expanded="false" aria-label="Ver mi perfil" title="Ver mi perfil">
         <img th:src="@{/admin/perfil/fotografia}" alt="Foto del usuario con sesión activa">
         <span><small>Sesión iniciada como</small><strong th:text="${usuarioSesion}">usuario</strong></span>
-    </div>
+    </button>
     <button class="theme-button" type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button>
     <form class="logout-form" method="post" th:action="@{/logout}">
         <button class="logout-button" type="submit"><span aria-hidden="true">↪</span> Cerrar sesión</button>
     </form>
+    <dialog id="session-profile" class="session-profile-dialog" aria-labelledby="session-profile-title" aria-describedby="session-profile-description" data-session-profile>
+        <div class="session-profile-cover" aria-hidden="true"><span>NEXO ESCOLAR</span><span class="session-profile-cover-mark">N</span></div>
+        <div class="session-profile-content">
+            <div class="session-profile-portrait"><img th:src="@{/admin/perfil/fotografia}" alt="Tu fotografía de perfil" width="112" height="112" loading="lazy"><span aria-hidden="true">✓</span></div>
+            <span class="session-profile-eyebrow">Tu espacio en Nexo</span>
+            <h2 id="session-profile-title" th:text="${usuarioSesion}">Mi perfil</h2>
+            <p id="session-profile-description">Tu información, a la mano.</p>
+            <p class="session-profile-status" role="status" data-profile-status>Consultando tu información…</p>
+            <dl class="session-profile-details" data-profile-details hidden>
+                <div><dt>Usuario</dt><dd data-profile-field="usuario"></dd></div>
+                <div><dt>Correo electrónico</dt><dd data-profile-field="correo"></dd></div>
+                <div class="session-profile-wide"><dt>Institución</dt><dd data-profile-field="institucion"></dd></div>
+                <div><dt>Tipo de acceso</dt><dd data-profile-field="acceso"></dd></div>
+                <div><dt>Alcance de la cuenta</dt><dd data-profile-field="alcance"></dd></div>
+            </dl>
+        </div>
+        <footer class="session-profile-footer"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6Z"/><path d="m8 12 3 3 5-6"/></svg>Sólo tú, en tu sesión</span><button type="button" data-session-profile-close autofocus>Cerrar</button></footer>
+    </dialog>
 </div>
 </body>
 </html>

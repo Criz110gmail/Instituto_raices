@@ -1,6 +1,7 @@
 package escuela.admin.controller;
 
 import escuela.archivo.dto.ArchivoDescarga;
+import escuela.admin.service.PerfilSesionService;
 import escuela.seguridad.service.FotografiaUsuarioService;
 import escuela.seguridad.service.UsuarioPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,12 @@ import java.nio.charset.StandardCharsets;
 public class PerfilSesionController {
 
     private final FotografiaUsuarioService fotografiaService;
+    private final PerfilSesionService perfilService;
+
+    @GetMapping("/admin/perfil/resumen")
+    ResponseEntity<PerfilSesionService.Resumen> resumen(@AuthenticationPrincipal UsuarioPrincipal principal) {
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(perfilService.actual(principal));
+    }
 
     @GetMapping("/admin/perfil/fotografia")
     ResponseEntity<Resource> fotografia(@AuthenticationPrincipal UsuarioPrincipal principal) {

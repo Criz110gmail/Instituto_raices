@@ -1,5 +1,17 @@
 # Sistema administrativo escolar
 
+## Perfil rápido de la sesión administrativa — 16/10/2026
+
+Al pulsar la foto o el nombre del encabezado se abre una ficha de sólo lectura con
+fotografía, usuario, correo, institución, tipo de acceso y alcance. Diseño azul/turquesa,
+adaptable a teléfono y tema oscuro; único botón Cerrar, además de Escape y fondo.
+No abandona el formulario ni cambia la sesión. Consulta privada bajo demanda de la
+identidad autenticada; no devuelve contraseñas/tokens ni exige administrar usuarios.
+823 pruebas Java/45 JavaScript aprobadas; diseño verificado con datos ficticios en
+escritorio y móvil. App actualizada con salud UP, sin migraciones ni cambios financieros.
+Pendiente aceptación visual del propietario y prueba guiada de transferencia entre
+dos cuentas aisladas. V105 conserva la guía de compra/reversa; siguiente migración V106.
+
 ## Guía de permisos de reportes confirmada — 16/10/2026
 
 V104 agrega **Comprobar permisos y alcance por plantel en Reportes financieros**, con
