@@ -58,6 +58,17 @@ class SesionActividadFilterTest {
             assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         }
     }
+    @Test void noCierraAntesDeLosTreintaMinutosExactos() throws Exception {
+        var request = request("/sesion/estado", ahora - 1799999);
+        var session = (MockHttpSession) request.getSession();
+        var response = new MockHttpServletResponse();
+        var ejecutado = new java.util.concurrent.atomic.AtomicBoolean();
+        filter.doFilter(request, response, (req,res) -> ejecutado.set(true));
+        assertThat(ejecutado.get()).isTrue();
+        assertThat(session.isInvalid()).isFalse();
+        assertThat(response.getHeader("X-Session-Expires")).isEqualTo(Long.toString(ahora + 1));
+        assertThat(session.getAttribute(SesionActividadFilter.ACTIVIDAD)).isEqualTo(ahora - 1799999);
+    }
     @Test void vencimientoLogicoRedirigeAlPortalPropio() throws Exception {
         var request = request("/maestros/planeaciones", ahora - 1800000);
         var response = new MockHttpServletResponse();

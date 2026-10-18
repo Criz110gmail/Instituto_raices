@@ -1,5 +1,44 @@
 # Sistema administrativo escolar
 
+## Cierre del ejemplo de traspaso y reversión — 17/10/2026
+
+V109 actualiza las guías existentes, sin duplicarlas: confirmados el corte histórico
+del16/10 después de revertir (pantalla/PDF/Excel sin alterar cifras) y la pantalla de
+operación ya revertida sin formulario para otra reversa. Bloque de este ejemplo cerrado;
+no implica aceptación de todas las variantes. Revisión de sesiones pendiente por separado,
+con timeout actual30m y propuesta temporal5m todavía no ejecutada.
+V109 aplicada:38 guías/315 etapas sin duplicados;840 Java/52 JavaScript correctas.
+Aplicación actualizada y saludable, sin cambios financieros ni de configuración de sesión.
+
+## Pendiente: prueba controlada de sesiones — 17/10/2026
+
+Revisar el cierre reportado como anticipado. Se propone un ensayo futuro cambiando
+temporalmente `server.servlet.session.timeout=5m`, sin reinicios durante la prueba,
+y restaurando `30m` al finalizar. Por petición del propietario queda pendiente:
+la configuración actual sigue en30 minutos. No se reinició la app para esta nota.
+
+## Reversión del traspaso y reportes confirmados — 17/10/2026
+
+V108 incorpora **Revertir un traspaso y comprobar sus reportes**: reversa del17/10 a16:10,
+origen recupera $2,000.00 y destino queda en $0.00. Tesorería, estados de cuenta, PDF
+y ambas hojas Excel coinciden y conservan originales/compensaciones. Actualiza límites
+anteriores de las guías sin reescribir migraciones ni registrar dinero.
+Pendientes adicionales: reconsultar el corte del16 después de revertir y comprobar
+el bloqueo de una segunda reversión. No repetir la operación para documentarla.
+V108 aplicada:38 guías/315 etapas;838 Java/52 JavaScript correctas, aplicación saludable.
+Sesiones: configuración30 minutos de inactividad, no modificada. Recrear la aplicación
+invalida sesiones aunque reste tiempo; la revisión del cierre reportado no demuestra
+todavía una causa individual. Nueva prueba técnica valida sesión activa a29:59.999.
+
+## Confirmación de reversa trazable — 17/10/2026
+
+Confirmar reversa trazable abre un modal de detalle antes de ejecutar. Cancelar cierra
+el modal sin perder fecha/motivo; sólo Confirmar y registrar reversa envía la operación.
+Cancelar del formulario tiene diseño de botón. Compatible con móvil y tema oscuro.
+835 pruebas Java/52 JavaScript correctas y revisión visual ficticia; sin migración ni
+operaciones financieras realizadas por el agente. Recargar la página para probar.
+Aplicación actualizada y saludable; base de datos y volúmenes intactos.
+
 ## Reportes del traspaso confirmados — 17/10/2026
 
 V107 incorpora la guía **Comprobar un traspaso en Tesorería y estados de cuenta**:

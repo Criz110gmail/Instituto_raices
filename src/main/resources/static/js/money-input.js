@@ -254,6 +254,21 @@
                 add('Referencia',valor('referencia')||'Sin referencia');
                 add('Observaciones',valor('observaciones')||'Sin observaciones');
                 note.textContent='Se descontará este importe de la cuenta de origen y se sumará a la de destino, registrando ambas operaciones juntas. Es un traspaso interno, no un ingreso ni gasto operativo consolidado, y no envía dinero al banco. Cancelar conserva tu captura sin aplicar la transferencia.';
+            } else if(kind==='reversion-financiera') {
+                const transferencia=form.dataset.confirmTransfer==='true';
+                title.textContent=transferencia?'Confirmar reversa de transferencia':'Confirmar reversa de operación';
+                cancel.textContent='Cancelar';accept.textContent='Confirmar y registrar reversa';
+                add(transferencia?'Transferencia original':'Movimiento original','#'+form.dataset.confirmId);
+                add('Operación',form.dataset.confirmTitle);
+                add(transferencia?'Recorrido original · origen → destino':'Cuenta y dirección original',form.dataset.confirmDetail);
+                add('Importe que se compensará',money(form.dataset.confirmAmount));
+                add('Fecha original',form.dataset.confirmOriginalDate);
+                const [dia,hora]=form.querySelector('[name="fecha"]').value.trim().split('T');
+                add('Fecha y hora de reversa',dia.split('-').reverse().join('/')+' · '+hora);
+                add('Motivo de la corrección',form.querySelector('[name="motivo"]').value.trim());
+                add('Resultado',transferencia?'Dos movimientos inversos: ingreso al origen y egreso del destino':'Un movimiento opuesto al original');
+                note.textContent=(transferencia?'Se devolverá el importe de la cuenta destino a la de origen mediante dos movimientos compensatorios registrados juntos. El destino debe conservar fondos suficientes. ':'Se registrará un movimiento compensatorio en la misma cuenta. ')
+                    +'La reversa modifica saldos internos, no envía dinero al banco ni borra el historial. Cancelar o pulsar Escape sólo cierra este resumen y conserva tu captura, sin registrar la reversa.';
             } else if(kind==='compra-cancelacion') {
                 title.textContent='Confirmar cancelación de compra';
                 cancel.textContent='Volver sin cancelar';accept.textContent='Confirmar cancelación';
@@ -534,7 +549,7 @@
             pending = form; submitter = event.submitter;
             accept.disabled = false;
             document.body.classList.add('money-confirm-open'); dialog.showModal(); cancel.focus();
-            if(kind==='transferencia-cuentas')dialog.scrollTop=0;
+            if(['transferencia-cuentas','reversion-financiera'].includes(kind))dialog.scrollTop=0;
         });
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);

@@ -1,5 +1,123 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Cierre humano de pruebas de traspaso/reversa — 2026-10-17
+
+- Propietario aportó reconsulta posterior a la reversa del corte Tesorería16/10/2026:
+ pantalla/PDF y Excel COMPLETO coinciden con el histórico previo. BBVA1mov/ingreso500;
+ origen3mov/ingreso406/egreso406/neto0/traspasos0entrada-300salida; destino1mov/operación0,
+ traspasos300entrada-0salida/MXN. PDF apertura4650/ingresos906/egresos406/cierre5150,
+ netos de traspasos0/-300/+300. Compensaciones17/10 no alteraron este corte anterior.
+- Captura adjunta muestra formulario de transferencia1 ya revertida, cuentas correctas,
+ importe300, fecha original16/10 a20:01 y aviso Esta operación ya fue revertida / No es
+ posible publicar una segunda reversa; tarjeta termina sin campos ni botón de envío.
+ Bloqueo EN PANTALLA aceptado, no afirmar ensayo humano de POST forzado o concurrencia.
+- V109 sólo UPDATE de guías existentes: reemplaza paso7 de reversa y pendientes de
+ resúmenes/paso6 de guías anteriores; no crea guías duplicadas ni modifica V1–V108.
+ Ya no quedan las dos comprobaciones humanas pendientes de ESTE ejemplo financiero.
+ No equivale a aceptación de todos los módulos/variantes. Sigue pendiente por separado
+ revisión de sesiones (propuesta5m temporal/restaurar30m), sin tocar properties actual30m.
+ SQL validado BEGIN/ROLLBACK; sin operaciones financieras, .env, roles ni commit.
+- Verificado840 Java/52 Node sin fallos y diff correcto. V109 aplicada:38 guías/315
+ etapas, sin duplicados; versiones transferencia4/reportes3/reversa2. App recreada y
+ salud UP8080,17/10 a18:29México; se avisó que publicación puede cerrar sesión. Base y
+ volúmenes conservados. Properties30m sin cambios; próxima migración V110. No ejecutar
+ nuevas pruebas financieras hasta acordar siguiente caso; este bloque ya está cerrado.
+
+## Sesiones aplazadas por el propietario; continuar pruebas financieras — 2026-10-17
+
+- Propietario aclaró que el cierre ocurrió después de publicar modal, cuando hizo
+ su prueba y escribió; no dio hora/contador exactos. NO atribuirlo al reinicio16:08
+ ni declararlo corregido. A petición explícita, dejar diagnóstico/prueba pendientes.
+- Propuesta para ensayo futuro controlado: cambiar temporalmente en properties
+ server.servlet.session.timeout de30m a5m, publicar ANTES de iniciar prueba y no
+ reiniciar durante ella. Comprobar aviso, vencimiento, renovación y retorno al login
+ propio; registrar horas/contador/actividad. Restaurar30m, publicar y confirmar antes
+ de cerrar la tarea. No se autorizó ejecutarlo ahora: sigue30m, no se cambió properties.
+- En este turno sólo documentación local; sin compilación/despliegue/reinicio,
+ migración ni operaciones financieras. V108 vigente/V109 libre. Continúan dos pruebas
+ financieras pendientes: reconsulta histórica16/10 tras reversa y bloqueo de segunda
+ reversión por pantalla. El ensayo de sesiones es un pendiente separado, no incluido
+ en las dos comprobaciones restantes de este bloque financiero.
+
+## Revisión de cierre antes de30 minutos — 2026-10-17
+
+- Propietario reportó un cierre que considera anterior a30 minutos mientras se
+ documentaba reversa. Diagnóstico sólo: NO cambiar seguridad ni persistencia sin
+ causa confirmada. application.properties fija server.servlet.session.timeout=30m,
+ no hay otra definición en application*, ni SERVER_SERVLET_SESSION_TIMEOUT en
+ contenedor. Filtro/estado usan1800s; son30 minutos desde última petición útil, no
+ desde la última tecla. Sondeo GET/estado cada5s NO renueva; acciones del servidor y
+ POST/renovar sí. Contador usa reloj servidor/performance.now, no reloj local.
+- En revisión antes de publicar V108 el contenedor arrancó17/10/2026 a22:08:17UTC
+ (16:08:17 México), app lista16:08:23; corresponde a publicar modal. Sesiones locales
+ se pierden al recrear app; no demuestra por sí solo causa del incidente sin hora
+ del propietario. RestartCount0 no excluye recreación (el contenedor es nuevo).
+ Se preguntó cuándo cerró, tiempo visible y actividad; respuesta pendiente.
+- Prueba adicional noCierraAntesDeLosTreintaMinutosExactos comprueba sesión válida
+ tras29:59.999; pruebas existentes invalidan a30:00 y renovación1800s. Sin cambios
+ funcionales de sesiones ni promesa de incidente corregido. Para prueba humana usar
+ tramo sin publicaciones/reinicios y anotar inicio, última acción y hora de cierre.
+
+## Reversa del traspaso y reportes aceptados — 2026-10-17
+
+- Propietario confirmó reversión tras publicar modal. TRASPASO-TEST-001/transferencia1,
+ original16/10 a20:01; reversa17/10/2026 a16:10. Cuentas: origen BANCO-COMPRAS-TEST
+ saldo actual2000/inicial2000; destino BANCO-TRASPASO-TEST actual0/inicial0. Libro:
+ ingreso REVERSO300 al origen, antes1700/después2000, Compensa #6, secuencia #4;
+ egreso REVERSO300 del destino, antes300/después0, Compensa #7, secuencia #2. No se
+ proporcionaron IDs de los nuevos movimientos ni cabecera de reversa: NO inventarlos.
+- Tesorería diaria17/10, todas autorizadas: dos filas/un movimiento cada una,
+ ingresos/egresos/neto operativo0. Origen traspasos entrada300/salida0; destino0/300.
+ Excel coincide. PDF apertura5150/operación0/cierre5150 y netos traspaso+300/-300.
+- Estado mensual2026/Octubre origen: cuatro filas (reversa300, traspaso300, reversa
+ compra406 y compra406), apertura0, inicial registrado2000, ingresos706/egresos706,
+ cierre2000. Destino: dos filas (reversa egreso300 y traspaso ingreso300), apertura0,
+ inicial0, ingresos300/egresos300/cierre0. Pantalla/PDF/Resumen y detalle Excel de AMBAS
+ cuentas confirmados. Primera copia repetida del origen fue error humano reconocido,
+ NO fallo de filtro; después aportó destino correcto. Historial de originales intacto.
+- V108 editorial: nueva guía reversa-traspaso-reportes-confirmados, CONFIRMADA,
+ siete etapas/cuatro acciones. Actualiza resumen/paso6 de guías V106/V107 y añade
+ advertencia histórica a pasos3–5 de V107: sus tres/una filas eran ANTES de reversa,
+ no se deben esperar hoy al consultar todo octubre. V1–V107 SQL sin modificar.
+ SQL validado BEGIN/ROLLBACK; sólo tablas guia_proceso*, sin mover dinero/otorgar roles.
+- Quedan DOS comprobaciones humanas de este bloque: volver a consultar corte16/10
+ después de revertir (debe conservar valores anteriores) y comprobar pantalla de
+ transferencia ya revertida sin formulario ni segunda reversión. No forzar POST.
+ Cancelar/Escape/fondo del nuevo modal siguen con evidencia técnica, no humana separada;
+ motivo exacto guardado no mostrado. No declarar aceptadas estas variantes ni todo el
+ sistema. Próximo: consulta histórica, después bloqueo de segunda reversión.
+- Verificado838 Java/52 Node sin fallos; diff correcto. V108 aplicada:38 guías/315
+ etapas, nueva guía CONFIRMADA/v1, transferencia v3 y reportes previos v2. App recreada
+ y salud UP8080; publicación17/10 a23:39UTC (17:39México), se avisó que cerraría sesiones.
+ PostgreSQL/volúmenes intactos, sin .env, operaciones financieras, roles ni commit.
+ Próxima migración V109. Incidente de sesión anterior sigue sin causa individual
+ confirmada; empezar prueba humana sin reinicios después de esta publicación.
+
+## Confirmación previa de reversa trazable — 2026-10-17
+
+- A petición del propietario, Confirmar reversa trazable ahora abre el modal compartido
+ money-input, kind reversion-financiera, antes del POST. Supera la nota anterior de
+ envío directo. Cancelar del formulario tiene clase detail-close-button y conserva
+ navegación al libro. Plantilla compartida cubre transferencia y operación manual.
+- Modal: ID/tipo de operación, recorrido original o cuenta/dirección, importe/moneda,
+ fecha original, fecha de reversa dd/MM/yyyy HH:mm, motivo vigente y compensación
+ esperada (dos movimientos inversos para transferencia, uno para manual). Advierte
+ devolución destino→origen, fondos suficientes, historial y que no envía dinero al banco.
+ Cancelar/Escape/fondo sólo cierran y conservan captura/foco. Confirmar y registrar
+ reversa reutiliza POST/CSRF/versión/idempotencia originales, sin modificar servicio.
+- Assets versionados20261017-reversion. Acciones pegadas al pie al desplazar, móvil y
+ oscuro.835 Java/52 Node correctos: render real transferencia/manual/revertida, moneda,
+ escape HTML, validación previa, motivo/fecha actualizados, cancelación/Escape/fondo y
+ confirmación única. QA navegador con fixture ficticia y todo POST bloqueado: escritorio
+ claro y390×844 oscuro legibles, Cancelar conserva campos. No operación financiera real.
+- Sin migración (V107 vigente/V108 libre), .env, usuarios/roles ni commit. Propietario
+ todavía NO ha revertido transferencia1/TRASPASO-TEST-001: último saldo aceptado origen
+1700/destino300. Recargar página tras publicación; probar Cancelar primero, después
+ volver a abrir y confirmar una vez para continuar ensayo humano pendiente.
+- App reconstruida/recreada, salud UP8080;107 migraciones validadas sin nuevas.
+ PostgreSQL/volúmenes intactos. Servidor/pestaña/contendor y etiqueta QA retirados,
+ viewport restaurado. No se pulsó confirmación sobre registros de la instalación.
+
 ## Reportes del traspaso aceptados por propietario — 2026-10-17
 
 - Evidencia humana nueva: Tesorería diaria16/10/2026, todas las cuentas autorizadas:
