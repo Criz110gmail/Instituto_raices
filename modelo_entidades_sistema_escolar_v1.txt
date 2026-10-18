@@ -22,8 +22,9 @@ Este documento es una propuesta de diseño, no una implementación ni una
 transcripción literal. Completa campos no definidos y corrige ambigüedades del
 análisis anterior. Las entidades auxiliares se proponen para cerrar los flujos.
 Materias, calificaciones y asistencia quedaron fuera del alcance inicial de cobros, pero
-se incorporan como ampliación académica desde V39. Nómina, inventarios y facturación
-fiscal continúan fuera del alcance actual.
+se incorporan como ampliación académica desde V39. Nómina se incorpora al alcance de
+diseño aprobado el18/10/2026, aún NO implementada: ver PLAN_PERSONAL_Y_NOMINA.md.
+Inventarios y emisión de facturación fiscal continúan fuera del alcance actual.
 El registro de tesorería descrito no equivale a contabilidad de partida doble.
 
 2. CONVENCIONES COMUNES

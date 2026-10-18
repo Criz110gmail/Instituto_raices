@@ -1,5 +1,25 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Próxima etapa: empleados, maestros y nómina — 2026-10-18
+
+- Propietario incorpora nómina al alcance futuro y aprueba Empleados como captura única
+  con perfil docente opcional y varios planteles por institución. Empleado, maestro y
+  usuario son distintos; acceso independiente, sin permisos automáticos por asignación.
+  Conservar IDs, usuarios, relaciones e historial de maestros; nunca borrar/recrear.
+- LEER ÍNTEGRO `PLAN_PERSONAL_Y_NOMINA.md` antes de ampliar: acuerdos, modelo conceptual,
+  fases, integración compatible y reglas aún por cerrar. Primera etapa: inventariar
+  dependencias y presentar estrategia aditiva; implementar empleados/perfil docente/
+  multi-plantel, no toda la nómina. No fusionar por nombre ni inventar datos laborales.
+- Plan incluye bruto/base/frecuencia/vigencia, conceptos, préstamos, distribución de
+  costos, nómina/pagos/reversas y recibo NO fiscal. IMSS/Infonavit/ISR inicialmente
+  manuales con soporte y revisión contable, NO cálculo legal automático ni timbrado.
+- Hoy sólo documentación para retomar19/10 o próxima sesión; sin código, migraciones,
+  reinicios, operaciones reales ni commit. V110 último estado documentado/V111 libre,
+  verificar al retomar. No declarar implementada la integración ni nómina.
+- Siguen aceptación humanaV110, ocho escenarios familiares y sesiones aplazadas30m.
+  Traspaso/reversa cerrado. Exclusiones históricas de nómina superadas por este acuerdo;
+  inventarios/emisión fiscal siguen fuera. Compras documental y respaldos independientes.
+
 ## Pendientes personales de administración y docentes — 2026-10-17
 
 - Solicitud aprobada: agenda PRIVADA por usuario, no compartida ni con administradores.

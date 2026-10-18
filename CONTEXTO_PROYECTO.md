@@ -1,5 +1,22 @@
 # Contexto del proyecto
 
+## Plan de integración de personal y nómina — 18/10/2026
+
+Propietario aprueba Empleados como captura única con perfil docente y varios planteles.
+Acceso de usuario independiente; conservar IDs, cuentas e historial académico, sin
+fusionar por nombre ni inventar sueldo/fecha laboral. Nómina se incorpora al alcance
+de DISEÑO, todavía NO implementada. Plan íntegro: `PLAN_PERSONAL_Y_NOMINA.md`.
+Incluye sueldo bruto/base/frecuencia, conceptos, préstamos, retenciones manuales con
+revisión contable, costos por plantel, nóminas, pagos/reversas y recibo interno no fiscal.
+Sin cálculo legal automático/timbrado inicial. Documenta decisiones pendientes: fórmulas,
+horas, redondeos, descuentos, costos, permisos y pagos parciales individuales.
+Retomar mañana19/10 o próxima sesión: revisar dependencias reales de Maestro y presentar
+estrategia aditiva; primera implementación empleados/perfil docente/multi-plantel.
+Hoy sólo documentación, sin código, SQL, migración, reinicio ni operación real/commit.
+V110 último estado documentado; revalidar V111 libre. Aceptación agenda, ocho pruebas
+familiares, sesiones5m/restaurar30m aplazadas, Compras documental y respaldos siguen
+pendientes. No reabrir ejemplo financiero traspaso/reversa ya cerrado.
+
 ## Nueva agenda personal privada — 2026-10-17
 
 V110 implementa /admin/pendientes y /maestros/pendientes. Título, descripción opcional,
