@@ -35,6 +35,7 @@ public class SeguridadConfig {
                         .requestMatchers(HttpMethod.GET, "/sesion/estado", "/acceso/csrf").permitAll()
                         .requestMatchers(HttpMethod.POST, "/acceso/comprobar").permitAll()
                         .requestMatchers(HttpMethod.POST, "/sesion/renovar").authenticated()
+                        .requestMatchers("/admin/pendientes", "/admin/pendientes/**").authenticated()
                         .requestMatchers("/", "/login", "/familias", "/maestros/acceso", "/activar-cuenta", "/restablecer-password", "/acceso-denegado", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
                         .requestMatchers("/maestros/**").hasAuthority("PORTAL_MAESTRO_ACCEDER")
                         .requestMatchers(HttpMethod.GET, "/portal/**")

@@ -211,7 +211,18 @@
                 if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
                 if (form.dataset.confirmSubject) add('Titular del pago', form.dataset.confirmSubject);
             }
-            if(kind==='apertura-caja') {
+            if(kind==='pendiente-guardar'||kind==='pendiente-estado') {
+                cancel.textContent='Cancelar';accept.textContent=kind==='pendiente-guardar'?'Confirmar y guardar pendiente':'Confirmar cambio de estado';
+                title.textContent=kind==='pendiente-guardar'?'Confirmar mi pendiente':'Confirmar seguimiento';
+                const campo=name=>form.querySelector('[name="'+name+'"]');
+                add('Título',kind==='pendiente-guardar'?campo('titulo').value.trim():form.dataset.confirmTitle);
+                if(kind==='pendiente-guardar'){
+                    add('Fecha compromiso',campo('fechaCompromiso').value.split('-').reverse().join('/'));
+                    add('Descripción',campo('descripcion').value.trim()||'Sin descripción');
+                }
+                add('Estado',campo('estado').selectedOptions[0].textContent);
+                note.textContent='Este pendiente es privado y sólo tú puedes consultarlo. Realizado y Cancelado dejan de aparecer en los avisos; puedes reabrirlo después. Cancelar sólo cierra este resumen y conserva tu captura.';
+            } else if(kind==='apertura-caja') {
                 title.textContent='Confirmar apertura de corte de caja';
                 cancel.textContent='Cancelar';accept.textContent='Confirmar y abrir corte';
                 const valor=name=>form.querySelector('[name="'+name+'"]').value.trim();
@@ -549,7 +560,7 @@
             pending = form; submitter = event.submitter;
             accept.disabled = false;
             document.body.classList.add('money-confirm-open'); dialog.showModal(); cancel.focus();
-            if(['transferencia-cuentas','reversion-financiera'].includes(kind))dialog.scrollTop=0;
+            if(['transferencia-cuentas','reversion-financiera','pendiente-guardar','pendiente-estado'].includes(kind))dialog.scrollTop=0;
         });
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);

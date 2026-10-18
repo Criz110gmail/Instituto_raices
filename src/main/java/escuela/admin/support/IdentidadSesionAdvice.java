@@ -4,7 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-@ControllerAdvice(basePackages = "escuela.admin")
+@ControllerAdvice(basePackages = {"escuela.admin", "escuela.pendiente"})
 public class IdentidadSesionAdvice {
 
     @ModelAttribute("usuarioSesion")

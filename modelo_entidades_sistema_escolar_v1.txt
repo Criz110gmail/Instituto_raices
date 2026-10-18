@@ -830,3 +830,20 @@ acuerdo aplicado cuando exista; devolución que reabre deuda elimina clasificaci
 LIQUIDADO sin borrar historia. Consulta por alcance de pago, filtros en DB y lotes por
 página; año cubierto difiere del año de recepción. Excel conserva filtros y no duplica
 el ingreso por cada alumno o año cubierto. V93 sólo crea vista y función de consulta.
+
+ACTUALIZACIÓN V110 — PENDIENTES PERSONALES (2026-10-17)
+PendientePersonal pertenece exclusivamente a Usuario; la institución se deriva de él.
+Título requerido hasta180 caracteres, descripción opcional hasta4000 y fechaCompromiso
+LocalDate requerida. Estados PENDIENTE, EN_PROCESO, REALIZADO y CANCELADO. Vencido se
+deriva de fecha anterior a hoy y estado abierto, según zona horaria de la institución.
+Realizado conserva realizadoEn; reabrir limpia esa fecha, no borra historial.
+Cada operación valida usuario autenticado persistido, activo, tipo de cuenta y la
+institución; no recibe propietario de la captura. Sólo ADMINISTRATIVO en /admin/pendientes
+y PORTAL_MAESTRO con acceso vigente en /maestros/pendientes. Familias, recuperación y
+soporte de otro maestro no obtienen la agenda de terceros; rol amplio nunca la comparte.
+PendienteCambio conserva auditoría privada inmutable por pendiente: acción, estado,
+instanteUTC y versión. No se envían títulos/descripciones al registro global de Auditoría.
+Triggers impiden borrar pendientes, cambiar propietario o editar/eliminar su historial.
+Listados/Excel paginados con filtros y pertenencia aplicados en JPA. Avisos al consultar:
+vencidos, hoy y próximos7días; primeros5 ordenados por fecha/id. No son correos, tareas
+programadas ni notificaciones familiares. No se crea un permiso para ver agendas ajenas.

@@ -2,6 +2,7 @@
     'use strict';
 
     const MODULES = [
+        [/^\/(admin|maestros)\/pendientes/, 'Mis pendientes', 'Tu agenda privada. Organiza compromisos con fecha y consulta avisos de vencidos, de hoy y de los próximos siete días. Ningún otro usuario puede consultar tus notas.', 'Crear Preparar material y marcarlo Realizado al terminar.'],
         [/^\/admin\/guias/, 'Guía de procesos', 'Consulta procesos probados con requisitos, pasos y resultados esperados. Sólo orienta; no crea registros ni ejecuta pagos.', 'Seguir la guía de una transferencia de $1,000 para dos hijos con cargos de $600 y $400.'],
         [/^\/admin\/catalogos\/instituciones|^\/admin\/instituciones/, 'Instituciones', 'Define los datos legales y operativos de cada institución que utiliza el sistema. Es la raíz que separa planteles, personas, seguridad y finanzas.', 'Registrar Instituto Raíces con su código, zona horaria y moneda de trabajo.'],
         [/^\/admin\/(catalogos\/)?planteles/, 'Planteles', 'Administra las sedes físicas de una institución y sus datos de contacto, ubicación y operación.', 'Crear el plantel Centro y relacionarlo con Instituto Raíces.'],
@@ -235,6 +236,10 @@
     };
 
     const MODULE_FIELD = {
+        'Mis pendientes:titulo': ['Nombre breve de tu compromiso personal. Sólo tú puedes consultarlo; no se publica para otros usuarios.', 'Preparar material para la reunión.'],
+        'Mis pendientes:descripcion': ['Notas privadas que te ayudan a recordar qué necesitas hacer.', 'Revisar la lista y preparar dos actividades.'],
+        'Mis pendientes:fechacompromiso': ['Día en que quieres completar el pendiente, según el calendario de tu institución. Si pasa la fecha sin terminar, aparecerá como vencido.', '20/10/2026'],
+        'Mis pendientes:estado': ['Pendiente o En proceso mantienen los avisos. Realizado y Cancelado conservan historial sin avisarte; puedes reabrirlos.', 'Selecciona Realizado cuando termines.'],
         'Pagos recibidos:alumnotexto': ['Filtra los pagos relacionados con los cargos de un alumno, incluidos pendientes y cancelados. Si un pago cubre a varios alumnos se muestra una sola vez y conserva su importe total.', 'Escribe Martha o su matrícula, selecciona la sugerencia y pulsa Aplicar filtros.'],
         'Instituciones:codigo': ['Es la nomenclatura única de la institución. Se utiliza para diferenciarla, formar referencias y resolver accesos cuando un usuario se repite en otra institución.', 'IRAICES'],
         'Planteles:codigo': ['Clave corta y única del plantel dentro de su institución. Facilita búsquedas, reportes y referencias internas.', 'CENTRO'],

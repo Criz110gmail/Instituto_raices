@@ -2,6 +2,8 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <body>
 <div class="form-session-actions" th:fragment="controls">
+    <link rel="stylesheet" href="/css/pendientes.css?v=20261017"><script src="/js/pendientes.js?v=20261017" defer></script>
+    <a class="agenda-notification" href="/admin/pendientes" data-personal-agenda aria-label="Mis pendientes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span>Mis pendientes</span><b data-agenda-count hidden>0</b></a>
     <link rel="stylesheet" th:href="@{/css/session-profile.css(v='20261016-foto')}">
     <script th:src="@{/js/session-profile.js(v='20261016-foto')}" defer></script>
     <button class="session-identity session-profile-trigger" type="button" data-session-profile-open aria-haspopup="dialog" aria-controls="session-profile" aria-expanded="false" aria-label="Ver mi perfil" title="Ver mi perfil">

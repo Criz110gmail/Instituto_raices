@@ -1,5 +1,35 @@
 # Contexto del proyecto
 
+## Nueva agenda personal privada — 2026-10-17
+
+V110 implementa /admin/pendientes y /maestros/pendientes. Título, descripción opcional,
+fecha compromiso y estados Pendiente/En proceso/Realizado/Cancelado; reabrir sin borrar
+historial. Vencido derivado con fecha institucional; realizados/cancelados sin avisos.
+Cada operación obtiene propietario de sesión y verifica usuario activo/tipo/institución.
+Ni administrador amplio ni soporte pueden consultar agendas ajenas. No asignaciones de
+rol nuevas; familias y bootstrap sin agenda. Auditoría privada (PendienteCambio), nunca
+notas en Auditoría global. SQL impide reasignación/borrado e historial mutable.
+JPA paginado, filtros por título/estado/rango, Excel por100 con mismos filtros y fechas
+numéricas dd/mm/yyyy; historial paginado20. Campana propia con contador, tarjeta al entrar
+en consultas administrativas/inicio docente: vencidos/hoy/próximos7días y top5 por fecha.
+Sin correos, tareas programadas ni modal obligatorio de acceso. Formularios ordenados,
+ayudas, validación local y confirmación al guardar y cambiar estado; Cancelar sólo cierra,
+acciones visibles con descripciones largas; móvil/claro/oscuro. Privacidad revalidada
+también para Excel y JSON, sin IDs de propietario elegibles desde el navegador.
+DDL/triggers con datos ficticios comprobados BEGIN/ROLLBACK, sin pendientes operativos.
+Prueba humana de agenda aún pendiente; luego retomar ocho escenarios de expediente
+familiar. Sesiones queda aplazado (propuesta5m/restaurar30m), properties actual30m intacto.
+855 Java/57 Node correctos. Cobertura de pertenencia/IDOR, perfiles e institución,
+optimismo, estados, avisos acotados, CSRF/anonimato, JSON seguro, Excel101 filas en dos
+bloques y seis vistas reales renderizadas. QA navegador sólo ficticio con POST bloqueado,
+estilos/ayudas/reloj globales, escritorio claro y móvil390×844 oscuro; contraste y botones
+corregidos, Cancelar conserva captura. No aceptación humana ni prueba de volumen real.
+V110 aplicada, salud UP8080 y JPA válido; publicación17/10 a19:00México con aviso de
+cierre de sesiones por recreación. Pendientes0/historial0,38 guías intactas, avisos sin
+sesión401. PostgreSQL/volúmenes intactos, sin .env, cuentas/roles/finanzas ni commit.
+Timeout30m intacto y V111 libre. QA temporal retirado (servidor/pestaña/contenedor/etiqueta),
+viewport restaurado; fixtures ficticias ignoradas en target/qa-pendientes.
+
 ## Dos comprobaciones finales aceptadas — 2026-10-17
 
 Reconsulta de Tesorería16/10 DESPUÉS de reversión confirmada por propietario en pantalla,

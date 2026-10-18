@@ -1,5 +1,22 @@
 # Sistema administrativo escolar
 
+## Mis pendientes — 17/10/2026
+
+Agenda privada disponible desde la campana **Mis pendientes** en administración y
+portal docente. No requiere asignar permisos nuevos: cada cuenta activa y persistida
+consulta únicamente su agenda, nunca la de otros usuarios, ni por soporte.
+
+Título, descripción y fecha compromiso; estados Pendiente, En proceso, Realizado y
+Cancelado, con reapertura e historial privado. Incluye filtros, Excel, confirmación
+al guardar/cambiar estado, avisos de vencidos/hoy/próximos7días y diseño móvil/claro/oscuro.
+V110 añade tablas/índices/protecciones de propiedad. No crea pendientes de ejemplo ni
+modifica finanzas o sesiones. Tras revisión humana retomaremos las ocho pruebas de
+actualización de expedientes desde familias; prueba de sesiones sigue aplazada.
+855 pruebas Java/57 JavaScript correctas, con revisión visual ficticia en escritorio
+y móvil, tema claro y oscuro. Falta la prueba funcional del propietario con su cuenta.
+V110 aplicada y aplicación saludable en8080; agenda inicialmente vacía, sin pendientes
+creados en cuentas reales. No cambió el timeout30m ni se otorgaron derechos a roles.
+
 ## Cierre del ejemplo de traspaso y reversión — 17/10/2026
 
 V109 actualiza las guías existentes, sin duplicarlas: confirmados el corte histórico

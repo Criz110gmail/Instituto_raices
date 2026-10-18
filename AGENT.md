@@ -1,5 +1,56 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Pendientes personales de administración y docentes — 2026-10-17
+
+- Solicitud aprobada: agenda PRIVADA por usuario, no compartida ni con administradores.
+ Acceso intrínseco como el perfil: ADMINISTRATIVO activo/persistido en /admin/pendientes;
+ PORTAL_MAESTRO activo/persistido con acceso docente en /maestros/pendientes. No requiere
+ asignar un módulo a roles; no se cambian permisos ni usuarios. Niega familias,
+ recuperación/bootstrap y consultas de agenda del maestro desde soporte administrativo.
+ Todas las lecturas/escrituras/Excel/historial/avisos filtran o verifican usuario e
+ institución de la sesión. No se admite propietario en formulario, parámetro o cuerpo.
+- V110 crea pendiente_personal (usuario, título180, descripción4000, fecha, estado,
+ realizadoEn y auditoría/versiones base) y pendiente_personal_cambio, auditoría PRIVADA
+ de acciones/estado/instante/versión. Nunca registrar notas privadas en Auditoría global.
+ Triggers bloquean cambiar propietario, borrar pendientes y modificar/borrar historial.
+ Migraciones anteriores intactas; modelo de entidades actualizado antes de ampliar.
+- Estados Pendiente/En proceso/Realizado/Cancelado; vencido es derivado. Editar, completar,
+ cancelar y reabrir sin borrar historial; realizadoEn sólo en Realizado. Fecha local
+ institucional, sin horas de compromiso; historial fecha local dd/MM/yyyy HH:mm.
+ Listado JPA paginado, búsqueda título, estado/abiertos/vencidos/hoy/próximos y rango.
+ Excel POI streaming100 con los mismos filtros, fechas numéricas dd/mm/yyyy y texto
+ literal (sin fórmulas desde captura). Historial paginado20, no colección completa.
+- Campana/enlace Mis pendientes en encabezado admin y docente real, contador de vencidos,
+ hoy y próximos7días. Tarjeta no modal en consultas con workspace/topbar o inicio docente;
+ top5 ordenado porfecha/id. No avisa realizados/cancelados ni manda email/push. Carga
+ al abrir pantalla, sin sondeo que mantenga sesión activa. Soporte docente oculta el enlace.
+- Formularios claros con ayudas propias, errores locales y modales compartidos al
+ guardar/editar y cambiar estado: detalle vigente y Cancelar/Escape/fondo sin guardar,
+ foco restaurado y confirmación única. Acciones visibles al desplazar textos largos.
+ Tema claro/oscuro y filtros uniformes; nuevos CSS limitados a agenda/header propio.
+- SQL y triggers validados con datos ficticios dentro de BEGIN/ROLLBACK; sin crear
+ pendientes en cuenta del propietario ni persistir datos de QA. Pruebas técnicas NO
+ equivalen a aceptación humana de la agenda. No modificar .env ni timeout actual30m.
+ Sesiones5m/restauración30m sigue pendiente por separado. Después de revisar agenda,
+ retomar los OCHO escenarios acordados de actualización de expedientes familiares;
+ no volver a abrir pruebas de traspaso/reversa ya cerradas.
+- Verificado855 Java/57 Node sin fallos, diff correcto. Pruebas: IDOR lectura/edición/
+ estado/historial, tipo de cuenta/activo/institución, pertenencia en JPA incluso Todos,
+ CSRF/anonimato/soporte, datos JSON sin principal, controles de versión, completar/
+ cancelar/reabrir y fecha de realización, avisos sólo abiertos/top5, Excel101 filas
+ en dos páginas/fecha numérica/texto sin fórmulas y seis vistas reales de ambos portales.
+ QA navegador con seis fixtures ficticias y POST bloqueado: escritorio claro y390×844
+ oscuro con estilos globales/ayudas/reloj, filtros y capturas legibles; Cancelar y modales
+ de guardar/estado sin mutaciones. Se corrigió contraste de tarjetas y botones en oscuro.
+ Resultados técnicos, no prueba humana de agenda ni carga de millones de pendientes.
+- Despliegue: V110 aplicada y Hibernate/repositorios arrancan sin errores; salud UP8080.
+ Publicación17/10 a19:00México (18/10 a01:00UTC), con aviso de posible cierre de sesión.
+ Verificación SQL sólo lectura: pendientes0/cambios0;38 guías existentes intactas.
+ Endpoint de avisos sin sesión401. PostgreSQL/volúmenes intactos; no .env, usuarios,
+ roles, movimientos financieros ni commit. Timeout30m conservado; próxima V111.
+ Servidor/pestaña/contenedor y etiqueta QA retirados, viewport restaurado. Sólo archivos
+ ficticios ignorados en target/qa-pendientes; sin copias de documentos reales.
+
 ## Cierre humano de pruebas de traspaso/reversa — 2026-10-17
 
 - Propietario aportó reconsulta posterior a la reversa del corte Tesorería16/10/2026:

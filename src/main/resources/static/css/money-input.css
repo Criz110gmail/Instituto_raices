@@ -17,11 +17,11 @@
 .money-confirm-actions button:disabled { opacity:.5; cursor:wait; }
 body.money-confirm-open { overflow:hidden; }
 /* El resumen del traspaso puede ser largo: conservar acciones sin ocultar su inicio. */
-.money-confirm-dialog:is([data-confirm-kind=transferencia-cuentas],[data-confirm-kind=reversion-financiera]) .money-confirm-actions { position:sticky; bottom:-28px; margin:22px -28px -28px; padding:14px 28px; border-top:1px solid var(--line,#dfe7f0); background:var(--surface,#fff); }
+.money-confirm-dialog:is([data-confirm-kind=transferencia-cuentas],[data-confirm-kind=reversion-financiera],[data-confirm-kind=pendiente-guardar],[data-confirm-kind=pendiente-estado]) .money-confirm-actions { position:sticky; bottom:-28px; margin:22px -28px -28px; padding:14px 28px; border-top:1px solid var(--line,#dfe7f0); background:var(--surface,#fff); }
 [data-theme=dark] .money-confirm-dialog { background:#0e1d31; color:#eef6ff; border-color:#344a63; }
 [data-theme=dark] .money-confirm-dialog dl { background:#13243a; border-color:#344a63; }
 [data-theme=dark] .money-confirm-badge { background:#153d35; color:#a7e9d9; }
 [data-theme=dark] .money-confirm-cancel { background:#19324d; color:#eef6ff; }
-[data-theme=dark] .money-confirm-dialog:is([data-confirm-kind=transferencia-cuentas],[data-confirm-kind=reversion-financiera]) .money-confirm-actions { background:#0e1d31; }
+[data-theme=dark] .money-confirm-dialog:is([data-confirm-kind=transferencia-cuentas],[data-confirm-kind=reversion-financiera],[data-confirm-kind=pendiente-guardar],[data-confirm-kind=pendiente-estado]) .money-confirm-actions { background:#0e1d31; }
 @media(max-width:480px) { .money-confirm-dialog { padding:20px; } .money-confirm-actions { flex-direction:column-reverse; } .money-confirm-actions button { width:100%; } }
-@media(max-width:480px) { .money-confirm-dialog:is([data-confirm-kind=transferencia-cuentas],[data-confirm-kind=reversion-financiera]) .money-confirm-actions { bottom:-20px; margin:22px -20px -20px; padding:14px 20px; } }
+@media(max-width:480px) { .money-confirm-dialog:is([data-confirm-kind=transferencia-cuentas],[data-confirm-kind=reversion-financiera],[data-confirm-kind=pendiente-guardar],[data-confirm-kind=pendiente-estado]) .money-confirm-actions { bottom:-20px; margin:22px -20px -20px; padding:14px 20px; } }
