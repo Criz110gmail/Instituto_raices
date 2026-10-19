@@ -141,7 +141,7 @@ public class CatalogoConsultaService {
                             cuentaTutor(e),
                             e.getInstitucion().getNombre()));
             case MAESTROS -> consultar(modulo, maestroRepository,
-                    texto(f, "numeroEmpleado", "nombres", "primerApellido", "segundoApellido", "email"),
+                    textoMaestro(f),
                     estadoMaestro(f), pagina, e -> fila(e.getId(), e.isActivo(), e.getNumeroEmpleado(),
                             nombreMaestro(e), e.getEmail(), cuentaMaestro(e), e.getInstitucion().getNombre()));
             case VINCULOS_TUTOR -> consultar(modulo, alumnoTutorRepository,
@@ -204,7 +204,7 @@ public class CatalogoConsultaService {
                     "Los avisos escolares usan su consulta especializada");
             case AUDITORIA -> throw new IllegalArgumentException(
                     "La auditoría usa su consulta especializada");
-            case PORTAL_TUTOR, PORTAL_MAESTRO, GUIAS -> throw new IllegalArgumentException(
+            case EMPLEADOS, PORTAL_TUTOR, PORTAL_MAESTRO, GUIAS -> throw new IllegalArgumentException(
                     "El portal tutor usa su consulta especializada");
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));
@@ -223,6 +223,10 @@ public class CatalogoConsultaService {
                 .and(alcanceDatosService.especificacion(modulo)), pagina).map(mapper);
     }
 
+    private Specification<Maestro> textoMaestro(FiltroCatalogo f) {
+        return (r,q,b)->{if(f.q().isBlank())return b.conjunction();String p="%"+f.q().toLowerCase(Locale.ROOT)+"%";
+            var e=r.get("empleado");return b.or(b.like(b.lower(r.get("numeroEmpleado")),p),b.like(b.lower(e.get("nombres")),p),b.like(b.lower(e.get("primerApellido")),p),b.like(b.lower(e.get("segundoApellido")),p),b.like(b.lower(e.get("email")),p));};
+    }
     private <T> Specification<T> texto(FiltroCatalogo f, String... campos) {
         return (root, query, cb) -> {
             if (f.q().isBlank()) return cb.conjunction();

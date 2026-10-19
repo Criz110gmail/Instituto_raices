@@ -8,6 +8,7 @@
         'Operación escolar · Cobranza escolar',
         'Operación escolar · Comunicación',
         'Administración · Finanzas',
+        'Administración · Personal y nómina',
         'Administración · Compras y proveedores',
         'Administración · Configuración escolar',
         'Administración · Seguridad y soporte'

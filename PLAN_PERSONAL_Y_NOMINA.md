@@ -1,7 +1,30 @@
 # Integración de empleados, maestros y nómina
 
-Acuerdo: 18/10/2026. Estado: DISEÑO APROBADO, NO IMPLEMENTADO.
-Continuidad para retomar el19/10/2026 o próxima sesión. Hoy sólo documentación.
+Acuerdo: 18/10/2026. Actualización: 19/10/2026.
+Estado: PRIMERA ENTREGA EMPLEADOS/PERFIL DOCENTE IMPLEMENTADA EN V111; NÓMINA PENDIENTE.
+
+V111 materializa identidad canónica, conversión uno a uno de maestros sin cambiar IDs,
+expediente personal, fotografía, perfil docente opcional, laboral privada con historial,
+planteles/vigencias/principal, permisos propios y listado/Excel paginados. No crea
+cuentas ni roles automáticamente ni deduce datos laborales. La gestión académica y
+de cuentas permanece en Maestros. Las cuentas mixtas siguen fuera de esta etapa.
+Pruebas técnicas y publicación local documentadas en CONTEXTO_PROYECTO.md; falta
+aceptación humana de esta entrega. Sueldos/condiciones/puestos normalizados, nómina,
+préstamos/pagos/recibos corresponden a etapas posteriores. El resto es diseño futuro,
+no debe interpretarse como funcionalidades de nómina ya disponibles.
+
+## Avance del 19/10/2026: inventario y propuesta técnica
+
+Se completó la revisión estática de dependencias y se documentó la propuesta en
+`DISENO_INTEGRACION_EMPLEADOS_MAESTROS.md`: relaciones, fuente única, migración
+aditiva, compatibilidad, seguridad y matriz de verificaciones. No se creó código,
+tabla ni migración; V111 sigue disponible en el repositorio revisado.
+
+Siguiente: revisar propuesta e implementar la primera entrega cuando se autorice.
+El acceso de empleados con funciones administrativas y docentes requiere definir
+si conservará cuentas separadas o una futura cuenta mixta; la estructura actual
+no permite anunciar esa combinación sin cambios de seguridad. Se mantienen intactos
+los usuarios y accesos actuales. Esta precisión no revoca el alcance aprobado.
 
 ## Alcance aprobado
 

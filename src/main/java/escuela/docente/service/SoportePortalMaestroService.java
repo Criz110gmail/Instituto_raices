@@ -35,8 +35,8 @@ public class SoportePortalMaestroService {
         Specification<Maestro> criterio = (r, consulta, cb) -> {
             var cuenta = r.join("usuario");
             var identidad = cb.concat(cb.concat(cb.concat(cb.concat(r.get("numeroEmpleado"), " "),
-                    r.get("nombres")), " "), cb.concat(r.get("primerApellido"),
-                    cb.concat(" ", cb.coalesce(r.get("segundoApellido"), ""))));
+                    r.get("empleado").get("nombres")), " "), cb.concat(r.get("empleado").get("primerApellido"),
+                    cb.concat(" ", cb.coalesce(r.get("empleado").get("segundoApellido"), ""))));
             return cb.and(cb.equal(r.get("institucion").get("id"), admin.institucionId()),
                     cb.equal(cuenta.get("institucion").get("id"), admin.institucionId()),
                     cb.isTrue(r.get("activo")), cb.equal(cuenta.get("estado"), EstadoUsuario.ACTIVO),
@@ -46,7 +46,7 @@ public class SoportePortalMaestroService {
         };
         int cantidad = Set.of(10, 25, 50, 100).contains(tamanio) ? tamanio : 25;
         return maestros.findAll(criterio, PageRequest.of(Math.max(0, pagina), cantidad,
-                Sort.by("primerApellido", "nombres", "id"))).map(m -> new MaestroSoporteFila(
+                Sort.by("empleado.primerApellido", "empleado.nombres", "id"))).map(m -> new MaestroSoporteFila(
                 m.getId(), m.getNumeroEmpleado(), nombre(m), m.getUsuario().getUsername()));
     }
 

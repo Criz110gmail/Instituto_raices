@@ -87,6 +87,6 @@ class SoportePortalMaestroServiceTest {
         var resultado = service.listar(admin(true, "PORTAL_MAESTRO_SOPORTE"), "Ana", -2, 10000);
         assertThat(resultado.getContent().getFirst().usuario()).isEqualTo("docente");
         verify(maestros).findAll(any(org.springframework.data.jpa.domain.Specification.class),
-                eq(PageRequest.of(0, 25, Sort.by("primerApellido", "nombres", "id"))));
+                eq(PageRequest.of(0, 25, Sort.by("empleado.primerApellido", "empleado.nombres", "id"))));
     }
 }

@@ -6,7 +6,8 @@
     <title th:text="${edicion ? 'Maestro · Nexo Escolar' : 'Nuevo maestro · Nexo Escolar'}">Maestro · Nexo Escolar</title>
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><link rel="stylesheet" href="/css/maestros.css"><link rel="stylesheet" href="/css/maestro-form.css">
-    <script src="/js/theme.js"></script><script src="/js/student-tabs.js" defer></script>
+    <link rel="stylesheet" href="/css/money-input.css">
+    <script src="/js/theme.js"></script><script src="/js/student-tabs.js" defer></script><script src="/js/money-input.js" defer></script>
 </head>
 <body class="form-page">
 <main class="form-shell teacher-admin-shell">
@@ -37,31 +38,31 @@
                 <div class="teacher-photo-tools-heading"><span class="teacher-photo-tools-icon" aria-hidden="true">IMG</span><div><strong>Fotografía del maestro</strong><span>JPEG, PNG, HEIC o HEIF, hasta 20 MB. La imagen se orienta y optimiza automáticamente.</span></div></div>
                 <div class="form-error" role="alert" th:if="${errorFotografia}"><strong>No se pudo actualizar la fotografía</strong><p th:text="${errorFotografia}"></p></div>
                 <div class="teacher-photo-actions">
-                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/maestros/{id}/fotografia(id=${id})}" class="photo-upload-form teacher-photo-upload">
+                    <form method="post" enctype="multipart/form-data" th:action="@{/admin/maestros/{id}/fotografia(id=${id})}" class="photo-upload-form teacher-photo-upload" th:if="${puedeEditarPersonal}">
                         <label for="archivo-fotografia-maestro"><span th:text="${fotografiaActual==null?'Seleccionar fotografía':'Reemplazar fotografía'}">Seleccionar fotografía</span><input id="archivo-fotografia-maestro" type="file" name="archivo" accept=".jpg,.jpeg,.png,.heic,.heif,image/jpeg,image/png,image/heic,image/heif" required></label>
                         <button type="submit">Guardar fotografía</button>
                     </form>
-                    <form class="teacher-photo-remove-form" th:if="${fotografiaActual != null}" method="post" th:action="@{/admin/maestros/{id}/fotografia/retirar(id=${id})}" onsubmit="return confirm('¿Retirar la fotografía actual del maestro?');"><button type="submit" class="photo-remove">Retirar actual</button></form>
+                    <form class="teacher-photo-remove-form" th:if="${fotografiaActual != null and puedeEditarPersonal}" method="post" th:action="@{/admin/maestros/{id}/fotografia/retirar(id=${id})}" onsubmit="return confirm('¿Retirar la fotografía actual del maestro?');"><button type="submit" class="photo-remove">Retirar actual</button></form>
                 </div>
             </div>
         </section>
         <form class="entity-form" method="post" th:action="${edicion ? '/admin/maestros/' + id : '/admin/maestros'}" th:object="${form}">
             <input type="hidden" th:field="*{version}">
             <div class="form-error" role="alert" th:if="${errorOperacion}"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}"></p></div>
-            <fieldset class="form-section"><legend>Identidad institucional</legend><div class="form-grid">
+            <fieldset class="form-section" disabled><legend>Identidad institucional</legend><div class="form-grid">
                 <label class="wide"><span>Institución *</span><select th:field="*{institucionId}" th:disabled="${edicion}"><option value="">Selecciona una institución</option><option th:each="i : ${instituciones}" th:value="${i.id}" th:text="${i.codigo + ' · ' + i.nombre}"></option></select><input th:if="${edicion}" type="hidden" th:field="*{institucionId}"><small class="field-error" th:errors="*{institucionId}"></small></label>
                 <label><span>Número de empleado *</span><input th:field="*{numeroEmpleado}" maxlength="50" autocomplete="off" placeholder="DOC-2026-001"><small class="field-error" th:errors="*{numeroEmpleado}"></small></label>
                 <label><span>Correo institucional *</span><input type="email" th:field="*{email}" maxlength="254" autocomplete="email" placeholder="maestro@escuela.mx"><small class="field-error" th:errors="*{email}"></small></label>
             </div></fieldset>
-            <fieldset class="form-section"><legend>Datos personales</legend><div class="form-grid">
+            <fieldset class="form-section" disabled><legend>Datos personales</legend><div class="form-grid">
                 <label class="wide"><span>Nombre(s) *</span><input th:field="*{nombres}" maxlength="150" autocomplete="given-name"><small class="field-error" th:errors="*{nombres}"></small></label>
                 <label><span>Primer apellido *</span><input th:field="*{primerApellido}" maxlength="100" autocomplete="family-name"><small class="field-error" th:errors="*{primerApellido}"></small></label>
                 <label><span>Segundo apellido</span><input th:field="*{segundoApellido}" maxlength="100"></label>
                 <label><span>Teléfono</span><input type="tel" th:field="*{telefono}" maxlength="30" autocomplete="tel"><small class="field-error" th:errors="*{telefono}"></small></label>
             </div></fieldset>
-            <footer class="form-actions"><a href="/admin/catalogos/maestros">Cancelar</a><button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Registrar maestro'}">Guardar</button></footer>
+            <footer class="form-actions"><a href="/admin/catalogos/maestros">Cancelar</a><a class="payment-list-button" th:if="${puedeEditarPersonal and empleadoId!=null}" th:href="@{/admin/empleados/{id}(id=${empleadoId})}">Editar identidad en Empleados →</a></footer>
         </form>
-        <form th:if="${edicion and maestro.activo}" method="post" th:action="@{/admin/maestros/{id}/desactivar(id=${id})}" class="danger-zone" onsubmit="return confirm('¿Desactivar este maestro? Sus asignaciones vigentes finalizarán.');"><input type="hidden" name="version" th:value="${maestro.version}"><div><strong>Desactivar maestro</strong><p>Su expediente se conserva, pero se bloquean el acceso y las nuevas planeaciones.</p></div><button type="submit">Desactivar</button></form>
+        <form th:if="${edicion and maestro.activo}" method="post" th:action="@{/admin/maestros/{id}/desactivar(id=${id})}" class="danger-zone" data-money-confirm="empleado-perfil"><input type="hidden" name="version" th:value="${maestro.version}"><input type="hidden" name="activo" value="false"><input type="hidden" name="codigoDocente" th:value="${maestro.numeroEmpleado}"><div><strong>Desactivar maestro</strong><p>Se conserva el historial y la cuenta. Si hay asignaciones, horarios o planeaciones pendientes, revisa esas dependencias antes de deshabilitar.</p></div><button type="submit">Desactivar</button></form>
     </section>
 
     <section id="portal-maestro" class="form-card teacher-management-card teacher-access-card teacher-tab-panel student-tab-panel" data-student-panel="acceso" role="tabpanel" aria-labelledby="tab-maestro-acceso" th:if="${edicion}">

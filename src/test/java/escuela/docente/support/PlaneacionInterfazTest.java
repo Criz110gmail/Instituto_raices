@@ -11,7 +11,7 @@ class PlaneacionInterfazTest {
                         "teacher-login-page", "Nexo Docente", "action=@{/login}", "name=\"_csrf\" value=\"\"", "data-login-refresh=\"maestros\"", "/js/login-session.js",
                         "name=\"origen\" value=\"maestros\"");
         assertThat(recurso("templates/admin/maestro-form.html"))
-                .contains("class=\"entity-form\"", "<fieldset class=\"form-section\"><legend>Identidad institucional</legend>",
+                .contains("class=\"entity-form\"", "<fieldset class=\"form-section\" disabled><legend>Identidad institucional</legend>", "Editar identidad en Empleados",
                         "/css/maestro-form.css", "teacher-management-card teacher-access-card",
                         "teacher-management-card teacher-assignment-card", "teacher-account-actions",
                         "teacher-assignment-list", "teacher-empty-assignment");

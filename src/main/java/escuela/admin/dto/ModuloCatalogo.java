@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.Map;
 
 public enum ModuloCatalogo {
+    EMPLEADOS("empleados","Empleados",List.of()),
     ALUMNOS("alumnos", "Alumnos", List.of("Matrícula", "Alumno", "CURP", "Nacimiento", "Ingreso")),
     TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),
     VINCULOS_TUTOR("vinculos-tutor", "Familiares del alumno", List.of("Alumno", "Tutor", "Parentesco", "Permisos", "Vigencia")),
@@ -120,6 +121,7 @@ public enum ModuloCatalogo {
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, TIPOS_BECA, BECAS_ALUMNO, CARGOS, CONVENIOS_PAGO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Operación escolar · Cobranza escolar";
             case EVENTOS_ESCOLARES, AVISOS -> "Operación escolar · Comunicación";
             case PAGOS, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Administración · Finanzas";
+            case EMPLEADOS -> "Administración · Personal y nómina";
             case PROVEEDORES, COMPRAS -> "Administración · Compras y proveedores";
             case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS -> "Administración · Configuración escolar";
             case ROLES, USUARIOS, AUDITORIA, PORTAL_TUTOR, PORTAL_MAESTRO, GUIAS -> "Administración · Seguridad y soporte";
@@ -141,6 +143,7 @@ public enum ModuloCatalogo {
             case CALIFICACIONES -> "CALIFICACION";
             case ASISTENCIA -> "ASISTENCIA";
             case BOLETAS -> "BOLETA";
+            case EMPLEADOS -> "EMPLEADO";
             case MAESTROS -> "MAESTRO";
             case PLANEACIONES -> "PLANEACION";
             case HORARIOS_CLASE -> "HORARIO_CLASE";
@@ -238,6 +241,7 @@ public enum ModuloCatalogo {
             case CALIFICACIONES -> "/admin/calificaciones";
             case ASISTENCIA -> "/admin/asistencia";
             case BOLETAS -> "/admin/boletas";
+            case EMPLEADOS -> "/admin/empleados";
             case MAESTROS -> "/admin/maestros";
             case PLANEACIONES -> "/admin/planeaciones";
             case HORARIOS_CLASE -> "/admin/horarios-clases";
@@ -275,7 +279,7 @@ public enum ModuloCatalogo {
     }
 
     public String rutaListado() {
-        return this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == ACTUALIZACIONES_EXPEDIENTE || this == PROVEEDORES || this == COMPRAS || this == CONVENIOS_PAGO || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
+        return this == EMPLEADOS || this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == ACTUALIZACIONES_EXPEDIENTE || this == PROVEEDORES || this == COMPRAS || this == CONVENIOS_PAGO || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
                 || this == PORTAL_MAESTRO || this == GUIAS ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }

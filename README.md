@@ -1,5 +1,34 @@
 # Sistema administrativo escolar
 
+## Empleados y maestros — V111, 19/10/2026
+
+Nuevo módulo **Administración → Personal y nómina → Empleados**: expediente único
+con fotografía, datos personales, información laboral protegida, varios planteles y
+perfil docente opcional. Filtros paginados, Excel con los mismos filtros, pestañas y
+confirmaciones con el diseño compartido. Los maestros existentes conservan sus IDs,
+cuentas, fotografías y relaciones académicas; los datos personales se editan en Empleados.
+
+En **Roles y permisos**, autorizar Empleados (EMPLEADO_LEER/ADMINISTRAR) y, sólo a
+quien corresponda, Datos laborales (EMPLEADO_LABORAL_LEER/ADMINISTRAR; requiere
+lectura de Empleados). No se asignan permisos a roles automáticamente. Una cuenta
+de recuperación no mantiene personal. Para grupos/cuentas docentes sigue aplicando
+MAESTRO_ADMINISTRAR. El vínculo laboral a un plantel nunca concede acceso.
+
+Datos laborales importados quedan **Por confirmar**; no se inventan fechas o puestos.
+No incluye sueldos, nómina, préstamos ni cuentas mixtas. Primero validar esta base
+con el propietario. Detalle técnico y continuidad en AGENT.md y CONTEXTO_PROYECTO.md.
+Las notas de propuesta que siguen son el historial anterior a V111.
+
+## Diseño de integración de empleados y maestros — 19/10/2026
+
+La propuesta técnica está en [DISENO_INTEGRACION_EMPLEADOS_MAESTROS.md](DISENO_INTEGRACION_EMPLEADOS_MAESTROS.md),
+complemento de [PLAN_PERSONAL_Y_NOMINA.md](PLAN_PERSONAL_Y_NOMINA.md). Documenta relaciones,
+identidad personal única, conservación de maestros y cuentas, varios planteles,
+migración aditiva y permisos. Todavía no se crearon tablas, formularios ni nóminas.
+Se debe acordar el acceso de quien administre y enseñe, sin convertir cuentas actuales
+automáticamente. La revisión no ejecutó SQL, compilación ni reinicios; V110 sigue
+siendo la última migración presente y V111 debe revalidarse antes de implementar.
+
 ## Mis pendientes — 17/10/2026
 
 Agenda privada disponible desde la campana **Mis pendientes** en administración y

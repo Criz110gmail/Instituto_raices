@@ -848,3 +848,26 @@ Triggers impiden borrar pendientes, cambiar propietario o editar/eliminar su his
 Listados/Excel paginados con filtros y pertenencia aplicados en JPA. Avisos al consultar:
 vencidos, hoy y próximos7días; primeros5 ordenados por fecha/id. No son correos, tareas
 programadas ni notificaciones familiares. No se crea un permiso para ver agendas ajenas.
+
+ACTUALIZACIÓN V111 — EMPLEADOS Y PERFIL DOCENTE (2026-10-19)
+Empleado es la fuente canónica de identidad/contacto/fotografía del personal, dentro
+de una institución y con código laboral único. Maestro mantiene su ID, institución,
+código docente, usuario, actividad y todas sus FK académicas; empleado_id es único,
+obligatorio y no reasignable. Conversión uno a uno por maestro_origen_id, nunca por
+nombre o correo. Columnas personales legadas de Maestro conservadas como snapshot
+técnico, fuera del mapeo y edición; nullable para perfiles nuevos. Fotos existentes
+mantienen Archivo/clave física; adaptadores académicos consultan Empleado.
+EmpleadoLaboral es uno a uno y mantiene puesto/ingreso/situación POR_CONFIRMAR,
+ACTIVO o BAJA; baja requiere fecha/motivo. No se deducen fechas, situación laboral
+ni plantel principal de los datos académicos. EmpleadoLaboralHistorial es privado,
+inmutable y registra versión/actor/fecha/snapshot mediante trigger de INSERT/UPDATE.
+EmpleadoPlantel mantiene vigencia inclusiva y principal; pueden existir varios
+planteles de la misma institución, sin repetir fechas del mismo plantel ni tener
+dos principales simultáneos. Finalizar sólo cierra una vigencia abierta, sin borrar.
+La adscripción laboral no otorga permisos ni cambia asignaciones, cuentas o sueldos.
+EMPLEADO_LEER/ADMINISTRAR protegen identidad/perfil y permisos LABORAL separados
+protegen historial/planteles/puesto/fechas. Requiere administrativo activo persistido
+con alcance institucional; no recuperación, familias, docente ni soporte académico.
+Listado/Excel aplican los mismos filtros paginados. Desactivar perfil docente ya no
+desactiva usuarios o grupos automáticamente y bloquea dependencias vigentes.
+Nómina, sueldo, préstamos y acceso mixto NO incluidos en esta entrega.

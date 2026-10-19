@@ -1,3 +1,24 @@
+.employee-panel { margin:0 34px 24px; border:1px solid var(--line); border-radius:0 0 17px 17px; background:var(--surface); }
+.employee-panel .entity-form { padding:24px; }
+.employee-identity { display:flex; align-items:center; gap:24px; padding:26px; min-width:0; }
+.employee-identity img,.employee-avatar { width:132px; height:132px; flex-shrink:0; object-fit:cover; border-radius:18px; border:1px solid var(--line); background:var(--soft); }
+.employee-avatar { display:grid; place-items:center; color:var(--muted); font-size:3rem; }
+.employee-identity h2 { margin:8px 0; overflow-wrap:anywhere; }
+.employee-identity p { margin:8px 0; color:var(--muted); overflow-wrap:anywhere; }
+.employee-panel .form-section:disabled { opacity:1; }
+.employee-panel .form-section:disabled input,.employee-panel .form-section:disabled select,.employee-panel .form-section:disabled textarea { color:var(--ink); opacity:1; }
+.employee-panel .pagination { flex-wrap:wrap; }
+.employee-list-panel .filters { grid-template-columns:minmax(200px,2fr) minmax(180px,1fr) minmax(100px,.7fr); align-items:end; }
+.employee-list-panel .filters label:nth-child(3) { grid-column:auto; }
+.employee-list-panel .panel-actions .export-button { font-size:.8rem; white-space:nowrap; }
+@media(max-width:900px){.employee-list-panel .panel-heading{flex-wrap:wrap}.employee-list-panel .filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.employee-list-panel .filters{grid-template-columns:minmax(0,1fr)}.employee-list-panel .panel-actions{width:100%;justify-content:flex-start}.employee-list-panel .filters label:nth-child(3){grid-column:1}}
+.filters .billing-filter-actions { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:12px; grid-column:1/-1; }
+.filters .billing-filter-actions button,.filters .billing-filter-actions a { display:inline-flex; align-items:center; justify-content:center; min-height:42px; width:auto; padding:10px 18px; border:1px solid var(--line); border-radius:10px; font:inherit; font-size:.8rem; font-weight:750; text-decoration:none; }
+.filters .billing-filter-actions a { color:var(--ink); background:var(--surface); }
+.filters .billing-filter-actions a:hover { border-color:var(--blue); background:var(--soft); }
+.filters .billing-filter-actions a:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
+@media(max-width:720px){.employee-panel{margin:0 20px 20px}.employee-panel .entity-form{padding:20px 16px}.employee-identity{flex-direction:column;align-items:flex-start;padding:20px}.employee-panel .requested-list article{display:block}.employee-panel .form-actions a,.employee-panel .form-actions button{width:100%;box-sizing:border-box}}
 .recargo-example.form-section { border: 1px solid #c3b5ea; border-left: 4px solid #8060b4; background: #f5f1fc; }
 .generation-selection-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); margin: 16px 0; }
 .generation-selection-bar p { flex: 1 1 340px; margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.5; }

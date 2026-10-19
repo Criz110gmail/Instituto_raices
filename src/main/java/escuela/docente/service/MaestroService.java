@@ -37,7 +37,8 @@ public class MaestroService {
         if(!m.getInstitucion().getId().equals(r.institucionId())) throw new ReglaNegocioException("No se puede cambiar la institución del maestro");
         validarNumero(r.institucionId(),r.numeroEmpleado(),id);copiar(m,r);return respuesta(maestros.saveAndFlush(m));
     }
-    public void desactivar(Long id,Long version){Maestro m=buscar(id);verificar(m,version,"Maestro");m.setActivo(false);if(m.getUsuario()!=null)m.getUsuario().setEstado(escuela.seguridad.entity.EstadoUsuario.INACTIVO);asignaciones.findAllByMaestroIdOrderByActivoDescFechaInicioDescIdDesc(id).forEach(a->a.setActivo(false));}
+    public void desactivar(Long id,Long version){Maestro m=buscar(id);verificar(m,version,"Maestro");if(maestros.tieneDependenciasActivas(id,LocalDate.now(java.time.ZoneId.of(m.getInstitucion().getZonaHoraria()))))throw new ReglaNegocioException("Finaliza o revisa primero las asignaciones, horarios y planeaciones pendientes");m.setActivo(false);}
+    @Transactional(readOnly=true) public Long empleadoId(Long id){return buscar(id).getEmpleado().getId();}
     @Transactional(readOnly=true) public MaestroResponse obtener(Long id){return respuesta(buscar(id));}
     @Transactional(readOnly=true) public List<AsignacionMaestroResponse> asignaciones(Long id){buscar(id);return asignaciones.findAllByMaestroIdOrderByActivoDescFechaInicioDescIdDesc(id).stream().map(this::respuesta).toList();}
     public AsignacionMaestroResponse asignar(Long maestroId,AsignacionMaestroRequest r){
@@ -61,7 +62,7 @@ public class MaestroService {
         if(!planesMateria.existsByMateriaIdAndGradoIdAndActivoTrue(materia.getId(),g.getGrado().getId()))throw new ReglaNegocioException("La materia no está configurada como activa para el grado de este grupo");
         if(inicio.isBefore(g.getCicloEscolar().getFechaInicio())||(fin!=null&&fin.isAfter(g.getCicloEscolar().getFechaFin())))throw new ReglaNegocioException("La vigencia de la asignación debe quedar dentro del ciclo escolar del grupo");
     }
-    private void copiar(Maestro m,MaestroRequest r){m.setNumeroEmpleado(codigo(r.numeroEmpleado()));m.setNombres(limpiar(r.nombres()));m.setPrimerApellido(limpiar(r.primerApellido()));m.setSegundoApellido(limpiar(r.segundoApellido()));m.setEmail(email(r.email()));m.setTelefono(limpiar(r.telefono()));m.setActivo(true);}
+    private void copiar(Maestro m,MaestroRequest r){m.setNumeroEmpleado(codigo(r.numeroEmpleado()));m.setNombres(limpiar(r.nombres()));m.setPrimerApellido(limpiar(r.primerApellido()));m.setSegundoApellido(limpiar(r.segundoApellido()));m.setEmail(email(r.email()));m.setTelefono(limpiar(r.telefono()));}
     private void validarNumero(Long i,String n,Long id){if(maestros.existsByInstitucionIdAndNumeroEmpleadoIgnoreCaseAndIdNot(i,codigo(n),id))throw new RecursoDuplicadoException("Ya existe un maestro con ese número de empleado");}
     private Maestro buscar(Long id){return maestros.findById(id).orElseThrow(()->new RecursoNoEncontradoException("el maestro",id));}
     private MaestroResponse respuesta(Maestro m){var u=m.getUsuario();return new MaestroResponse(m.getId(),m.getInstitucion().getId(),m.getInstitucion().getNombre(),m.getNumeroEmpleado(),m.getNombres(),m.getPrimerApellido(),m.getSegundoApellido(),nombre(m.getNombres(),m.getPrimerApellido(),m.getSegundoApellido()),m.getEmail(),m.getTelefono(),m.isActivo(),u==null?null:u.getId(),u==null?null:u.getUsername(),u==null?null:u.getEstado(),m.getVersion());}

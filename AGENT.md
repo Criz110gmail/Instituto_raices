@@ -1,5 +1,87 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Entrega V111: empleados y perfil docente — 19/10/2026
+
+- Usuario autorizó implementar la primera entrega. Empleados está en Administración →
+  Personal y nómina → Empleados (/admin/empleados), con filtros/paginación JPA y
+  Excel POI streaming con los mismos filtros. Expediente por pestañas: ficha/foto,
+  personales, laborales, planteles, información docente y acceso. Tema y controles
+  compartidos, ayudas/autocompletado10 al foco/3 caracteres y modales de confirmación.
+- V111 crea empleado, empleado_laboral, empleado_laboral_historial y empleado_plantel.
+  Convierte uno a uno por maestro.id/procedencia, sin fusión por nombre/email, conserva
+  Maestro.id/código/usuario/actividad/FK/foto. Identidad canónica sólo en Empleado;
+  columnas personales legadas de Maestro quedan snapshot técnico, no fuente editable.
+  Actualizados JPQL/Criteria/orden/soporte/horarios; no basta delegación Java.
+- Laboral inicial POR_CONFIRMAR, sin inferir ingreso/puesto/baja/planteles/principal
+  ni sueldo. Multiplantel con rangos inclusivos y un principal simultáneo; historial
+  laboral privado por trigger inmutable, versión/actor/fecha. No borrado de expedientes
+  ni traslado de un perfil docente a otro empleado. Editar no reactiva perfil/cuenta.
+  Deshabilitar docente bloquea asignaciones/horarios vigentes y planeaciones pendientes;
+  no desactiva cuentas ni grupos en cascada. Baja laboral independiente del perfil/acceso.
+- Nuevos permisos SIN asignación automática a roles: EMPLEADO_LEER/ADMINISTRAR y
+  EMPLEADO_LABORAL_LEER/ADMINISTRAR. Laboral requiere también lectura de Empleados.
+  Sólo administrativo activo/persistido, alcance institucional. Permisos de Maestros,
+  familias, docente, soporte o recuperación no abren expedientes laborales. No ampliar
+  roles/cuentas del propietario para probar. Asignar manualmente desde Roles y permisos.
+- Alta de maestros ahora comienza en Empleados → Información docente; gestión de
+  cuenta/grupos/materias permanece en Maestros con MAESTRO_ADMINISTRAR. Rutas antiguas
+  de escritura personal niegan cambios; foto académica requiere también EMPLEADO_ADMINISTRAR.
+  Cuenta administrativa/docente mixta pendiente: no convertir tipoCuenta ni crear cuentas
+  al guardar personal. Nómina, sueldos, préstamos y pagos NO implementados en esta entrega.
+- Validaciones técnicas: SQL V1–111 en PostgreSQL17 aislado, conversión ficticia con
+  maestros homónimos/contacto repetido, conservación de cuenta/foto/actividad, alta nueva
+  sin columnas legadas, exclusiones/IDOR de plantel e historial/vínculo inmutables.
+  Hibernate/repositorios arrancaron con esquema nuevo y salud UP en entorno aislado.
+  Pruebas de servicio, permisos/CSRF HTTP, vistas Thymeleaf, Excel101 filas/texto literal
+  y modales Node. QA visual con datos ficticios, móvil390px/claro y oscuro, pestañas y
+  Cancelar sin envío; no aceptación humana ni prueba de nómina.
+- Estado operativo final y cifras de pruebas: ver CONTEXTO_PROYECTO.md (entrada V111).
+  Base local encontrada V98, distinta de la V110 documentada en la otra computadora;
+  NO asumir que un pull aplica migraciones. Respaldo privado ignorado en
+  .respaldos-locales/personal-v111-20261019; excluido de Git y contexto Docker, fuera de
+  target para no perderlo con clean. Nunca mostrar su contenido. Respaldos
+  externos/cifrado/retención/restauración de archivos siguen pendientes operativos.
+- Siguiente: prueba humana de identidad canónica, empleado no docente, perfil nuevo,
+  laboral/multiplantel y regresión de portal/soporte/asignaciones. Después definir etapa
+  de puestos/condiciones salariales antes de nómina. Pendientes previos intactos: agenda,
+  ocho casos familiares y sesiones5m aplazadas (mantener30m), Compras documental/respaldos.
+  No reabrir traspasos/reversas ni dar por cerrado todo el sistema.
+
+Las entradas siguientes son historial previo; «no implementada/V111 libre» describe
+el inventario anterior y queda superado por esta entrega.
+
+## Inventario y propuesta de integración Empleado/Maestro — 19/10/2026
+
+- Usuario autorizó comenzar por definir relaciones/fuente de datos antes de tablas o
+  formularios. Se creó DISENO_INTEGRACION_EMPLEADOS_MAESTROS.md, propuesta técnica
+  NO implementada: inventario de Maestro/FK/consultas/foto/accesos/alcance/portal/
+  soporte/reportes/agenda, relaciones, conversión, permisos y matriz de regresiones.
+- Empleado fuente de identidad personal; Maestro conserva ID, código docente,
+  usuario y actividad, con vínculo único a Empleado. Un empleado por maestro actual
+  por ID/procedencia, jamás fusión por nombre/correo. EmpleadoPlantel confirmado con
+  vigencia/principal; grupos académicos no acreditan fecha laboral ni principal.
+  No copiar fechas técnicas como contratación ni inventar sueldo/estado laboral.
+- Riesgos comprobados: MaestroService.desactivar también desactiva usuario y todas
+  asignaciones; copiar reactiva. Criteria/JPQL usan campos personales directos; no
+  basta delegar getters. Foto tiene reemplazo/retiro privado; mantener mismo Archivo.
+  MAESTROS exige administración institucional; adscripción laboral no da permisos.
+  Usuario.tipoCuenta es exclusivo (admin/tutor/maestro), también validado por agenda:
+  elegir acceso mixto o cuentas separadas antes de ofrecer ese flujo. Sin convertir
+  tipos, reasignar cuentas, agendas o permisos automáticamente.
+- Propuesta aditiva: conservar columnas personales legadas sólo técnicamente sin
+  segunda fuente funcional, resolver sus NOT NULL para altas nuevas, cambiar todas
+  lecturas y consultas a canónica antes de editar. No borrar columnas en esta entrega.
+  No dar de baja laboral mediante el desactivar académico existente. Sueldos/nóminas/
+  préstamos quedan fuera de esta primera implementación. Ver documento para detalles.
+- Verificación sólo estática/diff; no certifica datos o esquema aplicado de esta
+  instalación. Git base c391be1, sin cambios locales al iniciar; última migración
+  presente V110/V111 libre. No se ejecutaron SQL, pruebas, builds, reinicios ni deploy;
+  no .env, usuarios, operaciones reales o commit. Sólo documentación actualizada.
+- Siguiente: presentar/revisar propuesta y después implementar entrega autorizada;
+  no interpretar este documento como integración ya construida. Pendientes previos
+  (agenda humana, ocho escenarios familiares, sesiones aplazadas, Compras documental,
+  respaldos) intactos. No reabrir traspaso/reversa cerrado.
+
 ## Próxima etapa: empleados, maestros y nómina — 2026-10-18
 
 - Propietario incorpora nómina al alcance futuro y aprueba Empleados como captura única

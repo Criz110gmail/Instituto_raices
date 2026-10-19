@@ -1,5 +1,79 @@
 # Contexto del proyecto
 
+## V111 — Empleados y vínculo docente implementados — 19/10/2026
+
+Entrega autorizada por el propietario después del inventario. Módulo Administración →
+Personal y nómina → Empleados (/admin/empleados). Identidad y fotografía canónicas,
+laboral privada, historial, multiplantel/principal/vigencias, perfil docente opcional
+y acceso independiente, en pestañas. Filtros/paginación JPA y Excel POI idénticos;
+autocompletado10/3, modales con Cancelar y estética compartida claro/oscuro/móvil.
+Datos de Maestros personales ahora de consulta; alta nueva desde Empleados, grupos y
+cuentas por Maestros. Nómina, sueldos, préstamos y cuentas mixtas no construidos.
+
+V111 preserva maestro.id y sus relaciones/cuenta/foto/actividad, crea un Empleado por
+maestro_origen_id (no deduplicación de personas), adapta consultas y deja columnas
+legadas sólo como snapshot sin mapeo. Laboral POR_CONFIRMAR sin inventar fechas;
+sin plantel inferido ni permisos otorgados por adscripción. Nuevos permisos de Empleados
+y Datos laborales NO asignados a roles. Laboral requiere lectura de Empleados y su
+permiso propio; bootstrap, docente, familias, soporte y alcance por plantel no acceden.
+Desactivar maestro ya no baja cuentas/asignaciones y bloquea dependencias vigentes.
+Historial privado inmutable, control de versión y exclusiones de vigencias/principal.
+
+Verificación técnica: 870 Java/59 Node sin fallos; empaquetado final y render adicional
+de4 vistas pasan. Tests de actor/institución/IDOR, campos privados ausentes sin permiso,
+CSRF/permisos HTTP, edición sin reactivar, conservación del perfil/cuenta, baja con
+motivo, Excel101 filas/dos páginas/filtros/texto literal y confirmación única/Cancelar.
+PostgreSQL17 aislado: migraciones1–111 y fixtures homónimos/correo repetido; restricciones
+de principal, solapamientos, otra institución, historial y vínculo no reasignable;
+alta docente con columnas personales legadas nulas. Todo el ensayo de restricciones
+en BEGIN/ROLLBACK. Arranque Hibernate/repositorios y salud UP sobre esquema ficticio.
+QA navegador de fixtures ficticias con POST bloqueado: ficha/laboral y Cancelar,
+tema oscuro y claro, móvil390px y listado/filtros. Se ajustaron Limpiar/Exportar/alineación
+sin redefinir paleta global. No es aceptación humana de personal ni prueba de nómina.
+
+Operación local encontrada en V98, aunque la otra computadora documentaba V110.
+Respaldo de DB+archivos con app detenida, conservado finalmente en
+.respaldos-locales/personal-v111-20261019 (excluido de Git y Docker, fuera de target;
+directorio700/archivos600). Dump custom restaurado exitosamente en PostgreSQL aislado,
+migró V99–111 vía Flyway y arrancó Hibernate; gzip de archivos íntegro, restauración
+completa de archivos/destino externo/cifrado/retención aún pendientes operativos.
+El primer intento de tar usando CMD no sobreescribió ENTRYPOINT: se detuvo exclusivamente
+ese contenedor auxiliar y se rehízo con --entrypoint tar. Artefacto final válido; no usar
+el comando histórico sin ese ajuste. No hubo cambios de cuentas ni operaciones reales.
+
+Publicada imagen local verificada el19/10 a10:34México mediante up -d --no-deps app.
+Salud UP en localhost:18080; Flyway111 y Hibernate válidos. Consulta agregada sólo lectura:
+maestros2, vínculos únicos2, cuentas2, foto1;2 identidades coinciden con legado/procedencia,
+2 laborales POR_CONFIRMAR. Sin altas laborales/planteles/usuarios de prueba en base real.
+PostgreSQL y volúmenes conservados; .env no leído ni cambiado, sin commits ni push.
+Imagen anterior retenida como nexo-personal-pre-v111:local; NO volver a ella ciegamente
+después de migrar: una reversión requiere estrategia de base+archivos compatible.
+Servidor/pestaña de fixtures y contenedores aislados retirados; viewport restaurado.
+Sólo se eliminó el entorno temporal de QA, no registros de la instalación real.
+Respaldo local conservado y excluido de Git/Docker; pendiente copia privada externa.
+
+Siguiente aceptación humana en PRUEBA_EMPLEADOS_V111.md. Si aprueba, definir puestos y
+condiciones salariales/versiones antes de liquidaciones. Pendientes de agenda, ocho
+escenarios familiares, sesiones temporales5m/restaurar30m, Compras documental/respaldos
+siguen vigentes. Las entradas anteriores de «no implementado» son historia superada.
+
+## Estrategia técnica de empleados y maestros — 19/10/2026
+
+Se realizó el inventario estático y la propuesta previa a implementación, autorizada
+como primer paso: DISENO_INTEGRACION_EMPLEADOS_MAESTROS.md complementa el plan de nómina.
+Empleado será fuente personal; Maestro conservará ID/código/usuario/historia, vínculo
+único por procedencia, sin fusionar personas ni inventar fecha laboral/sueldo/planteles.
+Se revisaron FK, consultas, rutas, foto, portal/soporte, alcance, exportaciones y agenda.
+Desactivar maestro hoy cambia usuario/asignaciones y copiar reactiva: separar acciones.
+Cambiar fuente requiere actualizar Criteria/JPQL, no sólo getters, y resolver columnas
+legadas obligatorias sin una segunda captura. Multiplantel no concede permisos.
+Cuenta mixta admin/docente pendiente de elección/diseño por tipoCuenta exclusivo y
+validación de agenda; preservar cuentas actuales. Nómina aún sin código.
+Sólo documentos, diff y revisión de archivos; no SQL, compilación, deploy/reinicio,
+datos reales/.env, roles ni commit. Base c391be1/V110 presente; V111 libre en código,
+no se certificó estado de BD. Siguiente: revisar propuesta y pasar a entrega autorizada.
+Pruebas previas pendientes siguen separadas; traspaso/reversa no se repiten.
+
 ## Plan de integración de personal y nómina — 18/10/2026
 
 Propietario aprueba Empleados como captura única con perfil docente y varios planteles.

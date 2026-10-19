@@ -75,9 +75,9 @@ public class BusquedaAutocompletadoService {
         String patron = "%" + texto + "%";
         Specification<Maestro> busqueda = (root, query, cb) -> cb.or(
                 cb.like(cb.lower(root.get("numeroEmpleado")), patron),
-                cb.like(cb.lower(root.get("nombres")), patron),
-                cb.like(cb.lower(root.get("primerApellido")), patron),
-                cb.like(cb.lower(root.get("segundoApellido")), patron));
+                cb.like(cb.lower(root.get("empleado").get("nombres")), patron),
+                cb.like(cb.lower(root.get("empleado").get("primerApellido")), patron),
+                cb.like(cb.lower(root.get("empleado").get("segundoApellido")), patron));
         int limite = tamano(consulta);
         var resultado = maestroRepository.findAll(Specification.where(busqueda)
                         .and(alcance.especificacion(ModuloCatalogo.MAESTROS)),

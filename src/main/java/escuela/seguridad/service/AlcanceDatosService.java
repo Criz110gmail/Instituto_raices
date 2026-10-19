@@ -96,7 +96,7 @@ public class AlcanceDatosService {
         return (root, query, cb) -> {
             Path<?> institucion = switch (modulo) {
                 case INSTITUCIONES -> root.get("id");
-                case PLANTELES, NIVELES, CICLOS, MATERIAS, ALUMNOS, ACTUALIZACIONES_EXPEDIENTE, TUTORES, MAESTROS, PLANEACIONES, HORARIOS_CLASE, CALENDARIO_ESCOLAR, CONCEPTOS_COBRO, CONVENIOS_PAGO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PROVEEDORES, COMPRAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS, EVENTOS_ESCOLARES, AVISOS, ROLES, USUARIOS, AUDITORIA -> root.get("institucion").get("id");
+                case EMPLEADOS, PLANTELES, NIVELES, CICLOS, MATERIAS, ALUMNOS, ACTUALIZACIONES_EXPEDIENTE, TUTORES, MAESTROS, PLANEACIONES, HORARIOS_CLASE, CALENDARIO_ESCOLAR, CONCEPTOS_COBRO, CONVENIOS_PAGO, TIPOS_BECA, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, PROVEEDORES, COMPRAS, PAGOS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS, EVENTOS_ESCOLARES, AVISOS, ROLES, USUARIOS, AUDITORIA -> root.get("institucion").get("id");
                 case PORTAL_TUTOR, PORTAL_MAESTRO -> root.get("id");
                 case GUIAS -> throw denegado();
                 case POLITICAS_RECARGO -> root.get("conceptoCobro").get("institucion").get("id");
@@ -120,7 +120,7 @@ public class AlcanceDatosService {
                         cb.equal(root.get("tutor").get("usuario").get("id"), principal.usuarioId()));
             }
             if (principal.plantelIds().isEmpty()) return cb.disjunction();
-            if (modulo == ModuloCatalogo.MAESTROS) return cb.disjunction();
+            if (modulo == ModuloCatalogo.MAESTROS || modulo == ModuloCatalogo.EMPLEADOS) return cb.disjunction();
             if (modulo == ModuloCatalogo.CUENTAS_FINANCIERAS) {
                 return cb.and(mismaInstitucion, cb.or(cb.isNull(root.get("plantel")),
                         root.get("plantel").get("id").in(principal.plantelIds())));
@@ -242,7 +242,7 @@ public class AlcanceDatosService {
                     .orElseThrow(this::denegado).getInstitucion().getId());
             case PLANEACIONES -> validarPlantel(planeacionSemanalRepository.findById(id)
                     .orElseThrow(this::denegado).getGrupo().getPlantel().getId());
-            case HORARIOS_CLASE -> throw denegado();
+            case EMPLEADOS, HORARIOS_CLASE -> throw denegado();
             case CALENDARIO_ESCOLAR, ACTUALIZACIONES_EXPEDIENTE, PROVEEDORES, COMPRAS -> throw denegado();
             case VINCULOS_TUTOR -> validarVinculoTutor(id);
             case INSCRIPCIONES -> validarPlantel(inscripcionRepository.findById(id)
