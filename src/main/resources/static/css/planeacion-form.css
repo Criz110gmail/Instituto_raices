@@ -1,0 +1,54 @@
+.plan-tablist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:8px;border:1px solid var(--line);border-radius:18px;background:var(--soft);margin:20px 0 16px}
+.plan-workspace-nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;padding:8px;margin:22px 0;border:1px solid var(--line);border-radius:18px;background:var(--soft)}
+.plan-workspace-nav button{display:grid;gap:5px;min-height:70px;padding:14px 16px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--muted);text-align:left;cursor:pointer;font:inherit}
+.plan-workspace-nav button strong{color:var(--ink);font-size:.88rem}.plan-workspace-nav button small{font-size:.73rem;line-height:1.5}
+.plan-workspace-nav button[aria-selected=true]{background:var(--card);border-color:var(--teal);box-shadow:0 3px 10px #07111f0a}.plan-workspace-nav button[aria-selected=true] strong{color:var(--teal)}
+.plan-workspace-nav button:focus-visible,.plan-workspace-button:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+[data-plan-workspace] [data-plan-view-panel][hidden],[data-plan-workspace] [data-plan-unsaved][hidden]{display:none!important}
+.plan-workspace-card{margin:20px 0;padding:26px;border:1px solid var(--line);border-radius:20px;background:var(--card);color:var(--ink)}
+.plan-workspace-card h2,.plan-workspace-panel .plan-detail-hero h2{margin:0 0 12px;font:800 1.15rem Manrope}
+.plan-workspace-card p,.plan-workspace-note{color:var(--muted);font-size:.86rem;line-height:1.8;max-width:80ch}
+.plan-workspace-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;min-height:46px;padding:12px 20px;border:1px solid var(--teal);border-radius:12px;background:var(--teal);color:var(--navy);font:800 .83rem Manrope;text-decoration:none;cursor:pointer}
+.plan-workspace-secondary{background:var(--soft);border-color:var(--line);color:var(--ink)}.plan-workspace-button:disabled{opacity:.55;cursor:not-allowed}
+.plan-document-label{display:block;margin-bottom:12px;color:var(--teal);font-size:.7rem;letter-spacing:.12em;font-weight:800}
+.plan-workspace-dirty{padding:15px 18px;border:1px solid var(--teal);border-left:4px solid var(--teal);border-radius:12px;background:var(--mint);color:var(--ink);font-size:.82rem;line-height:1.7}
+.plan-workspace-management .teacher-fields textarea{width:100%;box-sizing:border-box}.plan-workspace-management{border-top:3px solid var(--line)}
+.plan-review-feedback{--feedback-accent:#91530c;--feedback-bg:#fff7e7;--feedback-border:#e6bc70;--feedback-message:#fffdf7;margin:22px 0;padding:24px;border:1px solid var(--feedback-border);border-left:6px solid var(--feedback-accent);border-radius:20px;background:var(--feedback-bg);color:var(--ink);box-shadow:0 8px 24px #91530c0b}
+[data-theme=dark] .plan-review-feedback{--feedback-accent:#ffd28a;--feedback-bg:#30271b;--feedback-border:#73572d;--feedback-message:#211e1b}
+.plan-review-feedback>header{display:flex;gap:15px;align-items:flex-start}.plan-feedback-icon{display:grid;place-items:center;flex:0 0 44px;min-height:44px;border:1px solid var(--feedback-border);border-radius:13px;color:var(--feedback-accent);font-size:1.6rem;background:var(--feedback-message)}
+.plan-feedback-label{color:var(--feedback-accent);font-size:.7rem;font-weight:900;letter-spacing:.09em;line-height:1.6}.plan-review-feedback h2{margin:6px 0;font:800 1.2rem/1.4 Manrope}.plan-review-feedback header p{margin:0;font-size:.78rem;color:var(--muted)}
+.plan-feedback-message{margin:20px 0;padding:18px 20px;border:1px solid var(--feedback-border);border-radius:13px;background:var(--feedback-message);white-space:pre-wrap;overflow-wrap:anywhere;font-size:.95rem;line-height:1.85;max-height:360px;overflow:auto}
+.plan-review-feedback>footer{display:flex;align-items:center;justify-content:space-between;gap:18px}.plan-review-feedback footer p{margin:0;max-width:75ch;font-size:.81rem;line-height:1.8}.plan-review-feedback footer button{margin:0;flex-shrink:0;border-color:var(--feedback-border);background:var(--feedback-message)}
+@media(max-width:540px){.plan-review-feedback{padding:18px}.plan-review-feedback>header{gap:10px}.plan-feedback-icon{flex-basis:34px;min-height:36px}.plan-review-feedback>footer{flex-direction:column;align-items:stretch}.plan-feedback-message{padding:14px}.plan-review-feedback h2{font-size:1.05rem}}
+.plan-send-dialog{width:min(600px,calc(100vw - 32px));max-height:calc(100dvh - 40px);box-sizing:border-box;overflow:auto;padding:28px;border:1px solid var(--line);border-radius:22px;background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.plan-send-dialog::backdrop{background:#07111fcc;backdrop-filter:blur(4px)}.plan-send-dialog h2{margin:0 0 12px;font:800 1.35rem/1.4 Manrope}.plan-send-dialog>p{color:var(--muted);font-size:.87rem;line-height:1.8}
+.plan-send-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:20px 0;padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--soft)}.plan-send-summary dt{color:var(--muted);font-size:.72rem;margin-bottom:6px}.plan-send-summary dd{margin:0;font-weight:700;font-size:.85rem;line-height:1.6;overflow-wrap:anywhere}.plan-send-summary .full{grid-column:1/-1}
+.plan-send-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px;position:sticky;bottom:-28px;padding:12px 0;background:var(--card)}.plan-send-actions .plan-workspace-button{margin:0}
+@media(max-width:540px){.plan-send-dialog{padding:20px}.plan-send-summary{grid-template-columns:1fr}.plan-send-actions{bottom:-20px}.plan-send-actions button{flex:1 1 100%;width:100%}}
+@media(max-width:540px){.plan-workspace-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.plan-workspace-nav button{padding:12px 10px}.plan-workspace-card{padding:20px}.plan-workspace-button{width:100%;box-sizing:border-box}}
+.plan-tablist button{position:relative;display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:9px;align-content:center;min-height:76px;padding:12px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--muted);text-align:left;cursor:pointer}
+.plan-tablist button>span{grid-row:1/3;align-self:center;display:grid;place-items:center;width:28px;height:30px;border-radius:9px;background:var(--mint);color:var(--teal);font-size:.65rem;font-weight:800}
+.plan-tablist strong,.plan-tablist small{white-space:normal;overflow-wrap:anywhere;line-height:1.4}.plan-tablist strong{font-size:.82rem}.plan-tablist small{font-size:.69rem;margin-top:3px}
+.plan-tablist button[aria-selected=true]{background:var(--card);color:var(--ink);border-color:var(--teal);box-shadow:0 3px 10px #07111f0a}
+.plan-tablist button[aria-selected=true]>span{background:var(--teal);color:var(--navy)}
+.plan-tablist button:focus-visible,.plan-validation-summary button:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+.plan-tablist button.has-errors{border-color:var(--plan-error)}
+.plan-tablist [data-plan-error-count]{position:absolute;right:5px;top:3px;padding:2px 6px;border-radius:12px;background:var(--plan-error);color:var(--card);font-size:.65rem}
+.teacher-plan-form{--plan-error:#b42336;--plan-error-bg:#fff1f3}
+[data-theme=dark] .teacher-plan-form{--plan-error:#ff9da8;--plan-error-bg:#331d2b}
+.teacher-plan-form .plan-required{color:var(--plan-error);font-style:normal;font-weight:900}
+.teacher-plan-form .plan-tab-panel[hidden],.teacher-plan-form [hidden]{display:none!important}
+.teacher-plan-form .plan-tab-panel{scroll-margin-top:100px}
+.teacher-plan-form .field-error{display:block;margin:6px 0 0;color:var(--plan-error);font-size:.78rem;line-height:1.5;font-weight:700}
+.teacher-plan-form .field-error:empty{display:none}
+.teacher-plan-form .plan-invalid,.teacher-plan-form [aria-invalid=true]{border-color:var(--plan-error)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--plan-error) 12%,transparent)}
+.teacher-plan-form .subject-picker.plan-invalid{padding:16px;border:1px solid var(--plan-error);border-radius:12px}
+.teacher-plan-form .dynamic-card h3{margin:0 30px 18px 0;color:var(--ink);font:800 .92rem Manrope}
+.teacher-plan-form .subject-picker p,.teacher-plan-form .teacher-form-section header p{line-height:1.6}
+.plan-validation-summary{scroll-margin-top:110px;margin:16px 0;padding:18px 22px;border:1px solid var(--plan-error);border-left:4px solid var(--plan-error);border-radius:15px;background:var(--plan-error-bg);color:var(--plan-error)}
+.plan-validation-summary p{margin:7px 0;font-size:.8rem;line-height:1.5}.plan-validation-summary ul{margin:12px 0 0;padding-left:20px;max-height:200px;overflow:auto}.plan-validation-summary li+li{margin-top:6px}
+.plan-validation-summary button{padding:2px 0;border:0;background:transparent;color:inherit;text-align:left;font:inherit;font-size:.8rem;text-decoration:underline;cursor:pointer}
+.plan-form-actions>div:first-child{display:grid;gap:5px;min-width:0}.plan-form-actions>div:first-child>span{font-size:.76rem;line-height:1.5}
+.plan-action-buttons{display:flex;align-items:center;flex-wrap:wrap;gap:9px}.teacher-submit .plan-secondary{border:1px solid var(--line);background:var(--soft);color:var(--ink)}
+.teacher-plan-form .teacher-fields input:focus,.teacher-plan-form .teacher-fields select:focus,.teacher-plan-form .teacher-fields textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px color-mix(in srgb,var(--teal) 18%,transparent)}
+@media(max-width:720px){.plan-tablist{grid-template-columns:repeat(2,minmax(0,1fr))}.plan-tablist button{padding:10px 8px;grid-template-columns:24px minmax(0,1fr);column-gap:6px}.plan-tablist button>span{width:24px}.plan-form-actions{gap:12px}.plan-action-buttons{width:100%}.plan-action-buttons button{flex:1 1 120px}.plan-action-buttons button[type=submit]{flex-basis:100%}.plan-form-actions>div:first-child{width:100%}.plan-validation-summary{padding:16px}.plan-validation-summary ul{max-height:150px}}

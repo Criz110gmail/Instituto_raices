@@ -56,6 +56,8 @@ class PortalMaestroSoporteRenderTest {
         when(documento.materias()).thenReturn(List.of(new PlaneacionDocumento.Materia(5L, "MAT", "Matemáticas")));
         when(soporte.contexto(admin, 7L, "CAPTURA_PLANEACION")).thenReturn(docente);
         when(planes.detalleMaestro(docente, 10L)).thenReturn(documento);
+        when(planes.observacionRevision(docente, 10L)).thenReturn(new escuela.docente.dto.ObservacionRevisionPlaneacion(
+                "Correcciones solicitadas por administración", "Indicar evidencia de evaluación.", java.time.LocalDateTime.of(2026, 10, 19, 16, 0)));
         var controller = new PortalMaestroSoporteAdminController(soporte, planes,
                 mock(PortalAlumnoMaestroService.class), mock(FotografiaMaestroService.class),
                 mock(HorarioClaseService.class), mock(PdfPlaneacionService.class));
@@ -79,8 +81,10 @@ class PortalMaestroSoporteRenderTest {
                     .andReturn().getResponse();
             assertThat(captura.getStatus()).isEqualTo(200);
             assertThat(org.unbescape.html.HtmlEscape.unescapeHtml(captura.getContentAsString())).contains("Propósito de prueba", "Matemáticas", "disabled=\"disabled\"")
-                    .doesNotContain("Guardar planeación", "src=\"/js/planeacion-form.js\"");
+                    .contains("Indicar evidencia de evaluación.", "plan-review-feedback")
+                    .doesNotContain("Guardar planeación", "src=\"/js/planeacion-form.js\"", "data-plan-send-dialog", "Confirmar envío", "data-plan-open-capture");
             SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(docente, "", docente.authorities()));
+            assertThat(captura.getContentAsString()).doesNotContain("data-planeacion-confirm-dialog", "data-planeacion-confirm=", "src=\"/js/planeacion-confirmacion.js\"");
             var real = mvc.perform(get("/maestros")).andReturn().getResponse();
             assertThat(real.getStatus()).isEqualTo(200);
             assertThat(real.getContentAsString()).contains("Nueva planeación", "Cerrar sesión", "href=\"/maestros/horario\"")

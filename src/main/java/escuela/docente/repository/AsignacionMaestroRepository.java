@@ -9,12 +9,15 @@ import java.util.*;
 public interface AsignacionMaestroRepository extends JpaRepository<AsignacionMaestro, Long>, JpaSpecificationExecutor<AsignacionMaestro> {
     List<AsignacionMaestro> findAllByMaestroIdOrderByActivoDescFechaInicioDescIdDesc(Long maestroId);
     Optional<AsignacionMaestro> findByIdAndMaestroId(Long id, Long maestroId);
-    @Query("""
-        select count(a)>0 from AsignacionMaestro a
-        where a.maestro.id=:maestroId and a.grupo.id=:grupoId and a.materia.id=:materiaId and a.id<>:id
-          and a.activo=true and a.fechaInicio<=coalesce(:fechaFin,:fechaInicio)
-          and (a.fechaFin is null or a.fechaFin>=:fechaInicio)
-        """)
+    // Tipar explícitamente las fechas nulas evita date <= text en PostgreSQL.
+    // Sin fecha final significa vigencia abierta, no solamente el día inicial.
+    @Query(value="""
+        select count(*)>0 from asignacion_maestro a
+        where a.maestro_id=:maestroId and a.grupo_id=:grupoId and a.materia_id=:materiaId and a.id<>:id
+          and a.activo=true
+          and (cast(:fechaFin as date) is null or a.fecha_inicio<=cast(:fechaFin as date))
+          and (a.fecha_fin is null or a.fecha_fin>=cast(:fechaInicio as date))
+        """,nativeQuery=true)
     boolean existeTraslape(@Param("maestroId") Long maestroId, @Param("grupoId") Long grupoId,
                             @Param("materiaId") Long materiaId, @Param("fechaInicio") LocalDate fechaInicio,
                             @Param("fechaFin") LocalDate fechaFin, @Param("id") Long id);

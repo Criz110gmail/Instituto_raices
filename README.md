@@ -1424,6 +1424,25 @@ motivo obligatorio. Cada publicación conserva una versión histórica inmutable
 un PDF en línea. El listado pagina en PostgreSQL y su Excel Apache POI usa exactamente los
 mismos filtros. Flyway V43 contiene el nuevo dominio; la siguiente migración es V44.
 
+#### Flujo de planeaciones validado — 19/10/2026
+
+El propietario confirmó captura, envío, revisión, ajustes/corrección/reenvío, primera
+publicación, reapertura con motivo y segunda publicación. Los PDF históricos conservan
+por separado el contenido anterior y los nuevos materiales; el portal docente consulta
+la planeación Publicada sin permitir editarla.
+
+Procedimiento completo y ejemplos: [Guía de planeaciones docentes](GUIA_PLANEACIONES_DOCENTES.md).
+Acta y alcance de la aceptación: [Pruebas de Empleados y Maestros](PRUEBA_EMPLEADOS_V111.md).
+El detalle administrativo se organiza en Planeación, Revisión, Versiones PDF e Historial;
+los botones identifican PDF/versión y muestran discretamente su fecha/hora institucional.
+Esta validación no cierra todas las pruebas de personal ni escenarios independientes.
+V112 incorpora también el caso al módulo **Guía de procesos**, categoría **Gestión
+académica**, título **Planeaciones docentes: captura, revisión y versiones PDF**.
+Diez etapas con actores, módulos, botones, confirmaciones, ejemplos y resultados.
+Ruta: `/admin/guias/planeaciones-revision-versiones-pdf`; consulta con
+`GUIA_PROCESOS_CONSULTAR` y `PLANEACION_LEER`, sin conceder permisos nuevos.
+La exportación Excel de la guía conserva sus filtros y contiene todos los pasos.
+
 ### Correcciones posteriores a V43
 
 Calificaciones y Asistencia consultan las inscripciones vigentes mediante una subconsulta

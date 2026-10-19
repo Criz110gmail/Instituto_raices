@@ -16,12 +16,15 @@
     <div class="status" aria-hidden="true"><span>403</span><i>!</i></div>
     <p class="eyebrow">Alcance protegido</p>
     <h1>No tienes acceso a esta información</h1>
-    <p class="copy">Tu sesión es válida, pero el permiso o el alcance de tu rol no incluye la institución, el plantel o el registro solicitado.</p>
+    <p class="copy" th:if="${rutaRegreso == '/maestros'}">Tu cuenta corresponde al portal de maestros. Esta sección no está disponible para tu cuenta; puedes volver a tu espacio docente sin cambiar tus permisos.</p>
+    <p class="copy" th:if="${rutaRegreso == '/portal'}">Tu cuenta corresponde al portal de familias. Esta sección no está disponible para tu cuenta; puedes volver a tu portal sin cambiar tus permisos.</p>
+    <p class="copy" th:unless="${rutaRegreso == '/maestros' or rutaRegreso == '/portal'}">Tu sesión es válida, pero el permiso o el alcance de tu rol no incluye la institución, el plantel o el registro solicitado.</p>
     <div class="actions">
-        <a class="primary" th:href="@{/admin}">Volver a la consola</a>
+        <a class="primary" th:href="${rutaRegreso ?: '/admin'}" th:text="${rutaRegreso == '/maestros' ? 'Ir al portal de maestros' : (rutaRegreso == '/portal' ? 'Ir al portal de familias' : 'Volver al inicio de mi cuenta')}">Volver al inicio de mi cuenta</a>
         <a class="secondary" th:href="@{/}">Ir al inicio</a>
     </div>
-    <p class="help">Si necesitas este acceso, solicita al administrador que revise tu rol y su alcance.</p>
+    <p class="help" th:if="${rutaRegreso == '/maestros' or rutaRegreso == '/portal'}">Utiliza el acceso de tu portal. No necesitas permisos administrativos para entrar a tu espacio.</p>
+    <p class="help" th:unless="${rutaRegreso == '/maestros' or rutaRegreso == '/portal'}">Si necesitas este acceso, solicita al administrador que revise tu rol y su alcance.</p>
 </main>
 </body>
 </html>

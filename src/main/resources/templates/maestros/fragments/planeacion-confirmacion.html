@@ -1,0 +1,12 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><body>
+<dialog th:fragment="modal" id="planeacion-action-dialog" class="plan-action-confirm" data-planeacion-confirm-dialog aria-labelledby="planeacion-action-title" aria-describedby="planeacion-action-description">
+<span class="pc-label">CONFIRMACIÓN DE PLANEACIÓN</span><h2 id="planeacion-action-title" data-pc-title>Confirmar operación</h2><p id="planeacion-action-description" data-pc-description></p>
+<dl class="pc-summary">
+<div><dt>Maestro</dt><dd th:text="${planeacion != null ? planeacion.maestro : (perfil != null ? perfil.nombreCompleto : '')}"></dd></div>
+<div><dt>Grupo</dt><dd data-pc-group th:text="${planeacion != null ? planeacion.grado+' · '+planeacion.grupo : 'Selecciona un grupo'}"></dd></div>
+<div><dt>Semana</dt><dd data-pc-week th:text="${planeacion != null ? #temporals.format(planeacion.fechaInicio,'dd/MM/yyyy')+' al '+#temporals.format(planeacion.fechaFin,'dd/MM/yyyy') : 'Completa las fechas'}"></dd></div>
+<div><dt>Materias</dt><dd data-pc-subjects><span th:each="x,s:${planeacion != null ? planeacion.materias : null}" th:text="${x.nombre+(s.last?'':', ')}"></span></dd></div>
+<div class="pc-full" data-pc-reason-row hidden><dt>Motivo o correcciones</dt><dd data-pc-reason></dd></div></dl>
+<p class="pc-note" data-pc-note></p><footer><button type="button" class="pc-cancel" data-pc-cancel autofocus>Cancelar</button><button type="button" class="pc-accept" data-pc-accept>Confirmar</button></footer>
+</dialog>
+</body></html>

@@ -67,6 +67,9 @@ button,input,select,textarea{font:inherit}
 .teacher-alert{background:#fff0e9;color:#a84825}
 .teacher-form-shell{max-width:1030px}
 .teacher-back{display:inline-flex;margin-bottom:17px}
+.teacher-shell>.teacher-back{align-items:center;gap:8px;min-height:44px;padding:11px 16px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font-size:.82rem;box-shadow:0 3px 10px #07111f08}
+.teacher-shell>.teacher-back:hover{border-color:var(--teal);color:var(--teal)}
+.teacher-shell>.teacher-back:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
 .teacher-form-intro{padding:29px 32px;border-radius:24px;background:var(--navy);color:#fff}
 .teacher-form-intro h1{font-size:2.5rem}
 .teacher-form-intro p{margin:0;color:#c7dbdf}

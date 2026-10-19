@@ -31,6 +31,8 @@ public class CatalogoAdminController {
 
     @GetMapping("/admin")
     String admin(Authentication authentication) {
+        String portal=escuela.seguridad.service.DestinoPortalSesion.inicio(authentication);
+        if ("/maestros".equals(portal) || "/portal".equals(portal)) return "redirect:"+portal;
         return modulosVisibles(authentication).stream().findFirst()
                 .map(modulo -> "redirect:" + modulo.rutaListado())
                 .orElseGet(() -> authentication.getAuthorities().stream()

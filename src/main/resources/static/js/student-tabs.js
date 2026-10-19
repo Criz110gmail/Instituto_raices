@@ -34,6 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectedTab = tabs.find(tab => tab.dataset.studentTab === selected);
             const hash = selectedTab?.dataset.tabHash || '#panel-ficha-resumen';
             history.replaceState(null, '', hash);
+            if (navigation.dataset.scrollToTabs === 'true') {
+                const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+                navigation.scrollIntoView({block: 'start', behavior: reduced ? 'auto' : 'smooth'});
+            }
         }
     };
 

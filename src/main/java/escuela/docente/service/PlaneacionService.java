@@ -1,7 +1,8 @@
 package escuela.docente.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
 import escuela.academico.entity.*;
 import escuela.academico.repository.GrupoRepository;
 import escuela.auditoria.entity.AccionAuditoria;
@@ -36,7 +37,8 @@ public class PlaneacionService {
     private final UsuarioRepository usuarios;
     private final AlcanceDatosService alcance;
     private final RegistroAuditoriaService auditoria;
-    private final ObjectMapper json = new ObjectMapper().findAndRegisterModules();
+    // Jackson 3 (incluido por Spring Boot) soporta LocalDate/Instant sin módulos de Jackson 2.
+    private final JsonMapper json = JsonMapper.builder().disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS).build();
 
     public Long crear(UsuarioPrincipal principal, PlaneacionRequest request){
         Maestro maestro=maestro(principal);Grupo grupo=grupo(request.grupoId());
@@ -72,11 +74,26 @@ public class PlaneacionService {
     public void reabrir(Long id,Long version,String motivo){PlaneacionSemanal p=bloquearAdmin(id);verificar(p,version,"Planeación");if(p.getEstado()!=EstadoPlaneacion.PUBLICADA)throw new ReglaNegocioException("Sólo una planeación publicada puede reabrirse");if(limpiar(motivo)==null)throw new ReglaNegocioException("El motivo de reapertura es obligatorio");transicion(p,EstadoPlaneacion.REABIERTA,limpiar(motivo),AccionAuditoria.PLANEACION_REABIERTA);}
 
     @Transactional(readOnly=true) public PlaneacionDocumento detalleMaestro(UsuarioPrincipal principal,Long id){Maestro m=maestro(principal);PlaneacionSemanal p=detalle(id);if(!p.getMaestro().getId().equals(m.getId()))throw new org.springframework.security.access.AccessDeniedException("Planeación no autorizada");return documento(p,p.getNumeroRevision(),p.getPublicadaEn());}
+    @Transactional(readOnly=true)
+    public ObservacionRevisionPlaneacion observacionRevision(UsuarioPrincipal principal,Long id){
+        Maestro m=maestro(principal);PlaneacionSemanal p=detalle(id);
+        if(!p.getMaestro().getId().equals(m.getId())||!p.getInstitucion().getId().equals(m.getInstitucion().getId()))
+            throw new org.springframework.security.access.AccessDeniedException("Planeación no autorizada");
+        if(p.getEstado()!=EstadoPlaneacion.REQUIERE_AJUSTES&&p.getEstado()!=EstadoPlaneacion.REABIERTA)return null;
+        return historiales.findFirstByPlaneacionIdAndEstadoNuevoOrderByOcurridoEnDescIdDesc(id,p.getEstado())
+            .filter(h->limpiar(h.getMotivo())!=null)
+            .map(h->new ObservacionRevisionPlaneacion(p.getEstado()==EstadoPlaneacion.REABIERTA?"Motivo de reapertura por administración":"Correcciones solicitadas por administración",
+                h.getMotivo(),h.getOcurridoEn().atZone(ZoneId.of(p.getInstitucion().getZonaHoraria())).toLocalDateTime())).orElse(null);
+    }
     @Transactional(readOnly=true) public PlaneacionDocumento detalleAdmin(Long id){alcance.validarRecurso(escuela.admin.dto.ModuloCatalogo.PLANEACIONES,id);PlaneacionSemanal p=detalle(id);return documento(p,p.getNumeroRevision(),p.getPublicadaEn());}
     @Transactional(readOnly=true) public Long versionEntidad(Long id){return detalle(id).getVersion();}
     @Transactional(readOnly=true) public EstadoPlaneacion estado(Long id){return detalle(id).getEstado();}
     @Transactional(readOnly=true) public List<HistorialPlaneacionFila> historial(Long id){detalleAdmin(id);return historiales.findAllByPlaneacionIdOrderByOcurridoEnDescIdDesc(id).stream().map(h->new HistorialPlaneacionFila(h.getEstadoAnterior(),h.getEstadoNuevo(),h.getMotivo(),h.getActor()==null?"Sistema":h.getActor().getUsername(),h.getOcurridoEn())).toList();}
-    @Transactional(readOnly=true) public List<PlaneacionVersionPublicada> versiones(Long id){detalleAdmin(id);return versiones.findAllByPlaneacionIdOrderByNumeroRevisionDesc(id);}
+    @Transactional(readOnly=true) public List<VersionPlaneacionFila> versiones(Long id){
+        detalleAdmin(id);ZoneId zona=ZoneId.of(detalle(id).getInstitucion().getZonaHoraria());
+        return versiones.findAllByPlaneacionIdOrderByNumeroRevisionDesc(id).stream()
+            .map(v->new VersionPlaneacionFila(v.getNumeroRevision(),v.getPublicadaEn().atZone(zona).toLocalDateTime())).toList();
+    }
     @Transactional(readOnly=true) public PlaneacionDocumento version(Long id,int revision,boolean docente,UsuarioPrincipal principal){if(docente)detalleMaestro(principal,id);else detalleAdmin(id);PlaneacionVersionPublicada v=versiones.findByPlaneacionIdAndNumeroRevision(id,revision).orElseThrow(()->new RecursoNoEncontradoException("la versión publicada",(long)revision));return deserializar(v.getContenidoJson());}
 
     @Transactional(readOnly=true) public Page<PlaneacionFila> listarMaestro(UsuarioPrincipal principal,int pagina){return listarMaestro(principal,null,null,null,pagina);}
@@ -116,8 +133,8 @@ public class PlaneacionService {
     private PlaneacionSemanal bloquearAdmin(Long id){PlaneacionSemanal p=planeaciones.findByIdForUpdate(id).orElseThrow(()->new RecursoNoEncontradoException("la planeación",id));alcance.validarRecurso(escuela.admin.dto.ModuloCatalogo.PLANEACIONES,id);return p;}
     private PlaneacionFila fila(PlaneacionSemanal p){return new PlaneacionFila(p.getId(),nombre(p.getMaestro()),p.getMaestro().getNumeroEmpleado(),p.getGrupo().getPlantel().getNombre(),p.getGrupo().getNombre(),p.getGrupo().getGrado().getNombre(),p.getFechaInicio(),p.getFechaFin(),p.getEstado(),p.getNumeroRevision(),p.getMaterias().size(),p.getVersion());}
     private PlaneacionDocumento documento(PlaneacionSemanal p,int revision,Instant publicada){return new PlaneacionDocumento(p.getId(),p.getGrupo().getId(),revision,p.getInstitucion().getNombre(),nombre(p.getMaestro()),p.getMaestro().getNumeroEmpleado(),p.getGrupo().getPlantel().getNombre(),p.getCicloEscolar().getNombre(),p.getGrupo().getGrado().getNombre(),p.getGrupo().getNombre(),p.getFechaInicio(),p.getFechaFin(),p.getEstado().getEtiqueta(),p.getSituacionDidactica(),p.getProposito(),p.getEjesArticuladores(),p.getConocimientos(),p.getHabilidades(),p.getActitudes(),p.getTecnicaEvaluacion(),p.getInstrumentoEvaluacion(),p.getRecursos(),p.getActividadesPermanentes(),p.getAjustesRazonables(),p.getObservaciones(),p.getMaterias().stream().map(x->new PlaneacionDocumento.Materia(x.getMateria().getId(),x.getMateria().getCodigo(),x.getMateria().getNombre())).toList(),p.getAlineaciones().stream().map(x->new PlaneacionDocumento.Alineacion(x.getMateria()==null?null:x.getMateria().getId(),x.getMateria()==null?"General":x.getMateria().getNombre(),x.getCampoFormativo(),x.getContenido(),x.getProcesoDesarrollo())).toList(),p.getActividades().stream().map(x->new PlaneacionDocumento.Actividad(x.getMateria().getId(),x.getMateria().getNombre(),x.getFecha(),x.getTitulo(),x.getInicio(),x.getDesarrollo(),x.getCierre(),x.getDuracionMinutos(),x.getTarea(),x.getObservaciones())).toList(),publicada);}
-    private String serializar(PlaneacionDocumento d){try{return json.writeValueAsString(d);}catch(JsonProcessingException e){throw new IllegalStateException("No fue posible conservar la versión publicada",e);}}
-    private PlaneacionDocumento deserializar(String s){try{return json.readValue(s,PlaneacionDocumento.class);}catch(JsonProcessingException e){throw new IllegalStateException("No fue posible leer la versión publicada",e);}}
+    private String serializar(PlaneacionDocumento d){try{return json.writeValueAsString(d);}catch(JacksonException e){throw new IllegalStateException("No fue posible conservar la versión publicada",e);}}
+    private PlaneacionDocumento deserializar(String s){try{return json.readValue(s,PlaneacionDocumento.class);}catch(JacksonException e){throw new IllegalStateException("No fue posible leer la versión publicada",e);}}
     private String nombre(Maestro m){return java.util.stream.Stream.of(m.getNombres(),m.getPrimerApellido(),m.getSegundoApellido()).filter(x->x!=null&&!x.isBlank()).collect(Collectors.joining(" "));}
     private Specification<PlaneacionSemanal> criterios(FiltroPlaneacion f){return (r,q,c)->{List<jakarta.persistence.criteria.Predicate>p=new ArrayList<>();if(f.institucionId()!=null)p.add(c.equal(r.get("institucion").get("id"),f.institucionId()));if(f.plantelId()!=null)p.add(c.equal(r.get("grupo").get("plantel").get("id"),f.plantelId()));if(f.maestroId()!=null)p.add(c.equal(r.get("maestro").get("id"),f.maestroId()));if(f.grupoId()!=null)p.add(c.equal(r.get("grupo").get("id"),f.grupoId()));if(f.estado()!=null)p.add(c.equal(r.get("estado"),f.estado()));if(f.desde()!=null)p.add(c.greaterThanOrEqualTo(r.get("fechaFin"),f.desde()));if(f.hasta()!=null)p.add(c.lessThanOrEqualTo(r.get("fechaInicio"),f.hasta()));if(!f.texto().isBlank()){String x="%"+f.texto().toLowerCase(Locale.ROOT)+"%";p.add(c.like(c.lower(r.get("proposito")),x));}return c.and(p.toArray(jakarta.persistence.criteria.Predicate[]::new));};}
 }

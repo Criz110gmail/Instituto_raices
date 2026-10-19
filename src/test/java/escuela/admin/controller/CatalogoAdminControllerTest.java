@@ -23,6 +23,11 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CatalogoAdminControllerTest {
+    @Test void entradaAdminAntiguaDevuelveAlDocenteASuPortalSinConsultarCatalogos(){
+        assertThat(controller.admin(autenticacion("PORTAL_MAESTRO_ACCEDER"))).isEqualTo("redirect:/maestros");
+        assertThat(controller.admin(autenticacion("PORTAL_TUTOR_ACCEDER"))).isEqualTo("redirect:/portal");
+        org.mockito.Mockito.verifyNoInteractions(consultaService,excelService);
+    }
 
     @Mock private CatalogoConsultaService consultaService;
     @Mock private ExcelCatalogoService excelService;

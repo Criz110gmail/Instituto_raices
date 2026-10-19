@@ -22,6 +22,37 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 class GuiaProcesosRenderTest {
+    @Test void planeacionesRenderizaDiezPasosYExportaSuContenidoReal() throws Exception {
+        var sql=java.nio.file.Files.readString(java.nio.file.Path.of("src/main/resources/db/migration/V112__guia_planeaciones_docentes.sql"));
+        var patron=java.util.regex.Pattern.compile("(?m)^\\((\\d+),\\$texto\\$(.*?)\\$texto\\$,'(.*?)',\\$texto\\$(.*?)\\$texto\\$,\\R\\$texto\\$(.*?)\\$texto\\$,\\R\\$texto\\$(.*?)\\$texto\\$,\\R\\$texto\\$(.*?)\\$texto\\$,\\R\\$texto\\$(.*?)\\$texto\\$,(NULL|'(.*?)')\\)");
+        var pasos=patron.matcher(sql).results().map(m->new Paso(Integer.parseInt(m.group(1)),m.group(2),m.group(3),m.group(4),m.group(5),m.group(6),m.group(7),m.group(8),m.group(10))).toList();
+        assertThat(pasos).hasSize(10);
+        var principal=new UsuarioPrincipal(1L,2L,Set.of(),true,false,"admin","",List.of(
+                new SimpleGrantedAuthority("GUIA_PROCESOS_CONSULTAR"),new SimpleGrantedAuthority("PLANEACION_LEER")));
+        var guia=new Guia(2L,"planeaciones-revision-versiones-pdf","Planeaciones docentes: captura, revisión y versiones PDF",
+                "Gestión académica","Recorrido confirmado","Cuenta docente y asignaciones","Sumas con fichas",1,LocalDate.of(2026,10,19),"CONFIRMADA");
+        var service=mock(GuiaProcesosService.class);
+        when(service.obtener(principal,guia.slug())).thenReturn(new Detalle(guia,pasos));
+        when(service.listar(eq(principal),any())).thenReturn(new PageImpl<>(List.of(guia)));
+        var templates=new ClassLoaderTemplateResolver();templates.setPrefix("templates/");templates.setSuffix(".html");templates.setCharacterEncoding("UTF-8");
+        var engine=new SpringTemplateEngine();engine.setTemplateResolver(templates);
+        var views=new ThymeleafViewResolver();views.setTemplateEngine(engine);views.setCharacterEncoding("UTF-8");
+        var mvc=MockMvcBuilders.standaloneSetup(new GuiaProcesosAdminController(service)).setViewResolvers(views)
+                .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver()).build();
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(principal,"",principal.authorities()));
+        try {
+            var detalle=mvc.perform(get("/admin/guias/"+guia.slug())).andReturn().getResponse();
+            assertThat(detalle.getStatus()).isEqualTo(200);
+            assertThat(detalle.getContentAsString()).contains("paso-10","19/10/2026","Confirmar reapertura",
+                    "Ver PDF · Versión 2 — Nueva publicación","/admin/maestros","target=\"_blank\"");
+            var excel=mvc.perform(get("/admin/guias/excel").param("q","planeaciones").param("categoria","Gestión académica")).andReturn().getResponse();
+            try(var libro=new XSSFWorkbook(new ByteArrayInputStream(excel.getContentAsByteArray()))) {
+                assertThat(libro.getSheetAt(0).getLastRowNum()).isEqualTo(10);
+                assertThat(libro.getSheetAt(0).getRow(10).getCell(10).getStringCellValue()).contains("Versión 1","Versión 2","no publiques ni reabras otra vez");
+            }
+        } finally {SecurityContextHolder.clearContext();}
+    }
+
     @Test void listadoDetalleYExcelConservanFiltrosYNoEjecutanPagos() throws Exception {
         var principal=new UsuarioPrincipal(1L,2L,Set.of(),true,false,"admin","",
                 List.of(new SimpleGrantedAuthority("GUIA_PROCESOS_CONSULTAR")));

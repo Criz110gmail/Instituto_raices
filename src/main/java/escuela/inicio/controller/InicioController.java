@@ -12,7 +12,8 @@ public class InicioController {
     }
 
     @GetMapping("/acceso-denegado")
-    String accesoDenegado() {
+    String accesoDenegado(org.springframework.security.core.Authentication authentication, org.springframework.ui.Model model) {
+        model.addAttribute("rutaRegreso", escuela.seguridad.service.DestinoPortalSesion.inicio(authentication));
         return "error/acceso-denegado";
     }
 

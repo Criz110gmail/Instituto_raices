@@ -265,7 +265,9 @@ public class SeguridadConfig {
                                     .anyMatch(a -> a.getAuthority().equals("PORTAL_MAESTRO_ACCEDER"));
                             response.sendRedirect(request.getContextPath()
                                     + (entradaFamiliar ? (tienePortal ? "/portal" : "/acceso-denegado")
-                                    : entradaMaestro ? (tienePortalMaestro ? "/maestros" : "/acceso-denegado") : "/admin"));
+                                    : entradaMaestro ? (tienePortalMaestro ? "/maestros" : "/acceso-denegado")
+                                    : tienePortalMaestro && !tienePortal ? "/maestros"
+                                    : tienePortal && !tienePortalMaestro ? "/portal" : "/admin"));
                         })
                         .failureHandler((request, response, exception) -> response.sendRedirect(
                                 request.getContextPath() + ("familias".equals(request.getParameter("origen"))

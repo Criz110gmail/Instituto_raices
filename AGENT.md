@@ -1,5 +1,281 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V112 — Planeaciones incorporadas a la Guía de procesos — 19/10/2026
+
+- Usuario pide agregar el caso a la guía integrada para cerrar la prueba. V112 añade
+  sólo contenido editorial: Planeaciones docentes: captura, revisión y versiones PDF,
+  categoría Gestión académica, slug planeaciones-revision-versiones-pdf, CONFIRMADA.
+  Diez etapas detalladas: preparación, captura/borrador, envío, revisión/ajustes,
+  corrección/reenvío, publicación1, reapertura con motivo, nueva publicación y PDF1/2.
+- Consulta /admin/guias/planeaciones-revision-versiones-pdf con permisos existentes
+  GUIA_PROCESOS_CONSULTAR + PLANEACION_LEER. No otorga roles ni acceso docente al admin.
+  Reutiliza UI responsive/temas y Excel filtrado del módulo. Sin operaciones docentes,
+  publicaciones, datos laborales/financieros ni aceptación de otros escenarios.
+- V112 aplicada localmente19/10 a17:30México; salud UP y10 pasos confirmados en base.
+  Sólo app recreada; PostgreSQL/volúmenes conservados. Respaldo privado ignorado en
+  .respaldos-locales/guia-v112-20261019; no mostrar contenido. Sin .env/commit/push.
+  Pruebas897 Java/75 JS completas correctas, luego9 dirigidas correctas con render y
+  Excel de los diez pasos reales. SQL definitivo probado en PostgreSQL17 aislado.
+- README, GUIA_PLANEACIONES_DOCENTES y PRUEBA_EMPLEADOS_V111 actualizados: integración
+  ya NO pendiente. Notas anteriores son historial superado. Prueba principal cerrada;
+  no pedir repetirla ni reabrir/publicar otra vez. Descarte/concurrencia/aislamiento,
+  Empleados no docente/laboral/multiplantel, agenda/familias/sesiones y Compras siguen
+  pendientes independientes. Próxima migración disponible V113.
+
+## Cierre humano del flujo principal de planeaciones — 19/10/2026
+
+- Usuario confirma «sí todo coincide» al comparar Versiones1/2 y comprobar Publicada,
+  consulta PDF y ausencia de edición docente. Aceptado el recorrido principal completo:
+  captura→envío→revisión→ajustes/corrección/reenvío→publicación1→reapertura con motivo→
+  edición/reenvío/revisión→publicación2, con conservación del contenido de versión1.
+  NO volver a pedirle esta comparación ni repetir publicaciones/reaperturas/altas.
+- GUIA_PLANEACIONES_DOCENTES.md contiene procedimiento detallado, módulos/pestañas/
+  botones/modales/ejemplo/resultados/FAQ y límites. PRUEBA_EMPLEADOS_V111.md tiene acta
+  VALIDADO y pendientes históricos relacionados corregidos. Documentado en README y
+  CONTEXTO. Esta aceptación no cierra todo el sistema ni todo V111.
+- Sólo documentación este turno: no código, SQL, migraciones, builds, despliegues,
+  sesiones, datos reales, .env, commit o push. NO afirmar que ya se añadió el caso al
+  catálogo de Guía de procesos dentro de la aplicación: la guía en repositorio está
+  lista; esa incorporación sigue como pendiente documental explícito.
+- Siguiente acordable: incorporar este caso validado al catálogo integrado o escoger
+  escenario independiente pendiente (p.ej. descarte). No asumir autorización para
+  descartar esta planeación ni ampliar roles. Empleados no docente, laboral/multiplantel,
+  agenda, casos familiares, sesiones5m aplazadas y Compras documental siguen pendientes.
+
+## Detalle administrativo por pestañas y versiones PDF identificables — 19/10/2026
+
+- Usuario ve2 publicaciones tras reabrir/corregir/publicar; se explicó que son copias
+  históricas, no duplicados. Pidió rótulos Ver PDF · Versión1 — Publicación inicial /
+  Versión2 — Nueva publicación, fecha/hora discreta, y evitar scroll al final del historial.
+  Pendiente comparar ambos PDF con usuario; no asumir que confirmó su contenido.
+- Detalle admin ahora reutiliza student-tabs/forms: Planeación, Revisión, Versiones PDF,
+  Historial. Barra fija al desplazar contenido, cuatro opciones visibles (dos filas
+  móvil), paneles separados. Revisión inicial; publicar exitoso fuerza Versiones PDF,
+  error fuerza Revisión. PDF actual sigue arriba y archivos abren otra pestaña inline.
+- En Versiones PDF tarjetas/enlaces con rótulo explícito, fecha debajo dd/MM/yyyy · HH:mm,
+  vacíos explicados. Nueva VersionPlaneacionFila sólo presentación, convierte Instant
+  a zona de la institución sin alterar timestamps/JSON/orden/revisiones guardados.
+  Métodos/permiso de archivo histórico intactos; no migración ni nuevas publicaciones.
+- student-tabs incorpora scroll opcional sólo para nav data-scroll-to-tabs, respeta
+  movimiento reducido; otros módulos sin ese atributo conservan comportamiento.
+  Soporta hash/teclado, retorno a pestaña y no reconstruye formularios/motivos.
+- Estado de pruebas/publicación en CONTEXTO. Siguiente humano: abrir mismo detalle →
+  Versiones PDF → Ver PDF Versión1 y2, comprobar anterior/nuevos materiales, fecha
+  local y nueva navegación/modales. No reabrir otra vez sólo para comprobar los PDF.
+
+## Modales de acciones de planeación en ambos portales — 19/10/2026
+
+- Propietario confirmó Publicada/PDF histórico/bloqueo docente tras corrección del
+  serializador. Dice haber pulsado Reabrir; falta confirmar motivo visible, edición
+  y nueva publicación/revisión2. No repetir reapertura ni crear otro registro por él.
+- Solicita confirmaciones administrativas y docentes. Admin: Iniciar revisión,
+  Publicar, Solicitar ajustes, Reabrir. Docente: Guardar (nuevo y existente) y Descartar;
+  Enviar conserva su modal ya validado. Cada acción tiene texto/resumen/confirmar/
+  cancelar, fechas dd/MM/yyyy y motivo capturado cuando aplica. No añade permisos.
+- Fragmento/CSS/JS nuevos planeacion-confirmacion, dialog nativo y paletas actuales.
+  Cancelar/Escape/fondo cierran sin POST y restauran foco; confirmar requestSubmit
+  conserva endpoint/CSRF/versión/submitter, evita doble envío y revalida. Guardar sólo
+  abre tras validación completa, confirma captura actual sin publicar/enviar.
+  Vistas soporte sin nuevos botones/atributos/JS ni modal de mutación.
+- planeacion-vista coordina guardas: abrir/cancelar modal no marca salida aceptada;
+  captura pendiente sigue avisando al salir y bloquea envío/descarte. Ayudas de materia
+  excluidas del resumen (se toma texto, no icono i). Todo sin cambios de servidor/
+  esquema/datos reales. Ver CONTEXTO para verificación y publicación.
+- Siguiente: misma planeación Reabierta → docente editar/guardar y confirmar→enviar;
+  admin iniciar revisión/confirmar, Publicar/Cancelar primero y después confirmar.
+  Esperar Revisión2 y Revisión1 intacta. Descartar NO parte de esta prueba.
+
+## Corrección de publicación de planeaciones — 19/10/2026
+
+- Prueba humana de Publicar falló con500 a22:19:44UTC (16:19México). Log confirma
+  InvalidDefinitionException de Jackson2: LocalDate de PlaneacionDocumento.fechaInicio
+  sin módulo jsr310 al serializar versión histórica. No es error de captura ni PDF.
+- PlaneacionService usaba com.fasterxml ObjectMapper.findAndRegisterModules sin
+  módulo de fechas presente; Boot4 trae Jackson3 y Jackson2 queda por Jasper.
+  Cambiado mapper privado a tools.jackson JsonMapper con fechas ISO explícitas;
+  soporte nativo LocalDate/Instant y lectura del mismo DTO/snapshot. Sin dependencias
+  nuevas, esquemas o cambios de proceso. No modificar Jasper ni configuración JSONglobal.
+- Regresiones nuevas publican/leen snapshot con fechas de semana/actividad/Instant,
+  generan PDF desde snapshot, conservan revisión1 al reabrir/publicar2, rechazan
+  estado/versión inválida y leen fechas numéricas legadas. Render administrativo
+  prueba redirección/GET con versión publicada y enlace PDF/reapertura.
+- Sin publicar ni reparar manualmente datos del propietario. Ver CONTEXTO para
+  cifras/estado operativo. Pendiente reabrir mismo registro y reintentar Publicar;
+  no crear otra planeación ni marcar publicación/reapertura humana como aceptada.
+
+## Ajustes corregidos y reenviados: aceptación humana — 19/10/2026
+
+- Propietario confirma que vio la tarjeta, corrigió, guardó y reenvió; ya no permite
+  editar. Aceptado ese recorrido, no publicación/reapertura todavía. Siguiente prueba:
+  administración → Planeaciones → misma semana/grupo → Revisar → Iniciar revisión,
+  comprobar cambios y Publicar planeación; después comprobar bloqueo/PDF docente.
+- Pide simplificar tarjeta: quitar Ir a captura porque el menú ya está debajo.
+  Retirado botón/listener, tarjeta conserva motivo/fecha/ayuda que refiere al menú.
+  La prueba de aceptación se actualiza para usar Captura → Recursos y evaluación.
+  Las entradas históricas que citan CTA describen la versión anterior, ya superada.
+
+## Correcciones administrativas visibles al docente — 19/10/2026
+
+- Aceptación humana: modal Cancelar/Confirmar envío funciona; docente envió,
+  administrador inició revisión y solicitó ajustes. Maestro ve Requiere ajustes,
+  pero no veía el motivo. Confirmado faltante: guardado en historial admin sin
+  exposición docente. No confundir con observaciones generales del formulario.
+- Tarjeta ámbar destacada sobre las pestañas, en detalle/edición/POST con errores:
+  Correcciones solicitadas por administración, fecha institucional dd/MM/yyyy HH:mm,
+  texto íntegro multilínea escapado y botón Ir a captura. Paleta clara/oscura/móvil,
+  no rojo de errores; permanece al guardar hasta reenviar. Al reenviar deja de
+  marcar solicitud pendiente; historial administrativo original se conserva.
+- Nueva lectura observacionRevision verifica maestro activo, dueño e institución
+  ANTES de consultar historial. Sólo REQUIERE_AJUSTES/REABIERTA: último evento del
+  estado actual (findFirst orden fecha/id), no todo el historial ni comentarios
+  antiguos como pendientes. Reapertura usa título propio; sin motivo no inventa.
+  Soporte autorizado ve misma tarjeta sin botón/acciones de escritura.
+- No cambios de esquema, estados, permisos, PDF ni operaciones reales para QA.
+  Estado de verificación/publicación en CONTEXTO. Pendiente humano: ver tarjeta,
+  corregir recursos/evaluación, guardar y reenviar misma planeación; luego publicar.
+
+## Confirmación antes de enviar planeación — 19/10/2026
+
+- Propietario confirmó que ya ve el PDF en la navegación unificada. Pidió agregar
+  modal a Enviar a revisión antes de realizar la prueba de envío; no enviarla por él.
+- En Resumen y envío, submit abre dialog nativo estilizado con tema del portal,
+  maestro/grupo/plantel/semana dd/MM/yyyy/materias y aviso de bloqueo de edición.
+  Confirmar envío realiza requestSubmit al mismo endpoint/CSRF/versión; Cancelar,
+  Escape o fondo cierran sin POST y restauran foco. Confirmar evita doble clic y
+  revalida cambios pendientes; no aparece para soporte ni estados no editables.
+- No se modificó servidor/dominio ni se guardaron/enviaron planeaciones reales de QA.
+  Estado de verificación/publicación en CONTEXTO. Pendiente humano: probar Cancelar,
+  luego Confirmar envío con la misma planeación y revisión desde administración.
+
+## Planeación en una sola vista — 19/10/2026
+
+- Propietario reportó guardar su planeación y confundirse con «¿Necesitas descartarla?»;
+  se explicó que no era validación sino acción opcional. Solicita evitar volver del
+  formulario al detalle para abrir PDF. No hay todavía aceptación de envío/revisión.
+- Detalle editable y /editar ahora comparten formulario y navegación principal:
+  Captura (sus cinco secciones), Resumen y envío, Documento PDF y Gestión. Guardar
+  redirige a la misma vista en Resumen; /editar abre Captura. Volver va al listado.
+  Sin formulario nuevo dentro de otro: guardar, enviar y descartar son forms hermanos.
+- PDF tiene su pestaña y enlace al endpoint privado inline existente, abre otra pestaña
+  sin descarga automática ni perder captura. Aclara que PDF/resumen usan lo guardado,
+  no texto pendiente. No se creó una copia pública ni se cambió el generador de PDF.
+- JS de vista conserva DOM/texto al navegar, teclado/aria y tema móvil. Detecta cambios
+  pendientes, avisa y bloquea envío/descarte hasta guardar; también si el servidor
+  rechazó un POST (capturaPendiente). Aviso de salida del navegador para no perder texto.
+  Descartar sólo en Gestión con motivo, nunca como paso obligatorio de guardar.
+- Enviada/En revisión/Publicada/Descartada conservan consulta sin editor/acciones de
+  borrador; /editar redirige al detalle. Soporte mantiene sólo lectura y su PDF privado,
+  sin botones de escritura ni JS de mutación. Foto/reglas de servicio/CSRF/versiones
+  permanecen. Sin migración ni datos guardados de QA. Estado operativo en CONTEXTO.
+- Pendiente humano: recargar, abrir misma planeación, Captura→PDF→Captura conserva
+  texto; guardar y enviar desde Resumen y envío. Después prueba de revisión/ajustes.
+
+## Captura de planeaciones por pestañas y validación visible — 19/10/2026
+
+- Propietario confirmó que bruce.wayne SÍ entra por /maestros/acceso; estaba usando
+  /familias. Acceso humano docente confirmado, no faltaban roles ni contraseña. Las
+  entradas previas de rechazo pendiente son historial superado para ESTE login.
+  Sigue pendiente prueba humana de guardar/enviar/revisar/publicar planeación.
+- Nueva solicitud implementada: cinco pestañas de captura (grupo/semana, objetivos,
+  alineación, actividades, recursos/evaluación) con teclado, Anterior/Siguiente y
+  guardar visible. Paleta/controles portal, responsive, sin tocar diseño administrativo.
+  CSS nuevo planeacion-form.css y UI propia planeacion-form-ui.js; no usa estilos admin.
+- Obligatorios marcados*, errores rojos locales incluidos TODOS los campos anidados,
+  resumen enlazado/cuenta por pestaña y apertura del primer error. Corrige mensajes
+  Bean Validation en español y pinta borde/aria-invalid/describedby; cliente evita
+  enviar incompletos/espacios/fecha fuera de semana/duración inválida, servidor conserva
+  @Valid y datos. No relajar borrador: requiere propósito/materia/actividad completa.
+  Alineación opcional, pero cada tarjeta agregada requiere sus3 campos; quitar vacía.
+- Filas dinámicas ahora reindexan names/id al quitar/agregar, conservan catálogos
+  iniciales y limitan selects a materias marcadas. Consultas con aborto/secuencia
+  evitan respuestas viejas; no cambia permisos/elegibilidad del servicio. Las reglas
+  de vigencia, semana única, edición y publicación permanecen en backend.
+- Regresar ahora botón con borde/foco/tema. Foto en nueva/editar/POSTconerror/detalle:
+  faltaba fotoPerfil en preparar/detalle; se usa la misma fotografía privada docente,
+  no otro archivo ni URL pública. Soporte conserva captura deshabilitada y sin envío;
+  pestañas sí navegan en sólo lectura. Sin migraciones nuevas ni nómina.
+- Regla de UX: todo formulario con listas anidadas debe mostrar validación por campo
+  también en filas ya renderizadas, no sólo en plantillas JS; pestañas deben llevar
+  al error y conservar captura. Ayudas no son errores; rojo sólo requeridos/validación.
+- Verificado879 Java/62 Node y QA ficticia escritorio/móvil390px/claro/oscuro: guardar
+  incompleto, enlaces de error, corrección8→7, foto/cabecera/regresar, añadir/quitar/
+  reindexar actividad, seleccionar materia y captura completa que supera cliente.
+  POST de fixture bloqueado405 deliberadamente; no es error de app real. Pruebas MVC
+  invalidan sin llamar crear; válida llama crear una vez y redirige a detalle. Lectura
+  soporte pasó. Estado operativo final en CONTEXTO; no crear datos reales para probar.
+
+## Rechazo docente persiste: falta identificar petición real — 19/10/2026
+
+- Propietario sigue viendo mensaje contextual docente en acceso-denegado. No asumir
+  que los arreglos de navegación resolvieron su login. Se preguntó si al pulsar Ir al
+  portal de maestros vuelve al rechazo o abre; respuesta aún pendiente en este punto.
+- PortalDocenteCompletoIT ampliado con Java HttpClient contra Tomcat real/puerto
+  aleatorio, CookieManager, CSRF+comprobar+POSTlogin con origen maestros y redirects
+  reales: termina en /maestros200 con Mis planeaciones e identidad ficticia. Además
+  sigue pasando MockMvc. Prueba aislada1/1 sin fallos, DB/usuario/clave ficticios;
+  sin claves/sesiones reales, ni mutaciones de usuarios/roles/datos de instalación.
+- Sólo test/documentación cambiados en este seguimiento. Sin publicación/reinicio ni
+  cambio de código productivo para no seguir suponiendo causas. QA DB/red retiradas.
+  Obtener resultado del botón y URL siguiente antes de afirmar causa o nueva solución.
+
+## Diagnóstico ampliado del acceso docente — 19/10/2026
+
+- Propietario sigue reportando acceso denegado para cuenta docente de la prueba y
+  aporta URL /acceso-denegado. No ha confirmado desde qué formulario entró ni ventana
+  privada; NO dar por identificado/resuelto ese recorrido humano exacto.
+- Sólo lectura: tipo docente/activo, vínculo/perfil/institución correctos,1 asignación,
+  acceso reciente e intentos0; sin colisión de nombre con recuperación (sólo booleano,
+  nunca imprimir configuración), no se leyó contraseña/hash ni se cambió la cuenta.
+- PortalDocenteCompletoIT ejecuta Spring Boot/Flyway/JPA/servicios/filtros/Thymeleaf y
+  BCrypt reales sobre PostgreSQL desechable con usuario/empleado/maestro ficticios9100.
+  POSTlogin→/maestros y GETmaestros200 con ficha/nombre propios; recursos admin403.
+  Primer ensayo pasó SIN tocar permisos/código de autenticación. No basta probar302.
+- Encontrado y corregido bucle de navegación verificable: /admin no tenía regreso
+  docente si no había módulos y acceso-denegado enlazaba siempre /admin. Ahora entrada
+  genérica retorna al portal autorizado, error (forward/controlador o excepción) da
+  enlace contextual y ayuda sin pedir roles administrativos. Inicio público incluye
+  Entrar como maestro. DestinoPortalSesion sólo elige rutas internas, no da permisos.
+  Las restricciones a módulos/datos y origen explícito incompatible siguen intactas.
+- IT ampliado y pruebas dirigidas14 pasan; estado final en CONTEXTO. No reproducir el
+  acceso usando credenciales/sesiones reales del propietario ni cambiar claves/roles.
+  Pedir comprobación en /maestros/acceso después de publicar; si persiste, capturar
+  pantalla de entrada (sin contraseña) y recorrido/URL anteriores para ubicar el salto.
+
+## Asignación docente y entrada después de activar cuenta — 19/10/2026
+
+- Propietario probó DOC-PRUEBA-02 (empleado/perfil creado), no se ha aceptado aún el
+  flujo docente completo. Reportó500 al asignar materia y acceso denegado tras activar.
+  Log18:15UTC confirma PostgreSQL42883 date<=text en coalesce(:fechaFin,:fechaInicio).
+  Reemplazado por consulta nativa con cast DATE y fin nulo como rango abierto; evita
+  también omitir cruces con asignaciones futuras. No requiere migración ni corregir
+  registros: el fallo ocurrió antes del INSERT.
+- Lectura limitada confirmó perfil activo/cuenta PORTAL_MAESTRO ACTIVO/credencial
+  configurada, cero asignaciones; no se consultó hash/password ni se cambiaron permisos.
+  Activación llevaba a /login y login general enviaba siempre a /admin. Ahora la
+  autoridad exclusiva de docente/familia dirige a su portal aunque use login general;
+  entrada explícita incompatible sigue denegada y bootstrap/multiportal conserva admin.
+  Mensaje de activación ya no dice que el docente requiera roles administrativos.
+- PostgreSQL aislado (temporal, sin puertos, datos ficticios): AsignacionPostgresIT
+  ejecuta la consulta extraída del repositorio y parámetros DATE/nulos reales; prueba
+  vigencia abierta, futuro, límites inclusivos, adyacencia, otro maestro, inactivo e
+  ID excluido. Login HTTP prueba docente/familia desde general y administración403,
+  sin permisos extra (FACTOR_PASSWORD es autoridad técnica del framework).
+- Estado final de pruebas/publicación en CONTEXTO. No invitar de nuevo, cambiar clave
+  o dar roles a la cuenta de prueba para resolver esto. Pendiente propietario reintentar
+  asignar y entrar en /maestros/acceso, preferir ventana privada si admin sigue abierto.
+
+## Corrección visual de Empleados — 19/10/2026
+
+- Foto: selector nativo accesible estilizado con botón/borde/tema y ayudas separadas;
+  código docente dentro de form-grid compartido (antes fuera, no heredaba diseño).
+  Pestañas del expediente en rejilla3 columnas/escritorio,2/móvil, títulos completos
+  sin elipsis. CSS acotado a employee-card/panel; no cambia otras pestañas ni dominio.
+-16 pruebas Java relacionadas pasan, render de empleado sin perfil agregado para
+  cubrir campo de código; inspección visual ficticia móvil390px/claro/oscuro.
+  Cambio exclusivamente de plantilla/CSS/tests/documentación; sin migración, usuarios,
+  permisos u operaciones reales. Revisar CONTEXTO para publicación. Aceptación humana
+  sigue pendiente; no interpretar estas mejoras como prueba completa de personal.
+
 ## Entrega V111: empleados y perfil docente — 19/10/2026
 
 - Usuario autorizó implementar la primera entrega. Empleados está en Administración →

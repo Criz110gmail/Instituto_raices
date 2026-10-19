@@ -1,5 +1,375 @@
 # Contexto del proyecto
 
+## V112 — Cierre documentado también dentro de la aplicación — 19/10/2026
+
+Propietario autoriza incorporar el recorrido aceptado de planeaciones a Guía de
+procesos. Nueva guía CONFIRMADA, categoría Gestión académica, título Planeaciones
+docentes: captura, revisión y versiones PDF; diez etapas con módulos, actores,
+pestañas/botones/modales, captura de ejemplo, resultados y precauciones. Incluye las
+dos publicaciones históricas y distingue PDF actual de versiones. No repite operaciones
+reales ni declara aceptados descarte, concurrencia, solapamientos o aislamiento docente.
+
+V112 sólo inserta guia_proceso/guia_proceso_permiso/guia_proceso_paso; consulta requiere
+GUIA_PROCESOS_CONSULTAR y PLANEACION_LEER. Sin nuevos privilegios ni cambios a motor
+docente, datos de empleados, finanzas o diseño. Hereda navegación responsive/temas y
+Excel filtrado. Ruta /admin/guias/planeaciones-revision-versiones-pdf. README, guía
+markdown y acta actualizados; incorporación a aplicación deja de estar pendiente.
+
+Verificación:897 Java/75 JS sin fallos; después9 dirigidas aprobadas con render real
+Thymeleaf y Excel de los10 pasos leídos del SQL definitivo. PostgreSQL17 temporal sin
+red ni datos reales valida esquema/10 etapas/enlace Maestros/permisos. Sin nueva QA
+visual por no modificar UI; cobertura render del diseño existente. Respaldo privado
+ignorado .respaldos-locales/guia-v112-20261019, fuera de target/contexto Docker, sin
+mostrar contenido. Despliegue local19/10 a17:30México sólo app, V112 aplicada y salud
+UP,10 pasos confirmados en base real por lectura limitada a contenido de guía.
+PostgreSQL/volúmenes intactos; sin leer .env, modificar roles ni commit/push.
+Caso principal cerrado; demás pendientes independientes permanecen. Próxima V113.
+
+## Aceptación final humana de planeaciones y documentación — 19/10/2026
+
+Propietario confirma que todo coincide en la comprobación final: Versiones PDF1/2
+conservan contenido anterior/nuevos materiales respectivamente; maestro ve Publicada,
+puede abrir PDF y no editar. Se cierra el recorrido principal de planeaciones probado
+en esta conversación, incluyendo solicitud de ajustes, corrección/reenvío, publicación,
+reapertura con motivo y segunda publicación. No volver a probarlo sin nueva razón.
+
+GUIA_PLANEACIONES_DOCENTES.md documenta todo el procedimiento con precondiciones,
+actores, módulos/pestañas/botones, ejemplos de captura, modales, estados/resultados,
+diferencia de PDF actual/histórico y aclaración de que cada guardado/estado NO genera
+snapshot. PRUEBA_EMPLEADOS_V111.md registra acta de cierre y distingue pendientes de
+personal/otros escenarios. README enlaza la guía. Entradas antiguas de este recorrido
+como pendiente quedan superadas, conservándose su valor de historial técnico.
+
+No afirmar aceptación de descarte, concurrencia/aislamiento entre docentes ni pruebas
+laborales/multiplantel por esta confirmación. La integración del caso a la Guía de
+procesos en la app sigue identificada como pendiente; no se modificó ese catálogo.
+Este turno sólo documentación y diff-check, sin código/SQL/compilación/despliegue/
+reinicios/.env, datos reales ni commit/push. Pendientes operativos/funcionales previos
+intactos. Elegir siguiente escenario con propietario; no tocar su planeación publicada.
+
+## Versiones PDF y organización del detalle administrativo — 19/10/2026
+
+Propietario informa2 botones al publicar la planeación por segunda vez; se explicó
+inmutabilidad de snapshots. Pide rótulos explícitos de PDF/versión inicial/nueva con
+fecha/hora discreta y después reorganizar el módulo para no ir hasta el final.
+No se publicó ni reabrió ningún registro durante esta implementación.
+
+Detalle admin separado en Planeación/Revisión/Versiones PDF/Historial, mismos tabs
+de alumnos/pagos (student-tabs.js/forms.css), barra sticky y2 filas móvil. Revisión
+inicial; éxito de publicación lleva a Versiones PDF vía flash, fallo vuelve a Revisión.
+Motivos permanecen al alternar paneles. Actual PDF continúa a la vista en encabezado.
+Nueva pestaña de versiones muestra cada enlace Ver PDF · Versión N — Publicación
+inicial/Nueva publicación, tiempo discreto abajo y explicación/estado vacío; enlace
+privado inline/newtab original, orden descendente y contenido histórico sin cambios.
+
+VersionPlaneacionFila es DTO de presentación; servicio versiones valida admin y
+convierte publicadaEn a zona institucional antes de render. Timestamps persistidos y
+snapshotJSON no se modifican. Prueba de frontera UTC20/10 02:30→19/10 20:30México.
+student-tabs agrega desplazamiento al inicio sólo con data-scroll-to-tabs=true;
+respeta prefers-reduced-motion, mantiene hash/teclado y no cambia demás módulos.
+Sin migración, permiso nuevo, escritura financiera, cuenta ni operaciones reales.
+
+Verificación:895 Java/75 JS sin fallos; tras ajuste móvil a rejilla se reempaquetó
+con7 pruebas dirigidas aprobadas. Render comprueba4 pestañas, labels de ambas versiones,
+fecha/hora, PDF privado target_blank, vacío, éxito→versiones y fallo→revisión.
+Unit valida zona/fecha de frontera sin modificar Instant original. JS valida menú,
+hash, teclado, scroll opcional y movimiento reducido (otros módulos regresiones pasan).
+QA ficticia escritorio claro/móvil390px oscuro confirma botones y fecha discreta,
+ambas versiones visibles al abrir pestaña y sin scroll horizontal del menú. No se
+publicaron/reabrieron registros reales. Publicación local19/10 a17:06México, sólo
+app recreada, sin .env/commit/push, PostgreSQL/volúmenes conservados. QA servidor/tab
+cerrados y viewport restaurado; Dockerfiles temporales retirados. Pendiente humano
+comparar ambos PDF y aceptar la nueva navegación. Historial de estados no se fusiona
+con snapshots; estas entradas no afirman que cada transición genere un PDF.
+
+## Confirmaciones de planeaciones en administración y docentes — 19/10/2026
+
+Humano confirma Publicada, PDF Revisión1 y bloqueo de edición. Posteriormente indica
+haber pulsado Reabrir; no dar aún por aceptado el recorrido completo de reapertura y
+revisión2. Solicita modales antes de continuar; no se alteró esa planeación desde QA.
+
+Admin Iniciar revisión/Publicar/Solicitar ajustes/Reabrir ahora abren modal, con
+maestro/grupo/semana/materias y motivo cuando aplica. Maestro Guardar nuevo/editar
+y Descartar también; Enviar mantiene modal propio validado anteriormente. Guardar
+muestra fechas/materias seleccionadas de la captura actual, no sólo snapshot previo,
+y aclara que no envía/publica. Mensajes específicos de bloqueo/histórico/reapertura.
+Validación antes de abrir y al confirmar; Cancelar/Escape/fondo sin POST, motivo se
+conserva, foco retorna al botón. Latch evita doble envío. requestSubmit conserva
+submitter/versión/CSRF/endpoint. No modifica permisos ni lógica backend.
+
+Fragmento/CSS/JS planeacion-confirmacion compartido entre las dos paletas. Nativo
+dialog para foco/modalidad; estilos responsive acotados. Soporte sin modal/JS de
+escritura. Coordinado con guarda de pendientes en planeacion-vista para no desactivar
+aviso de salida sólo por abrir confirmación; validación roja sigue antes del modal.
+Ensayo inicial halló th:each evaluando planeacion nula en nueva: colección condicional
+resuelto y cubierto por GETnuevo/POSTinválidos. QA detectó icono i en materia del resumen:
+se excluyen nodos de ayuda, sin alterar la materia elegida.
+
+Verificación: suite completa894 Java sin fallos/errores;74 JS finales pasan. Después
+del ajuste de texto de materia se reempaquetó con11 renderizados dirigidos aprobados.
+Node cubre las6 acciones nuevas, validación previa y posterior, motivos vacíos,
+Cancelar/Escape/fondo, formato de fechas/texto literal/doble envío y guarda de salida.
+Render cubre admin por estado, nuevo docente sin snapshot, edición/errores anidados,
+soporte sin modal/atributos/JS de escritura. QA ficticia escritorio oscuro y móvil
+claro390px: publicar/cancelar, ajustes/motivo/Escape, reapertura/confirmar hacia POST405
+del servidor que bloquea guardados, guardar/cancelar y descartar/cancelar manteniendo
+motivo. No se ejecutaron acciones sobre planeaciones/cuentas reales.
+Publicado local19/10 a16:46México: sólo app recreada, sin migraciones/.env/commit/push,
+PostgreSQL y volúmenes conservados. QA servidor/pestaña cerrados, viewport restaurado,
+Dockerfiles temporales retirados. Aceptación humana de modales nuevos/revisión2 pendiente.
+
+## Publicación: error de fechas al guardar snapshot — 19/10/2026
+
+Error humano en Publicar planeación a22:19:44UTC/16:19México. Log identifica
+InvalidDefinitionException: Jackson2.21.5 no maneja LocalDate sin jsr310, falla en
+PlaneacionService.serializar→publicar al construir contenido_json. Controlador usa
+MensajeErrorFormulario que relanza errores inesperados, por eso termina en500.
+No atribuirlo a datos incompletos o PDF. La operación es transaccional; no se hizo
+una segunda publicación real desde QA ni cambios manuales en registros.
+
+Mapper privado cambia de com.fasterxml ObjectMapper a tools.jackson JsonMapper
+incluido por Boot4/Jackson3, con WRITE_DATES_AS_TIMESTAMPS desactivado. Sin instalar
+módulos ni tocar JSON global/Jasper. Snapshot conserva misma estructura y DTO, fechas
+ISO al escribir; regresiones validan lectura de fechas numéricas legadas también.
+Pruebas nuevas sobre servicio real con repositorios ficticios publican/leen/PDF,
+reapertura y revisión2 sin alterar snapshot1, estado/versión rechazados; MVC/Thymeleaf
+comprueba POSTredirect y detalle publicado con historial/versiones/PDF/reapertura.
+No migración ni operaciones de administración reales del agente.
+
+Verificación: publicación/lectura/PDF y versión2/legadas pasan en datos ficticios;
+controlador POST→redirect y detalle Publicada200 con versiones/enlaces probado.
+Compilación final desde clases regeneradas: 894 Java, cero fallos/errores; 69 JS
+también pasan. No confundir con aceptación humana del registro real. Un intento de
+mvn clean sobre target montado limpió sus generados pero no pudo retirar la raíz
+del bind mount (Resource busy); se completó con mvn package recompilando fuentes,
+sin ignorar pruebas. No usar clean sobre esa raíz montada en futuras verificaciones.
+Publicación local19/10 a16:25México: sólo app recreada, salud final UP. Sin migraciones,
+operaciones reales, .env, cambios de PostgreSQL/volúmenes, commit o push. Temporales
+Dockerfile retirados. Propietario debe volver a listado y abrir el mismo registro,
+no reenviar desde la página de error; si En revisión, reintentar Publicar.
+
+## Simplificación de tarjeta y reenvío confirmado — 19/10/2026
+
+Propietario confirma corrección/guardar/reenviar y bloqueo de edición. No se ejecutó
+esa acción por el agente. Considera redundante Ir a captura: se elimina botón y
+listener; tarjeta sólo muestra motivo/fecha e indica usar Captura del menú inferior.
+Prueba render exige ausencia del botón; resto del flujo sin cambios. Publicación y
+reapertura administrativa siguen pendientes humanos, no marcar módulo completo.
+
+Verificación acotada: 9 pruebas Java de render y 7 JavaScript de navegación/confirmación
+sin fallos; empaquetado correcto y diff limpio. Publicación local 19/10 a16:15 México,
+sólo app recreada, sin migraciones/datos/.env ni cambios de PostgreSQL/volúmenes.
+Temporales de construcción retirados; sin commit/push. Antecedente de suite completa
+889 Java/69 JS de la tarjeta sigue en la entrada anterior; no se repitió completa para
+retirar un botón y su listener. Siguiente: publicación y reapertura humana.
+
+## Tarjeta de correcciones en planeación docente — 19/10/2026
+
+Prueba humana confirmada: Cancelar/Confirmar envío del modal correctos, envío efectivo,
+administrador pasa a En revisión y solicita ajustes; maestro ve nuevo estado pero
+no texto. El motivo ya estaba en planeacion_historial; faltaba leerlo/renderizarlo.
+Nueva observacionRevision sólo consulta tras validar maestro activo/dueño/institución;
+trae último evento de REQUIERE_AJUSTES o REABIERTA con límite1 y orden fecha/id.
+No usa historial administrativo sin permisos ni carga lista completa. DTO de lectura
+con título/motivo/fecha local institucional; no cambia PlaneacionDocumento/PDF.
+
+Tarjeta ámbar sobre navegación, resumen y captura comparten ubicación permanente,
+texto multilínea escapado, fecha dd/MM/yyyy HH:mm y CTA Ir a captura. No es una
+validación roja ni observaciones generales editables. Si servidor rechaza guardar,
+captura y tarjeta permanecen; sólo deja de presentarse como pendiente al salir del
+estado editable de revisión (por ejemplo reenviar), sin borrar el historial.
+Reapertura muestra motivo con título propio; soporte conserva sólo lectura.
+No migración ni cambios de cuentas, estados o datos guardados por el agente.
+
+Verificación final: 889 Java y 69 JavaScript sin fallos. Seis casos nuevos de servicio
+prueban dueño/institución/estado/último motivo/fecha local/ausencia de datos; render
+prueba tarjeta en detalle/edición/POST inválido, texto escapado y soporte sin acción.
+QA ficticia escritorio claro/móvil390px oscuro verifica tarjeta/fecha/texto/CTA y
+conservación de la captura. Primera aserción del ensayo requería decodificar entidades
+HTML de textarea: corregido sólo el test; no se alteró escape ni captura productiva.
+Publicado localmente el 19/10/2026 a las 16:02 México, sólo servicio app recreado.
+PostgreSQL/volúmenes conservados; sin .env ni commit/push. Servidor y pestaña de QA
+cerrados, viewport restaurado y archivos temporales de construcción retirados.
+La solicitud ya capturada se lee del historial existente, no hay que volver a pedirla.
+
+## Modal de envío a revisión docente — 19/10/2026
+
+Propietario confirma PDF visible y solicita confirmación de envío antes de probarlo.
+Fragmento compartido incluye dialog sólo para docente en Borrador/Requiere ajustes/
+Reabierta, con identidad/grupo/plantel/semana/materias de la versión guardada y aviso
+de que revisión impide editar. Mismos tokens/versiones/endpoint y seguridad backend.
+Enviar abre modal sin POST; Confirmar envío revalida que no haya captura pendiente y
+hace requestSubmit una sola vez. Cancelar/Escape/fondo cierran sin enviar/restauran foco.
+Estilos acotados al dialog con paleta portal, responsive y foco/teclado nativos.
+Sin cambios de dominio, migraciones o aceptación humana de envío/revisión todavía.
+
+Pruebas: 882 Java y 69 JavaScript sin fallos; además 8 renderizados dirigidos tras
+completar nombre de fixture. QA ficticia confirma diseño claro/oscuro, móvil390px,
+Cancelar/Escape sin envío y foco restaurado, Confirmar continúa al POST bloqueado405
+del servidor ficticio (protección deliberada; no error de aplicación real). No se
+envió ninguna planeación guardada del propietario. Publicación local 19/10 a15:41
+México recreando sólo app, sin PostgreSQL/volúmenes/migraciones/.env/commit/push.
+Servidor temporal detenido, pestaña cerrada/viewport restaurado y Dockerfiles
+temporales retirados. Confirmación humana pendiente en Resumen y envío.
+
+## Planeación: captura, PDF y envío sin volver entre pantallas — 19/10/2026
+
+Solicitud: evitar Editar→Regresar→PDF. Detalle editable y edición reutilizan la misma
+vista con Captura, Resumen y envío, Documento PDF y Gestión. Captura conserva sus cinco
+pestañas/validación roja y foto. GETdetalle y guardar abren Resumen; GETeditar abre Captura;
+invalidación POST abre Captura sin perder valores ni pestañas de documento/gestión.
+PDF/resumen se identifican como última versión guardada; enlace inline privado existente
+abre nueva pestaña, no descarga automática. Gestión aparta descarte con motivo del flujo
+de guardar/enviar. Formularios hermanos, no anidados. Volver lleva a Mis planeaciones.
+
+Navegar no reconstruye el formulario ni guarda automáticamente. Detección por FormData
+e indicadores accesibles; envío/descarte bloqueados si hay cambios, incluso tras error
+del servidor. Aviso beforeunload sólo ante cambios pendientes y no en envío válido.
+Estado bloqueado no ofrece edición; soporte conserva consulta, sin escritura ni permisos
+adicionales. No se cambiaron reglas de dominio/CSRF/servicios/PDF ni hay migración.
+
+QA visual ficticia: escritorio claro, móvil390px/oscuro, PDF/nav/foto, texto conservado al
+alternar Captura/Resumen y envío bloqueado con cambios; al restaurar texto vuelve a habilitar.
+Servidor temporal bloquea todos los POST. Sin cuentas, planeaciones o movimientos reales
+creados para probar. Propietario reporta guardado; envío/revisión siguen por aceptar.
+
+Verificación final: 882 pruebas Java y 67 JavaScript, cero fallos/errores. Nuevos casos
+renderizan detalle/editar unificados, PDF privado y versión, ausencia de forms anidados,
+restricción de enviada, captura inválida conservada; soporte sin escritura. JS ejecutado
+en pruebas verifica teclado/cambios conservados/guardas/lectura y POST rechazado pendiente.
+Publicación local 19/10/2026 a las 15:30 (México): sólo app recreada, salud UP.
+PostgreSQL/volúmenes/datos conservados, sin migración, .env sin leer, sin commit/push.
+QA servidor temporal detenido, pestaña cerrada/viewport restablecido y Dockerfile temporal
+retirado. Pendiente aceptación humana de nueva navegación y flujo envío/revisión.
+
+## Planeaciones: navegación y validación de captura — 19/10/2026
+
+Primero, cierre del diagnóstico anterior: propietario reconoce entrada equivocada por
+/familias y confirma acceso correcto a maestros. No cambiar clave/roles: el tipo de
+cuenta y sus autoridades ya eran correctos. Aceptado login docente, no todo el flujo.
+
+Se solicitó organizar formulario de planeaciones con menu bar y validación roja de
+obligatorios; añadió botón regresar y foto que desaparecía al entrar a captura.
+Implementadas 5 pestañas con teclado/aria, acciones Anterior/Siguiente/guardar y diseño
+propio del portal claro/oscuro/móvil. Requeridos*; resumen enlazado, errores por campo
+incluidas actividades/alineaciones, contadores de errores y selección del primer panel
+con error. Al corregir, se limpia el rojo sin perder captura. Mensajes Bean Validation
+en español; servidor @Valid intacto y persistencia sólo tras validación. Borrador sigue
+requiriendo propósito/materias/una actividad completa. Alineación opcional pero si hay
+tarjeta requiere campo formativo/contenido/proceso; ayuda explica quitar tarjeta vacía.
+
+JS de filas reindexa names/id, conserva catálogo inicial y usa materias marcadas para
+selects de actividad/alineación, sin cambiar elegibilidad backend. Fetch descarta respuestas
+viejas y no permite guardar durante carga. Cliente valida espacios/fechas/duración;
+backend conserva reglas. En soporte, fields disabled, sin botón ni JS de mutación;
+sí navegación de pestañas. Regresar estilizado en portal y fotoPerfil añadido a preparar
+y detalle docente; foto privada propia, conservada al volver con errores.
+
+Verificado: 879 pruebas Java y 62 Node sin fallos. 4 pruebas nuevas MVC render/POST: obligatorios y
+mensajes anidados, captura retenida y foto visible, no llamar crear en inválido, válido
+sin alineación opcional llama crear una vez/redirige. Regresiones soporte sólo lectura
+aprobadas. QA navegador con fixtures ficticias: escritorio oscuro y móvil390px/claro,
+summary→campo/pestaña, rojo limpio8→7, foto/botón regresar, filas agregar/quitar/reindexar,
+materias y formulario completo. Servidorfixture rechazaPOST405 como protección; sin
+guardar planeaciones/usuarios/movimientos reales. Aceptación humana pendiente de captura.
+
+Publicación local el 19/10/2026 a las 15:00 (México): imagen construida con el JAR
+verificado, recreando únicamente el servicio app; health final UP. Sin migraciones
+ni cambios de datos guardados; PostgreSQL y volúmenes conservados. No se leyó .env
+ni se hizo commit/push. Servidor visual temporal detenido y archivos temporales de
+construcción retirados. Pendiente prueba humana del formulario y sus validaciones.
+
+## Reproducción HTTP real del acceso docente — 19/10/2026
+
+Propietario reporta otra vez el rechazo contextual que reconoce cuenta docente. El
+recorrido humano exacto todavía no está reproducido. Pregunta pendiente: ¿al pulsar
+Ir al portal de maestros abre o vuelve al mensaje, y cuál es la URL siguiente?
+
+Se amplió PortalDocenteCompletoIT para HTTP real además de MockMvc: Tomcat en puerto
+aleatorio, cliente con cookies aisladas, GETcsrf, POSTcomprobar204, POSTlogin origen
+maestros con cuenta/clave ficticias y seguimiento de redirects. Respuesta final
+/maestros200 contiene Mis planeaciones e identidad ficticia.1 test/1 éxito sobre
+PostgreSQL17 desechable; migraciones111 y servicios/BCrypt/filtros/controlador/vista
+reales. No se probó con contraseña ni sesión de la cuenta reportada. QA DB/red retiradas.
+Este turno sólo test/documentación: no cambio productivo, deploy/reinicio, .env,
+usuarios, roles, claves ni movimientos reales. No declarar resuelto por ese ensayo.
+
+## Seguimiento de acceso a portal docente — 19/10/2026
+
+Cuenta de prueba sigue reportando rechazo en /acceso-denegado; no se confirmó el
+formulario/origen usado. Lectura limitada confirma activo/tipo docente/vínculo/perfil
+e institución correctos,1 asignación y autenticación reciente con intentos0. No colisión
+con recuperación (comprobación booleana sin imprimir configuración). No se consultaron
+password/hash/tokens ni se modificaron roles, claves o cuentas.
+
+Reproducción aislada nueva PortalDocenteCompletoIT: aplicación Spring Boot completa,
+111 migraciones, Hibernate/repositorios, servicio real de usuarios/BCrypt, evento de
+login y principal UsuarioPrincipal, sesiones/CSRF/filtros, controlador y Thymeleaf.
+Sólo PostgreSQL temporal/archivos QA y usuario/empleado/maestro ficticios9100. POST
+login docente → /maestros; GET del destino200 con identidad correcta y admin protegido403.
+Primer ensayo pasó antes de cambios productivos: no es prueba del navegador/recorrido
+real reportado. No afirmar que faltaban permisos ni que se cerró aceptación humana.
+
+Sí se reprodujo/corrigió navegación genérica: /admin con cuenta docente sin módulos
+redirigía a acceso-denegado y esa vista volvía a /admin. Ahora /admin dirige docente
+a /maestros/familia a /portal, sin consultar catálogos; rutas privadas siguen403.
+DestinoPortalSesion fija sólo destinos internos; error de filtro o excepción MVC muestra
+Ir al portal de maestros/familias según autoridad exclusiva, sin enlaces admin para esos
+perfiles. Inicio público agrega Entrar como maestro. No se modifica origen explícito
+incompatible del login ni se amplían permisos. IT ampliado y14 pruebas dirigidas pasan.
+Suite final875 Java/59 Node sin fallos. Los ensayos IT se invocan explícitamente con
+QA_PORTAL_JDBC_URL y no se ejecutan por defecto en una base real. Entorno temporal
+retirado; falta confirmación humana del login de la cuenta reportada. No marcarlo
+resuelto sólo porque el acceso ficticio funciona.
+Publicación local19/10 a12:34México recreando sólo app; sin migraciones, cambios de
+usuarios, roles, claves o datos, .env no leído y sin commit/push.
+
+## Corrección de asignación y destino de login docente — 19/10/2026
+
+Prueba humana en curso con DOC-PRUEBA-02, aún no aceptación del módulo completo.
+50018:15UTC: PostgreSQL42883 date<=text en AsignacionMaestroRepository.existeTraslape,
+coalesce de dos parámetros cuando fechaFin nula. Consulta nativa tipa DATE de forma
+explícita y trata fin nulo como intervalo abierto; detecta también traslape futuro,
+antes omitido al convertir vigencia abierta en el día de inicio. Filtra mismo maestro,
+grupo/materia/activo/ID excluido y mantiene límites inclusivos.
+
+Lectura administrativa limitada: perfil activo, cuenta vinculada tipo PORTAL_MAESTRO,
+ACTIVO/credencial configurada y sin asignaciones. Sin consultar hash, password o token.
+No se cambiaron roles, permisos, contraseñas, cuentas o asignaciones reales. La
+autoridad técnica docente ya se deriva del tipo de cuenta sin roles administrativos.
+Activación llevaba a /login, y el éxito del login general siempre enviaba a /admin.
+Corregido para autoridad exclusiva docente/familia: dirige /maestros o /portal.
+Si origen explícito no corresponde conserva acceso-denegado; bootstrap/multiportal
+mantienen /admin. Activación explica entrada al portal sin pedir roles administrativos.
+
+Verificación:873 Java y59 Node sin fallos. Además6 tests dirigidos pasan, entre ellos
+AsignacionPostgresIT con la consulta extraída del repositorio y parámetros JDBC reales
+en PostgreSQL17 temporal: fecha final nula, cruce futuro, límites inclusivos, periodos
+adyacentes, otra cuenta docente, exclusión deID e inactivos. Sólo tabla temporal con
+fixtures ficticias. Login HTTP verifica destino de docente/familia desde general y403
+de recursos administrativos; no añade permisos, FACTOR_PASSWORD es factor del framework.
+Contenedor/red exclusivos de QA retirados, sin puertos publicados ni base real montada.
+No hay migración nueva (sigue V111). Retomar pasos en PRUEBA_EMPLEADOS_V111.md con
+la cuenta ya activada; no crear otra ni cambiar contraseña. Revisar /maestros/acceso
+en ventana privada para no compartir sesión administrativa entre pestañas.
+Publicada19/10 a12:24México mediante recreación sólo de app; PostgreSQL/volúmenes
+conservados. Sin .env, commit/push ni registros de QA en instalación real. Aceptación
+humana de ambos reintentos pendiente.
+
+## Ajuste de presentación de Empleados — 19/10/2026
+
+Propietario encontró selector de fotografía sin acabado, título Información docente
+recortado y Código docente sin estilos. Corregidos con controles/form-grid compartidos,
+file-selector-button nativo accesible, ayudas espaciadas y rejilla de pestañas3/2 columnas
+que permite envolver títulos sin elipsis. Estilos acotados, mismos colores claro/oscuro.
+Sin Java de dominio, nuevas migraciones o cambios de datos.16 pruebas Java pasan y
+render final5 tests; nueva fixture de empleado SIN perfil cubre el campo docente.
+QA visual ficticia en escritorio/móvil390px y temas; POST bloqueado y sin foto real.
+Ejemplo manual continúa en PRUEBA_EMPLEADOS_V111.md, aún no confirmado por propietario.
+Publicación local19/10 a10:53México: sólo recreada app con JAR verificado; salud UP18080.
+Sin nuevas migraciones ni cambios de cuentas/roles/datos/volúmenes, .env no leído,
+sin commit/push. Servidor/pestaña de QA cerrados y viewport restaurado.
+
 ## V111 — Empleados y vínculo docente implementados — 19/10/2026
 
 Entrega autorizada por el propietario después del inventario. Módulo Administración →

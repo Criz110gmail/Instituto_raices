@@ -24,9 +24,10 @@ public class ManejadorGlobalExcepciones {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    ModelAndView accesoDenegado() {
+    ModelAndView accesoDenegado(org.springframework.security.core.Authentication authentication) {
         ModelAndView resultado = new ModelAndView("error/acceso-denegado");
         resultado.setStatus(HttpStatus.FORBIDDEN);
+        resultado.addObject("rutaRegreso", escuela.seguridad.service.DestinoPortalSesion.inicio(authentication));
         return resultado;
     }
 

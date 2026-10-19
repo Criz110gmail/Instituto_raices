@@ -8,6 +8,17 @@
 .employee-panel .form-section:disabled { opacity:1; }
 .employee-panel .form-section:disabled input,.employee-panel .form-section:disabled select,.employee-panel .form-section:disabled textarea { color:var(--ink); opacity:1; }
 .employee-panel .pagination { flex-wrap:wrap; }
+.employee-card .student-tablist.payment-record-tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); overflow:visible; }
+.employee-card .student-tablist button { min-height:78px; height:auto; }
+.employee-card .student-tablist button strong,.employee-card .student-tablist button small { white-space:normal; text-overflow:clip; overflow:visible; overflow-wrap:anywhere; line-height:1.4; }
+.employee-photo-form .form-grid .employee-photo-input { display:block; min-height:62px; padding:10px; border:1px solid var(--line); background:var(--soft); color:var(--ink); font:inherit; font-size:.85rem; }
+.employee-photo-input::file-selector-button { margin:0 12px 0 0; padding:11px 14px; border:1px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink); font:inherit; font-weight:750; cursor:pointer; }
+.employee-photo-input:hover::file-selector-button { border-color:var(--blue); }
+.employee-photo-input:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
+.employee-panel .detail-notes { line-height:1.6; margin:0 0 12px; }
+.employee-panel .field-help { display:block; line-height:1.6; margin:12px 0 0; }
+.employee-photo-form .form-grid small { line-height:1.5; }
+@media(max-width:720px){.employee-card .student-tablist.payment-record-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.employee-card .student-tablist button{grid-template-columns:24px minmax(0,1fr);column-gap:7px;padding:10px 8px}.employee-card .student-tablist button>span{width:24px;height:27px}.employee-photo-input::file-selector-button{display:block;width:100%;margin:0 0 10px;text-align:center}}
 .employee-list-panel .filters { grid-template-columns:minmax(200px,2fr) minmax(180px,1fr) minmax(100px,.7fr); align-items:end; }
 .employee-list-panel .filters label:nth-child(3) { grid-column:auto; }
 .employee-list-panel .panel-actions .export-button { font-size:.8rem; white-space:nowrap; }

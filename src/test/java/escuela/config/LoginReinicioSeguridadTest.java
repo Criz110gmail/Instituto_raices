@@ -20,6 +20,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 class LoginReinicioSeguridadTest {
+    @Test void loginGeneralDespuesDeActivacionDirigeAlPortalSinConcederAccesoAdmin()throws Exception{
+        try(var c=new AnnotationConfigWebApplicationContext()){
+            c.setServletContext(new MockServletContext());c.register(Config.class,SeguridadConfig.class,SesionExpiradaAccessDeniedHandler.class,SesionController.class,Paginas.class);c.refresh();
+            var mvc=MockMvcBuilders.webAppContextSetup(c).addFilters(c.getBean(FilterChainProxy.class)).build();
+            for(String tipo:new String[]{"docente","familia"}){
+                var t=mvc.perform(get("/acceso/csrf")).andReturn();var sesion=(MockHttpSession)t.getRequest().getSession(false);
+                var token=java.util.regex.Pattern.compile("\"token\":\"([^\"]+)\"").matcher(t.getResponse().getContentAsString());assertThat(token.find()).isTrue();
+                var login=mvc.perform(post("/login").session(sesion).param("_csrf",token.group(1)).param("origen","admin").param("username",tipo+"-qa").param("password","clave-qa")).andReturn().getResponse();
+                assertThat(login.getRedirectedUrl()).isEqualTo(tipo.equals("docente")?"/maestros":"/portal");
+                var contexto=(org.springframework.security.core.context.SecurityContext)sesion.getAttribute("SPRING_SECURITY_CONTEXT");
+                assertThat(contexto.getAuthentication().getAuthorities()).extracting("authority").containsExactlyInAnyOrder(tipo.equals("docente")?"PORTAL_MAESTRO_ACCEDER":"PORTAL_TUTOR_ACCEDER","FACTOR_PASSWORD");
+                assertThat(mvc.perform(get("/admin/maestros/1/editar").session(sesion)).andReturn().getResponse().getStatus()).isEqualTo(403);
+            }
+        }
+    }
     @Test void preparacionCompruebaCsrfSinCredencialesYRechazaCookieCambiada() throws Exception {
         try(var context=new AnnotationConfigWebApplicationContext()) {
             context.setServletContext(new MockServletContext());
@@ -156,6 +171,7 @@ class LoginReinicioSeguridadTest {
             var usuarios = new InMemoryUserDetailsManager(User.withUsername("usuario-qa")
                     .password(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode("clave-qa"))
                     .authorities("PORTAL_TUTOR_ACCEDER", "PORTAL_MAESTRO_ACCEDER").build());
+            for(String tipo:new String[]{"docente","familia"})usuarios.createUser(User.withUsername(tipo+"-qa").password(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode("clave-qa")).authorities(tipo.equals("docente")?"PORTAL_MAESTRO_ACCEDER":"PORTAL_TUTOR_ACCEDER").build());
             return username -> { consultas.incrementAndGet(); return usuarios.loadUserByUsername(username); };
         }
     }

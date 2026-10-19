@@ -116,6 +116,7 @@ public class PortalMaestroSoporteAdminController {
                       @AuthenticationPrincipal UsuarioPrincipal admin, Model m) {
         var docente = preparar(maestroId, "DETALLE_PLANEACION", admin, m);
         m.addAttribute("planeacion", planeaciones.detalleMaestro(docente, id));
+        m.addAttribute("observacionRevision", planeaciones.observacionRevision(docente, id));
         return "maestros/planeacion-detalle";
     }
 
@@ -125,6 +126,8 @@ public class PortalMaestroSoporteAdminController {
         var docente = preparar(maestroId, "CAPTURA_PLANEACION", admin, m);
         var documento = planeaciones.detalleMaestro(docente, id);
         var form = PlaneacionForm.desde(documento, planeaciones.versionEntidad(id));
+        m.addAttribute("planeacion", documento);
+        m.addAttribute("observacionRevision", planeaciones.observacionRevision(docente, id));
         m.addAttribute("form", form); m.addAttribute("id", id); m.addAttribute("edicion", true);
         // Preserve the historical group even if its teaching assignment is no longer active.
         m.addAttribute("grupos", List.of(new escuela.docente.dto.AsignacionMaestroResponse(null,

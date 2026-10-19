@@ -4,3 +4,14 @@
 .planning-review-button:hover{transform:translateY(-1px);box-shadow:0 10px 20px rgba(41,121,255,.26)}
 .admin-back{align-items:center;min-height:42px;margin:-4px 0 18px;padding:9px 14px;border:1px solid var(--line);border-radius:11px;background:var(--white);color:#245f7c;box-shadow:0 7px 18px rgba(24,59,90,.07)}
 [data-theme=dark] .admin-back{border-color:#344a63;background:#0e1d31;color:#cde6fa;box-shadow:none}
+.review-console .version-help{margin:-4px 0 12px;color:var(--muted);font-size:.75rem;line-height:1.7}
+.review-console .version-link{display:grid;gap:7px;padding:13px 14px;border:1px solid var(--line);background:var(--paper);color:var(--ink);text-align:left;transition:border-color .15s,box-shadow .15s}
+.review-console .version-link strong{font-size:.79rem;line-height:1.6;overflow-wrap:anywhere}
+.review-console .version-link time{display:block;color:var(--muted);font-size:.69rem;font-weight:500;line-height:1.5}
+.review-console .version-link:hover,.review-console .version-link:focus-visible{border-color:var(--blue);box-shadow:0 0 0 2px color-mix(in srgb,var(--blue) 12%,transparent)}
+.student-tablist.planning-detail-tabs{display:grid;overflow:visible;grid-template-columns:repeat(4,minmax(0,1fr));margin:20px 0 0;position:sticky;top:12px;z-index:8;scroll-margin-top:12px}
+.planning-detail-tabs button strong,.planning-detail-tabs button small{white-space:normal;overflow-wrap:anywhere;text-overflow:clip;line-height:1.5}
+.planning-detail-panel{position:static;max-width:100%;margin:0 0 20px;border-radius:0 0 20px 20px}
+.planning-detail-panel .version-link{max-width:680px}.planning-detail-panel form{max-width:780px}
+.planning-detail-panel .review-history{margin-bottom:0}
+@media(max-width:720px){.student-tablist.planning-detail-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.planning-detail-tabs button{padding:12px 10px;column-gap:7px}.planning-detail-tabs button>span{width:25px;height:28px}.planning-detail-panel{padding:20px}}
