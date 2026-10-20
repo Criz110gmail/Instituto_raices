@@ -1,5 +1,41 @@
 # Aceptación de Empleados y Maestros — V111
 
+## Baja laboral — recorrido principal confirmado el 20/10/2026
+
+Propietario confirmó guardado válido con ingreso01/10/2026 y baja20/10/2026,
+corrección de motivo con entradas anteriores conservadas y Cancelar sin guardar.
+También confirmó foto, perfil, acceso y planteles sin cambios. Al principio pulsó
+Confirmar y guardar con ESTE TEXTO NO DEBE GUARDARSE: la entrada de13:24 es legítima
+trazabilidad de esa confirmación, no un fallo de Cancelar. No eliminarla ni corregir
+datos por él. No volver a registrar baja ni reactivar al empleado para cerrar la prueba.
+
+V114 incorpora Guía de procesos → Personal → Baja laboral: confirmación e historial
+sin borrar el expediente, /admin/guias/empleado-baja-laboral-historial. Ocho etapas,
+ejemplos, resultados, validaciones esperadas y límites; actualiza referencias de V113.
+No se presume aceptación individual de todas las fechas inválidas ni de una baja
+con cuenta docente activa. Siguiente prueba: permisos de información laboral privada.
+Puestos, condiciones salariales, nómina y reingresos siguen independientes.
+
+Diseño solicitado: Activo del listado usa status positivo verde compartido; Inactivo
+y Sin perfil conservan neutro. También aplica al perfil docente cuando corresponde,
+sin confundirlo con situación laboral BAJA ni cambiar filtros o reglas. Nombres/códigos
+en líneas separadas para mantener legibilidad. Pendiente aceptación visual del ajuste.
+
+## Incidente de fechas resuelto durante la prueba — 20/10/2026
+
+Propietario informa que fecha de ingreso no parece guardarse al revisar el punto1
+del ejemplo de baja. Diagnóstico de sólo lectura de EMP-ADM-PRUEBA-01: historial
+conserva ingreso01/10 y luego20/10; registro actual ACTIVO con ingreso20/10. No se
+modificaron esas fechas por el agente ni se ejecutó baja.
+
+Reproducción ficticia con plantilla real: sin formato explícito, input date recibía
+value01/10/26 en es-MX o10/1/26 en en-US, inválidos para HTML date, aunque POST ISO
+sí enlazaba y persistía. Corregido LaboralForm con DateTimeFormat ISO.DATE para ingreso
+y baja, sin cambiar servicio, validaciones ni datos. Pruebas de render y binding en
+ambos idiomas incluyen baja vacía. El historial aportado después confirma ingreso
+01/10 guardado a13:14 y las bajas posteriores con fechas visibles y correctas. Incidente
+resuelto; no tocar el cambio de plantel21/10 ni repetir guardados por este historial.
+
 ## Multiplantel y cambio programado — recorrido principal confirmado el 20/10/2026
 
 Propietario confirma cuatro vigencias del ejemplo: A principal/B adicional hasta

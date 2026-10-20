@@ -1,5 +1,19 @@
 # Sistema administrativo escolar
 
+## Baja laboral y estados visuales — V114, 20/10/2026
+
+Recorrido principal de baja laboral confirmado: guardado, corrección de motivo con
+historial conservado y Cancelar sin guardar, sin cambiar foto/perfil/acceso/planteles.
+Guía de procesos → Personal → **Baja laboral: confirmación e historial sin borrar el
+expediente**, ocho etapas, ejemplos y límites; no ejecutar otra baja para consultarla.
+V114 añade sólo documentación y actualiza referencias de guías previas de Personal.
+
+Empleados reutiliza `status positivo` verde de los demás módulos para Activo del
+expediente y del perfil docente; inactivos/sin perfil quedan neutros. Nombres, códigos
+y contactos se separan en líneas. No cambia filtros, permisos ni reglas: Expediente
+Activo no es lo mismo que situación laboral BAJA. Siguiente: prueba de permisos de
+información laboral privada antes de puestos, condiciones salariales y nómina.
+
 ## Guías de Personal — V113, 20/10/2026
 
 Guía de procesos → categoría **Personal** incorpora **Registrar un empleado

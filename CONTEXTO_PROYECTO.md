@@ -1,5 +1,60 @@
 # Contexto del proyecto
 
+## V114 — Cierre de prueba de baja y consistencia visual — 20/10/2026
+
+Propietario confirma recorrido de baja laboral, corrección de motivo con historial,
+cancelación del modal sin persistir y conservación de foto/perfil/acceso/planteles.
+El registro temporal13:24 fue confirmado por él; no borrar ni modificar ese historial.
+Fecha ingreso01/10/2026 y baja20/10/2026 verificadas por el propietario. No repetir baja.
+
+Listado de Empleados usa el verde status positivo compartido para Activo de expediente
+y perfil docente, neutro para inactivo/sin perfil; separa nombre/código/contacto.
+No modifica filtros, valores ni reglas: BAJA laboral es independiente del expediente activo.
+QA ficticia de escritorio en claro/oscuro, sin operaciones sobre registros reales.
+
+V114 añade guía Personal «Baja laboral: confirmación e historial sin borrar el expediente»,
+8 etapas con4 acciones cada una. Detalla módulos/botones, modal cancelar/confirmar,
+fechas, motivos, historial y límites de la aceptación humana. Actualiza referencias de
+las2 guías previas a versión de contenido2. Sólo tablas editoriales; permisos existentes,
+sin asignarlos a cuentas. Negativos individuales/cuenta docente activa no se declaran aceptados.
+
+920 Java/79 JS correctas; paquete y pruebas dirigidas de render/contenido repetidas tras
+los últimos cambios editoriales, BUILD SUCCESS. PostgreSQL17 aislado confirma SQL y
+7/8/8 etapas. Respaldo privado ignorado anterior a migración en
+.respaldos-locales/guia-baja-v114-20261020/antes-v114.dump, sin mostrar contenido.
+App actualizada20/10 a13:37México, salud UP y V114 success por lectura editorial acotada.
+Sólo app recreada, PostgreSQL/volúmenes conservados, sin .env ni cambios de personal,
+roles, cuentas, finanzas, commit/push. README y PRUEBA_EMPLEADOS_V111 actualizados.
+
+Sigue prueba humana de permisos privados: consulta general sin información laboral ni
+planteles privados; lectura laboral sin modificar. Después puestos/condiciones salariales
+y nómina. V115 libre; baja pendiente en entradas anteriores queda superada.
+
+## Diagnóstico y corrección de visualización de fecha laboral — 20/10/2026
+
+En punto1 del ejemplo de baja, propietario reporta que fecha de ingreso no guarda.
+Lectura limitada del empleado de prueba: ACTIVO, ingreso20/10/2026 versión2; historial
+contiene01/10 y luego20/10. Sin modificación del agente. No ejecutar baja ni cambiar
+fechas/adscripciones para forzar la prueba.
+
+Reproducción aislada usando MVC/Thymeleaf real, LaboralForm y fixtures ficticias:
+input fechaIngreso recibía value01/10/26 en es-MX y10/1/26 en en-US; fechaBaja también
+salía corta. HTML date necesita yyyy-MM-dd y por eso el navegador mostraba vacío.
+POST ISO de2026-10-01 se enlazaba sin errores: no era falla de persistencia.
+
+Corregidas ambas propiedades con DateTimeFormat ISO.DATE. Sin cambios de motor,
+reglas de baja, historial, tipos BD o diseño. LaboralFechasRenderTest prueba ambas
+fechas en GET para es-MX/en-US, POST con día/mes exactos y baja opcional vacía.
+917 Java/79 JS sin fallos. Sin nueva QA visual al no cambiar estilo; render usa
+plantilla real y confirma valores ISO. Diagnóstico scratch ignorado en target.
+
+App local actualizada20/10 a13:13México, salud UP, sólo app recreada. Sin migración V113/V114
+libre, .env, registros reales, roles, commit/push; PostgreSQL/volúmenes conservados.
+Dockerfiles temporales retirados. Pendiente humano: volver al expediente y, si desea
+la fecha del ejemplo, guardar01/10/2026 con su modal y recargar antes de seguir baja.
+El último valor guardado sigue20/10 hasta que él lo cambie; no afirmar que el agente
+lo corrigió en BD. Prueba de baja todavía pendiente; guías de casos previos intactas.
+
 ## V113 — Documentación integrada de Personal y cierre del caso — 20/10/2026
 
 Propietario aprueba el aviso y solicita documentar. Recorrido principal no docente,

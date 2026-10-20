@@ -80,6 +80,8 @@
 .employee-list-panel .filters { grid-template-columns:minmax(200px,2fr) minmax(180px,1fr) minmax(100px,.7fr); align-items:end; }
 .employee-list-panel .filters label:nth-child(3) { grid-column:auto; }
 .employee-list-panel .panel-actions .export-button { font-size:.8rem; white-space:nowrap; }
+.employee-list-panel td > strong,.employee-list-panel td > small { display:block; }
+.employee-list-panel td > small { margin-top:5px; color:var(--muted); font-size:.72rem; line-height:1.5; }
 @media(max-width:900px){.employee-list-panel .panel-heading{flex-wrap:wrap}.employee-list-panel .filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.employee-list-panel .filters{grid-template-columns:minmax(0,1fr)}.employee-list-panel .panel-actions{width:100%;justify-content:flex-start}.employee-list-panel .filters label:nth-child(3){grid-column:1}}
 .filters .billing-filter-actions { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:12px; grid-column:1/-1; }

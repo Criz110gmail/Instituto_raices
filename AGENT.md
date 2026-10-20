@@ -1,5 +1,50 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V114 — Baja confirmada y estados verdes de Empleados — 20/10/2026
+
+- Propietario confirma baja, historial, cancelar dentro del modal sin guardar y
+  conservación de foto/perfil/acceso/planteles. El texto temporal de13:24 se guardó
+  porque pulsó Confirmar y guardar, no por un fallo de Cancelar; conservar historial.
+  Ingreso01/10/2026 y baja20/10/2026 comprobados por él. No repetir operaciones.
+- Activo en listado de Empleados reutiliza status positivo verde del sistema, tanto
+  expediente como perfil docente. Inactivo neutro; nombre/código y contacto separados.
+  No cambia filtros, datos ni situación laboral: expediente activo no implica ACTIVO laboral.
+- V114 incorpora guía Personal «Baja laboral: confirmación e historial sin borrar el
+  expediente»,8 etapas/4 acciones cada una, con permisos existentes. Actualiza referencias
+  de guías anteriores (versión de contenido2). Sólo contenido editorial, sin otorgar permisos.
+  No declarar probados por el humano todos los negativos ni baja con cuenta docente activa.
+- 920 Java y79 JS correctas; tras últimos ajustes editoriales, paquete/pruebas dirigidas
+  de render y contenido correctos. SQL probado en PostgreSQL17 aislado. QA visual ficticia
+  escritorio claro/oscuro: verde compartido, inactivos neutros y textos separados.
+- Respaldo privado ignorado .respaldos-locales/guia-baja-v114-20261020/antes-v114.dump.
+  App actualizada20/10 a13:37México; salud UP, V114 exitosa, guías Personal7/8/8 etapas.
+  Sólo app recreada, sin operaciones reales de personal, .env, roles, commit/push.
+- Siguiente: probar permisos de información laboral privada (consulta general sin
+  datos privados; lectura laboral sin edición). Después puestos/condiciones salariales
+  y nómina. Próxima migración V115. Notas previas de baja pendiente quedan superadas.
+
+## Fechas laborales visibles al recargar — 20/10/2026
+
+- Usuario detenido en punto1 de prueba de baja: fecha de ingreso parece no guardarse.
+  Lectura acotada de EMP-ADM-PRUEBA-01 confirma ACTIVO, ingreso actual20/10/2026,
+  historial anterior01/10. No se tocaron registros ni se hizo baja por el propietario.
+- Diagnóstico con MVC/Thymeleaf real y datos ficticios: LaboralForm sin formato
+  explícito renderizaba date value01/10/26(es-MX) o10/1/26(en-US), inválidos para HTML
+  date. POST ISO sí enlaza correctamente; problema confirmado de visualización, no
+  pérdida del registro. DateTimeFormat ISO.DATE en fechaIngreso y fechaBaja corrige
+  render/binding sin cambiar LocalDate, servicio, validaciones o esquema.
+- 917 Java/79 JS correctas. Dos pruebas nuevas GET/POST en es-MX/en-US, ingreso/baja
+  ISO y baja vacía; calendario recibe valor válido y no invierte día/mes. Sin cambios
+  de diseño/JS ni nueva QA visual; prueba usa plantilla real. Diagnóstico temporal en
+  target/diagnostico, no aplicación ni base real. PRUEBA_EMPLEADOS_V111 actualizado.
+- App local actualizada20/10 a13:13México, sólo app recreada; PostgreSQL/volúmenes
+  conservados, sin migración (V113/V114 libre), .env, datos reales, roles, commit/push.
+  Dockerfiles temporales retirados; salud en CONTEXTO. No ejecutar fechas por él.
+- Siguiente humano: volver a Datos laborales, revisar fecha guardada; para ejemplo
+  capturar01/10/2026 y Guardar información laboral/Confirmar y guardar, recargar y
+  confirmar que permanece antes de continuar baja. No reprogramar planteles21/10
+  ni declarar prueba de baja aceptada. Guías V113 mantienen casos anteriores cerrados.
+
 ## V113 — Casos de Empleados y Planteles en Guía de procesos — 20/10/2026
 
 - Propietario confirma que el aviso quedó bien y pide documentar. Se cierra el

@@ -5,6 +5,9 @@ import java.util.*;import static org.assertj.core.api.Assertions.*;import static
 class EmpleadoRenderTest {
  @Test void exportaFixturesFicticiasParaRevisionVisual()throws Exception{var dir=java.nio.file.Path.of("target/qa-personal");java.nio.file.Files.createDirectories(dir);java.nio.file.Files.writeString(dir.resolve("empleado.html"),render("/test/empleado",true,true));java.nio.file.Files.writeString(dir.resolve("empleados.html"),render("/test/empleados",true,true));}
  @Controller static class Vista {
+  @GetMapping("/test/empleados-estados") String estados(Model m){String vista=listado(m);m.addAttribute("resultado",new org.springframework.data.domain.PageImpl<>(List.of(
+   new EmpleadoVista(2L,1L,"EMP-QA-ACT","Ana","Prueba",null,null,null,true,false,0L,7L,true,"DOC-QA-ACT",null),
+   new EmpleadoVista(3L,1L,"EMP-QA-INACT","Ana","Inactiva",null,null,null,false,false,0L,8L,false,"DOC-QA-INACT",null))));return vista;}
   @GetMapping("/test/empleado-cambio-programado") String programado(Model m){String vista=planteles(false,m);m.addAttribute("resumenPrincipal",new escuela.personal.service.EmpleadoService.ResumenPrincipal(java.time.LocalDate.of(2026,10,20),"Plantel Centro de Prueba","Plantel Norte",java.time.LocalDate.of(2026,10,21)));m.addAttribute("proximas",new org.springframework.data.domain.PageImpl<>(List.of(new escuela.personal.service.EmpleadoService.Adscripcion(34L,0L,"Plantel Norte","21/10/2026","Sin fin",true))));return vista;}
   @GetMapping("/test/empleado-principal-sin-cambio") String sinCambio(Model m){String vista=planteles(false,m);m.addAttribute("resumenPrincipal",new escuela.personal.service.EmpleadoService.ResumenPrincipal(java.time.LocalDate.of(2026,10,20),"Plantel Centro de Prueba",null,null));return vista;}
   @GetMapping("/test/empleado-planteles") String planteles(@RequestParam(defaultValue="false")boolean lectura,Model m){String vista=render(true,true,m);m.addAttribute("actuales",new org.springframework.data.domain.PageImpl<>(List.of(
@@ -19,6 +22,12 @@ class EmpleadoRenderTest {
  @Test void altaYEdicionRenderizanConPestanasModalesYFormulariosPost()throws Exception{for(boolean edicion:new boolean[]{true,false}){String html=render("/test/empleado",edicion,true);assertThat(html).contains("data-student-tabs","data-money-confirm=\"empleado-registro\"","method=\"post\"","Cancelar","/css/forms.css");if(edicion)assertThat(html).contains("data-money-confirm=\"empleado-laboral\"","data-money-confirm=\"empleado-perfil\"","data-money-confirm=\"empleado-plantel\"","PRIVADO-TEST","/planteles/buscar");}}
  @Test void sinPermisoLaboralNoSeRenderizaInformacionNiCamposPrivados()throws Exception{assertThat(render("/test/empleado",true,false)).contains("Datos personales","Cuenta del portal docente").doesNotContain("PRIVADO-TEST","name=\"puesto\"","name=\"situacion\"","name=\"motivoBaja\"","Historial laboral");}
  @Test void filtrosYExcelConservanMismosParametros()throws Exception{assertThat(render("/test/empleados",true,true)).contains("/admin/empleados/excel?institucionId=1&amp;q=Ana&amp;estado=DOCENTE","Personal y nómina","name=\"q\"","name=\"estado\"","name=\"tamanio\"");}
+ @Test void listadoUsaElMismoEstadoVerdeCompartidoYNoColoreaInactivos()throws Exception{
+  var html=render("/test/empleados-estados",true,true);
+  assertThat(html).contains("class=\"status positivo\">Activo</span>","class=\"status neutro\">Inactivo</span>","name=\"estado\"","/admin/empleados/excel?institucionId=1&amp;q=Ana&amp;estado=DOCENTE");
+  assertThat(html.split("class=\"status positivo\"",-1)).hasSize(3);assertThat(html.split("class=\"status neutro\"",-1)).hasSize(3);
+  var dir=java.nio.file.Path.of("target/qa-personal");java.nio.file.Files.createDirectories(dir);java.nio.file.Files.writeString(dir.resolve("empleados-estados.html"),html);
+ }
  @Test void fotografiaYCodigoDocenteUsanControlesCompartidosSinOcultarNombreDePestana()throws Exception{
   String html=render("/test/empleado-sin-perfil",true,true);
   assertThat(html).contains("Información docente","employee-photo-form","employee-photo-input","id=\"empleado-fotografia\"","aria-describedby=\"empleado-fotografia-ayuda\"","<div class=\"form-grid\"><label class=\"wide\" for=\"empleado-codigo-docente\"","Habilitar perfil docente");
