@@ -1,5 +1,40 @@
 # Aceptación de Empleados y Maestros — V111
 
+## Permisos privados — recorrido funcional confirmado el 20/10/2026
+
+Excel confirmado por el propietario con una fila del empleado filtrado y siete
+columnas: Código laboral, Nombre, Correo de contacto, Teléfono, Expediente, Código
+docente y Perfil docente. Sin puesto, situación/fechas/motivo/historial laboral ni
+asignaciones de planteles. Expediente Activo no significa situación laboral activa.
+También pegó la URL del expediente y las secciones privadas siguieron ocultas.
+Esta evidencia no confirma pruebas exhaustivas de endpoints privados ni POST.
+Recorrido manual cerrado; V115 lo incorpora a Guía de procesos → Personal → Permisos
+de empleados: proteger datos laborales y verificar Excel, ocho etapas detalladas,
+slug empleado-permisos-laborales. No repetir operaciones de baja ni conceder permisos
+para sólo consultar la guía. Después definir puestos y condiciones salariales;
+todavía no hay formularios de sueldo o generación de nómina.
+
+Actualización: propietario confirma también el caso CON permiso habilitado después
+de nueva sesión: Datos laborales y Planteles visibles correctamente con datos previos.
+Confirmó después retirar Datos laborales de empleados, guardar/confirmar y volver a
+iniciar sesión: ambas pestañas se ocultan nuevamente. Recorrido de concesión y retiro
+aceptado; no repetirlo, guardar datos laborales ni cambiar bajas.
+Exportación y navegación por URL confirmadas en el alcance descrito arriba.
+
+Sin Datos laborales de empleados, propietario confirma cuatro pestañas visibles:
+01 Ficha del empleado,02 Datos personales,05 Información docente y06 Acceso.
+Datos laborales (03) y Planteles (04) ocultos: resultado esperado confirmado.
+La numeración conserva su posición original; no implica secciones faltantes por error.
+
+Procedimiento ya realizado: administrador → Roles y permisos → rol
+de pruebas → marcar Datos laborales de empleados → Guardar cambios → confirmar.
+Cuenta de pruebas → Cerrar sesión → iniciar nuevamente → Personal y nómina →
+Empleados → EMP-ADM-PRUEBA-01 → Ver expediente. Deben aparecer Datos laborales
+y Planteles con fechas/historial/asignaciones existentes; no guardar ni repetir baja.
+Después retirar módulo, guardar/confirmar y renovar sesión para comprobar ocultación.
+Los permisos de otros roles se suman. No tocar el rol del administrador principal.
+La UI concede módulos completos, no hay selección independiente de sólo lectura.
+
 ## Baja laboral — recorrido principal confirmado el 20/10/2026
 
 Propietario confirmó guardado válido con ingreso01/10/2026 y baja20/10/2026,

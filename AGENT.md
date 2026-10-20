@@ -1,5 +1,101 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V115 — Guía integrada de permisos laborales — 20/10/2026
+
+- Usuario pide incorporar caso y siguiente ejemplo. Publicada Guía de procesos →
+  Personal → Permisos de empleados: proteger datos laborales y verificar Excel,
+  slug empleado-permisos-laborales, CONFIRMADA,8 etapas con4 acciones cada una.
+  Rol/cuenta capacitación, instituciones/alcance, sesiones separadas, modal/Cancelar,
+  sin/con permiso/retiro, URL del expediente y Excel de siete columnas. No se atribuye
+  auditoría exhaustiva de endpoints/POST ni sólo lectura seleccionable.
+- Requiere permisos existentes GUIA_PROCESOS_CONSULTAR (servicio), EMPLEADO_LEER,
+  ROL_ADMINISTRAR y USUARIO_ADMINISTRAR. No requiere laboral para leer instrucciones
+  ni otorga permisos a roles. V115 sólo tablas editoriales, actualiza referencia de
+  cierre de guía baja (versión2), sin reescribir migraciones anteriores.
+- 923 Java/83 JS correctas, incluido render Thymeleaf y Excel de ocho pasos. SQL en
+  PostgreSQL17 desechable confirma8 etapas y visibilidad0 sin Usuarios/1 con los tres
+  permisos editoriales; autorización general de Guía cubierta por servicio existente.
+  Sin nueva QA visual: sólo contenido sobre componentes compartidos y render real.
+- Respaldo privado ignorado .respaldos-locales/guia-permisos-v115-20261020/antes-v115.dump.
+  App actualizada20/10 a16:23México, salud UP, V115 success y8 pasos confirmados por
+  lectura editorial. Sólo app recreada, DB/volúmenes conservados. QA y Dockerfiles
+  temporales retirados; sin .env, operaciones de personal/cuentas/roles o commit/push.
+- Recorrido funcional de privacidad documentado: no repetirlo ni baja/cambios de
+  planteles. Siguiente es DISEÑO de puestos y condiciones salariales, NO otra prueba
+  capturable hoy. No hay entidades/formularios de sueldos/nómina. PLAN_PERSONAL_Y_NOMINA
+  actualizado con caso FUTURO propuesto: empleado activo autorizado, base mensual
+  bruta12000MXN desde01/11, pago mensual, cambio13000 desde01/01/2027, sin egresos.
+  No reactivar a María en baja; Bruce sólo si situación laboral confirmada/autorizada.
+  Reglas/formularios pendientes de aprobación e implementación separada. V116 libre.
+
+## Privacidad de Empleados — Excel y navegación confirmados — 20/10/2026
+
+- Propietario aporta Excel filtrado de EMP-ADM-PRUEBA-01: una fila, columnas Código
+  laboral, Nombre, Correo de contacto, Teléfono, Expediente, Código docente y Perfil
+  docente. Sin puesto, situación/fechas/motivo/historial laboral ni adscripciones.
+  Expediente Activo y Sin perfil son datos generales, no situación laboral.
+- También confirma pegar URL del expediente sin permiso y no ver secciones ocultas.
+  Esto acredita navegación/ocultación, no pruebas exhaustivas de endpoints o POST.
+  Concesión/retiro y nueva sesión ya aceptados. No repetir bajas ni permisos por él.
+- Recorrido funcional manual de privacidad concluido con esos límites. Pendiente
+  incorporar este caso a guía integrada; después definir puestos/condiciones salariales
+  antes de nómina. V115 libre. Sólo documentación, sin código, despliegue, permisos
+  reales, .env ni commit/push. Entradas anteriores de Excel/URL pendientes superadas.
+
+## Permisos laborales — recorrido concesión/retiro confirmado — 20/10/2026
+
+- Propietario confirma también retiro del módulo y nueva sesión: Datos laborales y
+  Planteles vuelven a ocultarse. Quedan aceptados los tres estados del recorrido:
+  sin permiso ocultos, al conceder visibles con datos previos y al retirar ocultos.
+  No repetir concesiones/retiros ni baja. Esta acta supera los pendientes del recorrido
+  mencionados en entradas anteriores. No equivale a aceptar Excel o rutas directas.
+- Roles concede paquetes completos; sólo lectura no es seleccionable en la UI.
+  Antes de cerrar toda la prueba de privacidad falta confirmar Excel filtrado sin
+  columnas laborales y acceso directo sin revelación. Después definir puestos y
+  condiciones salariales antes de implementar nómina. Incorporación de este recorrido
+  a guía integrada aún pendiente; acta actual sólo documental, sin migración/despliegue.
+
+## Aceptación parcial de permisos laborales — 20/10/2026
+
+- Confirmación posterior: propietario también realizó la prueba inversa con permiso
+  habilitado y nueva sesión; Datos laborales y Planteles aparecen correctamente con
+  sus datos anteriores. No repetir esta concesión ni guardar otra baja por la prueba.
+- Siguiente pendiente: retirar módulo laboral del rol de pruebas, confirmar y renovar
+  sesión para verificar ocultación nuevamente. No afirmar retiro probado ni Excel/rutas
+  directas confirmados. El siguiente humano indicado abajo queda actualizado por esta nota.
+- Propietario confirma prueba SIN Datos laborales de empleados: expediente muestra
+  sólo Ficha del empleado, Datos personales, Información docente y Acceso (01/02/05/06).
+  Datos laborales y Planteles (03/04) ocultos, resultado correcto. También declara
+  funcionamiento correcto de la prueba tras incorporación del modal de Roles.
+- No extender esa evidencia a exportación sin campos privados, acceso directo,
+  habilitar/retirar permiso o modo sólo lectura. La pantalla de Roles concede paquetes
+  completos por módulo, no separa lectura/escritura: no pedirle configurar sólo lectura.
+- Siguiente humano: marcar Datos laborales de empleados en el rol de pruebas,
+  guardar/confirmar, cerrar e iniciar sesión en cuenta de pruebas; verificar pestañas
+  privadas con información previa sin guardar movimientos. Después retirar permiso,
+  reiniciar sesión y comprobar ocultación. No modificar administrador principal.
+- Sólo acta documental, sin código, despliegue, migración ni cambios de usuarios.
+
+## Roles — confirmación antes de enviar cambios — 20/10/2026
+
+- Durante prueba pendiente de permisos privados, usuario pide modal en Roles.
+  Crear/guardar y desactivar usan modal compartido money-confirm, sin alert/confirm
+  del navegador ni nuevo estilo. Resumen de código/nombre, institución, descripción,
+  estado y lista de módulos; desactivar informa conservación de asignaciones/historial.
+- Cancelar o Escape cierra sin enviar y mantiene captura. Confirmar vuelve a validar
+  y envía el formulario original con CSRF/versión y autorización existente. No cambia
+  paquetes de permisos ni crea modalidad sólo lectura en pantalla. Explica efecto
+  sobre cuentas asignadas y suma de otros roles. No se modificaron cuentas/roles reales.
+- Pruebas JS para alta/edición/desactivación: resumen actualizado, módulos marcados,
+  cero seleccionados, Cancelar/Escape sin envío y confirmación única. Verificación
+  Java dirigida a controlador/servicio de roles; mismo componente visual existente.
+- Prueba humana de permisos laborales sigue pendiente; no documentar como confirmada
+  por entregar el ejemplo. V115 continúa libre, sin migración editorial en este cambio.
+- Verificación final:83 JS y6 Java de roles correctas, paquete BUILD SUCCESS.
+  App actualizada20/10 a14:10México, salud UP; sólo app recreada, sin DB/volúmenes,
+  .env, roles reales ni commit/push. Dockerfiles temporales retirados. No nueva QA
+  visual en navegador: se reutiliza el modal compartido, pruebas DOM de comportamiento.
+
 ## V114 — Baja confirmada y estados verdes de Empleados — 20/10/2026
 
 - Propietario confirma baja, historial, cancelar dentro del modal sin guardar y

@@ -1,5 +1,28 @@
 # Sistema administrativo escolar
 
+## Guía de permisos laborales — V115, 20/10/2026
+
+Guía de procesos → Personal → **Permisos de empleados: proteger datos laborales y
+verificar Excel** incorpora el recorrido confirmado en ocho etapas: rol/cuenta de
+pruebas, sesiones separadas, ocultación, navegación del expediente, Excel filtrado,
+concesión y retiro. Explica módulos, botones, modales y resultados sin operar por el
+usuario ni conceder roles. Visible con permisos existentes de guía, Empleados, Roles
+y Usuarios; no exige permiso laboral para consultar las instrucciones.
+V115 es sólo contenido editorial y actualiza la referencia de la guía de baja.
+No significa auditoría exhaustiva de endpoints. Próximo paso: acordar puestos y
+condiciones salariales; aún no hay captura de sueldos ni generación de nómina.
+Ejemplo futuro ilustrativo en PLAN_PERSONAL_Y_NOMINA.md, no ejecutado ni implementado.
+
+## Privacidad de Empleados — prueba funcional confirmada, 20/10/2026
+
+Confirmado por el propietario: secciones laborales ocultas sin permiso, visibles al
+concederlo y ocultas tras retirarlo y renovar sesión. Pegar URL del expediente no las
+revela; Excel filtrado incluye sólo identidad/contacto/estado de expediente y perfil
+docente, sin información laboral privada. No representa auditoría exhaustiva de endpoints.
+Acta en PRUEBA_EMPLEADOS_V111.md; incorporación a guía integrada pendiente.
+Después sigue definir puestos y condiciones salariales antes de nómina. Este estado
+supera las notas históricas que dejan el recorrido de privacidad pendiente.
+
 ## Baja laboral y estados visuales — V114, 20/10/2026
 
 Recorrido principal de baja laboral confirmado: guardado, corrección de motivo con

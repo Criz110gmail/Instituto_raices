@@ -3,6 +3,35 @@
 Acuerdo: 18/10/2026. Actualización: 19/10/2026.
 Estado: PRIMERA ENTREGA EMPLEADOS/PERFIL DOCENTE IMPLEMENTADA EN V111; NÓMINA PENDIENTE.
 
+## Actualización de pruebas y próximo caso propuesto — 20/10/2026
+
+Recorridos humanos de empleado administrativo, planteles/cambio programado, baja e
+historial y privacidad funcional confirmados en PRUEBA_EMPLEADOS_V111.md y
+PRUEBA_PLANTELES_EMPLEADOS.md. V115 documenta privacidad en la guía integrada.
+La URL probada fue navegación del expediente, no auditoría exhaustiva de endpoints.
+Entradas inferiores de aceptación pendiente son historial anterior, no repetir ensayos.
+
+Puestos normalizados y condiciones salariales todavía NO implementados. Próximo paso
+es acordar su captura antes de construirlos, no registrar nómina desde un menú inexistente.
+Caso ilustrativo propuesto para la siguiente entrega (no aprobado ni ejecutado):
+
+- Empleado activo autorizado de capacitación; no reactivar a María, ya en baja, para
+  reproducir el caso. Reutilizar Bruce Wayne sólo si su situación laboral está confirmada
+  activa y se autoriza usarlo; tener perfil docente no acredita contratación activa.
+- Puesto Docente de primaria; una condición vigente desde01/11/2026, sueldo bruto
+  base mensual $12,000.00 MXN, frecuencia de pago mensual. Sin deducciones, préstamos,
+  proporcionales, conversiones ni generación/pago de nómina en este ejemplo.
+- Vista previa/confirmación y Cancelar sin guardar; sólo una condición vigente por
+  relación laboral en la fecha. Vigencia salarial no es fecha de ingreso ni pago.
+- Cambio futuro propuesto a $13,000.00 desde01/01/2027: conservar condición previa
+  $12,000.00 hasta31/12/2026, no sobrescribir historial. Fechas y política de cierre
+  requieren validación al diseñar; no se implementan en esta entrega editorial.
+- Resultado futuro esperado de esta etapa: consultar sueldo aplicable por fecha,
+  sin duplicarlo por trabajar en varios planteles y sin modificar caja/banco.
+- Sueldo bruto configurado no es neto garantizado ni pago realizado. Periodicidades,
+  cambios a mitad de periodo, reglas de redondeo y autorizaciones se acuerdan antes
+  de cálculos. No captura fiscal real ni cálculo legal automático.
+
 V111 materializa identidad canónica, conversión uno a uno de maestros sin cambiar IDs,
 expediente personal, fotografía, perfil docente opcional, laboral privada con historial,
 planteles/vigencias/principal, permisos propios y listado/Excel paginados. No crea

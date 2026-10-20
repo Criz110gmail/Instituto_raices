@@ -222,6 +222,24 @@
                 }
                 add('Estado',campo('estado').selectedOptions[0].textContent);
                 note.textContent='Este pendiente es privado y sólo tú puedes consultarlo. Realizado y Cancelado dejan de aparecer en los avisos; puedes reabrirlo después. Cancelar sólo cierra este resumen y conserva tu captura.';
+            } else if(kind==='rol-guardar'||kind==='rol-desactivar') {
+                const desactivar=kind==='rol-desactivar',editar=form.dataset.confirmEdit==='true';
+                const campo=name=>form.querySelector('[name="'+name+'"]');
+                title.textContent=desactivar?'Confirmar desactivación del rol':editar?'Confirmar cambios del rol':'Confirmar creación del rol';
+                cancel.textContent='Cancelar';
+                accept.textContent=desactivar?'Confirmar y desactivar':editar?'Confirmar y guardar':'Confirmar y crear rol';
+                add('Código',desactivar?form.dataset.confirmCode:campo('codigo').value.trim());
+                add('Nombre',desactivar?form.dataset.confirmName:campo('nombre').value.trim());
+                if(desactivar){
+                    add('Resultado','Rol inactivo; se conservan sus permisos, asignaciones e historial');
+                }else{
+                    add('Institución',campo('institucionId').selectedOptions?.[0]?.textContent||'Sin institución');
+                    add('Descripción',campo('descripcion').value.trim()||'Sin descripción');
+                    add('Estado',campo('activo').checked?'Activo':'Inactivo');
+                    const modulos=[...form.querySelectorAll('.permission-card')].filter(card=>card.querySelector('input[type="checkbox"]').checked).map(card=>card.querySelector('strong').textContent.trim());
+                    add('Módulos autorizados ('+modulos.length+')',modulos.length?modulos.join('\n'):'Ninguno · este rol no concede acceso a módulos');
+                }
+                note.textContent=(desactivar?'El rol dejará de conceder acceso. No se borran usuarios ni registros.':'Cada módulo seleccionado concede su paquete completo de permisos. Al editar un rol, el cambio afecta a todas las cuentas que lo tengan asignado.')+' Los permisos de otros roles se suman; vuelve a iniciar sesión para comprobar el acceso actualizado. Cancelar conserva la captura sin enviar cambios.';
             } else if(kind.startsWith('empleado-')) {
                 const titles={'empleado-registro':'Confirmar datos personales','empleado-laboral':'Confirmar información laboral','empleado-plantel':'Confirmar asignación de plantel','empleado-perfil':'Confirmar actividad docente','empleado-vigencia':'Confirmar fin de vigencia'};
                 title.textContent=titles[kind]||'Confirmar operación de personal';cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar';

@@ -8,6 +8,8 @@
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/admin.css">
     <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/money-input.css">
+    <script src="/js/money-input.js" defer></script>
     <script src="/js/theme.js"></script>
 </head>
 <body class="form-page">
@@ -22,7 +24,8 @@
             <h1 th:text="${edicion ? 'Editar rol y permisos' : 'Crear rol y permisos'}">Crear rol</h1>
             <p>Define un perfil reutilizable para una institución. El alcance concreto se asignará a cada usuario.</p>
         </div>
-        <form class="entity-form" th:object="${form}" method="post"
+        <form class="entity-form" th:object="${form}" method="post" data-money-confirm="rol-guardar"
+              th:attr="data-confirm-edit=${edicion}"
               th:action="${edicion ? '/admin/roles/' + id : '/admin/roles'}">
             <input type="hidden" th:field="*{version}">
             <div class="form-error" role="alert" th:if="${errorOperacion}">
@@ -59,7 +62,8 @@
         </form>
         <form th:if="${edicion and form.activo}" class="danger-zone" method="post"
               th:action="@{/admin/roles/{id}/desactivar(id=${id})}"
-              onsubmit="return confirm('¿Desactivar este rol? Los usuarios conservarán el historial, pero no deberá conceder acceso.');">
+              data-money-confirm="rol-desactivar"
+              th:attr="data-confirm-code=${form.codigo},data-confirm-name=${form.nombre}">
             <input type="hidden" name="version" th:value="${form.version}">
             <div><strong>Desactivar rol</strong><p>El perfil, sus permisos y sus asignaciones se conservarán.</p></div>
             <button type="submit">Desactivar</button>
