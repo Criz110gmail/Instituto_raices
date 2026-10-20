@@ -1,5 +1,130 @@
 # Contexto del proyecto
 
+## V113 — Documentación integrada de Personal y cierre del caso — 20/10/2026
+
+Propietario aprueba el aviso y solicita documentar. Recorrido principal no docente,
+planteles/cambio programado y claridad actual/futuro aceptados. No repetir registros,
+finalizaciones ni cambio21/10 del ejemplo. Variantes y pruebas privadas/baja siguen
+pendientes; no declarar aceptación humana del día siguiente o de toda concurrencia.
+
+V113 agrega sólo contenido en tablas de guía: dos guías de Personal,7+8 etapas,
+CONFIRMADA, slugs empleado-administrativo-sin-perfil-docente y
+empleado-planteles-cambio-principal. Detalla módulos, botones, captura, modales,
+ejemplos, resultados y precauciones; consulta no ejecuta operaciones y Excel hereda
+los mismos filtros. Requiere permisos existentes de guía, lectura de empleados y
+administración laboral; alta también administración de empleado. No asigna roles.
+
+Se detectó selector de categoría hardcodeado a Cobranza. Ahora consulta categorías
+DISTINCT de las guías visibles con el mismo filtro de permisos, máximo100; listado y
+Excel preservan filtro Personal. No cambia diseño/seguridad del módulo ni motor laboral.
+
+915 Java/79 JS correctas. Pruebas de contenido,4 acciones por etapa, render real
+Thymeleaf/listado de categoría/ambos detalles y Excel con15 filas del SQL; prueba de
+categorías con autorización previa. SQL en PostgreSQL17 temporal valida7+8 etapas y
+visibilidad0 sin permiso laboral/2 con permisos. Sin nueva QA visual (sin nuevo diseño).
+
+Respaldo previo privado ignorado .respaldos-locales/guia-personal-v113-20261020,
+sin mostrar contenido. App local actualizada20/10 a12:44México, V113 aplicada, salud
+UP y2 guías/15 pasos confirmados en base real por lectura sólo editorial. PostgreSQL/
+volúmenes reales intactos; contenedor/volumen QA y Dockerfiles temporales retirados.
+Sin leer .env, modificar personal/cuentas/roles/finanzas ni commit/push.
+
+PRUEBA_EMPLEADOS_V111.md, PRUEBA_PLANTELES_EMPLEADOS.md y README actualizados.
+Incorporación de estos casos a guía integrada deja de estar pendiente. Próximo ensayo:
+baja laboral con fecha/motivo/historial, sin confundir con desactivar cuenta o docente;
+después permisos de datos privados, antes de puestos/salarios/nómina. No ejecutar la
+baja por el usuario. Próxima migración V114. Resto de pendientes del sistema conservado.
+
+## Claridad del cambio futuro de principal — 20/10/2026
+
+Usuario reporta ya es principal al intentar A21/10. Lectura limitada de asignaciones
+del código de prueba confirma cambio YA persistido,6 filas, Parian(A) principal desde
+21/10 y B adicional. B sigue principal hoy20/10; no hubo error de guardado y no se
+tocaron datos. No pedir repetir/cancelar/finalizar esas etapas. Propietario pide aviso.
+
+Nuevo ResumenPrincipal (fecha institucional) obtiene actual y próximo con consultas
+limitadas a1, independientes de las páginas de tarjetas. Protegido por lectura laboral.
+Controlador prepara resumen y plantilla muestra aviso antes de acciones/tarjetas:
+Hoy/Principal actual, Desde/Próximo principal, no confirmar de nuevo. Sin programación
+muestra sólo vigente hoy; sin ninguna etapa oculta el bloque. Estilos scoped con los
+tokens del expediente y rejilla móvil, sin nuevo JS ni cambio de motor/SQL/permisos.
+
+910 Java/79 JS correctas,3 pruebas nuevas de aviso (consulta acotada/seguridad/vacío,
+render con y sin futuro) y QA ficticia escritorio oscuro/móvil390 oscuro y claro.
+No se repite IT transaccional PostgreSQL: ver entrega anterior, motor sin cambios.
+PRUEBA_PLANTELES_EMPLEADOS.md aclara situación real encontrada y no repetirla. Falta
+aceptación visual humana; guía integrada de Empleados todavía pendiente. Después
+documentar y probar baja laboral/permisos antes de puestos/condiciones salariales.
+Sólo app local actualizada20/10 a12:35México, salud UP; sin migración (V112/V113 libre), .env,
+registros reales, roles, commit/push. PostgreSQL/volúmenes conservados, QA cerrado y
+temporales Docker retirados. No se genera nómina ni se cambia la fecha del servidor.
+
+## Organización y asistente de cambio de plantel principal — 20/10/2026
+
+Propietario confirma resultado manual de cuatro vigencias A/B del ejemplo; solicita
+tarjetas distinguibles y evitar las cuatro acciones manuales para intercambiar principal.
+Se implementa, sin tocar sus registros ni declarar aceptado el nuevo flujo.
+
+EmpleadoService clasifica actuales/próximas/históricas por hoy institucional, fechas
+inclusivas, páginas independientes20; actual principal primero, historial más reciente
+primero. Fragmento empleado-planteles con distintivos y tarjetas, historial/próximas
+cerrados inicialmente y apertura al navegar páginas. Finalizar etapa queda plegado.
+Estilos aislados con variables existentes, alias employee-card --surface/--soft,
+modal sólido y responsivo claro/oscuro. No cambia foto, perfil ni otras entidades.
+
+CambioPrincipalEmpleadoService nuevo, POST protegido laboral/CSRF y GET resumen sin
+escrituras. Sólo hoy/futuro y después del inicio de cada etapa afectada; fecha sugerida
+mañana. Ayuda de planteles compartida diez/3caracteres. Conservación opcional del anterior
+como adicional, motivo obligatorio; vista previa con fechas/planteles/fin previsto.
+Cancelar/Escape/fondo conservan datos, no POST. JS invalida resumen al cambiar campos,
+aborta/ignora respuestas viejas, valida selección y evita doble envío. No ejecuta con
+error HTTP/JSON ni redirige a otro portal; login caducado conserva flujo administrativo.
+
+Al confirmar bloquea empleado y verifica cuenta/alcance/institución/versiones/solapes;
+cierra origen y adicional de destino si existe, flush y crea etapas nuevas con sus
+fines previstos dentro de una transacción. No cambia tipo/fecha inicial del historial.
+Si falla cualquier escritura o Auditoría revierte todo. Añade acción de auditoría
+EMPLEADO_PRINCIPAL_CAMBIADO con actor/motivo/fecha efectiva/planteles; sin esquema nuevo
+porque la acción es varchar no vacío. No modifica grupos, permisos, sueldos o finanzas.
+
+908 Java/79 JS correctas. Incluye IT sobre app/Flyway/PostgreSQL17 desechable:
+preview GET/detalle reales y no-store, rollback de cierre ante falla inducida de insert,
+dos confirmaciones simultáneas: sólo una aplica y audita, límites inclusivos y páginas
+históricas20+3. Restricciones DB siguen bloqueando otro principal. Pruebas de permisos,
+CSRF, motivo/fechas/versiones, sólo lectura y cancelación. QA ficticia escritorio claro,
+móvil390 claro/oscuro, modal/ayuda/Cancelar sin operaciones reales. No aceptación humana.
+
+App local actualizada20/10 a12:24México y salud UP. Sólo app recreada; sin migración
+(V112/V113 libre), .env, datos reales, roles, commit/push; PostgreSQL/volúmenes reales
+intactos. Bases/volúmenes QA retirados, servidor/tab cerrados y viewport restaurado.
+PRUEBA_PLANTELES_EMPLEADOS.md contiene ejemplo nuevo: elegir A desde21/10 si hoy20,
+conservar B adicional; primero Cancelar luego confirmar. Si se prueba después, adaptar
+fecha futura sin reescribir historia. Pendiente humano asistente y después guía integrada
+para casos de personal; no confundir con guía de planeaciones V112 ni cerrar nómina.
+
+## Tarjetas de planteles y aceptación del empleado administrativo — 20/10/2026
+
+Propietario confirma que pasó el ejemplo completo de empleado no docente con un
+plantel. Se registra en PRUEBA_EMPLEADOS_V111.md sin consultar ni modificar sus datos.
+Pendientes independientes: varios planteles, solapamientos, segundo principal, bajas,
+permisos privados y resto de personal; no declarar todo V111 ni nómina aceptados.
+
+Única observación: tarjeta de plantel asignado sin diseño. Presentación corregida en
+empleado-form/forms.css con tarjeta delimitada, título, Principal/Adicional, inicio/fin
+separados y Finalizar vigencia en sección distinta con ayuda neutral. Fechas originales
+dd/MM/yyyy; Sin fin se presenta Sin fecha de fin. No calcula estado vigente con sólo
+fecha fin nula. Mantiene endpoint/POST/versión/confirmación y condición de permisos;
+finalizadas y sólo lectura no exponen formulario de finalización. Sin dominio/SQL nuevo.
+
+Verificación899 Java/75 JS sin fallos; prueba Thymeleaf con3 adscripciones ficticias,
+principal/adicional/finalizada, formularios sólo en2 abiertas y ninguno en sólo lectura.
+QA visual escritorio claro/oscuro y móvil390oscuro con nombres largos; falta visto
+bueno visual humano. Sólo app actualizada20/10 a11:55México, salud UP. Sin .env,
+cambios reales laborales/financieros, permisos ni commit/push; PostgreSQL/volúmenes
+conservados. Sin migración, V112 actual/V113 libre. Tab y servidor QA temporales cerrados.
+Incorporar caso no docente a guía integrada tras aceptación visual: aún pendiente;
+no confundir con planeaciones ya incorporadas por V112. Continuar luego multiplantel.
+
 ## V112 — Cierre documentado también dentro de la aplicación — 19/10/2026
 
 Propietario autoriza incorporar el recorrido aceptado de planeaciones a Guía de

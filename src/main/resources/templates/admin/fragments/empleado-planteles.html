@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><body>
+<div th:fragment="tarjetas(pagina,estado,parametro)">
+    <div class="employee-campus-list" th:aria-label="${'Planteles · '+estado}">
+        <article class="employee-campus-card" th:each="p:${pagina.content}" th:classappend="${estado=='Finalizada'?'employee-campus-past':''}">
+            <header class="employee-campus-heading">
+                <div><span class="employee-campus-caption" th:text="${estado=='Finalizada'?'Asignación anterior':'Plantel asignado'}"></span><h3 th:text="${p.plantel}"></h3></div>
+                <div class="employee-campus-badges"><span class="employee-campus-badge" th:text="${estado}"></span><span class="employee-campus-badge" th:text="${p.principal?'Plantel principal':'Plantel adicional'}"></span></div>
+            </header>
+            <dl class="employee-campus-dates">
+                <div><dt>Inicio de la asignación</dt><dd th:text="${p.inicio}"></dd></div>
+                <div><dt>Fin de la asignación</dt><dd th:text="${p.fin=='Sin fin'?'Sin fecha de fin':p.fin}"></dd></div>
+            </dl>
+            <details th:if="${puedeEditarLaboral and estado!='Finalizada' and p.fin=='Sin fin'}" class="employee-campus-finish">
+                <summary>Finalizar esta asignación</summary>
+                <form class="entity-form employee-campus-close" method="post" data-money-confirm="empleado-vigencia" th:action="@{/admin/empleados/{id}/planteles/{relacion}/finalizar(id=${id},relacion=${p.id})}">
+                    <input type="hidden" name="version" th:value="${p.version}">
+                    <div class="employee-campus-close-heading"><p>Úsalo sólo cuando deje de trabajar en este plantel. Para intercambiar el principal utiliza Cambiar plantel principal.</p></div>
+                    <div class="employee-campus-close-controls"><label><span>Fecha final de la asignación *</span><input type="date" name="fecha" required></label><button type="submit">Finalizar vigencia</button></div>
+                </form>
+            </details>
+        </article>
+    </div>
+    <div class="pagination" th:if="${pagina.totalPages>1}">
+        <a th:if="${pagina.hasPrevious()}" th:href="@{/admin/empleados/{id}(id=${id})}+${'?'+parametro+'='+(pagina.number-1)+'#planteles-empleado'}">Anterior</a>
+        <span th:text="${'Página '+(pagina.number+1)+' de '+pagina.totalPages}"></span>
+        <a th:if="${pagina.hasNext()}" th:href="@{/admin/empleados/{id}(id=${id})}+${'?'+parametro+'='+(pagina.number+1)+'#planteles-empleado'}">Siguiente</a>
+    </div>
+</div>
+
+<div th:fragment="cambio" th:if="${puedeEditarLaboral}">
+    <details class="employee-campus-change">
+        <summary>Cambiar plantel principal</summary>
+        <form class="entity-form" data-campus-change th:attr="data-preview-url=@{/admin/empleados/{id}/planteles/cambio-principal/vista-previa(id=${id})}" method="post" th:action="@{/admin/empleados/{id}/planteles/cambio-principal(id=${id})}">
+            <p class="field-help">Elige desde cuándo cambia. El resumen verificará el principal para esa fecha; no modifica las asignaciones anteriores ni concede permisos.</p>
+            <div class="form-grid">
+                <label><span>Fecha efectiva del cambio *</span><input id="campus-change-date" type="date" name="fecha" th:min="${hoyLaboral}" th:value="${fechaCambioSugerida}" required><small>Hoy o una fecha futura, posterior al inicio de las asignaciones que reemplazará.</small></label>
+                <div class="autocomplete" data-autocomplete data-institution-input="empleadoInstitucion" th:attr="data-endpoint=@{/admin/empleados/{id}/planteles/buscar(id=${id})}" data-refresh-on-focus="true">
+                    <label for="campus-change-target"><span>Nuevo plantel principal *</span></label>
+                    <div class="autocomplete-control"><input id="campus-change-target" class="autocomplete-input" autocomplete="off" required role="combobox" aria-expanded="false" aria-controls="campus-change-options" placeholder="Código o nombre"><button type="button" class="autocomplete-clear" aria-label="Quitar nuevo plantel">×</button></div>
+                    <input type="hidden" class="autocomplete-value" name="plantelId"><div class="autocomplete-results" id="campus-change-options" role="listbox" hidden></div><small class="autocomplete-status">Diez opciones al enfocar; busca desde tres caracteres.</small>
+                </div>
+                <label class="policy-card wide"><input type="checkbox" name="conservarAnterior" value="true" checked><span><strong>Continuará en el plantel anterior como adicional</strong><small>Si lo desmarcas, su asignación al plantel anterior terminará el día previo al cambio.</small></span></label>
+                <label class="wide"><span>Motivo del cambio *</span><textarea name="motivo" required maxlength="2000" rows="3"></textarea><small>Se conserva con el usuario y la fecha de la operación en Auditoría.</small></label>
+            </div>
+            <input type="hidden" name="origenId"><input type="hidden" name="versionOrigen"><input type="hidden" name="destinoId"><input type="hidden" name="versionDestino">
+            <p class="form-error" data-campus-error role="alert" hidden></p>
+            <footer class="form-actions"><button type="submit">Visualizar cambio de principal</button></footer>
+        </form>
+    </details>
+    <dialog class="employee-campus-dialog" data-campus-dialog aria-labelledby="campus-dialog-title" aria-describedby="campus-dialog-note">
+        <div class="employee-campus-dialog-body"><span class="employee-campus-caption">Revisión antes de guardar</span><h2 id="campus-dialog-title">Así quedará el cambio</h2>
+            <dl data-campus-summary></dl>
+            <p id="campus-dialog-note">Las asignaciones afectadas terminarán el día anterior. Se conservará el historial. Todo se guarda junto o no se guarda ningún cambio.</p>
+            <div class="form-actions"><button type="button" data-campus-cancel>Cancelar</button><button type="button" data-campus-confirm>Confirmar cambio de principal</button></div>
+        </div>
+    </dialog>
+    <script src="/js/empleado-planteles.js" defer></script>
+</div>
+</body></html>

@@ -26,6 +26,7 @@ public class GuiaProcesosAdminController {
                    @ModelAttribute Filtro filtro,Model model) {
         var f=filtro.normalizado(); model.addAttribute("filtro",f);
         model.addAttribute("resultado",service.listar(principal,f));
+        model.addAttribute("categorias",service.categorias(principal));
         navegacion(principal,model); return "admin/guias";
     }
 

@@ -1,5 +1,117 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V113 — Casos de Empleados y Planteles en Guía de procesos — 20/10/2026
+
+- Propietario confirma que el aviso quedó bien y pide documentar. Se cierra el
+  recorrido principal probado de empleado no docente y planteles/cambio programado.
+  No volver a crear EMP-ADM-PRUEBA-01 ni repetir/cancelar su cambio21/10: ya guardado.
+  No anticipar aceptación humana del paso de día, baja, continuidad desmarcada,
+  consulta privada entre cuentas ni todas las variantes/concurrencias por tests.
+- V113 añade2 guías CONFIRMADA, categoría Personal: Registrar un empleado
+  administrativo sin perfil docente (7 etapas) y Varios planteles y cambio programado
+  de principal (8). Slugs empleado-administrativo-sin-perfil-docente y
+  empleado-planteles-cambio-principal. Módulos/botones/ejemplos/resultados/precauciones,
+  fechas inclusivas, mensaje ya principal y aviso actual/futuro; Excel filtrado.
+  Sólo tablas de guía, sin operaciones de personal ni permisos a roles.
+- Visibilidad con GUIA_PROCESOS_CONSULTAR y EMPLEADO_LEER + LABORAL_ADMINISTRAR;
+  alta requiere además EMPLEADO_ADMINISTRAR. Reutiliza autorizaciones existentes.
+  Filtro de categoría antes sólo Cobranza; ahora DISTINCT de guías autorizadas,
+  acotado100 y mismo filtro de permisos, sin exponer módulos ajenos. UI sin nuevo diseño.
+- 915 Java/79 JS correctas, incluyendo render de2 guías/15 pasos y Excel15 filas,
+  filtro Personal y categorías restringidas. SQL validado PostgreSQL17 temporal:
+  7+8 pasos, sin permiso laboral0 visibles/con permisos2. Sin nueva QA visual por
+  contenido/filtro existentes; render verifica selección. Datos y escenarios no ensayados
+  quedan diferenciados. Actualizadas README y ambas pruebas de Personal.
+- V113 aplicada localmente20/10 a12:44México, salud UP,2 guías/15 pasos confirmados
+  por lectura limitada. Sólo app recreada; DB/volúmenes reales intactos. Respaldo privado
+  ignorado .respaldos-locales/guia-personal-v113-20261020; no mostrar contenido.
+  QA contenedor/volumen y Dockerfiles temporales retirados. Sin .env/commit/push.
+- Guía integrada de estos casos ya NO pendiente; notas anteriores superadas. Siguiente
+  prueba acordable: baja laboral con fecha/motivo/historial, separada de disponibilidad
+  de cuentas/perfil y adscripciones; después permisos privados. No ejecutarla por el
+  propietario. Puestos/condiciones salariales y nómina se definen después de esta base.
+  Próxima migración disponible V114.
+
+## Aviso de principal actual y programado — 20/10/2026
+
+- Propietario intenta elegir A para21/10 y obtiene ya es principal. Consulta limitada
+  de sólo lectura de EMP-ADM-PRUEBA-01 confirma6 filas: originales hasta19/10,
+  B principal/A adicional20/10 y Parian(A) principal/B adicional desde21/10. El cambio
+  YA está guardado; no repetirlo, cancelarlo ni pedir que lo vuelva a confirmar.
+- Usuario pide aclarar por qué las tarjetas muestran B hoy20/10. Aviso nuevo antes
+  de las tarjetas: principal actual con fecha de hoy y próximo con fecha efectiva;
+  aclara que aún no está vigente y no necesita confirmar otra vez. Sin futuro muestra
+  Principal vigente hoy, no un cambio ficticio. Si no hay asignaciones no aparece aviso.
+- ResumenPrincipal consulta sólo1 actual/1 próximo, con autorización laboral y fecha
+  institucional, independiente de página consultada. Presentación con tokens actuales,
+  claro/oscuro/móvil. Sin cambios a vigencias, motor, permisos, auditoría ni esquema.
+- 910 Java/79 JS correctas; nuevas pruebas de consultas limitadas/permiso/vacío y render
+  con/sin futuro. QA ficticia escritorio oscuro/móvil390 claro y oscuro, sin mutaciones.
+  No se repite IT PostgreSQL de cambio (ya verificada en entrega previa); sólo lectura/UI.
+- App local actualizada20/10 a12:35México; sólo app recreada, sin migración (V112),
+  .env, registros reales, roles, commit/push. DB/volúmenes intactos. Servidor/tab QA
+  cerrados, viewport restaurado y Dockerfiles temporales retirados. Salud en CONTEXTO.
+- Siguiente: propietario revisar aviso, comprobar Auditoría/identidad sin otra
+  operación. Documentar casos de personal en guía integrada (aún pendiente); después
+  prueba de baja laboral y permisos privados antes de puestos/salarios/nómina.
+
+## Planteles ordenados y cambio atómico de principal — 20/10/2026
+
+- Usuario confirma cuatro asignaciones del ejemplo manual A/B hasta19/10 y B/A
+  desde20/10; pide organización y asistente. No repetir las cuatro operaciones ni
+  modificar sus registros. Aceptación del nuevo asistente todavía pendiente.
+- Planteles separa actuales (principal primero), próximas e históricas, cerrando las
+  dos últimas inicialmente. Estado por fecha institucional, límites inclusivos;
+  tres consultas paginadas de20, sin cargar todas las vigencias. Navegar páginas abre
+  la sección correspondiente incluso al volver a página0. Tarjetas y acción Finalizar
+  independientes; grupos/roles y las demás pestañas no cambian.
+- Cambiar plantel principal permite plantel activo institucional (ayuda diez/3letras),
+  fecha hoy/futura posterior al inicio de las etapas afectadas, conservar anterior
+  como adicional y motivo obligatorio. Vista previa GET sin escritura, modal resumen,
+  Cancelar/Escape/fondo sin POST ni perder campos; confirmar usa CSRF y versiones.
+  JSON obsoleto se ignora, cambios de captura invalidan resumen y hay guarda dobleclic.
+- CambioPrincipalEmpleadoService autoriza EMPLEADO_LEER + LABORAL_ADMINISTRAR con
+  cuenta administrativa institucional real, bloquea empleado, revalida versiones y
+  cruces/programaciones. Cierra filas antes de insertar, flush en transacción única;
+  fallo revierte todo. Mantiene fechas fin previstas y tipos históricos. Auditoría
+  EMPLEADO_PRINCIPAL_CAMBIADO con actor/motivo/fecha efectiva/planteles; enum varchar
+  existente, sin SQL ni migración nueva. V112 vigente/V113 libre.
+- 908 Java incluyendo integración PostgreSQL temporal y79 JS aprobadas. IT con
+  aplicación/filtros reales, migraciones, GET resumen/detalle, fallo inducido tras cierre
+  (rollback total), dos confirmaciones concurrentes (una sola aplica/audita), páginas
+  históricas20+3 y exclusión DB. QA ficticia claro escritorio/móvil390 claro/oscuro,
+  resumen y cancelación; corregidos aliases scoped de colores para evitar modal
+  transparente. Nunca se confirmaron operaciones reales del propietario.
+- App local actualizada20/10 a12:24México, salud UP, sólo app recreada; DB/volúmenes
+  reales intactos, sin .env/roles/commit/push. Contenedores/volúmenes temporales QA,
+  servidor/tab y Dockerfiles temporales retirados; viewport restaurado.
+- Procedimiento nuevo en PRUEBA_PLANTELES_EMPLEADOS.md y README. Siguiente humano:
+  empleado existente → Planteles → Cambiar plantel principal → desde21/10 si hoy20/10,
+  elegir A, conservar B adicional, motivo; visualizar/Cancelar y luego confirmar si
+  correcto. Futuras quedan en Próximas hasta fecha efectiva. No repetir cambio manual.
+  Incorporar casos no docente/multiplantel a guía integrada tras aceptación del asistente;
+  todavía pendiente. No cerrar nómina ni otros escenarios de personal por estos tests.
+
+## Empleado no docente confirmado y tarjeta de plantel corregida — 20/10/2026
+
+- Propietario confirma todos los pasos del ejemplo administrativo no docente con un
+  plantel; única observación es diseño de tarjeta de adscripción. Acta en
+  PRUEBA_EMPLEADOS_V111.md. No repetir alta/foto/laboral ni habilitar perfil docente.
+  No equivale a aceptación de multiplantel, bajas, solapamientos o permisos privados.
+- Planteles asignados ahora usa tarjetas employee-campus-* de forms.css: nombre,
+  Principal/Adicional, inicio/fin separados, acción Finalizar vigencia en zona aparte.
+  Tokens actuales para claro/oscuro, rejilla adaptable móvil, nombres largos, foco
+  visible y calendario legible en ambos temas. Endpoint/POST/versión/modal/permisos
+  intactos; acción sólo para asignación sin fin y usuario con edición laboral.
+- Pruebas899 Java/75 JS aprobadas; render con principal/adicional/finalizado, fechas,
+  sólo lectura y fixture ficticia. QA visual escritorio claro/oscuro y móvil390oscuro
+  correcta; falta aceptación visual del propietario. App local actualizada20/10 a11:55
+  México, salud UP, sin migración (V112 vigente/V113 disponible). PostgreSQL/volúmenes
+  intactos, sin .env, registros reales, roles, commit/push. Servidor/tab QA cerrados.
+- Siguiente: aceptar diseño y documentar caso no docente en Guía de procesos integrada
+  (todavía NO añadido; V112 es planeaciones); después ejemplo de multiplantel y
+  validaciones. No asumir finalizados personal completo ni nómina.
+
 ## V112 — Planeaciones incorporadas a la Guía de procesos — 19/10/2026
 
 - Usuario pide agregar el caso a la guía integrada para cerrar la prueba. V112 añade

@@ -62,6 +62,11 @@ public class GuiaProcesosService {
         return new PageImpl<>(filas,PageRequest.of(f.pagina(),f.tamanio()),total == null ? 0 : total);
     }
 
+    public List<String> categorias(UsuarioPrincipal principal) {
+        return jdbc.queryForList("SELECT DISTINCT g.categoria "+ACCESO+" ORDER BY g.categoria LIMIT 100",
+                parametros(principal),String.class);
+    }
+
     public Detalle obtener(UsuarioPrincipal principal,String slug) {
         var p=parametros(principal).addValue("slug",slug);
         var guias=jdbc.query("SELECT g.* "+ACCESO+" AND g.slug=:slug",p,

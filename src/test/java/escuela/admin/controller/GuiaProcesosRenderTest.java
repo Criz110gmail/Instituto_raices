@@ -22,6 +22,36 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 class GuiaProcesosRenderTest {
+    @Test void guiasPersonalRenderizanYExportanSusQuincePasosReales() throws Exception {
+        var sql=java.nio.file.Files.readString(java.nio.file.Path.of("src/main/resources/db/migration/V113__guias_empleados_planteles.sql"));
+        var patron=java.util.regex.Pattern.compile("(?m)^\\((\\d+),\\$texto\\$(.*?)\\$texto\\$,\\$texto\\$(.*?)\\$texto\\$,\\R\\$texto\\$(.*?)\\$texto\\$,\\R\\$texto\\$(.*?)\\$texto\\$,\\R\\$texto\\$(.*?)\\$texto\\$,\\R\\$texto\\$(.*?)\\$texto\\$\\)");
+        var pasos=patron.matcher(sql).results().map(m->new Paso(Integer.parseInt(m.group(1)),m.group(2),"Administración",m.group(3),m.group(4),m.group(5),m.group(6),m.group(7),"/admin/empleados")).toList();
+        assertThat(pasos).hasSize(15);
+        var principal=new UsuarioPrincipal(1L,2L,Set.of(),true,false,"admin","",List.of(new SimpleGrantedAuthority("GUIA_PROCESOS_CONSULTAR")));
+        var alta=new Guia(3L,"empleado-administrativo-sin-perfil-docente","Registrar un empleado administrativo sin perfil docente","Personal","Confirmado","Expediente autorizado","María Prueba",1,LocalDate.of(2026,10,20),"CONFIRMADA");
+        var planteles=new Guia(4L,"empleado-planteles-cambio-principal","Varios planteles y cambio programado de principal","Personal","Confirmado","Dos planteles","A y B",1,LocalDate.of(2026,10,20),"CONFIRMADA");
+        var service=mock(GuiaProcesosService.class);
+        when(service.listar(eq(principal),any())).thenReturn(new PageImpl<>(List.of(alta,planteles)));
+        when(service.categorias(principal)).thenReturn(List.of("Personal"));
+        when(service.obtener(principal,alta.slug())).thenReturn(new Detalle(alta,pasos.subList(0,7)));
+        when(service.obtener(principal,planteles.slug())).thenReturn(new Detalle(planteles,pasos.subList(7,15)));
+        var templates=new ClassLoaderTemplateResolver();templates.setPrefix("templates/");templates.setSuffix(".html");templates.setCharacterEncoding("UTF-8");
+        var engine=new SpringTemplateEngine();engine.setTemplateResolver(templates);
+        var views=new ThymeleafViewResolver();views.setTemplateEngine(engine);views.setCharacterEncoding("UTF-8");
+        var mvc=MockMvcBuilders.standaloneSetup(new GuiaProcesosAdminController(service)).setViewResolvers(views).setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver()).build();
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(principal,"",principal.authorities()));
+        try {
+            var lista=mvc.perform(get("/admin/guias").param("categoria","Personal")).andReturn().getResponse();
+            assertThat(lista.getStatus()).isEqualTo(200);assertThat(lista.getContentAsString()).contains("value=\"Personal\" selected=\"selected\"","categoria=Personal");
+            var detalle=mvc.perform(get("/admin/guias/"+planteles.slug())).andReturn().getResponse();
+            assertThat(detalle.getStatus()).isEqualTo(200);assertThat(detalle.getContentAsString()).contains("paso-8","Cambio de principal programado","21/10/2026","no repitas la operación");
+            var excel=mvc.perform(get("/admin/guias/excel").param("categoria","Personal")).andReturn().getResponse();
+            try(var libro=new XSSFWorkbook(new ByteArrayInputStream(excel.getContentAsByteArray()))) {
+                assertThat(libro.getSheetAt(0).getLastRowNum()).isEqualTo(15);
+                assertThat(libro.getSheetAt(0).getRow(15).getCell(10).getStringCellValue()).contains("baja laboral","permisos privados");
+            }
+        } finally {SecurityContextHolder.clearContext();}
+    }
     @Test void planeacionesRenderizaDiezPasosYExportaSuContenidoReal() throws Exception {
         var sql=java.nio.file.Files.readString(java.nio.file.Path.of("src/main/resources/db/migration/V112__guia_planeaciones_docentes.sql"));
         var patron=java.util.regex.Pattern.compile("(?m)^\\((\\d+),\\$texto\\$(.*?)\\$texto\\$,'(.*?)',\\$texto\\$(.*?)\\$texto\\$,\\R\\$texto\\$(.*?)\\$texto\\$,\\R\\$texto\\$(.*?)\\$texto\\$,\\R\\$texto\\$(.*?)\\$texto\\$,\\R\\$texto\\$(.*?)\\$texto\\$,(NULL|'(.*?)')\\)");

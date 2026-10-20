@@ -11,7 +11,7 @@
         <div class="panel-heading"><div><h2>Procesos disponibles para tus permisos</h2><p th:text="${resultado.totalElements+' guías disponibles'}"></p></div><div class="panel-actions"><a class="export-button secondary" th:href="@{/admin/guias/excel(q=${filtro.q},categoria=${filtro.categoria},estado=${filtro.estado})}">Exportar Excel</a></div></div>
         <form class="filters" method="get" action="/admin/guias">
             <label class="search-wide"><span>¿Qué necesitas hacer?</span><input name="q" th:value="${filtro.q}" maxlength="200" placeholder="Ejemplo: pagar dos hijos o comprobante"></label>
-            <label><span>Proceso</span><select name="categoria"><option value="">Todos</option><option value="Cobranza" th:selected="${filtro.categoria=='Cobranza'}">Cobranza</option></select></label>
+            <label><span>Proceso</span><select name="categoria"><option value="">Todos</option><option th:each="categoria:${categorias}" th:value="${categoria}" th:selected="${filtro.categoria==categoria}" th:text="${categoria}"></option></select></label>
             <label><span>Verificación</span><select name="estado"><option value="TODOS">Todas</option><option value="CONFIRMADA" th:selected="${filtro.estado=='CONFIRMADA'}">Confirmada</option><option value="PENDIENTE" th:selected="${filtro.estado=='PENDIENTE'}">Pendiente</option></select></label>
             <label><span>Por página</span><select name="tamanio"><option th:each="n:${ {10,25,50,100} }" th:value="${n}" th:text="${n}" th:selected="${n==resultado.size}"></option></select></label>
             <div class="filter-actions"><button type="submit">Buscar</button><a href="/admin/guias">Limpiar</a></div>

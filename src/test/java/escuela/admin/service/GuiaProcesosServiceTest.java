@@ -52,6 +52,15 @@ class GuiaProcesosServiceTest {
         var paso=new Paso(1,"Prueba","Admin","Cuotas","1. Captura 600.00. 2. Guarda.","","","",null);
         assertThat(paso.acciones()).containsExactly("Captura 600.00.","Guarda.");
     }
+    @Test void categoriasTambienRespetanPermisosAntesDeMostrarse() {
+        assertThatThrownBy(()->service.categorias(principal(false))).isInstanceOf(AccessDeniedException.class);
+        verifyNoInteractions(jdbc);
+        service.categorias(principal(true));
+        var sql=ArgumentCaptor.forClass(String.class);var parametros=ArgumentCaptor.forClass(SqlParameterSource.class);
+        verify(jdbc).queryForList(sql.capture(),parametros.capture(),eq(String.class));
+        assertThat(sql.getValue()).contains("SELECT DISTINCT g.categoria","NOT EXISTS","p.codigo NOT IN (:permisos)","LIMIT 100");
+        assertThat(parametros.getValue().getValue("permisos")).isEqualTo(List.of("GUIA_PROCESOS_CONSULTAR"));
+    }
     private UsuarioPrincipal principal(boolean permiso) {
         return new UsuarioPrincipal(1L,2L,Set.of(),true,false,"admin","",
                 permiso?List.of(new SimpleGrantedAuthority("GUIA_PROCESOS_CONSULTAR")):List.of());

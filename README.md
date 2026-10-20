@@ -1,5 +1,28 @@
 # Sistema administrativo escolar
 
+## Guías de Personal — V113, 20/10/2026
+
+Guía de procesos → categoría **Personal** incorpora **Registrar un empleado
+administrativo sin perfil docente** (7 etapas) y **Varios planteles y cambio programado
+de principal** (8 etapas), con módulos, botones, ejemplos, resultados, límites y Excel
+filtrado. Usa las cuentas y permisos existentes: no otorga roles ni repite operaciones.
+El filtro de categorías muestra únicamente categorías de guías disponibles por permisos.
+Recorrido principal confirmado y aviso actual/futuro aprobado; bajas laborales y
+permisos privados siguen pendientes antes de definir puestos/salarios y nómina.
+
+## Planteles de empleados — mejora del 20/10/2026
+
+Empleados → expediente → Planteles separa actuales (principal primero), próximas e
+históricas, con tarjetas, fechas y paginación independiente de20. **Cambiar plantel
+principal** permite fecha efectiva hoy/futura, conservar el anterior como adicional,
+motivo y vista previa con Cancelar/Confirmar. Guarda el cambio completo en una
+transacción con bloqueo/versiones y Auditoría, sin editar libremente el historial
+ni otorgar accesos. Si una asignación comienza hoy, su etapa siguiente debe empezar
+al menos mañana. No se cambia una asignación académica ni se genera nómina.
+Procedimiento de prueba: [Planteles de empleados](PRUEBA_PLANTELES_EMPLEADOS.md).
+La mejora de planteles no cambia esquema. Su procedimiento confirmado se incorpora
+al catálogo de guías mediante V113, que sólo agrega contenido editorial.
+
 ## Empleados y maestros — V111, 19/10/2026
 
 Nuevo módulo **Administración → Personal y nómina → Empleados**: expediente único

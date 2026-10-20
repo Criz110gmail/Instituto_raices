@@ -1,5 +1,33 @@
 # Aceptación de Empleados y Maestros — V111
 
+## Multiplantel y cambio programado — recorrido principal confirmado el 20/10/2026
+
+Propietario confirma cuatro vigencias del ejemplo: A principal/B adicional hasta
+19/10/2026 y B principal/A adicional desde20/10/2026. Bloqueo de dos principales
+simultáneos reportado y aclarado como resultado esperado. No repetir esas operaciones.
+Solicita tarjetas ordenadas, historial separado y asistente para intercambiar principal.
+Procedimiento y límites: [Prueba de Planteles](PRUEBA_PLANTELES_EMPLEADOS.md).
+Se confirmó después el cambio A principal/B adicional desde21/10 y el aviso que
+distingue hoy de la fecha futura. Propietario aprueba la vista y pide documentar.
+V113 lo incorpora a Guía de procesos → Personal. No extender esta confirmación
+a bajas, permisos privados, todas las variantes del asistente ni toda nómina.
+
+## Empleado administrativo no docente — confirmado el 20/10/2026
+
+Propietario confirma que pasaron todos los pasos del ejemplo no docente entregado
+en conversación: alta/cancelación de modal, expediente único, ausencia de perfil y
+cuenta docente, foto, datos laborales, un plantel principal, edición de contacto,
+consulta/Excel filtrados y ausencia en Maestros. Fixture propuesta: EMP-ADM-PRUEBA-01,
+María Prueba Administrativa; no se consultaron sus datos reales ni se operó por él.
+No volver a crearla ni habilitarle perfil docente para repetir la prueba.
+
+Única observación reportada: tarjeta de plantel sin diseño. Corregida la presentación
+con borde, encabezado, distintivo Principal/Adicional, inicio/fin separados y zona de
+Finalizar vigencia independiente; mantiene permisos, versión y modal. La vista fue
+aprobada después por el propietario. No confundir con todos los solapamientos, bajas
+o pruebas de acceso privado entre cuentas. V113 incorpora el alta no docente y el
+caso de planteles a Guía de procesos → Personal; V112 conserva planeaciones.
+
 ## Acta de cierre: flujo principal de planeaciones — VALIDADO
 
 **Confirmación humana: 19/10/2026.** El propietario confirma los resultados finales:
@@ -201,9 +229,10 @@ Usa fechas confirmadas; para la fixture anterior en ambiente de pruebas:
    privada con un permiso básico.
 3. Revisa pestañas, ayudas, botones y modal Cancelar en móvil y con ambos temas.
 
-Resultado humano de Empleados/laboral/multiplantel: **PENDIENTE** (no incluye el flujo
-de planeaciones ya validado arriba). Después de confirmarlo, documentar el caso validado
-en la guía interactiva; no marcar como confirmado por la sola ejecución de tests.
+Resultado humano: **confirmados empleado administrativo no docente y recorrido
+principal de planteles/cambio programado** el20/10/2026. Incorporados a guía por V113.
+Pendientes baja laboral, permisos privados y otras variantes independientes.
+Planeaciones está validada por separado. No extender aceptación por tests.
 
 ## Retomar prueba reportada: DOC-PRUEBA-02
 

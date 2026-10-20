@@ -1,6 +1,7 @@
 package escuela.auditoria.entity;
 
 public enum AccionAuditoria {
+    EMPLEADO_PRINCIPAL_CAMBIADO,
     PAGO_VALIDADO,
     ANTICIPO_PROPUESTO,
     ANTICIPO_APLICADO,

@@ -54,7 +54,7 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/portal-maestros-soporte/**", "/admin/catalogos/portal-maestro/**")
                         .hasAuthority("PORTAL_MAESTRO_SOPORTE")
                         .requestMatchers(HttpMethod.GET,"/admin/empleados/**").hasAnyAuthority("EMPLEADO_LEER","EMPLEADO_ADMINISTRAR")
-                        .requestMatchers(HttpMethod.POST,"/admin/empleados/*/laboral","/admin/empleados/*/planteles","/admin/empleados/*/planteles/*/finalizar").hasAuthority("EMPLEADO_LABORAL_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.POST,"/admin/empleados/*/laboral","/admin/empleados/*/planteles","/admin/empleados/*/planteles/*/finalizar","/admin/empleados/*/planteles/cambio-principal").hasAuthority("EMPLEADO_LABORAL_ADMINISTRAR")
                         .requestMatchers("/admin/empleados/**").hasAuthority("EMPLEADO_ADMINISTRAR")
                         .requestMatchers("/admin/maestros/**").hasAuthority("MAESTRO_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/planeaciones/**")

@@ -76,6 +76,26 @@ public class EmpleadoService {
   l.setPuesto(limpiar(f.getPuesto()));l.setFechaIngreso(f.getFechaIngreso());l.setSituacion(f.getSituacion());l.setFechaBaja(f.getSituacion().equals("BAJA")?f.getFechaBaja():null);l.setMotivoBaja(f.getSituacion().equals("BAJA")?limpiar(f.getMotivoBaja()):null);laborales.saveAndFlush(l);
  }
  public record Adscripcion(Long id,Long version,String plantel,String inicio,String fin,boolean principal){}
+ public LocalDate hoyLaboral(Long id){var e=autorizar(id,true,false);return LocalDate.now(ZoneId.of(e.getInstitucion().getZonaHoraria()));}
+ public record ResumenPrincipal(LocalDate hoy,String actual,String proximo,LocalDate desde){}
+ public ResumenPrincipal resumenPrincipal(Long id){
+  LocalDate hoy=hoyLaboral(id);
+  Specification<EmpleadoPlantel> base=(r,q,b)->b.and(b.equal(r.get("empleado").get("id"),id),b.isTrue(r.get("principal")));
+  var actual=adscripciones.findAll(base.and((r,q,b)->b.and(b.lessThanOrEqualTo(r.get("fechaInicio"),hoy),b.or(b.isNull(r.get("fechaFin")),b.greaterThanOrEqualTo(r.get("fechaFin"),hoy)))),PageRequest.of(0,1,Sort.by("id")));
+  var proximo=adscripciones.findAll(base.and((r,q,b)->b.greaterThan(r.get("fechaInicio"),hoy)),PageRequest.of(0,1,Sort.by("fechaInicio","id")));
+  return new ResumenPrincipal(hoy,actual.isEmpty()?null:actual.getContent().getFirst().getPlantel().getNombre(),proximo.isEmpty()?null:proximo.getContent().getFirst().getPlantel().getNombre(),proximo.isEmpty()?null:proximo.getContent().getFirst().getFechaInicio());
+ }
+ public Page<Adscripcion> plantelesGrupo(Long id,int pagina,String grupo){
+  LocalDate hoy=hoyLaboral(id);
+  Specification<EmpleadoPlantel> s=(r,q,b)->b.and(b.equal(r.get("empleado").get("id"),id),switch(grupo){
+   case "ACTUALES" -> b.and(b.lessThanOrEqualTo(r.get("fechaInicio"),hoy),b.or(b.isNull(r.get("fechaFin")),b.greaterThanOrEqualTo(r.get("fechaFin"),hoy)));
+   case "PROXIMAS" -> b.greaterThan(r.get("fechaInicio"),hoy);
+   case "HISTORICAS" -> b.lessThan(r.get("fechaFin"),hoy);
+   default -> throw new IllegalArgumentException("Grupo de asignaciones no disponible");});
+  var sort=grupo.equals("HISTORICAS")?Sort.by("fechaFin").descending().and(Sort.by("id").descending()):Sort.by("principal").descending().and(Sort.by("fechaInicio")).and(Sort.by("id"));
+  var formato=java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+  return adscripciones.findAll(s,PageRequest.of(Math.max(0,pagina),20,sort)).map(a->new Adscripcion(a.getId(),a.getVersion(),a.getPlantel().getNombre(),formato.format(a.getFechaInicio()),a.getFechaFin()==null?"Sin fin":formato.format(a.getFechaFin()),a.isPrincipal()));
+ }
  public Page<Adscripcion> planteles(Long id,int pagina){autorizar(id,true,false);var fecha=java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");return adscripciones.findByEmpleadoId(id,PageRequest.of(Math.max(0,pagina),20,Sort.by("fechaInicio").descending().and(Sort.by("id").descending()))).map(a->new Adscripcion(a.getId(),a.getVersion(),a.getPlantel().getNombre(),fecha.format(a.getFechaInicio()),a.getFechaFin()==null?"Sin fin":fecha.format(a.getFechaFin()),a.isPrincipal()));}
  @Transactional public void agregarPlantel(Long id,PlantelEmpleadoForm f){var e=autorizar(id,true,true);empleados.bloquear(id).orElseThrow();var p=planteles.findById(f.getPlantelId()).orElseThrow(()->new ReglaNegocioException("Selecciona un plantel válido"));if(!p.isActivo()||!Objects.equals(p.getInstitucion().getId(),e.getInstitucion().getId()))throw new AccessDeniedException("Plantel no permitido");if(f.getFechaFin()!=null&&f.getFechaFin().isBefore(f.getFechaInicio()))throw new ReglaNegocioException("El fin no puede ser anterior al inicio");var a=new EmpleadoPlantel();a.setEmpleado(e);a.setPlantel(p);a.setFechaInicio(f.getFechaInicio());a.setFechaFin(f.getFechaFin());a.setPrincipal(f.isPrincipal());adscripciones.saveAndFlush(a);}
  @Transactional public void finalizarPlantel(Long id,Long relacion,Long version,LocalDate fecha){autorizar(id,true,true);empleados.bloquear(id).orElseThrow();var a=adscripciones.findByIdAndEmpleadoId(relacion,id).orElseThrow(()->new AccessDeniedException("Asignación no disponible"));ValidacionVersion.verificar(a,version,"Asignación laboral");if(fecha==null||fecha.isBefore(a.getFechaInicio()))throw new ReglaNegocioException("Indica fecha final igual o posterior al inicio");if(a.getFechaFin()!=null)throw new ReglaNegocioException("La vigencia ya tiene un fin; conserva su historial");a.setFechaFin(fecha);adscripciones.saveAndFlush(a);}
