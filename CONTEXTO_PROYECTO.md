@@ -1,5 +1,95 @@
 # Contexto del proyecto
 
+## Catálogo de puestos con formularios independientes — 20/10/2026
+
+Usuario pide el patrón de otros módulos: entrada del menú con tabla y botones de
+alta/edición separados. /admin/puestos ahora sólo lista; /nuevo y /{id}/editar usan
+puesto-form.html con estilos compartidos y confirmación existente. Cancelar, volver
+y guardar preservan filtros/paginación; errores mantienen captura, lectura no abre
+edición y enlaces antiguos ?id redirigen conservando contexto. Regla permanente en
+AGENTS.md para siguientes implementaciones/correcciones, sin refactorizar todo.
+935 Java y87 JS correctas. Render real prueba listado, formularios, errores,
+autorización y retorno filtrado. QA visual desktop claro/móvil390px oscuro con
+fixtures ficticios; servidor y pestaña temporales retirados. No creación real de
+puestos/sueldos ni cambios a empleados, permisos, dominio o migraciones; V118 libre.
+README/ejemplo V116 ajustados. Aceptación humana salarial aún pendiente.
+App actualizada20/10 a17:33México, salud UP; sólo app recreada, sin modificar
+base/volúmenes/.env ni commit/push. Dockerfiles temporales retirados.
+
+## Entrada propia de Puestos laborales — 20/10/2026
+
+Usuario aprueba organización del catálogo en Administración → Personal y nómina,
+debajo de Empleados. Nueva entrada compartida ModuloCatalogo.PUESTOS y orden JS,
+sin duplicar menú; apunta a /admin/puestos, conserva lista, filtros, paginación,
+Excel y acceso desde Registrar condición. Sólo visible con los tres permisos/paquetes
+necesarios (identidad, laboral y salarial). No concede derechos ni cambia datos.
+Se contempló nuevo valor en switches exhaustivos, aislado del CRUD genérico/alcance
+JPA. Alias de catálogo y Excel redirigen a rutas privadas; filtros del Excel preservados.
+Pruebas de visibilidad, agrupación/orden, render real y redirecciones; sin nuevo CSS
+ni QA visual, sólo componente de navegación existente. README/ejemplo actualizados.
+Prueba humana salarial sigue pendiente; no migración nueva, V118 libre.
+Verificación:929 Java completas/87 JS correctas; alias final de Excel incluido en35
+dirigidas correctas, paquete BUILD SUCCESS. App local actualizada20/10 a17:20México,
+salud UP. Sólo app recreada, sin tocar PostgreSQL/volúmenes ni registros/roles/.env.
+Dockerfiles temporales retirados; sin commit/push. IT salarial anterior no repetida
+porque no cambia dominio, importes ni vigencias. No nueva QA visual, render de menú sí.
+
+## Entrega V116 y continuidad editorial V117 — 20/10/2026
+
+Usuario autoriza puestos/condiciones y luego pide continuar. Implementados catálogo
+institucional /admin/puestos y configuración privada por empleado en
+/admin/empleados/{id}/condiciones, desde pestaña07 del expediente, con Consulta,
+Registrar e Historial. Permiso nuevo separado (lectura/administración salarial), sin
+otorgarlo a roles; requiere lectura de identidad/laboral y administrativo institucional
+activo/persistido. No perfiles familiares/docentes/soporte/recuperación o empleados
+ajenos. Roles concede paquete completo en UI; consulta técnica no escribe.
+
+Sueldo bruto, moneda institucional, base y frecuencia independientes, inicio/fin,
+motivo y copia histórica de puesto. Puesto textual anterior permanece como referencia.
+No conversiones de sueldo, impuestos, netos, préstamos, pagos, nóminas o egresos.
+Vigencias inclusivas sin superposición, inicio hoy/futuro y no antes de ingreso,
+empleado laboralmente activo. Nueva posterior cierra previa al día anterior si se
+cruzan; no se intercalan cambios antes de programaciones posteriores. Cancelar sólo
+última futura con motivo/versión y restauración anterior atómica. No borrado de historia.
+Bloqueo por empleado, revisión salarial/versión laboral y puesto revalidado; auditoría
+privada por trigger antes/después, actor/instante. No copiar sueldos en registro global.
+Listados/ayudas/Excel paginados en BD, mismos filtros; diez al foco/tres caracteres,
+moneda en input text, modales con Cancelar. Tablas/formularios/estados/fechas/tema
+compartidos. Ajustes CSS acotados para filtros uniformes y Excel legible en móvil.
+
+926 Java completas correctas incluyendo IT real PostgreSQL17 aislado, migraciones1–116
+y Hibernate, fallo forzado tras cierre revierte todo, concurrencia una ganadora, cambio
+de puesto no altera instantánea, cancelación restaura, permisos/lectura/IDOR/CSRF y
+Excel filtrado, cero movimientos. Luego protección de selección renombrada verificada
+con14 dirigidas correctas.87 JS correctas (modales/Cancelar/Escape/dinero/ayuda). V117
+editorial validada en SQL aislado y prueba de contenido; servicio repetido correcto.
+Último empaquetado sólo alinea CSS de filtros tras QA, sin repetir toda suite Java.
+Incidentes internos resueltos: runtime QA carecía Jasper JDT en caché (se preparó
+runtime con dependencias, DB siguió sin red); moneda lazy fuera de transacción;
+fixture HTTP limpia contexto y Content-Type ausente en denegación. No fallos pendientes.
+
+QA visual estática con ficticios generados por MVC real: escritorio oscuro/formulario,
+móvil390 claro/ayuda/campos/puesto, modal y Cancelar conserva captura; tarjeta de importe
+y filtros claros alineados. No envío a backend real; visor POST405. Viewport restaurado,
+tab/visor/DB/volumen QA y Dockerfiles temporales retirados. Runtime de pruebas
+nexo-salarios-runtime-qa disponible, sin datos operativos ni .env.
+
+V117 sólo actualiza referencia de guía de permisos para reflejar sueldo disponible,
+versión editorial2. No crea guía de salario confirmada. Aceptación humana nueva pendiente;
+procedimiento PRUEBA_CONDICIONES_SALARIALES_V116.md, README/plan/modelo actualizados.
+Respaldos previos privados ignorados en .respaldos-locales/personal-salarios-v116-20261020,
+antes-v116.dump y antes-v117.dump. Publicación final20/10 a16:56México, salud UP,
+V116/V117 success, puestos0/condiciones0/nuevos permisos otorgados0 en lectura acotada.
+Sólo app recreada, PostgreSQL/volúmenes conservados, sin cambios de empleados, cuentas,
+roles o finanzas reales ni lectura de .env, commit/push.
+
+Sigue propietario activar módulos autorizados, nueva sesión, elegir empleado activo
+(Bruce si procede, nunca reactivar María), puesto DOC-PRI-TEST, mensual12000 desde
+01/11/2026 y aumento13000 desde01/01/2027; comprobar consultas31/12 y01/01, historial,
+Excel y ninguna variación de caja/banco. Cancelación futura opcional separada. No repetir
+recorridos ya aceptados ni declarar validada esta prueba antes de confirmación humana.
+Después documentar guía y definir conceptos/calendarios para nómina. V118 libre.
+
 ## V115 — Publicación de guía de permisos y siguiente etapa — 20/10/2026
 
 Guía Personal «Permisos de empleados: proteger datos laborales y verificar Excel»,

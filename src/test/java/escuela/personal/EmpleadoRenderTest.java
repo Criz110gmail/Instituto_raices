@@ -5,6 +5,7 @@ import java.util.*;import static org.assertj.core.api.Assertions.*;import static
 class EmpleadoRenderTest {
  @Test void exportaFixturesFicticiasParaRevisionVisual()throws Exception{var dir=java.nio.file.Path.of("target/qa-personal");java.nio.file.Files.createDirectories(dir);java.nio.file.Files.writeString(dir.resolve("empleado.html"),render("/test/empleado",true,true));java.nio.file.Files.writeString(dir.resolve("empleados.html"),render("/test/empleados",true,true));}
  @Controller static class Vista {
+  @GetMapping("/test/menu-puestos") String menuPuestos(@RequestParam(defaultValue="true")boolean laboral,Model m){var vista=listado(m);var permisos=new HashSet<>(Set.of("EMPLEADO_LEER","EMPLEADO_LABORAL_LEER"));if(laboral)permisos.add("CONDICION_SALARIAL_LEER");m.addAttribute("modulos",Arrays.stream(ModuloCatalogo.values()).filter(x->x.visibleCon(permisos)).toList());return vista;}
   @GetMapping("/test/empleados-estados") String estados(Model m){String vista=listado(m);m.addAttribute("resultado",new org.springframework.data.domain.PageImpl<>(List.of(
    new EmpleadoVista(2L,1L,"EMP-QA-ACT","Ana","Prueba",null,null,null,true,false,0L,7L,true,"DOC-QA-ACT",null),
    new EmpleadoVista(3L,1L,"EMP-QA-INACT","Ana","Inactiva",null,null,null,false,false,0L,8L,false,"DOC-QA-INACT",null))));return vista;}
@@ -22,6 +23,11 @@ class EmpleadoRenderTest {
  @Test void altaYEdicionRenderizanConPestanasModalesYFormulariosPost()throws Exception{for(boolean edicion:new boolean[]{true,false}){String html=render("/test/empleado",edicion,true);assertThat(html).contains("data-student-tabs","data-money-confirm=\"empleado-registro\"","method=\"post\"","Cancelar","/css/forms.css");if(edicion)assertThat(html).contains("data-money-confirm=\"empleado-laboral\"","data-money-confirm=\"empleado-perfil\"","data-money-confirm=\"empleado-plantel\"","PRIVADO-TEST","/planteles/buscar");}}
  @Test void sinPermisoLaboralNoSeRenderizaInformacionNiCamposPrivados()throws Exception{assertThat(render("/test/empleado",true,false)).contains("Datos personales","Cuenta del portal docente").doesNotContain("PRIVADO-TEST","name=\"puesto\"","name=\"situacion\"","name=\"motivoBaja\"","Historial laboral");}
  @Test void filtrosYExcelConservanMismosParametros()throws Exception{assertThat(render("/test/empleados",true,true)).contains("/admin/empleados/excel?institucionId=1&amp;q=Ana&amp;estado=DOCENTE","Personal y nómina","name=\"q\"","name=\"estado\"","name=\"tamanio\"");}
+ @Test void menuMuestraPuestosJuntoAEmpleadosSoloConPermisoSalarial()throws Exception{
+  var html=render("/test/menu-puestos",true,true);assertThat(html).contains("href=\"/admin/puestos\"","Puestos laborales");assertThat(html.indexOf("href=\"/admin/empleados\"")).isLessThan(html.indexOf("href=\"/admin/puestos\""));
+  assertThat(html.split("Administración · Personal y nómina",-1)).hasSize(3);
+  assertThat(render("/test/menu-puestos",true,false)).doesNotContain("href=\"/admin/puestos\"","Puestos laborales");
+ }
  @Test void listadoUsaElMismoEstadoVerdeCompartidoYNoColoreaInactivos()throws Exception{
   var html=render("/test/empleados-estados",true,true);
   assertThat(html).contains("class=\"status positivo\">Activo</span>","class=\"status neutro\">Inactivo</span>","name=\"estado\"","/admin/empleados/excel?institucionId=1&amp;q=Ana&amp;estado=DOCENTE");

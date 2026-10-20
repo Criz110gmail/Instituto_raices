@@ -1,5 +1,93 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Puestos: listado y formularios separados — 20/10/2026
+
+- Por petición del usuario, /admin/puestos abre únicamente catálogo con menú,
+  filtros, tabla paginada, Excel y acciones autorizadas. Nuevo puesto abre /nuevo;
+  Editar abre /{id}/editar, ambos en puesto-form.html, sin captura debajo del listado.
+- Guardar, Cancelar y Volver conservan búsqueda, estado, página y tamaño. Errores
+  mantienen datos en formulario; alta/edición exigen permiso también en servidor.
+  Enlaces antiguos con ?id redirigen al formulario separado conservando filtros.
+- Regla permanente documentada en AGENTS.md: mismo patrón listado/alta/edición y
+  diseño compartido para nuevas implementaciones/correcciones; no refactor masivo.
+- Verificación:935 pruebas Java y87 JS correctas; render real de listado, alta,
+  edición, errores, filtros y sólo lectura. QA visual con datos ficticios en desktop
+  claro y móvil390px oscuro; no se crearon puestos ni condiciones reales.
+- README y ejemplo V116 actualizados. Prueba humana salarial sigue pendiente;
+  no darla por aceptada. Sin cambios de dominio, migraciones (V118 libre) ni permisos.
+- App local actualizada20/10 a17:33México, salud UP. Sólo app recreada, sin tocar
+  base/volúmenes/.env ni commit/push. Dockerfiles temporales retirados.
+
+## Puestos laborales en menú principal — 20/10/2026
+
+- Usuario aprueba entrada propia para organizar catálogo. ModuloCatalogo.PUESTOS
+  aparece debajo de Empleados en Administración → Personal y nómina; navigation.js
+  usa el mismo grupo/desplegable existente, sin duplicar categorías ni catálogos.
+  Reutiliza /admin/puestos y su lista/filtros/Excel; enlace desde captura salarial sigue.
+- Visibilidad requiere Empleados + Laboral + Salarial, LEER o ADMINISTRAR por cada
+  área, igual que el servicio existente. No se asignan permisos ni se modifican
+  registros. Sin cambios a montos, vigencias, schema o migraciones (V118 libre).
+  Alias /admin/catalogos/puestos y Excel remiten al controlador privado existente.
+- Pruebas de enum/permisos completos/incompletos/docente, ruta/sección/orden y render
+  Thymeleaf del menú (presente/ausente, un encabezado), redirecciones y Excel filtrado.
+  No nueva QA visual: no cambia componentes/estilos, sólo entrada compartida.
+- Prueba salarial humana sigue pendiente en PRUEBA_CONDICIONES_SALARIALES_V116.md;
+  actualizado acceso directo desde menú en README/ejemplo. No dar sueldos por aceptados.
+- 929 Java completas y87 JS correctas; tras alias Excel final35 dirigidas correctas,
+  paquete BUILD SUCCESS. App actualizada20/10 a17:20México, salud UP; sólo app recreada,
+  sin migración/DB/volúmenes/.env/cuentas/roles/commit/push. Dockerfiles temporales
+  retirados. No repetir IT de vigencias para un cambio de navegación sin dominio nuevo.
+
+## V116/V117 — Puestos y condiciones salariales implementados — 20/10/2026
+
+- Propietario autoriza caso base y pide continuar. Implementados puestos institucionales
+  y condiciones privadas desde Empleados → Ver expediente → Condiciones salariales →
+  Abrir condiciones salariales. Página con Consulta/Registrar/Historial; catálogo
+  /admin/puestos desde Registrar → Administrar puestos. Sin nuevo menú académico ni
+  cambios de identidad/cuentas/grupos. Puesto textual laboral previo se conserva como
+  referencia, no se importa ni sobrescribe; sueldo congela código/nombre del catálogo.
+- Permiso separado CONDICION_SALARIAL_LEER/ADMINISTRAR en paquete Roles «Puestos y
+  condiciones salariales», sin asignarlo. Requiere además Empleados y lectura laboral,
+  administrativo persistido activo/alcance institucional. Rutas/Excel/ayuda/historial
+  rechazan sin autorización y otra institución; docente/familia/soporte/recuperación
+  no heredan salario. Rol UI paquete completo, no selección sólo lectura.
+- Bruto DECIMAL19,2 positivo, moneda institucional no editable, base mensual/semanal/
+  diaria/hora y frecuencia semanal/quincenal/mensual descriptivas sin conversión.
+  Sólo actividad laboral confirmada/ingreso, expediente e institución activos. Nuevas
+  vigencias hoy/futuras y no antes del ingreso; exclusión inclusiva por empleado.
+  Otra vigencia cierra anterior al día previo si se cruzan; no intercalar antes de
+  programaciones posteriores. Sólo última futura cancelable con motivo/versión y
+  restauración atómica del fin original, preservando fila/historial. No borrar vigentes.
+- JDBC transaccional con bloqueo JPA de empleado, revisión de historial/versión laboral
+  y puesto revalidado antes de cerrar. Trigger conserva antes/después/actor/instante
+  privados e inmutables; no vuelca sueldos a bitácoras globales. Filtros/paginación BD,
+  ayuda10/foco/3 letras, Excel POI100 por bloque y mismos filtros; money text sin spinner,
+  modales detallados/Cancelar/Escape. No nóminas, pagos, impuestos, préstamos o egresos.
+- Suite926 Java completa correcta incluyendo IT PostgreSQL17 con migraciones1–116,
+  rollback deliberado, dos confirmaciones concurrentes (una ganadora), cierre/restaurar,
+  instantánea de puesto, permisos/lectura/IDOR/CSRF/Excel y cero movimientos. Tras
+  protección contra puesto renombrado,14 dirigidas correctas y87 JS; test editorial
+  V117 y servicio nuevamente correctos. Último cambio sólo CSS de filtros empaquetado
+  sin repetir todo Java; QA ficticia claro/oscuro, escritorio1280 y móvil390, ayuda,
+  modal/cancelar, tarjeta/importes y Excel legible. Sin operaciones sobre datos reales.
+- V117 sólo corrige referencia de guía de permisos (contenido versión2) para no decir
+  que aún no existe captura salarial. No agrega guía salarial CONFIRMADA; aceptación
+  humana pendiente. Ejemplo completo PRUEBA_CONDICIONES_SALARIALES_V116.md; README,
+  PLAN_PERSONAL_Y_NOMINA y modelo actualizados. No repetir bajas/planteles/permisos viejos.
+- Respaldos privados ignorados .respaldos-locales/personal-salarios-v116-20261020/
+  antes-v116.dump y antes-v117.dump; no mostrar contenido. App local final20/10 a16:56
+  México, salud UP, V116/V117 success. Contadores reales puestos0/condiciones0/permisos
+  salariales otorgados0. Sólo app recreada, PostgreSQL/volúmenes conservados. QA DB/
+  volumen/visor/tab y Dockerfiles temporales retirados, viewport restaurado. Runtime QA
+  nexo-salarios-runtime-qa conserva dependencias para futuros ensayos. No .env/commit/push.
+- Siguiente humano: activar3 módulos autorizados (Empleados, Laboral, Salariales),
+  confirmar rol y nueva sesión; Bruce sólo si actividad laboral/ingreso confirmados,
+  no reactivar a María. Puesto DOC-PRI-TEST, bruto mensual12000 desde01/11/2026, pago
+  mensual; luego13000 desde01/01/2027, verificar12000 hasta31/12 e historial/Excel,
+  sin cambios de banco. Cancelación futura opcional separada. No dar esta prueba por
+  aceptada; después incorporarla a guía y definir conceptos/calendarios antes de nómina.
+  Próxima migración V118. No automatizar cálculos legales ni asistencia escolar laboral.
+
 ## V115 — Guía integrada de permisos laborales — 20/10/2026
 
 - Usuario pide incorporar caso y siguiente ejemplo. Publicada Guía de procesos →

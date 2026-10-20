@@ -1,7 +1,39 @@
 # Integración de empleados, maestros y nómina
 
 Acuerdo: 18/10/2026. Actualización: 19/10/2026.
-Estado: PRIMERA ENTREGA EMPLEADOS/PERFIL DOCENTE IMPLEMENTADA EN V111; NÓMINA PENDIENTE.
+Estado: EMPLEADOS/PERFIL DOCENTE V111 Y PUESTOS/CONDICIONES SALARIALES V116 IMPLEMENTADOS; NÓMINA PENDIENTE.
+
+## Entrega V116 — puestos y condiciones salariales — 20/10/2026
+
+Autorizada por el propietario después del caso base. Catálogo institucional de puestos
+y registro privado de sueldo bruto, moneda institucional, base mensual/semanal/diaria/
+por hora y frecuencia semanal/quincenal/mensual. Base/frecuencia son configuración,
+no conversiones ni cálculo de nómina. Empleados → Condiciones salariales → Abrir,
+con pestañas Consulta, Registrar e Historial. Administrar puestos desde la captura.
+
+Permiso propio CONDICION_SALARIAL_LEER/ADMINISTRAR, además de lectura de Empleados y
+laboral; sin asignación automática. Sólo administrativos activos institucionales
+persistidos; no familias/docentes/soporte/recuperación. Puesto textual previo permanece
+como referencia histórica, no se sobrescribe; cada sueldo congela código/nombre del
+puesto. Renombrar/desactivar catálogo no reescribe condiciones anteriores.
+
+Una condición activa por empleado/fecha, fechas inclusivas. Nuevas vigencias hoy o
+futuras, nunca antes del ingreso; requiere actividad laboral confirmada. Al registrar
+una nueva condición que se cruza con la anterior se cierra ésta al día previo; no se
+intercalan cambios antes de programaciones posteriores. Conserva importe histórico.
+Sólo última programación futura cancelable, con motivo/versión, restaurando el fin
+anterior en la misma transacción. Vigentes/históricas no se editan ni borran.
+Historial inmutable privado con antes/después, actor/instante; exclusión PostgreSQL,
+bloqueo de empleado, revisión y versión laboral contra capturas viejas/concurrencia.
+
+Filtros/paginación BD, autocompletado10 al foco/3 letras, Excel POI por bloques con
+mismos filtros, importes text/moneda y modales de confirmación/Cancelar. No egresos,
+sueldos duplicados por plantel, pagos, préstamos, retenciones ni recibos. No calcular
+IMSS/ISR ni tomar asistencia escolar como laboral. Primera entrega salarial no cierra
+todo el plan. Ejemplo detallado y aceptación humana pendiente en
+PRUEBA_CONDICIONES_SALARIALES_V116.md. Entradas inferiores «no implementado» son
+historial anterior a esta entrega. Costos, condiciones de reingreso y cálculos siguen
+pendientes de definición antes de automatizar nómina.
 
 ## Actualización de pruebas y próximo caso propuesto — 20/10/2026
 

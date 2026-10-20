@@ -67,6 +67,7 @@ public class CatalogoAdminController {
         }
         List<ModuloCatalogo> modulos = modulosVisibles(authentication);
         validarPermiso(modulo, modulos);
+        if (modulo == ModuloCatalogo.PUESTOS) return "redirect:/admin/puestos";
         FiltroCatalogo filtro = new FiltroCatalogo(q, estado, fecha, pagina, tamanio, desde, hasta, tipoFecha,cobertura,anioCobertura,conceptoCobro,alumnoId,alumnoTexto).normalizado();
         try {
             filtro.validarRango();
@@ -116,6 +117,11 @@ public class CatalogoAdminController {
                HttpServletResponse response) throws IOException {
         ModuloCatalogo modulo = ModuloCatalogo.desde(slug);
         validarPermiso(modulo, modulosVisibles(authentication));
+        if (modulo == ModuloCatalogo.PUESTOS) {
+            response.sendRedirect("/admin/puestos/excel?q=" + URLEncoder.encode(q,StandardCharsets.UTF_8)
+                    + "&estado=" + URLEncoder.encode(estado,StandardCharsets.UTF_8));
+            return;
+        }
         FiltroCatalogo filtro=new FiltroCatalogo(q,estado,fecha,0,100,desde,hasta,tipoFecha,cobertura,anioCobertura,conceptoCobro,alumnoId,alumnoTexto).normalizado();
         filtro.validarRango();
         if(modulo==ModuloCatalogo.PAGOS)filtro.validarCobertura();

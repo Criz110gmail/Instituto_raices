@@ -23,6 +23,22 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CatalogoAdminControllerTest {
+    @Test void aliasExcelPuestosRedirigeAlExportadorConFiltros()throws Exception{
+        var response=new org.springframework.mock.web.MockHttpServletResponse();
+        controller.excel("puestos","Docente de primaria","ACTIVO",null,null,null,"VENCIMIENTO",
+                autenticacion("EMPLEADO_LEER","EMPLEADO_LABORAL_LEER","CONDICION_SALARIAL_LEER"),response);
+        assertThat(response.getRedirectedUrl()).isEqualTo("/admin/puestos/excel?q=Docente+de+primaria&estado=ACTIVO");
+        org.mockito.Mockito.verifyNoInteractions(consultaService,excelService);
+    }
+    @Test void puestosUsaSuCatalogoPrivadoYNoElCrudGenerico(){
+        assertThat(controller.catalogo("puestos","","TODOS",0,25,
+                autenticacion("EMPLEADO_LEER","EMPLEADO_LABORAL_LEER","CONDICION_SALARIAL_LEER"),new ExtendedModelMap()))
+                .isEqualTo("redirect:/admin/puestos");
+        assertThatThrownBy(()->controller.catalogo("puestos","","TODOS",0,25,
+                autenticacion("EMPLEADO_LEER","EMPLEADO_LABORAL_LEER"),new ExtendedModelMap()))
+                .isInstanceOf(AccessDeniedException.class);
+        org.mockito.Mockito.verifyNoInteractions(consultaService,excelService);
+    }
     @Test void entradaAdminAntiguaDevuelveAlDocenteASuPortalSinConsultarCatalogos(){
         assertThat(controller.admin(autenticacion("PORTAL_MAESTRO_ACCEDER"))).isEqualTo("redirect:/maestros");
         assertThat(controller.admin(autenticacion("PORTAL_TUTOR_ACCEDER"))).isEqualTo("redirect:/portal");

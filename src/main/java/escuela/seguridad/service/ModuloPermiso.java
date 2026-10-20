@@ -39,6 +39,7 @@ public enum ModuloPermiso {
             "BOLETA_CONSULTAR"),
     EMPLEADOS("Empleados", "Identidad, fotografía y perfil docente de empleados", "EMPLEADO_LEER", "EMPLEADO_ADMINISTRAR"),
     EMPLEADO_LABORAL("Datos laborales de empleados", "Datos laborales privados, historial y adscripciones", "EMPLEADO_LABORAL_LEER", "EMPLEADO_LABORAL_ADMINISTRAR"),
+    CONDICIONES_SALARIALES("Puestos y condiciones salariales", "Configuración privada de sueldos y vigencias; requiere Empleados y Datos laborales de empleados", "CONDICION_SALARIAL_LEER", "CONDICION_SALARIAL_ADMINISTRAR"),
     MAESTROS("Maestros", "Acceso completo a expedientes, cuentas y asignaciones docentes",
             "MAESTRO_LEER", "MAESTRO_ADMINISTRAR"),
     PLANEACIONES("Planeaciones", "Consulta, revisión, publicación y reapertura de planeaciones",

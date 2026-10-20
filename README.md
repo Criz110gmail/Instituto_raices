@@ -1,5 +1,25 @@
 # Sistema administrativo escolar
 
+## Puestos y condiciones salariales — V116
+
+El catálogo tiene entrada propia **Administración → Personal y nómina → Puestos
+laborales**, debajo de Empleados, con permisos salariales y laborales requeridos.
+Reutiliza /admin/puestos, filtros, paginación y Excel existentes; no concede permisos.
+El menú abre sólo la tabla; **Nuevo puesto** y **Editar** abren formularios separados.
+Guardar, Cancelar y Volver conservan filtros/página. Regla permanente para catálogos
+documentada en AGENTS.md, sin rediseñar otros módulos fuera de la tarea solicitada.
+
+**Empleados → Ver expediente → Condiciones salariales → Abrir condiciones salariales**.
+Requiere módulos Empleados, Datos laborales de empleados y **Puestos y condiciones
+salariales**, sin concesión automática; guardar rol y volver a iniciar sesión.
+Catálogo de puestos desde Registrar condición → Administrar puestos. Captura bruto,
+base/frecuencia, vigencia y motivo; consulta por fecha, filtros, paginación y Excel.
+Historial privado inmutable y confirmaciones con Cancelar. Programar otra condición
+cierra la anterior al día previo cuando se cruzan; sólo la última futura se cancela
+restaurando el fin anterior. Sin cambiar el puesto textual laboral previo.
+No genera nómina, cálculos fiscales ni movimientos de caja/banco. Prueba humana
+pendiente: [Ejemplo completo](PRUEBA_CONDICIONES_SALARIALES_V116.md).
+
 ## Guía de permisos laborales — V115, 20/10/2026
 
 Guía de procesos → Personal → **Permisos de empleados: proteger datos laborales y

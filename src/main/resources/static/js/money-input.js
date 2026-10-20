@@ -240,6 +240,26 @@
                     add('Módulos autorizados ('+modulos.length+')',modulos.length?modulos.join('\n'):'Ninguno · este rol no concede acceso a módulos');
                 }
                 note.textContent=(desactivar?'El rol dejará de conceder acceso. No se borran usuarios ni registros.':'Cada módulo seleccionado concede su paquete completo de permisos. Al editar un rol, el cambio afecta a todas las cuentas que lo tengan asignado.')+' Los permisos de otros roles se suman; vuelve a iniciar sesión para comprobar el acceso actualizado. Cancelar conserva la captura sin enviar cambios.';
+            } else if(kind==='salarial-guardar'||kind==='salarial-cancelar'||kind==='puesto-guardar') {
+                const campo=name=>form.querySelector('[name="'+name+'"]');
+                const texto=name=>campo(name)?.value?.trim()||'';
+                const opcion=name=>campo(name)?.selectedOptions?.[0]?.textContent||'';
+                const fecha=name=>texto(name)?texto(name).split('-').reverse().join('/'):'Sin fecha de fin';
+                cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar';
+                if(kind==='puesto-guardar'){
+                    title.textContent='Confirmar puesto laboral';add('Código',texto('codigo'));add('Nombre',texto('nombre'));
+                    add('Descripción',texto('descripcion')||'Sin descripción');add('Estado',campo('activo').checked?'Activo':'Inactivo');
+                    note.textContent='Se guarda el catálogo de tu institución. Las condiciones anteriores conservan su puesto histórico; desactivar impide nuevas asignaciones. No genera nómina ni modifica datos laborales previos. Cancelar conserva la captura sin guardar.';
+                }else if(kind==='salarial-guardar'){
+                    title.textContent='Confirmar condición salarial';add('Empleado',form.dataset.confirmSubject);add('Puesto',texto('puestoTexto'));
+                    add('Sueldo bruto base',money(texto('importeBruto')));add('Base',opcion('base'));add('Frecuencia de pago',opcion('frecuencia'));
+                    add('Inicio de vigencia',fecha('fechaInicio'));add('Fin previsto',fecha('fechaFin'));add('Motivo',texto('motivo'));
+                    note.textContent='Si se cruza con la condición anterior, ésta termina el día previo al inicio indicado y conserva su sueldo histórico. No se permiten cambios retroactivos o intercalados. No se calculan impuestos ni se genera pago alguno. Cancelar conserva la captura sin registrar.';
+                }else{
+                    title.textContent='Confirmar cancelación de programación';accept.textContent='Confirmar cancelación';
+                    add('Empleado',form.dataset.confirmSubject);add('Inicio programado',form.dataset.confirmStart);add('Sueldo bruto base',money(form.dataset.confirmAmount));add('Motivo',texto('motivo'));
+                    note.textContent='Sólo puede cancelarse la última programación que aún no inicia. Se conserva el historial y se restaura la vigencia anterior cuando corresponde. No hay egresos ni devoluciones. Cancelar sólo cierra este resumen sin ejecutar cambios.';
+                }
             } else if(kind.startsWith('empleado-')) {
                 const titles={'empleado-registro':'Confirmar datos personales','empleado-laboral':'Confirmar información laboral','empleado-plantel':'Confirmar asignación de plantel','empleado-perfil':'Confirmar actividad docente','empleado-vigencia':'Confirmar fin de vigencia'};
                 title.textContent=titles[kind]||'Confirmar operación de personal';cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar';
@@ -584,7 +604,7 @@
             pending = form; submitter = event.submitter;
             accept.disabled = false;
             document.body.classList.add('money-confirm-open'); dialog.showModal(); cancel.focus();
-            if(['transferencia-cuentas','reversion-financiera','pendiente-guardar','pendiente-estado'].includes(kind))dialog.scrollTop=0;
+            if(['transferencia-cuentas','reversion-financiera','pendiente-guardar','pendiente-estado','salarial-guardar','salarial-cancelar','puesto-guardar'].includes(kind))dialog.scrollTop=0;
         });
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);

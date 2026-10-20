@@ -28,6 +28,10 @@ public class EmpleadoService {
  private final MaestroRepository maestros;private final InstitucionRepository instituciones;private final PlantelRepository planteles;
  private final UsuarioRepository usuarios;private final AlcanceDatosService alcance;private final JdbcTemplate jdbc;
  public boolean permitido(String codigo){var a=SecurityContextHolder.getContext().getAuthentication();return a!=null&&a.getAuthorities().stream().anyMatch(p->p.getAuthority().equals(codigo));}
+ public UsuarioPrincipal autorizarSalarios(boolean escritura){
+  actor("EMPLEADO_LEER");actor("EMPLEADO_LABORAL_LEER");
+  return actor(escritura?"CONDICION_SALARIAL_ADMINISTRAR":"CONDICION_SALARIAL_LEER");
+ }
  private UsuarioPrincipal actor(String permiso){
   var a=SecurityContextHolder.getContext().getAuthentication();
   if(a==null||!(a.getPrincipal() instanceof UsuarioPrincipal p)||p.usuarioId()==null||p.accesoRecuperacion()||!p.alcanceInstitucional()||!(permitido(permiso)||permiso.endsWith("_LEER")&&permitido(permiso.replace("_LEER","_ADMINISTRAR"))))throw new AccessDeniedException("Sin autorización de personal institucional");

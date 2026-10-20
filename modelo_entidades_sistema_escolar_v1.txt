@@ -871,3 +871,23 @@ con alcance institucional; no recuperación, familias, docente ni soporte acadé
 Listado/Excel aplican los mismos filtros paginados. Desactivar perfil docente ya no
 desactiva usuarios o grupos automáticamente y bloquea dependencias vigentes.
 Nómina, sueldo, préstamos y acceso mixto NO incluidos en esta entrega.
+
+ACTUALIZACIÓN V116 — PUESTOS Y CONDICIONES SALARIALES (2026-10-20)
+PuestoLaboral institucional: código normalizado único, nombre, descripción, activo,
+auditoría y versión. No importa ni reemplaza automáticamente el puesto textual previo
+de EmpleadoLaboral. CondicionSalarial pertenece a Empleado/institución y PuestoLaboral;
+congela código/nombre de puesto, bruto DECIMAL(19,2), moneda institucional, base
+MENSUAL/SEMANAL/DIARIA/POR_HORA, frecuencia MENSUAL/QUINCENAL/SEMANAL, inicio/fin
+inclusivos, motivo, estado ACTIVA/CANCELADA y auditoría/versión. No convierte bases.
+Exclusión por empleado/rango impide superposición activa. Inicio hoy/futuro y no antes
+del ingreso, sólo actividad confirmada, expediente e institución activos. Nueva condición
+posterior cierra la que cubre esa fecha al día previo, sin alterar su importe histórico;
+no se insertan cambios entre programaciones posteriores. Referencia anterior y su fin
+original permiten cancelar sólo última programación futura con motivo y restauración
+atómica. Una condición vigente/histórica no se borra ni sobrescribe.
+PersonalSalarialHistorial privado e inmutable guarda tipo/registro, antes/después, actor
+e instante para catálogo y condiciones. Consultas por empleado institucional, filtros
+y paginación DB; Excel por bloques y mismos filtros. Autocompletado de puestos10/3.
+CONDICION_SALARIAL_LEER/ADMINISTRAR exige además permisos de Empleado y laboral;
+sin herencia académica ni concesión automática a roles. Sin cuentas ni datos reales
+inventados por migración. No nómina/pagos/préstamos/impuestos ni movimientos de dinero.
