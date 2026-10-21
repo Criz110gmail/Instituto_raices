@@ -1,5 +1,48 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Resumen de asignación y recorrido V119 confirmado — 21/10/2026
+
+- Propietario confirmó puntos5–7: cambiar catálogos25h/13000 preservó enero30h/12000;
+  febrero4 registró25h/13000 e hizo terminar enero3 el31/01/2027; canceló febrero4
+  y enero3 recuperó fin vacío con30h/12000. También confirmó Excel con mismos filtros.
+  Recorrido principal cerrado; no repetir operaciones ni cancelar enero. Las pruebas
+  independientes no confirmadas (permisos exhaustivos/saldos) no se dan por hechas.
+- Pide ordenar pestaña Resumen de Asignaciones: sueldo bruto y jornada destacados,
+  base y frecuencia separadas, puesto/configuración histórica y vigencia en tarjetas,
+  motivo aparte, estado explicado y enlace de expediente alineado. Cancelada aclara
+  que no aplica aunque fin sea vacío. Sin modificar datos, reglas ni otras pestañas.
+  Reutiliza salarial-amount y variables/estilos comunes; CSS acotado assignment-summary
+  en salarial.css, dos columnas escritorio/una móvil y temas existentes.
+- Acta en PRUEBA_ORGANIZACION_LABORAL_V119.md actualizada. Guía integrada de este
+  recorrido sigue pendiente de incorporación editorial; no crear migración sin tarea.
+  V120 libre. Sin .env, permisos, operaciones reales, commit ni push.
+- Verificación de esta mejora:948 Java unitarias/render (sin ejecutar IT PostgreSQL
+  esta vez),90 JavaScript correctas; package BUILD SUCCESS. Render cubre Próxima,
+  Vigente, Anterior, Cancelada y condición individual sin jornada. Revisión visual
+  ficticia escritorio claro y móvil390 oscuro. App actualizada21/10 a16:24México,
+  salud UP; sólo app recreada. Servidor/tab QA cerrados y tema/viewport restaurados.
+
+## Nombre laboral y punto4 confirmado — 21/10/2026
+
+- Esquemas de remuneración cambia sólo su nombre visible a Puestos y sueldos
+  configurados; botón Nueva configuración, ayuda Configuración de puesto y sueldo,
+  detalle/Excel Configuración histórica. Menú/navegación, captura, mensajes, modal,
+  resumen de Empleados y filtros mantienen mismo vocabulario y componentes visuales.
+  No cambiar enum técnico, /admin/esquemas, campos/JSON, IDs, códigos ESQ, permisos,
+  snapshots, reglas salariales ni migraciones. V120 libre; .env no se lee.
+- Propietario confirma punto4: Bruce DOC-PRUEBA-02, empleado3; asignación3 inicia
+  01/01/2027 sin fin,12000MXN/30h. Condición1 de12000 inicia01/11/2026 y termina
+  31/12/2026; condición2 de13000 inicia01/01/2027 y sigue Cancelada. Próximas es
+  correcto según fecha actual. No repetir punto4 ni crear registros por él.
+- Siguiente: punto5 PRUEBA_ORGANIZACION_LABORAL_V119.md: editar jornada25h y
+  configuración13000, verificar enero conserva30h/12000; después programar febrero
+  y cancelar sólo última futura. Aceptación completa V119 y guía siguen pendientes.
+- Verificado:948 pruebas Java (incluye PostgreSQL aislado) y90 JavaScript sin fallos,
+  package BUILD SUCCESS. Revisión visual ficticia escritorio/móvil390 claro con nuevo
+  nombre, sin cambiar el diseño. App actualizada21/10 a15:42México, salud UP;
+  sólo recreada app. Base QA eliminada y servidor/tab visual cerrados, viewport
+  restaurado; sin .env/commit/push ni operaciones sobre asignaciones reales.
+
 ## Filtros independientes de catálogos de Personal — 21/10/2026
 
 - Usuario detenido en punto4 de prueba V119 pide ayudas por código/nombre en todos

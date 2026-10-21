@@ -1,5 +1,43 @@
 # Contexto del proyecto
 
+## Resumen organizado y prueba principal de asignaciones confirmada — 21/10/2026
+
+Propietario confirmó editar catálogo sin alterar enero, programar febrero y cancelar
+sólo esa futura: enero3 recuperó fin vacío con30h/12000; febrero4 conserva25h/13000
+en Cancelada. Confirma también Excel con filtros. No repetir. Recorrido principal V119
+y exportación confirmados; no implica otras comprobaciones no confirmadas.
+Acta actualizada; incorporación editorial a Guía de procesos permanece pendiente.
+
+Solicita mejor organización del Resumen: tarjetas de sueldo/jornada, puesto y
+configuración histórica separados de vigencia, motivo en bloque propio, explicación
+del estado (Cancelada no aplica aunque conserve fin vacío), enlace alineado. Reutiliza
+componentes/variables comunes, dos columnas escritorio/una móvil, estilos acotados
+en salarial.css. Ningún dato ni regla salarial, Historial o Gestión cambió.
+Sin migración, V120 libre. Sin .env, operaciones reales ni commit/push.
+
+948 Java unitarias/render y90 JS sin fallos, package exitoso; no se ejecutó IT de
+PostgreSQL para esta mejora visual. Render cubre cuatro estados y jornada nula.
+Revisión ficticia escritorio claro/móvil390 oscuro. App actualizada21/10 a16:24México,
+salud UP; sólo app recreada. QA cerrada, tema y viewport restaurados.
+
+## Puestos y sueldos configurados; prueba punto4 — 21/10/2026
+
+Propietario confirma asignación de Bruce DOC-PRUEBA-02: fila3,12000MXN/30h desde
+01/01/2027 sin fin; fila1 individual12000 queda01/11/2026–31/12/2026, fila2
+individual13000 continúa Cancelada. No repetir ni confirmar toda V119 todavía.
+Solicita nombre claro: Esquemas de remuneración pasa a Puestos y sueldos configurados,
+Nueva configuración y Configuración de puesto y sueldo en ayudas/formulario/modal;
+Configuración histórica en detalle/Excel. Menú y resumen de empleado coherentes.
+Sólo etiquetas y explicaciones, sin modificar rutas técnicas, códigos, IDs, salarios,
+historial ni permisos; sin migración (V120 libre). Procedimiento actualizado.
+Siguiente: punto5 cambiar catálogo25h/13000 y comprobar enero conserva30h/12000;
+después programar febrero y cancelar sólo última futura. Sin cambios operativos por agente.
+
+948 Java incluyendo PostgreSQL desechable y90 JS correctas; package exitoso.
+Nombre revisado visualmente escritorio/móvil390, componentes sin alteración.
+App local actualizada21/10 a15:42México, salud UP; QA eliminada y navegador restaurado.
+No se leyeron secretos ni se hizo commit/push. Prueba humana continúa desde punto5.
+
 ## Catálogos de Personal con ayudas independientes — 21/10/2026
 
 Usuario en punto4 de V119 solicita ayudas y filtros separados. Puestos filtra por

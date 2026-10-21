@@ -1,6 +1,21 @@
 .salarial-amount { padding:24px; border:1px solid var(--line); border-radius:18px; background:var(--soft); display:grid; gap:8px; }
 .salarial-amount > strong { font-size:clamp(1.7rem,4vw,2.6rem); line-height:1.2; overflow-wrap:anywhere; }
 .salarial-amount p,.salarial-amount small { margin:0; color:var(--muted); }
+.assignment-summary .assignment-summary-heading { flex-wrap:wrap; align-items:center; gap:12px; margin-bottom:10px; }
+.assignment-summary .assignment-state-note { margin:0 0 20px; }
+.assignment-summary-highlights,.assignment-summary-sections { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-bottom:16px; }
+.assignment-summary-highlights > section,.assignment-summary-card { min-width:0; }
+.assignment-summary h3 { margin:0; color:var(--ink); font-size:.95rem; line-height:1.5; }
+.assignment-summary .salarial-amount { align-content:start; }
+.assignment-summary .employee-labor-dates { margin:14px 0 0; gap:16px; }
+.assignment-summary .employee-labor-dates dd { color:var(--ink); line-height:1.6; overflow-wrap:anywhere; }
+.assignment-summary .assignment-summary-single { grid-template-columns:minmax(0,1fr); }
+.assignment-summary-card { padding:20px; border:1px solid var(--line); border-radius:16px; background:var(--surface); }
+.assignment-summary-reason .detail-notes { margin:12px 0 0; white-space:pre-wrap; overflow-wrap:anywhere; }
+.assignment-summary-footer { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-top:20px; }
+.assignment-summary-footer .field-help { flex:1 1 300px; margin:0; }
+.assignment-summary-footer .payment-list-button { flex:0 1 auto; }
+@media(max-width:720px) { .assignment-summary-highlights,.assignment-summary-sections { grid-template-columns:minmax(0,1fr); } .assignment-summary-card { padding:18px; } .assignment-summary-footer .payment-list-button { width:100%; box-sizing:border-box; text-align:center; } }
 .salarial-card td > strong,.salarial-card td > small { display:block; }
 .salarial-card td > small { margin-top:6px; color:var(--muted); }
 .salarial-card td p { overflow-wrap:anywhere; }

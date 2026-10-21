@@ -1,9 +1,34 @@
 # Prueba de jornadas, esquemas y asignaciones — V119
 
-Implementación nueva; aceptación humana pendiente. La prueba salarial V116 ya está
+Recorrido principal confirmado por el propietario21/10/2026. La prueba salarial V116 ya está
 cerrada y no se repite. Ninguna acción de este ejemplo genera pagos o nóminas.
 Fecha base del ejemplo21/10/2026; si las fechas de inicio ya pasaron, usa fechas
 futuras y adapta todo el ejemplo. No utilizar personal real sin autorización.
+
+Avance previo confirmado por el propietario21/10/2026: punto4 realizado. Bruce tiene la
+asignación id3 de01/01/2027 sin fin,12000MXN/30horas; condición individual id1
+de01/11/2026 a31/12/2026 y condición id2 de13000 cancelada. No repetir punto4;
+continuar desde punto5. El módulo antes llamado Esquemas de remuneración ahora se
+presenta como Puestos y sueldos configurados. Códigos ESQ, IDs y /admin/esquemas
+no cambiaron. Confirmar este punto no cierra toda la prueba V119 ni publica la guía.
+
+## Resultado del recorrido principal — confirmado21/10/2026
+
+Propietario confirmó puntos5–7 y Excel con los filtros de febrero:
+
+- Editar catálogos a25horas/13000 no alteró enero: mantuvo30horas/12000.
+- Asignación4 desde01/02/2027 registró25horas/13000, sin fin; enero3 terminó31/01/2027.
+- Excel filtrado coincidió con la consulta; no exportó registros fuera del filtro.
+- Cancelada la asignación4 de febrero: conserva25horas/13000 y fechas originales.
+- Enero3 recuperó fin vacío y mantiene30horas/12000, estado Próxima.
+- Noviembre1 quedó observado previamente con fin31/12/2026; fila2 continúa Cancelada.
+
+No repetir operaciones ni volver a cancelar/programar para documentar. Este cierre
+corresponde al recorrido principal y Excel confirmado; no declara una auditoría de
+permisos ni comprobaciones adicionales de saldos no confirmadas por el propietario.
+Incorporación editorial a Guía de procesos integrada pendiente. Resumen mejorado:
+sueldo/jornada destacados, puesto/configuración y vigencia separados, motivo y aviso
+histórico; Cancelada aclara que no aplica aunque conserve fin vacío. No cambia datos.
 
 ## 1. Revisar acceso y condición previa
 
@@ -14,7 +39,7 @@ remuneración y Asignaciones laborales. No se otorgaron nuevos permisos automát
 
 En Asignaciones laborales enfoca el filtro **Empleado**: muestra hasta10 opciones
 iniciales de tu institución. Escribe `Bruce` (la búsqueda comienza desde3 caracteres)
-y selecciona a Bruce Wayne en la lista. Deja **Puesto**, **Jornada**, **Esquema de remuneración** y **Texto adicional** vacíos y
+y selecciona a Bruce Wayne en la lista. Deja **Puesto**, **Jornada**, **Configuración de puesto y sueldo** y **Texto adicional** vacíos y
 pulsa **Aplicar filtros**. La etiqueta incluye código y nombre, pero filtra por ID.
 Quitar empleado (×) elimina sólo ese criterio; Limpiar restablece todos los filtros.
 La selección se conserva al ver/volver, paginar y exportar Excel. También está el
@@ -37,8 +62,8 @@ no es una ayuda de catálogo ni sustituye la selección.
 
 - Puestos laborales: **Puesto**.
 - Jornadas laborales: **Jornada**.
-- Esquemas de remuneración: **Esquema de remuneración**, **Puesto** y **Jornada**.
-- Asignaciones laborales: **Empleado**, **Puesto**, **Jornada** y **Esquema de remuneración**.
+- Puestos y sueldos configurados: **Configuración de puesto y sueldo**, **Puesto** y **Jornada**.
+- Asignaciones laborales: **Empleado**, **Puesto**, **Jornada** y **Configuración de puesto y sueldo**.
 - Consulta anterior de condiciones salariales del empleado: **Puesto**.
 - Empleados conserva la ayuda **Empleado** implementada previamente.
 
@@ -67,7 +92,7 @@ ni control de asistencia, descansos automáticos u horas pagables.
 
 ## 3. Crear esquema
 
-Administración → Personal y nómina → Esquemas de remuneración → Nuevo esquema.
+Administración → Personal y nómina → Puestos y sueldos configurados → Nuevo esquema.
 Reutiliza ESQ-DOC-MAT-TEST si ya existe y coincide, no dupliques.
 
 | Campo | Valor |
@@ -90,12 +115,12 @@ revisar modal, probar Cancelar y después confirmar. Tabla muestra puesto/jornad
 
 Administración → Personal y nómina → Asignaciones laborales → Nueva asignación.
 Dentro del formulario **Nueva asignación**, enfoca **Empleado** y selecciona Bruce.
-Enfoca **Esquema de remuneración**, escribe `ESQ-DOC-MAT-TEST` y selecciona
+Enfoca **Configuración de puesto y sueldo**, escribe `ESQ-DOC-MAT-TEST` y selecciona
 la sugerencia **ESQ-DOC-MAT-TEST · Docente matutino de prueba**.
 No lo busques únicamente en el listado de Asignaciones antes de asignarlo:
 ese listado contiene condiciones/asignaciones del personal, no todos los esquemas
 del catálogo. Crear el esquema no crea una asignación automáticamente.
-Para comprobar el catálogo, entra a **Esquemas de remuneración**, selecciona ese
+Para comprobar el catálogo, entra a **Puestos y sueldos configurados**, selecciona ese
 esquema en su filtro y pulsa **Aplicar filtros**. El esquema existe y estaba activo
 en la comprobación de sólo lectura del21/10/2026; no hay que duplicarlo.
 En Revisa la configuración deben aparecer puesto, Matutina30horas,12000MXN y
@@ -114,7 +139,7 @@ la prueba y revísala; no intercalar cambios antes de una posterior ya registrad
 ## 5. Editar catálogos sin cambiar lo asignado
 
 Jornadas laborales → buscar JOR-MAT-TEST → Editar: cambiar horas a25 y descripción
-a Lunes a viernes de08:00 a13:00; confirmar guardado. Después Esquemas de remuneración
+a Lunes a viernes de08:00 a13:00; confirmar guardado. Después Puestos y sueldos configurados
 → ESQ-DOC-MAT-TEST → Editar: importe13000; confirmar. No cambia asignaciones existentes.
 
 Vuelve a Asignaciones → Bruce → Ver la nueva de enero: debe seguir mostrando30horas
@@ -124,14 +149,16 @@ retroactivamente la condición individual previa tampoco.
 ## 6. Programar otro cambio
 
 Asignaciones → Ver la de enero → Gestión → Programar cambio (o Nueva asignación
-desde listado). Selecciona mismo empleado/esquema: ahora resumen25horas y13000.
-Inicio01/02/2027, fin vacío, motivo Cambio de esquema de prueba desde febrero.
+desde listado). Selecciona mismo empleado y Configuración de puesto y sueldo
+ESQ-DOC-MAT-TEST: ahora resumen25horas y13000.
+Inicio01/02/2027, fin vacío, motivo Cambio de configuración de prueba desde febrero.
 Revisa modal y confirma. Enero12000/30horas queda hasta31/01/2027; febrero13000/25horas
 queda sin fin. La ficha del empleado resume sólo lo aplicable hoy, no confundir con
 programaciones futuras; Ver asignaciones muestra todo.
 
-En el filtro Empleado selecciona Bruce desde la ayuda; deja Buscar puesto o esquema
-vacío, elige Próximas y rango01/02/2027 a28/02/2027 y aplica filtros. Sólo debe coincidir13000
+En el filtro Empleado selecciona Bruce desde la ayuda; deja Puesto, Jornada,
+Configuración de puesto y sueldo y Texto adicional vacíos, elige Próximas y rango
+01/02/2027 a28/02/2027 y aplica filtros. Sólo debe coincidir13000
 si no hay otras filas del ensayo. Excel respeta exactamente filtros y muestra importes
 numéricos, horas, snapshots, fechas y motivos. Quita filtros para continuar.
 
@@ -150,6 +177,7 @@ planteles y clases intactos. Con cuenta sin autorización salarial no se ven men
 resúmenes salariales y rutas/Excel/ayudas se deniegan. No retirar permisos del admin
 principal ni modificar roles operativos para hacer pruebas.
 
-El propietario debe confirmar resultados antes de publicar este recorrido como
-CONFIRMADA en Guía de procesos. La guía salarial V118 corresponde al ensayo V116
-ya confirmado, no a estos nuevos módulos.
+El recorrido principal y Excel ya fueron confirmados por el propietario; falta su
+incorporación editorial a Guía de procesos, sin repetir operaciones. No marcar como
+realizadas las comprobaciones independientes que no fueron confirmadas. La guía
+salarial V118 corresponde al ensayo V116, no a estos nuevos módulos.

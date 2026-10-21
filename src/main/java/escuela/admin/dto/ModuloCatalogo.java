@@ -9,7 +9,7 @@ public enum ModuloCatalogo {
     EMPLEADOS("empleados","Empleados",List.of()),
     PUESTOS("puestos","Puestos laborales",List.of()),
     JORNADAS_LABORALES("jornadas","Jornadas laborales",List.of()),
-    ESQUEMAS_REMUNERACION("esquemas","Esquemas de remuneración",List.of()),
+    ESQUEMAS_REMUNERACION("esquemas","Puestos y sueldos configurados",List.of()),
     ASIGNACIONES_LABORALES("asignaciones","Asignaciones laborales",List.of()),
     ALUMNOS("alumnos", "Alumnos", List.of("Matrícula", "Alumno", "CURP", "Nacimiento", "Ingreso")),
     TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),

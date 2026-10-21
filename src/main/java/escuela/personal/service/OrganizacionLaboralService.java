@@ -71,7 +71,7 @@ public class OrganizacionLaboralService {
    if(f.getPuestoId()==null||f.getJornadaId()==null)throw regla("Selecciona puesto y jornada desde las ayudas; escribir el nombre sin seleccionar no es suficiente.");
    var puesto=salarios.puesto(f.getPuestoId());var jornada=obtener("jornadas",f.getJornadaId());
    if(!Objects.equals(f.getPuestoTexto(),puesto.codigo()+" · "+puesto.nombre())||!Objects.equals(f.getJornadaTexto(),jornada.codigo()+" · "+jornada.nombre()))throw regla("Puesto o jornada cambiaron; vuelve a seleccionarlos.");
-   if(f.isActivo()&&(!puesto.activo()||!jornada.activo()))throw regla("El esquema activo requiere puesto y jornada activos.");
+   if(f.isActivo()&&(!puesto.activo()||!jornada.activo()))throw regla("La configuración activa requiere puesto y jornada activos.");
    var importe=f.getImporteBruto();if(importe==null||importe.signum()<=0||importe.scale()>2||importe.precision()-importe.scale()>17)throw regla("Captura sueldo bruto positivo con máximo dos decimales.");
    if(!Set.of("MENSUAL","SEMANAL","DIARIA","POR_HORA").contains(Objects.toString(f.getBase(),""))||!Set.of("MENSUAL","QUINCENAL","SEMANAL").contains(Objects.toString(f.getFrecuencia(),"")))throw regla("Selecciona base y frecuencia válidas.");
    params.addValue("puesto",puesto.id()).addValue("jornada",jornada.id()).addValue("importe",importe).addValue("base",f.getBase()).addValue("frecuencia",f.getFrecuencia());
@@ -93,9 +93,9 @@ public class OrganizacionLaboralService {
   jdbc.queryForList("SELECT id FROM jornada_laboral WHERE id=:id AND institucion_id=:institucion FOR UPDATE",params.addValue("id",s.jornadaId()));
   jdbc.queryForList("SELECT id FROM puesto_laboral WHERE id=:id AND institucion_id=:institucion FOR UPDATE",params.addValue("id",s.puestoId()));
   contexto=contexto(f.getEmpleadoId(),f.getEsquemaId());s=contexto.esquema();var j=obtener("jornadas",s.jornadaId());var puesto=salarios.puesto(s.puestoId());
-  if(!s.activo()||!j.activo()||!puesto.activo())throw regla("El esquema, jornada y puesto deben estar activos.");
-  if(!Objects.equals(f.getVersionEsquema(),contexto.versionEsquema())||!Objects.equals(f.getVersionJornada(),contexto.versionJornada())||!Objects.equals(f.getVersionPuesto(),contexto.versionPuesto()))throw regla("El esquema, jornada o puesto cambió. Vuelve a seleccionarlo y revisa el resumen.");
-  if(!Objects.equals(s.moneda(),moneda()))throw regla("La moneda del esquema no coincide con la institución; revisa la configuración.");
+  if(!s.activo()||!j.activo()||!puesto.activo())throw regla("La configuración, jornada y puesto deben estar activos.");
+  if(!Objects.equals(f.getVersionEsquema(),contexto.versionEsquema())||!Objects.equals(f.getVersionJornada(),contexto.versionJornada())||!Objects.equals(f.getVersionPuesto(),contexto.versionPuesto()))throw regla("La configuración, jornada o puesto cambió. Vuelve a seleccionarlo y revisa el resumen.");
+  if(!Objects.equals(s.moneda(),moneda()))throw regla("La moneda de la configuración no coincide con la institución; revisa la configuración.");
   var condicion=new CondicionSalarialForm();condicion.setPuestoId(puesto.id());condicion.setPuestoTexto(puesto.codigo()+" · "+puesto.nombre());condicion.setImporteBruto(s.importe());condicion.setBase(s.base());condicion.setFrecuencia(s.frecuencia());condicion.setFechaInicio(f.getInicio());condicion.setFechaFin(f.getFin());condicion.setMotivo(f.getMotivo());condicion.setVersionLaboral(f.getVersionLaboral());condicion.setRevision(f.getRevision());
   Long id=salarios.programar(f.getEmpleadoId(),condicion);
   params.addValue("condicion",id).addValue("esquema",s.id()).addValue("esquemaVersion",s.version()).addValue("esquemaCodigo",s.codigo()).addValue("esquemaNombre",s.nombre()).addValue("jornada",j.id()).addValue("jornadaVersion",j.version()).addValue("jornadaCodigo",j.codigo()).addValue("jornadaNombre",j.nombre()).addValue("descripcion",j.descripcion()).addValue("horas",j.horas()).addValue("puestoVersion",puesto.version());

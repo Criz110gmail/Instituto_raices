@@ -1,5 +1,22 @@
 # Sistema administrativo escolar
 
+## Resumen de asignaciones laborales
+
+La pestaña Resumen separa sueldo y jornada destacados, puesto/configuración histórica,
+vigencia y motivo, con explicación del estado y el diseño compartido responsivo.
+Cancelada aclara que no aplica aunque conserve sus fechas originales.
+Recorrido principal V119 y Excel filtrado confirmados por el propietario21/10/2026;
+acta en PRUEBA_ORGANIZACION_LABORAL_V119.md. Guía integrada de este caso pendiente.
+
+## Nombre más claro para las configuraciones laborales — 21/10/2026
+
+El módulo antes llamado Esquemas de remuneración se presenta como **Puestos y sueldos
+configurados**. Define un puesto, su jornada y su sueldo para asignarlos después
+a empleados. Nuevo esquema pasa a **Nueva configuración**, y las ayudas muestran
+**Configuración de puesto y sueldo**. Misma presentación en menú, filtros, formularios,
+resumen, modal y Excel; sin cambios de IDs, códigos, rutas /admin/esquemas ni salarios.
+Prueba V119: punto4 confirmado por el propietario; continuar punto5 del procedimiento.
+
 ## Filtros de Personal y nómina
 
 Puestos, Jornadas, Esquemas y Asignaciones incluyen ayudas independientes de los

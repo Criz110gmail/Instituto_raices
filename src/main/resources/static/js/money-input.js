@@ -254,8 +254,8 @@
                     add('Descripción / distribución',texto('descripcion')||'Sin descripción');
                     note.textContent='Guarda el catálogo reutilizable. No cambia las asignaciones existentes ni genera nómina o movimientos de dinero. Cancelar conserva la captura sin guardar.';
                 }else{
-                    title.textContent='Confirmar asignación laboral';add('Empleado',form.dataset.confirmSubject);add('Esquema',form.dataset.confirmScheme);add('Configuración autorizada',form.dataset.confirmSummary);add('Inicio',fecha('inicio'));add('Fin previsto',fecha('fin'));add('Motivo',texto('motivo'));
-                    note.textContent='Se conserva una fotografía del esquema, jornada y sueldo. Si se cruza con una condición anterior, ésta termina el día previo; conserva su historial. No modifica planteles, clases ni cuentas financieras. Cancelar no registra la asignación.';
+                    title.textContent='Confirmar asignación laboral';add('Empleado',form.dataset.confirmSubject);add('Configuración de puesto y sueldo',form.dataset.confirmScheme);add('Configuración autorizada',form.dataset.confirmSummary);add('Inicio',fecha('inicio'));add('Fin previsto',fecha('fin'));add('Motivo',texto('motivo'));
+                    note.textContent='Se conserva una copia histórica del puesto, jornada y sueldo. Si se cruza con una condición anterior, ésta termina el día previo; conserva su historial. No modifica planteles, clases ni cuentas financieras. Cancelar no registra la asignación.';
                 }
             } else if(kind==='salarial-guardar'||kind==='salarial-cancelar'||kind==='puesto-guardar') {
                 const campo=name=>form.querySelector('[name="'+name+'"]');

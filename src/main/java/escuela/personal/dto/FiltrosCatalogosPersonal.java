@@ -18,10 +18,10 @@ public class FiltrosCatalogosPersonal {
  public void validar(){
   validar(filtroPuestoId,filtroPuestoTexto,"puesto");
   validar(filtroJornadaId,filtroJornadaTexto,"jornada");
-  validar(filtroEsquemaId,filtroEsquemaTexto,"esquema");
+  validar(filtroEsquemaId,filtroEsquemaTexto,"configuración de puesto y sueldo");
  }
  private static void validar(Long id,String texto,String nombre){
-  if(id==null&&texto!=null&&!texto.isBlank())throw new ReglaNegocioException("Selecciona el "+nombre+" de la lista de sugerencias o limpia el campo para consultar todos.");
+  if(id==null&&texto!=null&&!texto.isBlank())throw new ReglaNegocioException("Selecciona "+(nombre.equals("puesto")?"el ":"la ")+nombre+" de la lista de sugerencias o limpia el campo para consultar todos.");
  }
  public UriComponentsBuilder agregarA(UriComponentsBuilder url){
   if(filtroPuestoId!=null)url.queryParam("filtroPuestoId",filtroPuestoId);

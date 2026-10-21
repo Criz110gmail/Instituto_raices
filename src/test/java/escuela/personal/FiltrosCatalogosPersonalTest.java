@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.*;
 class FiltrosCatalogosPersonalTest {
  @Test void exigeSeleccionSinConvertirTextoEnConsultaDeTodos(){
   var f=new FiltrosCatalogosPersonal();f.setFiltroEsquemaTexto("ESQ-DOC-MAT-TEST");
-  assertThatThrownBy(f::validar).hasMessageContaining("Selecciona el esquema");
+  assertThatThrownBy(f::validar).hasMessageContaining("Selecciona la configuración de puesto y sueldo");
   f.setFiltroEsquemaId(12L);assertThatCode(f::validar).doesNotThrowAnyException();
   f.setFiltroPuestoTexto("Docente");assertThatThrownBy(f::validar).hasMessageContaining("puesto");
   f.setFiltroPuestoId(5L);f.setFiltroJornadaTexto("Matutina");assertThatThrownBy(f::validar).hasMessageContaining("jornada");
