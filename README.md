@@ -1,5 +1,14 @@
 # Sistema administrativo escolar
 
+## Filtros de Personal y nómina
+
+Puestos, Jornadas, Esquemas y Asignaciones incluyen ayudas independientes de los
+catálogos correspondientes: diez sugerencias al enfocar y búsqueda por código/nombre
+desde tres caracteres. Asignaciones combina Empleado, Puesto, Jornada y Esquema;
+también reconoce el código del esquema en el texto adicional. Pantalla y Excel usan
+los mismos filtros. Los inactivos se identifican para consulta histórica, sin
+habilitarlos para nuevas asignaciones. No se generan nóminas ni movimientos al consultar.
+
 ## Organización laboral y guía salarial — V118/V119
 
 Guía de procesos → Personal → **Puestos y sueldos: registrar, programar aumento y
@@ -23,6 +32,13 @@ Expediente resume lo vigente y enlaza al listado filtrado. Captura individual an
 permanece en **Condiciones salariales → Condiciones individuales y compatibilidad**.
 [Ejemplo completo para probar V119](PRUEBA_ORGANIZACION_LABORAL_V119.md), pendiente
 de aceptación humana; no confundirlo con la guía V118 ya confirmada.
+
+Empleados y Asignaciones laborales tienen filtro **Empleado** con ayuda10 al foco/
+búsqueda desde3 caracteres, independiente de la búsqueda libre. Seleccionar filtra por
+ID, no por la etiqueta concatenada; navegación/paginación/Excel conservan selección.
+La búsqueda general exige sólo Empleados, mientras la ayuda salarial mantiene sus
+permisos privados. Jornadas/Esquemas/Puestos no tienen empleado porque son catálogos
+reutilizables. Sin nuevos permisos, registros o migraciones en este ajuste.
 
 ## Puestos y condiciones salariales — V116
 

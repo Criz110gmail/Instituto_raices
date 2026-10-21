@@ -12,12 +12,40 @@ de empleados y Puestos y condiciones salariales, entra a Administración → Per
 y nómina. Debes ver Empleados, Puestos laborales, Jornadas laborales, Esquemas de
 remuneración y Asignaciones laborales. No se otorgaron nuevos permisos automáticamente.
 
-En Asignaciones laborales busca Bruce Wayne o su código. Debes ver las condiciones
+En Asignaciones laborales enfoca el filtro **Empleado**: muestra hasta10 opciones
+iniciales de tu institución. Escribe `Bruce` (la búsqueda comienza desde3 caracteres)
+y selecciona a Bruce Wayne en la lista. Deja **Puesto**, **Jornada**, **Esquema de remuneración** y **Texto adicional** vacíos y
+pulsa **Aplicar filtros**. La etiqueta incluye código y nombre, pero filtra por ID.
+Quitar empleado (×) elimina sólo ese criterio; Limpiar restablece todos los filtros.
+La selección se conserva al ver/volver, paginar y exportar Excel. También está el
+mismo selector en Empleados, junto a Búsqueda adicional para código/correo/otros datos.
+Debes ver las condiciones
 individuales anteriores:12000 desde01/11/2026 sin fin y13000 cancelada desde01/01/2027.
 Jornada aparece Sin jornada registrada; es correcto, no se infiere de las clases.
 No canceles12000 ni repitas la prueba anterior. Ver abre resumen/historial/gestión
 con pestañas; Volver conserva filtros. Empleados → Ver expediente → Condiciones
 salariales ahora resume lo vigente y ofrece Ver asignaciones del empleado.
+
+## Ayudas independientes para consultar los catálogos
+
+Todos los selectores de catálogo muestran hasta diez registros al enfocar o dar clic,
+sin necesidad de escribir. Desde tres caracteres buscan por código o nombre;
+selecciona una sugerencia y después pulsa **Aplicar filtros**. Cada selección usa
+su ID, no la etiqueta concatenada. Puedes combinar los criterios y limpiarlos con ×.
+**Limpiar** restablece la consulta completa. **Texto adicional** es libre y opcional,
+no es una ayuda de catálogo ni sustituye la selección.
+
+- Puestos laborales: **Puesto**.
+- Jornadas laborales: **Jornada**.
+- Esquemas de remuneración: **Esquema de remuneración**, **Puesto** y **Jornada**.
+- Asignaciones laborales: **Empleado**, **Puesto**, **Jornada** y **Esquema de remuneración**.
+- Consulta anterior de condiciones salariales del empleado: **Puesto**.
+- Empleados conserva la ayuda **Empleado** implementada previamente.
+
+En filtros se pueden localizar catálogos inactivos para revisar el historial; aparecen
+identificados. Para crear una asignación siguen ofreciéndose sólo catálogos activos.
+Pantalla y Excel aplican las mismas selecciones; listado, detalle y regreso conservan
+los filtros de organización laboral. Las búsquedas y tablas están acotadas en servidor.
 
 ## 2. Crear jornada reutilizable
 
@@ -61,7 +89,15 @@ revisar modal, probar Cancelar y después confirmar. Tabla muestra puesto/jornad
 ## 4. Asignar al empleado sin recapturar sueldo
 
 Administración → Personal y nómina → Asignaciones laborales → Nueva asignación.
-Selecciona Bruce desde ayuda de Empleado y ESQ-DOC-MAT-TEST desde Esquema.
+Dentro del formulario **Nueva asignación**, enfoca **Empleado** y selecciona Bruce.
+Enfoca **Esquema de remuneración**, escribe `ESQ-DOC-MAT-TEST` y selecciona
+la sugerencia **ESQ-DOC-MAT-TEST · Docente matutino de prueba**.
+No lo busques únicamente en el listado de Asignaciones antes de asignarlo:
+ese listado contiene condiciones/asignaciones del personal, no todos los esquemas
+del catálogo. Crear el esquema no crea una asignación automáticamente.
+Para comprobar el catálogo, entra a **Esquemas de remuneración**, selecciona ese
+esquema en su filtro y pulsa **Aplicar filtros**. El esquema existe y estaba activo
+en la comprobación de sólo lectura del21/10/2026; no hay que duplicarlo.
 En Revisa la configuración deben aparecer puesto, Matutina30horas,12000MXN y
 Mensual/Mensual. Si la consulta falla no se puede enviar: vuelve a seleccionar.
 
@@ -94,7 +130,8 @@ Revisa modal y confirma. Enero12000/30horas queda hasta31/01/2027; febrero13000/
 queda sin fin. La ficha del empleado resume sólo lo aplicable hoy, no confundir con
 programaciones futuras; Ver asignaciones muestra todo.
 
-Filtra por Bruce, Próximas, rango01/02/2027 a28/02/2027. Sólo debe coincidir13000
+En el filtro Empleado selecciona Bruce desde la ayuda; deja Buscar puesto o esquema
+vacío, elige Próximas y rango01/02/2027 a28/02/2027 y aplica filtros. Sólo debe coincidir13000
 si no hay otras filas del ensayo. Excel respeta exactamente filtros y muestra importes
 numéricos, horas, snapshots, fechas y motivos. Quita filtros para continuar.
 

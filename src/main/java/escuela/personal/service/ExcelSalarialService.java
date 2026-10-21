@@ -22,10 +22,11 @@ public class ExcelSalarialService {
    hoja.createFreezePane(0,1);hoja.setAutoFilter(new org.apache.poi.ss.util.CellRangeAddress(0,Math.max(0,fila-1),0,columnas.length-1));libro.write(out);
   }
  }
- public void puestos(String q,String estado,OutputStream out)throws IOException{
-  service.puestos(q,estado,0,10);
+ public void puestos(String q,String estado,OutputStream out)throws IOException{puestos(q,estado,null,out);}
+ public void puestos(String q,String estado,Long filtroPuestoId,OutputStream out)throws IOException{
+  service.puestos(q,estado,0,10,filtroPuestoId);
   try(var libro=new SXSSFWorkbook(100)){var hoja=libro.createSheet("Puestos");String[] cols={"Código","Nombre","Descripción","Estado"};var cab=hoja.createRow(0);for(int c=0;c<cols.length;c++){cab.createCell(c).setCellValue(cols[c]);hoja.setColumnWidth(c,35*256);}int fila=1,pag=0;org.springframework.data.domain.Page<CondicionesSalarialesService.Puesto> bloque;
-   do{bloque=service.puestos(q,estado,pag++,100);for(var p:bloque){var r=hoja.createRow(fila++);String[] valores={p.codigo(),p.nombre(),p.descripcion(),p.activo()?"Activo":"Inactivo"};for(int c=0;c<valores.length;c++)r.createCell(c).setCellValue(valores[c]==null?"":valores[c]);}}while(bloque.hasNext());hoja.createFreezePane(0,1);libro.write(out);
+   do{bloque=service.puestos(q,estado,pag++,100,filtroPuestoId);for(var p:bloque){var r=hoja.createRow(fila++);String[] valores={p.codigo(),p.nombre(),p.descripcion(),p.activo()?"Activo":"Inactivo"};for(int c=0;c<valores.length;c++)r.createCell(c).setCellValue(valores[c]==null?"":valores[c]);}}while(bloque.hasNext());hoja.createFreezePane(0,1);libro.write(out);
   }
  }
 }

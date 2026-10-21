@@ -1,5 +1,70 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Filtros independientes de catálogos de Personal — 21/10/2026
+
+- Usuario detenido en punto4 de prueba V119 pide ayudas por código/nombre en todos
+  los módulos de Personal/nómina. Puestos incorpora Puesto; Jornadas, Jornada;
+  Esquemas, Esquema/Puesto/Jornada; Asignaciones combina Empleado/Puesto/Jornada/Esquema.
+  Consulta individual anterior de condiciones incorpora Puesto. Empleados conserva
+  ayuda de identidad anterior. Texto adicional queda libre y explícitamente opcional.
+- Componente compartido filtro-personal usa autocomplete existente, diez al foco/clic,
+  mínimo tres caracteres, selección por ID y etiqueta canónica reconstruida en servidor.
+  FiltrosCatalogosPersonal usa prefijos para no colisionar con campos de captura.
+  Se conservan IDs en paginación, ver/editar, formularios, regreso y exportación de
+  los listados de organización. Excel aplica las mismas selecciones en cada bloque.
+  Texto sin seleccionar muestra validación; no consulta todos inadvertidamente.
+- Endpoint /admin/personal/filtros/{puestos|jornadas|esquemas}/buscar exige permisos
+  salariales/laborales institucionales; SQL acotado por institución y LIMIT11 para
+  mostrar diez+hayMas. Identifica inactivos para historial; captura sigue activos.
+  Búsqueda libre de Asignaciones ahora incluye esquema_codigo y jornada_codigo/nombre
+  históricos, no sólo nombre del esquema. No cambia snapshots ni reglas salariales.
+- Consulta operativa de sólo lectura confirmó ESQ-DOC-MAT-TEST id1 activo en
+  institución1. No se duplicó ni asignó. Para punto4 usar Asignaciones → Nueva
+  asignación, no buscar un catálogo no asignado en la tabla de asignaciones.
+- Sin migración; V120 sigue libre. Prueba humana V119 pendiente; continuar donde
+  indica PRUEBA_ORGANIZACION_LABORAL_V119.md, actualizado con ayudas independientes.
+  No hay nómina, movimientos financieros, cambios de permisos ni datos operativos
+  realizados por el agente. No leer .env ni hacer commit/push.
+- Verificación final:946 pruebas Java (incluye integración PostgreSQL desechable),
+  90 JavaScript, cero fallos; package BUILD SUCCESS. Render/SQL/Excel/identidad,
+  permisos, mínimo3, límite10+hayMas, inactivos y selecciones cubiertos. Revisión
+  visual ficticia escritorio claro y móvil390 oscuro, sin cambiar datos reales.
+  App local actualizada21/10 a15:27México, salud UP. Sólo app recreada, sin migración;
+  base QA sin puertos/volúmenes eliminada y servidor/tab visual cerrados, viewport
+  restaurado. No commit/push ni lectura de .env.
+
+## Búsqueda de empleado con ayuda compartida — 21/10/2026
+
+- Antes de iniciar ejemplo V119, usuario pide empleados10 al foco y buscar desde3
+  caracteres. Nueva asignación ya lo tenía; faltaba en filtros. Se añade selector
+  independiente Empleado en Empleados y Asignaciones laborales, con componente/tema
+  compartidos y texto libre adicional separado (puesto/esquema o código/correo).
+  Puestos/Jornadas/Esquemas no reciben filtro de empleado: son catálogos reutilizables.
+- /admin/empleados/buscar exige sólo autorización institucional de identidad; devuelve
+  código/nombre, sin salarios o laborales. Ayuda /admin/asignaciones/empleados/buscar
+  conserva autorización salarial y delega la consulta general. SQL por institución,
+  mínimo3 salvo vacío, LIMIT11 para mostrar10 y hayMas; no cargar todos los empleados.
+- Filtros por empleadoId exacto, etiqueta visible reconstruida por servidor; nunca
+  usar código+nombre concatenados como búsqueda libre. Texto sin selección muestra
+  validación y no consulta todos por accidente; Excel rechaza misma captura incompleta.
+  Excel de empleados propaga ID en cada bloque, asignaciones ya filtraba por ID.
+- Selección persiste en enlaces/página/Excel. Retorno explícito de Empleados usa
+  interceptor compartido de cobranza ampliado a ruta local fija /admin/empleados;
+  URLs externas/otros módulos/fragmentos rechazados, no sesión/localStorage. POSTs
+  conservan contexto mediante script compartido y volver/cancelar usan destino validado.
+- Filtros alineados3 columnas escritorio/2 o1 móvil con CSS acotado employee-filters,
+  sin paleta nueva ni cambios globales al autocomplete. Ejemplo/README actualizados.
+  No dominio/migración/cambios reales/salarios/roles/.env/commit/push. V120 libre.
+  Prueba humana V119 sigue pendiente; no repetir prueba V116 ni crear datos por usuario.
+- Verificación943 Java completas correctas, incluida IT PostgreSQL17 desechable de
+  búsqueda inicial10/hayMas, mínimo3, nombre compuesto/ID, Excel1 fila, alcance y
+  lectura general vs salarial.90 JS correctas; tras alineación final16 dirigidas y
+  tras retorno URI final4 (IT+retorno) correctas, paquete BUILD SUCCESS. QA ficticia
+  desktop oscuro y móvil390 claro, lista10/foco/3 letras/Quitar, campos alineados.
+- App local actualizada21/10 a14:05México, salud UP; sólo app recreada, sin migración
+  ni cambios a DB/volúmenes/.env/datos/roles. QA DB, visor, pestaña y Dockerfiles
+  temporales retirados; viewport restaurado. Sin commit/push; V120 sigue libre.
+
 ## V118/V119 — Guía salarial y organización laboral — 21/10/2026
 
 - Propietario autoriza incorporar prueba V116 a Guía y continuar reorganización.

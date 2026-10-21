@@ -66,7 +66,7 @@ class PuestosPantallasTest {
   when(empleados.permitido("CONDICION_SALARIAL_ADMINISTRAR")).thenReturn(false);
   var html=mvc.perform(get("/admin/puestos")).andReturn().getResponse().getContentAsString();assertThat(html).contains("Sólo consulta").doesNotContain("Nuevo puesto","Editar →");
   when(empleados.autorizarSalarios(true)).thenThrow(new org.springframework.security.access.AccessDeniedException("Sólo consulta"));
-  assertThatThrownBy(()->controller.nuevoPuesto("","TODOS",0,25,new org.springframework.ui.ExtendedModelMap())).isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
-  assertThatThrownBy(()->controller.editarPuesto(7L,"","TODOS",0,25,new org.springframework.ui.ExtendedModelMap())).isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+  assertThatThrownBy(()->controller.nuevoPuesto("","TODOS",0,25,new FiltrosCatalogosPersonal(),new org.springframework.ui.ExtendedModelMap())).isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+  assertThatThrownBy(()->controller.editarPuesto(7L,"","TODOS",0,25,new FiltrosCatalogosPersonal(),new org.springframework.ui.ExtendedModelMap())).isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
  }
 }

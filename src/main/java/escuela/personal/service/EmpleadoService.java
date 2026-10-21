@@ -48,8 +48,10 @@ public class EmpleadoService {
  public EmpleadoVista obtener(Long id){var e=vista(autorizar(id,false,false));if(!puedeResumenLaboral())return e;var l=laboral(id);return e.conResumenLaboral(new ResumenLaboral(l.getSituacion(),l.getFechaIngreso(),l.getFechaBaja()));}
  private boolean puedeResumenLaboral(){return permitido("EMPLEADO_LABORAL_LEER")||permitido("EMPLEADO_LABORAL_ADMINISTRAR");}
  public Page<EmpleadoVista> listar(FiltroEmpleado original){var p=actor("EMPLEADO_LEER");var f=original.normalizado();
+  f.validarSeleccion();
   if(f.institucionId()!=null&&!Objects.equals(f.institucionId(),p.institucionId()))throw new AccessDeniedException("Institución no autorizada");
   Specification<Empleado> s=(r,q,b)->{var pred=new ArrayList<jakarta.persistence.criteria.Predicate>();pred.add(b.equal(r.get("institucion").get("id"),p.institucionId()));
+   if(f.empleadoId()!=null)pred.add(b.equal(r.get("id"),f.empleadoId()));
    if(!f.q().isBlank()){String t="%"+f.q().toLowerCase(Locale.ROOT).replace("\\","\\\\").replace("%","\\%").replace("_","\\_")+"%";pred.add(b.or(b.like(b.lower(r.get("codigo")),t,'\\'),b.like(b.lower(r.get("nombres")),t,'\\'),b.like(b.lower(r.get("primerApellido")),t,'\\'),b.like(b.lower(r.get("segundoApellido")),t,'\\'),b.like(b.lower(r.get("email")),t,'\\')));}
    if(f.estado().equals("ACTIVO")||f.estado().equals("INACTIVO"))pred.add(b.equal(r.get("activo"),f.estado().equals("ACTIVO")));
    if(f.estado().equals("DOCENTE")||f.estado().equals("SIN_PERFIL_DOCENTE")){var sub=q.subquery(Long.class);var m=sub.from(Maestro.class);sub.select(m.get("id")).where(b.equal(m.get("empleado").get("id"),r.get("id")));pred.add(f.estado().equals("DOCENTE")?b.exists(sub):b.not(b.exists(sub)));}
@@ -62,6 +64,10 @@ public class EmpleadoService {
   return pagina.map(e->e.conResumenLaboral(resumenes.get(e.id())));
  }
  private EmpleadoVista vista(Empleado e){var m=maestros.findByEmpleadoId(e.getId()).orElse(null);return new EmpleadoVista(e.getId(),e.getInstitucion().getId(),e.getCodigo(),e.getNombres(),e.getPrimerApellido(),e.getSegundoApellido(),e.getEmail(),e.getTelefono(),e.isActivo(),e.getFotografiaArchivo()!=null,e.getVersion(),m==null?null:m.getId(),m!=null&&m.isActivo(),m==null?null:m.getNumeroEmpleado(),m==null||m.getUsuario()==null?null:m.getUsuario().getUsername());}
+ public java.util.List<escuela.admin.dto.OpcionAutocompletado> buscarEmpleados(String q){
+  var p=actor("EMPLEADO_LEER");String t=OrganizacionLaboralService.texto(q,100);if(!t.isEmpty()&&t.length()<3)return List.of();
+  return jdbc.query("SELECT id,codigo,nombres||' '||primer_apellido||coalesce(' '||segundo_apellido,'') nombre FROM empleado WHERE institucion_id=? AND strpos(lower(codigo||' '||nombres||' '||primer_apellido||coalesce(' '||segundo_apellido,'')),lower(?))>0 ORDER BY primer_apellido,nombres,id LIMIT 11",(r,n)->new escuela.admin.dto.OpcionAutocompletado(r.getLong("id"),r.getString("codigo")+" · "+r.getString("nombre"),"Empleado de tu institución"),p.institucionId(),t);
+ }
  @Transactional public Long guardar(Long id,EmpleadoForm f){var p=actor("EMPLEADO_ADMINISTRAR");
   if(!Objects.equals(f.getInstitucionId(),p.institucionId()))throw new AccessDeniedException("Institución no autorizada");
   var e=id==null?new Empleado():autorizar(id,false,true);if(id!=null)ValidacionVersion.verificar(e,f.getVersion(),"Empleado");

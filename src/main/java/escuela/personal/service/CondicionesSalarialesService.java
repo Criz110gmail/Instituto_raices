@@ -32,11 +32,13 @@ public class CondicionesSalarialesService {
  public String moneda(Long id){autorizar(id,false);return empleados.autorizar(id,true,false).getInstitucion().getMonedaPredeterminada();}
  private void autorizar(Long id,boolean escribir){empleados.autorizarSalarios(escribir);empleados.autorizar(id,true,false);}
  private void bloquear(Long id){expedientes.bloquear(id).orElseThrow(()->regla("Empleado no disponible."));}
- public Page<Puesto> puestos(String q,String estado,int pagina,int tamanio){
+ public Page<Puesto> puestos(String q,String estado,int pagina,int tamanio){return puestos(q,estado,pagina,tamanio,null);}
+ public Page<Puesto> puestos(String q,String estado,int pagina,int tamanio,Long filtroPuestoId){
   var p=parametros(empleados.autorizarSalarios(false));String texto=q==null?"":q.strip();
   p.addValue("q",texto.substring(0,Math.min(200,texto.length()))).addValue("estado",Set.of("ACTIVO","INACTIVO").contains(estado==null?"":estado)?estado:"TODOS");
   var pg=PageRequest.of(Math.max(0,pagina),Set.of(10,25,50,100).contains(tamanio)?tamanio:25);
   String where=" FROM puesto_laboral WHERE institucion_id=:institucion AND strpos(lower(codigo||' '||nombre),lower(:q))>0 AND (:estado='TODOS' OR activo=(:estado='ACTIVO'))";
+  if(filtroPuestoId!=null){puesto(filtroPuestoId);p.addValue("filtroPuesto",filtroPuestoId);where+=" AND id=:filtroPuesto";}
   Long total=jdbc.queryForObject("SELECT count(*)"+where,p,Long.class);
   p.addValue("limite",pg.getPageSize()).addValue("offset",pg.getOffset());
   return new PageImpl<>(jdbc.query("SELECT *"+where+" ORDER BY nombre,id LIMIT :limite OFFSET :offset",p,PUESTO),pg,total==null?0:total);
@@ -68,12 +70,15 @@ public class CondicionesSalarialesService {
  private long revisionInterna(Long id){var n=jdbc.queryForObject("SELECT coalesce(max(id),0) FROM personal_salarial_historial WHERE empleado_id=:empleado",new MapSqlParameterSource("empleado",id),Long.class);return n==null?0:n;}
  private MapSqlParameterSource filtro(Long id,FiltroSalarial original){
   autorizar(id,false);var f=original.normalizado();
+  if(f.filtroPuestoId()==null&&f.filtroPuestoTexto()!=null&&!f.filtroPuestoTexto().isBlank())throw regla("Selecciona el puesto de la lista de sugerencias o limpia el campo para consultar todos.");
+  if(f.filtroPuestoId()!=null)puesto(f.filtroPuestoId());
   if(f.desde()!=null&&f.hasta()!=null&&f.desde().isAfter(f.hasta()))throw regla("El inicio del rango debe ser anterior o igual al fin.");
   return new MapSqlParameterSource("empleado",id).addValue("q",f.q()).addValue("estado",f.estado()).addValue("hoy",hoy(id))
-   .addValue("desde",f.desde(),java.sql.Types.DATE).addValue("hasta",f.hasta(),java.sql.Types.DATE);
+   .addValue("filtroPuesto",f.filtroPuestoId(),java.sql.Types.BIGINT).addValue("desde",f.desde(),java.sql.Types.DATE).addValue("hasta",f.hasta(),java.sql.Types.DATE);
  }
  private static final String WHERE="""
   FROM condicion_salarial WHERE empleado_id=:empleado
+   AND (:filtroPuesto IS NULL OR puesto_id=:filtroPuesto)
    AND strpos(lower(puesto_codigo||' '||puesto_nombre||' '||motivo),lower(:q))>0
    AND (:desde IS NULL OR fecha_fin IS NULL OR fecha_fin>=:desde)
    AND (:hasta IS NULL OR fecha_inicio<=:hasta)

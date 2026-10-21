@@ -27,16 +27,37 @@ public class OrganizacionLaboralService {
  private String seleccion(String tipo){return esJornada(tipo)?"SELECT c.*,c.horas_semanales horas,NULL::bigint puesto,NULL::text puesto_texto,NULL::bigint jornada,NULL::text jornada_texto,NULL::numeric importe,NULL::text moneda,NULL::text base,NULL::text frecuencia FROM jornada_laboral c":
   "SELECT c.*,j.horas_semanales horas,p.id puesto,p.codigo||' · '||p.nombre puesto_texto,j.id jornada,j.codigo||' · '||j.nombre jornada_texto,c.importe_bruto importe FROM esquema_remuneracion c JOIN puesto_laboral p ON p.id=c.puesto_id JOIN jornada_laboral j ON j.id=c.jornada_id";}
  private static final RowMapper<Catalogo> CATALOGO=(r,n)->new Catalogo(r.getLong("id"),r.getString("codigo"),r.getString("nombre"),r.getString("descripcion"),r.getBoolean("activo"),r.getLong("version"),r.getBigDecimal("horas"),r.getObject("puesto",Long.class),r.getString("puesto_texto"),r.getObject("jornada",Long.class),r.getString("jornada_texto"),r.getBigDecimal("importe"),r.getString("moneda"),r.getString("base"),r.getString("frecuencia"));
- public Page<Catalogo> listar(String tipo,String q,String estado,int pagina,int tamanio){
+ public Page<Catalogo> listar(String tipo,String q,String estado,int pagina,int tamanio){return listar(tipo,q,estado,pagina,tamanio,new FiltrosCatalogosPersonal());}
+ public Page<Catalogo> listar(String tipo,String q,String estado,int pagina,int tamanio,FiltrosCatalogosPersonal f){
+  f.validar();
   var params=p(false).addValue("q",texto(q,200)).addValue("estado",estado(estado));var pg=pagina(pagina,tamanio);
   String where=" WHERE c.institucion_id=:institucion AND strpos(lower(c.codigo||' '||c.nombre),lower(:q))>0 AND (:estado='TODOS' OR c.activo=(:estado='ACTIVO'))";
+  if(esJornada(tipo)){if(f.getFiltroJornadaId()!=null){obtener(tipo,f.getFiltroJornadaId());params.addValue("filtroJornada",f.getFiltroJornadaId());where+=" AND c.id=:filtroJornada";}}
+  else{
+   if(f.getFiltroEsquemaId()!=null){obtener(tipo,f.getFiltroEsquemaId());params.addValue("filtroEsquema",f.getFiltroEsquemaId());where+=" AND c.id=:filtroEsquema";}
+   if(f.getFiltroPuestoId()!=null){salarios.puesto(f.getFiltroPuestoId());params.addValue("filtroPuesto",f.getFiltroPuestoId());where+=" AND c.puesto_id=:filtroPuesto";}
+   if(f.getFiltroJornadaId()!=null){obtener("jornadas",f.getFiltroJornadaId());params.addValue("filtroJornada",f.getFiltroJornadaId());where+=" AND c.jornada_id=:filtroJornada";}
+  }
   Long total=jdbc.queryForObject("SELECT count(*) FROM "+tabla(tipo)+" c"+where,params,Long.class);
   params.addValue("limite",pg.getPageSize()).addValue("offset",pg.getOffset());
   return new PageImpl<>(jdbc.query(seleccion(tipo)+where+" ORDER BY c.nombre,c.id LIMIT :limite OFFSET :offset",params,CATALOGO),pg,total==null?0:total);
  }
  public Catalogo obtener(String tipo,Long id){return jdbc.query(seleccion(tipo)+" WHERE c.id=:id AND c.institucion_id=:institucion",p(false).addValue("id",id),CATALOGO).stream().findFirst().orElseThrow(()->new AccessDeniedException("Registro no autorizado"));}
  public List<Catalogo> buscar(String tipo,String q){if(q!=null&&!q.isBlank()&&q.strip().length()<3){p(false);return List.of();}return listar(tipo,q,"ACTIVO",0,10).getContent();}
- public List<escuela.admin.dto.OpcionAutocompletado> buscarEmpleados(String q){var params=p(false).addValue("q",texto(q,100));if(q!=null&&!q.isBlank()&&q.strip().length()<3)return List.of();return jdbc.query("SELECT id,codigo,nombres||' '||primer_apellido||coalesce(' '||segundo_apellido,'') nombre FROM empleado WHERE institucion_id=:institucion AND strpos(lower(codigo||' '||nombres||' '||primer_apellido||coalesce(' '||segundo_apellido,'')),lower(:q))>0 ORDER BY primer_apellido,nombres,id LIMIT 11",params,(r,n)->new escuela.admin.dto.OpcionAutocompletado(r.getLong("id"),r.getString("codigo")+" · "+r.getString("nombre"),"Empleado de tu institución"));}
+ public List<escuela.admin.dto.OpcionAutocompletado> buscarFiltros(String tipo,String q){
+  var params=p(false);String t=texto(q,200);
+  if(!Set.of("puestos","jornadas","esquemas").contains(tipo))throw new AccessDeniedException("Filtro no disponible");
+  if(!t.isEmpty()&&t.length()<3)return List.of();
+  String tabla=tipo.equals("puestos")?"puesto_laboral":tabla(tipo);
+  return jdbc.query("SELECT id,codigo,nombre,activo FROM "+tabla+" WHERE institucion_id=:institucion AND strpos(lower(codigo||' '||nombre),lower(:q))>0 ORDER BY nombre,id LIMIT 11",params.addValue("q",t),(r,n)->new escuela.admin.dto.OpcionAutocompletado(r.getLong("id"),r.getString("codigo")+" · "+r.getString("nombre"),r.getBoolean("activo")?"Activo":"Inactivo · consulta histórica"));
+ }
+ public void prepararFiltros(FiltrosCatalogosPersonal f){
+  p(false);
+  if(f.getFiltroPuestoId()!=null){var c=salarios.puesto(f.getFiltroPuestoId());f.setFiltroPuestoTexto(c.codigo()+" · "+c.nombre());}
+  if(f.getFiltroJornadaId()!=null){var c=obtener("jornadas",f.getFiltroJornadaId());f.setFiltroJornadaTexto(c.codigo()+" · "+c.nombre());}
+  if(f.getFiltroEsquemaId()!=null){var c=obtener("esquemas",f.getFiltroEsquemaId());f.setFiltroEsquemaTexto(c.codigo()+" · "+c.nombre());}
+ }
+ public List<escuela.admin.dto.OpcionAutocompletado> buscarEmpleados(String q){p(false);return empleados.buscarEmpleados(q);}
  private void institucionActiva(MapSqlParameterSource params){if(!Boolean.TRUE.equals(jdbc.queryForObject("SELECT activo FROM institucion WHERE id=:institucion",params,Boolean.class)))throw regla("La institución está inactiva; sólo permite consulta.");}
  @Transactional public Long guardar(String tipo,Long id,ConfiguracionLaboralForm f){
   var params=p(true);institucionActiva(params);String tabla=tabla(tipo);
@@ -84,10 +105,15 @@ public class OrganizacionLaboralService {
  private static final String ASIGNACIONES=" FROM condicion_salarial c JOIN empleado e ON e.id=c.empleado_id LEFT JOIN asignacion_esquema_laboral a ON a.condicion_id=c.id ";
  private static final RowMapper<Asignacion> ASIGNACION=(r,n)->new Asignacion(r.getLong("id"),r.getLong("empleado_id"),r.getString("empleado"),r.getString("codigo_empleado"),r.getString("puesto_codigo")+" · "+r.getString("puesto_nombre"),r.getString("esquema"),r.getString("jornada"),r.getBigDecimal("horas_semanales"),r.getBigDecimal("importe_bruto"),r.getString("moneda"),r.getString("base"),r.getString("frecuencia"),r.getObject("fecha_inicio",LocalDate.class),r.getObject("fecha_fin",LocalDate.class),r.getString("situacion"),r.getString("motivo"),r.getLong("version"),r.getBoolean("cancelable"));
  private static final String CAMPOS="SELECT c.*,e.codigo codigo_empleado,e.nombres||' '||e.primer_apellido||coalesce(' '||e.segundo_apellido,'') empleado,coalesce(a.esquema_codigo||' · '||a.esquema_nombre,'Condición individual previa') esquema,a.jornada_codigo||' · '||a.jornada_nombre jornada,a.horas_semanales,CASE WHEN c.estado='CANCELADA' THEN 'Cancelada' WHEN c.fecha_inicio>:hoy THEN 'Próxima' WHEN c.fecha_fin<:hoy THEN 'Anterior' ELSE 'Vigente' END situacion,(c.estado='ACTIVA' AND c.fecha_inicio>:hoy AND NOT EXISTS(SELECT 1 FROM condicion_salarial posterior WHERE posterior.empleado_id=c.empleado_id AND posterior.estado='ACTIVA' AND posterior.fecha_inicio>c.fecha_inicio)) cancelable";
- public Page<Asignacion> asignaciones(Long empleado,String q,String estado,LocalDate desde,LocalDate hasta,int pagina,int tamanio){
+ public Page<Asignacion> asignaciones(Long empleado,String q,String estado,LocalDate desde,LocalDate hasta,int pagina,int tamanio){return asignaciones(empleado,q,estado,desde,hasta,pagina,tamanio,new FiltrosCatalogosPersonal());}
+ public Page<Asignacion> asignaciones(Long empleado,String q,String estado,LocalDate desde,LocalDate hasta,int pagina,int tamanio,FiltrosCatalogosPersonal f){
+  f.validar();prepararFiltros(f);
   var params=p(false).addValue("empleado",empleado,java.sql.Types.BIGINT).addValue("q",texto(q,200)).addValue("estado",Objects.toString(estado,"TODAS")).addValue("desde",desde,java.sql.Types.DATE).addValue("hasta",hasta,java.sql.Types.DATE).addValue("hoy",hoy());
   if(desde!=null&&hasta!=null&&desde.isAfter(hasta))throw regla("El inicio del rango debe ser anterior o igual al fin.");
-  String where=" WHERE c.institucion_id=:institucion AND (:empleado IS NULL OR c.empleado_id=:empleado) AND strpos(lower(e.codigo||' '||e.nombres||' '||e.primer_apellido||' '||c.puesto_codigo||' '||c.puesto_nombre||' '||coalesce(a.esquema_nombre,'')),lower(:q))>0 AND (:desde IS NULL OR c.fecha_fin IS NULL OR c.fecha_fin>=:desde) AND (:hasta IS NULL OR c.fecha_inicio<=:hasta) AND (:estado='TODAS' OR :estado='CANCELADA' AND c.estado='CANCELADA' OR c.estado='ACTIVA' AND (:estado='PROXIMA' AND c.fecha_inicio>:hoy OR :estado='ACTUAL' AND c.fecha_inicio<=:hoy AND (c.fecha_fin IS NULL OR c.fecha_fin>=:hoy) OR :estado='ANTERIOR' AND c.fecha_fin<:hoy))";
+  String where=" WHERE c.institucion_id=:institucion AND (:empleado IS NULL OR c.empleado_id=:empleado) AND strpos(lower(e.codigo||' '||e.nombres||' '||e.primer_apellido||' '||c.puesto_codigo||' '||c.puesto_nombre||' '||coalesce(a.esquema_codigo,'')||' '||coalesce(a.esquema_nombre,'')||' '||coalesce(a.jornada_codigo,'')||' '||coalesce(a.jornada_nombre,'')),lower(:q))>0 AND (:desde IS NULL OR c.fecha_fin IS NULL OR c.fecha_fin>=:desde) AND (:hasta IS NULL OR c.fecha_inicio<=:hasta) AND (:estado='TODAS' OR :estado='CANCELADA' AND c.estado='CANCELADA' OR c.estado='ACTIVA' AND (:estado='PROXIMA' AND c.fecha_inicio>:hoy OR :estado='ACTUAL' AND c.fecha_inicio<=:hoy AND (c.fecha_fin IS NULL OR c.fecha_fin>=:hoy) OR :estado='ANTERIOR' AND c.fecha_fin<:hoy))";
+  if(f.getFiltroPuestoId()!=null){params.addValue("filtroPuesto",f.getFiltroPuestoId());where+=" AND c.puesto_id=:filtroPuesto";}
+  if(f.getFiltroJornadaId()!=null){params.addValue("filtroJornada",f.getFiltroJornadaId());where+=" AND a.jornada_id=:filtroJornada";}
+  if(f.getFiltroEsquemaId()!=null){params.addValue("filtroEsquema",f.getFiltroEsquemaId());where+=" AND a.esquema_id=:filtroEsquema";}
   Long total=jdbc.queryForObject("SELECT count(*)"+ASIGNACIONES+where,params,Long.class);var pg=pagina(pagina,tamanio);params.addValue("limite",pg.getPageSize()).addValue("offset",pg.getOffset());
   return new PageImpl<>(jdbc.query(CAMPOS+ASIGNACIONES+where+" ORDER BY c.fecha_inicio DESC,c.id DESC LIMIT :limite OFFSET :offset",params,ASIGNACION),pg,total==null?0:total);
  }

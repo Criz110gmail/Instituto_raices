@@ -12,7 +12,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 /** Contexto explícito por navegación; no guarda búsquedas en sesión ni mezcla pestañas. */
 @Component
 public class RetornoListadoCobranza implements HandlerInterceptor,WebMvcConfigurer {
-    private static final Map<String,String> RUTAS=Map.of("pagos","/admin/catalogos/pagos","cargos","/admin/catalogos/cargos","cuotas-alumno","/admin/catalogos/cuotas-alumno");
+    private static final Map<String,String> RUTAS=Map.of("pagos","/admin/catalogos/pagos","cargos","/admin/catalogos/cargos","cuotas-alumno","/admin/catalogos/cuotas-alumno","empleados","/admin/empleados");
+    public static String empleados(escuela.personal.dto.FiltroEmpleado original){var f=original.normalizado();return UriComponentsBuilder.fromPath("/admin/empleados").queryParam("q",f.q()).queryParam("estado",f.estado()).queryParam("pagina",f.pagina()).queryParam("tamanio",f.tamanio()).queryParamIfPresent("institucionId",java.util.Optional.ofNullable(f.institucionId())).queryParamIfPresent("empleadoId",java.util.Optional.ofNullable(f.empleadoId())).build().encode().toUriString().replace("+","%2B");}
     public static String listado(ModuloCatalogo modulo,FiltroCatalogo f) {
         if(!RUTAS.containsKey(modulo.slug()))return null;
         return UriComponentsBuilder.fromPath(RUTAS.get(modulo.slug()))
@@ -36,7 +37,7 @@ public class RetornoListadoCobranza implements HandlerInterceptor,WebMvcConfigur
         }catch(IllegalArgumentException e){return null;}
     }
     @Override public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(this).addPathPatterns("/admin/pagos/**","/admin/cargos/**","/admin/cuotas-alumno/**");
+        registry.addInterceptor(this).addPathPatterns("/admin/pagos/**","/admin/cargos/**","/admin/cuotas-alumno/**","/admin/empleados/**");
     }
     @Override public void postHandle(HttpServletRequest request,HttpServletResponse response,Object handler,ModelAndView mv) {
         if(mv==null)return;

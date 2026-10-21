@@ -15,12 +15,12 @@ class ExcelEmpleadoServiceTest {
  @Test void paginaSinPerderFiltrosYNoInterpretaTextoComoFormula() throws Exception {
   var servicio=mock(EmpleadoService.class);
   var fila=new EmpleadoVista(1L,2L,"=NO_FORMULA","Persona","Ficticia",null,"qa@example.invalid",null,true,false,0L,null,false,null,null);
-  var primero=new FiltroEmpleado(2L,"QA","DOCENTE",0,100);
-  var segundo=new FiltroEmpleado(2L,"QA","DOCENTE",1,100);
+  var primero=new FiltroEmpleado(2L,"QA","DOCENTE",0,100,1L,"EMP · Persona Ficticia");
+  var segundo=new FiltroEmpleado(2L,"QA","DOCENTE",1,100,1L,"EMP · Persona Ficticia");
   when(servicio.listar(primero)).thenReturn(new PageImpl<>(Collections.nCopies(100,fila),PageRequest.of(0,100),101));
   when(servicio.listar(segundo)).thenReturn(new PageImpl<>(List.of(fila),PageRequest.of(1,100),101));
   var salida=new ByteArrayOutputStream();
-  new ExcelEmpleadoService(servicio).exportar(new FiltroEmpleado(2L,"QA","DOCENTE",8,25),salida);
+  new ExcelEmpleadoService(servicio).exportar(new FiltroEmpleado(2L,"QA","DOCENTE",8,25,1L,"EMP · Persona Ficticia"),salida);
   try(var libro=new XSSFWorkbook(new ByteArrayInputStream(salida.toByteArray()))){
    var hoja=libro.getSheetAt(0);assertThat(hoja.getLastRowNum()).isEqualTo(101);
    assertThat(hoja.getRow(1).getCell(0).getCellType()).isEqualTo(CellType.STRING);

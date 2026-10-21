@@ -9,6 +9,11 @@ import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 class RetornoListadoCobranzaTest {
+    @Test void retornoEmpleadoConservaSeleccionYNoAceptaSitiosExternos(){
+        var f=new escuela.personal.dto.FiltroEmpleado(1L,"nombre & correo","ACTIVO",2,10,42L,"EMP · Ana");var url=RetornoListadoCobranza.empleados(f);
+        assertThat(url).contains("empleadoId=42","pagina=2","tamanio=10","q=nombre%20%26%20correo");assertThat(RetornoListadoCobranza.validar(url,"/admin/empleados/42")).isEqualTo(url);
+        for(String ruta:java.util.List.of("https://externo.test/admin/empleados","//externo.test/admin/empleados","/admin/asignaciones","/admin/empleados#otro"))assertThat(RetornoListadoCobranza.validar(ruta,"/admin/empleados/42")).isNull();
+    }
     @Test void conservaTodosLosFiltrosYPaginaSinAceptarDestinosExternos() {
         var f=new FiltroCatalogo("Ana & Luis","VALIDADO",null,2,50,java.time.LocalDate.of(2026,10,1),java.time.LocalDate.of(2026,10,31),"REGISTRO","ANUAL_LIQUIDADO",2027,"ANTICIPO-TEST-05");
         String url=RetornoListadoCobranza.listado(ModuloCatalogo.PAGOS,f);

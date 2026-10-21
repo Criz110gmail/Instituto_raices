@@ -1,0 +1,10 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><body>
+<div th:fragment="campo(tipo,nombre,etiqueta)" class="autocomplete" data-autocomplete data-no-scope data-refresh-on-focus="true" th:attr="data-endpoint=@{/admin/personal/filtros/{tipo}/buscar(tipo=${tipo})}">
+ <label th:for="${nombre+'Texto'}"><span th:text="${etiqueta}"></span></label>
+ <div class="autocomplete-control"><input class="autocomplete-input" th:id="${nombre+'Texto'}" th:name="${nombre+'Texto'}" th:value="${selecciones[nombre+'Texto']}" role="combobox" aria-expanded="false" th:attr="aria-controls=${nombre+'Resultados'}" autocomplete="off" placeholder="Selecciona por código o nombre" maxlength="450"><button type="button" class="autocomplete-clear" th:attr="aria-label=${'Quitar '+etiqueta}">×</button></div>
+ <input type="hidden" class="autocomplete-value" th:name="${nombre+'Id'}" th:value="${selecciones[nombre+'Id']}">
+ <div class="autocomplete-results" th:id="${nombre+'Resultados'}" role="listbox" hidden></div>
+ <small class="autocomplete-status">Diez opciones al enfocar; busca desde tres caracteres.</small>
+</div>
+<th:block th:fragment="ocultos"><input type="hidden" name="filtroPuestoId" th:value="${selecciones.filtroPuestoId}"><input type="hidden" name="filtroJornadaId" th:value="${selecciones.filtroJornadaId}"><input type="hidden" name="filtroEsquemaId" th:value="${selecciones.filtroEsquemaId}"></th:block>
+</body></html>

@@ -38,7 +38,7 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/pendientes", "/admin/pendientes/**").authenticated()
                         .requestMatchers(HttpMethod.POST,"/admin/jornadas", "/admin/jornadas/**", "/admin/esquemas", "/admin/esquemas/**", "/admin/asignaciones", "/admin/asignaciones/**", "/admin/puestos", "/admin/puestos/**", "/admin/empleados/*/condiciones", "/admin/empleados/*/condiciones/**")
                         .hasAuthority("CONDICION_SALARIAL_ADMINISTRAR")
-                        .requestMatchers(HttpMethod.GET,"/admin/jornadas", "/admin/jornadas/**", "/admin/esquemas", "/admin/esquemas/**", "/admin/asignaciones", "/admin/asignaciones/**", "/admin/puestos", "/admin/puestos/**", "/admin/empleados/*/condiciones", "/admin/empleados/*/condiciones/**")
+                        .requestMatchers(HttpMethod.GET,"/admin/personal/filtros/**", "/admin/jornadas", "/admin/jornadas/**", "/admin/esquemas", "/admin/esquemas/**", "/admin/asignaciones", "/admin/asignaciones/**", "/admin/puestos", "/admin/puestos/**", "/admin/empleados/*/condiciones", "/admin/empleados/*/condiciones/**")
                         .hasAnyAuthority("CONDICION_SALARIAL_LEER","CONDICION_SALARIAL_ADMINISTRAR")
                         .requestMatchers("/", "/login", "/familias", "/maestros/acceso", "/activar-cuenta", "/restablecer-password", "/acceso-denegado", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
                         .requestMatchers("/maestros/**").hasAuthority("PORTAL_MAESTRO_ACCEDER")

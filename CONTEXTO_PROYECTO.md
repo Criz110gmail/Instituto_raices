@@ -1,5 +1,54 @@
 # Contexto del proyecto
 
+## Catálogos de Personal con ayudas independientes — 21/10/2026
+
+Usuario en punto4 de V119 solicita ayudas y filtros separados. Puestos filtra por
+Puesto; Jornadas por Jornada; Esquemas por Esquema/Puesto/Jornada; Asignaciones por
+Empleado/Puesto/Jornada/Esquema. Compatibilidad de condiciones individuales incorpora
+Puesto. Reutilizan autocomplete/estilos existentes, diez al foco/clic, búsqueda desde
+tres caracteres, ID exacto y etiqueta canónica, sin concatenar la selección a q.
+Texto adicional opcional permanece libre. Filtro incompleto genera mensaje claro.
+Pantalla/paginación/Excel usan los mismos criterios; organización conserva selección
+en detalle/regreso/formulario. Ayudas de filtros incluyen inactivos identificados
+para historial, pero captura sigue sólo activos; permisos privados e institución
+se validan en servidor, LIMIT11 y no-store. No se carga todo el catálogo.
+
+Corregida búsqueda libre por código de esquema y jornada históricos en Asignaciones.
+Sólo lectura confirmó ESQ-DOC-MAT-TEST id1 activo en institución1: no hay que volver
+a crearlo. Para asignarlo usar Nueva asignación; la tabla de asignaciones no es el
+catálogo de esquemas. Se amplió procedimiento V119/README. Prueba humana pendiente,
+sin nómina ni movimientos, sin migración (V120 libre), sin tocar .env ni Git remoto.
+
+Validación final:946 Java incluyendo integración PostgreSQL aislada,90 JavaScript,
+sin fallos; paquete construido. Revisión visual con datos ficticios en escritorio
+claro/móvil390 oscuro. App recreada21/10 a15:27México, salud UP. Base QA desechable
+eliminada; servidor visual cerrado, tab cerrada y viewport restaurado. No cambió la
+base operativa. Siguiente: retomar punto4 del ejemplo V119 con Nueva asignación.
+
+## Ayuda de empleado en filtros de Personal — 21/10/2026
+
+Usuario detenido antes de ejemplo V119 solicita10 empleados al enfocar y búsqueda
+desde3 caracteres. Alta de asignación ya usaba componente; se incorporó en listado
+de Empleados y Asignaciones con filtro independiente, mismo diseño y etiqueta canónica.
+Texto libre se conserva aparte para otros datos/puesto/esquema. Consulta SQL acotada
+por institución y LIMIT11, muestra10+hayMas, no carga todos. Endpoint general nuevo
+exige sólo Empleados y devuelve identidad; endpoint salarial conserva permisos completos
+antes de delegar. Sin exponer laborales ni importes en ayuda general.
+ID filtra tabla/Excel/páginas; etiqueta concatenada no alimenta q. Selección incompleta
+no deriva a consulta general; se muestra validación. Empleados exporta ID en cada bloque.
+Retorno local explícito también conserva filtros al ver/volver/guardar, reutilizando
+interceptor y JS existentes, sin guardar búsquedas en sesión ni aceptar URLs externas.
+CSS scoped alinea campos3/2/1 columnas. No nuevos catálogos, migraciones ni permisos,
+sin operaciones reales de personal o sueldos. V120 libre, ejemplo V119 aún pendiente.
+943 Java completas correctas (incluye IT PostgreSQL17 desechable),90 JS correctas.
+Validaciones de primeras10/hayMas, mínimo3, alcance, ID independiente de etiqueta,
+Excel de un empleado, retorno seguro y ayuda general sin salarios. Tras alineación
+final16 dirigidas y después4 (IT+retorno URI) correctas; paquete BUILD SUCCESS.
+QA ficticia desktop oscuro/móvil390 claro: foco10, texto3, Quitar y alineación.
+App actualizada21/10 a14:05México, salud UP; sólo app recreada, DB/volúmenes intactos,
+sin migración/.env/operaciones reales/commit/push. Base QA/visor/pestaña/Dockerfiles
+retirados, viewport restaurado. Próximo humano sigue ejemplo V119 con nuevo selector.
+
 ## Implementación V118/V119 — 21/10/2026
 
 Autorización expresa: integrar prueba salarial cerrada y continuar reorganización.

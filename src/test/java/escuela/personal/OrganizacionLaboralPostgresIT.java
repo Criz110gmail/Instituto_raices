@@ -45,6 +45,40 @@ class OrganizacionLaboralPostgresIT {
    for(String ruta:List.of("/admin/jornadas","/admin/esquemas","/admin/jornadas/nuevo","/admin/esquemas/nuevo","/admin/jornadas/"+jornada+"/editar","/admin/esquemas/"+esquema+"/editar","/admin/asignaciones","/admin/asignaciones/nuevo","/admin/asignaciones/"+aumento.id(),"/admin/empleados/96000")){
     var response=mvc.perform(get(ruta).session(session)).andReturn().getResponse();assertThat(response.getStatus()).as(ruta).isEqualTo(200);assertThat(response.getContentAsString()).doesNotContain("Whitelabel");java.nio.file.Files.writeString(dir.resolve(ruta.replace('/','_')+".html"),response.getContentAsString());
    }
+   // Filtros independientes: referencias exactas, texto canónico, mismos filtros en Excel.
+   sesion();var filtros=new FiltrosCatalogosPersonal();filtros.setFiltroPuestoId(puesto);filtros.setFiltroJornadaId(jornada);filtros.setFiltroEsquemaId(esquema);
+   assertThat(s.asignaciones(96000L,"ESQ-QA","TODAS",null,null,0,10,filtros).getTotalElements()).isEqualTo(2);
+   assertThat(s.listar("esquemas","","TODOS",0,10,filtros).getTotalElements()).isEqualTo(1);
+   assertThat(salarios.puestos("","TODOS",0,10,puesto).getTotalElements()).isEqualTo(1);
+   for(String tipo:List.of("puestos","jornadas","esquemas")){
+    var url="/admin/personal/filtros/"+tipo+"/buscar";
+    var respuesta=mvc.perform(get(url).session(session)).andReturn().getResponse();assertThat(respuesta.getStatus()).isEqualTo(200);
+    assertThat(new tools.jackson.databind.ObjectMapper().readTree(respuesta.getContentAsString()).get("resultados").size()).isEqualTo(1);
+    assertThat(respuesta.getHeader("Cache-Control")).contains("no-store");
+    assertThat(new tools.jackson.databind.ObjectMapper().readTree(mvc.perform(get(url).session(session).param("q","xy")).andReturn().getResponse().getContentAsString()).get("resultados").size()).isZero();
+    java.nio.file.Files.writeString(dir.resolve("filtros-"+tipo+".json"),respuesta.getContentAsString());
+   }
+   for(String ruta:List.of("/admin/puestos","/admin/jornadas","/admin/esquemas","/admin/asignaciones","/admin/esquemas/"+esquema+"/editar","/admin/asignaciones/"+inicial,"/admin/empleados/96000/condiciones")){
+    var respuesta=mvc.perform(get(ruta).session(session).param("filtroPuestoId",puesto.toString()).param("filtroJornadaId",jornada.toString()).param("filtroEsquemaId",esquema.toString())).andReturn().getResponse();
+    assertThat(respuesta.getStatus()).as(ruta).isEqualTo(200);
+    assertThat(respuesta.getContentAsString()).contains(ruta.equals("/admin/jornadas")?"MAT-QA":"DOC-ORG-QA").doesNotContain("Whitelabel");
+    java.nio.file.Files.writeString(dir.resolve(ruta.replace('/','_')+"-filtros.html"),respuesta.getContentAsString());
+   }
+   for(String tipo:List.of("puestos","jornadas","esquemas","asignaciones")){
+    var respuesta=mvc.perform(get("/admin/"+tipo+"/excel").session(session).param("filtroPuestoId",puesto.toString()).param("filtroJornadaId",jornada.toString()).param("filtroEsquemaId",esquema.toString())).andReturn().getResponse();
+    assertThat(respuesta.getStatus()).as(tipo).isEqualTo(200);
+    try(var libro=new org.apache.poi.xssf.usermodel.XSSFWorkbook(new ByteArrayInputStream(respuesta.getContentAsByteArray()))){assertThat(libro.getSheetAt(0).getLastRowNum()).isEqualTo(tipo.equals("asignaciones")?2:1);}
+    var incompleta=mvc.perform(get("/admin/"+tipo).session(session).param("filtro"+(tipo.equals("puestos")?"Puesto":tipo.equals("jornadas")?"Jornada":"Esquema")+"Texto","Texto sin seleccionar")).andReturn().getResponse();
+    assertThat(incompleta.getStatus()).isEqualTo(200);assertThat(incompleta.getContentAsString()).contains("de la lista de sugerencias");
+   }
+   var filtrada=mvc.perform(get("/admin/asignaciones").session(session).param("filtroEsquemaId",esquema.toString())).andReturn().getResponse().getContentAsString();
+   assertThat(filtrada).contains("filtroEsquemaId="+esquema,"value=\"ESQ-QA · Docente mensual ficticio\"","/admin/personal/filtros/esquemas/buscar");
+   // El límite se aplica en SQL, no después de cargar el catálogo entero.
+   for(int n=0;n<12;n++)jdbc.update("insert into puesto_laboral(institucion_id,codigo,nombre,activo,creado_por_id,actualizado_por_id) values(96000,?,? ,false,96000,96000)","P-AUX-"+n,"Zeta puesto "+n);
+   var diez=mvc.perform(get("/admin/personal/filtros/puestos/buscar").session(session)).andReturn().getResponse();
+   var diezJson=new tools.jackson.databind.ObjectMapper().readTree(diez.getContentAsString());assertThat(diezJson.get("resultados").size()).isEqualTo(10);assertThat(diezJson.get("hayMas").asBoolean()).isTrue();
+   sesion();assertThat(s.buscarFiltros("puestos","P-AUX-")).hasSize(11);assertThat(salarios.buscarPuestos("P-AUX-")).isEmpty();
+   var sinSalario=new MockHttpSession();sinSalario.setAttribute("SPRING_SECURITY_CONTEXT",new SecurityContextImpl(auth("EMPLEADO_LEER")));assertThat(mvc.perform(get("/admin/personal/filtros/esquemas/buscar").session(sinSalario)).andReturn().getResponse().getStatus()).isBetween(300,499);
    var nuevo=mvc.perform(get("/admin/jornadas/nuevo").session(session).param("q","MAT-QA").param("estado","ACTIVO").param("pagina","2").param("tamanio","10")).andReturn().getResponse().getContentAsString();assertThat(nuevo).contains("q=MAT-QA&amp;estado=ACTIVO&amp;pagina=2&amp;tamanio=10","data-money-confirm=\"laboral-catalogo\"").doesNotContain("<table");
    for(var entrada:Map.of("empleados","/admin/asignaciones/empleados/buscar","esquemas","/admin/esquemas/buscar","jornadas","/admin/jornadas/buscar","puestos","/admin/puestos/buscar","contexto","/admin/asignaciones/contexto?empleadoId=96000&esquemaId="+esquema).entrySet()){
     var response=mvc.perform(get(entrada.getValue()).session(session)).andReturn().getResponse();assertThat(response.getStatus()).isEqualTo(200);java.nio.file.Files.writeString(dir.resolve(entrada.getKey()+".json"),response.getContentAsString());
@@ -52,6 +86,20 @@ class OrganizacionLaboralPostgresIT {
    var guia=mvc.perform(get("/admin/guias/empleado-condiciones-salariales").session(session)).andReturn().getResponse();assertThat(guia.getStatus()).isEqualTo(200);assertThat(guia.getContentAsString()).contains("Cancelar únicamente el aumento futuro","DOC-PRI-TEST","Caso confirmado por el propietario");java.nio.file.Files.writeString(dir.resolve("guia.html"),guia.getContentAsString());
    var guiaExcel=mvc.perform(get("/admin/guias/excel").session(session).param("q","Puestos y sueldos")).andReturn().getResponse();assertThat(guiaExcel.getStatus()).isEqualTo(200);try(var libro=new org.apache.poi.xssf.usermodel.XSSFWorkbook(new ByteArrayInputStream(guiaExcel.getContentAsByteArray()))){assertThat(libro.getSheetAt(0).getLastRowNum()).isEqualTo(8);}
    var detalle=mvc.perform(get("/admin/asignaciones/"+inicial).session(session)).andReturn().getResponse().getContentAsString();assertThat(detalle).contains("MAT-QA","30.00","12,000.00","data-student-tabs");
+   // Autocompletado público de identidad: límite10, mínimo3, alcance y selección por ID.
+   for(int n=0;n<12;n++)jdbc.update("insert into empleado(id,institucion_id,codigo,nombres,primer_apellido) values(?,96000,?,?,'Zeta')",96100+n,"EMP-AUX-"+n,"Persona "+n);
+   var ayuda=mvc.perform(get("/admin/empleados/buscar").session(session)).andReturn().getResponse();assertThat(ayuda.getStatus()).isEqualTo(200);var json=new tools.jackson.databind.ObjectMapper().readTree(ayuda.getContentAsString());assertThat(json.get("resultados").size()).isEqualTo(10);assertThat(json.get("hayMas").asBoolean()).isTrue();assertThat(ayuda.getContentAsString()).doesNotContain("EMP-AJENO","puesto","importeBruto");java.nio.file.Files.writeString(dir.resolve("empleados.json"),ayuda.getContentAsString());
+   for(String endpoint:List.of("/admin/empleados/buscar","/admin/asignaciones/empleados/buscar")){
+    var corta=mvc.perform(get(endpoint).session(session).param("q","An")).andReturn().getResponse();assertThat(new tools.jackson.databind.ObjectMapper().readTree(corta.getContentAsString()).get("resultados").size()).isZero();
+    var encontrada=mvc.perform(get(endpoint).session(session).param("q","Ana")).andReturn().getResponse();assertThat(new tools.jackson.databind.ObjectMapper().readTree(encontrada.getContentAsString()).get("resultados").size()).isEqualTo(1);
+   }
+   String etiqueta="EMP-ORG-QA · Ana Capacitación";
+   var filtrados=mvc.perform(get("/admin/empleados").session(session).param("empleadoId","96000").param("empleadoTexto",etiqueta)).andReturn().getResponse();assertThat(filtrados.getStatus()).isEqualTo(200);assertThat(filtrados.getContentAsString()).contains("value=\""+etiqueta+"\"","1 empleados","empleadoId=96000").doesNotContain("EMP-AUX-","EMP-AJENO");java.nio.file.Files.writeString(dir.resolve("empleados-filtro.html"),filtrados.getContentAsString());
+   var filtradas=mvc.perform(get("/admin/asignaciones").session(session).param("empleadoId","96000").param("empleadoTexto",etiqueta)).andReturn().getResponse();assertThat(filtradas.getStatus()).isEqualTo(200);assertThat(filtradas.getContentAsString()).contains("value=\""+etiqueta+"\"","2 registros","/admin/asignaciones/empleados/buscar","filtro-empleado-resultados");
+   for(String ruta:List.of("/admin/empleados","/admin/asignaciones")){var incompleta=mvc.perform(get(ruta).session(session).param("empleadoTexto","Ana sin seleccionar")).andReturn().getResponse();assertThat(incompleta.getStatus()).isEqualTo(200);assertThat(incompleta.getContentAsString()).contains("Selecciona un empleado de la lista").doesNotContain("Persona 1");}
+   var empleadoExcel=mvc.perform(get("/admin/empleados/excel").session(session).param("empleadoId","96000").param("empleadoTexto",etiqueta)).andReturn().getResponse();assertThat(empleadoExcel.getStatus()).isEqualTo(200);try(var libro=new org.apache.poi.xssf.usermodel.XSSFWorkbook(new ByteArrayInputStream(empleadoExcel.getContentAsByteArray()))){assertThat(libro.getSheetAt(0).getLastRowNum()).isEqualTo(1);assertThat(libro.getSheetAt(0).getRow(1).getCell(0).getStringCellValue()).isEqualTo("EMP-ORG-QA");}
+   var general=new MockHttpSession();general.setAttribute("SPRING_SECURITY_CONTEXT",new SecurityContextImpl(auth("EMPLEADO_LEER")));assertThat(mvc.perform(get("/admin/empleados/buscar").session(general)).andReturn().getResponse().getStatus()).isEqualTo(200);assertThat(mvc.perform(get("/admin/asignaciones/empleados/buscar").session(general)).andReturn().getResponse().getStatus()).isBetween(300,499);
+   String retorno="/admin/empleados?empleadoId=96000&estado=ACTIVO&pagina=0&tamanio=10";var conRetorno=mvc.perform(get("/admin/empleados/96000").session(session).param("retorno",retorno)).andReturn().getResponse();assertThat(conRetorno.getStatus()).isEqualTo(200);assertThat(conRetorno.getContentAsString()).contains("href=\"/admin/empleados?empleadoId=96000&amp;estado=ACTIVO&amp;pagina=0&amp;tamanio=10\"","data-retorno-listado");
    var sinCsrf=mvc.perform(post("/admin/asignaciones").session(session)).andReturn().getResponse();assertThat(sinCsrf.getStatus()).isBetween(300,499);
    var export=mvc.perform(get("/admin/asignaciones/excel").session(session).param("q","EMP-ORG-QA").param("estado","PROXIMA").param("desde",hoy.plusDays(60).toString())).andReturn().getResponse();assertThat(export.getStatus()).isEqualTo(200);try(var libro=new org.apache.poi.xssf.usermodel.XSSFWorkbook(new ByteArrayInputStream(export.getContentAsByteArray()))){assertThat(libro.getSheetAt(0).getLastRowNum()).isEqualTo(1);assertThat(libro.getSheetAt(0).getRow(1).getCell(6).getNumericCellValue()).isEqualTo(13000);}
    for(var permisos:List.of(new String[]{"EMPLEADO_LEER","EMPLEADO_LABORAL_LEER"},new String[]{"CONDICION_SALARIAL_LEER"})){

@@ -970,6 +970,11 @@
 [data-theme=dark] .form-section { border-color: #344a63; }
 
 /* Contrato visual compartido para los filtros administrativos que usan .filters. */
+.employee-list-panel .filters.employee-filters { grid-template-columns:repeat(3,minmax(0,1fr)); align-items:start; }
+.employee-list-panel .employee-filters > * { min-width:0; }
+.employee-list-panel .employee-filters > label { grid-column:auto; }
+@media(max-width:900px) { .employee-list-panel .filters.employee-filters { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:620px) { .employee-list-panel .filters.employee-filters { grid-template-columns:minmax(0,1fr); } }
 .filters > label > input {
     height: 42px;
     padding: 0 11px;

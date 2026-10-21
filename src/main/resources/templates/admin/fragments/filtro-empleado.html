@@ -1,0 +1,9 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><body>
+<div th:fragment="filtro(endpoint)" class="autocomplete" data-autocomplete data-no-scope data-refresh-on-focus="true" th:attr="data-endpoint=${endpoint}">
+ <label for="filtro-empleado-texto"><span>Empleado</span></label>
+ <div class="autocomplete-control"><input id="filtro-empleado-texto" class="autocomplete-input" name="empleadoTexto" th:value="${empleadoFiltro}" role="combobox" aria-expanded="false" aria-controls="filtro-empleado-resultados" autocomplete="off" placeholder="Código o nombre del empleado" maxlength="450"><button type="button" class="autocomplete-clear" aria-label="Quitar empleado">×</button></div>
+ <input type="hidden" class="autocomplete-value" name="empleadoId" th:value="${filtro.empleadoId}">
+ <div id="filtro-empleado-resultados" class="autocomplete-results" role="listbox" hidden></div>
+ <small class="autocomplete-status">Diez opciones al enfocar; busca desde tres caracteres.</small>
+</div>
+</body></html>
