@@ -1,5 +1,32 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V120 — Guía de asignaciones laborales confirmadas — 21/10/2026
+
+- Usuario autoriza incorporar el recorrido a Guía de procesos y después revisar
+  Conceptos de nómina, sin implementarlos todavía. V120 sólo agrega contenido
+  editorial y enlaza desde el cierre de la guía salarial V118; no reescribe migraciones.
+- Guía Personal: Puesto, jornada y sueldo: asignar, programar cambios y cancelar el
+  futuro; slug asignaciones-laborales-configuracion-historica.12 etapas con cuatro
+  acciones cada una: acceso/previos, puesto, jornada, configuración, enero, resumen,
+  catálogo sin retroactividad, febrero, filtros/Excel, cancelación, restauración y cierre.
+  Códigos/fechas de Bruce, modales Cancelar/Confirmar, módulos/botones explícitos,
+  valores esperados, distinción catálogo/asignación y Cancelada con fin vacío.
+- CONFIRMADA corresponde al recorrido principal y Excel reportados; no afirma todas
+  las pruebas independientes. No repetir operaciones del ensayo. Reutiliza permisos
+  Empleados + laboral leer + salarial administrar y GUIA_PROCESOS_CONSULTAR existente;
+  no concede roles/permisos ni modifica salarios, cuentas, planteles o datos de personal.
+- Siguiente migración V121. Próximo trabajo: revisar diseño de Conceptos de nómina
+  con el propietario; no crear catálogo, cálculos fiscales o pagos sin autorización.
+- Verificación:951 Java completas (incluye PostgreSQL17 desechable),90 JS correctas;
+  tras pulir texto,3 pruebas dirigidas (12 etapas/4 acciones y migración/render/Excel/
+  permisos) y package BUILD SUCCESS. Guía12 pasos, Excel12 filas y cuenta limitada
+  denegada. Revisión ficticia escritorio claro y móvil390 oscuro, diseño sin cambios.
+- Respaldo privado ignorado .respaldos-locales/guia-v120-20261021/antes-v120.dump,
+  archivo válido comprobado sin mostrar contenido. App actualizada21/10 a16:40México,
+  salud UP; V120 success y guía CONFIRMADA/12 pasos comprobados en base operativa.
+  Sólo app recreada; base QA eliminada, servidor/tab cerrados y tema/viewport
+  restaurados. No .env/commit/push ni operaciones de personal o dinero.
+
 ## Resumen de asignación y recorrido V119 confirmado — 21/10/2026
 
 - Propietario confirmó puntos5–7: cambiar catálogos25h/13000 preservó enero30h/12000;

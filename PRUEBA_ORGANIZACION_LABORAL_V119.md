@@ -26,7 +26,8 @@ Propietario confirmó puntos5–7 y Excel con los filtros de febrero:
 No repetir operaciones ni volver a cancelar/programar para documentar. Este cierre
 corresponde al recorrido principal y Excel confirmado; no declara una auditoría de
 permisos ni comprobaciones adicionales de saldos no confirmadas por el propietario.
-Incorporación editorial a Guía de procesos integrada pendiente. Resumen mejorado:
+Incorporación editorial mediante V120: Guía de procesos → Personal → Puesto, jornada
+y sueldo: asignar, programar cambios y cancelar el futuro,12 etapas. Resumen mejorado:
 sueldo/jornada destacados, puesto/configuración y vigencia separados, motivo y aviso
 histórico; Cancelada aclara que no aplica aunque conserve fin vacío. No cambia datos.
 
@@ -177,7 +178,7 @@ planteles y clases intactos. Con cuenta sin autorización salarial no se ven men
 resúmenes salariales y rutas/Excel/ayudas se deniegan. No retirar permisos del admin
 principal ni modificar roles operativos para hacer pruebas.
 
-El recorrido principal y Excel ya fueron confirmados por el propietario; falta su
-incorporación editorial a Guía de procesos, sin repetir operaciones. No marcar como
+El recorrido principal y Excel ya fueron confirmados por el propietario; V120 los
+incorpora a Guía de procesos, sin repetir operaciones. No marcar como
 realizadas las comprobaciones independientes que no fueron confirmadas. La guía
 salarial V118 corresponde al ensayo V116, no a estos nuevos módulos.

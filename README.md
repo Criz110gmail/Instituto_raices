@@ -1,12 +1,21 @@
 # Sistema administrativo escolar
 
+## Guía de asignaciones laborales — V120
+
+**Guía de procesos → Personal → Puesto, jornada y sueldo: asignar, programar cambios
+y cancelar el futuro** reúne12 etapas del recorrido principal confirmado: catálogos,
+asignación, cambios sin retroactividad, programación, cancelación, restauración y Excel.
+Ruta `/admin/guias/asignaciones-laborales-configuracion-historica`. Reutiliza permisos
+privados existentes, sin otorgarlos; sólo contenido, sin repetir operaciones ni generar
+nómina. Conceptos de nómina queda pendiente de revisión e implementación separadas.
+
 ## Resumen de asignaciones laborales
 
 La pestaña Resumen separa sueldo y jornada destacados, puesto/configuración histórica,
 vigencia y motivo, con explicación del estado y el diseño compartido responsivo.
 Cancelada aclara que no aplica aunque conserve sus fechas originales.
 Recorrido principal V119 y Excel filtrado confirmados por el propietario21/10/2026;
-acta en PRUEBA_ORGANIZACION_LABORAL_V119.md. Guía integrada de este caso pendiente.
+acta en PRUEBA_ORGANIZACION_LABORAL_V119.md y guía integrada mediante V120.
 
 ## Nombre más claro para las configuraciones laborales — 21/10/2026
 

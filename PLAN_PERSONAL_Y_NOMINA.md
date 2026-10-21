@@ -3,6 +3,18 @@
 Acuerdo: 18/10/2026. Actualización: 21/10/2026.
 Estado: EMPLEADOS/PERFIL DOCENTE V111 Y PUESTOS/CONDICIONES SALARIALES V116 IMPLEMENTADOS; NÓMINA PENDIENTE.
 
+## Recorrido V119 confirmado y guía V120 — 21/10/2026
+
+Propietario confirmó edición de catálogos sin retroactividad, asignación de febrero,
+cancelación/restauración de enero y Excel filtrado. No repetir el ensayo. V120 agrega
+guía Personal de12 etapas: Puesto, jornada y sueldo: asignar, programar cambios y
+cancelar el futuro. Sólo contenido editorial y referencia desde guía salarial V118;
+no acredita pruebas independientes no reportadas. Nombre actual de catálogo: Puestos
+y sueldos configurados. Siguiente: revisar con propietario Conceptos de nómina antes
+de implementarlos; no crear cálculos, retenciones fiscales ni pagos automáticamente.
+Las notas inferiores de prueba V119 pendiente son antecedentes superados para este
+recorrido principal. Próxima migración V121.
+
 ## V118/V119 — guía y organización laboral implementadas — 21/10/2026
 
 V118 publica guía salarial confirmada con8 etapas y referencia desde guía de permisos.

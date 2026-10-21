@@ -1,5 +1,25 @@
 # Contexto del proyecto
 
+## V120 — Guía del recorrido principal laboral — 21/10/2026
+
+Autorizado por usuario: guardar guía confirmada y después revisar Conceptos de nómina.
+Se añade guía Personal Puesto, jornada y sueldo: asignar, programar cambios y cancelar
+el futuro, slug asignaciones-laborales-configuracion-historica;12 etapas detalladas con
+módulos, botones, cuatro acciones numeradas, ejemplo Bruce, Cancelar/Confirmar,
+datos históricos, cambios de catálogo, febrero, Excel y restauración de enero.
+Estado CONFIRMADA limitado al recorrido principal reportado; no se repiten operaciones
+ni se afirman pruebas independientes no reportadas. Enlace desde guía salarial V118.
+Sólo contenido editorial en V120, mismos permisos privados, sin roles/salarios/dinero.
+Siguiente V121; Conceptos de nómina pendiente de análisis con usuario, no implementado.
+
+Validación951 Java incluyendo PostgreSQL desechable y90 JS; tras redacción final,
+3 pruebas dirigidas y paquete exitoso. Guía12 etapas, cuatro acciones por etapa,
+Excel12 filas filtradas, acceso sin permisos denegado; revisión escritorio claro/
+móvil390 oscuro. Respaldo privado ignorado antes-v120.dump en
+.respaldos-locales/guia-v120-20261021, formato válido. App actualizada21/10 a16:40México,
+salud UP; base operativa confirma V120 success y guía CONFIRMADA con12 pasos.
+QA eliminada y navegador restaurado, sin operaciones de personal/dinero ni .env/Git.
+
 ## Resumen organizado y prueba principal de asignaciones confirmada — 21/10/2026
 
 Propietario confirmó editar catálogo sin alterar enero, programar febrero y cancelar
