@@ -14,6 +14,18 @@ class EmpleadoServiceTest {
  @AfterEach void limpiar(){SecurityContextHolder.clearContext();}
  @Test void otraInstitucionRecuperacionYAlcanceLimitadoNoPuedenLeer(){var otra=new Institucion();otra.setId(9L);e.setInstitucion(otra);assertThatThrownBy(()->s.obtener(2L)).isInstanceOf(AccessDeniedException.class);e.setInstitucion(i);sesion(true,true,"EMPLEADO_LEER");assertThatThrownBy(()->s.obtener(2L)).isInstanceOf(AccessDeniedException.class);sesion(false,false,"EMPLEADO_LEER");assertThatThrownBy(()->s.obtener(2L)).isInstanceOf(AccessDeniedException.class);}
  @Test void lecturaPersonalNoFiltraDatosLaborales(){assertThat(s.obtener(2L).nombre()).isEqualTo("Ana Prueba");assertThatThrownBy(()->s.laboral(2L)).isInstanceOf(AccessDeniedException.class);verifyNoInteractions(laborales);}
+ @Test void resumenEnListadoSeConsultaEnBloqueSoloParaPaginaEInstitucionAutorizadas(){
+  when(empleados.findAll(any(org.springframework.data.jpa.domain.Specification.class),any(org.springframework.data.domain.Pageable.class))).thenReturn(new org.springframework.data.domain.PageImpl<>(List.of(e)));
+  var filtro=new FiltroEmpleado(1L,"","TODOS",0,10);
+  assertThat(s.listar(filtro).getContent().getFirst().resumenLaboral()).isNull();verifyNoInteractions(laborales);
+  sesion(false,true,"EMPLEADO_LEER","EMPLEADO_LABORAL_LEER");var fila=mock(EmpleadoLaboralRepository.ResumenFila.class);when(fila.getEmpleadoId()).thenReturn(2L);when(fila.getSituacion()).thenReturn("ACTIVO");when(fila.getIngreso()).thenReturn(LocalDate.of(2026,10,1));when(laborales.resumirPagina(1L,List.of(2L))).thenReturn(List.of(fila));
+  assertThat(s.listar(filtro).getContent().getFirst().resumenLaboral().ingresoTexto()).isEqualTo("01/10/2026");verify(laborales).resumirPagina(1L,List.of(2L));verify(laborales,never()).findByEmpleadoId(anyLong());
+  assertThatThrownBy(()->s.listar(new FiltroEmpleado(9L,"","TODOS",0,10))).isInstanceOf(AccessDeniedException.class);
+ }
+ @Test void fichaConsultaResumenPersistidoSoloConPermiso(){
+  sesion(false,true,"EMPLEADO_LEER","EMPLEADO_LABORAL_LEER");var laboral=new EmpleadoLaboral();laboral.setSituacion("BAJA");laboral.setFechaIngreso(LocalDate.of(2026,10,1));laboral.setFechaBaja(LocalDate.of(2026,10,20));when(laborales.findByEmpleadoId(2L)).thenReturn(Optional.of(laboral));
+  var resumen=s.obtener(2L).resumenLaboral();assertThat(resumen.etiqueta()).isEqualTo("Baja laboral");assertThat(resumen.bajaTexto()).isEqualTo("20/10/2026");
+ }
  @Test void sueldosExigenPermisoPropioSinHerenciaAcademicaOLaboral(){
   sesion(false,true,"EMPLEADO_LEER","EMPLEADO_LABORAL_ADMINISTRAR","MAESTRO_ADMINISTRAR");assertThatThrownBy(()->s.autorizarSalarios(false)).isInstanceOf(AccessDeniedException.class);
   sesion(false,true,"EMPLEADO_LEER","CONDICION_SALARIAL_ADMINISTRAR");assertThatThrownBy(()->s.autorizarSalarios(true)).isInstanceOf(AccessDeniedException.class);

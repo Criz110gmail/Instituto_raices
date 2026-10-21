@@ -1736,6 +1736,12 @@ body.gradebook-modal-open { overflow: hidden; }
 [data-theme=dark] .partial-payment-toggle:hover { background: #21405f; }
 [data-theme=dark] .partial-payment-active .protected-amount-control { border-color: #916d32; background: #302819; }
 [data-theme=dark] .partial-payment-active .protected-amount-control b { background: #4a391d; color: #f8d58e; }
+.employee-labor-summary { margin: 20px 28px; border: 1px solid var(--line); border-radius: 16px; background: var(--soft); }
+.employee-labor-dates { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin: 16px 0; }
+.employee-labor-dates div { min-width: 0; }
+.employee-labor-dates dt { font-size: .8rem; opacity: .75; }
+.employee-labor-dates dd { margin: 6px 0 0; font-weight: 700; }
+@media (max-width: 720px) { .employee-labor-summary { margin: 16px; } .employee-labor-dates { grid-template-columns: 1fr; } }
 [data-theme=dark] .partial-payment-active .amount-help { color: #f0cc80; }
 [data-theme=dark] .distribution-row[data-fixed-charge="true"]:after { background: #17483f; color: #a7eadb; }
 

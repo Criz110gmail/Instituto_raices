@@ -1,7 +1,57 @@
 # Integración de empleados, maestros y nómina
 
-Acuerdo: 18/10/2026. Actualización: 19/10/2026.
+Acuerdo: 18/10/2026. Actualización: 21/10/2026.
 Estado: EMPLEADOS/PERFIL DOCENTE V111 Y PUESTOS/CONDICIONES SALARIALES V116 IMPLEMENTADOS; NÓMINA PENDIENTE.
+
+## V118/V119 — guía y organización laboral implementadas — 21/10/2026
+
+V118 publica guía salarial confirmada con8 etapas y referencia desde guía de permisos.
+V119 implementa JornadaLaboral, EsquemaRemuneracion y AsignacionEsquemaLaboral como
+extensiones aditivas. Menús propios con tabla/filtros/paginación/Excel por bloques y
+alta/edición separadas. Asignaciones se consulta globalmente o filtrada por empleado,
+con detalle Resumen/Historial/Gestión; programar cambio crea otra vigencia, no edita
+el pasado. Cancelación usa servicio salarial existente y restaura fin anterior.
+
+CondicionSalarial sigue siendo única fuente de remuneración/vigencia/estado; asignación
+agrega esquema/jornada/códigos/nombres/horas/versiones congelados. Se conserva captura
+individual anterior, accesible en compatibilidad, y se muestra sin jornada inferida.
+No duplicar salarios ni migrar sueldos existentes a esquemas inventados. Esquemas
+editables para futuras asignaciones; cambios no afectan snapshots anteriores.
+
+Jornadas registra total semanal y descripción de distribución, no calendario estructurado
+por días, asistencia ni horas pagables automáticas. Reutiliza planteles existentes sin
+copiarlos ni modificarlos, con enlace al expediente; costo por plantel sigue pendiente.
+Permisos V116 sin nuevas concesiones; los3 módulos requieren el paquete salarial y
+Empleados/Laboral. No nuevos cálculos, pagos, permisos fiscales ni nómina.
+
+Prueba humana V119 pendiente en PRUEBA_ORGANIZACION_LABORAL_V119.md. No declarar
+confirmada por los ensayos técnicos ni repetir V116 ya aceptada. Etapas inferiores de
+reorganización no implementada quedan superadas por esta nota. Próxima migración V120.
+
+## Aceptación V116 y siguiente etapa acordada — 21/10/2026
+
+Propietario confirma ejemplo salarial completo correcto. Estado final:12000MXN base
+mensual/pago mensual desde01/11/2026 sin fin, Próxima; aumento13000 desde01/01/2027
+Cancelado, preservado en historial y restaurado fin original de12000. No repetirlo
+ni cancelar la condición inicial. Incorporación a Guía de procesos integrada pendiente.
+Las menciones inferiores de aceptación pendiente son antecedentes superados por esta acta.
+
+Antes de nómina, reorganizar acceso y configuración en catálogos separados visibles:
+
+- Puestos: función, sin imponer un único salario a todas las personas del puesto.
+- Jornadas laborales: horas semanales/distribución acordada; separadas de clases.
+- Esquemas de remuneración: puesto+jornada+bruto/base/frecuencia reutilizables.
+- Asignaciones laborales: empleado+esquema+vigencias/motivo; snapshot/versiones
+  autorizados. Editar esquema no altera asignaciones anteriores; cambios programados.
+- Empleados: identidad/estado/ingreso/baja y resumen con enlaces filtrados; no otra
+  captura duplicada dentro de pantallas anidadas. Todos los módulos siguen tabla,
+  filtros/paginación/Excel y alta/edición separados con diseño/modales compartidos.
+
+Propuesta de reorganización acordada, todavía NO implementada. Primero contrastar
+modelo y código, integrar adscripciones de planteles y condiciones salariales existentes
+sin pérdida de IDs/historial ni fuentes contradictorias. No inferir salario de jornada
+ni horas pagadas de horario académico. Definir excepciones individuales autorizadas.
+V118 libre; no nómina, conversiones, pagos ni automatización legal en esta confirmación.
 
 ## Entrega V116 — puestos y condiciones salariales — 20/10/2026
 
@@ -30,7 +80,7 @@ Filtros/paginación BD, autocompletado10 al foco/3 letras, Excel POI por bloques
 mismos filtros, importes text/moneda y modales de confirmación/Cancelar. No egresos,
 sueldos duplicados por plantel, pagos, préstamos, retenciones ni recibos. No calcular
 IMSS/ISR ni tomar asistencia escolar como laboral. Primera entrega salarial no cierra
-todo el plan. Ejemplo detallado y aceptación humana pendiente en
+todo el plan. Ejemplo detallado y aceptación humana confirmada el21/10/2026 en
 PRUEBA_CONDICIONES_SALARIALES_V116.md. Entradas inferiores «no implementado» son
 historial anterior a esta entrega. Costos, condiciones de reingreso y cálculos siguen
 pendientes de definición antes de automatizar nómina.

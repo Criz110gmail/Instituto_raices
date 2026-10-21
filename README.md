@@ -1,5 +1,29 @@
 # Sistema administrativo escolar
 
+## Organización laboral y guía salarial — V118/V119
+
+Guía de procesos → Personal → **Puestos y sueldos: registrar, programar aumento y
+cancelar el futuro** incorpora los8 pasos del recorrido confirmado el21/10/2026.
+
+En **Administración → Personal y nómina** hay entradas separadas para **Empleados**,
+**Puestos laborales**, **Jornadas laborales**, **Esquemas de remuneración** y
+**Asignaciones laborales**. Cada catálogo abre tabla/filtros/paginación/Excel y
+Nuevo/Editar en formulario aparte. Asignaciones muestra detalle con pestañas y permite
+programar otro cambio o cancelar sólo la última futura, no sobrescribir el historial.
+
+Flujo: Puesto → Jornada (horas semanales y distribución de referencia) → Esquema
+(puesto+jornada+bruto/base/frecuencia) → Asignar al empleado con vigencia/motivo.
+El sueldo se carga del esquema; se conserva snapshot de jornada/versiones y sueldo.
+Editar catálogos no modifica asignaciones ya autorizadas. Condiciones individuales
+previas aparecen en el mismo listado sin inventar jornada y usan la misma fuente salarial.
+Planteles y clases no cambian; no genera nómina, pagos, impuestos o movimientos.
+
+Reutiliza permisos salariales/laborales de V116, sin asignarlos automáticamente.
+Expediente resume lo vigente y enlaza al listado filtrado. Captura individual anterior
+permanece en **Condiciones salariales → Condiciones individuales y compatibilidad**.
+[Ejemplo completo para probar V119](PRUEBA_ORGANIZACION_LABORAL_V119.md), pendiente
+de aceptación humana; no confundirlo con la guía V118 ya confirmada.
+
 ## Puestos y condiciones salariales — V116
 
 El catálogo tiene entrada propia **Administración → Personal y nómina → Puestos
@@ -17,8 +41,10 @@ base/frecuencia, vigencia y motivo; consulta por fecha, filtros, paginación y E
 Historial privado inmutable y confirmaciones con Cancelar. Programar otra condición
 cierra la anterior al día previo cuando se cruzan; sólo la última futura se cancela
 restaurando el fin anterior. Sin cambiar el puesto textual laboral previo.
-No genera nómina, cálculos fiscales ni movimientos de caja/banco. Prueba humana
-pendiente: [Ejemplo completo](PRUEBA_CONDICIONES_SALARIALES_V116.md).
+No genera nómina, cálculos fiscales ni movimientos de caja/banco. Recorrido humano
+confirmado el21/10/2026: [Ejemplo completo y resultado](PRUEBA_CONDICIONES_SALARIALES_V116.md).
+Incorporado a la Guía de procesos en V118; catálogos separados implementados en V119,
+conservando condiciones/historial actuales y pendientes de su propia prueba humana.
 
 ## Guía de permisos laborales — V115, 20/10/2026
 

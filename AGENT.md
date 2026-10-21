@@ -1,5 +1,101 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V118/V119 — Guía salarial y organización laboral — 21/10/2026
+
+- Propietario autoriza incorporar prueba V116 a Guía y continuar reorganización.
+  V118 publica Personal → Puestos y sueldos: registrar, programar aumento y cancelar
+  el futuro,8 etapas de4 acciones con módulos/botones/datos/resultados/precauciones.
+  Mantiene captura individual compatible en expediente → Condiciones salariales →
+  desplegar Condiciones individuales y compatibilidad → Abrir condiciones salariales.
+  Actualiza referencia de guía de permisos sin tocar migraciones aplicadas.
+- V119 agrega jornadas, esquemas y vínculo inmutable de asignación a condición salarial.
+  Menús Administración → Personal y nómina: Empleados/Puestos/Jornadas laborales/
+  Esquemas de remuneración/Asignaciones laborales. Tabla/filtros/paginación/Excel por
+  bloques y Nuevo/Editar separados; asignación no se sobrescribe, tiene Ver y Gestión
+  para nuevo cambio o cancelar última futura. Detalle Resumen/Historial/Gestión con nav.
+- Jornada: horas semanales Decimal5,2 positivas hasta168 y descripción de distribución
+  de referencia. No agenda por días/descansos estructurados, control de asistencia,
+  cálculo de horas pagables ni validación legal. Esquema combina puesto+jornada+bruto/
+  moneda/base/frecuencia. Asignar carga datos autoritativos; no recaptura salario.
+- CondicionSalarial sigue única fuente de sueldo/vigencia/estado; nuevo snapshot guarda
+  esquema/jornada/código/nombre/descripción/horas/versiones y FK única a condición.
+  Listado global también muestra condiciones individuales previas sin inventar jornada.
+  Catálogos editables no cambian snapshots autorizados. Mismo bloqueo empleado/revisión
+  salarial/versión laboral, catálogos bloqueados y versiones verificadas; operación
+  atómica revierte cierre/sueldo si falla snapshot. Cancelar reutiliza servicio V116 y
+  restaura fin anterior. Auditoría privada inmutable para los3 tipos nuevos.
+- Reutiliza permisos V116: paquete Puestos y condiciones salariales, Empleados y
+  Datos laborales de empleados; no concesiones automáticas. Rutas/ayudas/Excel/UI
+  exigen administrativo persistido institucional activo, sin soporte/docente/familia/
+  recuperación. Horas/esquemas privados bajo mismo permiso salarial en esta entrega.
+- Expediente resume condición aplicable hoy y enlaza al listado filtrado. Planteles
+  siguen en EmpleadoPlantel sin duplicación ni cambios; clases/usuario/foto intactos.
+  No nóminas, pagos, conversiones, impuestos, egresos ni nuevas condiciones reales
+  creadas por el agente. Próxima migración V120. No reescribir V116/V117.
+- Prueba humana V119 PENDIENTE en PRUEBA_ORGANIZACION_LABORAL_V119.md: reutilizar
+  Bruce/Puesto, Jornada JOR-MAT-TEST30h, Esquema ESQ-DOC-MAT-TEST12000, asignar01/01/2027;
+  editar catálogos25h/13000 sin cambiar enero; asignar01/02/2027, cancelar febrero y
+  comprobar restauración. No repetir V116 ni cancelar12000 como paso pendiente.
+  Nuevo caso no se publica CONFIRMADA antes de aceptación humana. Guía V118 sí confirmada.
+- Verificación final941 Java correctas (incluye IT salarios anterior y nuevo PostgreSQL17
+  desechable con migraciones1–119),90 JS correctas. Snapshot tras editar catálogos,
+  fallo deliberado/rollback completo, dos confirmaciones/una ganadora, restauración,
+  privacidad/lectura/CSRF/Excel/render10 rutas, guía8 pasos y Excel8 filas. QA visual
+  ficticia claro/oscuro desktop1280 y móvil390; ayuda foco, carga autoritativa, modal
+  Cancelar sin envío, formulario separado y sin overflow horizontal. No operaciones reales.
+- Respaldo privado ignorado .respaldos-locales/organizacion-v119-20261021/antes-v118-v119.dump.
+  App local actualizada21/10 a11:10México, salud UP; V118/V119 success, guía8 pasos,
+  jornadas0/esquemas0/asignaciones0 (no poblar por usuario). Sólo app recreada, DB/
+  volúmenes conservados; base desechable, visor, pestaña y Dockerfiles temporales
+  retirados, viewport restaurado. Sin .env/commit/push. No restaurar backup por defecto.
+
+## Prueba salarial confirmada y siguiente organización — 21/10/2026
+
+- Propietario confirma recorrido completo V116 correcto. Aporta resultado final:
+  DOC-PRI-TEST Docente de primaria,13000MXN mensual/mensual desde01/01/2027 sin fin,
+  CANCELADA, motivo aumento programado;12000MXN mensual/mensual desde01/11/2026
+  sin fin, PRÓXIMA, motivo condición inicial. Correcta restauración del fin anterior.
+  Próxima corresponde a inicio futuro, no falta de activación. No pulsar Cancelar
+  programación de12000: ese botón es una acción disponible, no prueba pendiente.
+- Cierra aceptación humana del recorrido indicado (registro/modal/consulta/aumento/
+  historial/Excel/cancelación futura y comprobaciones finales según confirmación global).
+  No convertir esa aceptación en prueba exhaustiva de concurrencia/seguridad o nómina.
+  PRUEBA_CONDICIONES_SALARIALES_V116.md y PLAN_PERSONAL_Y_NOMINA actualizados.
+  Pendiente incorporar recorrido a Guía de procesos integrada; todavía no publicado.
+- Siguiente acordado tras cerrar ejemplo: reorganizar navegación/catálogos visibles:
+  Empleados, Puestos, Jornadas laborales, Esquemas de remuneración (puesto+jornada+
+  bruto/base/frecuencia) y Asignaciones laborales (empleado+esquema+vigencias).
+  Cada menú tabla/filtros/paginación/Excel y Nuevo/Editar separados. Expediente ofrece
+  resumen y enlace filtrado, no capturas anidadas duplicadas. Propuesta, NO implementada.
+- Reutilizar salarios/historial y adscripciones actuales sin borrar/recrear. Asignación
+  conserva valores/versiones autorizados; editar catálogo no cambia sueldos existentes.
+  Horas semanales no son distribución horaria ni horas pagables; horario laboral no
+  es horario académico. Excepciones individuales con permiso/motivo/confirmación por
+  definir, sin aumentos automáticos al cambiar jornada. Revisar modelo antes de ampliar.
+- Sólo documentación en esta confirmación: sin código, migración, despliegue, cambios
+  de datos/permisos ni .env/commit/push. V118 sigue libre. No repetir prueba salarial.
+
+## Situación laboral visible en Empleados — 21/10/2026
+
+- Durante punto2 de prueba salarial, propietario muestra historial de Bruce ACTIVO,
+  ingreso01/10/2026, sin baja. Pide situación/fechas visibles sin interpretar historial.
+- Listado agrega columna privada Situación laboral (Activo verde/Baja laboral/Por
+  confirmar, ingreso y baja cuando existe). Expediente muestra tarjeta guardada
+  encima de pestañas con estado, ingreso/baja dd/MM/yyyy y aclaración: expediente,
+  perfil docente y situación laboral son independientes. No usa captura no guardada.
+- Resumen sólo con EMPLEADO_LABORAL_LEER/ADMINISTRAR además de autorización de
+  empleado/institución/cuenta existente. Listado consulta proyección mínima en un
+  bloque por página (IDs e institución), sin cargar historial ni nuevos N+1 laborales.
+  Sin permiso no consulta ni incluye resumen en DTO ni columna/tarjeta en HTML.
+- Sin cambios de datos, historial, Excel existente, permisos o migraciones; V118
+  libre. Prueba salarial sigue pendiente en punto2, continuar después de verificar
+  tarjeta/listado, luego crear/reutilizar DOC-PRI-TEST. No repetir baja de María.
+- Verificación938 Java correctas, incluye render de3 estados/con/sin permiso en
+  ambas vistas, consulta por bloque y DTO privado. QA visual ficticia escritorio
+  oscuro/móvil390px claro, sin modificar empleados. App actualizada21/10 a09:55
+  México, salud UP; sólo app recreada. Visor/pestaña/Dockerfiles temporales retirados,
+  viewport restaurado; sin .env, commit/push ni nuevas pruebas JS (no cambió JS).
+
 ## Puestos: listado y formularios separados — 20/10/2026
 
 - Por petición del usuario, /admin/puestos abre únicamente catálogo con menú,

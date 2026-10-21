@@ -1,5 +1,78 @@
 # Contexto del proyecto
 
+## Implementación V118/V119 — 21/10/2026
+
+Autorización expresa: integrar prueba salarial cerrada y continuar reorganización.
+V118 guía salarial CONFIRMADA8 etapas/4 acciones, acceso Personal, permisos existentes
+sin concesiones; referencia desde guía de permisos actualizada. Guía documenta captura
+individual anterior, ahora bajo Condiciones individuales y compatibilidad en expediente.
+V119 agrega jornadas laborales (horas semanales y distribución descriptiva), esquemas
+de remuneración y asignación inmutable enlazada uno a uno a CondicionSalarial. Salario,
+estado y vigencias no se duplican. Snapshot esquema/jornada/horas/versiones; cambiar
+catálogos no modifica asignaciones anteriores. Ninguna jornada inferida de las clases.
+Listado nuevo incluye condiciones individuales anteriores, resuelve filtros/rangos/
+estado/empleado/paginación en BD y Excel por bloques.3 menús separados en Personal y
+nómina, catálogos con Nuevo/Editar aparte y asignación con detalle/nav, programar otro
+cambio y cancelar sólo última futura con motivo/modal. Ayudas10/foco/3 caracteres,
+consulta autoritativa del esquema y bloqueo de envío hasta cargar contexto.
+Expediente resume vigente y enlaza al listado filtrado; compatibilidad individual se
+conserva sin crear otra fuente de sueldo. Planteles existentes y gestión académica
+intactos. Mismos permisos salariales V116 + Empleados/Laboral, sin asignaciones de roles.
+Revisión salarial/versión laboral y catálogos bloqueados/versionados evitan capturas
+viejas/duplicación; snapshot y registro/cierre se publican en la misma transacción.
+No nómina/conversión/legal/asistencia laboral/pagos/egresos. Jornada hasta168h es
+límite físico semanal, no norma legal; distribución sólo descriptiva en esta etapa.
+Ejemplo humano nuevo en PRUEBA_ORGANIZACION_LABORAL_V119.md pendiente; V116 cerrado,
+no repetirlo ni declarar V119 confirmado por pruebas técnicas. Próxima migración V120.
+Verificación final941 Java correctas, incluidas2 IT PostgreSQL17 aislado con migraciones
+1–119 y90 JS. Pruebas de snapshot, validaciones, rollback después de cierre, concurrencia
+dos confirmaciones/una ganadora, cancelación/restauración, permiso/lectura/CSRF/Excel,
+render real10 rutas y guía8 pasos/Excel8 filas. Corregida colisión inicial de ruta Excel
+con detalle mediante ID numérico. QA visual ficticia desktop1280 claro/oscuro y móvil390,
+ayuda al foco/carga automática/modal Cancelar/formularios independientes; sin overflow.
+Respaldo privado ignorado .respaldos-locales/organizacion-v119-20261021/antes-v118-v119.dump.
+App actualizada21/10 a11:10México, salud UP. V118/V119 aplicadas success, guía8 pasos;
+tablas nuevas jornadas0/esquemas0/asignaciones0. No condiciones ni empleados reales
+capturados por el agente. Sólo app recreada, sin recrear PostgreSQL/volúmenes.
+Base temporal/visor/pestaña/Dockerfiles retirados, viewport restaurado; sin .env/commit/push.
+
+## Cierre humano del ejemplo salarial — 21/10/2026
+
+Propietario confirma prueba completa correcta y muestra las dos condiciones de
+DOC-PRI-TEST:13000MXN mensual/mensual desde01/01/2027 sin fin CANCELADA;12000MXN
+mensual/mensual desde01/11/2026 sin fin PRÓXIMA. Conservados ambos motivos. Cancelar
+la futura restauró fin vacío de la inicial; botón Cancelar programación en12000 es
+disponibilidad, no paso pendiente. No pedir cancelar esa condición ni repetir prueba.
+Aceptación del recorrido humano, no auditoría exhaustiva ni nómina probada. Pendiente
+publicar caso en Guía de procesos integrada; esta acta no crea guía ni migración.
+Siguiente propuesta acordada: módulos separados Empleados/Puestos/Jornadas/Esquemas
+de remuneración/Asignaciones, con tablas y formularios independientes, resumen en
+expediente y enlaces filtrados. Esquema reutiliza puesto+jornada+bruto/base/frecuencia;
+asignación tiene empleado/esquema/vigencias y conserva snapshot/versiones, sin cambios
+retroactivos por editar catálogos. Encajar adscripciones/sueldos existentes sin duplicar.
+Horas semanales, horarios exactos y horas pagables son distintos; no usar clases como
+asistencia laboral. Reorganización NO implementada, requiere diseño de compatibilidad.
+Sólo documentos, sin código/despliegue/BD/.env/commit/push; V118 libre.
+
+## Estado laboral y fechas visibles — 21/10/2026
+
+Propietario detenido en punto2 del ejemplo salarial: historial de Bruce confirma
+ACTIVO con ingreso01/10/2026 sin baja. Implementada columna Situación laboral en
+tabla de Empleados y tarjeta de información guardada antes de pestañas del expediente.
+Activo usa verde compartido; Baja laboral/Por confirmar neutros. Fechas dd/MM/yyyy,
+vacíos explícitos y aclaración de independencia respecto a expediente/perfil docente.
+No refleja cambios sin guardar ni infiere estado de fechas de auditoría. Permiso
+laboral requerido tanto para consultar como para renderizar resumen; proyección
+mínima por IDs de página e institución, sin consultas de historial por fila.
+No nuevos filtros, salarios, Excel, permisos, migraciones ni cambios a registros.
+V118 libre. Prueba salarial humana sigue pendiente; después de verificar vista,
+seguir paso3 de PRUEBA_CONDICIONES_SALARIALES_V116.md sin duplicar puesto existente.
+938 pruebas Java correctas: render de estados/permisos, DTO sin datos privados y
+consulta laboral por bloque. QA ficticia escritorio oscuro y móvil390px claro.
+App local actualizada21/10 a09:55México, salud UP; sólo app recreada. Visor/pestaña/
+Dockerfiles temporales retirados y viewport restaurado. No se tocó .env ni se hizo
+commit/push; no se repitió JS porque no cambió. Sin operaciones sobre empleados reales.
+
 ## Catálogo de puestos con formularios independientes — 20/10/2026
 
 Usuario pide el patrón de otros módulos: entrada del menú con tabla y botones de

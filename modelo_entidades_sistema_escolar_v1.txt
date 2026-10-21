@@ -891,3 +891,22 @@ y paginación DB; Excel por bloques y mismos filtros. Autocompletado de puestos1
 CONDICION_SALARIAL_LEER/ADMINISTRAR exige además permisos de Empleado y laboral;
 sin herencia académica ni concesión automática a roles. Sin cuentas ni datos reales
 inventados por migración. No nómina/pagos/préstamos/impuestos ni movimientos de dinero.
+
+ACTUALIZACIÓN V119 — ORGANIZACIÓN LABORAL (2026-10-21)
+JornadaLaboral institucional: código/nombre/descripción, horasSemanales Decimal5,2
+positivas hasta168 (capacidad semanal, no validación legal de jornada), activo y auditoría/
+versión. Descripción permite distribución de referencia; no agenda estructurada por días.
+EsquemaRemuneracion: institución, puesto/jornada FK institucionales, código/nombre,
+descripción, bruto Decimal19,2 positivo, moneda institucional, base/frecuencia de V116,
+activo y auditoría/versión. Catálogos editables para selecciones futuras, no retroactivos.
+AsignacionEsquemaLaboral: empleado/institución, condicionSalarialId único, esquemaId y
+snapshot código/nombre/versión, jornadaId y snapshot código/nombre/descripción/horas/
+versión, versión del puesto y actor/instante. Inmutable; salario/puesto/vigencia/estado
+siguen en CondicionSalarial, no se duplican como fuente. Su cancelación/cierre siguen
+servicio V116; se puede consultar junto con condiciones individuales anteriores sin
+esquema/jornada, sin inventarles una. Planteles quedan en EmpleadoPlantel, no duplicados.
+Registro atómico con revisión salarial/versión laboral y versiones de catálogos bloqueados;
+fallo de snapshot revierte condición y cierre previo. Historial privado e inmutable también
+para catálogos/asignaciones. Mismos permisos salariales V116, sin concesiones automáticas.
+Módulos visibles separados, filtros/paginación BD y Excel mismos parámetros por bloques;
+expediente resume vigente y enlaza filtrado. No cálculos/pagos de nómina ni cambios académicos.

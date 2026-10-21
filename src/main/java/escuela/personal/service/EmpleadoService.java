@@ -45,7 +45,8 @@ public class EmpleadoService {
   var e=empleados.findById(id).orElseThrow(()->new RecursoNoEncontradoException("el empleado",id));
   if(!Objects.equals(e.getInstitucion().getId(),p.institucionId()))throw new AccessDeniedException("Empleado fuera de tu institución");return e;
  }
- public EmpleadoVista obtener(Long id){return vista(autorizar(id,false,false));}
+ public EmpleadoVista obtener(Long id){var e=vista(autorizar(id,false,false));if(!puedeResumenLaboral())return e;var l=laboral(id);return e.conResumenLaboral(new ResumenLaboral(l.getSituacion(),l.getFechaIngreso(),l.getFechaBaja()));}
+ private boolean puedeResumenLaboral(){return permitido("EMPLEADO_LABORAL_LEER")||permitido("EMPLEADO_LABORAL_ADMINISTRAR");}
  public Page<EmpleadoVista> listar(FiltroEmpleado original){var p=actor("EMPLEADO_LEER");var f=original.normalizado();
   if(f.institucionId()!=null&&!Objects.equals(f.institucionId(),p.institucionId()))throw new AccessDeniedException("Institución no autorizada");
   Specification<Empleado> s=(r,q,b)->{var pred=new ArrayList<jakarta.persistence.criteria.Predicate>();pred.add(b.equal(r.get("institucion").get("id"),p.institucionId()));
@@ -53,7 +54,12 @@ public class EmpleadoService {
    if(f.estado().equals("ACTIVO")||f.estado().equals("INACTIVO"))pred.add(b.equal(r.get("activo"),f.estado().equals("ACTIVO")));
    if(f.estado().equals("DOCENTE")||f.estado().equals("SIN_PERFIL_DOCENTE")){var sub=q.subquery(Long.class);var m=sub.from(Maestro.class);sub.select(m.get("id")).where(b.equal(m.get("empleado").get("id"),r.get("id")));pred.add(f.estado().equals("DOCENTE")?b.exists(sub):b.not(b.exists(sub)));}
    return b.and(pred.toArray(jakarta.persistence.criteria.Predicate[]::new));};
-  return empleados.findAll(s,PageRequest.of(f.pagina(),f.tamanio(),Sort.by("primerApellido","nombres","id"))).map(this::vista);
+  var pagina=empleados.findAll(s,PageRequest.of(f.pagina(),f.tamanio(),Sort.by("primerApellido","nombres","id"))).map(this::vista);
+  if(!puedeResumenLaboral()||pagina.isEmpty())return pagina;
+  actor("EMPLEADO_LABORAL_LEER");
+  var resumenes=new HashMap<Long,ResumenLaboral>();
+  laborales.resumirPagina(p.institucionId(),pagina.stream().map(EmpleadoVista::id).toList()).forEach(l->resumenes.put(l.getEmpleadoId(),new ResumenLaboral(l.getSituacion(),l.getIngreso(),l.getBaja())));
+  return pagina.map(e->e.conResumenLaboral(resumenes.get(e.id())));
  }
  private EmpleadoVista vista(Empleado e){var m=maestros.findByEmpleadoId(e.getId()).orElse(null);return new EmpleadoVista(e.getId(),e.getInstitucion().getId(),e.getCodigo(),e.getNombres(),e.getPrimerApellido(),e.getSegundoApellido(),e.getEmail(),e.getTelefono(),e.isActivo(),e.getFotografiaArchivo()!=null,e.getVersion(),m==null?null:m.getId(),m!=null&&m.isActivo(),m==null?null:m.getNumeroEmpleado(),m==null||m.getUsuario()==null?null:m.getUsuario().getUsername());}
  @Transactional public Long guardar(Long id,EmpleadoForm f){var p=actor("EMPLEADO_ADMINISTRAR");

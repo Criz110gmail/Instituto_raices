@@ -95,7 +95,7 @@ public class CondicionesSalarialesService {
   var filas=jdbc.query("SELECT id,to_char(ocurrido_en AT TIME ZONE :zona,'DD/MM/YYYY HH24:MI') fecha,usuario_id::text usuario,operacion,datos->'despues'->>'motivo_operacion' motivo FROM personal_salarial_historial WHERE empleado_id=:empleado ORDER BY id DESC LIMIT 20 OFFSET :offset",p,(r,n)->new Historia(r.getLong("id"),r.getString("fecha"),r.getString("usuario"),r.getString("operacion"),r.getString("motivo")));
   return new PageImpl<>(filas,pg,total==null?0:total);
  }
- @Transactional public void programar(Long id,CondicionSalarialForm f){
+ @Transactional public Long programar(Long id,CondicionSalarialForm f){
   autorizar(id,true);bloquear(id);var e=empleados.autorizar(id,true,false);var l=empleados.laboral(id);var hoy=hoy(id);
   if(!e.getInstitucion().isActivo())throw regla("La institución está inactiva; no se registran condiciones nuevas.");
   if(!e.isActivo()||!"ACTIVO".equals(l.getSituacion())||l.getFechaIngreso()==null)throw regla("Confirma primero la actividad y fecha de ingreso en Datos laborales. No se configura sueldo a personal en baja o por confirmar.");
@@ -118,7 +118,7 @@ public class CondicionesSalarialesService {
   p.addValue("puesto",puesto.id()).addValue("codigo",puesto.codigo()).addValue("nombre",puesto.nombre()).addValue("importe",f.getImporteBruto())
    .addValue("moneda",moneda).addValue("base",f.getBase()).addValue("frecuencia",f.getFrecuencia()).addValue("fin",f.getFechaFin(),java.sql.Types.DATE)
    .addValue("motivo",f.getMotivo().strip()).addValue("anteriorId",anterior==null?null:anterior.id(),java.sql.Types.BIGINT).addValue("finAnterior",anterior==null?null:anterior.fin(),java.sql.Types.DATE);
-  jdbc.update("INSERT INTO condicion_salarial(empleado_id,institucion_id,puesto_id,puesto_codigo,puesto_nombre,importe_bruto,moneda,base,frecuencia,fecha_inicio,fecha_fin,motivo,motivo_operacion,anterior_id,fin_anterior,creado_por_id,actualizado_por_id) VALUES(:empleado,:institucion,:puesto,:codigo,:nombre,:importe,:moneda,:base,:frecuencia,:inicio,:fin,:motivo,:motivo,:anteriorId,:finAnterior,:actor,:actor)",p);
+  return jdbc.queryForObject("INSERT INTO condicion_salarial(empleado_id,institucion_id,puesto_id,puesto_codigo,puesto_nombre,importe_bruto,moneda,base,frecuencia,fecha_inicio,fecha_fin,motivo,motivo_operacion,anterior_id,fin_anterior,creado_por_id,actualizado_por_id) VALUES(:empleado,:institucion,:puesto,:codigo,:nombre,:importe,:moneda,:base,:frecuencia,:inicio,:fin,:motivo,:motivo,:anteriorId,:finAnterior,:actor,:actor) RETURNING id",p,Long.class);
  }
  @Transactional public void cancelar(Long empleadoId,Long condicionId,Long version,String motivo){
   autorizar(empleadoId,true);bloquear(empleadoId);

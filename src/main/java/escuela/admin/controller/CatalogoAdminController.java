@@ -68,6 +68,7 @@ public class CatalogoAdminController {
         List<ModuloCatalogo> modulos = modulosVisibles(authentication);
         validarPermiso(modulo, modulos);
         if (modulo == ModuloCatalogo.PUESTOS) return "redirect:/admin/puestos";
+        if (modulo == ModuloCatalogo.JORNADAS_LABORALES || modulo == ModuloCatalogo.ESQUEMAS_REMUNERACION || modulo == ModuloCatalogo.ASIGNACIONES_LABORALES) return "redirect:"+modulo.rutaListado();
         FiltroCatalogo filtro = new FiltroCatalogo(q, estado, fecha, pagina, tamanio, desde, hasta, tipoFecha,cobertura,anioCobertura,conceptoCobro,alumnoId,alumnoTexto).normalizado();
         try {
             filtro.validarRango();
@@ -121,6 +122,10 @@ public class CatalogoAdminController {
             response.sendRedirect("/admin/puestos/excel?q=" + URLEncoder.encode(q,StandardCharsets.UTF_8)
                     + "&estado=" + URLEncoder.encode(estado,StandardCharsets.UTF_8));
             return;
+        }
+        if (modulo == ModuloCatalogo.JORNADAS_LABORALES || modulo == ModuloCatalogo.ESQUEMAS_REMUNERACION || modulo == ModuloCatalogo.ASIGNACIONES_LABORALES) {
+            response.sendRedirect(modulo.rutaListado()+"/excel?q="+URLEncoder.encode(q,StandardCharsets.UTF_8)+"&estado="+URLEncoder.encode(estado,StandardCharsets.UTF_8)
+                    +(desde==null?"":"&desde="+desde)+(hasta==null?"":"&hasta="+hasta));return;
         }
         FiltroCatalogo filtro=new FiltroCatalogo(q,estado,fecha,0,100,desde,hasta,tipoFecha,cobertura,anioCobertura,conceptoCobro,alumnoId,alumnoTexto).normalizado();
         filtro.validarRango();

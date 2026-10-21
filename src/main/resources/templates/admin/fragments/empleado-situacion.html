@@ -1,0 +1,7 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><body>
+<section th:fragment="tarjeta(resumen)" class="detail-section employee-labor-summary" aria-label="Situación laboral guardada" th:if="${resumen != null}">
+ <div class="section-heading"><div><span>Información laboral guardada</span><h2>Situación laboral</h2></div><span class="status" th:classappend="${resumen.clase()}" th:text="${resumen.etiqueta()}"></span></div>
+ <dl class="employee-labor-dates"><div><dt>Ingreso laboral</dt><dd th:text="${resumen.ingresoTexto()}"></dd></div><div><dt>Fecha de baja</dt><dd th:text="${resumen.baja != null ? resumen.bajaTexto() : 'Sin baja registrada'}"></dd></div></dl>
+ <p class="field-help">El estado laboral es independiente del estado del expediente y del perfil docente. Los cambios de captura se reflejan aquí después de guardar.</p>
+</section>
+</body></html>

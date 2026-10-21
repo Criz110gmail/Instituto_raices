@@ -1,8 +1,31 @@
 # Prueba de puestos y condiciones salariales — V116
 
-Implementación disponible; aceptación humana todavía pendiente. No es nómina ni
+Actualización posterior: incorporada a Guía de procesos → Personal en V118.
+Reorganización de catálogos implementada en V119; su propio ensayo humano pendiente
+está en PRUEBA_ORGANIZACION_LABORAL_V119.md. Las notas históricas de guía/reorganización
+pendientes inferiores quedan superadas por esta actualización. No repetir V116.
+
+Recorrido principal confirmado por el propietario el21/10/2026. No es nómina ni
 pago, ni calcula impuestos, deducciones, proporcionales o conversiones de sueldo.
 No usar empleados reales sin autorización; no reactivar a María que quedó en baja.
+
+## Resultado confirmado — 21/10/2026
+
+Propietario confirma prueba completa correcta. Resultado final aportado para
+DOC-PRI-TEST · Docente de primaria, ambas base Mensual y pago Mensual:
+
+| Sueldo bruto | Inicio | Fin | Estado final |
+|---|---|---|---|
+| $13,000.00 MXN | 01/01/2027 | Sin fecha de fin | Cancelada |
+| $12,000.00 MXN | 01/11/2026 | Sin fecha de fin | Próxima |
+
+Conservados motivos inicial/aumento y restauración del fin vacío del sueldo inicial.
+Próxima es correcta antes del01/11/2026. No cancelar la condición de12000: el botón
+Cancelar programación sólo indica una acción disponible. No repetir operaciones.
+La confirmación global cierra el recorrido principal; no acredita todos los negativos
+de privacidad/concurrencia opcionales ni cálculos de nómina. Guía integrada pendiente.
+Siguiente: diseño de catálogos separados de jornadas, esquemas y asignaciones,
+reutilizando condiciones actuales. No implementados al cerrar este ejemplo.
 
 ## 1. Autorizar el acceso privado
 
@@ -21,11 +44,19 @@ No usar empleados reales sin autorización; no reactivar a María que quedó en 
    (`DOC-PRUEBA-02` si conserva ese código) → **Ver expediente**.
 2. En **Datos laborales**, verifica actividad laboral confirmada y fecha de ingreso
    legítima. Perfil docente activo y expediente Activo NO acreditan actividad laboral.
+   Ahora también puedes comprobarlo en la tarjeta **Situación laboral** encima de
+   las pestañas y en la columna **Situación laboral** del listado de Empleados:
+   para Bruce esperamos **Activo**, ingreso **01/10/2026** y sin baja registrada,
+   conforme al historial aportado por el propietario. Sólo aparece con permiso laboral
+   y refleja lo guardado; no hace falta volver a guardar para consultarlo.
 3. Si está Por confirmar, completa actividad, puesto textual e ingreso únicamente si
    son datos correctos y autorizados, usando Guardar información laboral y su modal.
    Si está en baja, no lo reactives para este ejemplo: utiliza otro empleado ficticio
    activo autorizado. No cambiar cuentas, materias, foto ni adscripciones.
-4. Abre **Condiciones salariales → Abrir condiciones salariales**. Si la pestaña no
+4. Abre **Condiciones salariales → Condiciones individuales y compatibilidad →
+   Abrir condiciones salariales** (desde V119 hay que desplegar compatibilidad).
+   Para el flujo nuevo usa el menú Asignaciones laborales, no repitas este ensayo.
+   Si la pestaña no
    aparece, revisa permisos y nueva sesión, no inventes otro empleado.
 
 El puesto textual previo de Datos laborales se conserva como referencia. El puesto
@@ -139,5 +170,5 @@ Realizar sólo si se quiere deshacer el aumento de prueba, no después de que ya
   acceden al expediente salarial. No otorgar privilegios para intentar eludirlo.
 - Cuentas financieras deben conservar exactamente el saldo anterior: no hubo
   egresos, pagos, préstamos, retenciones, nóminas o recibos.
-- Aceptación humana pendiente hasta que el propietario confirme resultados. La guía
-  de este nuevo proceso se incorporará después de probarlo, no como CONFIRMADA ahora.
+- Aceptación del recorrido principal confirmada el21/10/2026. Pendiente incorporar
+  este caso a la Guía de procesos integrada; esta acta no lo publica automáticamente.
