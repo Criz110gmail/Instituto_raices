@@ -1,7 +1,22 @@
 # Integración de empleados, maestros y nómina
 
-Acuerdo: 18/10/2026. Actualización: 21/10/2026.
-Estado: EMPLEADOS/PERFIL DOCENTE V111 Y PUESTOS/CONDICIONES SALARIALES V116 IMPLEMENTADOS; NÓMINA PENDIENTE.
+Acuerdo: 18/10/2026. Actualización: 22/10/2026.
+Estado: EMPLEADOS/PERFIL DOCENTE V111, CONFIGURACIÓN SALARIAL V116/V119 Y CONCEPTOS V121/V123 IMPLEMENTADOS; CÁLCULO/PAGO DE NÓMINA PENDIENTES.
+
+## Conceptos por empleado aprobados — V123,22/10/2026
+
+Importe fijo habitual por nómina, sin duplicar sueldo base; ocasionales y porcentajes
+se resolverán en preparación de nómina. Módulo separado visible, mismos filtros/Excel/
+autocompletado10/3/modales/diseño. Empleado y concepto en filtros independientes con ID,
+tipos/estado/fechas; conservan contexto al volver. Alta no crea pagos ni movimientos.
+Snapshots y auditoría inmutables, control de versiones y exclusión DB por pareja/rango;
+cambios de importe crean vigencia, cancelación futura restaura anterior, terminar
+vigente sólo hoy/futuro sin borrar pasado. Mismos permisos privados, sin concesiones.
+
+Prueba humana PENDIENTE: PRUEBA_CONCEPTOS_EMPLEADO_V123.md. Siguiente V124;
+primero aceptar recorrido, después diseñar calendarios y preparación de nómina,
+incluyendo elegibilidad por vigencias y reglas de periodos parciales antes de calcular.
+No asumir prorrateo ni cálculos legales. Las notas inferiores son antecedentes.
 
 ## Catálogo V121 confirmado y guía V122 — 21/10/2026
 

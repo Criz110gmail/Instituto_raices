@@ -12,6 +12,7 @@ public enum ModuloCatalogo {
     ESQUEMAS_REMUNERACION("esquemas","Puestos y sueldos configurados",List.of()),
     ASIGNACIONES_LABORALES("asignaciones","Asignaciones laborales",List.of()),
     CONCEPTOS_NOMINA("conceptos-nomina","Conceptos de nómina",List.of()),
+    CONCEPTOS_EMPLEADO("conceptos-empleado","Conceptos por empleado",List.of()),
     ALUMNOS("alumnos", "Alumnos", List.of("Matrícula", "Alumno", "CURP", "Nacimiento", "Ingreso")),
     TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),
     VINCULOS_TUTOR("vinculos-tutor", "Familiares del alumno", List.of("Alumno", "Tutor", "Parentesco", "Permisos", "Vigencia")),
@@ -126,7 +127,7 @@ public enum ModuloCatalogo {
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, TIPOS_BECA, BECAS_ALUMNO, CARGOS, CONVENIOS_PAGO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Operación escolar · Cobranza escolar";
             case EVENTOS_ESCOLARES, AVISOS -> "Operación escolar · Comunicación";
             case PAGOS, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Administración · Finanzas";
-            case EMPLEADOS, PUESTOS, JORNADAS_LABORALES, ESQUEMAS_REMUNERACION, ASIGNACIONES_LABORALES, CONCEPTOS_NOMINA -> "Administración · Personal y nómina";
+            case EMPLEADOS, PUESTOS, JORNADAS_LABORALES, ESQUEMAS_REMUNERACION, ASIGNACIONES_LABORALES, CONCEPTOS_NOMINA, CONCEPTOS_EMPLEADO -> "Administración · Personal y nómina";
             case PROVEEDORES, COMPRAS -> "Administración · Compras y proveedores";
             case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS -> "Administración · Configuración escolar";
             case ROLES, USUARIOS, AUDITORIA, PORTAL_TUTOR, PORTAL_MAESTRO, GUIAS -> "Administración · Seguridad y soporte";
@@ -149,7 +150,7 @@ public enum ModuloCatalogo {
             case ASISTENCIA -> "ASISTENCIA";
             case BOLETAS -> "BOLETA";
             case EMPLEADOS -> "EMPLEADO";
-            case PUESTOS, JORNADAS_LABORALES, ESQUEMAS_REMUNERACION, ASIGNACIONES_LABORALES, CONCEPTOS_NOMINA -> "CONDICION_SALARIAL";
+            case PUESTOS, JORNADAS_LABORALES, ESQUEMAS_REMUNERACION, ASIGNACIONES_LABORALES, CONCEPTOS_NOMINA, CONCEPTOS_EMPLEADO -> "CONDICION_SALARIAL";
             case MAESTROS -> "MAESTRO";
             case PLANEACIONES -> "PLANEACION";
             case HORARIOS_CLASE -> "HORARIO_CLASE";
@@ -183,7 +184,7 @@ public enum ModuloCatalogo {
             case PORTAL_MAESTRO -> "PORTAL_MAESTRO_SOPORTE";
             case GUIAS -> "GUIA_PROCESOS_CONSULTAR";
         };
-        if (this == PUESTOS || this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA) return (permisos.contains("EMPLEADO_LEER") || permisos.contains("EMPLEADO_ADMINISTRAR"))
+        if (this == PUESTOS || this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA || this == CONCEPTOS_EMPLEADO) return (permisos.contains("EMPLEADO_LEER") || permisos.contains("EMPLEADO_ADMINISTRAR"))
                 && (permisos.contains("EMPLEADO_LABORAL_LEER") || permisos.contains("EMPLEADO_LABORAL_ADMINISTRAR"))
                 && (permisos.contains("CONDICION_SALARIAL_LEER") || permisos.contains("CONDICION_SALARIAL_ADMINISTRAR"));
         if (this == PORTAL_TUTOR) return permisos.contains("PORTAL_TUTOR_SOPORTE");
@@ -217,7 +218,7 @@ public enum ModuloCatalogo {
     }
 
     public boolean mantenimientoDisponible() {
-        return this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA || this == PUESTOS || this == INSTITUCIONES || this == PLANTELES || this == NIVELES
+        return this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA || this == CONCEPTOS_EMPLEADO || this == PUESTOS || this == INSTITUCIONES || this == PLANTELES || this == NIVELES
                 || this == OFERTA || this == GRADOS || this == CICLOS || this == PERIODOS
                 || this == GRUPOS || this == MATERIAS || this == CALIFICACIONES || this == ASISTENCIA || this == ALUMNOS || this == TUTORES || this == MAESTROS
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
@@ -256,6 +257,7 @@ public enum ModuloCatalogo {
             case ESQUEMAS_REMUNERACION -> "/admin/esquemas";
             case ASIGNACIONES_LABORALES -> "/admin/asignaciones";
             case CONCEPTOS_NOMINA -> "/admin/conceptos-nomina";
+            case CONCEPTOS_EMPLEADO -> "/admin/conceptos-empleado";
             case MAESTROS -> "/admin/maestros";
             case PLANEACIONES -> "/admin/planeaciones";
             case HORARIOS_CLASE -> "/admin/horarios-clases";
@@ -293,13 +295,13 @@ public enum ModuloCatalogo {
     }
 
     public String rutaListado() {
-        return this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA || this == PUESTOS || this == EMPLEADOS || this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == ACTUALIZACIONES_EXPEDIENTE || this == PROVEEDORES || this == COMPRAS || this == CONVENIOS_PAGO || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
+        return this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA || this == CONCEPTOS_EMPLEADO || this == PUESTOS || this == EMPLEADOS || this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == ACTUALIZACIONES_EXPEDIENTE || this == PROVEEDORES || this == COMPRAS || this == CONVENIOS_PAGO || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
                 || this == PORTAL_MAESTRO || this == GUIAS ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }
 
     public String segmentoNuevo() {
-        if (this == PUESTOS || this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA) return "/nuevo";
+        if (this == PUESTOS || this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA || this == CONCEPTOS_EMPLEADO) return "/nuevo";
         return this == PLANTELES || this == NIVELES || this == GRADOS || this == CICLOS
                 || this == PERIODOS || this == GRUPOS || this == CALIFICACIONES || this == ASISTENCIA || this == ALUMNOS || this == TUTORES || this == MAESTROS
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES

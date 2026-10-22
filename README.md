@@ -1,5 +1,17 @@
 # Sistema administrativo escolar
 
+## Conceptos por empleado — V123
+
+**Administración → Personal y nómina → Conceptos por empleado**. Asigna conceptos
+habituales activos con importe fijo por nómina y vigencia; no duplica sueldo base.
+Tabla, filtros independientes con ayudas10/3, paginación y Excel con mismos criterios;
+alta aparte, detalle por pestañas e historial. Modales para confirmar/cancelar alta,
+cambio futuro, cancelación y fin de vigencia. Cambios conservan el importe histórico;
+cancelar el último futuro restaura vigencia previa cuando corresponde. Mismo diseño.
+
+No genera nómina, cálculos fiscales ni movimientos. Ocasionales/porcentajes pendientes.
+Prueba humana por ejecutar: [Ejemplo completo](PRUEBA_CONCEPTOS_EMPLEADO_V123.md).
+
 ## Guía del catálogo de nómina — V122
 
 **Guía de procesos → Personal → Conceptos de nómina: crear, filtrar y proteger cambios**

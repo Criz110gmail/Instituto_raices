@@ -924,3 +924,21 @@ persistido activo; no concede accesos. Menú separado con listado/filtros/Excel,
 independiente, modal de confirmación y autocompletado10 al foco/desde3 caracteres.
 Asignar importes y vigencias a empleados, préstamos y calcular/pagar nómina siguen
 pendientes de entregas propias; no se duplica la fuente de sueldo CondicionSalarial.
+
+ACTUALIZACIÓN V123 — CONCEPTOS POR EMPLEADO (2026-10-22)
+ConceptoEmpleado une empleado/concepto/institución con FK compuestas, snapshot de
+código/nombre/naturaleza/aplicación habitual/versión de catálogo, importe fijo19,2
+positivo por nómina elegible, moneda institucional, fechas inclusivas, estado ACTIVA/
+CANCELADA, motivos/actor/instantes/versión. No duplica sueldo base ni calcula nómina.
+Exclusión por pareja empleado/concepto y rango activo evita superposiciones concurrentes.
+Alta habitual activo, empleado/ingreso laboral confirmados y fechas hoy/futuro; contexto
+revalidado por versiones/etiquetas y bloqueos. Cambiar crea otra vigencia y cierra previa
+día anterior, sin intercalar programaciones posteriores; anterior_id/fin_anterior permiten
+restauración atómica al cancelar última futura. Terminar vigente sólo cierra hoy/futuro
+sin extender fin ni borrar pasado. Código/tipo/importes originales inmutables.
+ConceptoEmpleadoHistorial privado e inmutable guarda antes/después/actor/fecha/motivo.
+Listado, Excel por bloques y ayudas10/3 comparten permisos privados salariales/laborales
+institucionales, sin nuevas concesiones. Filtros empleado/concepto ID, tipo histórico,
+estado y rango coincidente conservan retorno. Sólo configuración: nada de impuestos,
+préstamos, sueldos duplicados o cuentas. Ocasionales/porcentajes, elegibilidad/prorrateo
+y cálculos/pagos se definirán al preparar nómina. Prueba humana aún pendiente.

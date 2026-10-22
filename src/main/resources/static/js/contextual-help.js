@@ -2,6 +2,7 @@
     'use strict';
 
     const MODULES = [
+        [/^\/admin\/(catalogos\/)?conceptos-empleado/, 'Conceptos por empleado', 'Asigna conceptos habituales activos con importe fijo y vigencia. Conserva historial, permite programar otro importe o cancelar el futuro; el sueldo base se mantiene en Asignaciones laborales. No genera nómina ni mueve dinero.', 'Asignar BON-PUNT-TEST a Bruce por 500 por nómina desde enero; programar otro importe crea una nueva vigencia, no modifica la anterior.'],
         [/^\/admin\/(catalogos\/)?conceptos-nomina/, 'Conceptos de nómina', 'Catálogo privado de percepciones, deducciones y aportaciones patronales. Define el concepto y si es habitual u ocasional; aquí no se capturan importes, no se asignan a empleados ni se generan nóminas o movimientos.', 'Crear BON-PUNT · Bono de puntualidad como Percepción habitual. Su importe por empleado se definirá en una etapa posterior.'],
         [/^\/(admin|maestros)\/pendientes/, 'Mis pendientes', 'Tu agenda privada. Organiza compromisos con fecha y consulta avisos de vencidos, de hoy y de los próximos siete días. Ningún otro usuario puede consultar tus notas.', 'Crear Preparar material y marcarlo Realizado al terminar.'],
         [/^\/admin\/guias/, 'Guía de procesos', 'Consulta procesos probados con requisitos, pasos y resultados esperados. Sólo orienta; no crea registros ni ejecuta pagos.', 'Seguir la guía de una transferencia de $1,000 para dos hijos con cargos de $600 y $400.'],

@@ -1,0 +1,91 @@
+package escuela.personal;
+
+import escuela.SistemaAdministrativoEscolarApplication;
+import escuela.personal.dto.*;
+import escuela.personal.service.*;
+import escuela.seguridad.service.UsuarioPrincipal;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.*;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import java.nio.file.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.math.BigDecimal;
+import java.time.*;
+import java.io.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
+@EnabledIfEnvironmentVariable(named="QA_SALARIOS_JDBC",matches="jdbc:postgresql://127.0.0.1:5432/nexo_salarios_qa")
+class ConceptoEmpleadoPostgresIT {
+ private UsernamePasswordAuthenticationToken auth(Long u,Long i,boolean institucional,boolean recuperacion,String... permisos){var a=Arrays.stream(permisos).map(SimpleGrantedAuthority::new).toList();return new UsernamePasswordAuthenticationToken(new UsuarioPrincipal(u,i,Set.of(),institucional,recuperacion,"qa.asignados","",a),"",a);}
+ private UsernamePasswordAuthenticationToken completo(){return auth(98000L,98000L,true,false,"EMPLEADO_LEER","EMPLEADO_LABORAL_LEER","CONDICION_SALARIAL_ADMINISTRAR");}
+ private void sesion(){SecurityContextHolder.getContext().setAuthentication(completo());}
+ private MockHttpSession web(UsernamePasswordAuthenticationToken a){var session=new MockHttpSession();session.setAttribute("SPRING_SECURITY_CONTEXT",new SecurityContextImpl(a));return session;}
+ private ConceptoNominaForm concepto(String codigo,String naturaleza,String aplicacion){var f=new ConceptoNominaForm();f.setCodigo(codigo);f.setNombre("Concepto ficticio "+codigo);f.setNaturaleza(naturaleza);f.setAplicacion(aplicacion);return f;}
+ private ConceptoEmpleadoForm captura(ConceptoEmpleadoService s,Long concepto,LocalDate inicio,String importe){var c=s.contexto(98000L,concepto);var f=new ConceptoEmpleadoForm();f.setEmpleadoId(98000L);f.setEmpleadoTexto(c.empleado());f.setConceptoId(concepto);f.setConceptoTexto(c.concepto());f.setConceptoVersion(c.conceptoVersion());f.setLaboralVersion(c.laboralVersion());f.setImporte(new BigDecimal(importe));f.setInicio(inicio);f.setMotivo("Asignación ficticia sin generar nómina");return f;}
+ private FiltroConceptoEmpleado filtro(Long empleado,Long concepto,String estado){return new FiltroConceptoEmpleado("",estado,empleado,null,concepto,null,"",null,null,0,10);}
+ @Test void configPrivadaHistoricaConcurrenciaSinPagosFiltrosExcelRenderYCsrf()throws Exception{
+  var storage=Files.createTempDirectory(Path.of("target"),"qa-asignados-").toAbsolutePath();
+  try(var app=new SpringApplicationBuilder(SistemaAdministrativoEscolarApplication.class).run("--server.port=0","--spring.config.import=","--spring.datasource.url="+System.getenv("QA_SALARIOS_JDBC"),"--spring.datasource.username=postgres","--spring.datasource.password=qa-no-usada","--spring.security.user.name=qa-recuperacion","--spring.security.user.password=qa-no-usada","--app.archivos.directorio="+storage)){
+   var jdbc=app.getBean(JdbcTemplate.class);jdbc.update("insert into institucion(id,codigo,nombre,zona_horaria,moneda_predeterminada) values(98000,'QA-ASIG','Institución ficticia asignaciones','America/Mexico_City','MXN'),(98001,'QA-ASIG-OTRA','Otra institución ficticia','America/Mexico_City','MXN')");
+   jdbc.update("insert into usuario(id,institucion_id,username,email,tipo_cuenta,estado,password_hash) values(98000,98000,'qa.asignados','qa.asig@example.invalid','ADMINISTRATIVO','ACTIVO','no-usado'),(98001,98001,'qa.otro.asig','qa.otro.asig@example.invalid','ADMINISTRATIVO','ACTIVO','no-usado'),(98002,98000,'qa.docente.asig','qa.docente.asig@example.invalid','PORTAL_MAESTRO','ACTIVO','no-usado')");
+   jdbc.update("insert into empleado(id,institucion_id,codigo,nombres,primer_apellido) values(98000,98000,'EMP-QA','Bruce','Ficticio'),(98001,98001,'EMP-OTRO','Otra','Persona')");
+   jdbc.update("insert into empleado_laboral(empleado_id,puesto,fecha_ingreso,situacion) values(98000,'Docente',current_date-60,'ACTIVO'),(98001,'Docente',current_date-60,'ACTIVO')");
+   var s=app.getBean(ConceptoEmpleadoService.class);var cat=app.getBean(ConceptoNominaService.class);sesion();var hoy=s.hoy();var inicio=hoy.plusDays(10);Long movimientos=jdbc.queryForObject("select count(*) from movimiento_financiero",Long.class),salarios=jdbc.queryForObject("select count(*) from condicion_salarial",Long.class);
+   Long bono=cat.guardar(null,concepto("BON-ASIG","PERCEPCION","HABITUAL")),ded=cat.guardar(null,concepto("DED-ASIG","DEDUCCION","HABITUAL")),pat=cat.guardar(null,concepto("PAT-ASIG","APORTACION_PATRONAL","HABITUAL")),ocasional=cat.guardar(null,concepto("OCA-ASIG","DEDUCCION","OCASIONAL"));
+   for(int n=0;n<12;n++)cat.guardar(null,concepto("AUX-ASIG-"+n,"PERCEPCION","HABITUAL"));
+   assertThat(s.buscarConceptos("",true)).hasSize(11);assertThat(s.buscarConceptos("BO",true)).isEmpty();assertThat(s.buscarConceptos("OCA",true)).isEmpty();assertThat(s.buscarConceptos("OCA",false)).hasSize(1);assertThat(s.buscarEmpleados("")).hasSize(1);assertThat(s.buscarEmpleados("EM")).isEmpty();
+   assertThatThrownBy(()->s.contexto(98000L,ocasional)).hasMessageContaining("habitual");
+   var f=captura(s,bono,inicio,"500.00");Long id=s.asignar(f);assertThat(s.obtener(id).importe()).isEqualByComparingTo("500.00");assertThatThrownBy(()->s.asignar(f)).hasMessageContaining("Ya existe");
+   var mala=captura(s,ded,hoy.minusDays(1),"10.00");assertThatThrownBy(()->s.asignar(mala)).hasMessageContaining("pasado");mala.setInicio(inicio);mala.setFin(hoy);assertThatThrownBy(()->s.asignar(mala)).hasMessageContaining("fin");mala.setFin(null);mala.setImporte(new BigDecimal("1.001"));assertThatThrownBy(()->s.asignar(mala)).hasMessageContaining("decimales");
+   var viejo=captura(s,bono,inicio.plusMonths(2),"800.00");var renombrado=concepto("BON-ASIG","DEDUCCION","HABITUAL");renombrado.setNombre("Nombre cambiado sólo para nuevas asignaciones");cat.guardar(bono,renombrado);assertThat(s.obtener(id).naturaleza()).isEqualTo("PERCEPCION");assertThat(s.obtener(id).nombre()).isEqualTo("Concepto ficticio BON-ASIG");assertThatThrownBy(()->s.asignar(viejo)).hasMessageContaining("cambió");
+   var cambio=captura(s,bono,inicio.plusMonths(1),"600.00");cambio.setAnteriorId(id);cambio.setAnteriorVersion(s.obtener(id).version());Long siguiente=s.asignar(cambio);assertThat(s.obtener(id).fin()).isEqualTo(cambio.getInicio().minusDays(1));assertThatThrownBy(()->s.asignar(cambio)).hasMessageContaining("anterior cambió");
+   s.gestionar(siguiente,s.obtener(siguiente).version(),"Cancelar cambio de prueba",null,true);assertThat(s.obtener(id).fin()).isNull();assertThat(s.obtener(siguiente).estado()).isEqualTo("Cancelada");assertThatThrownBy(()->s.gestionar(siguiente,0L,"No repetir",null,true)).hasMessageContaining("otra pestaña");
+   Long actual=s.asignar(captura(s,ded,hoy,"50.00"));assertThatThrownBy(()->s.gestionar(actual,0L,"No cancelar pasado",null,true)).hasMessageContaining("Sólo se cancela");s.gestionar(actual,0L,"Terminar hoy sin borrar",hoy,false);assertThat(s.obtener(actual).fin()).isEqualTo(hoy);assertThatThrownBy(()->s.gestionar(actual,0L,"Pantalla atrasada",hoy,false)).hasMessageContaining("otra pestaña");
+   Long aporte=s.asignar(captura(s,pat,inicio,"100.00"));assertThat(s.obtener(aporte).efecto()).contains("no reduce");
+   // Dos transacciones compiten por la misma pareja empleado/concepto: sólo una registra.
+   Long concurrente=cat.guardar(null,concepto("CONC-ASIG","PERCEPCION","HABITUAL"));var concurrentForm=captura(s,concurrente,inicio,"25.00");var inicioConcurrente=new CountDownLatch(1);var pool=Executors.newFixedThreadPool(2);
+   try{var tareas=new ArrayList<Future<Boolean>>();for(int n=0;n<2;n++)tareas.add(pool.submit(()->{sesion();try{inicioConcurrente.await();s.asignar(concurrentForm);return true;}catch(escuela.common.exception.ReglaNegocioException ex){return false;}finally{SecurityContextHolder.clearContext();}}));inicioConcurrente.countDown();int exitos=0;for(var t:tareas)if(t.get(20,TimeUnit.SECONDS))exitos++;assertThat(exitos).isEqualTo(1);}finally{pool.shutdownNow();}sesion();
+   assertThat(s.listar(filtro(98000L,bono,"PROXIMA")).getTotalElements()).isEqualTo(1);assertThat(s.listar(filtro(98000L,bono,"CANCELADA")).getTotalElements()).isEqualTo(1);
+   assertThatThrownBy(()->jdbc.update("update concepto_empleado set importe=999 where id=?",id)).isInstanceOf(org.springframework.dao.DataAccessException.class);assertThatThrownBy(()->jdbc.update("delete from concepto_empleado where id=?",id)).isInstanceOf(org.springframework.dao.DataAccessException.class);assertThatThrownBy(()->jdbc.update("delete from concepto_empleado_historial where asignacion_id=?",id)).isInstanceOf(org.springframework.dao.DataAccessException.class);
+   assertThat(s.historial(id,0).getTotalElements()).isEqualTo(3);
+   var laboralAnterior=captura(s,pat,inicio.plusMonths(3),"100.00");jdbc.update("update empleado_laboral set version=version+1 where empleado_id=98000");assertThatThrownBy(()->s.asignar(laboralAnterior)).hasMessageContaining("cambió");
+   jdbc.update("update empleado set activo=false where id=98000");assertThatThrownBy(()->s.contexto(98000L,pat)).hasMessageContaining("actividad");jdbc.update("update empleado set activo=true where id=98000");
+   jdbc.update("update empleado_laboral set situacion='BAJA',fecha_baja=current_date,motivo_baja='Prueba sintética de baja' where empleado_id=98000");assertThatThrownBy(()->s.contexto(98000L,pat)).hasMessageContaining("actividad");jdbc.update("update empleado_laboral set situacion='ACTIVO',fecha_baja=null,motivo_baja=null where empleado_id=98000");
+   for(Long extra:jdbc.queryForList("select id from concepto_nomina where institucion_id=98000 and codigo like 'AUX-ASIG-%' order by id limit 12",Long.class))s.asignar(captura(s,extra,inicio,"10.00"));
+   assertThat(s.listar(filtro(98000L,null,"TODAS")).getContent()).hasSize(10);assertThat(s.listar(filtro(98000L,null,"TODAS")).hasNext()).isTrue();assertThat(s.listar(filtro(98000L,null,"TODAS").pagina(100,10))).isEmpty();
+   // La inactividad bloquea escrituras pero no elimina consultas.
+   jdbc.update("update institucion set activo=false where id=98000");assertThatThrownBy(()->s.asignar(captura(s,pat,inicio.plusMonths(2),"100.00"))).hasMessageContaining("inactiva");assertThat(s.obtener(id)).isNotNull();jdbc.update("update institucion set activo=true where id=98000");
+   for(var a:List.of(auth(98000L,98000L,false,false,"EMPLEADO_LEER","EMPLEADO_LABORAL_LEER","CONDICION_SALARIAL_ADMINISTRAR"),auth(98000L,98000L,true,true,"EMPLEADO_LEER","EMPLEADO_LABORAL_LEER","CONDICION_SALARIAL_ADMINISTRAR"),auth(98002L,98000L,true,false,"EMPLEADO_LEER","EMPLEADO_LABORAL_LEER","CONDICION_SALARIAL_ADMINISTRAR"))){SecurityContextHolder.getContext().setAuthentication(a);assertThatThrownBy(()->s.obtener(id)).isInstanceOf(org.springframework.security.access.AccessDeniedException.class);}
+   SecurityContextHolder.getContext().setAuthentication(auth(98001L,98001L,true,false,"EMPLEADO_LEER","EMPLEADO_LABORAL_LEER","CONDICION_SALARIAL_ADMINISTRAR"));assertThat(s.listar(filtro(null,null,"TODAS"))).isEmpty();assertThatThrownBy(()->s.obtener(id)).isInstanceOf(org.springframework.security.access.AccessDeniedException.class);assertThatThrownBy(()->s.contexto(98001L,bono)).isInstanceOf(org.springframework.security.access.AccessDeniedException.class);sesion();
+   var mvc=MockMvcBuilders.webAppContextSetup((WebApplicationContext)app).addFilters(app.getBean(FilterChainProxy.class)).build();var session=web(completo());var dir=Path.of("target/qa-conceptos-empleado");Files.createDirectories(dir);
+   for(var ruta:List.of("/admin/conceptos-empleado","/admin/conceptos-empleado/nuevo","/admin/conceptos-empleado/"+id,"/admin/conceptos-empleado/"+id+"/cambio")){
+    var response=mvc.perform(get(ruta).session(session).param("filtroEmpleadoId","98000").param("filtroConceptoId",bono.toString()).param("estado","PROXIMA")).andReturn().getResponse();assertThat(response.getStatus()).as(ruta).isEqualTo(200);assertThat(response.getContentAsString()).contains("Conceptos por empleado","filtroEmpleadoId");Files.writeString(dir.resolve(ruta.endsWith("nuevo")?"nuevo.html":ruta.endsWith("cambio")?"cambio.html":ruta.endsWith("/"+id)?"detalle.html":"listado.html"),response.getContentAsString());
+   }
+   var ayuda=mvc.perform(get("/admin/conceptos-empleado/conceptos/buscar").param("captura","true").session(session)).andReturn().getResponse();var json=new tools.jackson.databind.ObjectMapper().readTree(ayuda.getContentAsString());assertThat(json.get("resultados").size()).isEqualTo(10);assertThat(json.get("hayMas").asBoolean()).isTrue();Files.writeString(dir.resolve("conceptos.json"),ayuda.getContentAsString());
+   var contexto=mvc.perform(get("/admin/conceptos-empleado/contexto").param("empleadoId","98000").param("conceptoId",bono.toString()).session(session)).andReturn().getResponse();assertThat(contexto.getStatus()).isEqualTo(200);Files.writeString(dir.resolve("contexto.json"),contexto.getContentAsString());
+   Files.writeString(dir.resolve("empleados.json"),mvc.perform(get("/admin/conceptos-empleado/empleados/buscar").session(session)).andReturn().getResponse().getContentAsString());
+   var excel=mvc.perform(get("/admin/conceptos-empleado/excel").session(session).param("filtroEmpleadoId","98000").param("filtroConceptoId",bono.toString()).param("estado","PROXIMA").param("filtroNaturaleza","PERCEPCION").param("desde",inicio.toString()).param("hasta",inicio.plusDays(2).toString())).andReturn().getResponse();assertThat(excel.getStatus()).isEqualTo(200);try(var libro=new org.apache.poi.xssf.usermodel.XSSFWorkbook(new ByteArrayInputStream(excel.getContentAsByteArray()))){assertThat(libro.getSheetAt(0).getLastRowNum()).isEqualTo(1);assertThat(libro.getSheetAt(0).getRow(1).getCell(7).getNumericCellValue()).isEqualTo(500d);}
+   var incompleta=mvc.perform(get("/admin/conceptos-empleado").session(session).param("filtroEmpleadoTexto","Sin seleccionar")).andReturn().getResponse();assertThat(incompleta.getContentAsString()).contains("Selecciona el empleado");
+   var nueva=mvc.perform(get("/admin/conceptos-empleado/nuevo").session(session)).andReturn();var csrf=(CsrfToken)nueva.getRequest().getAttribute(CsrfToken.class.getName());
+sesion();Long postConcepto=cat.guardar(null,concepto("POST-ASIG","APORTACION_PATRONAL","HABITUAL"));var datos=captura(s,postConcepto,inicio,"125.00");
+   var guardada=mvc.perform(post("/admin/conceptos-empleado").session(session).param(csrf.getParameterName(),csrf.getToken()).param("empleadoId","98000").param("empleadoTexto",datos.getEmpleadoTexto()).param("conceptoId",postConcepto.toString()).param("conceptoTexto",datos.getConceptoTexto()).param("conceptoVersion",datos.getConceptoVersion().toString()).param("laboralVersion",datos.getLaboralVersion().toString()).param("importe","125.00").param("inicio",inicio.toString()).param("motivo","Registro POST conserva filtros separados").param("filtroEmpleadoId","98000").param("filtroConceptoId",bono.toString()).param("filtroNaturaleza","PERCEPCION").param("estado","PROXIMA").param("pagina","1")).andReturn().getResponse();assertThat(guardada.getStatus()).isEqualTo(302);assertThat(guardada.getRedirectedUrl()).contains("filtroConceptoId="+bono,"filtroNaturaleza=PERCEPCION","pagina=1");sesion();assertThat(s.listar(filtro(98000L,postConcepto,"PROXIMA")).getContent().getFirst().naturaleza()).isEqualTo("APORTACION_PATRONAL");
+   var invalida=mvc.perform(post("/admin/conceptos-empleado").session(session).param(csrf.getParameterName(),csrf.getToken()).param("motivo","Captura conservada").param("importe","-1")).andReturn().getResponse();assertThat(invalida.getStatus()).isEqualTo(200);assertThat(invalida.getContentAsString()).contains("field-error","Captura conservada");Files.writeString(dir.resolve("errores.html"),invalida.getContentAsString());
+   var cancelar=mvc.perform(post("/admin/conceptos-empleado/"+siguiente+"/cancelar").session(session).param(csrf.getParameterName(),csrf.getToken()).param("version","0").param("motivo","Motivo conservado por concurrencia")).andReturn().getResponse();assertThat(cancelar.getStatus()).isEqualTo(200);assertThat(cancelar.getContentAsString()).contains("otra pestaña","Motivo conservado por concurrencia");
+   assertThat(mvc.perform(post("/admin/conceptos-empleado").session(session)).andReturn().getResponse().getStatus()).isBetween(300,499);
+   var lectura=web(auth(98000L,98000L,true,false,"EMPLEADO_LEER","EMPLEADO_LABORAL_LEER","CONDICION_SALARIAL_LEER"));assertThat(mvc.perform(get("/admin/conceptos-empleado/"+id).session(lectura)).andReturn().getResponse().getContentAsString()).doesNotContain("Revisar cancelación","Programar cambio →");assertThat(mvc.perform(get("/admin/conceptos-empleado/nuevo").session(lectura)).andReturn().getResponse().getStatus()).isBetween(300,499);
+   var sinLaboral=web(auth(98000L,98000L,true,false,"EMPLEADO_LEER","CONDICION_SALARIAL_LEER"));for(var ruta:List.of("/admin/conceptos-empleado","/admin/conceptos-empleado/excel","/admin/conceptos-empleado/empleados/buscar","/admin/conceptos-empleado/contexto?empleadoId=98000&conceptoId="+bono))assertThat(mvc.perform(get(ruta).session(sinLaboral)).andReturn().getResponse().getStatus()).isBetween(300,499);
+   assertThat(jdbc.queryForObject("select count(*) from movimiento_financiero",Long.class)).isEqualTo(movimientos);assertThat(jdbc.queryForObject("select count(*) from condicion_salarial",Long.class)).isEqualTo(salarios);
+  }finally{SecurityContextHolder.clearContext();}
+ }
+}

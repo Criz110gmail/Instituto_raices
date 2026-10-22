@@ -1,5 +1,51 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V123 — Conceptos por empleado — 22/10/2026
+
+- Verificación:962 pruebas Java completas y95 JavaScript correctas. Tras ajustes finales,
+  5 pruebas dirigidas y package BUILD SUCCESS; PostgreSQL17 desechable verificó vigencias,
+  duplicados concurrentes, snapshots/auditoría inmutable, baja/inactivo, versión laboral,
+  aislamiento/permisos/CSRF, render de listado/formulario/detalle/cambio y POST válido
+  con filtros separados; Excel filtrado y paginación DB. Sin cambios de salarios/dinero.
+- Revisión visual ficticia escritorio claro y móvil390 oscuro: ayudas al foco, campos
+  monetarios y fechas, modales Cancelar/Escape y pestañas. Indicadores01–03 usan la
+  composición compartida y evitan títulos comprimidos en móvil; sin estilos propios.
+- Respaldo privado ignorado .respaldos-locales/conceptos-empleado-v123-20261022/antes-v123.dump
+  validado sin mostrar contenido. Sólo app actualizada22/10 a10:30México; salud UP,
+  V123 success y tablas operativas nuevas vacías comprobadas. Contenedor QA eliminado,
+  servidor/tab ficticios cerrados, tema/viewport restaurados. Sin .env, datos de ensayo
+  operativos, commit ni push. Catálogos/salarios existentes conservados.
+
+
+- Usuario autoriza importes fijos habituales y exige filtros con ayudas10 al foco y
+  búsqueda desde3 caracteres. Menú Personal y nómina → Conceptos por empleado,
+  /admin/conceptos-empleado; tabla paginada, alta aparte, detalle por pestañas
+  Resumen/Historial/Gestión, POI por bloques y mismos filtros/retorno. Diseño compartido
+  claro/oscuro, campos monetarios texto y modales Cancelar/Confirmar, sin CSS nuevo.
+- Filtros independientes empleado/concepto por ID, tipo histórico, estado de vigencia,
+  texto y rango de vigencias coincidentes. Ayudas limitadas por institución; catálogo
+  inactivo consultable en filtros pero captura sólo habituales activos. Índices trigram
+  para búsquedas literales; no carga colecciones completas ni filtra etiquetas concatenadas.
+- ConceptoEmpleado congela código/nombre/tipo/aplicación/versión del catálogo, importe
+  fijo Decimal19,2 por nómina elegible, moneda institucional, fechas inclusivas y motivos.
+  No es mensual para prorratear; elegibilidad/prorrateo se diseñarán con preparación de
+  nómina. Sueldo base sigue sólo en CondicionSalarial. No cálculos/impuestos/pagos/dinero.
+- Alta sólo empleado activo con ingreso/situación ACTIVO, institución activa y fechas
+  hoy/futuro no anteriores a ingreso. Contexto revalida laboral/catálogo/etiquetas bajo
+  bloqueos. Exclusión DB impide superposición pareja empleado/concepto aun en carreras.
+- Programar cambio crea otra vigencia y cierra anterior día previo sin alterar importe;
+  no intercala posteriores. Cancelar sólo última futura restaura fin previo en transacción.
+  Terminar vigente incluye día elegido hoy/futuro, sin extender fin ni borrar pasado.
+  Historial privado inmutable antes/después/actor/fecha/motivo, versiones optimistas.
+- Mismos permisos salariales/laborales, sin concesiones nuevas; administrativo activo
+  persistido institucional, no recuperación/docente/familia/plantel. Ocasionales y
+  porcentajes pendientes para preparación, no se automatizan aquí.
+- Prueba humana PENDIENTE: PRUEBA_CONCEPTOS_EMPLEADO_V123.md. No añadir como confirmada
+  a Guía hasta aceptación. No repetir catálogos confirmados ni cambiar salarios de Bruce.
+  Próxima migración V124. Siguiente: ensayo bono500 enero/cambio600 febrero/cancelar
+  futuro y restaurar, filtros/Excel/modales; después calendarios/preparación de nómina.
+
+
 ## V122 — Guía de Conceptos de nómina confirmados — 21/10/2026
 
 - Usuario confirma todas las pruebas del catálogo, filtros/Excel y dos pestañas;

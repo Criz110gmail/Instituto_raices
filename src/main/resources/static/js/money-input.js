@@ -240,6 +240,23 @@
                     add('Módulos autorizados ('+modulos.length+')',modulos.length?modulos.join('\n'):'Ninguno · este rol no concede acceso a módulos');
                 }
                 note.textContent=(desactivar?'El rol dejará de conceder acceso. No se borran usuarios ni registros.':'Cada módulo seleccionado concede su paquete completo de permisos. Al editar un rol, el cambio afecta a todas las cuentas que lo tengan asignado.')+' Los permisos de otros roles se suman; vuelve a iniciar sesión para comprobar el acceso actualizado. Cancelar conserva la captura sin enviar cambios.';
+            } else if(kind.startsWith('concepto-empleado-')) {
+                const campo=name=>form.querySelector('[name="'+name+'"]');
+                const texto=name=>campo(name)?.value?.trim()||'';
+                const fecha=name=>texto(name)?texto(name).split('-').reverse().join('/'):'Sin fecha de fin';
+                const asignar=kind==='concepto-empleado-asignar';
+                const cancelar=kind==='concepto-empleado-cancelar';
+                title.textContent=asignar?(texto('anteriorId')?'Confirmar cambio de importe':'Confirmar concepto por empleado'):(cancelar?'Confirmar cancelación futura':'Confirmar fin de vigencia');
+                cancel.textContent='Cancelar';accept.textContent=asignar?'Confirmar y guardar':cancelar?'Confirmar cancelación':'Confirmar fin de vigencia';
+                add('Empleado',asignar?texto('empleadoTexto'):form.dataset.confirmSubject);
+                add('Concepto',asignar?texto('conceptoTexto'):form.dataset.confirmConcept);
+                add('Importe fijo por nómina · '+form.dataset.confirmCurrency,money(asignar?texto('importe'):form.dataset.confirmAmount));
+                if(asignar){add('Inicio',fecha('inicio'));add('Último día incluido',fecha('fin'));add('Efecto',form.dataset.confirmEffect||form.querySelector('[data-contexto-estado]')?.textContent||'Habitual');}
+                else if(cancelar)add('Inicio programado',form.dataset.confirmStart);
+                else add('Último día incluido',fecha('fin'));
+                add('Motivo',texto('motivo'));
+                note.textContent=(asignar?(texto('anteriorId')?'La vigencia anterior termina el día previo al nuevo inicio; conserva su importe histórico. ':'Se registra una asignación habitual con importe fijo, sin sobrescribir otras vigencias. '):cancelar?'Sólo se cancela una programación que aún no inicia. Se restaura el fin anterior cuando corresponde y se conserva el historial. ':'Termina la asignación en la fecha indicada, que sí queda incluida; no borra el historial. ')
+                    +'No duplica sueldo base ni genera nómina, impuestos, pagos o movimientos financieros. Cancelar sólo cierra este resumen sin guardar.';
             } else if(kind==='concepto-nomina-guardar') {
                 const campo=name=>form.querySelector('[name="'+name+'"]');
                 const texto=name=>campo(name)?.value?.trim()||'';
