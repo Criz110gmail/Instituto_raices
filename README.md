@@ -1,5 +1,20 @@
 # Sistema administrativo escolar
 
+## Calendarios y periodos de nómina — V125
+
+**Administración → Personal y nómina → Calendarios de nómina / Periodos de nómina**.
+Catálogos separados del calendario escolar, sin duplicar la configuración salarial.
+Frecuencias mensual/quincenal/semanal; periodos con cobertura inclusiva, corte de
+novedades y pago previsto. Bloquea traslapes del mismo calendario, protege versiones
+concurrentes e historial; cancelación con motivo sin borrar. Mismo diseño, modales,
+ayudas10/3, filtros/paginación y Excel con los mismos criterios. Detalles por pestañas.
+Sólo permisos privados salariales/laborales existentes, sin nuevas concesiones.
+
+**No calcula nóminas ni genera pagos**. Los casos parciales se revisarán explícitamente
+al preparar nómina, todavía pendiente. Prueba humana pendiente:
+[Ejemplo completo V125](PRUEBA_CALENDARIOS_PERIODOS_NOMINA_V125.md).
+Las notas inferiores que proponen analizar calendarios son antecedentes superados.
+
 ## Guía de Conceptos por empleado — V124
 
 **Guía de procesos → Personal → Conceptos por empleado: asignar, cambiar y cancelar

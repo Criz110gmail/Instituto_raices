@@ -240,6 +240,22 @@
                     add('Módulos autorizados ('+modulos.length+')',modulos.length?modulos.join('\n'):'Ninguno · este rol no concede acceso a módulos');
                 }
                 note.textContent=(desactivar?'El rol dejará de conceder acceso. No se borran usuarios ni registros.':'Cada módulo seleccionado concede su paquete completo de permisos. Al editar un rol, el cambio afecta a todas las cuentas que lo tengan asignado.')+' Los permisos de otros roles se suman; vuelve a iniciar sesión para comprobar el acceso actualizado. Cancelar conserva la captura sin enviar cambios.';
+            } else if(kind==='nomina-calendario'||kind==='nomina-periodo'||kind==='nomina-periodo-cancelar') {
+                const campo=name=>form.querySelector('[name="'+name+'"]');
+                const texto=name=>campo(name)?.value?.trim()||'';
+                const fecha=name=>texto(name)?texto(name).split('-').reverse().join('/'):'Sin capturar';
+                const opcion=name=>campo(name)?.selectedOptions?.[0]?.textContent||({MENSUAL:'Mensual',QUINCENAL:'Quincenal',SEMANAL:'Semanal'}[texto(name)]||texto(name));
+                cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar';
+                if(kind==='nomina-calendario'){
+                    title.textContent='Confirmar calendario de nómina';add('Código',texto('codigo'));add('Nombre',texto('nombre'));add('Frecuencia',opcion('frecuencia'));add('Descripción',texto('descripcion')||'Sin descripción');add('Estado',campo('activo').checked?'Activo':'Inactivo');
+                    note.textContent='Guarda sólo el catálogo. Desactivar no cancela periodos existentes. No asigna empleados ni genera periodos, nóminas o movimientos de dinero. Cancelar conserva la captura sin guardar.';
+                }else if(kind==='nomina-periodo'){
+                    title.textContent='Confirmar periodo de nómina';add('Calendario',texto('calendarioTexto'));add('Código',texto('codigo'));add('Nombre',texto('nombre'));add('Días cubiertos',fecha('inicio')+' — '+fecha('fin'));add('Corte de novedades',fecha('corte'));add('Pago previsto',fecha('pago'));add('Motivo',texto('motivo'));
+                    note.textContent='Sólo programa fechas. No selecciona empleados ni calcula sueldos, impuestos o pagos. Los casos parciales tendrán revisión explícita al preparar nómina. Cancelar conserva la captura sin guardar.';
+                }else{
+                    title.textContent='Confirmar cancelación del periodo';accept.textContent='Confirmar cancelación';add('Periodo',form.dataset.confirmSubject);add('Calendario histórico',form.dataset.confirmCalendar);add('Días cubiertos',form.dataset.confirmStart+' — '+form.dataset.confirmEnd);add('Motivo',texto('motivo'));
+                    note.textContent='Cancela únicamente esta programación y conserva el historial. No cancela pagos ni modifica salarios o cuentas. No se podrá editar o reactivar este periodo. Cancelar sólo cierra este resumen.';
+                }
             } else if(kind.startsWith('concepto-empleado-')) {
                 const campo=name=>form.querySelector('[name="'+name+'"]');
                 const texto=name=>campo(name)?.value?.trim()||'';

@@ -3,6 +3,26 @@
 Acuerdo: 18/10/2026. Actualización: 22/10/2026.
 Estado: EMPLEADOS/PERFIL DOCENTE V111, CONFIGURACIÓN SALARIAL V116/V119 Y CONCEPTOS V121/V123 IMPLEMENTADOS; CÁLCULO/PAGO DE NÓMINA PENDIENTES.
 
+## Calendarios y periodos de nómina — V125,22/10/2026
+
+Implementación autorizada de organización de fechas, no de preparación/cálculo/pago.
+Calendario institucional código/nombre/descripción/frecuencia/activo; periodo con
+snapshot del calendario, cobertura inclusiva, corte de novedades, pago previsto y
+motivos. Sin superposición programada por calendario, cancelación terminal con
+historial, versiones y bloqueos; frecuencia protegida tras cualquier periodo.
+Mismos permisos salariales/laborales existentes sin grants, filtros ID independientes,
+fechas coincidentes, paginación SQL, Excel POI por bloques con mismos criterios,
+retorno conservado, formularios aparte, ayudas10/3/modales y diseño compartido.
+
+Recorrido humano pendiente: PRUEBA_CALENDARIOS_PERIODOS_NOMINA_V125.md.
+No repetir datos Bruce/BON-PUNT-TEST aceptados. Próxima migración V126; primero
+aceptar este recorrido e incorporar a Guía, después diseñar preparación de nómina.
+CondicionSalarial sigue siendo sueldo/frecuencia del empleado: calendario no asigna
+empleados ni calcula por sí solo. Periodos parciales/cambios durante la cobertura
+exigirán revisión explícita antes de preparar: no asumir prorrateo, impuestos,
+préstamos, ocasionales/porcentajes ni movimientos bancarios sin acuerdo posterior.
+Las notas inferiores de calendarios pendientes son antecedentes superados.
+
 ## Conceptos por empleado confirmados y guía V124 — 22/10/2026
 
 Propietario reporta todas las pruebas correctas; cierre500MXN desde01/01/2027 sin

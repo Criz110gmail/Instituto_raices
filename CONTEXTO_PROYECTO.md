@@ -1,5 +1,35 @@
 # Contexto del proyecto
 
+## V125 — Calendarios y periodos de nómina — 22/10/2026
+
+- Verificación final:971 Java/101 JS sin fallos, package BUILD SUCCESS; PostgreSQL17
+  desechable con migraciones/render8pantallas/Excel/seguridad/CSRF/concurrencia/rangos
+  e historial, capturas ficticias escritorio claro y móvil390 oscuro. Primera suite
+  fue interrumpida al detenerse contenedores; se repitió completa satisfactoriamente.
+  Respaldo privado ignorado antes-v125.dump validado, app sola recreada a12:30México,
+  salud UP/Flyway125success, catálogos nuevos0/0. PostgreSQL/volúmenes conservados.
+  QA retirada, visor/tab cerrados, tema/viewport restaurados; Dockerfiles retirados.
+  Sin leer .env, alterar sueldos/Bruce/cuentas, commit ni push.
+
+- Implementación aprobada únicamente de fechas. Dos módulos en Personal y nómina:
+  calendarios institucionales con frecuencia/activo y periodos con cobertura inclusiva,
+  corte de novedades y pago previsto. No empleados asignados ni cálculos o movimientos.
+- Tabla/formulario separados, mismo diseño/ayudas10/3/filtros independientes/Excel
+  paginado/retorno/modales con Cancelar. Detalles por pestañas e historial privado.
+  Reutiliza paquete privado salarial/laboral; no concede permisos ni altera Bruce.
+- V125: FK compuesta institucional, exclusión de rangos PROGRAMADO por calendario,
+  versiones y bloqueos, instantánea inmutable de calendario/frecuencia/motivo original,
+  historial antes/después con actor; no DELETE/edición cancelado/reactivación. Frecuencia
+  protegida tras cualquier periodo, incluso cancelado. Cancelar libera fechas, no código.
+- Fin>=inicio/corte>=inicio/pago>=corte; corte puede quedar después de fin. Duración
+  explícita sin prorrateo, estado temporal no equivale a nómina pagada o cerrada.
+- Ensayo humano pendiente PRUEBA_CALENDARIOS_PERIODOS_NOMINA_V125.md, con calendario
+  NOM-MENSUAL-TEST, enero31días programado y febrero28días cancelado al cierre, fechas,
+  permisos, filtros/Excel/retorno, modales y concurrencia. No ejecutado con datos reales.
+  Próxima V126; aceptar ensayo e incorporar Guía antes de preparar/cálculo/pago.
+  Revisión explícita futura de periodos parciales y cambios durante cobertura; nada
+  de impuestos/préstamos/porcentajes/ocasionales automáticos sin acuerdo posterior.
+
 ## V124 — Guía de Conceptos por empleado confirmada — 22/10/2026
 
 - Verificación:965 Java completas/96 JS correctas. Tras pulir legibilidad,3 pruebas

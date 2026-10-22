@@ -942,3 +942,20 @@ institucionales, sin nuevas concesiones. Filtros empleado/concepto ID, tipo hist
 estado y rango coincidente conservan retorno. Sólo configuración: nada de impuestos,
 préstamos, sueldos duplicados o cuentas. Ocasionales/porcentajes, elegibilidad/prorrateo
 y cálculos/pagos se definirán al preparar nómina. Prueba humana aún pendiente.
+
+ACTUALIZACIÓN V125 — CALENDARIOS Y PERIODOS DE NÓMINA (2026-10-22)
+CalendarioNomina institucional: código único, nombre/descripción, frecuencia mensual/
+quincenal/semanal, activo, actores/instantes/versión. PeriodoNomina vincula calendario
+con FK compuesta institucional y snapshot código/nombre/frecuencia/versión, código
+único por calendario incluso cancelado, inicio/fin inclusivos, corte y pago previsto,
+estado PROGRAMADO/CANCELADO, motivo original y de última operación, actores/versiones.
+Exclusión GiST por calendario/rango PROGRAMADO, CHECK fin>=inicio/corte>=inicio/
+pago>=corte. Cancelar libera fechas, no código; no reactiva ni edita cancelado.
+Calendario conserva frecuencia tras cualquier periodo; snapshots originales no cambian.
+ProgramacionNominaHistorial privado inmutable con antes/después JSON/usuario/instante,
+triggers y prohibición de DELETE. Servicios bloquean institución activa/calendario/
+periodo y verifican versiones para no sobrescribir ni generar traslapes concurrentes.
+Lectura y Excel privados requieren paquete salarial/laboral institucional, sin grants.
+No hay relación automática de empleados, sueldo duplicado, cálculos ni movimientos.
+Preparación posterior debe definir elegibilidad y revisión de parciales; no autoprorratea.
+V123 ya confirmada e incorporada a guía V124; prueba humana V125 aún pendiente.

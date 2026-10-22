@@ -1,5 +1,41 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V125 — Calendarios y periodos de nómina — 22/10/2026
+
+- Verificado:971 Java completas/101 JS correctas y package BUILD SUCCESS. PostgreSQL17
+  desechable validó migración, fechas inclusivas/traslapes, dos transacciones, versiones,
+  snapshots, cancelación/historial inmutable, permisos/tenant/CSRF, render8 pantallas,
+  filtros y Excel. Revisión ficticia escritorio claro/móvil390 oscuro con ayudas y
+  modales, sin CSS nuevo ni guardados reales. Primera regresión se interrumpió por
+  parada de contenedores temporales; repetición completa final sin fallos.
+- Respaldo privado ignorado .respaldos-locales/programacion-nomina-v125-20261022/antes-v125.dump
+  validado. Sólo app actualizada22/10 a12:30México; salud UP, V125 success y catálogos
+  nuevos vacíos(0/0). QA eliminada, visor/pestaña cerrados, tema claro/viewport restaurados
+  y Dockerfiles temporales retirados. No .env, cambios a sueldos/cuentas, commit o push.
+
+- Propietario aprobó implementar sólo organización de fechas, separada de calendario
+  escolar y configuración salarial: Calendarios de nómina y Periodos de nómina.
+  No preparar/calcular nómina, prorratear, asignar empleados ni generar pagos/cuentas.
+- Calendario código/nombre/descripción/frecuencia mensual-quincenal-semanal/activo;
+  periodo calendario histórico/código/nombre/cobertura inclusiva/corte/pago previsto/
+  motivos, PROGRAMADO o CANCELADO terminal. Programado no equivale a pagado; situación
+  Próximo/En curso/Transcurrido sólo describe fechas según zona institucional.
+- V125 usa FK compuesta institucional, exclusión GiST de traslapes programados por
+  calendario, versiones/bloqueos e historial privado inmutable antes/después con actor.
+  Fin>=inicio, corte>=inicio, pago>=corte; corte puede quedar después de fin. Fechas
+  explícitas sin duración automática. Frecuencia protegida tras cualquier periodo,
+  incluso cancelado. Cancelar libera fechas, no reutiliza código ni borra/reabre.
+- Mismos permisos privados Empleados/Laboral/Salarios y admin institucional persistido
+  activo, sin grants. Mismo diseño claro/oscuro/móvil, módulos separados tabla-formulario,
+  detalle Resumen/Historial/Gestión, ayudas10 al foco/desde3, SQL paginado, Excel POI
+  por bloques con mismos filtros y retorno conservado, confirmaciones Cancelar/Confirmar.
+- Prueba humana PENDIENTE: PRUEBA_CALENDARIOS_PERIODOS_NOMINA_V125.md. No registrar
+  ensayos por el propietario. Bruce DOC-PRUEBA-02 y BON-PUNT-TEST500 aceptados intactos.
+  No declarar V125 confirmada ni publicar guía hasta su reporte. Próxima migración V126.
+  Después de aceptación, documentar Guía y diseñar preparación/elegibilidad/vigencias/
+  parciales con revisión explícita, sin asumir prorrateo o impuestos/préstamos/pagos.
+  Las notas inferiores que pedían analizar calendarios quedan como antecedentes.
+
 ## V124 — Guía de Conceptos por empleado confirmada — 22/10/2026
 
 - Verificación:965 Java completas/96 JS correctas. Tras pulir legibilidad,3 pruebas
