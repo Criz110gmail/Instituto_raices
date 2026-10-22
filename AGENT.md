@@ -1,5 +1,57 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V128 — Preparación de nómina mensual autorizada — 22/10/2026
+
+- Verificación final:979 pruebas Java correctas (976 de suite general con IT nuevo,
+  más tres regresiones PostgreSQL aisladas de conceptos/programación),109 JS y
+  package BUILD SUCCESS. IT nuevo adicional final verifica conteos HTML, POST real
+  con CSRF/retorno, Excel filtrado y por revisión, snapshots inmutables, fuentes
+  obsoletas, selección repetida, carrera entre pestañas, permisos/maestro/otra institución,
+  actualización/cancelación sin tocar movimientos/sueldos/conceptos. Fixtures requieren
+  DB limpia por IT: ConceptoNominaPostgresIT comprueba ausencia global de sueldos;
+  no ejecutar juntos con fixture salarial nuevo en una misma DB sin aislarlos.
+  AyudaContextualInterfazTest verifica carga del theme también mediante head compartido.
+  Render revisado escritorio claro, móvil390 oscuro, tarjetas/nombres/códigos y modal.
+- Respaldo privado ignorado .respaldos-locales/preparacion-nomina-v128-20261022/
+  antes-v128.dump validado. Sólo app actualizada22/10 a16:38México; saludUP y
+  Flyway128success; cuatro tablas nuevas vacías comprobadas, sin datos reales de ensayo.
+  PostgreSQL/volúmenes conservados. Sin leer .env, modificar Bruce/periodos/dinero,
+  commit ni push. Prueba humana y guía confirmada de esta etapa siguen pendientes.
+
+- Usuario autorizó implementar el siguiente paso y continuar. Nuevo módulo propio
+  Administración → Personal y nómina → Preparación de nómina, /admin/preparacion-nomina.
+  Sólo borradores: periodo Programado/calendario activo, mes gregoriano completo,
+  sueldo base/frecuencia Mensual y conceptos habituales fijos vigentes toda la cobertura.
+  Propuesto = sueldo + percepciones − deducciones; aportaciones patronales separadas.
+  No es neto fiscal ni nómina autorizada: sin impuestos, prorrateos, incidencias,
+  préstamos, porcentajes, autorizaciones, pagos ni movimientos financieros.
+- SQL clasifica antes de paginar: LISTO, REVISION, NO_INCLUIDO y motivo individual.
+  Parciales/cambios dentro del mes no se resuelven asignando cero: importes null,
+  selección bloqueada. Cambios de frecuencia tampoco se convierten automáticamente.
+  Filtros de listado y consulta de candidatos separados; ayudas10 al foco/desde3,
+  mismos criterios en Excel POI por bloques, retorno de filtros, formularios aparte,
+  confirmaciones Cancelar/Confirmar para guardar/actualizar/cancelar y diseño compartido.
+  Selección de página actual explícita, máximo100 por borrador; se permiten otros
+  borradores del mismo periodo para empleados distintos, no duplicaciones coincidentes.
+- Migración V128 crea nomina_borrador/revision/empleado/historial. Copias JSON+SHA256,
+  fechas/importes/códigos/nombres guardados, revisiones inmutables. Actualizar exige
+  previa y motivo, conserva empleados originales, incrementa revisión/version; si uno
+  dejó de ser elegible bloquea toda actualización. Cancelar libera inclusión sin borrar
+  copias ni tocar configuraciones. Historial20/revisiones20/empleados25 por página.
+  Las revisiones anteriores muestran sus propios metadatos y exportan su desglose.
+- FK institucionales/exclusión GiST por empleado/fechas y unicidad por periodo;
+  institución/calendario/periodo/empleados bloqueados y sellos revalidados, versión
+  optimista en actualizar/cancelar. Reutiliza permisos privados salariales+Empleados+
+  Laboral y administrador institucional persistido activo, sin grants/portal/recuperación.
+- PRUEBA_PREPARACION_NOMINA_V128.md deja recorrido detallado aún NO confirmado:
+  usar enero existente ENE-2027-TEST y Bruce, no repetir altas ni cambiar fechas.
+  Si únicamente tiene sueldo12000 y bono500, propuesta12500; comprobar configuración
+  real antes de exigir cifra. No cancelar bono ni asignación aceptados. Guía confirmada
+  de esta entrega pendiente de prueba humana. Próxima migración V129; primero aceptar
+  este recorrido y después acordar incidencias/revisión/autorización, sin asumir pagos.
+- Las notas de V127 de sólo analizar quedan superadas por esta autorización;
+  aceptación exacta de enero/febrero y registros anteriores se preserva.
+
 ## V127 — Guía de calendarios y periodos confirmados — 22/10/2026
 
 - Verificado:974 Java completas/105 JS correctas y package BUILD SUCCESS. PostgreSQL17

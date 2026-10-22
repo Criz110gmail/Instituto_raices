@@ -19,7 +19,7 @@ class AyudaContextualInterfazTest {
                     .filter(ruta -> ruta.toString().endsWith(".html"))
                     .filter(ruta -> !ruta.toString().contains("/fragments/"))
                     .filter(this::contieneCamposVisibles)
-                    .filter(ruta -> !leer(ruta).contains("theme.js"))
+                    .filter(ruta -> !cargaTema(ruta))
                     .toList();
             assertThat(sinAyuda).as("plantillas con campos sin ayuda contextual").isEmpty();
         }
@@ -111,6 +111,15 @@ class AyudaContextualInterfazTest {
     private boolean contieneCamposVisibles(Path ruta) {
         String html = leer(ruta);
         return html.matches("(?s).*(<input(?![^>]*type=\\\"hidden\\\")|<select|<textarea).*" );
+    }
+
+    private boolean cargaTema(Path ruta) {
+        String html = leer(ruta);
+        if (html.contains("theme.js")) return true;
+        // El head reutilizable se comprueba también: no basta con nombrar el fragmento.
+        return html.contains("th:replace=\"~{admin/fragments/nomina-comun :: head(")
+                && leer(Path.of("src/main/resources/templates/admin/fragments/nomina-comun.html"))
+                        .contains("<script src=\"/js/theme.js\"></script>");
     }
 
     private String leer(Path ruta) {

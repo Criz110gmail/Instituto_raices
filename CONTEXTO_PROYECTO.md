@@ -1,5 +1,39 @@
 # Contexto del proyecto
 
+## V128 — Preparación mensual de nómina, pendiente de aceptación humana — 22/10/2026
+
+Verificado:979 Java correctas (976suite con IT nuevo +3IT previos en DB limpias
+independientes),109JS, package BUILD SUCCESS. Ensayo PostgreSQL17: clasificación,
+previa, guardado, CSRF/retorno, Excel por filtros/revisión, conteos HTML, copias
+inmutables y bloqueo de cambios obsoletos/duplicados/carrera concurrente, permisos y
+cancelación sin movimientos/configuraciones. IT previos se aíslan porque comprueban
+conteos globales de tablas. Revisión visual escritorio claro y móvil390 oscuro;
+nombres/códigos en contenedor único para no amontonarse al convertir tabla en tarjetas.
+Respaldo privado ignorado antes-v128.dump validado. Sólo app desplegada22/10 a16:38,
+saludUP/Flyway128success y cuatro tablas vacías comprobadas. Sin .env, cambios de
+Bruce/periodos/dinero, commit/push. PostgreSQL y volúmenes conservados.
+
+Autorizada e implementada /admin/preparacion-nomina, menú propio Personal y nómina.
+Sólo copias revisables: meses completos, frecuencia/base mensual y configuraciones
+de cobertura completa. Clasificación SQL antes de paginar LISTO/REVISION/NO_INCLUIDO
+con motivos. Parciales/cambios/monedas/deducciones incompatibles no reciben importe
+automático ni cero. Sueldo+percepciones−deducciones; aportaciones escuela aparte.
+Sin impuestos, prorrateos, incidencias, préstamos, autorizaciones/pagos/movimientos.
+
+V128 cuatro tablas de borrador/revisión/empleado/historial, snapshots JSON+SHA256,
+FK institucionales y exclusión empleado/fechas también entre calendarios. Guardado
+revalida fuentes bajo bloqueos; actualización explícita con motivo conserva empleados
+y revisiones anteriores, versión optimista; cancelar libera inclusión, no borra nada.
+Mismos permisos salariales/laborales privados, sin grants, cuentas portal/recuperación.
+Listado/consulta/Excel con filtros independientes, SQL paginado, ayudas10/3, contexto
+de retorno, diseño compartido oscuro/claro y modales con cancelar. Selección por página
+con máximo100 explicada; empleados25, historial/revisiones20 por página.
+
+Ejemplo pendiente PRUEBA_PREPARACION_NOMINA_V128.md: enero existente Programado y
+Bruce12000+bono500=12500 sólo si no hay otros conceptos; no alterar ensayo aceptado,
+ni crear registros reales por el agente. No publicar aún guía confirmada. Próxima V129;
+primero prueba humana, después acordar paso siguiente sin asumir nómina fiscal/pagos.
+
 ## V127 — Recorrido de periodos confirmado e incorporado a Guía — 22/10/2026
 
 - 974 Java/105 JS correctas y package BUILD SUCCESS. PostgreSQL17 temporal: migración,

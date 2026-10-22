@@ -1,5 +1,18 @@
 # Sistema administrativo escolar
 
+## Preparación de nómina mensual — V128
+
+**Administración → Personal y nómina → Preparación de nómina**: selecciona periodo y
+empleados elegibles, revisa importes y guarda un borrador histórico. Sólo meses
+completos con sueldo y conceptos habituales fijos cubriendo toda la vigencia; los casos
+parciales explican su motivo sin proponer cero ni prorratear. Aportaciones patronales
+separadas, filtros/autocompletado, paginación, Excel y confirmaciones con cancelar.
+Actualizar crea otra revisión explícita; cancelar conserva historial y libera inclusión.
+No calcula impuestos ni autoriza/paga nómina o altera cuentas financieras.
+
+[Ejemplo detallado para probar V128](PRUEBA_PREPARACION_NOMINA_V128.md).
+Prueba humana pendiente; no volver a crear enero ni modificar configuraciones aceptadas.
+
 ## Guía de calendarios y periodos de nómina — V127
 
 **Guía de procesos → Personal → Calendarios y periodos de nómina: programar, revisar

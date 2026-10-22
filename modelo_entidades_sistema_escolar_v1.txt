@@ -968,3 +968,24 @@ opcional, inicio<=fecha_corte<=pago. Snapshots/historial/cancelación conservado
 Sólo referencia para reportes de faltas/bonos/descuentos: no aplica incidencias ni
 bloquea capturas. Detalle/tabla/modal/Excel muestran Sin definir para NULL. Dominio
 de incidencias y efecto en preparación sigue pendiente; no movimientos de dinero.
+
+ACTUALIZACIÓN V128 — BORRADORES MENSUALES DE NÓMINA (2026-10-22)
+NominaBorrador institucional pertenece a PeriodoNomina, estado BORRADOR/CANCELADO,
+nombre/motivo/actor/instantes/version/revision_actual. No es nómina autorizada ni fiscal.
+NominaBorradorRevision inmutable guarda snapshot de calendario/periodo, fechas de mes
+completo, pago previsto, moneda, JSON fuente/sello SHA256 y motivo/actor/instante.
+NominaBorradorEmpleado por revisión conserva identidad histórica, fecha inclusiva,
+sueldo/percepciones/deducciones/aportaciones/propuesto, moneda, JSON de configuración
+laboral/sueldo/conceptos y sello. FK compuestas institucionales; exclusión GiST activa
+empleado/fechas impide duplicar preparación incluso entre calendarios. Propuesto no
+negativo igual sueldo+percepciones−deducciones; aportación patronal no resta. Activo
+sólo puede pasar a false al cancelar/actualizar, sin reescribir copia. Head identity
+inmutable y cancelado terminal; trigger registra antes/después/usuario/instante/motivo
+en NominaBorradorHistorial inmutable. No DELETE ni cambio silencioso de snapshots.
+Selección LISTO/REVISION/NO_INCLUIDO SQL antes de paginar, sólo mensual completo,
+base y pago mensual, empleado elegible y todas las vigencias compatibles. Casos
+parciales o deducciones incompatibles no calculan cero ni prorrateo. Revalidación
+de sellos bajo bloqueos y versiones protege fuentes cambiadas/duplicados. Actualizar
+con previa conserva empleados originales; cancelar libera fechas, no configuraciones.
+Sólo permisos privados salariales/laborales administrativos existentes, sin grants.
+No impuestos/préstamos/porcentajes/incidencias/autorizaciones/pagos/movimientos.

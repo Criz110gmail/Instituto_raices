@@ -2,6 +2,30 @@
 
 Acuerdo: 18/10/2026. Actualización: 22/10/2026.
 
+## Preparación mensual en borrador — V128
+
+Usuario autorizó implementar. Módulo separado **Preparación de nómina**: escoger
+periodo Programado de calendario activo, consultar elegibilidad, seleccionar empleados
+listos, revisar importes, confirmar borrador. Sólo mes gregoriano completo con sueldo
+base/pago Mensual y conceptos habituales fijos cubriendo todo el mes. Las vigencias
+se evalúan contra periodo, por lo que enero futuro se puede preparar sin falsear fechas.
+Ingresos/bajas/cambios dentro del mes y demás incompatibilidades requieren revisión;
+sin importe automático, sin asignar cero y sin autoprorrateo. Sin sueldo/duplicados/
+expediente inactivo/frecuencia incompatible se explica No incluido.
+
+Propuesto = sueldo + percepciones − deducciones; aportaciones escuela separadas.
+No es neto fiscal, autorización, egreso ni pago. Impuestos, incidencias ocasionales,
+horas extra, préstamos, porcentajes, quincenal/semanal y parciales quedan pendientes.
+Snapshots y revisiones inmutables, actualización explícita con previa+motivo y mismos
+empleados, cancelación sin borrar historial, protección concurrente entre calendarios.
+Filtros independientes y SQL paginado, ayudas10/3, Excel con mismos filtros, retorno,
+modales Cancelar/Confirmar, mismo diseño. Máximo100 empleados de página por borrador;
+otros borradores pueden incluir personas distintas del periodo sin duplicarlas.
+
+Prueba humana pendiente: PRUEBA_PREPARACION_NOMINA_V128.md, conservar enero/febrero,
+asignaciones y bono de Bruce aceptados. Incorporar a Guía sólo tras confirmación.
+Próxima V129. Las notas inferiores de sólo analizar preparación son antecedentes.
+
 ## Calendarios y periodos confirmados — Guía V127
 
 Propietario confirmó recorrido principal: traslape, filtros/Excel/retorno, edición/

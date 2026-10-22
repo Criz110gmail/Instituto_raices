@@ -240,6 +240,16 @@
                     add('Módulos autorizados ('+modulos.length+')',modulos.length?modulos.join('\n'):'Ninguno · este rol no concede acceso a módulos');
                 }
                 note.textContent=(desactivar?'El rol dejará de conceder acceso. No se borran usuarios ni registros.':'Cada módulo seleccionado concede su paquete completo de permisos. Al editar un rol, el cambio afecta a todas las cuentas que lo tengan asignado.')+' Los permisos de otros roles se suman; vuelve a iniciar sesión para comprobar el acceso actualizado. Cancelar conserva la captura sin enviar cambios.';
+            } else if(kind==='nomina-borrador'||kind==='nomina-borrador-cancelar') {
+                const cancelar=kind==='nomina-borrador-cancelar',actualizar=form.dataset.confirmUpdate==='true';
+                title.textContent=cancelar?'Confirmar cancelación del borrador':actualizar?'Confirmar nueva revisión':'Confirmar borrador mensual';
+                cancel.textContent='Cancelar';accept.textContent=cancelar?'Confirmar cancelación':actualizar?'Confirmar actualización':'Confirmar y guardar';
+                if(form.dataset.confirmSubject)add('Borrador',form.dataset.confirmSubject);
+                add('Periodo',form.dataset.confirmPeriod);add('Empleados',form.dataset.confirmPeople);
+                if(actualizar)add('Propuesto guardado anteriormente',money(form.dataset.confirmBefore));
+                add(cancelar?'Propuesto histórico, no pagado':'Propuesto sin impuestos calculados',money(form.dataset.confirmAmount));
+                add('Motivo',form.querySelector('[name="motivo"]')?.value||'');
+                note.textContent=cancelar?'Cancela sólo el borrador y libera a sus empleados para otra preparación. Conserva todas las revisiones; no cancela pagos ni altera salarios o cuentas.':'Guarda una copia histórica revisable, no una nómina fiscal ni autorizada. No calcula impuestos, prorrateos o préstamos y no ejecuta pagos. Las aportaciones de la escuela no restan al empleado. Cancelar conserva la captura sin guardar.';
             } else if(kind==='nomina-calendario'||kind==='nomina-periodo'||kind==='nomina-periodo-cancelar') {
                 const campo=name=>form.querySelector('[name="'+name+'"]');
                 const texto=name=>campo(name)?.value?.trim()||'';
