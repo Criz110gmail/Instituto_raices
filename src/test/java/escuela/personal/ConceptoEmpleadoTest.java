@@ -10,6 +10,10 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.*;
 
 class ConceptoEmpleadoTest {
+ @Test void avisosDentroDeFilaPropiaSinMargenNegativoContraInputs()throws Exception{
+  String html=java.nio.file.Files.readString(java.nio.file.Path.of("src/main/resources/templates/admin/concepto-empleado-form.html"));
+  assertThat(html).contains("<div class=\"wide\"><small class=\"field-help\" data-contexto-estado","Referencia de la asignación anterior").doesNotContain("</div><p class=\"field-help\" data-contexto-estado");
+ }
  @Test void filtrosIndependientesNormalizadosConRetornoSeguro(){
   var f=new FiltroConceptoEmpleado(" bono ","PROXIMA",3L,"Bruce",2L,"BON","PERCEPCION",LocalDate.of(2027,1,1),LocalDate.of(2027,2,1),-2,999).normalizado();f.validar();assertThat(f.pagina()).isZero();assertThat(f.tamanio()).isEqualTo(25);
   assertThat(f.url("/admin/conceptos-empleado/5")).contains("filtroEmpleadoId=3","filtroConceptoId=2","filtroNaturaleza=PERCEPCION","desde=2027-01-01","hasta=2027-02-01").doesNotContain("empleadoId=", "Bruce");

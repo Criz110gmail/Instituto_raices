@@ -138,7 +138,12 @@
             const parametrosConsulta=parametros(consulta);
             clavePendiente=parametrosConsulta.toString();
             try {
-                const respuesta = await fetch(`${contenedor.dataset.endpoint}?${parametrosConsulta}`, {
+                // Algunos catálogos añaden un filtro fijo, por ejemplo ?captura=true.
+                // Mezclar parámetros evita generar captura=true?q= y rechazar la consulta.
+                const [ruta, consultaFija = ''] = contenedor.dataset.endpoint.split('?', 2);
+                const consultaCompleta = new URLSearchParams(consultaFija);
+                parametrosConsulta.forEach((valor, nombre) => consultaCompleta.set(nombre, valor));
+                const respuesta = await fetch(`${ruta}?${consultaCompleta}`, {
                     headers: {'Accept': 'application/json'},
                     signal: actual.signal
                 });

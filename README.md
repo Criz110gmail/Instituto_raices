@@ -1,6 +1,23 @@
 # Sistema administrativo escolar
 
+## Guía de Conceptos por empleado — V124
+
+**Guía de procesos → Personal → Conceptos por empleado: asignar, cambiar y cancelar
+un bono**. Diez etapas detalladas del recorrido confirmado: bono500 de Bruce desde
+01/01/2027 sin fin, Próxima, y aumento600 desde01/02/2027 Cancelada. Incluye ayudas,
+filtros/Excel, modales, fechas y restauración sin duplicar sueldo base ni mover dinero.
+Ruta `/admin/guias/conceptos-por-empleado-bono-confirmado`. No repetir las operaciones.
+Siguiente: analizar calendarios y preparación de nómina antes de implementarlos.
+
 ## Conceptos por empleado — V123
+
+Programar cambio separa el aviso contextual de los inputs y muestra referencia del
+importe/fechas anteriores. El nuevo inicio se elige explícitamente, sin proponer
+automáticamente el día siguiente. No cambia registros ya guardados.
+
+Corrección22/10: las ayudas conservan filtros fijos como `captura=true` al agregar
+la búsqueda; Concepto habitual vuelve a consultar iniciales al foco y desde3 letras.
+Sin cambios de datos ni migración; prueba de regresión incluida.
 
 **Administración → Personal y nómina → Conceptos por empleado**. Asigna conceptos
 habituales activos con importe fijo por nómina y vigencia; no duplica sueldo base.
@@ -10,7 +27,7 @@ cambio futuro, cancelación y fin de vigencia. Cambios conservan el importe hist
 cancelar el último futuro restaura vigencia previa cuando corresponde. Mismo diseño.
 
 No genera nómina, cálculos fiscales ni movimientos. Ocasionales/porcentajes pendientes.
-Prueba humana por ejecutar: [Ejemplo completo](PRUEBA_CONCEPTOS_EMPLEADO_V123.md).
+Recorrido confirmado: [Ejemplo completo](PRUEBA_CONCEPTOS_EMPLEADO_V123.md).
 
 ## Guía del catálogo de nómina — V122
 

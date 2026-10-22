@@ -1,5 +1,80 @@
 # Contexto del proyecto
 
+## V124 — Guía de Conceptos por empleado confirmada — 22/10/2026
+
+- Verificación:965 Java completas/96 JS correctas. Tras pulir legibilidad,3 pruebas
+  dirigidas y package BUILD SUCCESS; PostgreSQL17 desechable comprobó migración,
+  diez etapas/cuatro acciones, render, Excel10 filas y cuenta sin paquete denegada.
+  Reutiliza plantilla/estilos de guía existentes, sin cambios visuales o de negocio.
+- Respaldo privado ignorado .respaldos-locales/guia-conceptos-empleado-v124-20261022/antes-v124.dump
+  validado sin mostrar contenido. Sólo app actualizada22/10 a11:55México; salud UP,
+  V124 success y guía CONFIRMADA/10 comprobadas. Base QA eliminada y Dockerfiles
+  temporales retirados. No .env, operaciones de personal/dinero, commit ni push.
+
+- Propietario reporta todas las pruebas correctas y comparte cierre: Bruce Wayne
+  DOC-PRUEBA-02, BON-PUNT-TEST Percepción/Habitual;500MXN desde01/01/2027 sin fin,
+  Próxima;600 desde01/02/2027 sin fin, Cancelada. Restauración confirmada. No repetir
+  altas/cambios/cancelaciones ni cancelar500. Aceptación no equivale a auditoría exhaustiva.
+- Usuario autoriza incorporar a Guía y decir siguiente paso. V124 agrega sólo contenido
+  editorial Personal: Conceptos por empleado: asignar, cambiar y cancelar un bono;
+  slug conceptos-por-empleado-bono-confirmado. Diez etapas/cuatro acciones numeradas,
+  módulos/botones/capturas/resultados/precauciones,10/3/filtros/Excel/retorno, modales,
+  cambio con fecha vacía explícita01/02 vs02/01, cierre previo y restauración posterior.
+- Reutiliza permisos de guía y salariales/laborales existentes, sin concederlos.
+  Enlaza desde cierre de guía de catálogo V122. No modifica conceptos, asignaciones,
+  sueldos, cuentas ni datos de ensayo. PRUEBA_CONCEPTOS_EMPLEADO_V123.md confirmada.
+  Las notas inferiores de aceptación pendiente son antecedentes superados para este caso.
+- Próxima migración V125. Siguiente: ANALIZAR calendarios y preparación de nómina,
+  periodos/frecuencias/cortes, sueldo y conceptos por vigencia, parciales/elegibilidad
+  y revisión antes de autorización. No implementar ni asumir impuestos, préstamos,
+  porcentajes, ocasionales o pagos sin definirlos con el propietario.
+
+
+## Corrección visual y fecha explícita al programar concepto — 22/10/2026
+
+- Verificado:6 Java dirigidas (PostgreSQL17 desechable/render/fecha nueva vacía/
+  referencias anteriores y reglas existentes),96 JS correctas y package BUILD SUCCESS.
+  Revisión ficticia escritorio claro/móvil390 oscuro: aviso23px debajo de los inputs,
+  sin superposición; sin CSS nuevo. Sólo app actualizada22/10 a11:37México, salud UP.
+  Base/archivos/fechas guardadas intactos; QA eliminada, servidor/tab cerrados,
+  tema/viewport restaurados y Dockerfiles temporales retirados.
+
+- Propietario reporta en punto6 mensaje contextual encima de inputs al cargar cambio.
+  Causa: p.field-help fuera de form-grid heredaba margen -8px. Contexto, errores y
+  notas ahora están en filas wide de la cuadrícula con small.field-help (margen5px),
+  usando el mismo diseño común; no se modifica CSS global ni importes/registro anterior.
+- Cambio ya NO propone automáticamente el siguiente día válido: inicio nuevo vacío,
+  obligatorio, etiqueta Inicio del nuevo importe, mínimo posterior a hoy y al inicio
+  previo. Tarjeta de referencia muestra importe/inicio/fin anteriores dd/MM/yyyy.
+  Esto evita confundir02/01/2027 (2enero) con01/02/2027 (1febrero) del ejemplo.
+  Nuevo registro conserva fecha inicial hoy; reglas de servicio sin cambios.
+- Ensayo V123 sigue pendiente en punto6: elegir600 e inicio01/02/2027 para terminar
+  los500 el31/01/2027. No guardar ni corregir registros reales por el agente.
+  Sin migración: siguiente V124. Se preserva corrección anterior de autocomplete y
+  cambios del propietario. Sin .env, commit ni push.
+
+
+## Corrección del autocompletado de Concepto habitual — 22/10/2026
+
+- Sólo app actualizada22/10 a11:23México; salud UP y recurso JavaScript corregido
+  servido comprobados. Base/archivos conservados; Dockerfiles temporales retirados.
+
+- En prueba humana V123, punto2, el propietario informa ayuda sin opciones. Causa:
+  autocomplete.js concatenaba siempre '?' aunque el endpoint ya tenía ?captura=true;
+  enviaba captura=true?q= y Spring rechazaba el booleano. No era ausencia de catálogos.
+- Se separa ruta/consulta fija y se combinan con URLSearchParams.set. Conserva
+  captura=true y q vacío al foco o texto desde3; selección/limpiar y helpers existentes
+  sin cambios de diseño, permisos o elegibilidad. Sólo habituales activos para alta.
+- Nueva prueba de regresión reproduce endpoint real con parámetro fijo y exige una
+  sola '?', captura exactamente true, q independiente, opciones al foco, mínimo3 y
+  reapertura al limpiar.96 JS correctas. Package BUILD SUCCESS; Java sin cambios
+  funcionales (empaquetado con skipTests; no se repitió suite Java en esta corrección).
+- Sin migración; siguiente sigue V124. No datos de prueba operativos ni cambios de
+  catálogos/salarios/cuentas/permisos. Retomar punto2 seleccionando BON-PUNT-TEST;
+  DESC-TEST ocasional continúa excluido. Ensayo humano pendiente, no documentar como
+  confirmado todavía. Sin .env, commit ni push.
+
+
 ## V123 — Conceptos por empleado — 22/10/2026
 
 - Verificación:962 pruebas Java completas y95 JavaScript correctas. Tras ajustes finales,

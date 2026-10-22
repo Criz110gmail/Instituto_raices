@@ -1,8 +1,20 @@
 # Prueba de Conceptos por empleado — V123
 
-Prueba humana PENDIENTE. La verificación técnica no confirma este recorrido por el
-propietario. No generar nómina ni modificar cuentas, salarios o las asignaciones
-laborales de Bruce. No repetir registros de pruebas anteriores sin comprobarlos.
+Recorrido confirmado por el propietario el22/10/2026. Reporta todas las pruebas
+correctas y proporciona cierre del listado: bono500 desde01/01/2027 sin fin Próxima,
+aumento600 desde01/02/2027 sin fin Cancelada. No generar nómina ni modificar cuentas,
+salarios o asignaciones laborales de Bruce. No repetir operaciones para documentarlas.
+
+## Cierre confirmado e incorporación a Guía
+
+Se restauró correctamente el fin del bono500 al cancelar el aumento600. La fila
+cancelada conserva importe/fechas como historial, pero no aplica. Estado Próxima
+depende de la fecha del ensayo, anterior a enero2027. La aceptación funcional del
+recorrido no equivale a auditoría exhaustiva de escenarios o accesos no reportados.
+V124 incorpora diez etapas en Guía de procesos → Personal → Conceptos por empleado:
+asignar, cambiar y cancelar un bono; ruta /admin/guias/conceptos-por-empleado-bono-confirmado.
+Se conserva este documento como ejemplo, sin repetir altas ni cancelar también500.
+Siguiente: analizar calendarios y preparación de nómina antes de calcular/pagar.
 
 ## Alcance y reglas
 
@@ -83,8 +95,11 @@ y no registrar otro bono. Cancelar del formulario vuelve sin guardar.
 ## 5. Programar nuevo importe
 
 En **Conceptos por empleado → Ver** del bono de500, pestaña **Gestión → Programar
-cambio**. Empleado/concepto permanecen identificados. Captura importe600, inicio
-01/02/2027, fin vacío, motivo `Aumento de bono de prueba desde febrero`.
+cambio**. Empleado/concepto permanecen identificados. La nueva fecha viene vacía
+para elegirla explícitamente; la tarjeta de referencia muestra los500 y su inicio
+anterior01/01/2027. Captura importe600, Inicio del nuevo importe **01/02/2027
+(1 de febrero)**, fin vacío, motivo `Aumento de bono de prueba desde febrero`.
+No uses02/01/2027: esa fecha corresponde al2 de enero, no febrero.
 Revisa modal y confirma. Debe existir una vigencia nueva de600 desde01/02/2027;
 la de500 termina31/01/2027 y conserva su importe y motivo originales.
 
@@ -124,10 +139,10 @@ Confirmar registra el fin inclusivo, mantiene historial y estado Vigente durante
 ese último día. Al día siguiente se verá Anterior. No extiende un fin registrado;
 si hay una programación posterior debe resolverse antes. No afecta sueldo base.
 
-## Cierre esperado antes de documentar como confirmado
+## Resultado final confirmado
 
 Bono500 Próxima desde01/01/2027 sin fin, bono600 Cancelada; sin duplicados activos,
-sin cambios a salarios/cuentas. Confirmar con propietario filtros/Excel, modales y
-restauración antes de incorporar el caso a Guía de procesos. Después: analizar
+sin cambios a salarios/cuentas. El propietario confirmó el recorrido y la restauración;
+V124 lo incorpora a Guía de procesos. Después: analizar
 calendarios y preparación de nómina, definiendo periodos y elegibilidad sin asumir
 cálculos fiscales o aplicar conceptos ocasionales automáticamente.

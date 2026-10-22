@@ -3,6 +3,19 @@
 Acuerdo: 18/10/2026. Actualización: 22/10/2026.
 Estado: EMPLEADOS/PERFIL DOCENTE V111, CONFIGURACIÓN SALARIAL V116/V119 Y CONCEPTOS V121/V123 IMPLEMENTADOS; CÁLCULO/PAGO DE NÓMINA PENDIENTES.
 
+## Conceptos por empleado confirmados y guía V124 — 22/10/2026
+
+Propietario reporta todas las pruebas correctas; cierre500MXN desde01/01/2027 sin
+fin Próxima y600 desde01/02/2027 sin fin Cancelada. Restauración aceptada; no repetir
+operaciones ni cancelar500. V124 incorpora diez etapas a Guía, sólo contenido, sin
+conceder permisos ni modificar personal/sueldos/cuentas. Acta V123 actualizada.
+Supera las notas inferiores de prueba pendiente para este recorrido principal.
+
+Próxima V125. Siguiente: análisis de calendarios y preparación de nómina: frecuencias,
+periodos/cortes, selección de sueldo y conceptos por vigencia, periodos parciales,
+elegibilidad y revisión antes de autorizar. Aún no implementar calendario/cálculo/pago
+ni asumir retenciones legales, préstamos, porcentajes u ocasionales sin acordarlos.
+
 ## Conceptos por empleado aprobados — V123,22/10/2026
 
 Importe fijo habitual por nómina, sin duplicar sueldo base; ocasionales y porcentajes
