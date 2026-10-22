@@ -1,5 +1,25 @@
 # Sistema administrativo escolar
 
+## Guía de calendarios y periodos de nómina — V127
+
+**Guía de procesos → Personal → Calendarios y periodos de nómina: programar, revisar
+y cancelar**. Doce etapas detalladas con módulos/botones/capturas/resultados, filtros,
+Excel, modales, historial y protección entre pestañas. Cierre confirmado22/10/2026:
+NOM-MENSUAL-TEST Activo; enero revisiónA Programado31días con fecha opcional28/01/2027;
+febrero Cancelado28días sin fecha opcional. No repetir registros para leer la guía.
+Ruta `/admin/guias/calendarios-periodos-nomina-confirmado`. Sólo documentación:
+no cambia periodos, sueldos o cuentas. Siguiente: analizar preparación de nómina,
+elegibilidad por vigencias y revisión explícita de periodos parciales, sin calcular/pagar aún.
+
+## Fecha opcional de incidencias de nómina — V126
+
+En **Periodos de nómina**, captura principal inicio/fin/pago previsto. **Configuración
+avanzada → Fecha límite para recibir incidencias de nómina**, opcional, explica faltas,
+bonos/descuentos; por ahora sólo referencia, sin bloqueos ni aplicación automática.
+Datos previos conservados; al editar, muestra la sección abierta si existe fecha.
+Sin fecha: Sin definir en detalle/tabla/modal/Excel. Si se define, entre inicio y pago.
+No genera nómina ni movimientos. Continúa [la prueba en el punto3](PRUEBA_CALENDARIOS_PERIODOS_NOMINA_V125.md).
+
 ## Calendarios y periodos de nómina — V125
 
 **Administración → Personal y nómina → Calendarios de nómina / Periodos de nómina**.

@@ -1,7 +1,22 @@
 # Calendarios y periodos de nómina — Prueba V125
 
-Estado: **pendiente de aceptación por el propietario**. Las verificaciones técnicas no
-sustituyen este recorrido. No repitas las pruebas confirmadas de Bruce ni cambies sus
+Actualización V126: **Fecha límite para recibir incidencias de nómina** es opcional,
+en **Configuración avanzada**. Sustituye la etiqueta técnica anterior. Si estabas en
+el punto3, continúa ahí: no repitas el calendario. Los registros previos conservan
+sus fechas; no tienes que borrarlas ni rehacer los periodos que ya guardaste.
+
+Estado: **recorrido principal confirmado por el propietario el 22/10/2026**. Confirmó
+traslape rechazado, febrero creado, filtros/Excel/retorno, edición/historial, bloqueo
+de segunda pestaña, desactivación/reactivación y cancelación final de febrero. Cierre:
+calendario Activo; enero con nombre **Enero de 2027 — revisión A**,31días, pago31/01/2027,
+fecha opcional28/01/2027, Programado/Próximo; febrero28días, pago28/02/2027, fecha
+opcional Sin definir, Cancelado/No aplica. No repetir operaciones para documentarlas.
+Guía V127: **Personal → Calendarios y periodos de nómina: programar, revisar y cancelar**,
+ruta `/admin/guias/calendarios-periodos-nomina-confirmado`,12etapas con cuatro acciones
+por etapa. La aceptación no acredita pruebas adicionales no reportadas.
+
+Las verificaciones técnicas no sustituyen el uso autorizado. No repitas las pruebas
+confirmadas de Bruce ni cambies sus
 sueldos, planteles o bono de $500. Este ejercicio sólo organiza fechas: no genera nómina,
 retenciones, recibos ni movimientos en cuentas.
 
@@ -55,15 +70,18 @@ espera a que aparezca **Mensual** en Frecuencia del calendario. Captura:
 | Nombre del periodo | `Enero de 2027 de prueba` |
 | Inicio del periodo | **01/01/2027** |
 | Fin del periodo | **31/01/2027** |
-| Fecha de corte de novedades | **28/01/2027** |
+| Configuración avanzada → Fecha límite para recibir incidencias de nómina | **Dejar vacía** |
 | Fecha prevista de pago | **31/01/2027** |
 | Motivo de registro | `Programación mensual de prueba de enero; todavía sin preparar ni pagar nómina.` |
 
-Inicio y fin son los días cubiertos, ambos incluidos. Corte es el límite administrativo
-previsto para novedades; no cierra por sí solo la captura ni ejecuta tareas automáticas
-en esta etapa. Pago previsto es la fecha planeada, no un pago realizado.
+Inicio y fin son los días cubiertos, ambos incluidos. Pago previsto es la fecha planeada,
+no un pago realizado. Configuración avanzada empieza cerrada si no hay una fecha opcional.
+Ábrela para revisar la ayuda: incidencias son reportes de faltas, bonos o descuentos
+que podrían afectar cuánto recibe el empleado; no son cambios de datos personales.
+Por ahora su fecha sólo es referencia: no bloquea capturas ni aplica cambios automáticamente.
 
-Pulsa **Revisar periodo**. Verifica calendario y las cuatro fechas en `dd/mm/aaaa`.
+Pulsa **Revisar periodo**. Verifica calendario, inicio/fin/pago en `dd/mm/aaaa` y la
+fecha opcional como **Sin definir**.
 Primero pulsa **Cancelar** en el modal: no debe guardarse. Abre otra vez la revisión y
 pulsa **Confirmar y guardar**. En el detalle → Resumen debes ver **Programado**, **31 días**,
 las fechas anteriores y el motivo. Si hoy todavía es 2026, la situación por fechas es
@@ -74,15 +92,16 @@ eso NO significa que esté calculado, cerrado o pagado. Historial muestra usuari
 
 Vuelve a **Periodos de nómina → Nuevo periodo** y selecciona el mismo calendario.
 Usa código `TRASLAPE-2027-TEST`, nombre `Traslape que no debe registrarse`, inicio
-**15/01/2027**, fin **14/02/2027**, corte **10/02/2027**, pago **14/02/2027**, motivo
+**15/01/2027**, fin **14/02/2027**, fecha de incidencias vacía, pago **14/02/2027**, motivo
 `Prueba de bloqueo de fechas ya cubiertas.` Revisa y confirma: debe indicar que el
 calendario ya tiene un periodo que coincide con esas fechas. No debe crear el registro
 ni perder la captura. Incluso empezar el **31/01/2027** se cruza con enero porque ambos
 extremos están incluidos. El siguiente periodo puede comenzar el **01/02/2027**.
 
-También deben rechazarse fin anterior al inicio, corte anterior al inicio y pago anterior
-al corte. Corrige o vuelve sin guardar estos intentos. El corte sí puede quedar después
-del fin del periodo si la escuela así lo requiere, siempre que pago sea igual o posterior.
+También deben rechazarse fin anterior al inicio y pago anterior al inicio. Si abres
+Configuración avanzada y defines fecha de incidencias, debe rechazarse si es anterior
+al inicio o posterior al pago previsto. Corrige o vuelve sin guardar esos intentos.
+Esa fecha sí puede quedar después del fin, siempre que no sea posterior al pago.
 La frecuencia no rellena fechas ni fuerza meses de una duración fija: permite periodos
 parciales explícitos; su eventual prorrateo todavía no está implementado.
 
@@ -94,7 +113,8 @@ En **Periodos de nómina → Nuevo periodo** selecciona el calendario mensual y 
 | --- | --- |
 | Código / nombre | `FEB-2027-TEST` / `Febrero de 2027 de prueba` |
 | Inicio / fin | **01/02/2027** / **28/02/2027** |
-| Corte / pago previsto | **25/02/2027** / **28/02/2027** |
+| Fecha prevista de pago | **28/02/2027** |
+| Fecha límite para recibir incidencias de nómina | **Vacía; opcional** |
 | Motivo | `Programación mensual de prueba de febrero.` |
 
 Confirma el modal. Debe registrarse sin conflicto, con **28 días**. En **Periodos de
@@ -113,11 +133,17 @@ por combinación de filtros, debe mostrar un vacío explicativo, no un error.
 
 Desde **Periodos de nómina**, localiza enero y pulsa **Editar**. El calendario histórico
 no se puede cambiar; el motivo del cambio comienza vacío para que expliques esta gestión.
-Cambia el nombre a `Enero de 2027 revisado de prueba`, conserva las cuatro fechas y
+Cambia el nombre a `Enero de 2027 revisado de prueba`, conserva inicio/fin/pago y
 captura `Se aclara el nombre del periodo de prueba sin cambiar su cobertura.`
 Pulsa **Revisar cambios → Confirmar y guardar**. Resumen conserva el motivo original y
 muestra Última gestión; Historial contiene el alta y el cambio con usuario y fecha.
 No debe considerarse superposición consigo mismo.
+
+Prueba opcional adicional: en **Editar enero → Configuración avanzada**, define
+fecha límite **28/01/2027**, captura un motivo y confirma. Debe conservarla; al volver
+a Editar la sección aparece abierta para mostrarla. Puedes vaciarla con otro motivo
+y confirmar: detalle, tabla y Excel deben mostrar **Sin definir**. Esto no borra
+el cambio anterior del historial ni afecta nómina/pagos.
 
 Para probar dos pestañas, abre **Editar** del mismo periodo en dos pestañas antes de
 guardar. Guarda el primer cambio con motivo. Intenta guardar un nombre diferente en
@@ -162,8 +188,9 @@ historial de todas las gestiones, filtros/Excel coherentes y modales Cancelar/Co
 No cambian empleados, sueldo base, bono de Bruce, adeudos, pagos ni cuentas.
 
 Prueba también vistas de escritorio/móvil y temas claro/oscuro con los mismos estilos.
-Reporta cualquier diferencia antes de dar el caso por confirmado. Después de tu
-confirmación se incorporará el recorrido a **Guía de procesos**. No se publica como
-prueba confirmada automáticamente. La siguiente etapa será diseñar la **preparación
+Reporta cualquier diferencia si vuelves a consultar el recorrido. El propietario ya
+confirmó este cierre y autorizó incorporarlo a **Guía de procesos** mediante V127.
+No se repiten operaciones ni se cambian los datos del ensayo para publicarlo.
+La siguiente etapa será diseñar la **preparación
 de nómina**, elegibilidad por vigencias y revisión explícita de periodos parciales y
 cambios de sueldo/conceptos dentro del periodo, sin asumir prorrateo, impuestos o pagos.

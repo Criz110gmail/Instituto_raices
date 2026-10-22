@@ -1,5 +1,87 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V127 — Guía de calendarios y periodos confirmados — 22/10/2026
+
+- Verificado:974 Java completas/105 JS correctas y package BUILD SUCCESS. PostgreSQL17
+  desechable comprobó migración, render de guía12etapas/cuatro acciones, tres permisos
+  privados, acceso denegado sin paquete y Excel12filas con filtro exclusivo del caso.
+  El título también aparece en referencia de guía anterior: búsqueda general por
+  contenido puede incluir ambas, por eso ensayo Excel usa TRASLAPE-2027-TEST.
+  Revisión ficticia escritorio claro/móvil390 oscuro sin desborde; mismo diseño.
+- Respaldo privado ignorado .respaldos-locales/guia-periodos-v127-20261022/antes-v127.dump
+  validado. Sólo app actualizada22/10 a15:36México; saludUP/Flyway127success y guía
+  CONFIRMADA/12 comprobadas. QA eliminada, visor/tab cerrados, tema/viewport restaurados,
+  Dockerfiles temporales retirados. Sin .env, cambios de personal/periodos/dinero,
+  commit ni push. Se preservan cambios previos V126 y tema que estaban sin confirmar.
+
+- Propietario confirmó todos los pasos principales y compartió tabla final: calendario
+  NOM-MENSUAL-TEST · Nómina mensual de prueba Mensual Activo. Enero ENE-2027-TEST,
+  nombre Enero de 2027 — revisión A,01/01–31/01/2027,31días,pago31/01/2027,fecha
+  opcional incidencias28/01/2027,Programado/Próximo. Febrero FEB-2027-TEST,01/02–28/02,
+  28días,pago28/02/2027,incidenciasSin definir,Cancelado/No aplica. RevisiónB bloqueada,
+  traslape rechazado, filtros/Excel/retorno, edición/historial y desactivar/reactivar
+  confirmados. No repetir operaciones ni borrar la fecha opcional de enero.
+- Usuario autoriza incorporar a Guía. V127 sólo editorial agrega Personal:
+  Calendarios y periodos de nómina: programar, revisar y cancelar, slug
+  calendarios-periodos-nomina-confirmado,12etapas/cuatro acciones con módulos/botones/
+  capturas/resultados/precauciones. Reutiliza diseño/servicio/permisos privados de guía
+  y paquete Empleados/Laboral/Salarios, sin grants. Enlaza desde cierre V124; no cambia
+  calendarios/periodos/sueldos/cuentas. Acta V125 actualizada; notas de pendiente abajo
+  quedan como antecedentes superados para el recorrido reportado, no auditoría exhaustiva.
+- Próxima migración V128. Siguiente ANALIZAR preparación de nómina, no implementar
+  aún: elegibilidad por vigencias, frecuencia de calendario vs salario, sueldo/conceptos,
+  revisión explícita de parciales/cambios dentro de periodo y vista previa antes de
+  autorizar. No asumir prorrateos, impuestos, préstamos, ocasionales ni pagos.
+
+## V126 — Fecha opcional de incidencias — 22/10/2026
+
+- Package BUILD SUCCESS, respaldo privado ignorado
+  .respaldos-locales/incidencias-opcionales-v126-20261022/antes-v126.dump validado.
+  Sólo app actualizada a15:07México: salud UP, Flyway126success, fecha_corte nullableYES.
+  PostgreSQL/volúmenes preservados, QA eliminada, visor/tab cerrados, tema/viewport
+  restaurados, Dockerfiles temporales retirados. Sin .env ni commit/push.
+
+- Propietario en punto3 de ensayo V125 pidió simplificar término Corte de novedades.
+  Aprobó hacerlo opcional en Configuración avanzada y cambiar etiqueta exactamente a
+  Fecha límite para recibir incidencias de nómina. Principal: inicio/fin/pago previsto.
+  Ayuda faltas/bonos/descuentos que podrían afectar pago, no editar datos personales.
+  Sólo referencia: no bloquea capturas ni aplica cambios; incidencias reales pendientes.
+- V126 relaja NOT NULL de fecha_corte y reemplaza CHECK de fechas: fin>=inicio,
+  pago>=inicio y, si hay opcional, inicio<=fecha_corte<=pago. No backfill ni UPDATE
+  de registros previos; no modificar V125 aplicada. Mantiene permisos/historial/versiones
+  y rangos. Detalle/tabla/modal/Excel nulos muestran Sin definir, etiqueta actualizada.
+  Nuevo desplegable cerrado sin fecha; abierto si hay dato o error. Diseño compartido,
+  CSS sólo16px de separación scoped al desplegable, móvil390 sin desborde.
+- 972 Java completas/105 JS correctas; PostgreSQL17 temporal valida null en alta,
+  edición añadir/quitar fecha, historial, reglas opcionales, POST con campo vacío,
+  render/Excel, protección y regresiones. Comparación visual escritorio claro/móvil oscuro.
+  PRUEBA_CALENDARIOS_PERIODOS_NOMINA_V125.md actualizada: continuar punto3 con fecha
+  opcional vacía, no repetir calendario ni registros Bruce/BON-PUNT-TEST aceptados.
+  Guía confirmada sigue pendiente del ensayo humano; próxima migración V127.
+- Propietario confirmó causa de colores anteriores: extensión del navegador que
+  modifica tema (Dark Reader), no fallo de tabla. Se conserva ajuste preventivo previo
+  theme.js, sin revertirlo. No seguir investigando ese caso salvo nuevo reporte.
+
+## Tema consistente en primera carga — 22/10/2026
+
+- Propietario muestra dos capturas de Empleados tras reinicio con colores distintos
+  que se normalizan al recargar. /admin abre primer módulo autorizado (Empleados)
+  por diseño; no se cambió navegación ni permisos. Cabeceras reales CSS/JS ya usan
+  no-cache/no-store: no atribuir el caso a caché sin evidencia.
+- theme.js ahora aplica preferencia válida light/dark y color-scheme only light/dark
+  sincrónicamente antes de insertar componentes, para declarar paleta propia al navegador
+  y evitar adaptación automática adicional. Mantiene colores existentes. Lee/escribe
+  localStorage con tolerancia a bloqueo; enlaza botones también con DOM ya cargado.
+  Referencia técnica: https://developer.chrome.com/blog/auto-dark-theme
+- 105 JS y7 Java dirigidas login/reinicio correctas; package BUILD SUCCESS. Comparación
+  DOM en vista ficticia con CSS reales: fondo/estados/bordes idénticos antes/después
+  de recargar en claro y oscuro; only dark soportado. Chrome real no pudo inspeccionarse
+  por falta de permisos Computer Use: causa específica del navegador original no
+  reproducida ni demostrada. Solicitar confirmación humana tras actualizar, no prometer
+  haber verificado extensiones/flags. Visor/tab cerrados y tema ficticio restaurado.
+- Sin migración: siguiente V126, ensayo V125 sigue pendiente. Sólo app actualizada,
+  sin editar DB/datos/.env ni commit/push. Dockerfiles temporales retirados.
+
 ## V125 — Calendarios y periodos de nómina — 22/10/2026
 
 - Verificado:971 Java completas/101 JS correctas y package BUILD SUCCESS. PostgreSQL17

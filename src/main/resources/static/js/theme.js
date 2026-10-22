@@ -1,5 +1,19 @@
 (() => {
     const root = document.documentElement;
+    // Declarar el tema antes de cargar componentes evita una segunda adaptación
+    // automática del navegador sobre la paleta que ya controla la aplicación.
+    const preferred = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const readSaved = () => {
+        try {
+            const value = localStorage.getItem('nexo-theme');
+            return value === 'dark' || value === 'light' ? value : null;
+        } catch (_) { return null; }
+    };
+    const apply = theme => {
+        root.dataset.theme = theme;
+        root.style.colorScheme = 'only ' + theme;
+    };
+    apply(readSaved() || preferred);
     // Componente global sólo en pantallas del sistema, nunca en los accesos públicos.
     const ruta = location.pathname;
     if ((/^\/(admin|portal)(\/|$)/.test(ruta) || /^\/maestros(\/|$)/.test(ruta))
@@ -35,10 +49,7 @@
         helpScript.dataset.contextualHelp = 'true';
         document.head.appendChild(helpScript);
     }
-    const saved = localStorage.getItem('nexo-theme');
-    const preferred = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    root.dataset.theme = saved || preferred;
-    document.addEventListener('DOMContentLoaded', () => {
+    const bindButtons = () => {
         document.querySelectorAll('[data-theme-toggle]').forEach(button => {
             const refresh = () => {
                 const dark = root.dataset.theme === 'dark';
@@ -47,11 +58,13 @@
                 button.dataset.activeTheme = root.dataset.theme;
             };
             button.addEventListener('click', () => {
-                root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-                localStorage.setItem('nexo-theme', root.dataset.theme);
+                apply(root.dataset.theme === 'dark' ? 'light' : 'dark');
+                try { localStorage.setItem('nexo-theme', root.dataset.theme); } catch (_) { /* El tema sigue funcionando sin almacenamiento. */ }
                 refresh();
             });
             refresh();
         });
-    });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindButtons);
+    else bindButtons();
 })();

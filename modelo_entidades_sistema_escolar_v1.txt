@@ -959,3 +959,12 @@ Lectura y Excel privados requieren paquete salarial/laboral institucional, sin g
 No hay relación automática de empleados, sueldo duplicado, cálculos ni movimientos.
 Preparación posterior debe definir elegibilidad y revisión de parciales; no autoprorratea.
 V123 ya confirmada e incorporada a guía V124; prueba humana V125 aún pendiente.
+
+ACTUALIZACIÓN V126 — FECHA OPCIONAL DE INCIDENCIAS (2026-10-22)
+PeriodoNomina.fecha_corte ahora admite NULL y se presenta como Fecha límite para
+recibir incidencias de nómina, opcional en Configuración avanzada. Sin backfill ni
+reescritura de fechas guardadas. CHECK fin>=inicio, pago>=inicio y, si hay fecha
+opcional, inicio<=fecha_corte<=pago. Snapshots/historial/cancelación conservados.
+Sólo referencia para reportes de faltas/bonos/descuentos: no aplica incidencias ni
+bloquea capturas. Detalle/tabla/modal/Excel muestran Sin definir para NULL. Dominio
+de incidencias y efecto en preparación sigue pendiente; no movimientos de dinero.

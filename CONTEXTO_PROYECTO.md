@@ -1,5 +1,72 @@
 # Contexto del proyecto
 
+## V127 — Recorrido de periodos confirmado e incorporado a Guía — 22/10/2026
+
+- 974 Java/105 JS correctas y package BUILD SUCCESS. PostgreSQL17 temporal: migración,
+  render12etapas/cuatro acciones, Excel12filas filtrado por TRASLAPE-2027-TEST, permisos
+  y consultas de guía sin cambiar calendarios/periodos/historial. El título se enlaza
+  desde otra guía, por lo que buscarlo por contenido puede devolver ambas: no es un fallo.
+  Revisión ficticia escritorio claro/móvil390oscuro sin cambios de CSS/plantilla.
+- Respaldo privado antes-v127.dump validado en carpeta ignorada guia-periodos-v127-20261022.
+  App sola recreada a15:36México, saludUP/Flyway127success y CONFIRMADA12etapas.
+  PostgreSQL/volúmenes conservados, QA eliminada, visor/tab cerrados, tema/viewport
+  restaurados y Dockerfiles retirados. Sin .env, personal/periodos/dinero, commit/push;
+  se preservan todos los cambios previos sin confirmar.
+
+- Propietario confirmó el recorrido principal completo y cierre exacto: calendario
+  NOM-MENSUAL-TEST Activo/Mensual; ENE-2027-TEST Enero de 2027 — revisión A31días,
+  pago31/01/2027,incidencias28/01/2027,Programado/Próximo; FEB-2027-TEST28días,
+  pago28/02/2027,incidenciasSin definir,Cancelado/No aplica. No repetir registros.
+  Traslape, filtros/Excel/retorno, historial, dos pestañas y desactivar/reactivar aceptados.
+- V127 sólo contenido de Guía Personal, slug calendarios-periodos-nomina-confirmado:
+  doce etapas/cuatro acciones, rutas/módulos/botones/capturas/resultados/precauciones,
+  fecha opcional y estados temporales explícitos, cierre de enero sin borrar28/01.
+  Mismo diseño/servicio y permisos existentes sin concesiones, sin modificar personal,
+  periodos ni dinero. Referencia desde guía anterior de Conceptos por empleado.
+- Acta V125 confirmada; las notas inferiores pendientes son antecedentes. Próxima
+  migración V128; analizar preparación/elegibilidad/vigencias/frecuencias y revisión
+  explícita de parciales antes de implementar cálculos, sin supuestos fiscales ni pagos.
+
+## V126 — Fecha límite opcional de incidencias — 22/10/2026
+
+- Package BUILD SUCCESS; respaldo privado antes-v126.dump validado en carpeta ignorada
+  incidencias-opcionales-v126-20261022. App sola recreada a15:07México, saludUP,
+  Flyway126success/fecha_corte nullableYES; PostgreSQL/volúmenes conservados. QA
+  eliminada, visor/tab cerrados, tema/viewport restaurados y Dockerfiles retirados.
+  Sin leer .env, modificar dinero/Bruce, commit ni push.
+
+- Aprobado en prueba punto3: Fecha límite para recibir incidencias de nómina, opcional
+  en Configuración avanzada; explicación faltas/bonos/descuentos, sólo referencia, no
+  bloqueo ni efectos automáticos. Principal inicio/fin/pago previsto y motivo.
+- V126 hace fecha_corte nullable y CHECK fin>=inicio/pago>=inicio y, si hay fecha,
+  inicio<=fecha_corte<=pago. Conserva datos/snapshots/historial/permisos/versiones,
+  sin backfill, sin tocar V125. Null visible Sin definir en tabla/detalle/modal/Excel.
+  Desplegable abre con fecha/error y cierra si vacío; separación16px con CSS scoped.
+- 972 Java/105 JS correctas, PostgreSQL17 temporal con alta/edición null, añadir/quitar
+  fecha, historial, POSTvacío y Excel/render/seguridad. Revisión escritorio claro y
+  móvil390 oscuro sin desborde. Ejemplo V125 actualizado para continuar punto3 con
+  fecha opcional vacía. No repetir datos previos ni declarar ensayo confirmado.
+  Próxima V127; preparación/incidencias/cálculo/pago todavía pendientes de definición.
+- Reporte anterior de líneas/colores quedó aclarado por propietario: extensión de
+  navegador modificaba el tema. No atribuir a caché; ajuste preventivo theme.js intacto.
+
+## Corrección preventiva del tema inicial — 22/10/2026
+
+- Capturas reportan colores distintos en primera carga tras reinicio, luego normalizados.
+  HTTP real ya indica no-cache/no-store para admin.css y theme.js, por tanto caché no
+  está confirmada como causa. /admin redirige primer módulo autorizado: Empleados;
+  se conserva comportamiento. theme.js aplica tema válido/color-scheme only light/dark
+  antes de componentes; no cambia paleta. Almacenamiento bloqueado no interrumpe
+  controles ni recursos y botones se enlazan con documento ya cargado.
+- 105 JS/7 Java login-reinicio y package correctos. Vista ficticia con CSS reales:
+  colores calculados iguales antes/después de recargar claro/oscuro. Chrome original
+  inaccesible por permisos Computer Use; no se reproduce causalidad exacta de sus
+  capturas. Pendiente confirmación humana en ese navegador. Referencia técnica:
+  https://developer.chrome.com/blog/auto-dark-theme
+- Sólo app actualizada, DB/volúmenes intactos; visor/tab cerrados, tema restaurado y
+  Dockerfiles temporales retirados. Sin .env, commit/push ni migración; siguiente V126,
+  prueba humana de calendarios/periodos V125 pendiente, sin alterar datos de Bruce.
+
 ## V125 — Calendarios y periodos de nómina — 22/10/2026
 
 - Verificación final:971 Java/101 JS sin fallos, package BUILD SUCCESS; PostgreSQL17

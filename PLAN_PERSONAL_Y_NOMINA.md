@@ -1,6 +1,25 @@
 # Integración de empleados, maestros y nómina
 
 Acuerdo: 18/10/2026. Actualización: 22/10/2026.
+
+## Calendarios y periodos confirmados — Guía V127
+
+Propietario confirmó recorrido principal: traslape, filtros/Excel/retorno, edición/
+historial, dos pestañas, desactivar/reactivar calendario y cancelar febrero. Cierre
+NOM-MENSUAL-TEST Activo; enero revisiónA31días Programado, pago31/01/2027 y fecha
+opcional28/01/2027; febrero28días Cancelado, pago28/02/2027, incidenciasSin definir.
+V127 añade sólo guía Personal de12etapas, sin repetir operaciones ni alterar datos.
+PRUEBA_CALENDARIOS_PERIODOS_NOMINA_V125.md confirmada. Próxima V128: primero analizar
+preparación de nómina, selección por vigencias/elegibilidad, frecuencia salarial vs
+calendario y revisión de parciales/cambios de sueldo-conceptos durante periodo.
+No asumir prorrateos, impuestos, préstamos, ocasionales o pagos. Las notas inferiores
+de aceptación pendiente quedan como antecedentes superados para el recorrido reportado.
+
+V126 simplifica Periodos: inicio/fin/pago previsto y fecha límite para recibir
+incidencias de nómina opcional en Configuración avanzada, conservando fechas previas.
+No aplica faltas/bonos/descuentos ni bloqueos. Definir su operación real cuando se
+construyan incidencias/preparación. Prueba humana V125 sigue en punto3 con captura
+opcional vacía; siguiente migración V127. No repetir Bruce ni publicar guía confirmada.
 Estado: EMPLEADOS/PERFIL DOCENTE V111, CONFIGURACIÓN SALARIAL V116/V119 Y CONCEPTOS V121/V123 IMPLEMENTADOS; CÁLCULO/PAGO DE NÓMINA PENDIENTES.
 
 ## Calendarios y periodos de nómina — V125,22/10/2026

@@ -15,7 +15,7 @@ public class PeriodoNominaForm {
  @NotNull(message="Espera la consulta del calendario antes de confirmar.") @PositiveOrZero private Long calendarioVersion;
  @NotNull(message="Captura el inicio del periodo.") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) private LocalDate inicio;
  @NotNull(message="Captura el fin del periodo.") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) private LocalDate fin;
- @NotNull(message="Captura la fecha de corte.") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) private LocalDate corte;
+ @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) private LocalDate corte;
  @NotNull(message="Captura la fecha prevista de pago.") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) private LocalDate pago;
  @NotBlank(message="Explica el motivo de registro o cambio.") @Size(max=2000) private String motivo;
  @NotNull @PositiveOrZero private Long version=0L;

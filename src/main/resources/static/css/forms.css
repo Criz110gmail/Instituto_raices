@@ -36,6 +36,7 @@
 .employee-campus-history > summary .employee-campus-count { margin-left:8px; }
 .employee-campus-change > summary { padding:10px 14px; border:1px solid var(--line); border-radius:10px; background:var(--surface); }
 .employee-campus-change > summary:focus-visible,.employee-campus-history > summary:focus-visible,.employee-campus-finish > summary:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
+.entity-form > details.form-section.employee-campus-change > .form-grid { margin-top:16px; }
 .employee-panel .employee-campus-change .entity-form { padding:0; }
 .employee-campus-badges { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:7px; }
 .employee-campus-card.employee-campus-past { border-left-color:var(--muted); }
