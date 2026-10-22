@@ -240,6 +240,15 @@
                     add('Módulos autorizados ('+modulos.length+')',modulos.length?modulos.join('\n'):'Ninguno · este rol no concede acceso a módulos');
                 }
                 note.textContent=(desactivar?'El rol dejará de conceder acceso. No se borran usuarios ni registros.':'Cada módulo seleccionado concede su paquete completo de permisos. Al editar un rol, el cambio afecta a todas las cuentas que lo tengan asignado.')+' Los permisos de otros roles se suman; vuelve a iniciar sesión para comprobar el acceso actualizado. Cancelar conserva la captura sin enviar cambios.';
+            } else if(kind==='concepto-nomina-guardar') {
+                const campo=name=>form.querySelector('[name="'+name+'"]');
+                const texto=name=>campo(name)?.value?.trim()||'';
+                const opcion=name=>campo(name)?.selectedOptions?.[0]?.textContent||'';
+                title.textContent='Confirmar concepto de nómina';cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar';
+                add('Código',texto('codigo'));add('Nombre',texto('nombre'));add('Tipo de concepto',opcion('naturaleza'));add('Forma de aplicación',opcion('aplicacion'));
+                add('Efecto de referencia',campo('naturaleza').value==='PERCEPCION'?'Suma al empleado':campo('naturaleza').value==='DEDUCCION'?'Resta al empleado':'Costo de la escuela; no reduce el pago del empleado');
+                add('Descripción',texto('descripcion')||'Sin descripción');add('Estado',campo('activo').checked?'Activo':'Inactivo');
+                note.textContent='Sólo guarda el catálogo. No asigna importes a empleados, no genera nómina, retenciones, pagos ni descuentos. Cancelar conserva la captura sin guardar.';
             } else if(kind==='laboral-catalogo'||kind==='laboral-asignar') {
                 const campo=name=>form.querySelector('[name="'+name+'"]');
                 const texto=name=>campo(name)?.value?.trim()||'';

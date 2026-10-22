@@ -1,5 +1,53 @@
 # Contexto del proyecto
 
+## V122 — Guía del catálogo de nómina confirmada — 21/10/2026
+
+Usuario confirma pruebas completas, filtros, Excel y dos pestañas; DESC-TEST se
+desactivó y reactivó, quedó Activo. Estado final: los tres conceptos de prueba Activos.
+Autoriza guía. V122 agrega diez etapas detalladas con módulos/botones/ejemplos,
+cuatro acciones por etapa, Cancelar/Confirmar, efectos, filtros/Excel, edición,
+inactivación/reactivación, duplicados y versión; no repite operaciones ni declara
+auditoría exhaustiva. Título Conceptos de nómina: crear, filtrar y proteger cambios,
+categoría Personal, slug conceptos-nomina-catalogo-confirmado. Enlace desde guía V120.
+Sólo contenido editorial, permisos existentes, sin cambios de conceptos/salarios/dinero.
+Siguiente V123. Próximo análisis: Conceptos por empleado, con importes/vigencias,
+sin duplicar sueldo base ni generar nóminas; todavía no implementarlo.
+
+Verificación V122:957 Java/91 JS correctas, migración y render de diez etapas,
+Excel10 filas y acceso limitado denegado en PostgreSQL17 desechable. Respaldo
+privado ignorado validado; app actualizada21/10 a17:33México, salud UP, migración122
+success y guía CONFIRMADA/10 comprobadas. Contenedor QA eliminado. Sin .env,
+operaciones reales de conceptos/salarios/finanzas ni commit/push. Sin cambios visuales.
+
+## V121 — Conceptos de nómina, catálogo separado — 21/10/2026
+
+Usuario aprueba catálogo y recalca misma estructura/diseño. Menú Personal y nómina →
+Conceptos de nómina, /admin/conceptos-nomina. Tabla, filtros, ayuda10/3, paginación y
+Excel mismos criterios, Nuevo/Editar en formulario separado, confirmación con Cancelar.
+Campos código/nombre/descripción, tipo percepción/deducción/aportación patronal,
+aplicación habitual/ocasional y activo. Sin importes, porcentajes, empleados o cálculos.
+Efecto sólo informativo; aportación no disminuye pago del empleado. Tipos cortos en
+selectores para móvil, explicaciones neutrales y efecto explícito en modal.
+
+V121 crea concepto_nomina y auditoría privada inmutable; no borra ni cambia institución,
+versiones evitan sobrescribir y código único normalizado por institución. Permisos
+salariales/laborales existentes, sin concesiones, usuario administrativo institucional
+persistido activo. Filtros prefijados no colisionan con captura; retorno y exportación
+conservan criterios, consulta limitada por servidor. Estilos/ayudas/modal compartidos.
+Ejemplo humano pendiente en PRUEBA_CONCEPTOS_NOMINA_V121.md. No se crearon conceptos
+reales ni se alteraron sueldos/finanzas. Próxima V122. Después de aceptar catálogo,
+analizar asignación de conceptos por empleado; no implementar nómina todavía.
+
+955 Java completas con integración PostgreSQL desechable y91 JS correctas. Tras
+refinar textos de selectores móviles,5 dirigidas (unidad+IT) y paquete exitoso.
+Auditado aislamiento/duplicados/versiones/validaciones/permisos/CSRF, Excel filtrado,
+plantillas y POST conservando filtros independientes. QA visual ficticia desktop claro,
+móvil390 oscuro, lista10 al foco y Cancelar del modal conservando captura.
+Respaldo privado ignorado antes-v121.dump en .respaldos-locales/conceptos-nomina-v121-20261021,
+formato válido sin mostrar datos. App actualizada21/10 a17:06México, salud UP;
+base operativa confirma V121 y cero conceptos/cero entradas de historial inicialmente.
+QA eliminada, tab/servidor cerrados y tema/viewport restaurados. Sin .env/commit/push.
+
 ## V120 — Guía del recorrido principal laboral — 21/10/2026
 
 Autorizado por usuario: guardar guía confirmada y después revisar Conceptos de nómina.

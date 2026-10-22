@@ -2,6 +2,7 @@
     'use strict';
 
     const MODULES = [
+        [/^\/admin\/(catalogos\/)?conceptos-nomina/, 'Conceptos de nómina', 'Catálogo privado de percepciones, deducciones y aportaciones patronales. Define el concepto y si es habitual u ocasional; aquí no se capturan importes, no se asignan a empleados ni se generan nóminas o movimientos.', 'Crear BON-PUNT · Bono de puntualidad como Percepción habitual. Su importe por empleado se definirá en una etapa posterior.'],
         [/^\/(admin|maestros)\/pendientes/, 'Mis pendientes', 'Tu agenda privada. Organiza compromisos con fecha y consulta avisos de vencidos, de hoy y de los próximos siete días. Ningún otro usuario puede consultar tus notas.', 'Crear Preparar material y marcarlo Realizado al terminar.'],
         [/^\/admin\/guias/, 'Guía de procesos', 'Consulta procesos probados con requisitos, pasos y resultados esperados. Sólo orienta; no crea registros ni ejecuta pagos.', 'Seguir la guía de una transferencia de $1,000 para dos hijos con cargos de $600 y $400.'],
         [/^\/admin\/catalogos\/instituciones|^\/admin\/instituciones/, 'Instituciones', 'Define los datos legales y operativos de cada institución que utiliza el sistema. Es la raíz que separa planteles, personas, seguridad y finanzas.', 'Registrar Instituto Raíces con su código, zona horaria y moneda de trabajo.'],

@@ -3,6 +3,28 @@
 Acuerdo: 18/10/2026. Actualización: 21/10/2026.
 Estado: EMPLEADOS/PERFIL DOCENTE V111 Y PUESTOS/CONDICIONES SALARIALES V116 IMPLEMENTADOS; NÓMINA PENDIENTE.
 
+## Catálogo V121 confirmado y guía V122 — 21/10/2026
+
+Usuario confirma recorrido completo, filtros/Excel y protección de dos pestañas;
+DESC-TEST fue desactivado y reactivado, quedó Activo junto a BON-PUNT-TEST y APORT-TEST.
+V122 incorpora guía Personal de diez etapas, sólo editorial, sin repetir operaciones.
+Supera las notas inferiores de aceptación pendiente del catálogo. Próximo paso:
+analizar Conceptos por empleado para asignar importes y vigencias, sin duplicar
+CondicionSalarial ni generar nómina todavía. Próxima migración V123.
+
+## Catálogo de conceptos aprobado e implementado — V121,21/10/2026
+
+Conceptos de nómina tiene menú propio, listado/filtros/Excel y formulario separado.
+Código, nombre, descripción, tipo percepción/deducción/aportación patronal, aplicación
+habitual/ocasional y activo; sin importes ni empleados. Aportación es costo de escuela,
+no resta al empleado. Guardar catálogo no asigna ni aplica descuentos automáticamente.
+Permisos salariales/laborales privados existentes, auditoría, versiones y confirmación
+con Cancelar, diseño compartido. Prueba humana pendiente en PRUEBA_CONCEPTOS_NOMINA_V121.md.
+Todavía faltan Conceptos por empleado con importes/vigencias, calendarios, préstamos,
+cálculo/preparación/autorización y pago. Sueldo base sigue en CondicionSalarial; no
+duplicarlo. No cálculos legales ni saldos de préstamo a partir de un nombre de concepto.
+Siguiente V122; confirmar catálogo antes de avanzar a importes individuales.
+
 ## Recorrido V119 confirmado y guía V120 — 21/10/2026
 
 Propietario confirmó edición de catálogos sin retroactividad, asignación de febrero,

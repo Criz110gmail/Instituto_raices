@@ -1,5 +1,26 @@
 # Sistema administrativo escolar
 
+## Guía del catálogo de nómina — V122
+
+**Guía de procesos → Personal → Conceptos de nómina: crear, filtrar y proteger cambios**
+incorpora diez etapas del recorrido confirmado, con ejemplos, modales, Excel, edición,
+activación/desactivación y protección entre pestañas. Los tres conceptos quedaron
+Activos al finalizar el ensayo. Ruta `/admin/guias/conceptos-nomina-catalogo-confirmado`.
+Sólo documentación, mismos permisos privados; sin generar conceptos, importes o pagos.
+Siguiente: analizar Conceptos por empleado antes de implementar sus montos y vigencias.
+
+## Conceptos de nómina — V121
+
+**Administración → Personal y nómina → Conceptos de nómina**: catálogo institucional
+de percepciones, deducciones y aportaciones patronales, con aplicación habitual u
+ocasional. Listado con filtros/autocompletado10 al foco y búsqueda desde3 caracteres,
+paginación y Excel por bloques; Nuevo/Editar en formulario separado con confirmación.
+Mismo diseño, ayudas, temas y controles alineados de los módulos anteriores.
+Reutiliza permisos privados salariales/laborales; no concede accesos automáticamente.
+No captura importes ni asigna conceptos a empleados, calcula nómina o mueve dinero.
+Auditoría y versiones; desactivar conserva historial. Prueba humana confirmada:
+[Ejemplo del catálogo](PRUEBA_CONCEPTOS_NOMINA_V121.md).
+
 ## Guía de asignaciones laborales — V120
 
 **Guía de procesos → Personal → Puesto, jornada y sueldo: asignar, programar cambios

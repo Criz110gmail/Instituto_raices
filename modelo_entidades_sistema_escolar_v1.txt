@@ -910,3 +910,17 @@ fallo de snapshot revierte condición y cierre previo. Historial privado e inmut
 para catálogos/asignaciones. Mismos permisos salariales V116, sin concesiones automáticas.
 Módulos visibles separados, filtros/paginación BD y Excel mismos parámetros por bloques;
 expediente resume vigente y enlaza filtrado. No cálculos/pagos de nómina ni cambios académicos.
+
+ACTUALIZACIÓN V121 — CATÁLOGO DE CONCEPTOS DE NÓMINA (2026-10-21)
+ConceptoNomina institucional: código normalizado único, nombre, descripción, naturaleza
+PERCEPCION/DEDUCCION/APORTACION_PATRONAL, aplicación HABITUAL/OCASIONAL, activo,
+actor/instante de creación y actualización y versión optimista. No contiene dinero,
+porcentajes, empleado, saldos de préstamo ni reglas fiscales. El efecto mostrado es
+descriptivo: suma al empleado, resta, o costo patronal que no disminuye su pago.
+ConceptoNominaHistorial privado e inmutable registra antes/después, actor e instante
+mediante triggers. Desactivar conserva datos; borrar/cambiar institución está bloqueado.
+Reutiliza permisos salariales V116 más Empleados/Laboral y administrador institucional
+persistido activo; no concede accesos. Menú separado con listado/filtros/Excel, formulario
+independiente, modal de confirmación y autocompletado10 al foco/desde3 caracteres.
+Asignar importes y vigencias a empleados, préstamos y calcular/pagar nómina siguen
+pendientes de entregas propias; no se duplica la fuente de sueldo CondicionSalarial.

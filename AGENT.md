@@ -1,5 +1,67 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## V122 — Guía de Conceptos de nómina confirmados — 21/10/2026
+
+- Usuario confirma todas las pruebas del catálogo, filtros/Excel y dos pestañas;
+  aclara que probó activar/desactivar DESC-TEST y lo dejó Activo al terminar. Los
+  tres conceptos BON-PUNT-TEST, DESC-TEST y APORT-TEST quedaron Activos. No repetir
+  altas ni desactivar para documentar. Aceptación funcional no es auditoría exhaustiva.
+- Autoriza incorporar a Guía de procesos y después decir siguiente paso. V122 agrega
+  sólo contenido editorial: categoría Personal, Conceptos de nómina: crear, filtrar
+  y proteger cambios; slug conceptos-nomina-catalogo-confirmado;10 etapas con cuatro
+  acciones numeradas, módulos/botones, captura/resultado y precauciones. Incluye
+  Cancelar modal vs formulario, tipos/efectos, filtros/Excel, edición, desactivación/
+  reactivación, duplicados y protección entre pestañas; no cálculos ni operaciones.
+- Reutiliza permisos salariales/laborales y Guía existentes, sin concederlos ni
+  cambiar conceptos/sueldos/cuentas. Enlaza desde cierre de guía laboral V120.
+  Acta PRUEBA_CONCEPTOS_NOMINA_V121.md actualizada. Próxima migración V123.
+- Siguiente: analizar con usuario Conceptos por empleado (importe y vigencia),
+  sin duplicar sueldo base CondicionSalarial ni implementar nómina/pagos todavía.
+- Verificación V122:957 pruebas Java y91 JavaScript correctas; PostgreSQL17
+  desechable comprobó migración, diez etapas, render, Excel10 filas y permisos.
+  Respaldo privado ignorado .respaldos-locales/guia-conceptos-v122-20261021/antes-v122.dump
+  validado sin mostrar contenido. Sólo app actualizada21/10 a17:33México;
+  V122 success, guía CONFIRMADA/10 y salud UP. Base QA eliminada. No .env,
+  operaciones de personal/dinero, commit ni push; plantillas/estilos sin cambios.
+
+## V121 — Catálogo de Conceptos de nómina — 21/10/2026
+
+- Usuario aprueba análisis e implementación sólo del catálogo; reitera diseño común,
+  filtros/ayudas, formularios separados ordenados y modales. Se agrega menú Personal
+  y nómina → Conceptos de nómina, /admin/conceptos-nomina. Listado/filtros/paginación/
+  Excel y Nuevo/Editar aparte; modal compartido con Cancelar y resumen de efecto,
+  código/nombre/tipo/aplicación/descripción/estado. Nada de importes ni empleados.
+- Tipos PERCEPCION/DEDUCCION/APORTACION_PATRONAL, aplicación HABITUAL/OCASIONAL;
+  efecto descriptivo, no cálculo. Costo patronal no resta al empleado. Código único
+  normalizado por institución, activo y versión; desactivar sin eliminar. Auditoría
+  privada antes/después por trigger en concepto_nomina_historial, inmutable; no DELETE
+  ni cambio de identidad/institución. Listado por ID, sin campo de orden capturable.
+- Reutiliza paquete salarial V116 y Empleados/Laboral; autorización institucional
+  administrativa persistida activa en servicio, no recuperación/docente/familia/plantel.
+  Lectura no permite editar/alta. Sin concesiones ni permisos nuevos. Enum/menú,
+  acceso HTTP, alcance genérico denegado y redirecciones de compatibilidad actualizados.
+- Ayuda del filtro diez al foco/clic, mínimo3, SQL LIMIT11, por institución e incluye
+  inactivos identificados; selección exacta por ID/etiqueta canónica. Tipo/aplicación/
+  estado/texto se combinan; Excel en bloques100 con mismos filtros. Parámetros
+  filtroNaturaleza/filtroAplicacion evitan colisionar con campos del formulario.
+  Volver/Cancelar/guardar conservan filtros/página sin URLs externas ni sesión global.
+- Prueba humana PENDIENTE en PRUEBA_CONCEPTOS_NOMINA_V121.md; no publicar como
+  confirmada en Guía aún. No se crearon conceptos en base operativa por el agente.
+  Siguiente: ejecutar ejemplo del catálogo con usuario; después analizar Conceptos
+  por empleado (importes/vigencias), sin duplicar CondicionSalarial. Nómina/préstamos/
+  impuestos/pagos siguen fuera de esta entrega. Próxima migración V122.
+- Verificado:955 Java completas con IT PostgreSQL17 desechable (aislamiento, código
+  duplicado, validación/versiones, auditoría inmutable, institución inactiva, permisos,
+  CSRF, plantilla/paginación/filtros/Excel y POST sin colisión). Tras ajuste visual,
+  5 pruebas dirigidas y package BUILD SUCCESS;91 JS, modal Cancelar/Escape y envío
+  único. Revisión visual ficticia escritorio claro y móvil390 oscuro, ayudas10 al foco,
+  formulario alineado y modal final; sin estilos propios nuevos para este módulo.
+- Respaldo privado ignorado .respaldos-locales/conceptos-nomina-v121-20261021/antes-v121.dump
+  validado sin mostrar contenido. App actualizada21/10 a17:06México, salud UP, V121
+  success y catálogo/historial operativos vacíos comprobados. Sólo app recreada;
+  base QA eliminada, servidor/tab cerrados y tema/viewport restaurados. Sin .env,
+  conceptos reales, sueldos, movimientos, commit ni push.
+
 ## V120 — Guía de asignaciones laborales confirmadas — 21/10/2026
 
 - Usuario autoriza incorporar el recorrido a Guía de procesos y después revisar
