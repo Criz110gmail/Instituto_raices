@@ -1,2 +1,69 @@
 .nomina-totales{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0 24px}.nomina-totales article{min-width:0;padding:20px;border:1px solid var(--line);border-radius:15px;background:var(--white)}.nomina-totales span,.nomina-totales small{display:block;color:var(--muted);font-size:.74rem;line-height:1.6}.nomina-totales strong{display:block;margin:8px 0;font:800 clamp(1.25rem,3vw,1.8rem) Manrope,system-ui,sans-serif;overflow-wrap:anywhere}.nomina-totales .nomina-propuesto{border-color:var(--aqua);box-shadow:inset 0 3px var(--aqua)}.nomina-grupos{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0}.nomina-grupos .payment-list-button{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}.nomina-grupos button{cursor:pointer;font:inherit}.nomina-grupos strong{font-variant-numeric:tabular-nums}.nomina-grupo-activo{box-shadow:inset 0 -3px var(--aqua)}.nomina-checkbox{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--white);cursor:pointer}.nomina-checkbox input{width:19px;height:19px;accent-color:var(--blue);margin:0}.nomina-volver{padding-top:0}.nomina-volver button{cursor:pointer;font:inherit}.nomina-totales+ .form-error{margin-top:16px}@media(max-width:720px){.nomina-totales{grid-template-columns:minmax(0,1fr)}.nomina-grupos{align-items:stretch}.nomina-grupos .payment-list-button{width:100%}.nomina-checkbox span{font-size:.78rem}}
 .nomina-cell{min-width:0;overflow-wrap:anywhere}.nomina-cell strong,.nomina-cell small{display:block}.nomina-cell small{margin-top:4px;color:var(--muted)}
+.nomina-capture{width:min(1120px,calc(100% - 32px))}
+/* Fieldset no debe heredar el ancho intrínseco de la tabla y desbordar el formulario. */
+.nomina-capture .entity-form,.nomina-capture .form-section,.nomina-capture .form-grid>*,.nomina-capture .nomina-context{min-width:0;max-width:100%}
+.nomina-capture .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.nomina-capture .form-section{margin-inline:0}
+.nomina-context{margin:0 34px 4px;padding:22px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.nomina-context-heading{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:18px}
+.nomina-context-heading>div{flex:1 1 380px;min-width:0}
+.nomina-eyebrow{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.nomina-context h2{font-size:1.1rem;line-height:1.5;overflow-wrap:anywhere;margin:6px 0 8px}
+.nomina-period-dates,.nomina-classification-help,.nomina-selection-help{color:var(--muted);font-size:.8rem;line-height:1.65;margin:0}
+.nomina-capture .nomina-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;max-width:100%;padding:9px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font-family:inherit;font-size:.78rem;font-weight:700;line-height:1.4;text-decoration:none;box-shadow:none;cursor:pointer;white-space:normal;text-align:center}
+.nomina-capture .nomina-secondary:hover{border-color:var(--blue);background:var(--soft)}
+.nomina-capture a:focus-visible,.nomina-capture button:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.nomina-classifications{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 10px}
+.nomina-classifications a{display:inline-flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 13px;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--muted);font-size:.8rem;font-weight:700;text-decoration:none;box-shadow:none}
+.nomina-classifications strong{display:grid;place-items:center;min-width:25px;min-height:25px;padding:2px 6px;border-radius:8px;background:var(--soft);color:var(--ink);font-size:.78rem;font-variant-numeric:tabular-nums}
+.nomina-classifications a.nomina-grupo-activo{border-color:var(--blue);color:var(--ink);box-shadow:inset 0 -2px var(--blue);background:color-mix(in srgb,var(--blue) 8%,var(--surface))}
+.nomina-selection-toolbar,.nomina-selection-buttons{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.nomina-selection-toolbar{justify-content:space-between;margin:18px 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--soft)}
+.nomina-selection-toolbar>[role=status]{font-size:.75rem;line-height:1.5;font-weight:700;color:var(--muted)}
+.nomina-capture .nomina-candidates{width:100%;max-width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:13px;padding:0}
+.nomina-candidates table{width:100%;table-layout:fixed}
+.nomina-col-select{width:11%}.nomina-col-person{width:27%}.nomina-col-salary{width:16%}.nomina-col-concepts{width:27%}.nomina-col-total{width:19%}
+.nomina-candidates th,.nomina-candidates td{padding:15px 12px;vertical-align:top;overflow-wrap:anywhere}
+.nomina-candidates th{font-size:.66rem;line-height:1.5;letter-spacing:.035em}
+.nomina-candidates td{font-size:.81rem;line-height:1.5}
+.nomina-candidates .nomina-checkbox{gap:6px;padding:8px 6px;font-size:.73rem;border:0;background:transparent}
+.nomina-candidates .nomina-checkbox input{flex:0 0 18px;width:18px;height:18px}
+.nomina-row-reason{font-size:.74rem;line-height:1.6;color:var(--muted);margin:10px 0 0}
+.nomina-money{font-weight:700;font-variant-numeric:tabular-nums}
+.nomina-concept-breakdown{margin:0;display:grid;gap:8px}
+.nomina-concept-breakdown>div{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.nomina-concept-breakdown dt{font-size:.72rem;color:var(--muted);min-width:0}
+.nomina-concept-breakdown dd{margin:0;font-size:.76rem;font-weight:700;font-variant-numeric:tabular-nums}
+.nomina-row-total{padding:11px 10px;border:1px solid var(--line);border-radius:10px;background:var(--soft)}
+.nomina-row-total strong,.nomina-row-total small{display:block;overflow-wrap:anywhere}
+.nomina-row-total strong{font-size:.98rem;font-variant-numeric:tabular-nums}
+.nomina-row-total small{font-size:.65rem;line-height:1.5;margin-top:5px;color:var(--muted)}
+@media(max-width:850px) and (min-width:721px){.nomina-capture .entity-form{padding-inline:22px}.nomina-context{margin-inline:22px}.nomina-candidates th,.nomina-candidates td{padding:12px 8px}.nomina-concept-breakdown>div{display:block}.nomina-row-total{padding:8px 6px}}
+@media(max-width:720px){.nomina-capture .form-grid{grid-template-columns:minmax(0,1fr)}.nomina-context{margin-inline:20px;padding:18px}.nomina-context-heading>div{flex-basis:100%}.nomina-classifications{display:grid;grid-template-columns:minmax(0,1fr)}.nomina-selection-toolbar{align-items:stretch}.nomina-selection-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.nomina-capture .nomina-candidates{border:0;overflow:visible}.nomina-candidates colgroup{display:none}.nomina-candidates th,.nomina-candidates td{padding:12px 0}.nomina-candidates td::before{flex:0 0 30%;overflow-wrap:anywhere}.nomina-candidates td>*{min-width:0;max-width:65%}.nomina-concept-breakdown{width:65%}.nomina-concept-breakdown>div{flex-wrap:wrap;justify-content:flex-end;gap:2px 8px}.nomina-concept-breakdown dt{flex:1 1 100%;text-align:right}.nomina-row-total{width:65%;text-align:right}}
+.nomina-detail .section-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:18px}
+.nomina-detail .section-heading h2{margin:0;min-width:0}
+.nomina-detail .nomina-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;max-width:100%;width:auto;padding:9px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font-size:.78rem;line-height:1.4;font-weight:700;text-decoration:none;text-align:center;box-shadow:0 2px 5px #08172c08;transition:border-color .18s ease,background .18s ease}
+.nomina-detail .nomina-action:hover{border-color:var(--blue);background:var(--soft)}
+.nomina-detail .nomina-action:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.nomina-detail td .nomina-action{min-height:36px;padding:8px 11px;font-size:.75rem}
+.nomina-revisions{display:grid;gap:12px;margin:20px 0}
+.nomina-revision-card{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--surface);min-width:0}
+.nomina-revision-info{flex:1;min-width:0}
+.nomina-revision-title{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.nomina-revision-title h3{margin:0;font-size:.92rem;line-height:1.5}
+.nomina-revision-info p{display:flex;align-items:center;flex-wrap:wrap;gap:6px 16px;margin:8px 0 0;font-size:.76rem;line-height:1.6;color:var(--muted);overflow-wrap:anywhere}
+.nomina-revision-card>.nomina-action{flex:0 0 auto}
+@media(max-width:720px){.nomina-revision-card{align-items:stretch;flex-direction:column;padding:16px}.nomina-revision-card>.nomina-action{align-self:flex-start}.nomina-detail .section-heading .nomina-action{width:auto}.nomina-detail td .nomina-action{max-width:100%}}
+.nomina-detail{width:min(1120px,calc(100% - 32px))}
+.nomina-detail td .nomina-action{white-space:nowrap}
+.nomina-options{margin-top:20px;min-width:0}.nomina-options>summary{cursor:pointer;font-size:.85rem;font-weight:750;padding:12px 0;color:var(--ink)}.nomina-options>.form-grid{margin-top:16px}
+.nomina-preview-notice{padding:18px 20px;border:1px solid var(--line);border-left:3px solid var(--aqua);border-radius:12px;background:var(--soft);margin:20px 0}.nomina-preview-notice strong{font-size:.9rem}.nomina-preview-notice p{margin:8px 0 0;font-size:.8rem;line-height:1.7;color:var(--muted)}
+.nomina-bulk-content{padding:24px 34px 30px;min-width:0}.nomina-bulk-content>.field-help{font-size:.8rem;line-height:1.7;color:var(--muted)}
+.nomina-bulk-counts>span{display:inline-flex;align-items:center;gap:10px;padding:10px 13px;border:1px solid var(--line);border-radius:11px;font-size:.78rem;color:var(--muted)}
+.nomina-bulk-list{margin-top:26px;min-width:0}.nomina-bulk-list .filters{padding:18px;border:1px solid var(--line);border-radius:14px;margin-bottom:18px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.nomina-bulk-list .filters>*{min-width:0}.nomina-bulk-list .filters .billing-filter-actions{grid-column:auto;align-self:end}
+.nomina-bulk-breakdown{display:inline-flex;align-items:center;min-height:36px;margin-top:8px;color:var(--ink);font-size:.75rem;font-weight:700;text-decoration:underline;text-underline-offset:4px}
+.nomina-detail .nomina-row-select{margin:10px 0 0}.nomina-detail .nomina-row-select .nomina-action{font-family:inherit;white-space:normal;min-height:38px;cursor:pointer;padding:8px 10px}
+.nomina-bulk .nomina-bulk-save,.nomina-bulk .nomina-bulk-discard{padding:22px 0 0}.nomina-bulk-discard{display:flex;align-items:center;flex-wrap:wrap;gap:14px;border-top:1px solid var(--line);margin-top:18px}.nomina-bulk-discard .field-help{font-size:.75rem;color:var(--muted)}.nomina-refresh{margin:18px 0}.nomina-refresh button{font-family:inherit;cursor:pointer}
+@media(max-width:720px){.nomina-bulk-content{padding:20px}.nomina-bulk-list .filters{grid-template-columns:minmax(0,1fr)}.nomina-bulk-counts>span{width:100%;justify-content:space-between}.nomina-bulk .nomina-candidates td>*{max-width:65%}.nomina-bulk .nomina-row-select .nomina-action{width:auto}}
+.nomina-consent{display:flex;align-items:flex-start;gap:12px;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--soft);font-size:.85rem;line-height:1.7;cursor:pointer}.nomina-consent input{width:20px;height:20px;flex:0 0 20px;margin:3px 0 0;accent-color:var(--blue)}

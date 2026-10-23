@@ -240,6 +240,22 @@
                     add('Módulos autorizados ('+modulos.length+')',modulos.length?modulos.join('\n'):'Ninguno · este rol no concede acceso a módulos');
                 }
                 note.textContent=(desactivar?'El rol dejará de conceder acceso. No se borran usuarios ni registros.':'Cada módulo seleccionado concede su paquete completo de permisos. Al editar un rol, el cambio afecta a todas las cuentas que lo tengan asignado.')+' Los permisos de otros roles se suman; vuelve a iniciar sesión para comprobar el acceso actualizado. Cancelar conserva la captura sin enviar cambios.';
+            } else if(kind==='calendario-empleado') {
+                const campo=name=>form.querySelector('[name="'+name+'"]');
+                title.textContent='Confirmar calendario del empleado';cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar calendario';
+                add('Empleado',form.dataset.confirmSubject);add('Calendario anterior',form.dataset.confirmBefore);
+                add('Nuevo calendario',campo('calendarioTexto').value);add('Motivo',campo('motivo').value.trim());
+                note.textContent='Se conserva el historial de este cambio. No modifica sueldos, conceptos, borradores ni cuentas financieras. Cancelar conserva la captura sin guardar.';
+            } else if(kind==='nomina-aplicar') {
+                title.textContent='Aplicar nómina y registrar egreso';cancel.textContent='Cancelar';accept.textContent='Confirmar aplicación y egreso';
+                add('Nómina / periodo',(form.dataset.confirmSubject||'')+' · '+form.dataset.confirmPeriod);
+                add('Empleados',form.dataset.confirmPeople);add('Cuenta de origen',form.dataset.confirmAccount);
+                add('Total que saldrá',money(form.dataset.confirmAmount));add('Saldo disponible',money(form.dataset.confirmBefore));add('Saldo después',money(form.dataset.confirmAfter));
+                note.textContent='Se registra un único egreso interno, se bloquea la revisión y se conserva el detalle por empleado. No se envía una transferencia bancaria. Cancelar no mueve dinero. La aplicación no puede deshacerse desde movimientos manuales.';
+            } else if(kind==='nomina-preparacion-descartar') {
+                title.textContent='Descartar vista previa';cancel.textContent='Cancelar';accept.textContent='Confirmar descarte';
+                add('Periodo',form.dataset.confirmPeriod);
+                note.textContent='Se descarta únicamente esta vista previa y su selección. No se cancelan borradores existentes, no se modifican configuraciones y no se mueve dinero.';
             } else if(kind==='nomina-borrador'||kind==='nomina-borrador-cancelar') {
                 const cancelar=kind==='nomina-borrador-cancelar',actualizar=form.dataset.confirmUpdate==='true';
                 title.textContent=cancelar?'Confirmar cancelación del borrador':actualizar?'Confirmar nueva revisión':'Confirmar borrador mensual';

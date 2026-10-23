@@ -1,5 +1,12 @@
 # Preparación de nómina mensual — V128
 
+Actualización22/10: el flujo principal fue ampliado en V129/V130. Ver
+[preparación global y aplicación desde cuenta](PRUEBA_NOMINA_GLOBAL_V129_V130.md).
+Este documento conserva la prueba original; la selección manual de V128 quedó en
+`/admin/preparacion-nomina/seleccion-manual`. No repetir altas ni cancelar el borrador
+Bruce/enero12500 ya guardado para probar la nueva pantalla.
+
+
 Estado: implementación para probar. **La prueba del propietario aún no está confirmada.**
 Esta etapa guarda borradores revisables, no autoriza ni paga nómina. No calcula
 impuestos, faltas, horas extra, préstamos, porcentajes ni prorrateos. El importe

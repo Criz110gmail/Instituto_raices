@@ -2,6 +2,42 @@
 
 Acuerdo: 18/10/2026. Actualización: 22/10/2026.
 
+## Configuración por empleado — V131,23/10/2026
+
+Primera entrega del flujo aprobado: módulo Configuración de nómina reúne fuentes
+canónicas de sueldo/jornada/puesto y conceptos recurrentes con fecha de consulta,
+sin copiarlas. Enlaces a módulos originales; calendario actual por empleado con
+motivo/versiones/historial inmutable, sin backfill. Listado25, filtros10/3, Excel por
+bloques, detalle por pestañas y modal compartido Cancelar/Confirmar, permisos privados.
+Referencia organizativa: no altera aún la selección/cálculo mensual ni convierte
+salarios por frecuencia, no recalcula borradores o mueve dinero. Integración funcional
+de calendario y periodos requiere próxima entrega compatible con datos previos.
+Prueba humana PRUEBA_CONFIGURACION_NOMINA_V131.md pendiente; conservar Bruce/enero.
+
+Orden acordado restante: ocasionales/una vez por periodo (consumir al aplicar, no al
+preparar), porcentajes/bases e incrementos programados con ejemplos, semanal/quincenal
+y parciales con reglas explícitas, distribución entre varias cuentas y reversión.
+No presumir cálculo fiscal ni pagos parciales individuales. Próxima migración V132.
+
+
+## V129/V130 — Preparación global y aplicación desde cuenta
+
+Ampliación autorizada22/10: un periodo incluye todos los elegibles en una vista y
+borrador, totales globales y detalle paginado. Exclusiones persistentes, opción
+individual, filtros10/3 y Excel por bloques, sin límite100 ni borrador por persona.
+Instantáneas privadas2h/versionadas; guardar/actualizar revalida fuentes y conserva
+revisiones. Guardar NO mueve dinero. Aplicar se hace desde Gestión después de revisar:
+cuenta CAJA/BANCO activa/misma moneda, motivo egreso, previa saldos y modal/cancelar.
+Paquete salarial + registrar movimientos, sin grants. UN egreso consolidado NOMINA,
+fecha actual, clave idempotente, aplicación+estado+movimiento atómicos. Aplicada sólo
+consulta, sin cancelar/actualizar/reversa manual. Reversión especializada pendiente.
+No banco/API, cálculos fiscales, préstamos/incidencias/prorrateos ni pago patronal.
+
+Prueba humana PRUEBA_NOMINA_GLOBAL_V129_V130.md pendiente; guía confirmada aún no.
+Conservar borrador Bruce/enero12500 aceptado, no duplicarlo. Próxima V131. Las notas
+inferiores máximo100/sin egreso describen entregas anteriores, no el flujo actual.
+
+
 ## Preparación mensual en borrador — V128
 
 Usuario autorizó implementar. Módulo separado **Preparación de nómina**: escoger

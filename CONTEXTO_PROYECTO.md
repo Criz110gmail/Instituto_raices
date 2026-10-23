@@ -1,5 +1,127 @@
 # Contexto del proyecto
 
+## V131 — Primera entrega de configuración por empleado — 23/10/2026
+
+Verificación final:985Java (981suite/PrepIT+4IT aislados incluyendo nuevo),114JS,
+package BUILD SUCCESS. DB PostgreSQL17 ficticia:31empleados/páginas25+6, fecha futura/
+fin de concepto, filtros/Excel31y1, sueldo/bono canónicos, historial inmutable, CSRF/
+validación/retorno de filtros, empleado preseleccionado, calendarios inactivos/ajenos,
+dos pestañas/concurrencia y permisos/portales. No alteró sueldos/conceptos ni dinero.
+QA visual claro/escritorio y390oscuro: filtros/tarjetas/modal/cancelar, sin desborde;
+corregida agrupación móvil para no estirar estados ni ocultar acción como＋.
+Respaldo privado ignorado antes-v131.dump validado. Sólo app recreada10:19México,
+saludUP/V131success; nuevas tablas0/0,4condiciones/2conceptos/1BORRADOR/46movimientos
+previos conservados por conteos. QA/visor/pestaña/Dockerfiles retirados, tema/viewport
+restaurados, sin .env, commit/push ni operaciones reales. Prueba humana pendiente.
+
+Autorizada tras propuesta: listado propio Configuración de nómina,25/página, filtros
+empleado/calendario actual/fecha/estado/texto, ayudas10/3, Excel POI mismos filtros por
+bloques, retorno conservado. Detalle Resumen/Conceptos recurrentes/Historial con diseño
+compartido y accesos a fuentes originales; enlace desde expediente salarial privado.
+Consulta canónica CondicionSalarial/AsignacionEsquemaLaboral y ConceptoEmpleado en la
+fecha elegida, sin editar/copiar fuentes ni calcular nómina. Asignar concepto desde
+configuración preselecciona empleado en formulario original; no repite importes.
+
+V131 empleado_calendario_nomina (actual, no vigencias futuras) e historial inmutable
+antes/después/motivo/actor/instante con nombres congelados. Sin backfill; calendario
+activo institucional, institución activa, bloqueos/versiones y etiqueta revalidada;
+no DELETE/reasignación de propietario ni modificación de historial. Paquete salarial
+privado+Empleados/Laboral sin grants. No acceso por portales/recuperación. Confirmación
+compartida con cancelar, CSRF y doble pestaña. Fecha de sueldo/conceptos no convierte
+calendario en histórico; UI lo aclara. Asociación organizativa: no filtra ni altera aún
+generador mensual existente, ni modifica borradores/aplicaciones/cuentas.
+
+Prueba humana pendiente PRUEBA_CONFIGURACION_NOMINA_V131.md, Bruce/enero15/01/2027
+12000+500/jornadahistórica30, asignar NOM-MENSUAL-TEST y filtros/Excel/historial/modal;
+cambio alterno/doble pestaña/restauración opcionales. No repetir registros aceptados,
+cancelar su borrador ni aplicar dinero por herramientas. Próxima V132; ocasionales,
+porcentajes/incrementos, cálculo semanal/quincenal, integración de calendario con
+preparación/pagos multicuenta y reversa siguen pendientes. QA/publicación arriba,
+no equivale a aceptación humana.
+
+
+## V129/V130 — Nómina global y egreso desde cuenta — 22/10/2026
+
+Verificación final:981 Java (978suite+3IT previos aislados),113JS y package correctos.
+PostgreSQL17 ficticio:140 empleados/un borrador, páginas25/exclusión persistente,
+Excel global/consulta filtrada, actualización140/revisiones inmutables, fuentes
+obsoletas/duplicados/caducidad/IDOR, permisos/fondos y dos confirmaciones simultáneas:
+un egreso exacto, cuenta/saldos/estado correctos, aplicada no cancelable/modificable
+ni reversible como manual. Validación periodo vacío. QA escritorio claro/móvil390
+oscuro sin desborde, resumen/selección/modal y Cancelar, sólo fixtures sin POST.
+Respaldo privado ignorado antes-v129-v130.dump validado. App sola recreada17:57México;
+saludUP/Flyway129y130success. Preview0/filas0/aplicación0 en BD operativa, único
+borrador existente y46 movimientos previos intactos por conteos. Sin egresos reales,
+.env, commit/push. QA/visor/pestaña/Dockerfiles retirados, tema/viewport restaurados.
+Aceptación humana pendiente, no publicar guía confirmada todavía.
+
+Autorizado: preparar un periodo con todos los elegibles en un borrador, revisar antes
+de aplicar y elegir cuenta para reflejar egreso. /nuevo ahora prepara periodo completo,
+alternativa individual vacía. V129 nomina_preparacion/empleado: instantánea privada
+UUID/usuario/institución con caducidad2h, tabla25, totales SQL globales sin límite100.
+Exclusión persistente al paginar/filtrar; POI Resumen global y Consulta filtrada por
+bloques. Casos incompatibles con motivo, no cero/prorrateo. Guardar y actualizar
+global conservan todos los empleados/revisiones bajo bloqueos y revalidan fuentes.
+La ruta manual antigua permanece compatible, no es flujo principal.
+
+Aplicación separada en Gestión, con cuenta activa CAJA/BANCO institucional/misma
+moneda, motivo Egreso/Ambos, motivo administrativo, previa y modal Cancelar/Confirmar.
+Exige paquete salarial privado y MOVIMIENTO_FINANCIERO_REGISTRAR sin grants.
+V130 nomina_aplicacion inmutable, APLICADA y ledger NOMINA: un egreso consolidado
+NOMINA:{borradorId}; aplicación/estado/movimiento atómicos con saldo/fuentes/versiones/
+motivo revalidados y bloqueos. Doble pestaña no duplica. Usa fecha/hora actuales,
+no envía transferencias ni programa pago futuro. Detalle por empleado sigue privado.
+Aplicada sólo consulta: no actualizar/cancelar/desactivar filas/revertir como manual.
+Reversa especializada pendiente. Sin cálculo fiscal, prorrateos/incidencias/préstamos,
+dispersión/recibos ni pago separado de aportaciones patronales. Cero no genera egreso.
+
+PRUEBA_NOMINA_GLOBAL_V129_V130.md pendiente de aceptación humana/guía confirmada.
+Bruce enero ya guardado/revisión1/12500 aceptado12000+500 se conserva; no duplicar,
+cancelar o cambiar sus datos por herramientas. No asumir ID/folio ni usar febrero
+Cancelado. No egresos operativos ejecutados por el agente. Próxima migración V131.
+Publicación/verificación final arriba; no acredita aceptación humana del recorrido.
+
+
+## Corrección de enlace a revisión ya consultada — 22/10/2026
+
+Ver revisión1 fallaba segunda vez porque sólo variaba fragmento URL y el script de
+pestañas corría al cargar documento, no al cambiar hash. student-tabs.js reconoce
+hashchange válido, activa/enfoca pestaña, permite atrás/adelante; ignora hash ajeno.
+Cambio de revisionConsulta sigue cargando documento/datos correctos, sin interceptar
+peticiones.111 JS completas correctas con2 regresiones nuevas; navegador ficticio
+verificó dos ciclos de misma revisión sin recargar. Sin Java/migración/DB/.env.
+No marca V128 completa: faltan pruebas de duplicado/actualización/cancelación.
+Package BUILD SUCCESS; app sola recreada a17:22. Visor/pestaña/Dockerfiles retirados,
+sin cambios de datos, .env, commit/push. Retomar consulta repetida de revisión1.
+
+## Acciones de detalle y revisión de nómina — 22/10/2026
+
+Propietario confirmó Bruce revisión1 Borrador12500=12000+500, desglose y Excel correctos,
+auditoría Registro1/criz22/10 a17:10/motivo original. Falta pulsar Ver revisión1 y pruebas
+de duplicados/actualización/cancelación. No cerrar recorrido ni publicar guía aún.
+Pide mejorar botones Excel/Ver desglose/Ver revisión: acciones compactas secundarias,
+fecha y usuario fuera del botón en tarjeta de revisión con indicador En consulta.
+Scoped detalle/CSS, sin alterar rutas/consultas/exportación/ID/revisiones/datos/permisos.
+11Java y4JS dirigidas correctas, escritorio claro y móvil390oscuro sin desborde.
+V129 sigue libre; preserva cambios visuales anteriores y datos del propietario.
+Package BUILD SUCCESS; app sola recreada a17:19. QA/visor/pestaña/Dockerfiles
+retirados y tema/viewport restaurados; no .env, BD, commit/push ni datos reales.
+
+## Nuevo borrador mensual, orden visual — 22/10/2026
+
+Propietario confirmó en punto3 propuesta12500 de Bruce/enero, no prueba completa.
+Tabla anterior recortaba columnas por ancho intrínseco del fieldset y ocho columnas.
+Captura ahora scoped min-width0/grid minmax y cinco columnas, conceptos agrupados sin
+omitir importes/motivos, propuesto destacado. Clasificaciones con conteo discretas,
+botones secundarios neutros, periodo/exportación alineados y selección separada.
+Mismo diseño claro/oscuro/tarjetas móvil, sin estilos globales o cambios de negocio.
+11Java dirigidas y4JS correctas; escritorio oscuro y móvil390 sin desborde medido.
+No se tocaron datos Bruce/sueldos/periodos/cuentas, ni se guardaron borradores reales.
+Sin migración; V129 libre. Continuar punto3 y luego4, no repetir altas ni publicar guía.
+Package BUILD SUCCESS; sólo app recreada a17:05México. Verificado también1024claro
+sin desborde; selección de página sigue funcionando. Sin .env, DB operativa,
+commit/push. QA/visor/pestaña/Dockerfiles retirados, tema/viewport restaurados.
+
 ## V128 — Preparación mensual de nómina, pendiente de aceptación humana — 22/10/2026
 
 Verificado:979 Java correctas (976suite con IT nuevo +3IT previos en DB limpias

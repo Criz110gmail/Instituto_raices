@@ -39,6 +39,23 @@ public class MovimientoManualServiceImpl implements MovimientoManualService {
 
     @Override
     public MovimientoFinancieroResponse registrar(MovimientoManualRequest request) {
+        if (request.claveIdempotencia()!=null && request.claveIdempotencia().startsWith("NOMINA:"))
+            throw new ReglaNegocioException("La nómina se registra desde su proceso de aplicación, no como movimiento manual");
+        return registrar(request, ClaseMovimiento.OPERACION);
+    }
+
+    @Override
+    public MovimientoFinancieroResponse registrarNomina(MovimientoManualRequest request) {
+        var a=SecurityContextHolder.getContext().getAuthentication();
+        if(a==null || a.getAuthorities().stream().noneMatch(p->p.getAuthority().equals("CONDICION_SALARIAL_ADMINISTRAR"))
+                || a.getAuthorities().stream().noneMatch(p->p.getAuthority().equals("MOVIMIENTO_FINANCIERO_REGISTRAR")))
+            throw new AccessDeniedException("Se requiere administración salarial y registro de movimientos financieros");
+        if(request.direccion()!=DireccionMovimiento.EGRESO || request.claveIdempotencia()==null || !request.claveIdempotencia().startsWith("NOMINA:"))
+            throw new ReglaNegocioException("La aplicación de nómina requiere un egreso identificable");
+        return registrar(request,ClaseMovimiento.NOMINA);
+    }
+
+    private MovimientoFinancieroResponse registrar(MovimientoManualRequest request,ClaseMovimiento clase) {
         CuentaFinanciera cuenta = cuentaRepository.findByIdForUpdate(request.cuentaId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("la cuenta financiera", request.cuentaId()));
         validarCuenta(request, cuenta);
@@ -46,7 +63,10 @@ public class MovimientoManualServiceImpl implements MovimientoManualService {
 
         var existente = movimientoRepository.findByInstitucionIdAndClaveIdempotencia(
                 cuenta.getInstitucion().getId(), request.claveIdempotencia());
-        if (existente.isPresent()) return respuesta(existente.get());
+        if (existente.isPresent()) {
+            if(existente.get().getClase()!=clase)throw new ReglaNegocioException("La clave corresponde a otro tipo de movimiento");
+            return respuesta(existente.get());
+        }
 
         MotivoFinanciero motivo = motivoRepository.findById(request.motivoFinancieroId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("el motivo financiero", request.motivoFinancieroId()));
@@ -77,7 +97,7 @@ public class MovimientoManualServiceImpl implements MovimientoManualService {
         movimiento.setFechaOperacion(fecha);
         movimiento.setSecuenciaCuenta(secuencia);
         movimiento.setDireccion(request.direccion());
-        movimiento.setClase(ClaseMovimiento.OPERACION);
+        movimiento.setClase(clase);
         movimiento.setMonto(monto);
         movimiento.setMotivoFinanciero(motivo);
         movimiento.setConcepto(limpiar(request.concepto()));

@@ -4,6 +4,13 @@ class E{
  append(...v){this.children.push(...v);}replaceChildren(){this.children=[];}setAttribute(){}focus(){}close(){this.open=false;}showModal(){this.open=true;}scrollIntoView(){this.scrolled=true;}
  addEventListener(n,f){(this.listeners[n]??=[]).push(f);}fire(n,e={}){for(const f of this.listeners[n]||[])f(e);}
 }
+for(const tipo of ['nomina-aplicar','nomina-preparacion-descartar','calendario-empleado'])test(tipo+': cancelar/Escape no registran y confirmar envía una sola vez',()=>{
+ const document=new E('document'),body=new E('body');document.body=body;document.readyState='complete';body.classList={add(){},remove(){}};document.querySelectorAll=()=>[];document.createElement=t=>new E(t);
+ const form=new E('form');form.dataset={moneyConfirm:tipo,confirmSubject:'BOR-000001',confirmPeriod:'ENE-TEST',confirmAccount:'CAJA · Ficticia',confirmPeople:'140',confirmAmount:'1680400',confirmBefore:'2000000',confirmAfter:'319600',confirmCurrency:'MXN'};form.querySelector=()=>({value:'CAL-TEST · Mensual de prueba'});form.querySelectorAll=()=>[];form.reportValidity=()=>true;let enviados=0;
+ const emitir=()=>{const e={target:form,submitter:new E('button'),defaultPrevented:false,preventDefault(){this.defaultPrevented=true;}};document.fire('submit',e);if(!e.defaultPrevented)enviados++;};form.requestSubmit=emitir;
+ vm.runInNewContext(fs.readFileSync('src/main/resources/static/js/money-input.js','utf8'),{document,Intl,WeakMap,WeakSet,setTimeout,MutationObserver:class{observe(){}}});
+ emitir();assert.equal(enviados,0);const dialog=body.children.find(e=>e.tag==='dialog'),actions=dialog.children[4];assert.equal(dialog.open,true);assert.equal(actions.children[0].textContent,'Cancelar');actions.children[0].fire('click');assert.equal(enviados,0);emitir();dialog.fire('cancel',{preventDefault(){}});assert.equal(enviados,0);emitir();actions.children[1].fire('click');actions.children[1].fire('click');assert.equal(enviados,1);
+});
 for(const modo of ['guardar','actualizar','cancelar'])test('borrador: modal '+modo+' cancela sin enviar y confirma una sola vez',()=>{
  const document=new E('document'),body=new E('body');document.body=body;document.readyState='complete';body.classList={add(){},remove(){}};document.querySelectorAll=()=>[];document.createElement=t=>new E(t);
  const form=new E('form');form.dataset={moneyConfirm:modo==='cancelar'?'nomina-borrador-cancelar':'nomina-borrador',confirmUpdate:String(modo==='actualizar'),confirmSubject:'BOR-000001',confirmPeriod:'ENE-TEST · Enero',confirmPeople:'1',confirmAmount:'12500',confirmBefore:'12000',confirmCurrency:'MXN'};

@@ -45,6 +45,13 @@ public class ConceptoEmpleadoService {
   if(!c.activo()||!"HABITUAL".equals(c.aplicacion()))throw regla("Selecciona un concepto activo y habitual. Los ocasionales se capturarán al preparar una nómina específica.");
   return new Contexto(c.version(),((Number)datos.get("laboral_version")).longValue(),(String)datos.get("moneda_predeterminada"),c.tipoTexto(),c.efecto(),c.codigo()+" · "+c.nombre(),(String)datos.get("etiqueta"));
  }
+ public Page<Asignacion> vigentesEnFecha(Long empleadoId,LocalDate fecha,int pagina){
+  empleados.autorizarSalarios(false);empleados.autorizar(empleadoId,true,false);
+  var p=parametros(false).addValue("empleado",empleadoId).addValue("fecha",fecha);
+  String where=" WHERE a.institucion_id=:institucion AND a.empleado_id=:empleado AND a.estado='ACTIVA' AND a.fecha_inicio<=:fecha AND (a.fecha_fin IS NULL OR a.fecha_fin>=:fecha)";
+  Long n=jdbc.queryForObject("SELECT count(*)"+FROM+where,p,Long.class);var pg=PageRequest.of(Math.max(0,pagina),25);p.addValue("offset",pg.getOffset());
+  return new PageImpl<>(jdbc.query(SELECT+FROM+where+" ORDER BY a.id LIMIT 25 OFFSET :offset",p,mapper(fecha)),pg,n==null?0:n);
+ }
  public List<OpcionAutocompletado> buscarConceptos(String q,boolean captura){
   var p=parametros(false);String t=OrganizacionLaboralService.texto(q,200);if(!t.isEmpty()&&t.length()<3)return List.of();
   String where=captura?" AND activo AND aplicacion='HABITUAL'":"";

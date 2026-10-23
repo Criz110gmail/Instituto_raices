@@ -989,3 +989,45 @@ de sellos bajo bloqueos y versiones protege fuentes cambiadas/duplicados. Actual
 con previa conserva empleados originales; cancelar libera fechas, no configuraciones.
 Sólo permisos privados salariales/laborales administrativos existentes, sin grants.
 No impuestos/préstamos/porcentajes/incidencias/autorizaciones/pagos/movimientos.
+
+ACTUALIZACIÓN V129/V130 — PREPARACIÓN GLOBAL Y APLICACIÓN INTERNA (2026-10-22)
+Ampliación expresamente autorizada: NominaPreparacion UUID/institución/usuario/periodo,
+modo TODOS/INDIVIDUAL/ACTUALIZAR, estado ABIERTA/GUARDADA/DESCARTADA, caducidad2h,
+versiones, snapshot/sello de periodo y referencia a borrador/versión origen al actualizar.
+NominaPreparacionEmpleado por preview/empleado contiene identidad, motivo/clasificación,
+selección, importes automáticos nullable y JSON/sello fuente. Sólo LISTO seleccionable;
+REVISION/NO_INCLUIDO nunca reciben importe cero inventado. FK institucionales, índices,
+agregados SQL globales y tabla paginada; selección persistente, sin límite100 global.
+Guardar integra modelo V128 con INSERT SELECT; actualizar conserva todos los empleados
+originales y revisiones, fuentes revalidadas bajo bloqueos. Purga sólo previews propias
+caducadas por bloques; no auditoría definitiva. Filtros no cambian selección/globales.
+
+NominaAplicacion inmutable une borrador/revisión/periodo/institución con movimiento
+financiero único y cuenta/motivo/actor/instante; conserva cuenta código/nombre, cantidad
+de empleados, monto/moneda y saldos antes/después. Borrador admite APLICADA terminal,
+filas aplicadas inmutables incluso para desactivación. ClaseMovimiento agrega NOMINA;
+aplicación registra un único EGRESO consolidado NOMINA:{borradorId}, cuenta activa
+CAJA/BANCO institucional/misma moneda, motivo Egreso/Ambos y fondos suficientes.
+Misma transacción JDBC/JPA, bloqueos/versiones/sellos y clave idempotente; doble
+confirmación no duplica ni produce aplicación sin ledger. Fecha/hora institucional
+actual, no futura según periodo. Requiere paquete salarial más permiso financiero,
+sin concesiones automáticas. No nombres/sueldos individuales en concepto financiero.
+Aplicada sólo consulta, no cancelar/actualizar/reversa manual. Reversión especializada
+pendiente. No dispersión bancaria, cálculos fiscales, incidencias/préstamos/prorrateos
+ni egreso separado de aportaciones patronales. Totales cero no producen movimientos.
+
+ACTUALIZACIÓN V131 — CONFIGURACIÓN DE NÓMINA POR EMPLEADO (2026-10-23)
+Módulo privado Configuración de nómina consulta fuentes canónicas Empleado,
+CondicionSalarial/AsignacionEsquemaLaboral y ConceptoEmpleado, sin copiarlas ni editarlas.
+Consulta sueldo/conceptos a una fecha (no elegibilidad de periodo), tabla25/Excel por
+bloques con mismos filtros empleado/calendario/fecha/estado. Accesos a módulos origen.
+EmpleadoCalendarioNomina: PK empleado_id, institución/calendario FK compuestas,
+calendario_texto histórico, motivo obligatorio, actor/instante/versiones. Una referencia
+actual por empleado, sin vigencias o cambio programado. Sin backfill automático.
+EmpleadoCalendarioNominaHistorial inmutable con antes/después JSON, motivo/actor/instante;
+triggers impiden DELETE y cambio de propietario/institución. Bloqueo empleado/vínculo,
+institución/calendario activos y control de versión evitan sobrescritura concurrente.
+Calendario actual no filtra/recalcula todavía el generador existente; salarios/conceptos/
+borradores/pagos inalterados. No duplica frecuencia salarial: muestra incompatibilidades
+sin convertir importes. Mismos permisos salariales+Empleados/Laboral, sin grants/portales.
+Semanal/quincenal, ocasionales/porcentajes/incrementos/pagos multicuenta pendientes.

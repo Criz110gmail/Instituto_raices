@@ -63,7 +63,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const panelWithErrors = panels.find(panel => [...panel.querySelectorAll('small[id$="errors"],.field-error')]
         .some(error => error.textContent.trim().length > 0));
-    const requestedByHash = tabs.find(tab => tab.dataset.tabHash === window.location.hash)?.dataset.studentTab
+    const requestedByHash = () => tabs.find(tab => tab.dataset.tabHash === window.location.hash)?.dataset.studentTab
         || legacyHashTabs[window.location.hash];
-    activate(panelWithErrors?.dataset.studentPanel || navigation.dataset.forceActiveTab || requestedByHash || navigation.dataset.activeTab || 'ficha');
+    activate(panelWithErrors?.dataset.studentPanel || navigation.dataset.forceActiveTab || requestedByHash() || navigation.dataset.activeTab || 'ficha');
+
+    // Un enlace a la misma revisión sólo cambia el fragmento: no hay DOMContentLoaded.
+    // Atiende también navegación atrás/adelante y conserva la carga normal si cambia la revisión.
+    window.addEventListener?.('hashchange', () => {
+        const requested = requestedByHash();
+        if (!validTabs.has(requested)) return;
+        activate(requested);
+        tabs.find(tab => tab.dataset.studentTab === requested)?.focus();
+    });
 });

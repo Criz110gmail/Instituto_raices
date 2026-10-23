@@ -5,4 +5,5 @@ import escuela.finanzas.dto.response.MovimientoFinancieroResponse;
 
 public interface MovimientoManualService {
     MovimientoFinancieroResponse registrar(MovimientoManualRequest request);
+    MovimientoFinancieroResponse registrarNomina(MovimientoManualRequest request);
 }

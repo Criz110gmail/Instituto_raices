@@ -1,5 +1,36 @@
 # Sistema administrativo escolar
 
+## Configuración de nómina por empleado — V131
+
+**Administración → Personal y nómina → Configuración de nómina** reúne puesto,
+jornada, sueldo y conceptos recurrentes desde sus registros originales. Consulta por
+fecha, filtros con ayudas10/3, tabla paginada y Excel con mismos filtros. Detalle por
+pestañas; asigna calendario actual con motivo, historial y confirmación con cancelar.
+También se abre desde Empleados → Condiciones salariales. No duplica datos ni mueve
+dinero: calendario organizativo, todavía no filtra el generador mensual existente.
+
+[Ejemplo detallado V131](PRUEBA_CONFIGURACION_NOMINA_V131.md), pendiente de prueba
+humana. Conserva Bruce/enero y borrador aceptados; no repetir altas ni aplicar pagos.
+
+
+## Nómina global y aplicación desde cuenta — V129/V130
+
+**Administración → Personal y nómina → Preparación de nómina**: elige periodo,
+revisa todos los elegibles y sus totales, excluye los necesarios y guarda un solo
+borrador. Tabla paginada, selección persistente, opción individual y Excel con resumen
+global/consulta filtrada. Guardar no mueve dinero.
+
+Después, **Ver → Gestión → Revisar y aplicar nómina** elige cuenta de origen,
+revisa saldos y confirma un egreso consolidado en Movimientos financieros. Requiere
+administrar salarios y registrar movimientos; doble confirmación no duplica el egreso.
+Aplicada sólo consulta; reversión especializada pendiente. No envía transferencias,
+calcula impuestos/prorrateos ni paga aportaciones patronales por separado.
+
+[Prueba detallada V129/V130](PRUEBA_NOMINA_GLOBAL_V129_V130.md), pendiente de
+confirmación humana. Conservar borrador previo Bruce/enero, no duplicarlo. V128
+siguiente conserva el alcance histórico anterior a esta ampliación.
+
+
 ## Preparación de nómina mensual — V128
 
 **Administración → Personal y nómina → Preparación de nómina**: selecciona periodo y
