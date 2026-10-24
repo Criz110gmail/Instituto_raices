@@ -1,5 +1,12 @@
 # Simplificación de Personal y nómina — acuerdo 24/10/2026
 
+Actualización fase5: implementados autorización congelada, pagos/intentos por empleado,
+rechazo sin dinero, reversa con devolución real, abonos/compensaciones, liquidación y
+reapertura de préstamos. Entrega habilitada; nueva aplicación consolidada deshabilitada.
+V134 no convierte aplicaciones antiguas ni fabrica pagos individuales. Aceptación humana
+integrada y guía confirmada pendientes. Ver PRUEBA_SIMPLIFICACION_NOMINA_ETAPA5.md.
+Abonos externos, suspensión y devolución del principal no incluidos en esta entrega.
+
 Actualización etapa4: préstamos sin intereses capturables, versión/historial y entrega
 técnicamente comprobada en QA. Entregas operativas BLOQUEADAS hasta conectar fase5
 (app.nomina.prestamos.entrega-habilitada=false). No hay abonos/liquidación operativos:

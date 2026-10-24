@@ -7,4 +7,6 @@ public interface MovimientoManualService {
     MovimientoFinancieroResponse registrar(MovimientoManualRequest request);
     MovimientoFinancieroResponse registrarNomina(MovimientoManualRequest request);
     MovimientoFinancieroResponse registrarPrestamo(MovimientoManualRequest request);
+    MovimientoFinancieroResponse registrarNominaEmpleado(MovimientoManualRequest request);
+    MovimientoFinancieroResponse compensarNominaEmpleado(MovimientoManualRequest request,Long originalId);
 }

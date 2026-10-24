@@ -8,9 +8,9 @@
  <div th:replace="~{admin/fragments/laboral-comun :: avisos}"></div>
  <div class="form-error" th:if="${advertencia!=null and !advertencia.empty}" th:text="${advertencia}"></div>
  <section class="nomina-status-summary" aria-label="Estado actual de la nómina">
-  <div><span>Estado actual</span><strong th:text="${borrador.estado=='APLICADA'?'Nómina aplicada':(borrador.estado=='BORRADOR'?'Borrador pendiente de aplicar':'Borrador cancelado')}"></strong><small th:text="${'Última revisión '+borrador.revision+' · '+borrador.cantidad+(borrador.cantidad==1?' empleado':' empleados')}"></small></div>
+  <div><span>Estado actual</span><strong th:text="${borrador.estado=='APLICADA'?'Nómina aplicada':(borrador.estado=='BORRADOR'?'Borrador pendiente de autorizar':(borrador.estado=='CANCELADO'?'Borrador cancelado':borrador.estado))}"></strong><small th:text="${'Última revisión '+borrador.revision+' · '+borrador.cantidad+(borrador.cantidad==1?' empleado':' empleados')}"></small></div>
   <div><span th:text="${borrador.estado=='APLICADA'?'Importe aplicado':'Importe de la última revisión'}"></span><strong th:text="${'$'+#numbers.formatDecimal(borrador.propuesto,1,'COMMA',2,'POINT')+' '+borrador.moneda}"></strong><small th:text="${borrador.periodoCodigo}"></small></div>
-  <div class="nomina-status-actions">
+  <div class="nomina-status-actions"><a class="nomina-primary-action" th:if="${borrador.estado!='APLICADA' and borrador.estado!='CANCELADO'}" th:href="${filtro.url('/admin/preparacion-nomina/'+borrador.id+'/pagos')}">Autorización y pagos por empleado →</a>
    <a th:if="${aplicacionNomina!=null}" class="nomina-primary-action" href="#aplicacion">Ver aplicación y egreso →</a>
    <a th:if="${puedeAplicar and borrador.estado=='BORRADOR'}" class="nomina-primary-action" th:href="${filtro.url('/admin/preparacion-nomina/'+borrador.id+'/aplicacion')}">Revisar y aplicar nómina →</a>
    <a class="nomina-action" th:href="@{/admin/preparacion-nomina/{id}/excel(id=${borrador.id},revisionConsulta=${revisionConsulta})}">Exportar revisión a Excel</a>
@@ -33,7 +33,7 @@
  </section>
  <section id="panel-nomina-empleados" class="student-tab-panel employee-panel detail-section" data-student-panel="empleados" role="tabpanel" aria-labelledby="tab-nomina-empleados" hidden>
   <div class="section-heading"><h2 th:text="${'Empleados · Revisión '+revisionConsulta}"></h2><a class="nomina-action" th:href="@{/admin/preparacion-nomina/{id}/excel(id=${borrador.id},revisionConsulta=${revisionConsulta})}">Exportar esta revisión a Excel</a></div>
-  <p class="field-help">Abre Ver desglose para consultar cada percepción y deducción original. Esta pantalla no permite revertir pagos individuales: esa función corresponde a una próxima etapa.</p>
+  <p class="field-help">Abre Ver desglose para consultar cada percepción y deducción original. Los pagos individuales y sus reversas se consultan desde Autorización y pagos por empleado; las aplicaciones consolidadas antiguas no se dividen.</p>
   <div class="table-wrap"><table><thead><tr><th>Empleado</th><th>Sueldo</th><th>Otras percepciones</th><th>Deducciones</th><th>Aportaciones escuela</th><th>Importe de la revisión</th><th>Acción</th></tr></thead><tbody>
    <tr th:each="e:${guardados.content}"><td data-label="Empleado"><div class="nomina-cell"><strong th:text="${e.nombre}"></strong><small th:text="${e.codigo}"></small></div></td><td data-label="Sueldo" th:text="${'$'+#numbers.formatDecimal(e.sueldo,1,'COMMA',2,'POINT')}"></td><td data-label="Otras percepciones" th:text="${'$'+#numbers.formatDecimal(e.percepciones,1,'COMMA',2,'POINT')}"></td><td data-label="Deducciones" th:text="${'$'+#numbers.formatDecimal(e.deducciones,1,'COMMA',2,'POINT')}"></td><td data-label="Aportaciones escuela" th:text="${'$'+#numbers.formatDecimal(e.aportaciones,1,'COMMA',2,'POINT')}"></td><td data-label="Importe de la revisión"><strong th:text="${'$'+#numbers.formatDecimal(e.propuesto,1,'COMMA',2,'POINT')}"></strong></td><td data-label="Acción"><a class="nomina-action" th:href="${filtro.url('/admin/preparacion-nomina/'+borrador.id+'/empleados/'+e.id)}">Ver desglose →</a></td></tr>
   </tbody></table></div>

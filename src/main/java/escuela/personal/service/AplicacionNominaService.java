@@ -17,6 +17,7 @@ import java.util.*;
 
 @Service @RequiredArgsConstructor @Transactional(readOnly=true)
 public class AplicacionNominaService {
+ @org.springframework.beans.factory.annotation.Value("${app.nomina.consolidada-habilitada:false}") private boolean consolidadaHabilitada;
  private final PreparacionNominaService preparacion;
  private final EmpleadoService empleados;
  private final NamedParameterJdbcTemplate jdbc;
@@ -26,7 +27,7 @@ public class AplicacionNominaService {
  public record Vista(PreparacionNominaService.Borrador borrador,PreparacionNominaService.Totales totales,Cuenta cuenta,Motivo motivo,BigDecimal saldoPosterior,String sello){}
  public record Aplicacion(Long movimientoId,String cuenta,String fecha,String usuario,BigDecimal monto,String moneda,String motivo){}
  private MapSqlParameterSource parametros(boolean escribir){var a=empleados.autorizarSalarios(escribir);return new MapSqlParameterSource("institucion",a.institucionId()).addValue("actor",a.usuarioId());}
- public boolean puedeAplicar(){return empleados.permitido("CONDICION_SALARIAL_ADMINISTRAR")&&empleados.permitido("MOVIMIENTO_FINANCIERO_REGISTRAR");}
+ public boolean puedeAplicar(){return consolidadaHabilitada&&empleados.permitido("CONDICION_SALARIAL_ADMINISTRAR")&&empleados.permitido("MOVIMIENTO_FINANCIERO_REGISTRAR");}
  private void autorizar(){empleados.autorizarSalarios(true);if(!puedeAplicar())throw new AccessDeniedException("Se requiere administrar salarios y registrar movimientos financieros para aplicar nómina");}
  public void validarBorrador(Long id){autorizar();var b=preparacion.obtener(id);if(!b.estado().equals("BORRADOR"))throw new ReglaNegocioException("Esta nómina ya fue aplicada o cancelada; sólo está disponible para consulta.");}
  private Cuenta cuenta(Long id,String moneda){return jdbc.query("SELECT c.id,c.codigo,c.nombre,c.moneda,c.version,coalesce((SELECT m.saldo_posterior FROM movimiento_financiero m WHERE m.cuenta_id=c.id ORDER BY m.secuencia_cuenta DESC LIMIT 1),c.saldo_inicial) saldo FROM cuenta_financiera c WHERE c.id=:id AND c.institucion_id=:institucion AND c.activo AND c.moneda=:moneda AND c.tipo IN ('CAJA','BANCO')",parametros(true).addValue("id",id).addValue("moneda",moneda),(r,n)->new Cuenta(r.getLong("id"),r.getString("codigo"),r.getString("nombre"),r.getString("moneda"),r.getBigDecimal("saldo"),r.getLong("version"))).stream().findFirst().orElseThrow(()->new ReglaNegocioException("La cuenta debe ser caja o banco, estar activa y pertenecer a la institución y moneda de la nómina."));}

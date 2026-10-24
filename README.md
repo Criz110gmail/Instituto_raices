@@ -1,5 +1,13 @@
 # Sistema administrativo escolar
 
+## Nómina: pagos por empleado — fase 5
+
+Nóminas → detalle → **Autorización y pagos por empleado**. Autorizar congela la revisión
+sin mover dinero. Después registra cada pago o rechazo; una reversa con devolución real
+afecta sólo a ese empleado. Las cuotas de préstamo se abonan al pagar y se restauran al
+revertir, con historial y liquidación. Entregas de préstamos habilitadas; aplicaciones
+consolidadas antiguas permanecen sólo consulta. [Ejemplo propuesto](PRUEBA_SIMPLIFICACION_NOMINA_ETAPA5.md).
+
 ## Personal y nómina: préstamos sin intereses — base de etapa 4
 
 **Configuración de nómina → empleado → Conceptos recurrentes → Préstamos** permite

@@ -1,5 +1,61 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Nómina: pagos individuales y abonos — fase5,24/10/2026
+
+- Usuario autoriza fase5. V134 aditiva; NO dividir aplicaciones anteriores. BOR000001
+  APLICADA/rev1/mov10/12500/saldo posterior7500 permanece histórica. Nuevas nóminas:
+  BORRADOR→AUTORIZADA→PARCIALMENTE_PAGADA/PAGADA según pagos vigentes. Autorización
+  congela revisión/empleados sin dinero. No cancelarla como borrador ni recalcularla
+  al cambiar configuración. Neto0 requiere resolver configuración; no egreso cero.
+- Detalle → Autorización y pagos por empleado. Lista/estado/búsqueda/paginación/Excel;
+  empleado con Resumen/Registrar resultado/Historial. Captura con retorno/contexto,
+  cuenta/motivo10/3, importe histórico no editable, revisión sellada, confirmaciones
+  detalladas y Cancelar. Nuevo intento de formulario/versiones tras operación exitosa.
+- Pagar: un egreso NOMINA individual por intento y abonos exactos de sus préstamos,
+  en misma transacción. Rechazado SIN salida no crea movimiento ni abona; pendiente.
+  Reversa exige confirmar devolución real a cuenta original, ingreso NOMINA_REVERSO
+  con reversa_de_id, motivos/referencia/fecha/actor privados y compensación de abonos;
+  sólo ese empleado vuelve pendiente. Reintento nuevo, sin editar original. No depósito
+  bancario automatizado/timbrado ni pago parcial del neto individual.
+- Préstamos: min(parcialidad,saldo) por mes desde inicio. Reserva cuota al autorizar,
+  no abono; otra nómina de ese préstamo exige resolver pago pendiente antes de reservar.
+  Saldo deriva entregas menos abonos de PAGADOS. Liquidación automática y reapertura
+  al revertir; otras nóminas pagadas no se recalculan. Historial → Abonos/compensaciones
+  paginado con saldos históricos y enlace al pago. No duplicar deducción habitual.
+- application.properties: entrega-habilitada=true ahora que abonos conectados;
+  consolidada-habilitada=false. Servicio entrega conserva default false. Compatibilidad
+  consolidada sólo activada explícitamente en fixtures IT antiguas, NO en operación.
+  No abonos externos/suspensiones/intereses/devolución del principal/refinanciamiento.
+- Permisos existentes sin grants; salario privado para autorizar/consultar, más registro
+  financiero para pagar y más MOVIMIENTO_FINANCIERO_REVERTIR para reversa. Backend/CSRF/
+  IDOR y cuentas institucionales/moneda/saldo/estado/versiones selladas. Locks de pago
+  nómina→empleado→préstamos→cuenta; autorización conserva periodo→nómina→empleados.
+  Tabla intentos con índice único pago vigente, reversa única, abonos/compensaciones
+  inmutables y triggers de correspondencia financiera/fotografía/estado. No PII salarial
+  en libro global: sólo folios. Ocasionales congelados también desde autorización.
+- 1003Java suite+4IT PostgreSQL17 aislados,126JS correctos. Executor IT7 incluye3unitarios
+  ya en suite. Última cuota250 de1250/500, liquidación/reapertura, rechazo/concurrencia/
+  reversa/reintento/otro empleado intacto; POST reales, permisos/CSRF/IDOR/Excel/abonos.
+  Fallo SQL deliberado DESPUÉS de egreso al abonar: rollback dinero/intento/abono, reintento
+  correcto. Error inicial de sintaxis CASE corregido en V134 aún no publicada; fixture
+  restablece contexto después de MockMVC. Sin problemas ni cambios sobre datos reales.
+- PRUEBA_SIMPLIFICACION_NOMINA_ETAPA5.md: ejemplo humano propuesto, no confirmado.
+  Guía integrada pendiente de aceptación. Siguen pruebas humanas de flujo simplificado,
+  expedientes familiares/timeout de sesión y requisitos de liberación generales.
+  Respaldo privado previo .respaldos-locales/nomina-etapa5-v134-20261024/antes-v134.dump,
+  catálogo verificado. No leer/publicar .env ni respaldos, no commit/push ni pagos reales.
+- Publicada24/10/2026 a16:09México, saludUP8080/Flyway134. Comparación de huellas de
+  aplicación histórica y fuentes de empleados BOR000001 idénticas antes/después,
+  estadoAPLICADA/rev1/mov10/12500/saldo posterior7500 intactos;10 movimientos/0préstamos.
+  Tablas nuevas autorización/intentos/reversas/abonos/compensaciones vacías en operación.
+  No se hicieron pagos, entregas, abonos o reversas reales por herramientas. Entrega
+  true y consolidada false en fuente empaquetada. QA visual ficticia escritorio/móvil,
+  claro/oscuro, modal/Cancelar sin enviar; evidencia ignorada target/qa-nomina-etapa5/.
+  DB tmpfs/ejecutor/etiqueta imagen QA retirados, servidor/tab cerrados, viewport/tema
+  restaurados. No volúmenes operativos ni imágenes previas de respaldo eliminados.
+  Siguiente: prueba humana fase5 propuesta; no repetir aceptación ya confirmada ni
+  dar por aceptado el flujo nuevo por pasar pruebas técnicas. Guía integrada pendiente.
+
 ## Préstamos: base técnica de etapa4, entregas protegidas — 24/10/2026
 
 - Usuario responde «continúa» a confirmación de propuesta SIN INTERESES. Implementada

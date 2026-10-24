@@ -1,5 +1,27 @@
 # Contexto del proyecto
 
+## Pagos individuales y préstamos conectados — fase5,24/10/2026
+
+V134 aditiva, sin transformar aplicaciones consolidadas antiguas. Nuevas nóminas se
+autorizan congelando revisión sin dinero; pagar/rechazar/revertir se registra por empleado.
+Estado AUTORIZADA/PARCIALMENTE_PAGADA/PAGADA según pagos vigentes. Un rechazo sin dinero
+no abona; reversa con devolución real ingresa a cuenta original, compensa abonos y deja
+sólo ese empleado pendiente. Nuevo intento, historial original conservado. Neto no editable.
+Cuotas min(saldo,parcialidad), reserva al autorizar sin abonar, saldo por pagos vigentes,
+liquidación/reapertura con reversa; abonos/compensaciones consultables y paginados.
+Entregas habilitadas ahora, ruta consolidada nueva deshabilitada; salario privado más
+finanzas para pago y permiso de reversa adicional para devolver. Sin grants ni PII en libro.
+1003Java+4IT PostgreSQL17 aislados+126JS correctos; incluye rollback tras egreso al fallar
+abono, concurrencia, reintento, liquidación/reapertura, permisos/CSRF/IDOR y POST reales.
+Ejemplo PRUEBA_SIMPLIFICACION_NOMINA_ETAPA5.md pendiente de aceptación; no guía confirmada.
+No abonos externos/intereses/suspensiones/devolución del principal ni cálculo fiscal nuevo.
+Respaldo privado previo verificado; BOR000001 histórica no se repite ni divide.
+Publicada24/10 a16:09México, saludUP8080/V134. Huellas de aplicación y fuentes históricas
+idénticas;BOR000001APLICADA/rev1/mov10/12500/saldo posterior7500;10movimientos/0préstamos.
+Nuevas tablas vacías. Sin operaciones financieras reales de QA. Vista ficticia verificada
+escritorio/móvil y claro/oscuro; recursos QA temporales retirados sin tocar volúmenes
+operativos/imágenes previas. Aceptación humana y guía integrada aún pendientes.
+
 ## Base de préstamos sin intereses — etapa4,24/10/2026
 
 V133: préstamos por empleado, entrega e historial privado. Captura desde Configuración

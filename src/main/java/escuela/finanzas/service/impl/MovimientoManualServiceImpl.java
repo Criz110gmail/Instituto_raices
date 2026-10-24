@@ -39,7 +39,7 @@ public class MovimientoManualServiceImpl implements MovimientoManualService {
 
     @Override
     public MovimientoFinancieroResponse registrar(MovimientoManualRequest request) {
-        if (request.claveIdempotencia()!=null && (request.claveIdempotencia().startsWith("NOMINA:") || request.claveIdempotencia().startsWith("PRESTAMO:")))
+        if (request.claveIdempotencia()!=null && (request.claveIdempotencia().startsWith("NOMINA:") || request.claveIdempotencia().startsWith("PRESTAMO:") || request.claveIdempotencia().startsWith("NOMINA-EMP:") || request.claveIdempotencia().startsWith("NOMINA-REV:")))
             throw new ReglaNegocioException("La nómina o préstamo se registra desde su proceso específico, no como movimiento manual");
         return registrar(request, ClaseMovimiento.OPERACION);
     }
@@ -66,7 +66,34 @@ public class MovimientoManualServiceImpl implements MovimientoManualService {
         return registrar(request,ClaseMovimiento.PRESTAMO);
     }
 
+    @Override
+    public MovimientoFinancieroResponse registrarNominaEmpleado(MovimientoManualRequest request) {
+        validarPagoIndividual(request,false);
+        return registrar(request,ClaseMovimiento.NOMINA,null);
+    }
+
+    @Override
+    public MovimientoFinancieroResponse compensarNominaEmpleado(MovimientoManualRequest request,Long originalId) {
+        validarPagoIndividual(request,true);
+        var original=movimientoRepository.findById(originalId).orElseThrow(()->new ReglaNegocioException("Movimiento original no disponible"));
+        if(original.getClase()!=ClaseMovimiento.NOMINA || !original.getClaveIdempotencia().startsWith("NOMINA-EMP:")
+                || !original.getCuenta().getId().equals(request.cuentaId()) || original.getMonto().compareTo(request.monto())!=0
+                || !original.getInstitucion().getId().equals(request.institucionId()))
+            throw new ReglaNegocioException("La compensación debe regresar el pago individual exacto a su cuenta original");
+        return registrar(request,ClaseMovimiento.NOMINA_REVERSO,originalId);
+    }
+
+    private void validarPagoIndividual(MovimientoManualRequest r,boolean reversa) {
+        var a=SecurityContextHolder.getContext().getAuthentication();
+        for(String permiso:reversa?java.util.List.of("CONDICION_SALARIAL_ADMINISTRAR","MOVIMIENTO_FINANCIERO_REGISTRAR","MOVIMIENTO_FINANCIERO_REVERTIR"):java.util.List.of("CONDICION_SALARIAL_ADMINISTRAR","MOVIMIENTO_FINANCIERO_REGISTRAR"))
+            if(a==null||a.getAuthorities().stream().noneMatch(p->p.getAuthority().equals(permiso)))throw new AccessDeniedException("Falta autorización salarial/financiera para esta operación");
+        if(r.direccion()!=(reversa?DireccionMovimiento.INGRESO:DireccionMovimiento.EGRESO)||r.claveIdempotencia()==null||!r.claveIdempotencia().matches((reversa?"NOMINA-REV:":"NOMINA-EMP:")+"[0-9]+"))throw new ReglaNegocioException("Movimiento de nómina individual no identificable");
+    }
+
     private MovimientoFinancieroResponse registrar(MovimientoManualRequest request,ClaseMovimiento clase) {
+        return registrar(request,clase,null);
+    }
+    private MovimientoFinancieroResponse registrar(MovimientoManualRequest request,ClaseMovimiento clase,Long reversaId) {
         CuentaFinanciera cuenta = cuentaRepository.findByIdForUpdate(request.cuentaId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("la cuenta financiera", request.cuentaId()));
         validarCuenta(request, cuenta);
@@ -109,6 +136,7 @@ public class MovimientoManualServiceImpl implements MovimientoManualService {
         movimiento.setSecuenciaCuenta(secuencia);
         movimiento.setDireccion(request.direccion());
         movimiento.setClase(clase);
+        if(reversaId!=null)movimiento.setReversaDe(movimientoRepository.getReferenceById(reversaId));
         movimiento.setMonto(monto);
         movimiento.setMotivoFinanciero(motivo);
         movimiento.setConcepto(limpiar(request.concepto()));

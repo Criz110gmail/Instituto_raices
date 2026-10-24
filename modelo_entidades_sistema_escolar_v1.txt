@@ -1,4 +1,15 @@
 SISTEMA ADMINISTRATIVO ESCOLAR
+ACTUALIZACION 24/10/2026 — NOMINA INDIVIDUAL V134:
+NominaAutorizacion congela revision/empleados sin dinero. NominaPagoIntento privado,
+solicitud UUID, PAGADO/RECHAZADO/REVERTIDO, egreso unico y un pago vigente por fila.
+NominaPagoReversa unica enlaza ingreso compensatorio a cuenta original, actor/motivo/
+referencia/fecha; rechazo sin salida no genera ingreso/egreso. PrestamoAbonoNomina y
+PrestamoAbonoCompensacion inmutables; saldo deriva pagos vigentes, no meses transcurridos.
+Prestamo LIQUIDADO admite reapertura por reversa sin cambiar condiciones. Nómina nueva
+AUTORIZADA/PARCIALMENTE_PAGADA/PAGADA; antiguas APLICADA se conservan sin dividir egresos.
+Cuota min(parcialidad,saldo) y reserva al autorizar; pago individual confirma abono.
+Sin nuevos permisos/grants, formulas fiscales ni dispersion bancaria automatizada.
+
 ACTUALIZACION 24/10/2026 — PRESTAMOS V133:
 PrestamoEmpleado institucional con empleado/concepto DEDUCCION/CON_SALDO, importe,
 parcialidad mensual, moneda, inicio dia01, solicitud UUID, estado BORRADOR/ACTIVO/

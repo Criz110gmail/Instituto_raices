@@ -1,5 +1,12 @@
 # Integración de empleados, maestros y nómina
 
+24/10 fase5: autorización/pagos/rechazos/reversas individuales y abonos de préstamos
+implementados V134. Entregas ahora habilitadas, ruta de nuevas aplicaciones consolidadas
+deshabilitada. Aplicaciones históricas intactas. Cuota limitada a saldo real y abono sólo
+al pagar; reversa restaura deuda sin tocar otros empleados. Aceptación humana pendiente.
+Ver prueba etapa5. No declarar implementados abonos externos/suspensión/intereses/
+devolución del principal ni fórmulas fiscales. Las entradas inferiores son historia.
+
 24/10 etapa4: propietario confirma sin intereses al continuar. Base de préstamos V133
 desde Configuración/Conceptos/Préstamos; borrador/editar/cancelar/lista/Excel/historial.
 Entrega atómica con egreso PRESTAMO probada sólo en QA: deshabilitada en operación hasta

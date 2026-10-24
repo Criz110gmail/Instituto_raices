@@ -240,6 +240,16 @@
                     add('Módulos autorizados ('+modulos.length+')',modulos.length?modulos.join('\n'):'Ninguno · este rol no concede acceso a módulos');
                 }
                 note.textContent=(desactivar?'El rol dejará de conceder acceso. No se borran usuarios ni registros.':'Cada módulo seleccionado concede su paquete completo de permisos. Al editar un rol, el cambio afecta a todas las cuentas que lo tengan asignado.')+' Los permisos de otros roles se suman; vuelve a iniciar sesión para comprobar el acceso actualizado. Cancelar conserva la captura sin enviar cambios.';
+            } else if(kind==='nomina-autorizar'||kind==='nomina-empleado-pagar'||kind==='nomina-empleado-rechazar'||kind==='nomina-empleado-revertir') {
+                const campo=n=>form.querySelector('[name="'+n+'"]');
+                const autorizar=kind==='nomina-autorizar',pagar=kind==='nomina-empleado-pagar',reversa=kind==='nomina-empleado-revertir';
+                title.textContent=autorizar?'Autorizar revisión de nómina':pagar?'Confirmar pago individual':reversa?'Revertir sólo este pago':'Registrar rechazo sin dinero';cancel.textContent='Cancelar';accept.textContent=autorizar?'Confirmar autorización':pagar?'Confirmar pago y abonos':reversa?'Confirmar devolución y reversa':'Confirmar rechazo';
+                add(autorizar?'Nómina':'Empleado',form.dataset.confirmSubject);add(autorizar?'Total de revisión':'Neto individual',money(form.dataset.confirmAmount));
+                if(autorizar)add('Empleados',form.dataset.confirmPeople);
+                if(pagar){add('Cuenta de origen',form.dataset.confirmAccount);add('Saldo anterior',money(form.dataset.confirmBefore));add('Saldo posterior',money(form.dataset.confirmAfter));add('Préstamos con abono',form.dataset.confirmPeople);}
+                if(reversa)add('Pago que se revierte','NPI-'+form.dataset.confirmPayment+' · devolución a su cuenta original');
+                if(!autorizar)add('Referencia',campo('referencia').value.trim());add('Motivo',campo('motivo').value.trim());
+                note.textContent=autorizar?'Congela esta revisión y sus empleados, sin pagar ni abonar préstamos. No podrá editarse o cancelarse como borrador. Cancelar conserva la revisión sin autorizar.':pagar?'Registra un egreso por el neto completo y abona únicamente las cuotas de este empleado. No envía una transferencia bancaria. Cancelar no mueve dinero ni reduce préstamos.':reversa?'Confirma que los fondos regresaron realmente: publica el ingreso compensatorio exacto, restaura sus abonos y vuelve a pendiente. Los otros empleados no cambian. No borra el pago original. Cancelar no registra devolución.':'No salió dinero: se conserva el intento rechazado, sigue pendiente y no abona a préstamos ni genera movimientos. Cancelar no registra el intento.';
             } else if(kind==='prestamo-guardar'||kind==='prestamo-cancelar'||kind==='prestamo-entregar') {
                 const campo=n=>form.querySelector('[name="'+n+'"]');
                 const entregar=kind==='prestamo-entregar',cancelar=kind==='prestamo-cancelar';

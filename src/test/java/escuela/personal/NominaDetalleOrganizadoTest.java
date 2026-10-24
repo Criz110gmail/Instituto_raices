@@ -44,7 +44,7 @@ class NominaDetalleOrganizadoTest {
  }
  @Test void historicaConservaRevisionConsultaEnExcelYPaginacionSinConfundirConEstadoActual()throws Exception{var html=render("APLICADA",true,1);assertThat(html).contains("Histórica, no es la última revisión","revisionConsulta=1","Ver revisión 1","Ver revisión 2","pagina=2");}
  @Test void borradorYCanceladoConservanConsultaYAccionesSegunEstado()throws Exception{
-  assertThat(render("BORRADOR",false,2)).contains("Borrador pendiente de aplicar","Gestión del borrador","preparar-actualizacion","Revisar cancelación","data-money-confirm=\"nomina-borrador-cancelar\"").doesNotContain("tab-nomina-aplicacion");
+  assertThat(render("BORRADOR",false,2)).contains("Borrador pendiente de autorizar","Autorización y pagos por empleado","Gestión del borrador","preparar-actualizacion","Revisar cancelación","data-money-confirm=\"nomina-borrador-cancelar\"").doesNotContain("tab-nomina-aplicacion");
   assertThat(render("CANCELADO",false,2)).contains("Borrador cancelado","sólo consulta").doesNotContain("preparar-actualizacion","/cancelar","tab-nomina-gestion");
  }
 }
