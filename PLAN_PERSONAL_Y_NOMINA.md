@@ -1,5 +1,11 @@
 # Integración de empleados, maestros y nómina
 
+Estado actual24/10/2026: simplificación etapas1–3 implementadas; calendario actual
+conectado al generador y conceptos ocasionales por periodo V132. Sin backfill,
+mensual completo, revisión explícita de borradores legados, aplicadas intactas.
+Pendientes4préstamos con saldo y5pagos/reversas individuales. Aceptación humana y guía
+integrada aún pendientes. Leer PLAN_SIMPLIFICACION_NOMINA.md y prueba de etapa3.
+
 Acuerdo: 18/10/2026. Actualización: 22/10/2026.
 
 Actualización24/10/2026: el propietario aprueba simplificar navegación y capturas.

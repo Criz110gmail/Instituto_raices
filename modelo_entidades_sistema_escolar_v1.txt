@@ -1,4 +1,14 @@
 SISTEMA ADMINISTRATIVO ESCOLAR
+ACTUALIZACION 24/10/2026 — NOMINA ETAPA3:
+concepto_empleado_periodo vincula empleado/concepto/periodo institucionales, conserva
+codigo/nombre/naturaleza/version/importe/moneda/cobertura/sello, estado ACTIVA o
+CANCELADA y motivo. Historial inmutable. Una asignacion activa por concepto/empleado/
+periodo. Incluida en revision aplicada no se cancela. Sin consumo en borrador.
+Calendario actual asignado filtra generacion mensual completa; ausencia exige revision.
+V132 sin backfill. Fuentes/sellos originales de revisiones se conservan; marcador
+CALENDARIO_VIGENCIAS_1 requiere actualizar explicitamente borradores anteriores.
+No prestamos ni pagos individuales todavia: pendientes etapas4–5 del plan vigente.
+
 Propuesta de entidades, atributos, relaciones y reglas de negocio
 Versión 1.0 | 11 de septiembre de 2026 | Documento para revisión
 

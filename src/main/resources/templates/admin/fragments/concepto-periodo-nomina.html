@@ -1,0 +1,7 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><body>
+<th:block th:fragment="ocultos">
+ <th:block th:replace="~{admin/fragments/configuracion-nomina-comun :: ocultos}"></th:block>
+ <input type="hidden" name="buscarOcasional" th:value="${ocasFiltro.buscarOcasional}"><input type="hidden" name="estadoOcasional" th:value="${ocasFiltro.estadoOcasional}"><input type="hidden" name="periodoOcasionalId" th:value="${ocasFiltro.periodoOcasionalId}"><input type="hidden" name="paginaOcasional" th:value="${ocasFiltro.paginaOcasional}"><input type="hidden" name="tamanioOcasional" th:value="${ocasFiltro.tamanioOcasional}">
+</th:block>
+<nav th:fragment="secciones" class="personal-section-nav" aria-label="Tipos de conceptos del empleado"><a th:href="${configuracionUrl+'#conceptos'}"><strong>Habituales</strong><small>Se repiten según su vigencia</small></a><a th:href="${volverUrl}" aria-current="page"><strong>Sólo un periodo</strong><small>Bonos o deducciones ocasionales</small></a></nav>
+</body></html>

@@ -240,6 +240,14 @@
                     add('Módulos autorizados ('+modulos.length+')',modulos.length?modulos.join('\n'):'Ninguno · este rol no concede acceso a módulos');
                 }
                 note.textContent=(desactivar?'El rol dejará de conceder acceso. No se borran usuarios ni registros.':'Cada módulo seleccionado concede su paquete completo de permisos. Al editar un rol, el cambio afecta a todas las cuentas que lo tengan asignado.')+' Los permisos de otros roles se suman; vuelve a iniciar sesión para comprobar el acceso actualizado. Cancelar conserva la captura sin enviar cambios.';
+            } else if(kind==='nomina-concepto-periodo'||kind==='nomina-concepto-periodo-cancelar') {
+                const cancelar=kind==='nomina-concepto-periodo-cancelar',campo=n=>form.querySelector('[name="'+n+'"]');
+                title.textContent=cancelar?'Cancelar concepto de un solo periodo':'Confirmar concepto de un solo periodo';cancel.textContent='Cancelar';accept.textContent=cancelar?'Confirmar cancelación':'Confirmar y guardar concepto';
+                add(cancelar?'Concepto':'Empleado',form.dataset.confirmSubject);
+                add('Periodo',cancelar?form.dataset.confirmPeriod:campo('periodoTexto').value);
+                if(!cancelar){add('Concepto',campo('conceptoTexto').value);add('Tipo',form.dataset.confirmEffect);add('Cobertura',form.querySelector('[data-periodo-fechas]').value);}
+                add('Importe',money(cancelar?form.dataset.confirmAmount:campo('importe').value));add('Motivo',campo('motivo').value.trim());
+                note.textContent=(cancelar?'Se conserva el registro cancelado y su historial.':'Se propone sólo en el periodo indicado, no cada mes. Preparar o guardar el borrador no paga ni consume el concepto.')+' Las revisiones guardadas no se reescriben: actualiza el borrador antes de aplicar. No modifica una nómina aplicada ni mueve dinero. Cancelar cierra este resumen sin guardar.';
             } else if(kind==='configuracion-integrada') {
                 const campo=name=>form.querySelector('[name="'+name+'"]');
                 const fecha=valor=>valor?valor.split('-').reverse().join('/'):'Sin fecha de fin';

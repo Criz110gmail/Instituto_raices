@@ -1,5 +1,25 @@
 # Contexto del proyecto
 
+## Generador desde configuración — etapa3,24/10/2026
+
+V132: conceptos ocasionales por empleado y periodo con importes originales, auditoría
+inmutable y cancelación controlada antes de aplicación. Configuración → Conceptos →
+Sólo un periodo, listado/Excel/alta aparte, autocomplete10/3, modal con Cancelar.
+Generador ahora exige calendario asignado y respeta vigencias; sin asignación revisa,
+otro calendario no se incluye. No backfill. Configuración anual se reutiliza por mes.
+Ocasionales no se consumen al preparar/guardar; sólo cuentan en periodo exacto.
+Marcador CALENDARIO_VIGENCIAS_1 y fuentes calendario_empleado/ocasionales invalidan
+propuestas viejas: actualizar explícitamente crea revisión sin tocar original.
+Aplicadas intactas; sin conversión de sueldo ni cálculo proporcional/fiscal.
+997Java suite +2IT aislados PostgreSQL17,118JS correctos, QA visual ficticia responsiva.
+Prueba propuesta PRUEBA_SIMPLIFICACION_NOMINA_ETAPA3.md no aceptada aún por usuario.
+Respaldo privado previo verificado; no guía integrada confirmada ni pagos reales de QA.
+Publicada24/10 a14:51México, saludUP8080 yV132. BOR-000001 sigueAPLICADA/rev1/
+movimiento10/$12500/saldo posterior7500.10 movimientos y1 calendario conservados;
+tablas nuevas vacías. QA temporal retirada sin tocar volúmenes operativos.
+Siguiente etapa4 préstamos con saldo, después5 pagos/reversas por empleado.
+Las entradas antiguas siguientes describen estados históricos, no límites actuales.
+
 ## Captura integrada de configuración de nómina — etapa2,24/10/2026
 
 Propietario autoriza etapa2. Configuración de nómina → empleado → Configurar nómina:

@@ -1,5 +1,12 @@
 # Simplificación de Personal y nómina — acuerdo 24/10/2026
 
+Estado24/10: etapas1–3 implementadas técnicamente. Etapa3 conecta calendario actual
+y vigencias al generador e incorpora ocasionales por periodo (V132), sin backfill.
+Borradores anteriores requieren revisión explícita; aplicadas conservan su fotografía.
+Prueba humana integrada pendiente. Siguen4préstamos y5pagos/reversa individual.
+Ver PRUEBA_SIMPLIFICACION_NOMINA_ETAPA3.md; entradas históricas posteriores que
+describan calendario sólo organizativo quedan superadas por esta etapa.
+
 Sustituye la propuesta de once entradas independientes, no los historiales existentes.
 Autorizado implementar POR ETAPAS. No publicar todavía guía de usuario confirmada:
 primero simplificar la operación. Diseño compartido, filtros alineados, listado separado

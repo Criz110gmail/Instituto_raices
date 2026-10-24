@@ -1,5 +1,14 @@
 # Sistema administrativo escolar
 
+## Personal y nómina: generación desde configuración — etapa 3
+
+Calendario asignado y vigencias determinan los empleados/conceptos de cada mes.
+Desde Configuración → empleado → Conceptos → **Sólo un periodo** se registran
+bonos o deducciones ocasionales con historial, confirmación, filtros y Excel.
+Borradores se actualizan explícitamente; nóminas aplicadas no cambian.
+Sin asignación de calendario requiere revisión. Sólo cálculo mensual completo;
+préstamos y pagos individuales pendientes. [Prueba propuesta](PRUEBA_SIMPLIFICACION_NOMINA_ETAPA3.md).
+
 ## Personal y nómina: captura integrada — etapa 2
 
 **Configuración de nómina → empleado → Configurar nómina** reúne puesto y sueldo,

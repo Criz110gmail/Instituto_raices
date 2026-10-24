@@ -31,13 +31,13 @@
     <p class="field-help" th:text="${'Calendario actual: '+(empleado.calendario?:'Sin asignar')}"></p>
     <fieldset class="form-section" data-config-fields="calendario" th:disabled="${!configuracionForm.cambiarCalendario}"><legend>Frecuencia y grupo organizativo</legend>
      <div th:replace="~{admin/fragments/concepto-empleado-comun :: ayuda('calendario.calendario','Calendario activo *',${configuracionForm.calendario.calendarioId},${configuracionForm.calendario.calendarioTexto},'/admin/configuracion-nomina/calendarios/buscar?activos=true',true)}"></div>
-     <p class="field-help">Referencia actual, no cambio programado por fecha. La conexión con el generador por periodo corresponde a la siguiente etapa; no convierte importes ni modifica borradores existentes.</p>
+     <p class="field-help">Referencia actual: el generador sólo considera al empleado en periodos de este calendario. Un cambio no es retroactivo ni reescribe borradores guardados; deberán actualizarse antes de aplicar.</p>
     </fieldset>
    </section>
    <section class="student-tab-panel employee-panel detail-section" role="tabpanel" data-student-panel="conceptos" id="panel-integrada-conceptos" aria-labelledby="tab-integrada-conceptos" hidden>
     <div class="section-heading"><div><h2>Percepciones y deducciones adicionales</h2><p class="field-help">Agrega conceptos habituales con su propio inicio y fin; hasta 20 por confirmación. No vuelvas a agregar el sueldo base aquí.</p></div><button type="button" class="nomina-action" data-agregar-concepto>＋ Agregar concepto</button></div>
     <div data-conceptos><th:block th:each="c,n:${configuracionForm.conceptos}"><article th:replace="~{admin/fragments/configuracion-concepto-fila :: fila(${c},${n.index})}"></article></th:block></div>
-    <p class="field-help">Para cambiar un importe existente, vuelve a la configuración y utiliza Programar cambio en ese concepto. Préstamos con saldo, retenciones automáticas y conceptos ocasionales aún no están implementados.</p>
+    <p class="field-help">Para cambiar un importe existente, vuelve a la configuración y utiliza Programar cambio en ese concepto. Para un bono o deducción de una sola nómina usa Conceptos de un solo periodo desde el detalle del empleado. Préstamos con saldo y retenciones automáticas siguen pendientes.</p>
    </section>
    <section class="config-review assignment-summary-card"><h2>Motivo y confirmación</h2><label><span>Motivo obligatorio de los cambios *</span><textarea th:field="*{motivo}" rows="3" maxlength="2000" required placeholder="Explica qué se está configurando y por qué."></textarea></label><p class="field-help" data-config-status role="status">Revisa las secciones que vas a cambiar antes de confirmar.</p>
     <footer class="form-actions"><a class="detail-close-button" th:href="${filtro.url('/admin/configuracion-nomina/'+empleado.id)}">Cancelar</a><button type="submit">Revisar y guardar configuración</button></footer>

@@ -1,5 +1,44 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Simplificación de nómina: etapa3 — 24/10/2026
+
+- Implementada generación por calendario asignado, vigencias habituales y conceptos
+  ocasionales para UN periodo. Leer PRUEBA_SIMPLIFICACION_NOMINA_ETAPA3.md y plan.
+  Configuración → empleado → Conceptos → Sólo un periodo: listado/filtros/paginación/
+  Excel, alta separada, detalle/historial/cancelación con motivo y modal Cancelar.
+  Autocomplete10/3, dinero compartido, fechas dd/MM/yyyy, diseño claro/oscuro/móvil.
+- V132 crea concepto_empleado_periodo e historial inmutable; no backfill/grants.
+  Importe, concepto y periodo originales se conservan. Cancelar sólo antes de incluir
+  en revisión aplicada, protección servidor/BD. Preparar/guardar no consume ni paga.
+  Identidad institucional y empleado fijados en servidor; permisos salariales/CSRF.
+  Calendario actual debe asignarse explícitamente: sin calendario REVISION, otro
+  calendario NO_INCLUIDO. No convertirlo en historial de calendarios por vigencias.
+- Generador agrega calendario_empleado/ocasionales al JSON original y marcador
+  CALENDARIO_VIGENCIAS_1 al sello de periodo. Borrador legado sólo cambia mediante
+  actualización explícita/nueva revisión; no omitir empleados bloqueados. Cambios
+  posteriores invalidan propuesta, no reescriben snapshots. Aplicadas intactas.
+  Sueldo sigue UNA fuente condicion_salarial; mensual completo exclusivamente.
+  Locks compatibles calendario SHARE/periodo/empleado, versiones y contexto revalidados.
+- 997Java suite +2IT PostgreSQL17 aislados (Preparacion y EtapaTres),118JS correctos;
+  incluyen junio/diciembre, calendario ausente/distinto, ocasionales, concurrencia,
+  revisiones previas/legadas, aplicación ficticia, permisos/CSRF/Excel multipágina.
+  QA visual ficticia, sin conexión operativa, escritorio/móvil y modal Cancelar.
+  Aceptación humana pendiente: no publicar guía confirmada todavía.
+- Respaldo previo privado ignorado en .respaldos-locales/nomina-etapa3-v132-20261024/
+  antes-v132.dump; catálogo pg_restore verificado. No leer/publicar .env ni respaldos.
+  Antes de publicación: V131, BOR-000001/APLICADA/rev1/movimiento10/$12500/
+  saldo posterior7500;10 movimientos totales y1 asignación calendario. No repetir pago.
+- Publicada24/10/2026 a14:51México, saludUP8080/V132. Comprobación posterior:
+  aplicación/revisión/movimiento/importe/saldo intactos,10 movimientos y1 calendario
+  como antes; tablas nuevas sin filas operativas. Base de QA ficticia en tmpfs,
+  ejecutor e imagen QA retirados; servidor y pestaña de revisión cerrados. No se
+  eliminaron volúmenes operativos, imágenes previas de respaldo ni otros proyectos.
+- Sigue etapa4 préstamos con saldo; etapa5 pagos/reversa individual pendiente.
+  No fórmulas fiscales, prorrateos ni frecuencias nuevas. Prueba de timeout de sesión
+  y pruebas de expedientes del portal familiar siguen pendientes; no resueltas aquí.
+  Usuario ya liberó espacio Docker: aviso histórico de falta de espacio no implica
+  necesidad de limpieza global actual. No commit/push ni datos operativos de prueba.
+
 ## Simplificación de nómina: etapa2 — 24/10/2026
 
 - Usuario autoriza continuar etapa2. Captura separada en Configuración de nómina →
