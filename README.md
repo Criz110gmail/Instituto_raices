@@ -1,5 +1,13 @@
 # Sistema administrativo escolar
 
+## Personal y nómina: préstamos sin intereses — base de etapa 4
+
+**Configuración de nómina → empleado → Conceptos recurrentes → Préstamos** permite
+preparar, editar y cancelar borradores, con historial, filtros y Excel. El catálogo
+incorpora Deducción / Con saldo. La entrega real está protegida temporalmente hasta
+integrar pagos y abonos individuales en fase5; guardar no mueve dinero ni reduce deuda.
+[Ejemplo de revisión sin dinero](PRUEBA_SIMPLIFICACION_NOMINA_ETAPA4.md).
+
 ## Personal y nómina: generación desde configuración — etapa 3
 
 Calendario asignado y vigencias determinan los empleados/conceptos de cada mes.

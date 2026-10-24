@@ -39,8 +39,8 @@ public class MovimientoManualServiceImpl implements MovimientoManualService {
 
     @Override
     public MovimientoFinancieroResponse registrar(MovimientoManualRequest request) {
-        if (request.claveIdempotencia()!=null && request.claveIdempotencia().startsWith("NOMINA:"))
-            throw new ReglaNegocioException("La nómina se registra desde su proceso de aplicación, no como movimiento manual");
+        if (request.claveIdempotencia()!=null && (request.claveIdempotencia().startsWith("NOMINA:") || request.claveIdempotencia().startsWith("PRESTAMO:")))
+            throw new ReglaNegocioException("La nómina o préstamo se registra desde su proceso específico, no como movimiento manual");
         return registrar(request, ClaseMovimiento.OPERACION);
     }
 
@@ -53,6 +53,17 @@ public class MovimientoManualServiceImpl implements MovimientoManualService {
         if(request.direccion()!=DireccionMovimiento.EGRESO || request.claveIdempotencia()==null || !request.claveIdempotencia().startsWith("NOMINA:"))
             throw new ReglaNegocioException("La aplicación de nómina requiere un egreso identificable");
         return registrar(request,ClaseMovimiento.NOMINA);
+    }
+
+    @Override
+    public MovimientoFinancieroResponse registrarPrestamo(MovimientoManualRequest request) {
+        var a=SecurityContextHolder.getContext().getAuthentication();
+        if(a==null || a.getAuthorities().stream().noneMatch(p->p.getAuthority().equals("CONDICION_SALARIAL_ADMINISTRAR"))
+                || a.getAuthorities().stream().noneMatch(p->p.getAuthority().equals("MOVIMIENTO_FINANCIERO_REGISTRAR")))
+            throw new AccessDeniedException("Se requiere administración salarial y registro de movimientos financieros");
+        if(request.direccion()!=DireccionMovimiento.EGRESO || request.claveIdempotencia()==null || !request.claveIdempotencia().matches("PRESTAMO:[0-9]+"))
+            throw new ReglaNegocioException("La entrega del préstamo requiere un egreso identificable");
+        return registrar(request,ClaseMovimiento.PRESTAMO);
     }
 
     private MovimientoFinancieroResponse registrar(MovimientoManualRequest request,ClaseMovimiento clase) {

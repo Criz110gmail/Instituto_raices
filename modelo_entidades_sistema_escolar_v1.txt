@@ -1,4 +1,14 @@
 SISTEMA ADMINISTRATIVO ESCOLAR
+ACTUALIZACION 24/10/2026 — PRESTAMOS V133:
+PrestamoEmpleado institucional con empleado/concepto DEDUCCION/CON_SALDO, importe,
+parcialidad mensual, moneda, inicio dia01, solicitud UUID, estado BORRADOR/ACTIVO/
+CANCELADO, version e historial privado inmutable. PrestamoEntrega inmutable enlaza
+egreso PRESTAMO unico, importe, cuenta/referencia y actor. Guardar no entrega dinero.
+Entrega operativa bloqueada hasta fase5 (propiedad false); QA aislada verifica atomicidad.
+Saldo deriva entrega, no meses transcurridos. Abonos/liquidacion/suspension/compensaciones
+de entrega pendientes; no calcular descuentos sin pago individual ni dividir aplicaciones
+historicas. Generador exige revision para prestamos activos que corresponda descontar.
+
 ACTUALIZACION 24/10/2026 — NOMINA ETAPA3:
 concepto_empleado_periodo vincula empleado/concepto/periodo institucionales, conserva
 codigo/nombre/naturaleza/version/importe/moneda/cobertura/sello, estado ACTIVA o

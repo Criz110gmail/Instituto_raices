@@ -240,6 +240,16 @@
                     add('Módulos autorizados ('+modulos.length+')',modulos.length?modulos.join('\n'):'Ninguno · este rol no concede acceso a módulos');
                 }
                 note.textContent=(desactivar?'El rol dejará de conceder acceso. No se borran usuarios ni registros.':'Cada módulo seleccionado concede su paquete completo de permisos. Al editar un rol, el cambio afecta a todas las cuentas que lo tengan asignado.')+' Los permisos de otros roles se suman; vuelve a iniciar sesión para comprobar el acceso actualizado. Cancelar conserva la captura sin enviar cambios.';
+            } else if(kind==='prestamo-guardar'||kind==='prestamo-cancelar'||kind==='prestamo-entregar') {
+                const campo=n=>form.querySelector('[name="'+n+'"]');
+                const entregar=kind==='prestamo-entregar',cancelar=kind==='prestamo-cancelar';
+                title.textContent=entregar?'Confirmar entrega del préstamo':cancelar?'Cancelar préstamo sin entregar':'Guardar borrador del préstamo';
+                cancel.textContent='Cancelar';accept.textContent=entregar?'Confirmar entrega y egreso':cancelar?'Confirmar cancelación':'Confirmar y guardar borrador';
+                add(cancelar?'Préstamo':'Empleado',form.dataset.confirmSubject);
+                if(entregar){add('Préstamo',form.dataset.confirmPrestamo);add('Cuenta de origen',form.dataset.confirmAccount);add('Motivo financiero',form.dataset.confirmFinancial);add('Importe a entregar',money(form.dataset.confirmAmount));add('Saldo anterior',money(form.dataset.confirmBefore));add('Saldo posterior',money(form.dataset.confirmAfter));add('Referencia de entrega',campo('referencia').value);}
+                else if(!cancelar){add('Deducción con saldo',campo('conceptoTexto').value);add('Importe autorizado',money(campo('importe').value));add('Parcialidad mensual',money(campo('parcialidad').value));add('Primer descuento',campo('primerDescuento').value.split('-').reverse().join('/'));}
+                add('Motivo',campo('motivo').value.trim());
+                note.textContent=entregar?'Se registra un único egreso interno por la entrega real, sin enviar una transferencia bancaria. El préstamo queda activo y conserva su deuda íntegra; preparar nómina no registra abonos. La entrega real no se cancela como borrador. Cancelar cierra sin entregar dinero.':cancelar?'Sólo se cancela el borrador sin entregar. Se conserva historial y no se mueve dinero. Cancelar cierra sin guardar.':'Préstamo sin intereses. Guardar crea o modifica únicamente el borrador: no entrega dinero, no activa una deducción fija ni reduce saldos. Cancelar conserva la captura sin guardar.';
             } else if(kind==='nomina-concepto-periodo'||kind==='nomina-concepto-periodo-cancelar') {
                 const cancelar=kind==='nomina-concepto-periodo-cancelar',campo=n=>form.querySelector('[name="'+n+'"]');
                 title.textContent=cancelar?'Cancelar concepto de un solo periodo':'Confirmar concepto de un solo periodo';cancel.textContent='Cancelar';accept.textContent=cancelar?'Confirmar cancelación':'Confirmar y guardar concepto';

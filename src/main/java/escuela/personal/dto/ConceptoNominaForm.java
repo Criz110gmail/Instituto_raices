@@ -11,7 +11,7 @@ public class ConceptoNominaForm {
  @NotBlank(message="Captura el nombre.") @Size(max=150) private String nombre;
  @Size(max=2000) private String descripcion;
  @NotBlank(message="Selecciona el tipo de concepto.") @Pattern(regexp="PERCEPCION|DEDUCCION|APORTACION_PATRONAL",message="Selecciona un tipo válido.") private String naturaleza;
- @NotBlank(message="Selecciona la forma de aplicación.") @Pattern(regexp="HABITUAL|OCASIONAL",message="Selecciona una aplicación válida.") private String aplicacion;
+ @NotBlank(message="Selecciona la forma de aplicación.") @Pattern(regexp="HABITUAL|OCASIONAL|CON_SALDO",message="Selecciona una aplicación válida.") private String aplicacion;
  private boolean activo=true;
  @NotNull @PositiveOrZero private Long version=0L;
 }

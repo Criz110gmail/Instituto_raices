@@ -1,5 +1,27 @@
 # Contexto del proyecto
 
+## Base de préstamos sin intereses — etapa4,24/10/2026
+
+V133: préstamos por empleado, entrega e historial privado. Captura desde Configuración
+→ Conceptos → Préstamos, lista/Excel/filtros/alta-edición separada y detalle por tabs.
+Catálogo añade Con saldo sólo Deducción; no duplicar cuota habitual. Borrador sin
+entregar saldo0; edición/cancelación trazables, versiones y solicitud única.
+Entrega técnicamente probada en QA, pero propiedad entrega-habilitada=false en app y
+servicio hasta fase5: no liberar préstamos reales sin pagos/abonos individuales completos.
+QA: un egreso PRESTAMO por entrega, atómico e idempotente, cuenta institucional,
+permisos salario+finanzas y sin datos laborales en libro global. Saldo deriva entrega;
+no abonos por preparar ni por meses transcurridos. Liquidación/suspensión/correcciones
+pendientes. Generador exige revisión con préstamo activo que corresponda; sin préstamo
+no cambia fuentes ni cálculo. Aplicadas intactas.1000Java+3IT aislados+122JS correctos.
+Prueba humana propuesta sólo borradores en PRUEBA_SIMPLIFICACION_NOMINA_ETAPA4.md;
+no guía confirmada. Sigue fase5 antes de habilitar entrega; no basta cambiar propiedad.
+Respaldo privado previo verificado; no modificar datos reales, roles o aplicaciones viejas.
+App publicada24/10 a15:24México, saludUP8080/V133. BOR000001/rev1/mov10/12500/
+saldo posterior7500 intactos;10 movimientos;3 tablas nuevas vacías. Entrega false.
+QA visual ficticia1280/390/claro/oscuro, ayudas móviles separadas y textarea legible.
+Recursos QA temporales retirados, servidor/tab cerrados, sin volúmenes operativos
+eliminados ni limpieza global Docker. Aceptación humana aún pendiente.
+
 ## Generador desde configuración — etapa3,24/10/2026
 
 V132: conceptos ocasionales por empleado y periodo con importes originales, auditoría

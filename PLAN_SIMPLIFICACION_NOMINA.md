@@ -1,5 +1,12 @@
 # Simplificación de Personal y nómina — acuerdo 24/10/2026
 
+Actualización etapa4: préstamos sin intereses capturables, versión/historial y entrega
+técnicamente comprobada en QA. Entregas operativas BLOQUEADAS hasta conectar fase5
+(app.nomina.prestamos.entrega-habilitada=false). No hay abonos/liquidación operativos:
+no declarar ciclo de préstamo completo. Siguiente: pagos individuales/abonos/reversas,
+compensaciones y transición de aplicaciones históricas antes de habilitar entregas.
+Ver PRUEBA_SIMPLIFICACION_NOMINA_ETAPA4.md. No crear séptima entrada principal.
+
 Estado24/10: etapas1–3 implementadas técnicamente. Etapa3 conecta calendario actual
 y vigencias al generador e incorpora ocasionales por periodo (V132), sin backfill.
 Borradores anteriores requieren revisión explícita; aplicadas conservan su fotografía.

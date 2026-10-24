@@ -1,5 +1,54 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Préstamos: base técnica de etapa4, entregas protegidas — 24/10/2026
+
+- Usuario responde «continúa» a confirmación de propuesta SIN INTERESES. Implementada
+  captura de préstamos desde Configuración → empleado → Conceptos → Préstamos, sin
+  séptimo menú. Listado/filtros/paginación/Excel, Nuevo/Editar aparte, detalle con tabs
+  Resumen/Entrega/Historial. Origen/filtros/página y captura en error conservados.
+  Diseño compartido claro/oscuro/móvil, ayudas10/3 y modales Cancelar/confirmación única.
+- V133: prestamo_empleado, prestamo_entrega e historial inmutable; catálogo CON_SALDO
+  sólo DEDUCCION; clase financiera PRESTAMO.
+  Snapshot concepto/nombre/versión/moneda, UUID único de solicitud, importe y parcialidad,
+  primer descuento día01 de mes actual/futuro, motivo, versiones e historial privado.
+  Empleado activo laboral/ingreso compatible/calendario mensual; no iniciar antes de
+  nóminas ya aplicadas. Borrador saldo0, no mueve dinero; sólo éste admite Editar/Cancelar.
+- Entrega implementada pero NO habilitada operativamente: application.properties y
+  servicio app.nomina.prestamos.entrega-habilitada=false. NO activar para ejemplo humano:
+  faltan pagos/abonos individuales. Backend también bloquea, no sólo botón oculto.
+  QA aislada sí habilita: revisión sellada/cuenta/saldo/motivo/referencia, confirmación
+  real, egreso único PRESTAMO y entrega en misma transacción. Permisos salario+finanzas,
+  cuenta caja/banco institucional, moneda/saldo/estado revalidados y locks ordenados.
+  Libro global no revela empleado ni referencia privada. No transferencia bancaria.
+- No abonos/liquidación/suspensión/correcciones de entrega operativos aún. Saldo actual
+  deriva sólo de entrega; no inferir pagos por meses transcurridos. Cuota mínima de
+  saldo/parcialidad como contrato, NO afirmar amortización automática implementada.
+  ACTIVO no admite cancelación/edición ni reversa manual genérica. Etapa5 requiere
+  nueva migración de abonos/pagos/compensaciones y transición LIQUIDADO segura antes
+  de habilitar entregas; NO basta cambiar la propiedad ni dividir aplicaciones viejas.
+- Generador no cambia candidatos sin préstamo; añade fuentes sólo si activo y ya
+  corresponde descuento. Clasifica REVISION hasta fase5; no omitir deuda al aplicar.
+  Captura BORRADOR no afecta selección ni cálculo. Aplicadas previas conservadas.
+- 1000Java suite +3IT PostgreSQL17 aislados,122JS correctos: concurrencia egreso único,
+  rollback/sello alterado/sin saldo, privacidad/CSRF/IDOR, captura y revisión web,
+  Excel filtrado multipágina, doble solicitud e historia inmutable. Primera aserción
+  de captura corregida para decodificar entidad HTML &eacute;, no pérdida de datos.
+  PRUEBA_SIMPLIFICACION_NOMINA_ETAPA4.md: ejemplo humano sólo borradores, pendiente
+  aceptación; no publicar guía integrada confirmada todavía. Sigue fase5.
+- Respaldo privado ignorado .respaldos-locales/nomina-etapa4-v133-20261024/antes-v133.dump,
+  catálogo pg_restore verificado. Antes: V132/BOR000001APLICADA/rev1/mov10/12500/
+  saldo posterior7500/10 movimientos. No repetir ni probar dinero sobre esta base.
+  Sin .env/commit/push ni grants. Pendientes de sesión y expedientes familiares intactos.
+- Publicada24/10/2026 a15:24México: saludUP8080, Flyway133 success. BOR000001
+  conservaAPLICADA/rev1/mov10/12500/saldo posterior7500;10 movimientos como antes.
+  Tablas de préstamos/entrega/historial vacías en base operativa, sin préstamos reales
+  ni alteración de saldo. Propiedad de entrega false. QA visual ficticia1280/390,
+  oscuro/claro: autocomplete, contexto, modal y Cancelar, pestañas/gestión protegida;
+  corregida separación de ayudas y tipografía de textarea en captura móvil.
+  Contenedores temporales QA y etiqueta de imagen retirados, servidor/tab cerrados;
+  no se eliminaron volúmenes operativos ni imágenes previas de respaldo. Capturas
+  ficticias ignoradas en target/qa-nomina-etapa4. No dar aceptación humana por concluida.
+
 ## Simplificación de nómina: etapa3 — 24/10/2026
 
 - Implementada generación por calendario asignado, vigencias habituales y conceptos

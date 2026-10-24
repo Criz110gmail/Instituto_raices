@@ -96,3 +96,5 @@
 @media(max-width:620px){.config-integrada .entity-form{padding:0 14px 18px}.config-integrada .config-review,.config-integrada .config-concept-row{padding:16px}.config-integrada .section-heading>*{max-width:100%}.config-integrada .config-section-toggle{align-items:flex-start}.config-integrada .form-actions{flex-wrap:wrap}.config-integrada .form-actions>*{width:100%;text-align:center;justify-content:center}.config-integrada .student-tablist{grid-template-columns:1fr}}
 .conceptos-periodo .personal-section-nav + .field-help{display:block;margin:14px 0 20px;line-height:1.65}
 .conceptos-periodo .panel-actions .new-button{color:var(--ink)}
+.prestamo-captura fieldset > .field-help{display:block;margin:14px 0 0;line-height:1.65}
+.prestamo-captura textarea,.prestamo-detail textarea{font:inherit;line-height:1.5}

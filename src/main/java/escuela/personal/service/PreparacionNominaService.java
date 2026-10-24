@@ -48,11 +48,11 @@ public class PreparacionNominaService {
  WITH datos AS (
  SELECT e.id,e.codigo,concat_ws(' ',e.nombres,e.primer_apellido,e.segundo_apellido) nombre,e.activo,
  l.situacion,l.fecha_ingreso,l.fecha_baja,sc.n sueldos,sc.sueldo,sc.base,sc.frecuencia,sc.moneda sueldo_moneda,sc.cubre sueldo_cubre,
- ec.calendario_id calendario_asignado,
+ ec.calendario_id calendario_asignado,coalesce(pr.n,0) prestamos_pendientes,
  coalesce(ce.percepciones,0)+coalesce(oc.percepciones,0) percepciones,coalesce(ce.deducciones,0)+coalesce(oc.deducciones,0) deducciones,
  coalesce(ce.aportaciones,0)+coalesce(oc.aportaciones,0) aportaciones,coalesce(ce.cubre,true) AND coalesce(oc.cubre,true) conceptos_cubren,
  EXISTS(SELECT 1 FROM nomina_borrador_empleado ne WHERE ne.empleado_id=e.id AND ne.activo AND ne.borrador_id<>:ignorar AND daterange(ne.fecha_inicio,ne.fecha_fin,'[]') && daterange(:inicio,:fin,'[]')) ocupado,
- jsonb_build_object('empleado',to_jsonb(e),'laboral',to_jsonb(l),'calendario_empleado',to_jsonb(ec),'sueldos',coalesce(sc.fuentes,'[]'::jsonb),'conceptos',coalesce(ce.fuentes,'[]'::jsonb),'ocasionales',coalesce(oc.fuentes,'[]'::jsonb))::text fuentes
+ (jsonb_build_object('empleado',to_jsonb(e),'laboral',to_jsonb(l),'calendario_empleado',to_jsonb(ec),'sueldos',coalesce(sc.fuentes,'[]'::jsonb),'conceptos',coalesce(ce.fuentes,'[]'::jsonb),'ocasionales',coalesce(oc.fuentes,'[]'::jsonb)) || CASE WHEN pr.n>0 THEN jsonb_build_object('prestamos',pr.fuentes) ELSE '{}'::jsonb END)::text fuentes
  FROM empleado e LEFT JOIN empleado_laboral l ON l.empleado_id=e.id
  LEFT JOIN empleado_calendario_nomina ec ON ec.empleado_id=e.id AND ec.institucion_id=e.institucion_id
  LEFT JOIN LATERAL (SELECT count(*) n,min(s.importe_bruto) sueldo,min(s.base) base,min(s.frecuencia) frecuencia,min(s.moneda) moneda,
@@ -66,6 +66,9 @@ public class PreparacionNominaService {
  bool_and(o.fecha_inicio=:inicio AND o.fecha_fin=:fin AND o.moneda=:moneda AND o.sello_periodo=:selloActual) cubre,
  jsonb_agg(to_jsonb(o) ORDER BY o.id) fuentes FROM concepto_empleado_periodo o
  WHERE o.empleado_id=e.id AND o.institucion_id=:institucion AND o.periodo_id=:periodoActual AND o.estado='ACTIVA') oc ON true
+ LEFT JOIN LATERAL (SELECT count(*) n,jsonb_agg(to_jsonb(p) ORDER BY p.id) fuentes FROM prestamo_empleado p
+ JOIN prestamo_entrega en ON en.prestamo_id=p.id WHERE p.empleado_id=e.id AND p.institucion_id=:institucion
+ AND p.estado='ACTIVO' AND p.primer_descuento<=:fin) pr ON true
  WHERE e.institucion_id=:institucion AND (:empleado IS NULL OR e.id=:empleado) AND (:solo IS NULL OR e.id=:solo)
  AND strpos(lower(e.codigo||' '||concat_ws(' ',e.nombres,e.primer_apellido,e.segundo_apellido)),lower(:q))>0
  ), evaluados AS (
@@ -85,6 +88,7 @@ public class PreparacionNominaService {
  WHEN base<>'MENSUAL' OR frecuencia<>'MENSUAL' THEN 'NO_INCLUIDO|Sueldo de base o frecuencia distinta de mensual; no se convierte automáticamente.'
  WHEN sueldo_moneda<>:moneda THEN 'REVISION|La moneda salarial no coincide con la institucional.'
  WHEN NOT conceptos_cubren THEN 'REVISION|Un concepto no cubre el periodo, usa otra moneda o su periodo cambió; revisa la configuración sin prorrateo automático.'
+ WHEN prestamos_pendientes>0 THEN 'REVISION|Préstamo activo pendiente de descuento. Los abonos requieren pagos individuales (fase 5); no se aplica sin registrar la recuperación del préstamo.'
  WHEN deducciones>sueldo+percepciones THEN 'REVISION|Las deducciones superan el sueldo y las percepciones; no se propone un importe negativo.'
  WHEN greatest(sueldo,percepciones,deducciones,aportaciones,sueldo+percepciones-deducciones)>99999999999999999.99 THEN 'REVISION|Los importes exceden la capacidad de este borrador.'
  ELSE 'LISTO|Calendario asignado y configuración mensual compatibles durante todo el periodo.' END evaluacion

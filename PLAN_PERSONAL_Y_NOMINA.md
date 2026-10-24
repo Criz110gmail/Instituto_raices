@@ -1,5 +1,11 @@
 # Integración de empleados, maestros y nómina
 
+24/10 etapa4: propietario confirma sin intereses al continuar. Base de préstamos V133
+desde Configuración/Conceptos/Préstamos; borrador/editar/cancelar/lista/Excel/historial.
+Entrega atómica con egreso PRESTAMO probada sólo en QA: deshabilitada en operación hasta
+fase5. No activar sin pagos/abonos/compensaciones individuales, ni declarar liquidación
+o recuperación automáticas listas. Ver prueba etapa4 y plan de simplificación vigente.
+
 Estado actual24/10/2026: simplificación etapas1–3 implementadas; calendario actual
 conectado al generador y conceptos ocasionales por periodo V132. Sin backfill,
 mensual completo, revisión explícita de borradores legados, aplicadas intactas.

@@ -7,7 +7,7 @@
  <label><span>Texto adicional (opcional)</span><input name="q" th:value="${filtro.q}" maxlength="200" placeholder="Código, nombre o descripción"></label>
  <label><span>Estado</span><select name="estado"><option th:each="op:${ {'TODOS','ACTIVO','INACTIVO'} }" th:value="${op}" th:selected="${op==filtro.estado}" th:text="${op=='TODOS'?'Todos':(op=='ACTIVO'?'Activos':'Inactivos')}"></option></select></label>
  <label><span>Tipo de concepto</span><select name="filtroNaturaleza"><option value="">Todos los tipos</option><option th:each="op:${ {'PERCEPCION','DEDUCCION','APORTACION_PATRONAL'} }" th:value="${op}" th:selected="${op==filtro.filtroNaturaleza}" th:text="${T(escuela.personal.service.ConceptoNominaService).etiqueta(op)}"></option></select></label>
- <label><span>Forma de aplicación</span><select name="filtroAplicacion"><option value="">Todas las formas</option><option th:each="op:${ {'HABITUAL','OCASIONAL'} }" th:value="${op}" th:selected="${op==filtro.filtroAplicacion}" th:text="${T(escuela.personal.service.ConceptoNominaService).etiqueta(op)}"></option></select></label>
+ <label><span>Forma de aplicación</span><select name="filtroAplicacion"><option value="">Todas las formas</option><option th:each="op:${ {'HABITUAL','OCASIONAL','CON_SALDO'} }" th:value="${op}" th:selected="${op==filtro.filtroAplicacion}" th:text="${T(escuela.personal.service.ConceptoNominaService).etiqueta(op)}"></option></select></label>
  <label><span>Por página</span><select name="tamanio"><option th:each="n:${ {10,25,50,100} }" th:value="${n}" th:selected="${n==filtro.tamanio}" th:text="${n}"></option></select></label>
  <div class="billing-filter-actions"><button type="submit">Aplicar filtros</button><a href="/admin/conceptos-nomina">Limpiar</a></div>
 </form>
