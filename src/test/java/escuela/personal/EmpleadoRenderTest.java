@@ -34,7 +34,10 @@ class EmpleadoRenderTest {
   }
  }
  @Test void altaYEdicionRenderizanConPestanasModalesYFormulariosPost()throws Exception{for(boolean edicion:new boolean[]{true,false}){String html=render("/test/empleado",edicion,true);assertThat(html).contains("data-student-tabs","data-money-confirm=\"empleado-registro\"","method=\"post\"","Cancelar","/css/forms.css");if(edicion)assertThat(html).contains("data-money-confirm=\"empleado-laboral\"","data-money-confirm=\"empleado-perfil\"","data-money-confirm=\"empleado-plantel\"","PRIVADO-TEST","/planteles/buscar");}}
- @Test void sinPermisoLaboralNoSeRenderizaInformacionNiCamposPrivados()throws Exception{assertThat(render("/test/empleado",true,false)).contains("Datos personales","Cuenta del portal docente").doesNotContain("PRIVADO-TEST","name=\"puesto\"","name=\"situacion\"","name=\"motivoBaja\"","Historial laboral");}
+ @Test void puestoLaboralUsaAyudaCompartidaYConservaTextoAnteriorSinCrearOtraFuenteSalarial()throws Exception{
+  assertThat(render("/test/empleado",true,true)).contains("/admin/empleados/2/puestos/buscar","id=\"laboral-puesto\"","name=\"puestoId\"","autocomplete-input","data-no-scope","data-refresh-on-focus=\"true\"","value=\"PRIVADO-TEST\"","no asigna sueldo ni cambia nóminas");
+ }
+ @Test void sinPermisoLaboralNoSeRenderizaInformacionNiCamposPrivados()throws Exception{assertThat(render("/test/empleado",true,false)).contains("Datos personales","Cuenta del portal docente").doesNotContain("PRIVADO-TEST","name=\"puesto\"","name=\"puestoId\"","/puestos/buscar","name=\"situacion\"","name=\"motivoBaja\"","Historial laboral");}
  @Test void filtrosYExcelConservanMismosParametros()throws Exception{assertThat(render("/test/empleados",true,true)).contains("/admin/empleados/excel?institucionId=1&amp;q=Ana&amp;estado=DOCENTE","Personal y nómina","name=\"q\"","name=\"estado\"","name=\"tamanio\"");}
  @Test void menuMuestraPuestosJuntoAEmpleadosSoloConPermisoSalarial()throws Exception{
   var html=render("/test/menu-puestos",true,true);assertThat(html).contains("href=\"/admin/puestos\"","Puestos laborales");assertThat(html.indexOf("href=\"/admin/empleados\"")).isLessThan(html.indexOf("href=\"/admin/puestos\""));

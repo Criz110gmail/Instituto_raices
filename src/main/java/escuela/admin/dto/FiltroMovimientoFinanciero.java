@@ -17,14 +17,19 @@ public record FiltroMovimientoFinanciero(
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaDesde,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta,
         int pagina,
-        int tamanio
+        int tamanio,
+        Long movimientoId
 ) {
+    public FiltroMovimientoFinanciero(Long institucionId,Long cuentaId,String cuentaTexto,Long plantelId,
+            String direccion,String clase,LocalDate fechaDesde,LocalDate fechaHasta,int pagina,int tamanio) {
+        this(institucionId,cuentaId,cuentaTexto,plantelId,direccion,clase,fechaDesde,fechaHasta,pagina,tamanio,null);
+    }
     public FiltroMovimientoFinanciero normalizado() {
         String cuenta = cuentaTexto == null ? "" : cuentaTexto.trim().replaceAll("\\s+", " ");
         return new FiltroMovimientoFinanciero(institucionId, cuentaId, cuenta, plantelId,
                 enumValido(direccion, DireccionMovimiento.values()),
                 enumValido(clase, ClaseMovimiento.values()), fechaDesde, fechaHasta,
-                Math.max(0, pagina), Arrays.asList(10, 25, 50, 100).contains(tamanio) ? tamanio : 25);
+                Math.max(0, pagina), Arrays.asList(10, 25, 50, 100).contains(tamanio) ? tamanio : 25,movimientoId);
     }
 
     private static String enumValido(String valor, Enum<?>[] permitidos) {
@@ -35,6 +40,6 @@ public record FiltroMovimientoFinanciero(
 
     public FiltroMovimientoFinanciero conPagina(int nuevaPagina, int nuevoTamanio) {
         return new FiltroMovimientoFinanciero(institucionId, cuentaId, cuentaTexto, plantelId,
-                direccion, clase, fechaDesde, fechaHasta, nuevaPagina, nuevoTamanio).normalizado();
+                direccion, clase, fechaDesde, fechaHasta, nuevaPagina, nuevoTamanio,movimientoId).normalizado();
     }
 }

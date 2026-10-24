@@ -51,11 +51,12 @@ public class MovimientoFinancieroAdminController {
                    @RequestParam(required = false) LocalDate fechaHasta,
                    @RequestParam(defaultValue = "0") int pagina,
                    @RequestParam(defaultValue = "25") int tamanio,
+                   @RequestParam(required = false) Long movimientoId,
                    Authentication authentication, Model model) {
         List<InstitucionResponse> instituciones = alcance.filtrarInstituciones(institucionService.listar());
         if (institucionId == null && !instituciones.isEmpty()) institucionId = instituciones.getFirst().id();
         FiltroMovimientoFinanciero filtro = new FiltroMovimientoFinanciero(institucionId, cuentaId,
-                cuentaTexto, plantelId, direccion, clase, fechaDesde, fechaHasta, pagina, tamanio).normalizado();
+                cuentaTexto, plantelId, direccion, clase, fechaDesde, fechaHasta, pagina, tamanio,movimientoId).normalizado();
         try {
             model.addAttribute("resultado", consultaService.consultar(filtro));
         } catch (ReglaNegocioException excepcion) {
@@ -91,9 +92,10 @@ public class MovimientoFinancieroAdminController {
                @RequestParam(defaultValue = "TODOS") String clase,
                @RequestParam(required = false) LocalDate fechaDesde,
                @RequestParam(required = false) LocalDate fechaHasta,
+               @RequestParam(required = false) Long movimientoId,
                HttpServletResponse response) throws IOException {
         FiltroMovimientoFinanciero filtro = new FiltroMovimientoFinanciero(institucionId, cuentaId,
-                cuentaTexto, plantelId, direccion, clase, fechaDesde, fechaHasta, 0, 100).normalizado();
+                cuentaTexto, plantelId, direccion, clase, fechaDesde, fechaHasta, 0, 100,movimientoId).normalizado();
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         String nombre = URLEncoder.encode("movimientos-financieros-filtrados.xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + nombre);

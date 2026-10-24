@@ -1,5 +1,118 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Simplificación de nómina: etapa2 — 24/10/2026
+
+- Usuario autoriza continuar etapa2. Captura separada en Configuración de nómina →
+  empleado → Configurar nómina (`/{id}/editar`), con pestañas Puesto y sueldo,
+  Calendario y Conceptos adicionales. Cambiar sueldo/calendario por selección explícita;
+  hasta20 conceptos con vigencias propias, motivo común y modal detallado con Cancelar.
+  Quitar fila sólo quita captura, no cancela registros guardados. No generar otro empleado.
+- Orquestador transaccional reutiliza CondicionesSalarialesService.programar,
+  ConfiguracionNominaService.guardarCalendario y ConceptoEmpleadoService.asignar.
+  Empleado y laboral bloqueados, versiones/revisión salarial/calendario/conceptos
+  revalidadas; segundo envío u otra pestaña rechazan. Si falla cualquier fila, rollback
+  incluye sueldo/calendario/conceptos e historiales. Permisos institucionales salariales
+  existentes, CSRF; no nuevas concesiones. Empleado se fija por ruta en servidor.
+- Sueldo es percepción base desde condicion_salarial, UNA fuente, sin crear concepto
+  duplicado ni exigir jornada/plantilla. Captura directa NO hereda jornada/horas de una
+  asignación previa; se conserva ésta históricamente. Herramientas avanzadas compatibles.
+  Programar cambio de concepto desde el empleado conserva anteriorId/version, valida
+  pertenencia/concepto y cierra vigencia anterior sin modificar importe histórico.
+- Detalle incluye todas las vigencias futuras/anteriores de conceptos y condiciones,
+  con paginación; resumen/Excel conservan su fecha y filtros. El estado de conceptos
+  se refiere a hoy; condiciones indican estado en fecha consultada. Captura/errores/
+  cancelar/retorno mantienen contexto. Autocomplete dinámico comparte componente10/3,
+  con inicialización idempotente; dinero y ayudas globales reutilizados.
+- Calendario sigue referencia ACTUAL organizativa, no vigencia futura ni restricción
+  del generador: etapa3 pendiente. No cálculo semanal/quincenal/proporcional/fiscal;
+  no préstamos/saldos ni pagos/reversa individual (etapas4–5). No migración:V131/V132 libre.
+- Verificado993 Java de suite +1 IT Configuración PostgreSQL17 aislado ampliado,
+  115JS; incluye rollback tras fallo de concepto, duplicación, junio, cambio de importe,
+  GET/POST/render reales, CSRF, lectura sin editar y retorno. QA visual ficticia
+  escritorio1280/móvil390, claro/oscuro, autocompletado dinámico y modal con Cancelar.
+  Prueba propuesta PRUEBA_SIMPLIFICACION_NOMINA_ETAPA2.md, aceptación humana pendiente.
+  No publicar guía integrada confirmada todavía, no repetir BOR-000001/egreso12500.
+  App sola publicada24/10 a12:20México, saludUP8080; sin migración nueva.
+  Primer arranque sin espacio /tmp en Docker: retirados tres IDs exactos de caché de
+  compilación de esta etapa (~418MB, regenerables), no imágenes previas de respaldo.
+  Contenedor DB ficticia en tmpfs, ejecutor e imagen QA retirados; servidor/tab de vista
+  ficticia cerrados. No hubo limpieza global ni borrado de volúmenes operativos.
+  Consulta limitada confirma BOR-000001/rev1/movimiento10/12500/saldo posterior7500
+  intactos. Sin .env/commit/push ni cambios de datos reales. Espacio Docker sigue siendo
+  pendiente de mantenimiento autorizado antes de más compilaciones grandes.
+
+
+## Simplificación de nómina autorizada: etapa1 — 24/10/2026
+
+- Propietario aprueba seis módulos y configuración anual/vigencias, deducciones que
+  empiecen después (ejemplo préstamo junio) y reversa de pago de UN empleado sin cancelar
+  todo. Leer PLAN_SIMPLIFICACION_NOMINA.md íntegro. Etapas:1navegación/consulta,
+  2configuración única,3generación por vigencias/periodo,4préstamos,5pagos/reversas
+  individuales. NO afirmar2–5 implementadas. No cálculo fiscal automático ni timbrado.
+- Etapa1: menú principal Empleados/Puestos/Conceptos/Periodos/Configuración/Nóminas.
+  Interceptor postHandle sólo organiza modelos de navegación ya autorizados, sin alterar
+  visibleCon ni servicios/permisos. Jornadas/esquemas quedan en Puestos; asignaciones/
+  conceptos por empleado en Configuración; calendarios en Periodos. Nav interna clara,
+  rutas y formularios anteriores compatibles. Capturas aún no fusionadas: avisos explícitos.
+- Nóminas muestra estado/importe/empleados arriba, pestañas Resumen/Detalle por empleado/
+  Aplicación/Historial; Gestión sólo borrador. Aplicación destaca cuenta, monto, fecha,
+  actor, motivo e ID de movimiento. Enlace financiero requiere permiso existente y filtra
+  movimientoId exacto más institución/alcance/clase; filtro conservado en página/Excel.
+  DTO sobrecarga anterior compatible. No No autorizado en Aplicada; no cambia estados.
+- Evidencia humana nueva en esta base: Carlos EMP-NOM-TEST-01, BOR-000001/revisión1
+  APLICADA24/10 a10:54 según usuario, egreso12500 en BANCO-NOMINA-TEST/cuenta6,
+  antes20000/después7500, no permite aplicar otra vez. Consulta acotada de sólo lectura
+  confirma aplicación/movimientoID10 (NO secuencia #1). No repetir operación ni pedir
+  Bruce de otra computadora. Usuario pospone expresamente guía integrada hasta simplificar.
+- Sin SQL/migración ni escritura de datos operativos. V131 vigente/V132 libre. Mantener
+  cambios previos sin commit de autocomplete Puesto. Verificación: 991 Java de suite
+  más 3 IT PostgreSQL aislados (Preparación, Programación y Configuración), 114 JS,
+  package BUILD SUCCESS y diff --check correcto. Render real prueba Aplicada/Borrador/
+  Cancelada, revisión histórica, permisos, filtro exacto y Excel. QA visual con datos
+  ficticios en escritorio 1280 y móvil 390, claro/oscuro: pestañas adaptables, filtros
+  alineados, Nuevo/Excel legibles. Recursos Docker temporales de QA retirados, sin tocar
+  volúmenes operativos. PRUEBA_SIMPLIFICACION_NOMINA_ETAPA1.md propone sólo consulta.
+  Lo siguiente es etapa2, después de entregar1: fuente salarial única y captura integrada,
+  no crear Sueldo como segundo importe ni dividir retrospectivamente el egreso aplicado.
+- Publicada sólo app el24/10 a11:59México, saludUP8080 y Flyway131 sin migración nueva.
+  Primer arranque falló por No space left on device de Docker en /tmp; retirados sólo
+  tres registros identificados de caché de estas compilaciones (~418MB), no limpieza
+  global ni volúmenes. Reinicio posterior correcto. Caché regenerable, sin datos perdidos.
+  Docker conserva muchas imágenes/caché previas: revisar espacio antes de otra compilación,
+  no borrar recursos de otros proyectos sin autorización. Aceptación visual humana pendiente.
+
+## Puesto de referencia de Empleados desde catálogo — 24/10/2026
+
+- Propietario trabaja en otra computadora con base distinta y sin empleados; ejemplo
+  nuevo Carlos Prueba Nómina/EMP-NOM-TEST-01, no asumir Bruce ni transportar datos con Git.
+  No ha confirmado guardados. Pide sustituir puesto libre laboral por ayuda de catálogo.
+- Datos laborales usa autocomplete compartido10 al foco/desde3, nombre en entrada y
+  código en detalle. Endpoint /admin/empleados/{id}/puestos/buscar sólo laboral de
+  edición + Empleados institucional, sin salario; SQL activo/institución/LIMIT11 y
+  no-store. No ampliar permisos salariales ni exponer importes. Texto nuevo/cambiado
+  exige ID/nombre válidos, activo/institución bajo FOR SHARE; conserva nombre histórico.
+- Sin migración/FK nueva: puesto sigue referencia textual, no segunda condición salarial.
+  Texto anterior sin cambio se conserva aunque no esté catalogado/activo; no backfill
+  por nombre ni cambios retroactivos al editar catálogo. ID sólo valida selección de
+  captura, no se presenta como vínculo persistente. Historial/versiones/CSRF/modales
+  y validaciones locales existentes conservados. Nada de sueldos/egresos por este cambio.
+- PRUEBA_PUESTO_EMPLEADO_AUTOCOMPLETADO.md documenta orden corregido: crear/reutilizar
+  puesto ANTES de confirmar laboral; luego ejemplo mensual Carlos12000+bono500 enero.
+  No repetir altas ni aplicar dinero. Guía confirmada pendiente de prueba humana.
+- Verificación:985 Java de suite y1 IT PostgreSQL17 aislado correctos,114 JS y package
+  BUILD SUCCESS. IT con131 migraciones y datos ficticios: ayuda11/10+hayMas, mínimo3,
+  búsqueda literal/código, inactivo/ajeno, selección y nombre alterados, snapshot tras
+  renombrar/desactivar, CSRF, POST real válido/error con captura, historial y cero
+  condiciones/movimientos nuevos. Correcciones de fixture (email/contexto tras MVC)
+  antes del resultado final; no fueron cambios de datos operativos.
+  Sin cambios CSS ni QA visual nueva: componente compartido y render real verificados,
+  aceptación móvil/claro/oscuro del propietario pendiente. QA DB/volumen/etiqueta
+  temporal retirados; sin .env, cambios operativos ni commit/push.
+  V131 última migración/V132 libre; otros pendientes de nómina intactos.
+- App sola recreada24/10 a09:48México; saludUP8080 y Flyway131 validada sin nuevas
+  migraciones. PostgreSQL/volúmenes conservados. Recargar/iniciar sesión y continuar
+  Carlos desde el paso efectivamente guardado, creando puesto antes de elegirlo.
+
 ## V131 — Configuración de nómina por empleado — 23/10/2026
 
 - Verificación final:985 Java correctas (981suite+PreparacionNominaIT y cuatro IT

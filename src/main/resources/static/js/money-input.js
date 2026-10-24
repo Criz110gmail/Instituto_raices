@@ -240,6 +240,26 @@
                     add('Módulos autorizados ('+modulos.length+')',modulos.length?modulos.join('\n'):'Ninguno · este rol no concede acceso a módulos');
                 }
                 note.textContent=(desactivar?'El rol dejará de conceder acceso. No se borran usuarios ni registros.':'Cada módulo seleccionado concede su paquete completo de permisos. Al editar un rol, el cambio afecta a todas las cuentas que lo tengan asignado.')+' Los permisos de otros roles se suman; vuelve a iniciar sesión para comprobar el acceso actualizado. Cancelar conserva la captura sin enviar cambios.';
+            } else if(kind==='configuracion-integrada') {
+                const campo=name=>form.querySelector('[name="'+name+'"]');
+                const fecha=valor=>valor?valor.split('-').reverse().join('/'):'Sin fecha de fin';
+                title.textContent='Confirmar configuración de nómina';cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar configuración';
+                add('Empleado',form.dataset.confirmSubject);
+                if(campo('cambiarSueldo').checked){
+                    add('Puesto nuevo',campo('sueldo.puestoTexto').value);
+                    add('Sueldo bruto — percepción base',money(campo('sueldo.importeBruto').value));
+                    add('Base / frecuencia',campo('sueldo.base').selectedOptions[0].textContent+' / '+campo('sueldo.frecuencia').selectedOptions[0].textContent);
+                    add('Vigencia del sueldo',fecha(campo('sueldo.fechaInicio').value)+' — '+fecha(campo('sueldo.fechaFin').value));
+                }
+                if(campo('cambiarCalendario').checked)add('Calendario actual nuevo',campo('calendario.calendarioTexto').value);
+                form.querySelectorAll('[data-config-concepto]').forEach((fila,n)=>{
+                    const c=sufijo=>fila.querySelector('[name$="'+sufijo+'"]');
+                    add('Concepto '+(n+1),c('.conceptoTexto').value+' · '+fila.querySelector('[data-concept-effect]').value);
+                    add('Importe / vigencia '+(n+1),money(c('.importe').value)+' · '+fecha(c('.inicio').value)+' — '+fecha(c('.fin').value));
+                    if(c('.anteriorId').value)add('Cambio de asignación', '#'+c('.anteriorId').value+'; cerrará la vigencia previa');
+                });
+                add('Motivo',campo('motivo').value.trim());
+                note.textContent='Se guardan juntos únicamente los cambios seleccionados y los conceptos añadidos. Se conservan las fuentes e historiales originales. No se recalculan nóminas guardadas ni se mueve dinero. Cancelar sólo cierra este resumen y conserva la captura.';
             } else if(kind==='calendario-empleado') {
                 const campo=name=>form.querySelector('[name="'+name+'"]');
                 title.textContent='Confirmar calendario del empleado';cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar calendario';

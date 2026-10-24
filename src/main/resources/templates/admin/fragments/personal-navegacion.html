@@ -1,0 +1,30 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><body>
+<section class="personal-navigation" th:fragment="secciones(actual)" th:if="${actual!=null}" th:with="origen=${moduloPersonalOrigen?:actual},grupo=${actual.menuPersonal().name()}">
+ <th:block th:if="${grupo=='PUESTOS'}">
+  <p class="personal-navigation-caption">Puestos y organización laboral</p>
+  <nav class="personal-section-nav" aria-label="Secciones de puestos laborales">
+   <a href="/admin/puestos" th:attr="aria-current=${origen.name()=='PUESTOS'?'page':null}"><strong>Puestos</strong><small>Catálogo principal</small></a>
+   <a href="/admin/jornadas" th:attr="aria-current=${origen.name()=='JORNADAS_LABORALES'?'page':null}"><strong>Jornadas</strong><small>Horas de referencia</small></a>
+   <a href="/admin/esquemas" th:attr="aria-current=${origen.name()=='ESQUEMAS_REMUNERACION'?'page':null}"><strong>Plantillas de puesto y sueldo</strong><small>Configuraciones existentes</small></a>
+  </nav>
+  <p class="field-help">Las jornadas y plantillas se conservan aquí durante la integración de la captura. Consultarlas no cambia las asignaciones guardadas.</p>
+ </th:block>
+ <th:block th:if="${grupo=='CONFIGURACION_NOMINA'}">
+  <p class="personal-navigation-caption">Configuración del personal</p>
+  <nav class="personal-section-nav" aria-label="Secciones de configuración de nómina">
+   <a href="/admin/configuracion-nomina" th:attr="aria-current=${origen.name()=='CONFIGURACION_NOMINA'?'page':null}"><strong>Resumen por empleado</strong><small>Sueldo, conceptos y calendario</small></a>
+   <a href="/admin/asignaciones" th:attr="aria-current=${origen.name()=='ASIGNACIONES_LABORALES'?'page':null}"><strong>Puesto y sueldo</strong><small>Asignaciones y vigencias</small></a>
+   <a href="/admin/conceptos-empleado" th:attr="aria-current=${origen.name()=='CONCEPTOS_EMPLEADO'?'page':null}"><strong>Percepciones y deducciones</strong><small>Conceptos por empleado</small></a>
+  </nav>
+  <p class="field-help">Abre el resumen de un empleado y pulsa Configurar nómina para capturar puesto, sueldo, calendario y conceptos juntos. Las herramientas anteriores se conservan para consultar y gestionar su historial.</p>
+ </th:block>
+ <th:block th:if="${grupo=='PERIODOS_NOMINA'}">
+  <p class="personal-navigation-caption">Periodos y frecuencia de pago</p>
+  <nav class="personal-section-nav" aria-label="Secciones de periodos de nómina">
+   <a href="/admin/periodos-nomina" th:attr="aria-current=${origen.name()=='PERIODOS_NOMINA'?'page':null}"><strong>Periodos de nómina</strong><small>Cobertura y pago previsto</small></a>
+   <a href="/admin/calendarios-nomina" th:attr="aria-current=${origen.name()=='CALENDARIOS_NOMINA'?'page':null}"><strong>Calendarios y frecuencias</strong><small>Organización de periodos</small></a>
+  </nav>
+  <p class="field-help">Primero define un calendario y después sus periodos. La organización de fechas no calcula ni aplica pagos.</p>
+ </th:block>
+</section>
+</body></html>

@@ -7,7 +7,8 @@ import java.util.*;import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.*;import static org.mockito.Mockito.*;import static org.mockito.ArgumentMatchers.*;
 class EmpleadoServiceTest {
  final EmpleadoRepository empleados=mock(EmpleadoRepository.class);final EmpleadoLaboralRepository laborales=mock(EmpleadoLaboralRepository.class);final EmpleadoPlantelRepository ads=mock(EmpleadoPlantelRepository.class);final MaestroRepository maestros=mock(MaestroRepository.class);final InstitucionRepository instituciones=mock(InstitucionRepository.class);final PlantelRepository planteles=mock(PlantelRepository.class);final UsuarioRepository usuarios=mock(UsuarioRepository.class);
- final EmpleadoService s=new EmpleadoService(empleados,laborales,ads,maestros,instituciones,planteles,usuarios,mock(AlcanceDatosService.class),mock(JdbcTemplate.class));
+ final JdbcTemplate jdbc=mock(JdbcTemplate.class);
+ final EmpleadoService s=new EmpleadoService(empleados,laborales,ads,maestros,instituciones,planteles,usuarios,mock(AlcanceDatosService.class),jdbc);
  final Institucion i=new Institucion();final Empleado e=new Empleado();final Usuario u=new Usuario();
  @BeforeEach void datos(){i.setId(1L);i.setActivo(true);i.setZonaHoraria("America/Mexico_City");e.setId(2L);e.setInstitucion(i);e.setCodigo("EMP-2");e.setNombres("Ana");e.setPrimerApellido("Prueba");e.setVersion(4L);u.setId(3L);u.setInstitucion(i);u.setTipoCuenta(TipoCuentaUsuario.ADMINISTRATIVO);u.setEstado(EstadoUsuario.ACTIVO);when(usuarios.findById(3L)).thenReturn(Optional.of(u));when(empleados.findById(2L)).thenReturn(Optional.of(e));when(empleados.bloquear(2L)).thenReturn(Optional.of(e));when(maestros.findByEmpleadoId(anyLong())).thenReturn(Optional.empty());sesion(false,true,"EMPLEADO_LEER","EMPLEADO_ADMINISTRAR");}
  void sesion(boolean bootstrap,boolean institucional,String...permisos){var authorities=Arrays.stream(permisos).map(SimpleGrantedAuthority::new).toList();var p=new UsuarioPrincipal(3L,1L,Set.of(),institucional,bootstrap,"qa","",authorities);SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(p,"",authorities));}
@@ -41,6 +42,30 @@ class EmpleadoServiceTest {
  @Test void bajaRequiereMotivoYSoloCambiaLaboral(){sesion(false,true,"EMPLEADO_LEER","EMPLEADO_LABORAL_ADMINISTRAR");var l=new EmpleadoLaboral();l.setEmpleado(e);l.setVersion(2L);when(laborales.findByEmpleadoId(2L)).thenReturn(Optional.of(l));var f=new LaboralForm();f.setVersion(2L);f.setSituacion("BAJA");f.setFechaBaja(LocalDate.of(2026,1,1));assertThatThrownBy(()->s.guardarLaboral(2L,f)).hasMessageContaining("motivo");f.setMotivoBaja("Fin de relación confirmado");s.guardarLaboral(2L,f);assertThat(l.getSituacion()).isEqualTo("BAJA");assertThat(e.isActivo()).isTrue();assertThat(u.getEstado()).isEqualTo(EstadoUsuario.ACTIVO);verifyNoInteractions(maestros);}
  @Test void plantelAjenoNoSeAsignaNiEntregaPermisos(){sesion(false,true,"EMPLEADO_LEER","EMPLEADO_LABORAL_ADMINISTRAR");var otra=new Institucion();otra.setId(9L);var p=new Plantel();p.setId(5L);p.setInstitucion(otra);p.setActivo(true);when(planteles.findById(5L)).thenReturn(Optional.of(p));var f=new PlantelEmpleadoForm();f.setPlantelId(5L);f.setFechaInicio(LocalDate.of(2026,1,1));assertThatThrownBy(()->s.agregarPlantel(2L,f)).isInstanceOf(AccessDeniedException.class);verifyNoInteractions(ads);}
  @Test void identidadCanonicaSeComparteConMaestroSinReactivar(){var m=new Maestro();m.setId(7L);m.setEmpleado(e);m.setActivo(false);m.setNombres("Nombre único");assertThat(e.getNombres()).isEqualTo("Nombre único");e.setTelefono("123");assertThat(m.getTelefono()).isEqualTo("123");assertThat(m.isActivo()).isFalse();}
+ private LaboralForm laboralParaPrueba(String puesto){
+  sesion(false,true,"EMPLEADO_LEER","EMPLEADO_LABORAL_ADMINISTRAR");var l=new EmpleadoLaboral();l.setEmpleado(e);l.setVersion(2L);l.setPuesto("Puesto anterior");when(laborales.findByEmpleadoId(2L)).thenReturn(Optional.of(l));
+  var f=new LaboralForm();f.setVersion(2L);f.setSituacion("ACTIVO");f.setFechaIngreso(LocalDate.of(2026,1,1));f.setPuesto(puesto);return f;
+ }
+ @Test void puestoNuevoExigeSeleccionYConservaTextoHistoricoSinConsultarSalarios(){
+  var f=laboralParaPrueba("Texto libre nuevo");assertThatThrownBy(()->s.guardarLaboral(2L,f)).hasMessageContaining("sugerencias");verify(laborales,never()).saveAndFlush(any());
+  f.setPuesto("Puesto anterior");s.guardarLaboral(2L,f);assertThat(laborales.findByEmpleadoId(2L).orElseThrow().getPuesto()).isEqualTo("Puesto anterior");verifyNoInteractions(jdbc);
+ }
+ @Test void puestoSeleccionadoValidaInstitucionActivoYEtiquetaYGuardaNombreHistorico(){
+  var f=laboralParaPrueba("Auxiliar de prueba");f.setPuestoId(7L);
+  when(jdbc.query(contains("SELECT nombre FROM puesto_laboral"),any(org.springframework.jdbc.core.RowMapper.class),eq(7L),eq(1L))).thenReturn(List.of("Auxiliar de prueba"));
+  s.guardarLaboral(2L,f);assertThat(laborales.findByEmpleadoId(2L).orElseThrow().getPuesto()).isEqualTo("Auxiliar de prueba");
+  verify(jdbc).query(contains("activo FOR SHARE"),any(org.springframework.jdbc.core.RowMapper.class),eq(7L),eq(1L));
+  f.setPuesto("Etiqueta alterada");assertThatThrownBy(()->s.guardarLaboral(2L,f)).hasMessageContaining("seleccionarlo");
+  when(jdbc.query(contains("SELECT nombre FROM puesto_laboral"),any(org.springframework.jdbc.core.RowMapper.class),eq(7L),eq(1L))).thenReturn(List.of());
+  assertThatThrownBy(()->s.guardarLaboral(2L,f)).hasMessageContaining("activo de tu institución");verify(laborales,times(1)).saveAndFlush(any());
+ }
+ @Test void ayudaPuestosLimitadaSinSalariosPeroConPermisoLaboralYEmpleadoPropio(){
+  assertThatThrownBy(()->s.buscarPuestosLaborales(2L,"")).isInstanceOf(AccessDeniedException.class);verifyNoInteractions(jdbc);
+  sesion(false,true,"EMPLEADO_LEER","EMPLEADO_LABORAL_ADMINISTRAR");assertThat(s.buscarPuestosLaborales(2L,"ab")).isEmpty();verifyNoInteractions(jdbc);
+  s.buscarPuestosLaborales(2L,"");verify(jdbc).query(contains("ORDER BY nombre,id LIMIT 11"),any(org.springframework.jdbc.core.RowMapper.class),eq(1L),eq(""));
+  s.buscarPuestosLaborales(2L,"AUX");verify(jdbc).query(contains("institucion_id=? AND activo"),any(org.springframework.jdbc.core.RowMapper.class),eq(1L),eq("AUX"));
+  var otra=new Institucion();otra.setId(99L);e.setInstitucion(otra);assertThatThrownBy(()->s.buscarPuestosLaborales(2L,"")).isInstanceOf(AccessDeniedException.class);
+ }
  @Test void resumenPrincipalConsultaActualYProximoConLimiteUnoSinDependerDePagina(){
   sesion(false,true,"EMPLEADO_LEER","EMPLEADO_LABORAL_LEER");var actual=new EmpleadoPlantel();var pa=new Plantel();pa.setNombre("Plantel B");actual.setPlantel(pa);
   var proximo=new EmpleadoPlantel();var pb=new Plantel();pb.setNombre("Plantel A");proximo.setPlantel(pb);proximo.setFechaInicio(LocalDate.now(java.time.ZoneId.of("America/Mexico_City")).plusDays(1));

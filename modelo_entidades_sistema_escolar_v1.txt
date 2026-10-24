@@ -1031,3 +1031,20 @@ Calendario actual no filtra/recalcula todavía el generador existente; salarios/
 borradores/pagos inalterados. No duplica frecuencia salarial: muestra incompatibilidades
 sin convertir importes. Mismos permisos salariales+Empleados/Laboral, sin grants/portales.
 Semanal/quincenal, ocasionales/porcentajes/incrementos/pagos multicuenta pendientes.
+
+AJUSTE DE CAPTURA — PUESTO DE REFERENCIA LABORAL (2026-10-24)
+EmpleadoLaboral.puesto mantiene nombre histórico textual; captura selecciona un
+PuestoLaboral activo institucional mediante ayuda10/3. puestoId en LaboralForm sólo
+valida selección/nombre en servidor bajo FOR SHARE, no nueva FK ni fuente de sueldo.
+Sin selección se permite conservar texto anterior o vaciarlo cuando la situación lo
+permite; texto nuevo no seleccionado se rechaza. No backfill/fusión por nombre ni
+actualización retroactiva por renombrar catálogo. Ayuda con permiso laboral de edición
+y Empleados, sin acceso a importes/salarios; CRUD Puestos mantiene permisos propios.
+NOTA DE CONTINUIDAD 24/10/2026 — Captura integrada de nómina (etapa2):
+ConfiguracionEmpleadoNominaService coordina en UNA transacción las fuentes existentes:
+condicion_salarial (sueldo/percepción base), empleado_calendario_nomina (referencia actual)
+y concepto_empleado (conceptos adicionales/vigencias). No nueva tabla ni fuente salarial,
+no duplicar Sueldo en concepto_empleado. No hereda jornada de un esquema al sueldo directo.
+Bloqueo/versión/revisiones y auditorías originales; no cambiar nóminas históricas al editar.
+Etapa3 conectará calendario y periodo con generador; préstamos/pagos individuales futuros.
+V131 vigente, sin migración en esta entrega. Plan:PLAN_SIMPLIFICACION_NOMINA.md.

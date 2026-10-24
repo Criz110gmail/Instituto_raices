@@ -1,0 +1,49 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/nomina-comun :: head('Configurar nómina del empleado')}"></head>
+<body class="form-page"><main class="form-shell finance-shell nomina-detail config-integrada">
+ <header class="form-top"><a class="payment-back-link" th:href="${filtro.url('/admin/configuracion-nomina/'+empleado.id)}">← Volver a la configuración</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+ <section class="form-card employee-card">
+  <div class="form-intro finance-intro"><span>Personal · Configuración del empleado</span><h1 th:text="${empleado.nombre}"></h1><p th:text="${empleado.codigo+' · Puesto, sueldo, calendario y conceptos en una captura'}"></p></div>
+  <div th:replace="~{admin/fragments/laboral-comun :: avisos}"></div>
+  <form method="post" class="entity-form" th:action="@{/admin/configuracion-nomina/{id}/editar(id=${empleado.id})}" th:object="${configuracionForm}" data-config-integrada data-money-confirm="configuracion-integrada" th:attr="data-employee-id=${empleado.id},data-confirm-subject=${empleado.codigo+' · '+empleado.nombre}">
+   <th:block th:replace="~{admin/fragments/configuracion-nomina-comun :: ocultos}"></th:block>
+   <input type="hidden" th:field="*{versionLaboral}"><input type="hidden" th:field="*{revisionConceptos}"><input type="hidden" th:field="*{sueldo.revision}"><input type="hidden" th:field="*{calendario.version}">
+   <div class="nomina-preview-notice"><strong>Cambia sólo lo necesario</strong><p>Activa Puesto y sueldo o Calendario únicamente si vas a cambiarlos. Para agregar una percepción o deducción no necesitas volver a capturar el sueldo. Todo se confirma junto; si un dato falla, no se guarda ningún cambio.</p></div>
+   <nav class="student-tablist standalone-record-tabs payment-record-tabs" data-student-tabs data-active-tab="sueldo" role="tablist" aria-label="Captura de configuración">
+    <button type="button" role="tab" data-student-tab="sueldo" data-tab-hash="#sueldo" id="tab-integrada-sueldo" aria-controls="panel-integrada-sueldo"><span>01</span><strong>Puesto y sueldo</strong><small>Percepción base y vigencia</small></button>
+    <button type="button" role="tab" data-student-tab="calendario" data-tab-hash="#calendario" id="tab-integrada-calendario" aria-controls="panel-integrada-calendario"><span>02</span><strong>Calendario</strong><small>Frecuencia y grupo</small></button>
+    <button type="button" role="tab" data-student-tab="conceptos" data-tab-hash="#conceptos" id="tab-integrada-conceptos" aria-controls="panel-integrada-conceptos"><span>03</span><strong>Conceptos adicionales</strong><small>Percepciones y deducciones</small></button>
+   </nav>
+   <section class="student-tab-panel employee-panel detail-section" role="tabpanel" data-student-panel="sueldo" id="panel-integrada-sueldo" aria-labelledby="tab-integrada-sueldo">
+    <label class="config-section-toggle"><input type="checkbox" th:field="*{cambiarSueldo}" data-config-toggle="sueldo"><span>Registrar o programar un nuevo puesto y sueldo</span></label>
+    <p class="field-help">Sueldo es la percepción base, con una sola fuente. No necesitas crear una plantilla de puesto y sueldo. Un cambio comienza hoy o después; conserva lo anterior y no recalcula nóminas guardadas.</p>
+    <fieldset class="form-section" data-config-fields="sueldo" th:disabled="${!configuracionForm.cambiarSueldo}"><legend>Puesto, sueldo y vigencia nueva</legend><div class="form-grid">
+     <div class="wide" th:insert="~{admin/fragments/concepto-empleado-comun :: ayuda('sueldo.puesto','Puesto laboral *',${configuracionForm.sueldo.puestoId},${configuracionForm.sueldo.puestoTexto},'/admin/puestos/buscar',true)}"></div>
+     <label><span>Sueldo bruto — percepción base *</span><input type="text" inputmode="decimal" data-money data-min="0.01" th:field="*{sueldo.importeBruto}" required></label>
+     <label><span>Base del importe *</span><select th:field="*{sueldo.base}"><option value="MENSUAL">Mensual</option><option value="SEMANAL">Semanal</option><option value="DIARIA">Diaria</option><option value="POR_HORA">Por hora</option></select></label>
+     <label><span>Frecuencia salarial *</span><select th:field="*{sueldo.frecuencia}"><option value="MENSUAL">Mensual</option><option value="QUINCENAL">Quincenal</option><option value="SEMANAL">Semanal</option></select></label>
+     <label><span>Inicio del nuevo sueldo *</span><input type="date" th:field="*{sueldo.fechaInicio}" th:min="${hoy}" required></label>
+     <label><span>Último día del sueldo</span><input type="date" th:field="*{sueldo.fechaFin}"><small class="field-help">Opcional, se incluye este día.</small></label>
+    </div><p class="field-help">El sueldo directo no asigna una jornada ni hereda horas de una plantilla anterior. Esa información histórica se conserva en las asignaciones originales. No hay conversión automática semanal/quincenal ni cálculo fiscal.</p></fieldset>
+   </section>
+   <section class="student-tab-panel employee-panel detail-section" role="tabpanel" data-student-panel="calendario" id="panel-integrada-calendario" aria-labelledby="tab-integrada-calendario" hidden>
+    <label class="config-section-toggle"><input type="checkbox" th:field="*{cambiarCalendario}" data-config-toggle="calendario"><span>Asignar o cambiar calendario actual</span></label>
+    <p class="field-help" th:text="${'Calendario actual: '+(empleado.calendario?:'Sin asignar')}"></p>
+    <fieldset class="form-section" data-config-fields="calendario" th:disabled="${!configuracionForm.cambiarCalendario}"><legend>Frecuencia y grupo organizativo</legend>
+     <div th:replace="~{admin/fragments/concepto-empleado-comun :: ayuda('calendario.calendario','Calendario activo *',${configuracionForm.calendario.calendarioId},${configuracionForm.calendario.calendarioTexto},'/admin/configuracion-nomina/calendarios/buscar?activos=true',true)}"></div>
+     <p class="field-help">Referencia actual, no cambio programado por fecha. La conexión con el generador por periodo corresponde a la siguiente etapa; no convierte importes ni modifica borradores existentes.</p>
+    </fieldset>
+   </section>
+   <section class="student-tab-panel employee-panel detail-section" role="tabpanel" data-student-panel="conceptos" id="panel-integrada-conceptos" aria-labelledby="tab-integrada-conceptos" hidden>
+    <div class="section-heading"><div><h2>Percepciones y deducciones adicionales</h2><p class="field-help">Agrega conceptos habituales con su propio inicio y fin; hasta 20 por confirmación. No vuelvas a agregar el sueldo base aquí.</p></div><button type="button" class="nomina-action" data-agregar-concepto>＋ Agregar concepto</button></div>
+    <div data-conceptos><th:block th:each="c,n:${configuracionForm.conceptos}"><article th:replace="~{admin/fragments/configuracion-concepto-fila :: fila(${c},${n.index})}"></article></th:block></div>
+    <p class="field-help">Para cambiar un importe existente, vuelve a la configuración y utiliza Programar cambio en ese concepto. Préstamos con saldo, retenciones automáticas y conceptos ocasionales aún no están implementados.</p>
+   </section>
+   <section class="config-review assignment-summary-card"><h2>Motivo y confirmación</h2><label><span>Motivo obligatorio de los cambios *</span><textarea th:field="*{motivo}" rows="3" maxlength="2000" required placeholder="Explica qué se está configurando y por qué."></textarea></label><p class="field-help" data-config-status role="status">Revisa las secciones que vas a cambiar antes de confirmar.</p>
+    <footer class="form-actions"><a class="detail-close-button" th:href="${filtro.url('/admin/configuracion-nomina/'+empleado.id)}">Cancelar</a><button type="submit">Revisar y guardar configuración</button></footer>
+   </section>
+  </form>
+ </section>
+ <template id="config-concept-template"><article th:replace="~{admin/fragments/configuracion-concepto-fila :: fila(${conceptoVacio},'ROWINDEX')}"></article></template>
+ <noscript><p class="form-error">Activa JavaScript para organizar la captura y revisar la confirmación antes de guardar.</p></noscript>
+</main><script src="/js/configuracion-integrada.js" defer></script></body></html>

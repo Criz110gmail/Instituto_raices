@@ -1,5 +1,10 @@
 # Aceptación de Empleados y Maestros — V111
 
+Actualización24/10: el puesto de Datos laborales se selecciona de Puestos laborales
+con autocompletado10/3, ya no texto libre nuevo. Crear/reutilizar el puesto primero;
+los textos anteriores se conservan. Ver PRUEBA_PUESTO_EMPLEADO_AUTOCOMPLETADO.md.
+Los recorridos históricos siguientes no deben repetirse por este ajuste.
+
 ## Permisos privados — recorrido funcional confirmado el 20/10/2026
 
 Excel confirmado por el propietario con una fila del empleado filtrado y siete

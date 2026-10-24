@@ -16,7 +16,7 @@ public enum ModuloCatalogo {
     CONFIGURACION_NOMINA("configuracion-nomina","Configuración de nómina",List.of()),
     CALENDARIOS_NOMINA("calendarios-nomina","Calendarios de nómina",List.of()),
     PERIODOS_NOMINA("periodos-nomina","Periodos de nómina",List.of()),
-    PREPARACION_NOMINA("preparacion-nomina","Preparación de nómina",List.of()),
+    PREPARACION_NOMINA("preparacion-nomina","Nóminas",List.of()),
     ALUMNOS("alumnos", "Alumnos", List.of("Matrícula", "Alumno", "CURP", "Nacimiento", "Ingreso")),
     TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),
     VINCULOS_TUTOR("vinculos-tutor", "Familiares del alumno", List.of("Alumno", "Tutor", "Parentesco", "Permisos", "Vigencia")),
@@ -75,6 +75,14 @@ public enum ModuloCatalogo {
 
     public String slug() { return slug; }
     public String titulo() { return titulo; }
+    public ModuloCatalogo menuPersonal() {
+        return switch(this) {
+            case JORNADAS_LABORALES, ESQUEMAS_REMUNERACION -> PUESTOS;
+            case ASIGNACIONES_LABORALES, CONCEPTOS_EMPLEADO -> CONFIGURACION_NOMINA;
+            case CALENDARIOS_NOMINA -> PERIODOS_NOMINA;
+            default -> this;
+        };
+    }
     public List<String> columnas() { return columnas; }
 
     /** Estados válidos para el filtro de este listado; evita mostrar opciones que el módulo no entiende. */

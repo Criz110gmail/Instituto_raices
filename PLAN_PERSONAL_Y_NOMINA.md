@@ -2,6 +2,12 @@
 
 Acuerdo: 18/10/2026. Actualización: 22/10/2026.
 
+Actualización24/10/2026: el propietario aprueba simplificar navegación y capturas.
+Leer PLAN_SIMPLIFICACION_NOMINA.md, que supera la organización de once menús y
+precisa cinco entregas, configuración anual, préstamos desde junio y reversa individual.
+Etapa1 reorganiza consulta/navegación; no declara etapas2–5 implementadas. No modificar
+BOR-000001 aplicada ni su egreso consolidado para convertirlos en pagos individuales.
+
 ## Configuración por empleado — V131,23/10/2026
 
 Primera entrega del flujo aprobado: módulo Configuración de nómina reúne fuentes

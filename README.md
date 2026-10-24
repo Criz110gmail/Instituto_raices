@@ -1,5 +1,31 @@
 # Sistema administrativo escolar
 
+## Personal y nómina: captura integrada — etapa 2
+
+**Configuración de nómina → empleado → Configurar nómina** reúne puesto y sueldo,
+calendario y conceptos adicionales en una captura por pestañas. Cambia sólo lo necesario,
+con vigencias, historial y confirmación; un error revierte el guardado completo.
+Sueldo usa su fuente original, sin duplicarlo ni exigir una plantilla. No modifica
+nóminas guardadas ni mueve dinero. Calendario aún organizativo; préstamos y pagos
+individuales siguen pendientes. [Revisión propuesta](PRUEBA_SIMPLIFICACION_NOMINA_ETAPA2.md).
+
+## Personal y nómina: organización simplificada — etapa1
+
+Seis entradas principales: Empleados, Puestos laborales, Conceptos de nómina,
+Periodos de nómina, Configuración de nómina y Nóminas. Navegación interna conserva
+las herramientas anteriores durante la integración. La captura única se añadió en
+etapa2; préstamos/reversa individual siguen pendientes. Nóminas destaca estado y aplicación, con
+enlace al egreso exacto y exportación filtrada. Historial y datos aplicados intactos.
+[Plan por etapas](PLAN_SIMPLIFICACION_NOMINA.md) y
+[revisión de consulta sin repetir pagos](PRUEBA_SIMPLIFICACION_NOMINA_ETAPA1.md).
+
+## Puesto laboral con ayuda de catálogo — 24/10/2026
+
+Empleados → Datos laborales → Puesto laboral ahora selecciona Puestos laborales
+activos de la institución, diez al enfocar y búsqueda desde tres caracteres. Crear el
+puesto antes de confirmar actividad laboral. Conserva textos anteriores e historial;
+no asigna sueldo ni cambia nóminas. [Prueba y ejemplo en base nueva](PRUEBA_PUESTO_EMPLEADO_AUTOCOMPLETADO.md).
+
 ## Configuración de nómina por empleado — V131
 
 **Administración → Personal y nómina → Configuración de nómina** reúne puesto,

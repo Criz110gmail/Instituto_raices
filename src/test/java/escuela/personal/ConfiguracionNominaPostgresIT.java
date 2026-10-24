@@ -62,6 +62,7 @@ class ConfiguracionNominaPostgresIT {
    SecurityContextHolder.getContext().setAuthentication(auth(310001L,310001L,"CONDICION_SALARIAL_ADMINISTRAR"));assertThatThrownBy(()->s.obtener(310010L,enero)).isInstanceOf(org.springframework.security.access.AccessDeniedException.class);assertThat(s.listar(filtro(null,null,"TODOS",enero))).isEmpty();
    SecurityContextHolder.getContext().setAuthentication(a);assertThatThrownBy(()->j.update("delete from empleado_calendario_nomina where empleado_id=310010")).isInstanceOf(org.springframework.dao.DataAccessException.class);assertThatThrownBy(()->j.update("delete from empleado_calendario_nomina_historial where empleado_id=310010")).isInstanceOf(org.springframework.dao.DataAccessException.class);
    assertThat(j.queryForObject("select count(*) from movimiento_financiero",Long.class)).isZero();assertThat(j.queryForObject("select count(*) from nomina_borrador",Long.class)).isZero();assertThat(j.queryForObject("select count(*) from condicion_salarial",Long.class)).isEqualTo(1);assertThat(j.queryForObject("select count(*) from concepto_empleado",Long.class)).isEqualTo(1);
+   ConfiguracionIntegradaVerificacion.verificar(app,j,mvc,session,a,dir);
   }finally{SecurityContextHolder.clearContext();}
  }
 }

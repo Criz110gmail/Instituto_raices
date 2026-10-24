@@ -20,7 +20,9 @@ class CapturaMonetariaInterfazTest {
                         fail("Importe con number en " + path + ": " + tag);
                     if (tag.contains("data-money")) {
                         assertThat(tag).contains("type=\"text\"", "inputmode=\"decimal\"");
-                        assertThat(html).contains("/js/money-input.js", "/css/money-input.css");
+                        String cabecera=html.contains("th:replace=\"~{admin/fragments/nomina-comun :: head(")
+                                ? Files.readString(Path.of("src/main/resources/templates/admin/fragments/nomina-comun.html")) : html;
+                        assertThat(cabecera).contains("/js/money-input.js", "/css/money-input.css");
                     }
                 }
             }

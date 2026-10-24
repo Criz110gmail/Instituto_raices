@@ -65,6 +65,8 @@ public class MovimientoFinancieroConsultaService {
     private Specification<MovimientoFinanciero> especificacion(FiltroMovimientoFinanciero filtro, ZoneId zona) {
         return Specification.where(alcance.<MovimientoFinanciero>especificacion(ModuloCatalogo.MOVIMIENTOS_FINANCIEROS))
                 .and((root, query, cb) -> cb.equal(root.get("institucion").get("id"), filtro.institucionId()))
+                .and((root, query, cb) -> filtro.movimientoId() == null ? cb.conjunction()
+                        : cb.equal(root.get("id"), filtro.movimientoId()))
                 .and((root, query, cb) -> filtro.cuentaId() == null ? cb.conjunction()
                         : cb.equal(root.get("cuenta").get("id"), filtro.cuentaId()))
                 .and((root, query, cb) -> filtro.plantelId() == null ? cb.conjunction()

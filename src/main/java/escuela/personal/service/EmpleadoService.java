@@ -84,12 +84,31 @@ public class EmpleadoService {
   maestros.saveAndFlush(m);e.setActualizadoEn(java.time.Instant.now());empleados.saveAndFlush(e);
  }
  public LaboralForm laboral(Long id){autorizar(id,true,false);var l=laborales.findByEmpleadoId(id).orElseThrow();var f=new LaboralForm();f.setPuesto(l.getPuesto());f.setFechaIngreso(l.getFechaIngreso());f.setSituacion(l.getSituacion());f.setFechaBaja(l.getFechaBaja());f.setMotivoBaja(l.getMotivoBaja());f.setVersion(l.getVersion());return f;}
+ public List<escuela.admin.dto.OpcionAutocompletado> buscarPuestosLaborales(Long id,String q){
+  var e=autorizar(id,true,true);String t=OrganizacionLaboralService.texto(q,100);
+  if(!t.isEmpty()&&t.length()<3)return List.of();
+  return jdbc.query("SELECT id,codigo,nombre FROM puesto_laboral WHERE institucion_id=? AND activo AND strpos(lower(codigo||' '||nombre),lower(?))>0 ORDER BY nombre,id LIMIT 11",
+   (r,n)->new escuela.admin.dto.OpcionAutocompletado(r.getLong("id"),r.getString("nombre"),r.getString("codigo")+" · Puesto laboral"),e.getInstitucion().getId(),t);
+ }
+ private String resolverPuestoLaboral(Empleado e,EmpleadoLaboral actual,LaboralForm f){
+  String texto=limpiar(f.getPuesto());
+  if(f.getPuestoId()==null){
+   if(texto==null||texto.isBlank()||Objects.equals(texto,limpiar(actual.getPuesto())))return texto;
+   throw new ReglaNegocioException("Selecciona el puesto de las sugerencias. Si no existe, regístralo primero en Puestos laborales.");
+  }
+  var nombres=jdbc.query("SELECT nombre FROM puesto_laboral WHERE id=? AND institucion_id=? AND activo FOR SHARE",
+   (r,n)->r.getString("nombre"),f.getPuestoId(),e.getInstitucion().getId());
+  if(nombres.isEmpty())throw new ReglaNegocioException("Selecciona un puesto activo de tu institución; vuelve a buscarlo en las sugerencias.");
+  if(!Objects.equals(texto,nombres.getFirst()))throw new ReglaNegocioException("El puesto cambió o el texto no corresponde a la selección. Vuelve a seleccionarlo antes de guardar.");
+  return nombres.getFirst();
+ }
  @Transactional public void guardarLaboral(Long id,LaboralForm f){var e=autorizar(id,true,true);empleados.bloquear(id).orElseThrow();var l=laborales.findByEmpleadoId(id).orElseThrow();ValidacionVersion.verificar(l,f.getVersion(),"Datos laborales");
+  String puesto=resolverPuestoLaboral(e,l,f);
   if(f.getFechaIngreso()!=null&&f.getFechaIngreso().isAfter(LocalDate.now(ZoneId.of(e.getInstitucion().getZonaHoraria()))))throw new ReglaNegocioException("La fecha de ingreso no puede ser futura");
   if(f.getSituacion().equals("ACTIVO")&&(f.getFechaIngreso()==null||f.getPuesto()==null||f.getPuesto().isBlank()))throw new ReglaNegocioException("Para confirmar actividad laboral indica puesto y fecha de ingreso");
   if(f.getSituacion().equals("BAJA")&&(f.getFechaBaja()==null||f.getMotivoBaja()==null||f.getMotivoBaja().isBlank()))throw new ReglaNegocioException("La baja laboral requiere fecha y motivo; no desactiva cuenta ni grupos");
   if(f.getFechaBaja()!=null&&(f.getFechaIngreso()!=null&&f.getFechaBaja().isBefore(f.getFechaIngreso())||f.getFechaBaja().isAfter(LocalDate.now(ZoneId.of(e.getInstitucion().getZonaHoraria())))))throw new ReglaNegocioException("Revisa las fechas de ingreso y baja");
-  l.setPuesto(limpiar(f.getPuesto()));l.setFechaIngreso(f.getFechaIngreso());l.setSituacion(f.getSituacion());l.setFechaBaja(f.getSituacion().equals("BAJA")?f.getFechaBaja():null);l.setMotivoBaja(f.getSituacion().equals("BAJA")?limpiar(f.getMotivoBaja()):null);laborales.saveAndFlush(l);
+  l.setPuesto(puesto);l.setFechaIngreso(f.getFechaIngreso());l.setSituacion(f.getSituacion());l.setFechaBaja(f.getSituacion().equals("BAJA")?f.getFechaBaja():null);l.setMotivoBaja(f.getSituacion().equals("BAJA")?limpiar(f.getMotivoBaja()):null);laborales.saveAndFlush(l);
  }
  public record Adscripcion(Long id,Long version,String plantel,String inicio,String fin,boolean principal){}
  public LocalDate hoyLaboral(Long id){var e=autorizar(id,true,false);return LocalDate.now(ZoneId.of(e.getInstitucion().getZonaHoraria()));}

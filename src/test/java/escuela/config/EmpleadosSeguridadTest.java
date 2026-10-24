@@ -23,6 +23,9 @@ class EmpleadosSeguridadTest {
    for(String permiso:List.of("MAESTRO_LEER","MAESTRO_ADMINISTRAR","PORTAL_MAESTRO_ACCEDER","PORTAL_TUTOR_ACCEDER"))
     assertThat(mvc.perform(get("/admin/empleados/1").session(sesion(permiso))).andReturn().getResponse().getStatus()).isEqualTo(403);
    assertThat(mvc.perform(get("/admin/empleados/1").session(sesion("EMPLEADO_LEER"))).andReturn().getResponse().getStatus()).isEqualTo(200);
+   for(String permiso:List.of("EMPLEADO_LEER","EMPLEADO_ADMINISTRAR","EMPLEADO_LABORAL_LEER","PORTAL_MAESTRO_ACCEDER","PORTAL_TUTOR_ACCEDER"))
+    assertThat(mvc.perform(get("/admin/empleados/1/puestos/buscar").session(sesion(permiso))).andReturn().getResponse().getStatus()).isEqualTo(403);
+   assertThat(mvc.perform(get("/admin/empleados/1/puestos/buscar").session(sesion("EMPLEADO_LABORAL_ADMINISTRAR"))).andReturn().getResponse().getStatus()).isEqualTo(200);
    for(String ruta:List.of("/admin/empleados/1","/admin/empleados/1/laboral","/admin/empleados/1/planteles","/admin/empleados/1/planteles/2/finalizar","/admin/empleados/1/planteles/cambio-principal"))
     assertThat(mvc.perform(post(ruta).session(sesion("EMPLEADO_LABORAL_ADMINISTRAR"))).andReturn().getResponse().getStatus()).isIn(302,403);
    var session=sesion("EMPLEADO_ADMINISTRAR");
@@ -38,7 +41,7 @@ class EmpleadosSeguridadTest {
   }
  }
  @RestController static class Paginas {
-  @GetMapping({"/admin/empleados/1","/acceso-qa-csrf"}) String get(){return "QA";}
+  @GetMapping({"/admin/empleados/1","/admin/empleados/1/puestos/buscar","/acceso-qa-csrf"}) String get(){return "QA";}
   @PostMapping({"/admin/empleados/1","/admin/empleados/1/laboral","/admin/empleados/1/planteles","/admin/empleados/1/planteles/2/finalizar","/admin/empleados/1/planteles/cambio-principal"}) String post(){return "QA";}
  }
 }

@@ -2,9 +2,14 @@
     const MINIMO = 3;
     const DEMORA = 280;
 
+    const iniciados = new WeakSet();
     document.querySelectorAll('[data-autocomplete]').forEach(inicializar);
+    document.addEventListener('autocomplete:initialize', event => {
+        event.target.querySelectorAll('[data-autocomplete]').forEach(inicializar);
+    });
 
     function inicializar(contenedor) {
+        if (iniciados.has(contenedor)) return;
         const entrada = contenedor.querySelector('.autocomplete-input');
         const valor = contenedor.querySelector('.autocomplete-value');
         const lista = contenedor.querySelector('.autocomplete-results');
@@ -16,6 +21,7 @@
         const parametroAlcance = contenedor.dataset.scopeParam || 'institucionId';
         const etiquetaAlcance = contenedor.dataset.scopeLabel || 'una institución';
         if (!entrada || !valor || !lista || !estado || (!sinAlcance && !alcance) || entrada.disabled) return;
+        iniciados.add(contenedor);
 
         let temporizador;
         let solicitud;

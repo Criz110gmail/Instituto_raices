@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><body>
+<article class="config-concept-row assignment-summary-card" th:fragment="fila(c,n)" data-config-concepto>
+ <div class="section-heading"><h3 data-concept-title>Concepto adicional</h3><button type="button" class="detail-close-button" data-quitar-concepto>Quitar de esta captura</button></div>
+ <input type="hidden" th:name="${'conceptos['+n+'].conceptoVersion'}" th:value="${c.conceptoVersion}" data-concept-version>
+ <input type="hidden" th:name="${'conceptos['+n+'].anteriorId'}" th:value="${c.anteriorId}">
+ <input type="hidden" th:name="${'conceptos['+n+'].anteriorVersion'}" th:value="${c.anteriorVersion}">
+ <p class="field-help" th:if="${c.anteriorId!=null}">Cambio de una asignación existente: cerrará su vigencia anterior el día previo al inicio nuevo. No modifica importes históricos.</p>
+ <div class="form-grid">
+  <div class="wide" th:insert="~{admin/fragments/concepto-empleado-comun :: ayuda(${'conceptos['+n+'].concepto'},'Concepto habitual *',${c.conceptoId},${c.conceptoTexto},'/admin/conceptos-empleado/conceptos/buscar?captura=true',true)}"></div>
+  <label><span>Importe fijo por nómina *</span><input type="text" inputmode="decimal" data-money data-min="0.01" required th:name="${'conceptos['+n+'].importe'}" th:value="${c.importe}"><small class="field-help">No es porcentaje ni importe a dividir entre periodos.</small></label>
+  <label><span>Tipo y efecto</span><input data-concept-effect readonly placeholder="Selecciona un concepto"></label>
+  <label><span>Inicio de vigencia *</span><input type="date" required th:min="${hoy}" th:name="${'conceptos['+n+'].inicio'}" th:value="${c.inicio}"></label>
+  <label><span>Último día de vigencia</span><input type="date" th:name="${'conceptos['+n+'].fin'}" th:value="${c.fin}"><small class="field-help">Vacío significa sin fecha de fin. Se incluye este día.</small></label>
+ </div>
+ <p class="field-help" data-concept-status role="status">Selecciona el concepto para consultar su tipo y versión.</p>
+</article>
+</body></html>

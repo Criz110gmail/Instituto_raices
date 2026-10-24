@@ -973,6 +973,23 @@
 /* Contrato visual compartido para los filtros administrativos que usan .filters. */
 .employee-list-panel .filters.employee-filters { grid-template-columns:repeat(3,minmax(0,1fr)); align-items:start; }
 .employee-list-panel .employee-filters > * { min-width:0; }
+.employee-list-panel .employee-filters > label > span { display:flex;align-items:center;min-height:30px;gap:7px; }
+.employee-list-panel .employee-filters > .autocomplete > label { display:flex;align-items:center;min-height:30px;gap:7px; }
+.personal-navigation { margin:0 0 22px;min-width:0; }
+.personal-navigation-caption { margin:0 0 10px;color:var(--muted);font-size:.75rem;font-weight:750; }
+.personal-navigation > .field-help { display:block;margin:12px 0 0;color:var(--muted);font-size:.78rem;line-height:1.65; }
+.employee-list-panel .panel-actions { flex-wrap:wrap;min-width:0; }
+.employee-list-panel .panel-heading > .export-button { font-size:.8rem;white-space:nowrap;flex-shrink:0; }
+.employee-list-panel .panel-actions .new-button { font-size:.8rem;line-height:1.5;white-space:normal;max-width:100%;text-align:center;justify-content:center; }
+.employee-list-panel .panel-actions .new-button::after { content:none; }
+.personal-section-nav { display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;min-width:0; }
+.personal-section-nav a { display:flex;flex-direction:column;justify-content:center;min-width:0;gap:5px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);text-decoration:none;overflow-wrap:anywhere; }
+.personal-section-nav strong { font-size:.85rem;line-height:1.5; }
+.personal-section-nav small { font-size:.73rem;line-height:1.5;color:var(--muted); }
+.personal-section-nav a[aria-current="page"] { border-color:var(--aqua);box-shadow:inset 0 -3px var(--aqua);background:var(--soft); }
+.personal-section-nav a:hover { border-color:var(--blue); }
+.personal-section-nav a:focus-visible { outline:2px solid var(--blue);outline-offset:3px; }
+@media(max-width:620px) { .personal-section-nav { grid-template-columns:minmax(0,1fr); } }
 .employee-list-panel .employee-filters > label { grid-column:auto; }
 @media(max-width:900px) { .employee-list-panel .filters.employee-filters { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:620px) { .employee-list-panel .filters.employee-filters { grid-template-columns:minmax(0,1fr); } }

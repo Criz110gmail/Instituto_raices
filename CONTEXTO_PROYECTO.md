@@ -1,5 +1,82 @@
 # Contexto del proyecto
 
+## Captura integrada de configuración de nómina — etapa2,24/10/2026
+
+Propietario autoriza etapa2. Configuración de nómina → empleado → Configurar nómina:
+formulario aparte con tres pestañas, selección explícita de sueldo/calendario y hasta20
+conceptos habituales con vigencias propias, motivo y confirmación detallada con Cancelar.
+Una transacción delega a fuentes existentes; versiones/revisión y bloqueo del empleado
+evitan doble envío/captura obsoleta. Error de una fila revierte también sueldo/calendario
+e historiales. No nueva fuente salarial: Sueldo es percepción base en condicion_salarial,
+sin crear otro concepto ni exigir plantilla/jornada. No hereda horas/jornada anterior;
+historia y herramientas previas permanecen. Cambio de concepto se inicia desde su fila,
+valida pertenencia y cierra lo anterior sin cambiar el importe histórico.
+Detalle muestra vigencias futuras/anteriores paginadas; resumen/Excel conservan fecha.
+Filtros/retorno/errores preservan captura y contexto. Autocomplete10/3 dinámico y dinero/
+ayudas/modales compartidos. Calendario sigue actual y organizativo; generador sin cambios.
+No migración,V131/V132 libre; sin sueldos/usuarios/roles/pagos reales por herramientas.
+993Java suite +1IT Configuración PostgreSQL17 aislado ampliado,115JS correctos;
+rollback/duplicación/inicio junio/cambio importe/permisos/CSRF/POST real y render.
+QA visual ficticia1280/390/claro/oscuro/modal Cancelar sin enviar y filas dinámicas.
+PRUEBA_SIMPLIFICACION_NOMINA_ETAPA2.md pendiente de aceptación humana, no guía confirmada.
+Sigue etapa3(periodos/vigencias);4préstamos y5pagos individuales aún pendientes.
+App sola publicada24/10 a12:20México, saludUP8080 sin migración nueva. Arranque /tmp
+sin espacio resuelto retirando tres IDs de caché de compilación de esta etapa (~418MB),
+sin borrar imágenes de respaldo, volúmenes ni otros proyectos. DB ficticia en tmpfs,
+ejecutor e imagen QA retirados; servidor y pestaña temporal cerrados. Consulta acotada
+reconfirma aplicación BOR-000001/rev1/movimiento10/monto12500/saldo posterior7500 intacta.
+Mantenimiento de espacio Docker sigue pendiente de autorización para recursos previos.
+
+## Reorganización autorizada y evidencia de nómina aplicada — 24/10/2026
+
+Usuario aprueba simplificar a seis entradas y ejecutar por etapas, incluyendo futuras
+deducciones desde junio de configuración anual y reversa individual del pago de empleado.
+Plan íntegro PLAN_SIMPLIFICACION_NOMINA.md. Primera entrega sólo organización/consulta;
+configuración única/vigencias/préstamos/pagos individuales pendientes de etapas2–5.
+Menú seis, navegación interna conserva jornadas/plantillas/asignaciones/conceptos/
+calendarios y rutas autorizadas, sin modificar grants ni datos. Nóminas con estado y
+acciones claros, Aplicación separada y egreso exacto mediante movimientoId; alcance e
+institución revalidados, filtros/Excel conservados. No No autorizado cuando está aplicada.
+Datos humanos confirmados: Carlos/EMP-NOM-TEST-01, BOR-000001revisión1 Aplicada,
+egreso12500/saldo20000→7500/BANCO-NOMINA-TEST, bloqueada reaplicación. Lectura acotada
+confirma movimientoID10, distinto de secuencia1. No repetir ni suponer datos de Bruce.
+Guía integrada aplazada explícitamente; sólo continuidad y ejemplo visual de consulta
+en PRUEBA_SIMPLIFICACION_NOMINA_ETAPA1.md. Sin nuevas migraciones,131 vigente/132 libre,
+sin .env/commit ni cambios financieros. Verificación: 991 Java de suite +3 IT PostgreSQL
+aislados (Preparación/Programación/Configuración), 114 JS, package y diff --check correctos.
+Render de estados/revisiones y permisos, enlace al egreso exacto, filtros y Excel probado.
+QA visual con datos ficticios, escritorio1280/móvil390, claro/oscuro; pestañas y botones
+legibles, filtros alineados. Contenedores/volumen DB/etiqueta de QA retirados; no se
+eliminaron datos operativos. Aceptación humana del nuevo diseño pendiente.
+Publicada app sola24/10 a11:59México, saludUP8080/Flyway131 sin migración nueva.
+Incidencia de arranque /tmp sin espacio en Docker resuelta retirando tres registros
+exactos de caché de las compilaciones de esta entrega (~418MB, regenerables). No hubo
+limpieza global, borrado de bases/archivos ni cambios de configuración para ocultar error.
+Vigilar espacio antes de siguientes builds; recursos previos de otros trabajos intactos.
+
+## Autocompletado de puesto de Empleados — 24/10/2026
+
+Base de esta computadora distinta y sin empleados según propietario. Ejemplo nuevo
+Carlos Prueba Nómina/EMP-NOM-TEST-01, no confirmado todavía; no repetir Bruce del otro
+equipo. Solicita usar Puestos laborales en Datos laborales. Ayuda compartida10/3 por
+empleado/institución, sólo activos, sin importes y sin requerir permiso salarial para
+buscar; exige edición laboral. Crear catálogo conserva permiso salarial existente.
+Selección ID/nombre revalidada en servidor bajo bloqueo compartido; texto nuevo sin
+selección rechaza localmente. Conserva texto anterior sin forzar catálogo/backfill.
+Nombre sigue snapshot de referencia, ID de captura no persistido; no FK/migración ni
+cambios de sueldo/condiciones/finanzas/historial anterior. UI/modal/diseño existentes.
+Prueba pendiente y orden desde cero en PRUEBA_PUESTO_EMPLEADO_AUTOCOMPLETADO.md:
+crear puesto antes de confirmar laboral y luego Carlos12000+500 enero2027/borrador,
+sin aplicar egreso. Verificado985 Java de suite+1IT PostgreSQL17 aislado,114JS,
+package correcto:131 migraciones, búsqueda acotada/permisos/activo/institución,
+snapshot/texto previo, CSRF y POST válido/error conservando captura; cero sueldos/
+movimientos en ensayo. Fixture corrigió email obligatorio y contexto tras MVC antes
+del resultado final. Sin CSS nuevo ni revisión visual nueva; render y componente
+compartido verificados, aceptación humana pendiente. QA DB/volumen/etiqueta temporal
+retirados. V131/V132 libre, sin .env/commit ni operaciones reales por herramientas.
+App sola recreada24/10 a09:48México; saludUP8080/Flyway131 sin migración nueva.
+PostgreSQL/volúmenes conservados; recargar/login si cerró sesión por publicación.
+
 ## V131 — Primera entrega de configuración por empleado — 23/10/2026
 
 Verificación final:985Java (981suite/PrepIT+4IT aislados incluyendo nuevo),114JS,
