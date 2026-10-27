@@ -20,11 +20,14 @@ public class CondicionesSalarialesService {
  private final EmpleadoService empleados;
  private final EmpleadoRepository expedientes;
  private final NamedParameterJdbcTemplate jdbc;
- public record Puesto(Long id,String codigo,String nombre,String descripcion,boolean activo,Long version){}
+ public record Puesto(Long id,String codigo,String nombre,String descripcion,boolean activo,Long version,BigDecimal horasSemanales,BigDecimal sueldoMensual){
+  public Puesto(Long id,String codigo,String nombre,String descripcion,boolean activo,Long version){this(id,codigo,nombre,descripcion,activo,version,null,null);}
+  public boolean completo(){return horasSemanales!=null&&sueldoMensual!=null;}
+ }
  public record Condicion(Long id,String puestoCodigo,String puestoNombre,BigDecimal importeBruto,String moneda,
   String base,String frecuencia,LocalDate inicio,LocalDate fin,String estado,String motivo,Long version){}
  public record Historia(Long id,String fecha,String usuario,String operacion,String motivo){}
- private static final RowMapper<Puesto> PUESTO=(r,n)->new Puesto(r.getLong("id"),r.getString("codigo"),r.getString("nombre"),r.getString("descripcion"),r.getBoolean("activo"),r.getLong("version"));
+ private static final RowMapper<Puesto> PUESTO=(r,n)->new Puesto(r.getLong("id"),r.getString("codigo"),r.getString("nombre"),r.getString("descripcion"),r.getBoolean("activo"),r.getLong("version"),r.getBigDecimal("horas_semanales"),r.getBigDecimal("sueldo_mensual"));
  private static final RowMapper<Condicion> CONDICION=(r,n)->new Condicion(r.getLong("id"),r.getString("puesto_codigo"),r.getString("puesto_nombre"),r.getBigDecimal("importe_bruto"),r.getString("moneda"),r.getString("base"),r.getString("frecuencia"),r.getObject("fecha_inicio",LocalDate.class),r.getObject("fecha_fin",LocalDate.class),r.getString("estado"),r.getString("motivo"),r.getLong("version"));
  public static String etiqueta(String valor){return switch(valor){case "MENSUAL"->"Mensual";case "SEMANAL"->"Semanal";case "DIARIA"->"Diaria";case "POR_HORA"->"Por hora";case "QUINCENAL"->"Quincenal";default->valor;};}
  private MapSqlParameterSource parametros(UsuarioPrincipal p){return new MapSqlParameterSource("institucion",p.institucionId()).addValue("actor",p.usuarioId());}
@@ -58,12 +61,15 @@ public class CondicionesSalarialesService {
   var p=parametros(empleados.autorizarSalarios(true));
   if(!Boolean.TRUE.equals(jdbc.queryForObject("SELECT activo FROM institucion WHERE id=:institucion",p,Boolean.class)))throw regla("La institución está inactiva; sólo se permite consultar su configuración.");
   if(f.getCodigo()==null||f.getNombre()==null||f.getCodigo().isBlank()||f.getNombre().isBlank())throw regla("Captura código y nombre del puesto.");
+  var h=f.getHorasSemanales();var s=f.getSueldoMensual();
+  if(h==null||s==null||h.signum()<=0||h.compareTo(new BigDecimal("168"))>0||h.scale()>2||s.signum()<=0||s.scale()>2||s.precision()-s.scale()>17)
+   throw regla("Captura horas semanales mayores que cero y hasta 168, y sueldo mensual positivo, ambos con máximo dos decimales.");
   p.addValue("codigo",f.getCodigo().strip().toUpperCase(Locale.ROOT)).addValue("nombre",f.getNombre().strip())
-   .addValue("descripcion",f.getDescripcion()==null?"":f.getDescripcion().strip()).addValue("activo",f.isActivo());
-  if(id==null)return jdbc.queryForObject("INSERT INTO puesto_laboral(institucion_id,codigo,nombre,descripcion,activo,creado_por_id,actualizado_por_id) VALUES(:institucion,:codigo,:nombre,:descripcion,:activo,:actor,:actor) RETURNING id",p,Long.class);
+   .addValue("descripcion",f.getDescripcion()==null?"":f.getDescripcion().strip()).addValue("activo",f.isActivo()).addValue("horas",h).addValue("sueldo",s);
+  if(id==null)return jdbc.queryForObject("INSERT INTO puesto_laboral(institucion_id,codigo,nombre,descripcion,activo,horas_semanales,sueldo_mensual,creado_por_id,actualizado_por_id) VALUES(:institucion,:codigo,:nombre,:descripcion,:activo,:horas,:sueldo,:actor,:actor) RETURNING id",p,Long.class);
   var actual=puesto(id,true);if(!Objects.equals(actual.version(),f.getVersion()))throw regla("El puesto cambió desde que lo abriste. Recarga antes de guardar.");
   p.addValue("id",id).addValue("version",f.getVersion());
-  int n=jdbc.update("UPDATE puesto_laboral SET codigo=:codigo,nombre=:nombre,descripcion=:descripcion,activo=:activo,actualizado_por_id=:actor,actualizado_en=CURRENT_TIMESTAMP,version=version+1 WHERE id=:id AND institucion_id=:institucion AND version=:version",p);
+  int n=jdbc.update("UPDATE puesto_laboral SET codigo=:codigo,nombre=:nombre,descripcion=:descripcion,activo=:activo,horas_semanales=:horas,sueldo_mensual=:sueldo,actualizado_por_id=:actor,actualizado_en=CURRENT_TIMESTAMP,version=version+1 WHERE id=:id AND institucion_id=:institucion AND version=:version",p);
   if(n!=1)throw regla("El puesto cambió; recarga la información.");return id;
  }
  public long revision(Long id){autorizar(id,false);return revisionInterna(id);}
@@ -101,6 +107,16 @@ public class CondicionesSalarialesService {
   return new PageImpl<>(filas,pg,total==null?0:total);
  }
  @Transactional public Long programar(Long id,CondicionSalarialForm f){
+  return programar(id,f,null);
+ }
+ @Transactional public Long asignarPuesto(Long id,CondicionSalarialForm f,Long versionPuesto){
+  autorizar(id,true);bloquear(id);var puesto=puesto(f.getPuestoId(),true);
+  if(!puesto.completo()||!puesto.activo())throw regla("El puesto debe estar activo y tener horas y sueldo mensual completos.");
+  if(!Objects.equals(puesto.version(),versionPuesto))throw regla("El puesto cambió. Vuelve a seleccionarlo y revisa su sueldo antes de confirmar.");
+  f.setImporteBruto(puesto.sueldoMensual());f.setBase("MENSUAL");f.setFrecuencia("MENSUAL");
+  return programar(id,f,puesto);
+ }
+ private Long programar(Long id,CondicionSalarialForm f,Puesto origen){
   autorizar(id,true);bloquear(id);var e=empleados.autorizar(id,true,false);var l=empleados.laboral(id);var hoy=hoy(id);
   if(!e.getInstitucion().isActivo())throw regla("La institución está inactiva; no se registran condiciones nuevas.");
   if(!e.isActivo()||!"ACTIVO".equals(l.getSituacion())||l.getFechaIngreso()==null)throw regla("Confirma primero la actividad y fecha de ingreso en Datos laborales. No se configura sueldo a personal en baja o por confirmar.");
@@ -113,6 +129,7 @@ public class CondicionesSalarialesService {
   var p=parametros(empleados.autorizarSalarios(true)).addValue("empleado",id).addValue("inicio",f.getFechaInicio());
   var puesto=puesto(f.getPuestoId(),true);if(!puesto.activo())throw regla("El puesto está inactivo; selecciona uno activo.");
   if(!Objects.equals(f.getPuestoTexto(),puesto.codigo()+" · "+puesto.nombre()))throw regla("El puesto cambió desde la selección. Quita la selección y vuelve a elegirlo antes de confirmar.");
+  if(origen==null&&puesto.completo())throw regla("Asigna este puesto y su sueldo desde Empleados → Datos laborales → Asignar o cambiar puesto; no captures otro sueldo manual.");
   Long posteriores=jdbc.queryForObject("SELECT count(*) FROM condicion_salarial WHERE empleado_id=:empleado AND estado='ACTIVA' AND fecha_inicio>=:inicio",p,Long.class);
   if(posteriores!=null&&posteriores>0)throw regla("Ya existe una condición en esa fecha o posterior. Consulta la programación; no se insertan cambios entre vigencias existentes.");
   var previas=jdbc.query("SELECT * FROM condicion_salarial WHERE empleado_id=:empleado AND estado='ACTIVA' AND fecha_inicio<:inicio AND (fecha_fin IS NULL OR fecha_fin>=:inicio) FOR UPDATE",p,CONDICION);
@@ -123,7 +140,8 @@ public class CondicionesSalarialesService {
   p.addValue("puesto",puesto.id()).addValue("codigo",puesto.codigo()).addValue("nombre",puesto.nombre()).addValue("importe",f.getImporteBruto())
    .addValue("moneda",moneda).addValue("base",f.getBase()).addValue("frecuencia",f.getFrecuencia()).addValue("fin",f.getFechaFin(),java.sql.Types.DATE)
    .addValue("motivo",f.getMotivo().strip()).addValue("anteriorId",anterior==null?null:anterior.id(),java.sql.Types.BIGINT).addValue("finAnterior",anterior==null?null:anterior.fin(),java.sql.Types.DATE);
-  return jdbc.queryForObject("INSERT INTO condicion_salarial(empleado_id,institucion_id,puesto_id,puesto_codigo,puesto_nombre,importe_bruto,moneda,base,frecuencia,fecha_inicio,fecha_fin,motivo,motivo_operacion,anterior_id,fin_anterior,creado_por_id,actualizado_por_id) VALUES(:empleado,:institucion,:puesto,:codigo,:nombre,:importe,:moneda,:base,:frecuencia,:inicio,:fin,:motivo,:motivo,:anteriorId,:finAnterior,:actor,:actor) RETURNING id",p,Long.class);
+  p.addValue("horasPuesto",origen==null?null:origen.horasSemanales(),java.sql.Types.NUMERIC).addValue("puestoVersion",origen==null?null:origen.version(),java.sql.Types.BIGINT);
+  return jdbc.queryForObject("INSERT INTO condicion_salarial(empleado_id,institucion_id,puesto_id,puesto_codigo,puesto_nombre,importe_bruto,moneda,base,frecuencia,fecha_inicio,fecha_fin,motivo,motivo_operacion,anterior_id,fin_anterior,creado_por_id,actualizado_por_id,horas_puesto,puesto_version) VALUES(:empleado,:institucion,:puesto,:codigo,:nombre,:importe,:moneda,:base,:frecuencia,:inicio,:fin,:motivo,:motivo,:anteriorId,:finAnterior,:actor,:actor,:horasPuesto,:puestoVersion) RETURNING id",p,Long.class);
  }
  @Transactional public void cancelar(Long empleadoId,Long condicionId,Long version,String motivo){
   autorizar(empleadoId,true);bloquear(empleadoId);

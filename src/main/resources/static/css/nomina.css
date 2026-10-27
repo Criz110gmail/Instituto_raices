@@ -80,6 +80,21 @@
 @media(max-width:720px){.nomina-bulk-content{padding:20px}.nomina-bulk-list .filters{grid-template-columns:minmax(0,1fr)}.nomina-bulk-counts>span{width:100%;justify-content:space-between}.nomina-bulk .nomina-candidates td>*{max-width:65%}.nomina-bulk .nomina-row-select .nomina-action{width:auto}}
 .nomina-consent{display:flex;align-items:flex-start;gap:12px;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--soft);font-size:.85rem;line-height:1.7;cursor:pointer}.nomina-consent input{width:20px;height:20px;flex:0 0 20px;margin:3px 0 0;accent-color:var(--blue)}
 .config-integrada .entity-form{padding:0 24px 24px}
+.nomina-detail h1,.nomina-detail h2,.nomina-detail h3{font-family:Manrope,system-ui,sans-serif}
+.config-integrada .form-grid textarea{box-sizing:border-box;font:inherit;font-size:.85rem;line-height:1.6;resize:vertical}
+.nomina-detail .config-entry-actions{display:grid;justify-items:start;gap:14px}
+.nomina-detail .config-entry-actions>.nomina-primary-action{position:static;box-sizing:border-box;flex-shrink:0}
+.nomina-detail .config-entry-actions>.field-help{margin:0;line-height:1.65;color:var(--muted);font-size:.8rem}
+.config-integrada .form-section,.config-integrada .form-grid,.config-integrada .form-grid>*{min-width:0;max-width:100%}
+.config-integrada .form-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.config-integrada .form-grid label>span,.config-integrada .autocomplete>label{display:block;margin-bottom:7px;font-size:.78rem;font-weight:700;color:var(--ink)}
+.config-integrada .form-grid input:not([type=checkbox]):not([type=hidden]),.config-integrada .form-grid select,.config-integrada .config-review textarea{display:block;box-sizing:border-box;width:100%;min-width:0;min-height:44px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-size:.85rem;line-height:1.5}
+.config-integrada .form-grid .autocomplete-control .autocomplete-input{padding-right:44px}
+.config-integrada .form-grid input:focus-visible,.config-integrada .form-grid select:focus-visible,.config-integrada .config-review textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.config-integrada .form-grid input[readonly]{background:var(--soft);color:var(--muted)}
+.config-integrada .form-grid input[type=date]{color-scheme:light}
+[data-theme=dark] .config-integrada .form-grid input[type=date]{color-scheme:dark}
+@media(max-width:720px){.config-integrada .form-grid{grid-template-columns:minmax(0,1fr)}}
 .config-integrada .employee-card .student-tablist{margin-inline:0}
 .config-integrada .employee-panel{margin-inline:0;padding:20px}
 @media(max-width:620px){.config-integrada .employee-panel{padding:16px}}
@@ -88,7 +103,7 @@
 .config-integrada fieldset[disabled]{opacity:.6}
 .config-integrada .config-concept-row{margin:18px 0;padding:20px;min-width:0}
 .config-integrada .section-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
-.config-integrada .section-heading h2,.config-integrada .section-heading h3{margin:0}
+.config-integrada .section-heading h2,.config-integrada .section-heading h3{margin:0;color:var(--ink)}
 .config-integrada .config-review{padding:22px;margin-top:20px}
 .config-integrada .config-review label{display:grid;gap:8px}
 .config-integrada .config-review textarea{width:100%;box-sizing:border-box}

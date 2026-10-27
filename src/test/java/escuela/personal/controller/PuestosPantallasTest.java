@@ -40,7 +40,7 @@ class PuestosPantallasTest {
   var r=mvc.perform(get("/admin/puestos").param("q","Docente").param("estado","ACTIVO").param("pagina","2").param("tamanio","10")).andReturn().getResponse();
   assertThat(r.getStatus()).isEqualTo(200);var html=r.getContentAsString();
   assertThat(html).contains("sidebar","Puestos laborales","Nuevo puesto","/admin/puestos/7/editar?q=Docente&amp;estado=ACTIVO&amp;pagina=2&amp;tamanio=10","/admin/puestos/excel?q=Docente&amp;estado=ACTIVO","status positivo");
-  assertThat(html).doesNotContain("puesto-guardar","name=\"codigo\"","name=\"nombre\"","name=\"descripcion\"");fixture("listado",html);
+  assertThat(html).contains("personal-list-panel","module-filters","module-filter-actions","class=\"module-action\"").doesNotContain("undefined","puesto-guardar","name=\"codigo\"","name=\"nombre\"","name=\"descripcion\"");fixture("listado",html);
  }
  @Test void altaYEdicionSeparadasConRegresoFiltradoYModal()throws Exception{
   for(String ruta:List.of("/admin/puestos/nuevo","/admin/puestos/7/editar")){
@@ -55,11 +55,11 @@ class PuestosPantallasTest {
   var invalido=mvc.perform(post("/admin/puestos").param("codigo","").param("nombre","").param("q","Docente").param("pagina","2").param("tamanio","10")).andReturn().getResponse();
   assertThat(invalido.getStatus()).isEqualTo(200);assertThat(invalido.getContentAsString()).contains("field-error","Nuevo puesto laboral").doesNotContain("<table");verify(service,never()).guardarPuesto(any(),any());
   when(service.guardarPuesto(isNull(),any())).thenThrow(new ReglaNegocioException("Ya existe ese código de puesto."));
-  var duplicado=mvc.perform(post("/admin/puestos").param("codigo","DOC-QA").param("nombre","Nombre capturado").param("q","Docente").param("estado","ACTIVO").param("pagina","2").param("tamanio","10")).andReturn().getResponse();
+  var duplicado=mvc.perform(post("/admin/puestos").param("horasSemanales","40").param("sueldoMensual","10000").param("codigo","DOC-QA").param("nombre","Nombre capturado").param("q","Docente").param("estado","ACTIVO").param("pagina","2").param("tamanio","10")).andReturn().getResponse();
   assertThat(duplicado.getStatus()).isEqualTo(200);var html=duplicado.getContentAsString();assertThat(html).contains("Ya existe ese código","value=\"Nombre capturado\"","name=\"pagina\" value=\"2\"").doesNotContain("<table");fixture("errores",html);
  }
  @Test void guardarVuelveAlListadoConFiltrosYPaginaSinUrlExterna()throws Exception{
-  var r=mvc.perform(post("/admin/puestos").param("id","7").param("version","2").param("codigo","DOC-QA").param("nombre","Docente de prueba").param("q","Docente de prueba").param("estado","ACTIVO").param("pagina","2").param("tamanio","10")).andReturn().getResponse();
+  var r=mvc.perform(post("/admin/puestos").param("horasSemanales","40").param("sueldoMensual","10000").param("id","7").param("version","2").param("codigo","DOC-QA").param("nombre","Docente de prueba").param("q","Docente de prueba").param("estado","ACTIVO").param("pagina","2").param("tamanio","10")).andReturn().getResponse();
   assertThat(r.getStatus()).isEqualTo(302);assertThat(r.getRedirectedUrl()).isEqualTo("/admin/puestos?q=Docente%20de%20prueba&estado=ACTIVO&pagina=2&tamanio=10");verify(service).guardarPuesto(eq(7L),any());
  }
  @Test void lecturaOcultaAccionesYNoPermiteAbrirFormularios()throws Exception{

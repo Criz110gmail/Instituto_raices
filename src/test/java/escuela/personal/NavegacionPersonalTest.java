@@ -9,13 +9,27 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.*;
 
 class NavegacionPersonalTest {
+ @Test void menuSigueElProcesoAcordadoEnServidorYNavegador()throws Exception{
+  var permisos=Set.of("EMPLEADO_LEER","EMPLEADO_LABORAL_LEER","CONDICION_SALARIAL_ADMINISTRAR");
+  var view=new ModelAndView("admin/puestos");view.addObject("modulos",Arrays.stream(ModuloCatalogo.values()).filter(m->m.visibleCon(permisos)).toList());
+  new NavegacionPersonalConfig().postHandle(null,null,null,view);
+  assertThat(view.getModel().get("modulos")).isEqualTo(List.of(ModuloCatalogo.PUESTOS,ModuloCatalogo.CONCEPTOS_NOMINA,ModuloCatalogo.EMPLEADOS,ModuloCatalogo.PERIODOS_NOMINA,ModuloCatalogo.PREPARACION_NOMINA));
+  var js=java.nio.file.Files.readString(java.nio.file.Path.of("src/main/resources/static/js/navigation.js"));
+  assertThat(js).contains("'Administración · Personal y nómina': ['Puestos laborales', 'Conceptos de nómina', 'Empleados', 'Periodos de nómina', 'Nóminas']");
+ }
+ @Test void plantillasNoContienenRestosUndefined()throws Exception{
+  try(var rutas=java.nio.file.Files.walk(java.nio.file.Path.of("src/main/resources/templates"))){
+   for(var ruta:rutas.filter(p->p.toString().endsWith(".html")).toList())
+    assertThat(java.nio.file.Files.readString(ruta)).as(ruta.toString()).doesNotContainPattern("(?m)^\\s*undefined\\s*$");
+  }
+ }
  @Test void seisEntradasSinCambiarAutorizacionNiEliminarRutas(){
   var permisos=Set.of("EMPLEADO_LEER","EMPLEADO_LABORAL_LEER","CONDICION_SALARIAL_ADMINISTRAR");
   var originales=Arrays.stream(ModuloCatalogo.values()).filter(m->m.visibleCon(permisos)).toList();
   assertThat(originales).contains(ModuloCatalogo.JORNADAS_LABORALES,ModuloCatalogo.CALENDARIOS_NOMINA);
   var view=new ModelAndView("admin/programacion-nomina-listado");view.addObject("modulos",originales);view.addObject("moduloActual",ModuloCatalogo.CALENDARIOS_NOMINA);
   new NavegacionPersonalConfig().postHandle(null,null,null,view);
-  assertThat((List<?>)view.getModel().get("modulos")).hasSize(6);
+  assertThat((List<?>)view.getModel().get("modulos")).hasSize(5);
   assertThat(view.getModel().get("moduloActual")).isEqualTo(ModuloCatalogo.PERIODOS_NOMINA);
   assertThat(view.getModel().get("moduloPersonalOrigen")).isEqualTo(ModuloCatalogo.CALENDARIOS_NOMINA);
   assertThat(ModuloCatalogo.CALENDARIOS_NOMINA.visibleCon(permisos)).isTrue();assertThat(ModuloCatalogo.JORNADAS_LABORALES.rutaListado()).isEqualTo("/admin/jornadas");

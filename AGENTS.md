@@ -21,6 +21,11 @@ nunca leas, publiques ni confirmes en Git el contenido real de `.env`.
   los errores permanecen en el formulario sin perder la captura.
 - Reutilizar diseño, botones, ayudas, estados, confirmaciones con Cancelar y temas
   claro/oscuro responsivos de los módulos existentes; no crear una paleta diferente.
+- Patrón aprobado para acciones de filtros y tablas: `module-action` y
+  `module-filter-actions`, secundarias con borde discreto y sin gradiente/brillo;
+  Aplicar filtros usa `module-action--primary`. Mantener alineación y respuesta
+  móvil del patrón aplicado en Empleados y Puestos. Adoptarlo en nuevas pantallas
+  o correcciones solicitadas, no hacer una sustitución global no autorizada.
 - Las acciones y sus rutas respetan permisos; ocultar un botón no sustituye validar
   autorización en servidor. Sólo apartarse de este patrón si el usuario lo pide
   explícitamente para un flujo específico. No refactorizar todos los módulos previos

@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 class EmpleadoPuestosControllerTest {
  @Test void ayudaDevuelveDiezYHayMasSinCacheNiImportes()throws Exception{
   var service=mock(EmpleadoService.class);
-  var controller=new EmpleadoAdminController(service,mock(ExcelEmpleadoService.class),mock(InstitucionService.class),mock(AlcanceDatosService.class),mock(FotografiaEmpleadoService.class),mock(PlantelRepository.class),mock(CambioPrincipalEmpleadoService.class),mock(OrganizacionLaboralService.class));
+  var controller=new EmpleadoAdminController(service,mock(ExcelEmpleadoService.class),mock(InstitucionService.class),mock(AlcanceDatosService.class),mock(FotografiaEmpleadoService.class),mock(PlantelRepository.class),mock(CambioPrincipalEmpleadoService.class),mock(OrganizacionLaboralService.class),mock(NominaEmpleadoService.class),mock(CondicionesSalarialesService.class));
   var filas=IntStream.rangeClosed(1,11).mapToObj(n->new OpcionAutocompletado((long)n,"Puesto "+n,"COD-"+n+" · Puesto laboral")).toList();
   when(service.buscarPuestosLaborales(2L,"")).thenReturn(filas);
   var r=controller.buscarPuestos(2L,"");assertThat(r.getHeaders().getCacheControl()).contains("no-store");

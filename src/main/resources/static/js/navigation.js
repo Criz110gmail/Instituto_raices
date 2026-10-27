@@ -18,7 +18,7 @@
         'Operación escolar · Gestión académica': ['Materias', 'Maestros', 'Horarios y clases', 'Calendario escolar', 'Planeaciones', 'Asistencia', 'Calificaciones', 'Boletas'],
         'Operación escolar · Cobranza escolar': ['Conceptos de cobro', 'Cuotas por alumno', 'Tipos de beca', 'Becas por alumno', 'Adeudos de alumnos', 'Convenios de pago', 'Historial de ajustes', 'Políticas de recargo'],
         'Administración · Finanzas': ['Pagos recibidos', 'Motivos financieros', 'Cuentas financieras', 'Movimientos financieros', 'Retiros de fondos', 'Reportes financieros'],
-        'Administración · Personal y nómina': ['Empleados', 'Puestos laborales', 'Conceptos de nómina', 'Periodos de nómina', 'Configuración de nómina', 'Nóminas'],
+        'Administración · Personal y nómina': ['Puestos laborales', 'Conceptos de nómina', 'Empleados', 'Periodos de nómina', 'Nóminas'],
         'Administración · Seguridad y soporte': ['Roles y permisos', 'Usuarios', 'Auditoría', 'Soporte del portal familiar', 'Soporte del portal de maestros']
     };
     const clavePreferencias = 'nexo.menu.secciones-abiertas';

@@ -1,5 +1,11 @@
 # Simplificación de Personal y nómina — acuerdo 24/10/2026
 
+> **Destino sustituido el26/10/2026.** Leer
+> [Rediseño funcional acordado](PLAN_REDISENO_NOMINA_20261026.md) y la cabecera de
+> AGENT.md antes de continuar. Este documento conserva la historia de las etapas
+> anteriores; no usar su organización de calendarios/configuración separada como
+> destino actual. Nuevo plan sólo documentado, no implementado por ese acuerdo.
+
 Actualización fase5: implementados autorización congelada, pagos/intentos por empleado,
 rechazo sin dinero, reversa con devolución real, abonos/compensaciones, liquidación y
 reapertura de préstamos. Entrega habilitada; nueva aplicación consolidada deshabilitada.

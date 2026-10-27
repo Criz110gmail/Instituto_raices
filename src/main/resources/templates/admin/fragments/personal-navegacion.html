@@ -1,13 +1,7 @@
 <!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><body>
 <section class="personal-navigation" th:fragment="secciones(actual)" th:if="${actual!=null}" th:with="origen=${moduloPersonalOrigen?:actual},grupo=${actual.menuPersonal().name()}">
  <th:block th:if="${grupo=='PUESTOS'}">
-  <p class="personal-navigation-caption">Puestos y organización laboral</p>
-  <nav class="personal-section-nav" aria-label="Secciones de puestos laborales">
-   <a href="/admin/puestos" th:attr="aria-current=${origen.name()=='PUESTOS'?'page':null}"><strong>Puestos</strong><small>Catálogo principal</small></a>
-   <a href="/admin/jornadas" th:attr="aria-current=${origen.name()=='JORNADAS_LABORALES'?'page':null}"><strong>Jornadas</strong><small>Horas de referencia</small></a>
-   <a href="/admin/esquemas" th:attr="aria-current=${origen.name()=='ESQUEMAS_REMUNERACION'?'page':null}"><strong>Plantillas de puesto y sueldo</strong><small>Configuraciones existentes</small></a>
-  </nav>
-  <p class="field-help">Las jornadas y plantillas se conservan aquí durante la integración de la captura. Consultarlas no cambia las asignaciones guardadas.</p>
+  <p class="field-help">Cada puesto incluye sus horas semanales y sueldo mensual. La asignación y los conceptos se administran desde el expediente del empleado.</p>
  </th:block>
  <th:block th:if="${grupo=='CONFIGURACION_NOMINA'}">
   <p class="personal-navigation-caption">Configuración del personal</p>

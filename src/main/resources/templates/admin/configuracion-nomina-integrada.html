@@ -15,22 +15,25 @@
     <button type="button" role="tab" data-student-tab="conceptos" data-tab-hash="#conceptos" id="tab-integrada-conceptos" aria-controls="panel-integrada-conceptos"><span>03</span><strong>Conceptos adicionales</strong><small>Percepciones y deducciones</small></button>
    </nav>
    <section class="student-tab-panel employee-panel detail-section" role="tabpanel" data-student-panel="sueldo" id="panel-integrada-sueldo" aria-labelledby="tab-integrada-sueldo">
+    <div class="nomina-preview-notice"><strong>El puesto ya incluye horas y sueldo mensual</strong><p>Asigna o cambia el puesto desde el empleado. No vuelvas a capturar su sueldo aquí.</p><a class="nomina-action" th:href="@{/admin/empleados/{id}/puesto(id=${empleado.id})}">Ver puesto y sueldo del empleado →</a></div>
+    <details class="nomina-options"><summary>Compatibilidad anterior · puestos sin horas y sueldo definidos</summary>
     <label class="config-section-toggle"><input type="checkbox" th:field="*{cambiarSueldo}" data-config-toggle="sueldo"><span>Registrar o programar un nuevo puesto y sueldo</span></label>
     <p class="field-help">Sueldo es la percepción base, con una sola fuente. No necesitas crear una plantilla de puesto y sueldo. Un cambio comienza hoy o después; conserva lo anterior y no recalcula nóminas guardadas.</p>
     <fieldset class="form-section" data-config-fields="sueldo" th:disabled="${!configuracionForm.cambiarSueldo}"><legend>Puesto, sueldo y vigencia nueva</legend><div class="form-grid">
      <div class="wide" th:insert="~{admin/fragments/concepto-empleado-comun :: ayuda('sueldo.puesto','Puesto laboral *',${configuracionForm.sueldo.puestoId},${configuracionForm.sueldo.puestoTexto},'/admin/puestos/buscar',true)}"></div>
+     <p class="field-help wide">Para el primer sueldo se propone el puesto del expediente cuando coincide con un único puesto activo. Si aparece vacío, selecciónalo de las sugerencias. Puedes cambiarlo antes de confirmar; no modifica el puesto del expediente ni registra sueldo hasta que actives esta sección y confirmes.</p>
      <label><span>Sueldo bruto — percepción base *</span><input type="text" inputmode="decimal" data-money data-min="0.01" th:field="*{sueldo.importeBruto}" required></label>
      <label><span>Base del importe *</span><select th:field="*{sueldo.base}"><option value="MENSUAL">Mensual</option><option value="SEMANAL">Semanal</option><option value="DIARIA">Diaria</option><option value="POR_HORA">Por hora</option></select></label>
      <label><span>Frecuencia salarial *</span><select th:field="*{sueldo.frecuencia}"><option value="MENSUAL">Mensual</option><option value="QUINCENAL">Quincenal</option><option value="SEMANAL">Semanal</option></select></label>
      <label><span>Inicio del nuevo sueldo *</span><input type="date" th:field="*{sueldo.fechaInicio}" th:min="${hoy}" required></label>
      <label><span>Último día del sueldo</span><input type="date" th:field="*{sueldo.fechaFin}"><small class="field-help">Opcional, se incluye este día.</small></label>
-    </div><p class="field-help">El sueldo directo no asigna una jornada ni hereda horas de una plantilla anterior. Esa información histórica se conserva en las asignaciones originales. No hay conversión automática semanal/quincenal ni cálculo fiscal.</p></fieldset>
+    </div><p class="field-help">El sueldo directo no asigna una jornada ni hereda horas de una plantilla anterior. Esa información histórica se conserva en las asignaciones originales. No hay conversión automática semanal/quincenal ni cálculo fiscal.</p></fieldset></details>
    </section>
    <section class="student-tab-panel employee-panel detail-section" role="tabpanel" data-student-panel="calendario" id="panel-integrada-calendario" aria-labelledby="tab-integrada-calendario" hidden>
     <label class="config-section-toggle"><input type="checkbox" th:field="*{cambiarCalendario}" data-config-toggle="calendario"><span>Asignar o cambiar calendario actual</span></label>
     <p class="field-help" th:text="${'Calendario actual: '+(empleado.calendario?:'Sin asignar')}"></p>
     <fieldset class="form-section" data-config-fields="calendario" th:disabled="${!configuracionForm.cambiarCalendario}"><legend>Frecuencia y grupo organizativo</legend>
-     <div th:replace="~{admin/fragments/concepto-empleado-comun :: ayuda('calendario.calendario','Calendario activo *',${configuracionForm.calendario.calendarioId},${configuracionForm.calendario.calendarioTexto},'/admin/configuracion-nomina/calendarios/buscar?activos=true',true)}"></div>
+     <div class="form-grid"><div class="wide" th:insert="~{admin/fragments/concepto-empleado-comun :: ayuda('calendario.calendario','Calendario activo *',${configuracionForm.calendario.calendarioId},${configuracionForm.calendario.calendarioTexto},'/admin/configuracion-nomina/calendarios/buscar?activos=true',true)}"></div></div>
      <p class="field-help">Referencia actual: el generador sólo considera al empleado en periodos de este calendario. Un cambio no es retroactivo ni reescribe borradores guardados; deberán actualizarse antes de aplicar.</p>
     </fieldset>
    </section>

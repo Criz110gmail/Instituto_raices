@@ -24,13 +24,24 @@ public class ConfiguracionEmpleadoNominaService {
     new MapSqlParameterSource("id",id),Long.class);
  }
  public ConfiguracionEmpleadoNominaForm preparar(Long id,Long cambioConcepto) {
-  empleados.autorizarSalarios(true);
+  var actor=empleados.autorizarSalarios(true);
   var e=configuracion.obtener(id,configuracion.hoy());var f=new ConfiguracionEmpleadoNominaForm();
-  f.setVersionLaboral(empleados.laboral(id).getVersion());f.setRevisionConceptos(revisionConceptos(id));
+  var laboral=empleados.laboral(id);
+  f.setVersionLaboral(laboral.getVersion());f.setRevisionConceptos(revisionConceptos(id));
   f.getSueldo().setRevision(salarios.revision(id));f.getSueldo().setVersionLaboral(f.getVersionLaboral());
   f.getSueldo().setFechaInicio(configuracion.hoy());
   f.getCalendario().setVersion(e.version());f.getCalendario().setCalendarioId(e.calendarioId());f.getCalendario().setCalendarioTexto(e.calendario());
-  // No preseleccionar el sueldo: evita registrar otra condición por guardar un concepto.
+  // Sólo propone el puesto del primer sueldo; nunca activa el cambio ni copia importes.
+  // El expediente anterior conserva nombre, no ID: no adivinar entre nombres duplicados.
+  if(f.getSueldo().getRevision()==0L&&laboral.getPuesto()!=null&&!laboral.getPuesto().isBlank()) {
+   var puestos=jdbc.queryForList("SELECT id,codigo,nombre FROM puesto_laboral WHERE institucion_id=:inst AND activo AND nombre=:nombre ORDER BY id LIMIT 2",
+     new MapSqlParameterSource("inst",actor.institucionId()).addValue("nombre",laboral.getPuesto().strip()));
+   if(puestos.size()==1) {
+    var puesto=puestos.getFirst();
+    f.getSueldo().setPuestoId(((Number)puesto.get("id")).longValue());
+    f.getSueldo().setPuestoTexto(puesto.get("codigo")+" · "+puesto.get("nombre"));
+   }
+  }
   if(cambioConcepto!=null) {
    var anterior=conceptos.obtener(cambioConcepto);
    if(!Objects.equals(anterior.empleadoId(),id))throw new org.springframework.security.access.AccessDeniedException("Concepto de otro empleado");

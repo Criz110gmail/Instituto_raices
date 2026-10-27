@@ -56,7 +56,7 @@ public class CondicionesSalarialesController {
   service.listar(id,filtro.pagina(0,10));cabecera(r,"condiciones-salariales.xlsx");excel.condiciones(id,filtro,r.getOutputStream());
  }
  @GetMapping("/admin/puestos/buscar") @ResponseBody
- ResponseEntity<ResultadoAutocompletado> buscar(@RequestParam(defaultValue="")String q){var filas=service.buscarPuestos(q);return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(new ResultadoAutocompletado(filas.stream().limit(10).map(p->new OpcionAutocompletado(p.id(),p.codigo()+" · "+p.nombre(),"Puesto laboral activo")).toList(),filas.size()>10));}
+ ResponseEntity<ResultadoAutocompletado> buscar(@RequestParam(defaultValue="")String q){var filas=service.buscarPuestos(q);return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(new ResultadoAutocompletado(filas.stream().limit(10).map(p->new OpcionAutocompletado(p.id(),p.codigo()+" · "+p.nombre(),p.completo()?p.horasSemanales()+" h/semana · $"+p.sueldoMensual()+" mensuales":"Pendiente de completar horas y sueldo")).toList(),filas.size()>10));}
  @GetMapping("/admin/puestos")
  String puestos(@RequestParam(required=false)Long id,@RequestParam(defaultValue="")String q,@RequestParam(defaultValue="TODOS")String estado,@RequestParam(defaultValue="0")int pagina,@RequestParam(defaultValue="25")int tamanio,@ModelAttribute("selecciones")FiltrosCatalogosPersonal selecciones,Model m){
   empleados.autorizarSalarios(false);
@@ -73,7 +73,7 @@ public class CondicionesSalarialesController {
  }
  @GetMapping("/admin/puestos/{id}/editar")
  String editarPuesto(@PathVariable Long id,@RequestParam(defaultValue="")String q,@RequestParam(defaultValue="TODOS")String estado,@RequestParam(defaultValue="0")int pagina,@RequestParam(defaultValue="25")int tamanio,@ModelAttribute("selecciones")FiltrosCatalogosPersonal selecciones,Model m){
-  empleados.autorizarSalarios(true);var p=service.puesto(id);var f=new PuestoForm();f.setCodigo(p.codigo());f.setNombre(p.nombre());f.setDescripcion(p.descripcion());f.setActivo(p.activo());f.setVersion(p.version());
+  empleados.autorizarSalarios(true);var p=service.puesto(id);var f=new PuestoForm();f.setCodigo(p.codigo());f.setNombre(p.nombre());f.setDescripcion(p.descripcion());f.setActivo(p.activo());f.setVersion(p.version());f.setHorasSemanales(p.horasSemanales());f.setSueldoMensual(p.sueldoMensual());
   prepararFiltroPuestos(q,estado,pagina,tamanio,selecciones,m);m.addAttribute("form",f);m.addAttribute("puestoId",id);return "admin/puesto-form";
  }
  private void prepararFiltroPuestos(String q,String estado,int pagina,int tamanio,FiltrosCatalogosPersonal selecciones,Model m){

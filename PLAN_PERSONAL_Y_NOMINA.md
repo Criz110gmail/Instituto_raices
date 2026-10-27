@@ -1,5 +1,10 @@
 # Integración de empleados, maestros y nómina
 
+> **Nuevo destino funcional acordado el26/10/2026:**
+> [PLAN_REDISENO_NOMINA_20261026.md](PLAN_REDISENO_NOMINA_20261026.md).
+> Las notas siguientes conservan entregas y verificaciones históricas. No implican
+> que esté construido el nuevo flujo ni autorizan borrar tablas o iniciar migraciones.
+
 24/10 fase5: autorización/pagos/rechazos/reversas individuales y abonos de préstamos
 implementados V134. Entregas ahora habilitadas, ruta de nuevas aplicaciones consolidadas
 deshabilitada. Aplicaciones históricas intactas. Cuota limitada a saldo real y abono sólo

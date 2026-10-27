@@ -6,17 +6,17 @@ import java.util.Set;
 import java.util.Map;
 
 public enum ModuloCatalogo {
-    EMPLEADOS("empleados","Empleados",List.of()),
     PUESTOS("puestos","Puestos laborales",List.of()),
+    CONCEPTOS_NOMINA("conceptos-nomina","Conceptos de nómina",List.of()),
+    EMPLEADOS("empleados","Empleados",List.of()),
+    PERIODOS_NOMINA("periodos-nomina","Periodos de nómina",List.of()),
+    CONFIGURACION_NOMINA("configuracion-nomina","Configuración de nómina",List.of()),
+    PREPARACION_NOMINA("preparacion-nomina","Nóminas",List.of()),
     JORNADAS_LABORALES("jornadas","Jornadas laborales",List.of()),
     ESQUEMAS_REMUNERACION("esquemas","Puestos y sueldos configurados",List.of()),
     ASIGNACIONES_LABORALES("asignaciones","Asignaciones laborales",List.of()),
-    CONCEPTOS_NOMINA("conceptos-nomina","Conceptos de nómina",List.of()),
     CONCEPTOS_EMPLEADO("conceptos-empleado","Conceptos por empleado",List.of()),
-    CONFIGURACION_NOMINA("configuracion-nomina","Configuración de nómina",List.of()),
     CALENDARIOS_NOMINA("calendarios-nomina","Calendarios de nómina",List.of()),
-    PERIODOS_NOMINA("periodos-nomina","Periodos de nómina",List.of()),
-    PREPARACION_NOMINA("preparacion-nomina","Nóminas",List.of()),
     ALUMNOS("alumnos", "Alumnos", List.of("Matrícula", "Alumno", "CURP", "Nacimiento", "Ingreso")),
     TUTORES("tutores", "Tutores", List.of("Tutor", "Teléfono", "Correo", "Cuenta de acceso", "Institución")),
     VINCULOS_TUTOR("vinculos-tutor", "Familiares del alumno", List.of("Alumno", "Tutor", "Parentesco", "Permisos", "Vigencia")),

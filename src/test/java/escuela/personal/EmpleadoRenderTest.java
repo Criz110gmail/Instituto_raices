@@ -5,6 +5,10 @@ import java.util.*;import static org.assertj.core.api.Assertions.*;import static
 class EmpleadoRenderTest {
  @Test void exportaFixturesFicticiasParaRevisionVisual()throws Exception{var dir=java.nio.file.Path.of("target/qa-personal");java.nio.file.Files.createDirectories(dir);java.nio.file.Files.writeString(dir.resolve("empleado.html"),render("/test/empleado",true,true));java.nio.file.Files.writeString(dir.resolve("empleados.html"),render("/test/empleados",true,true));}
  @Controller static class Vista {
+  @GetMapping("/test/empleado-puesto-diseno") String puestoDiseno(@RequestParam(defaultValue="true")boolean laboral,Model m){
+   var vista=render(true,true,m);m.addAttribute("puestoUnificado",true);m.addAttribute("puedeSalarios",laboral);
+   m.addAttribute("asignacionActual",new escuela.personal.service.OrganizacionLaboralService.Asignacion(1L,2L,"Ana Prueba","EMP-TEST","APOYO_40 · Apoyo técnico","Asignación desde puesto",null,new java.math.BigDecimal("40"),new java.math.BigDecimal("10000"),"MXN","MENSUAL","MENSUAL",java.time.LocalDate.of(2026,10,1),null,"Vigente","Asignación ficticia",0L,false));return vista;
+  }
   @GetMapping("/test/resumen-laboral") String resumen(@RequestParam(defaultValue="ACTIVO")String situacion,@RequestParam(defaultValue="false")boolean tabla,@RequestParam(defaultValue="true")boolean laboral,Model m){
    String plantilla=render(true,laboral,m);var e=(EmpleadoVista)m.getAttribute("empleado");e=e.conResumenLaboral(new ResumenLaboral(situacion,java.time.LocalDate.of(2026,10,1),situacion.equals("BAJA")?java.time.LocalDate.of(2026,10,20):null));m.addAttribute("empleado",e);
    if(tabla){plantilla=listado(m);m.addAttribute("puedeLaboral",laboral);m.addAttribute("resultado",new org.springframework.data.domain.PageImpl<>(List.of(e)));}return plantilla;
@@ -24,6 +28,12 @@ class EmpleadoRenderTest {
   @GetMapping("/test/empleados") String listado(Model m){m.addAttribute("modulos",List.of(ModuloCatalogo.EMPLEADOS));m.addAttribute("moduloActual",ModuloCatalogo.EMPLEADOS);m.addAttribute("resultado",Page.empty());m.addAttribute("filtro",new FiltroEmpleado(1L,"Ana","DOCENTE",0,25));m.addAttribute("puedeAdministrar",true);return "admin/empleados";}
  }
  String render(String ruta,boolean edicion,boolean laboral)throws Exception{var r=new ClassLoaderTemplateResolver();r.setPrefix("templates/");r.setSuffix(".html");r.setCharacterEncoding("UTF-8");var e=new SpringTemplateEngine();e.setTemplateResolver(r);var v=new ThymeleafViewResolver();v.setTemplateEngine(e);v.setCharacterEncoding("UTF-8");var mvc=MockMvcBuilders.standaloneSetup(new Vista()).setViewResolvers(v).build();var response=mvc.perform(get(ruta).param("edicion",String.valueOf(edicion)).param("laboral",String.valueOf(laboral))).andReturn().getResponse();assertThat(response.getStatus()).isEqualTo(200);return response.getContentAsString();}
+ @Test void accionesDiscretasYFiltrosCompartidosSinExponerSalarios()throws Exception{
+  var ficha=render("/test/empleado-puesto-diseno",true,true);assertThat(ficha).contains("employee-position-card","class=\"module-action\"","Ver puesto e historial","10,000.00");
+  assertThat(render("/test/empleado-puesto-diseno",true,false)).doesNotContain("employee-position-card","10,000.00","Ver puesto e historial");
+  var tabla=render("/test/resumen-laboral?tabla=true",true,true);assertThat(tabla).contains("personal-list-panel","module-filters","module-filter-actions","class=\"module-action\"");
+  var dir=java.nio.file.Path.of("target/qa-personal");java.nio.file.Files.createDirectories(dir);java.nio.file.Files.writeString(dir.resolve("puesto-diseno.html"),ficha);java.nio.file.Files.writeString(dir.resolve("acciones-tabla.html"),tabla);
+ }
  @Test void resumenGuardadoVisibleYPrivadoEnExpedienteYTabla()throws Exception{
   var r=new ClassLoaderTemplateResolver();r.setPrefix("templates/");r.setSuffix(".html");r.setCharacterEncoding("UTF-8");var engine=new SpringTemplateEngine();engine.setTemplateResolver(r);var views=new ThymeleafViewResolver();views.setTemplateEngine(engine);views.setCharacterEncoding("UTF-8");var mvc=MockMvcBuilders.standaloneSetup(new Vista()).setViewResolvers(views).build();
   for(String situacion:List.of("ACTIVO","BAJA","POR_CONFIRMAR"))for(boolean tabla:List.of(true,false))for(boolean permiso:List.of(true,false)){
@@ -40,7 +50,7 @@ class EmpleadoRenderTest {
  @Test void sinPermisoLaboralNoSeRenderizaInformacionNiCamposPrivados()throws Exception{assertThat(render("/test/empleado",true,false)).contains("Datos personales","Cuenta del portal docente").doesNotContain("PRIVADO-TEST","name=\"puesto\"","name=\"puestoId\"","/puestos/buscar","name=\"situacion\"","name=\"motivoBaja\"","Historial laboral");}
  @Test void filtrosYExcelConservanMismosParametros()throws Exception{assertThat(render("/test/empleados",true,true)).contains("/admin/empleados/excel?institucionId=1&amp;q=Ana&amp;estado=DOCENTE","Personal y nómina","name=\"q\"","name=\"estado\"","name=\"tamanio\"");}
  @Test void menuMuestraPuestosJuntoAEmpleadosSoloConPermisoSalarial()throws Exception{
-  var html=render("/test/menu-puestos",true,true);assertThat(html).contains("href=\"/admin/puestos\"","Puestos laborales");assertThat(html.indexOf("href=\"/admin/empleados\"")).isLessThan(html.indexOf("href=\"/admin/puestos\""));
+  var html=render("/test/menu-puestos",true,true);assertThat(html).contains("href=\"/admin/puestos\"","Puestos laborales");assertThat(html.indexOf("href=\"/admin/puestos\"")).isLessThan(html.indexOf("href=\"/admin/empleados\""));
   assertThat(html.split("Administración · Personal y nómina",-1)).hasSize(3);
   assertThat(render("/test/menu-puestos",true,false)).doesNotContain("href=\"/admin/puestos\"","Puestos laborales");
  }

@@ -21,4 +21,9 @@ public class ConceptoEmpleadoForm {
  @NotBlank(message="Explica el motivo de la asignación.") @Size(max=2000) private String motivo;
  @Positive private Long anteriorId;
  @PositiveOrZero private Long anteriorVersion;
+ private String frecuenciaImporte="MENSUAL";
+ private String modalidad="RECURRENTE";
+ @Positive private Long periodoId;
+ private String periodoTexto;
+ @PositiveOrZero private Long periodoVersion;
 }

@@ -1,5 +1,356 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Privacidad salarial aprobada; siguiente ensayo entrega2 — 27/10/2026
+
+Usuario **prueba** con Empleados + Datos laborales y sin Salarios confirmó menú
+sólo Empleados, pestañas01/02/03/04/05/06, sin Ver puesto e historial, y denegación
+de /admin/empleados/6/puesto y /admin/asignaciones/excel?empleadoId=6&estado=TODAS.
+Caso aislado de privacidad salarial/URL/Excel aprobado. No volver a pedirlo.
+Pruebas manuales viables del cierre entrega1 terminadas: positivos con **pruebas**,
+negativos con **prueba**, concurrencia con Elena y selector de fechas. No afirmar
+POST negativo manual ni sólo lectura; separación Consultar/Administrar pendiente.
+Siguiente: PRUEBA_REDISENO_NOMINA_ENTREGA2.md. Habilitar Empleados — Configuración
+de nómina al rol administrativo de ensayo autorizado (QA_SALARIOS_CONSULTA si se
+usa **pruebas**), no a PRUEBA_PERSONAL_BASE/usuario **prueba** negativo. Renovar
+sesión. No nuevas funciones ni duplicar empleados/puestos existentes por herramientas.
+
+## Acceso salarial positivo y Excel confirmados — 27/10/2026
+
+Usuario con **pruebas** confirmó menú correcto, pestañas03Datos laborales/04Planteles,
+Diana15/06/2027→40h/$10,000;16/06/2027→48h/$14,000 y Excel coincidente. Registrar
+como prueba positiva de acceso salarial, NO sólo consulta (paquetes completos).
+Con **prueba** se confirmó ocultación sin Laboral/Salarios y ruta salarial denegada;
+privacidad aislada con Laboral permitido/Salarios omitido y Excel directo no está
+confirmada. Separar Consultar/Administrar requiere autorización propia, pendiente.
+Entrega2 aún sin ensayo humano. Para empezar se habilita módulo Empleados —
+Configuración de nómina al rol administrativo autorizado y se renueva sesión;
+seguir PRUEBA_REDISENO_NOMINA_ENTREGA2.md sin duplicar puestos de Diana.
+
+## Causa identificada: prueba y pruebas son cuentas distintas — 27/10/2026
+
+Resumen de sesión proporcionado por usuario: username **prueba** (singular),
+administrativo/Toda la institución. SQL acotado confirma prueba→PRUEBA_PERSONAL_BASE:
+sólo EMPLEADO_LEER/ADMINISTRAR activos, Laboral desactivado y sin Salarios.
+**pruebas** (plural)→QA_SALARIOS_CONSULTA tiene los6permisos activos de Empleados,
+Laboral y Salarios. Investigación previa se hizo sobre la cuenta plural, no la
+sesión real. Las cuatro pestañas y denegación observadas son coherentes con el rol
+de prueba; no es evidencia de fallo de carga/caché. No se modificaron permisos.
+Siguiente iniciar como pruebas para el ensayo de acceso laboral/salarial, sin tocar
+roles de prueba ni administrador. Sólo consulta sigue no disponible por paquetes;
+no declararla aprobada. Esperar confirmación de pestañas/acceso con cuenta correcta.
+
+## Diagnóstico pendiente de sesión efectiva — 27/10/2026
+
+Usuario confirmó acceso denegado en /admin/empleados/6/puesto pese a los tres paquetes
+seleccionados. Último acceso de pruebas es POSTERIOR a actualización de permisos:
+descartado recomendar otra vez renovar sesión como solución suficiente. SQL confirma
+usuario9 administrativo activo/institución1, rol activo INSTITUCION y seis permisos
+activos; empleado6 institución1. Código no permite concluir causa sin sesión real.
+Chrome no se pudo inspeccionar: permisos de Computer Use no concedidos, no evadir
+esa restricción. Siguiente comprobar /admin/perfil/resumen existente con usuario de
+prueba: pedir sólo usuario/acceso/alcance, nunca contraseña, cookies o tokens.
+No modificar grants ni ampliar acceso para ocultar el fallo. Prueba bloqueada, no
+marcar permisos aprobados ni asumir caché/rol faltante sin evidencia.
+
+## Diagnóstico de permisos durante cierre entrega1 — 27/10/2026
+
+Usuario ve sólo menú Empleados y pestañas01/02/05/06. Inspección de sólo lectura:
+QA_SALARIOS_CONSULTA tiene los6permisos LEER/ADMINISTRAR de Empleados/Laboral/Salarios
+activos; asignación activa al usuario pruebas, administrativo activo e INSTITUCION.
+La sesión/cuenta visible no refleja esos permisos; pedir cerrar sesión y renovar,
+no agregar grants para corregir una sesión antigua. No se han cambiado permisos.
+Corrección importante del ejemplo: Roles asigna paquetes completos en
+RolServiceImpl.sincronizarPermisos y login ModuloPermiso.expandir. No existe selección
+efectiva sólo lectura por módulo. No afirmar que el rol QA es de consulta ni aprobar
+ese caso. Manual de pendientes actualizado con advertencia; separar operaciones
+requiere autorización e implementación propias, no cambiar seguridad a escondidas.
+
+## Retoma manual: concurrencia de asignaciones aprobada — 27/10/2026
+
+Usuario confirmó segunda pestaña rechazada con recarga y UNA asignación en historial
+de Elena: APOYO_TECNICO_48,48h,14000mensuales,desde01/06/2027,sin fin,Próxima.
+No repetir ni cancelar esa fila. Observó también selector bloqueado antes de hoy;
+es evidencia de interfaz, no prueba manual del servidor. Documentado en ambos
+manuales entrega1. Siguiente: bloque3 de PRUEBAS_PENDIENTES_NOMINA_ENTREGA1.md,
+permisos de lectura salarial/sin salario con cuentas de ensayo. Entrega2 todavía
+no probada por el usuario; no comenzar otro desarrollo sin autorización.
+
+## Cierre de implementación entrega2 y retoma manual — 27/10/2026
+
+Implementación terminada/desplegada: sólo app actualizada, saludUP18080 y V136success.
+1018pruebas generales+1IT PostgreSQL17 aislada (1019total),132JS, package correcto.
+IT cubre configuración/fechas/únicos/periodoobsoleto/POST-CSRF/reenvío/rollback tras
+cierre previo/IDOR/permisos/POI/motor anterior bloqueado; no afirmar que se repitieron
+las demás IT históricas. Chrome1440/390 claro/oscuro, sin desbordamiento, ayudas y
+modal Cancelar con ceroPOST; fechas únicas protegidas; filtros alineados4porfila.
+Huellas de9tablas operativas comparadas iguales (se excluyen columnas aditivas),
+46movimientos y saldos conservados; nuevos permisos con0asignaciones a roles.
+Respaldo privado validado y foto anterior de imagen nexo-pre-entrega2-v136:20261026.
+Dockerfile temporal retirado y contenedor QA/tmpfs nexo-conceptos-entrega2-qa retirado;
+PostgreSQL operativo/volúmenes intactos, sin .env, capturas por herramientas, commit/push.
+
+Usuario pidió terminar pendientes y recibir pruebas antiguas antes de probar entrega2.
+Seguir PRUEBAS_PENDIENTES_NOMINA_ENTREGA1.md: empleado auxiliar Elena
+EMP-PUESTOS-SEG-TEST, ingreso01/10/2026; dos intentos inválidos sin guardar y dos
+pestañas para dejar UNA asignación48h/14000desde01/06/2027. No alterar Diana.
+Permisos con roles/cuentas de ensayo separados, no rol del administrador real.
+Ninguno de los tres bloques se ha confirmado aún; entrega2 tampoco tiene aceptación
+humana. Siguiente entrega3 sólo con autorización: periodos sin calendario/motor por
+tramos/centavos y clasificación de preparación (sin puesto/configuración/listos),
+no presentar esos filtros o cálculo como ya implementados por esta entrega.
+
+## PRIORIDAD ACTUAL — Rediseño de nómina, entrega2 — 26/10/2026
+
+Usuario autorizó avanzar con configuración individual y retirar submenús antiguos.
+Leer PRUEBA_REDISENO_NOMINA_ENTREGA2.md. No reanudar el ensayo V134 ni generar/pagar
+nómina con la configuración nueva: motor proporcional y periodos sin calendario
+siguen siendo entrega3. Los tres bloques manuales de entrega1 (fechas anteriores,
+dos pestañas asignando puesto y permisos) quedan para27/10/2026 por decisión expresa.
+Selección desactualizada de puesto y cierre sin nuevas asignaciones sí confirmados.
+
+Implementación entrega2: V136 aditiva sobre concepto_empleado (fuente canónica).
+LEGADO conserva importe por nómina; V2 añade frecuencia mensual/quincenal/semanal,
+recurrente o única con periodo/snapshot exacto. No convertir los dos conceptos
+anteriores ni modificar salarios, borradores, pagos o cuotas. Nueva pestaña privada
+Configuración de nómina en Empleados, tabla/filtros/paginación/ayuda10/3/Excel POI,
+formularios separados y modales de alta/cambio/terminación/cancelación. Sueldo base
+protegido desde la asignación vigente hoy; si futura muestra aviso y enlace a fechas.
+Programar cambio crea vigencia, cierra anterior día previo y conserva importe viejo;
+cancelar última futura restaura fin anterior. Terminar vigente incluye último día.
+Único conserva cobertura del periodo; no implementa aún consumo ni pago. Bloqueos/
+versiones/traslapes, periodo obsoleto, protección contra duplicar Sueldo base/Con saldo
+y captura ocasional anterior. Aportaciones patronales legadas no se reinterpretan.
+
+Permisos nuevos EMPLEADO_NOMINA_LEER/ADMINISTRAR, visibles en Roles como
+Empleados — Configuración de nómina; exigen además paquete Empleados/laboral/salarial.
+NO se conceden automáticamente: rol autorizado debe habilitarlos y renovar sesión.
+Sin permiso no pestaña/contexto/Excel ni acceso por URL; lectura no administra.
+
+Menú Puestos sin Jornadas/Plantillas; se conserva información y rutas antiguas.
+Configuración de nómina deja de ser entrada separada, ahora está en Empleados.
+Periodos aún conserva compatibilidad de calendarios hasta entrega3, no afirmar que
+ya quedó rediseñado. Motor mensual anterior clasifica V2 como Revisión sin importe
+pagable; resumen anterior sólo suma LEGADO. Rutas históricas no se borran.
+
+Inventario previo local:6empleados,3puestos,7condiciones,2conceptos legados,
+46movimientos,1borrador. No crear datos de ejemplo con herramientas. Respaldo privado
+ignorado validado: .respaldos-locales/entrega2-v136.rHzHze/antes-v136.dump. Huellas
+de9tablas previas tomadas para comprobar despliegue; no mostrar datos del respaldo.
+Estilo module-action aprobado por usuario y agregado a regla de AGENTS.md para nuevas
+pantallas/correcciones, no refactor global de todos los módulos. Ensayo humano de
+entrega2 pendiente; aceptación automatizada no sustituye confirmación del usuario.
+
+## Concurrencia del catálogo confirmada — 26/10/2026
+
+Usuario confirmó rechazo de segunda pestaña editando Puestos: «El puesto cambió
+desde que lo abriste. Recarga antes de guardar». Caso de versión de catálogo
+aprobado en manual entrega1. No confundir con concurrencia de asignaciones o con
+selección obsoleta del puesto; esos casos y permisos no están aún confirmados.
+No presumir restauración de la descripción original sin confirmación.
+
+## Validaciones de horas y sueldo confirmadas — 26/10/2026
+
+Usuario confirmó todos los intentos del ejemplo: campos vacíos, horas0/169,
+sueldo0 rechazados y salida sin crear VALIDACION-PUESTO-TEST. Manual entrega1
+actualizado. Concurrencia y permisos todavía requieren confirmación manual.
+
+## Código de puesto duplicado — 26/10/2026
+
+Usuario confirmó rechazo al registrar APOYO_TECNICO_40 nuevamente. Caso manual de
+duplicidad aprobado e incorporado al manual entrega1. No dar por aprobadas las
+validaciones restantes de horas/sueldo, concurrencia o permisos.
+
+## Puesto inactivo validado manualmente — 26/10/2026
+
+Usuario confirmó desactivar APOYO_TECNICO_40, ausencia en ayuda para asignaciones,
+conservación del historial de Diana40h/$10,000 y reactivación final. Manual entrega1
+actualizado; no presumir comprobados otros casos negativos, concurrencia o permisos.
+
+
+## Confirmación adicional del ensayo entrega1 — 26/10/2026
+
+Usuario confirmó consultas de Diana15/06/2027(40h/$10,000) y16/06/2027(48h/$14,000),
+Excel de ambas asignaciones y rechazo al intercalar otra desde10/06/2027 sin alterar
+historial. Registrado en PRUEBA_REDISENO_NOMINA_ENTREGA1.md. Restan verificaciones
+manuales negativas, concurrencia y permisos; no asumir cierre completo ni implementar
+entrega2 sin autorización. Esta actualización es documental, no despliegue/migración.
+
+## Estilo de acciones de filtros y tablas — 26/10/2026
+
+- Usuario confirmó el flujo principal de puestos hasta los dos registros de historial
+  (40 horas hasta15/06/2027,48 horas desde16/06/2027). No inferir aceptación de
+  pruebas negativas o de seguridad no reportadas. El rediseño sigue en entrega1.
+- Se creó el patrón reutilizable `module-action`/`module-filter-actions`: acciones
+  secundarias discretas con borde, sin gradiente ni sombra; Aplicar filtros azul.
+  Adopción piloto en Empleados y Puestos, pendiente de aprobación visual del usuario
+  antes de extenderlo al resto de módulos. No afirmar homologación global realizada.
+- Cuatro filtros en una fila de escritorio, dos en tablet y uno en móvil. Acciones
+  Ver expediente/Editar usan el mismo patrón. Datos laborales presenta tarjeta de
+  puesto y sueldo con acción **Ver puesto e historial**, sin cambiar rutas/permisos.
+- Cambio sólo de presentación; no migraciones, cálculos ni capturas operativas.
+- Verificación: package correcto,1014Java/128JS sin fallos; fixtures en Chrome
+ 1440/390 sin desbordamiento y cuatro controles alineados (44px). Revisados temas
+ claro/oscuro y tarjeta laboral. Sólo app actualizada, saludUP18080; sin commit/push.
+
+## Orden del menú y texto residual — 26/10/2026
+
+- Usuario pidió ordenar Personal y nómina según el proceso: Puestos laborales,
+  Conceptos de nómina, Empleados, Periodos de nómina, Configuración de nómina,
+  Nóminas. Orden coherente en enum del servidor y navigation.js; sin nuevos módulos,
+  permisos, rutas, eliminación de menús ni cambios de datos.
+- Se retiró texto literal `undefined` de puestos.html y empleado-form.html,
+  introducido por la edición anterior; no era un valor de la BD. Regresión recorre
+  todas las plantillas y verifica ausencia de línea residual, además de render de
+  Puestos y orden/permisos del menú. Ejemplo entrega1 sigue pendiente de aceptación.
+- Cierre: compilación limpia/package correcto,1013Java/128JS sin fallos. Fixture de
+  Puestos en Chrome390/1366 confirma orden y ausencia de texto residual. Sólo app
+  actualizada/recreada, saludUP18080; sin nueva migración ni cambios de puestos,
+  sueldos, permisos o cuentas. PostgreSQL/volúmenes intactos, sin commit/push.
+
+## Rediseño de nómina: entrega 1 — 26/10/2026
+
+- Usuario autorizó implementar entrega1 y solicitó ejemplo manual. Leer
+  `PRUEBA_REDISENO_NOMINA_ENTREGA1.md` (pendiente de aceptación humana) y
+  `PLAN_REDISENO_NOMINA_20261026.md`. No continuar automáticamente el ensayo V134.
+- V135 aditiva: puesto_laboral.horas_semanales/sueldo_mensual y fotografía en
+  condicion_salarial.horas_puesto/puesto_version. Puestos legados quedan NULL/
+  Pendiente de completar, sin inferencia ni backfill; condiciones previas intactas.
+  Sueldo canónico sigue condicion_salarial, no otra tabla duplicada. ACTIVO laboral
+  requiere ingreso, ya no texto de puesto; conserva reglas de baja/historial.
+- Puestos: creación/edición separada con horas positivas hasta168 (capacidad técnica,
+  no norma legal), sueldo mensual positivo, validación, modal y Excel con filtros.
+  Nombre puede repetirse por variantes; código único institucional normalizado.
+- Empleados → Datos laborales → Ver puesto, asignar o cambiar e historial. Ya no
+  seleccionar puesto textual allí y recapturar sueldo en otra pantalla. Primero
+  confirmar ingreso/actividad; nueva acción selecciona puesto una vez, consulta
+  horas/sueldo protegidos, Aplicar desde y motivo. Cierre previo día anterior,
+  snapshot de catálogo/versiones y revisión salarial en transacción. Sólo hoy/futuro,
+  no antes del ingreso ni intercalado antes de una programación posterior existente.
+- GET/POST/contexto de /admin/empleados/{id}/puesto protegidos por paquete salarial
+  además de alcance/empleado laboral; sin grants nuevos. Catálogo editado no cambia
+  snapshots; puesto obsoleto/inactivo/incompleto se rechaza. Ruta manual anterior no
+  acepta sueldo separado para puestos completos. Compatibilidad anterior preservada
+  en Configurar nómina bajo detalle secundario; aún no se implementa entrega2.
+- Resumen con fecha y tabla histórica paginada/Excel; expediente muestra sueldo
+  actual autorizado. OrganizacionLaboral/ConfiguracionNomina leen horas snapshot
+  primero y luego horas históricas de esquema legado. No inventar jornada nueva.
+- QA aislada PostgreSQL17 verificó V1–135, dos variantes, vigencias, inmutabilidad,
+  rollback deliberado tras cierre previo, cancelación futura/restauración, dos
+  pestañas, alcance/permisos, Excel, render GET y POST con CSRF/importe manipulado/
+  repetición. Sin dinero ni nómina creada. Fixture visual390/1366 claro/oscuro con
+  autocompletado y modal/Cancelar. No atribuir como ejecutadas las demás IT históricas.
+- Inventario de esta base antes de V135:5empleados (Bruce3,Ana5),1puesto legado,
+  5condiciones salariales y46movimientos. Respaldo privado ignorado y catálogo
+  validado: `.respaldos-locales/entrega1-v135.bPaKCX/antes-v135.dump`. Huellas de
+  7tablas previas guardadas para comparar al desplegar, sin mostrar contenido.
+- Ejemplo propuesto usa Diana/EMP-PUESTOS-TEST-01 y dos puestos nuevos APOYO_TECNICO_40
+  /48. No crear esos registros por herramientas ni cambiar Bruce/Ana. No probar aún
+  nómina proporcional: cálculo por tramos pertenece a entrega3; esta entrega no paga.
+- Cierre técnico: package offline correcto,1011Java/128JS y1IT PostgreSQL17 aislada
+  correctos. Sólo app recreada, saludUP18080 y V135success; huellas antes/después de
+  7tablas idénticas,46movimientos. Imagen anterior conservada como
+  nexo-pre-entrega1-v135:20261026. Sin .env, permisos concedidos, commit ni push.
+  Contenedor de QA desechable retirado, Dockerfile temporal eliminado; PostgreSQL
+  operativo y volúmenes intactos. Prueba humana nueva todavía pendiente.
+
+## PRIORIDAD: rediseño de nómina acordado y documentado — 26/10/2026
+
+- Leer primero `PLAN_REDISENO_NOMINA_20261026.md`: especificación funcional vigente
+  como DESTINO. Sustituye el destino de los planes anteriores, no declara funciones
+  construidas. Usuario pidió sólo documentar; NO implementar/migrar/desplegar ni
+  borrar tablas por esta solicitud. No reiniciar el ensayo anterior automáticamente.
+- Flujo: puestos con horas/sueldo mensual → asignación única en empleado/conceptos
+  por frecuencia y vigencia → periodo sin calendario obligatorio → borrador/pago.
+  Cálculo por días reales/tramos, semana lunes–domingo y quincenas1–15/16–fin,
+  centavos controlados. Sin puesto puede calcular conceptos con advertencia;
+  negativo bloqueado y visible; neto0 conserva liquidación/contabilidad sin cuenta.
+- Pago colectivo/individual no se duplican. Borrador reserva persona/cobertura;
+  pendiente sólo se paga individualmente en periodo original, jamás se mezcla con
+  otro colectivo. Individual sin borrador previo; ordinario/pendiente/extraordinario.
+  No aplicar/Posponer con motivo; cancelación compensa cuenta/abonos y conserva
+  obligación original, sin fingir devolución bancaria. Aplicada inmutable.
+- Varias fuentes/medios, saldo insuficiente con disponible/solicitado/faltante,
+  transacciones e idempotencia. Chequeras en cuentas bancarias, no otra cuenta con
+  saldo. Préstamos separados con saldo real y reestructuración sólo hacia adelante.
+- Pendiente resolver detalles técnicos contables de neto0, centavos fuera de orden,
+  corrección de cálculo aplicado y migración segura; no funciones ya implementadas.
+  Plan de7entregas y21casos de aceptación en especificación. Guía sólo tras ensayo.
+- Usuario confirmó calendario de Bruce y Ana9000/NOM-MENSUAL-TEST consultada al
+  15/06/2027. No constan nuevas confirmaciones de periodo junio/préstamo/pagos.
+  Lo anterior es reporte humano, no consulta nueva de DB; releer inventario en otra
+  computadora. V134/fase5 sigue sin aceptación integrada final.
+- Esta actualización sólo documentación. Siguiente propuesto: entrega1 de puestos y
+  asignación única, con inventario/diseño técnico de transición y autorización antes
+  de implementar. Conservar cambios previos del usuario y del ajuste de puesto.
+
+## Propuesta de puesto en el primer sueldo — 26/10/2026
+
+- A petición del usuario, preparar configuración integrada propone ID y código/nombre
+  del puesto del expediente sólo si no existe historial salarial y hay una coincidencia
+  exacta y única activa en la misma institución. El expediente legado conserva nombre,
+  no ID; no inferir por coincidencias parciales ni elegir entre nombres duplicados.
+- No activa cambiarSueldo, no copia importes, no registra asignaciones al abrir y no
+  sincroniza/reemplaza el puesto laboral ni los salarios existentes. Se mantienen
+  permiso, revisión de concurrencia, validación del catálogo y modal al confirmar.
+- Once pruebas Java focalizadas y una JS correctas; cinco nuevas cubren propuesta,
+  alcance institucional, ambigüedad, ausencia de coincidencia/historial/nombre.
+- Suite completa y package offline correctos:1009Java/126JS sin fallos. Sin migración,
+  cambios de datos ni commit/push. Imagen local reconstruida; Dockerfile temporal retirado.
+- Sólo app recreada; salud UP18080. PostgreSQL y sus volúmenes permanecieron intactos.
+- Ana puede continuar en Configurar nómina → Puesto y sueldo: recargar antes de
+  capturar para ver propuesta, activar sección,9000mensual desde01/06/2027 sin fin,
+  calendario NOM-MENSUAL-TEST y sin conceptos adicionales. Si ya registró sueldo,
+  consultarlo al15/06/2027 y no duplicar. Ensayo fase5 sigue pendiente.
+
+## Ajuste visual de configuración de nómina — 26/10/2026
+
+- Separación explícita entre Configurar nómina y su ayuda; Calendario usa el mismo
+  contenedor form-grid que los demás campos. Captura integrada con controles uniformes,
+  autocompletados, fechas, sólo lectura y motivo en temas claro/oscuro y móvil.
+- Sin cambios de cálculo, permisos, vigencias ni registros. Seis pruebas Java focalizadas
+  y una JS de confirmación correctas; fixture visual con CSS/fragmentos reales revisado
+  en 390/1280px y ambos temas, sin desbordamiento ni solapamiento. No es aceptación
+  humana del flujo ni una prueba autenticada del portal.
+- Package offline correcto; imagen local actualizada y sólo app recreada. Salud UP
+  en18080, sin reiniciar PostgreSQL/volúmenes; Dockerfile temporal retirado.
+- Para continuar: Resumen por empleado, Bruce/DOC-PRUEBA-02, fecha de consulta
+  15/06/2027 y Aplicar filtros antes de Ver configuración. Sueldo12000 y bono500
+  existen desdeenero2027; no duplicarlos. Sólo asignar NOM-MENSUAL-TEST desde
+  Configurar nómina → Calendario. Aún pendiente ensayo humano de fase5.
+
+## Retoma local V134 desde V131 — 26/10/2026
+
+- Usuario pidió leer continuidad, revisar esta base antes del ensayo fase5 y autorizó
+  respaldar/actualizar sólo app. Código Git9f21177 estaba limpio; DB y app locales
+  seguían V131. No confundir con datos de otra computadora del24/10.
+- Aquí hay Bruce Wayne/DOC-PRUEBA-02 activo, ingreso01/10/2026, sueldo12000mensual
+  desde01/01/2027 sin fin y bono BON-PUNT-TEST500 desdeenero sin fin; programaciones
+ 13000/600 canceladas conservadas. Calendario NOM-MENSUAL-TEST activo pero sin
+  asignaciones a empleados. Enero2027 PROGRAMADO/febrero CANCELADO. Carlos/Ana no
+  existen. BOR-000001 está BORRADOR/rev1, NO APLICADA; no pagar/cancelar para retomar.
+  Tres cuentas existentes contienen otros ensayos; usar otra exclusiva de capacitación.
+- Respaldo privado ignorado .respaldos-locales/retoma-v134-20261026.Jft5P6/antes-v134.dump,
+  catálogo pg_restore validado. Huellas antes/después de14tablas previas idénticas
+  (empleados/laboral/salarios/conceptos/calendarios/periodos/borrador/revisiones/filas/
+  aplicación/cuentas/movimientos); no fueron sólo conteos. Imagen anterior conservada
+  como nexo-retoma-pre134:20261026-Jft5P6. No leer/publicar contenido de respaldo/.env.
+- Compilación limpia offline/package BUILD SUCCESS,1003Java y126JS correctos en esta
+  computadora; no volver a atribuir los4IT anteriores como ejecutados hoy. App sola
+  recreada26/10 a10:17México, saludUP18080 y V132/133/134success. JAR en ejecución
+  contiene las tres migraciones; PostgreSQL/volúmenes conservados. Sin limpieza Docker.
+- Ocasionales/préstamos/entregas/autorizaciones/intentos/reversas/abonos/compensaciones
+  consultados0;46movimientos como antes, BOR000001 BORRADOR/rev1 intacto. No entregas,
+  pagos, reversas ni modificación de datos operativos por herramientas. Defaults en
+  fuente empaquetada entrega=true/consolidada=false, sin cambiar properties o roles.
+  Dockerfiles temporales retirados; sin cambios Java/SQL ni commit/push.
+- Siguiente: prueba humana PRUEBA_SIMPLIFICACION_NOMINA_ETAPA5.md adaptada a ESTA base.
+  Reutilizar Bruce en vez de Carlos si se acuerda; conservar12000+500, asignar calendario,
+  crear Ana9000, periodo nuevo junio2027, cuenta exclusiva30000 y concepto Deducción/
+  Con saldo para préstamo3000/cuota500 desde01/06/2027. No crear registros por el agente.
+  Resultados propuestos conservan21000total/12000Bruce/9000Ana. Guía integrada sigue
+  pendiente de aceptación humana; V135 disponible, no nueva funcionalidad autorizada.
+
+
 ## Nómina: pagos individuales y abonos — fase5,24/10/2026
 
 - Usuario autoriza fase5. V134 aditiva; NO dividir aplicaciones anteriores. BOR000001

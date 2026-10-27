@@ -1,0 +1,21 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{admin/fragments/nomina-comun :: head('Asignar o cambiar puesto')}"></head>
+<body class="form-page"><main class="form-shell finance-shell nomina-detail config-integrada">
+<header class="form-top"><a class="payment-back-link" th:href="${volverUrl}">← Volver al puesto del empleado</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
+<section class="form-card employee-card"><div class="form-intro finance-intro"><span>Empleado · Datos laborales</span><h1>Asignar o cambiar puesto</h1><p th:text="${empleado.codigo+' · '+empleado.nombre}"></p></div>
+<div class="form-error" th:if="${errorOperacion}" role="alert"><strong>No se pudo guardar</strong><p th:text="${errorOperacion}"></p></div>
+<form class="entity-form" method="post" th:action="@{/admin/empleados/{id}/puesto(id=${id})}" th:object="${form}" data-asignacion-puesto data-money-confirm="puesto-empleado" th:attr="data-confirm-subject=${empleado.codigo+' · '+empleado.nombre},data-context-url=@{/admin/empleados/{id}/puesto/contexto(id=${id})}">
+<input type="hidden" th:field="*{consulta}"><input type="hidden" th:field="*{pagina}"><input type="hidden" th:field="*{versionLaboral}"><input type="hidden" th:field="*{revision}"><input type="hidden" th:field="*{puestoVersion}" data-puesto-version>
+<div class="form-error" role="alert" th:if="${#fields.hasAnyErrors()}"><strong>Revisa los datos antes de guardar</strong><ul><li th:each="e:${#fields.allErrors()}" th:text="${e}"></li></ul></div>
+<fieldset class="form-section"><legend>1 · Puesto y condiciones del catálogo</legend><div class="form-grid">
+<div class="wide" th:insert="~{admin/fragments/concepto-empleado-comun :: ayuda('puesto','Puesto laboral *',${form.puestoId},${form.puestoTexto},'/admin/puestos/buscar',true)}"></div>
+<p class="field-error wide" th:errors="*{puestoId}"></p><p class="field-error wide" th:errors="*{puestoTexto}"></p>
+<label><span>Horas semanales del puesto</span><input readonly data-puesto-horas placeholder="Se completan al seleccionar"></label>
+<label><span>Sueldo base mensual del puesto</span><input readonly data-puesto-sueldo placeholder="No se captura nuevamente"></label>
+<p class="field-help wide" data-puesto-status role="status">Selecciona un puesto activo con horas y sueldo completos. Su importe se guarda como copia histórica; editar el catálogo después no lo modifica.</p>
+</div></fieldset>
+<fieldset class="form-section"><legend>2 · Fecha efectiva y motivo</legend><div class="form-grid">
+<label><span>Aplicar desde *</span><input type="date" th:field="*{inicio}" th:min="${hoy}" required><small class="field-help">Hoy o una fecha futura, no antes del ingreso. El puesto anterior termina el día previo; no es una baja laboral.</small><small class="field-error" th:errors="*{inicio}"></small></label>
+<label class="wide"><span>Motivo obligatorio *</span><textarea th:field="*{motivo}" required rows="3" maxlength="2000"></textarea><small class="field-error" th:errors="*{motivo}"></small></label>
+</div></fieldset><p class="field-help">No se calcula ni paga nómina. No se cambia la identidad, el acceso, los grupos ni los planteles del empleado. Las condiciones anteriores permanecen consultables.</p>
+<footer class="form-actions"><a class="detail-close-button" th:href="${volverUrl}">Cancelar</a><button type="submit" data-puesto-submit disabled>Revisar asignación de puesto</button></footer>
+</form></section></main><script src="/js/asignacion-puesto.js" defer></script></body></html>

@@ -39,8 +39,10 @@ class CondicionesSalarialesPostgresIT {
    var hoy=LocalDate.now(ZoneId.of("America/Mexico_City"));
    jdbc.update("insert into empleado_laboral(empleado_id,puesto,fecha_ingreso,situacion) values(95000,'Referencia previa',?,'ACTIVO'),(95001,NULL,NULL,'POR_CONFIRMAR')",hoy.minusDays(10));
    var s=app.getBean(CondicionesSalarialesService.class);var empleados=app.getBean(EmpleadoService.class);SecurityContextHolder.getContext().setAuthentication(completo());
-   var p=new PuestoForm();p.setCodigo("doc-qa");p.setNombre("Docente de prueba");p.setDescripcion("Sólo capacitación");Long puesto=s.guardarPuesto(null,p);
-   for(int n=0;n<12;n++){var otro=new PuestoForm();otro.setCodigo("P-"+n);otro.setNombre("Puesto ficticio "+n);s.guardarPuesto(null,otro);}
+   // Fixtures anteriores a V135: no inventar horas/sueldo para su compatibilidad.
+   var p=new PuestoForm();p.setCodigo("DOC-QA");p.setNombre("Docente de prueba");p.setDescripcion("Sólo capacitación");
+   Long puesto=jdbc.queryForObject("INSERT INTO puesto_laboral(institucion_id,codigo,nombre,descripcion,creado_por_id,actualizado_por_id) VALUES(95000,'DOC-QA','Docente de prueba','Sólo capacitación',95000,95000) RETURNING id",Long.class);
+   for(int n=0;n<12;n++)jdbc.update("INSERT INTO puesto_laboral(institucion_id,codigo,nombre,creado_por_id,actualizado_por_id) VALUES(95000,?,?,95000,95000)","P-"+n,"Puesto ficticio "+n);
    assertThat(s.buscarPuestos("")).hasSize(11);assertThat(s.buscarPuestos("do")).isEmpty();assertThat(s.buscarPuestos("doc")).hasSize(1);assertThat(s.puestos("","ACTIVO",0,10).getContent()).hasSize(10);assertThat(s.puestos("","ACTIVO",1,10).getContent()).hasSize(3);
    var invalida=form(s,empleados,puesto,hoy.minusDays(1),"12000.00");assertThatThrownBy(()->s.programar(95000L,invalida)).hasMessageContaining("vigencia");
    invalida.setFechaInicio(hoy.plusDays(2));invalida.setImporteBruto(BigDecimal.ZERO);assertThatThrownBy(()->s.programar(95000L,invalida)).hasMessageContaining("positivo");
@@ -61,7 +63,7 @@ class CondicionesSalarialesPostgresIT {
    SecurityContextHolder.getContext().setAuthentication(completo());
    assertThat(s.aplicable(95000L,hoy.plusDays(59)).fin()).isEqualTo(hoy.plusDays(59));var segundo=s.aplicable(95000L,hoy.plusDays(60));assertThat(segundo.importeBruto()).isEqualByComparingTo("13000");
    // El puesto renombrado no altera su fotografía histórica.
-   p.setCodigo("DOC-REN");p.setNombre("Nombre corregido");p.setVersion(0L);s.guardarPuesto(puesto,p);assertThat(s.aplicable(95000L,hoy.plusDays(60)).puestoNombre()).isEqualTo("Docente de prueba");
+   p.setCodigo("DOC-REN");p.setNombre("Nombre corregido");p.setVersion(0L);p.setHorasSemanales(new BigDecimal("40"));p.setSueldoMensual(new BigDecimal("12000"));s.guardarPuesto(puesto,p);assertThat(s.aplicable(95000L,hoy.plusDays(60)).puestoNombre()).isEqualTo("Docente de prueba");
    var seleccionadoViejo=form(s,empleados,puesto,hoy.plusDays(90),"14000.00");seleccionadoViejo.setPuestoTexto("DOC-QA · Docente de prueba");assertThatThrownBy(()->s.programar(95000L,seleccionadoViejo)).hasMessageContaining("puesto cambió");
    var filtro=new FiltroSalarial("Docente","PROXIMA",hoy.plusDays(60),hoy.plusDays(100),0,10);
    assertThat(s.listar(95000L,filtro).getTotalElements()).isEqualTo(1);

@@ -26,7 +26,8 @@ class OrganizacionLaboralPostgresIT {
    jdbc.update("insert into empleado(id,institucion_id,codigo,nombres,primer_apellido) values(96000,96000,'EMP-ORG-QA','Ana','Capacitación'),(96001,96001,'EMP-AJENO','Otro','Empleado')");
    var hoy=LocalDate.now(ZoneId.of("America/Mexico_City"));jdbc.update("insert into empleado_laboral(empleado_id,puesto,fecha_ingreso,situacion) values(96000,'Referencia previa',?,'ACTIVO'),(96001,NULL,NULL,'POR_CONFIRMAR')",hoy.minusDays(10));
    var s=app.getBean(OrganizacionLaboralService.class);var salarios=app.getBean(CondicionesSalarialesService.class);sesion();
-   var puestoForm=new PuestoForm();puestoForm.setCodigo("DOC-ORG-QA");puestoForm.setNombre("Docente ficticio");Long puesto=salarios.guardarPuesto(null,puestoForm);
+   // Puesto legado sin horas/sueldo: conserva las asignaciones de plantilla previas.
+   Long puesto=jdbc.queryForObject("INSERT INTO puesto_laboral(institucion_id,codigo,nombre,creado_por_id,actualizado_por_id) VALUES(96000,'DOC-ORG-QA','Docente ficticio',96000,96000) RETURNING id",Long.class);
    var j=jornada("MAT-QA");Long jornada=s.guardar("jornadas",null,j);j.setVersion(0L);var e=esquema(s,salarios,puesto,jornada);Long esquema=s.guardar("esquemas",null,e);e.setVersion(0L);
    assertThat(s.buscar("jornadas","ma")).isEmpty();assertThat(s.buscar("jornadas","")).hasSize(1);assertThat(s.buscarEmpleados("")).hasSize(1);assertThat(s.listar("esquemas","ESQ-QA","ACTIVO",0,10).getTotalElements()).isEqualTo(1);
    assertThatThrownBy(()->s.contexto(96001L,esquema)).isInstanceOf(org.springframework.security.access.AccessDeniedException.class);

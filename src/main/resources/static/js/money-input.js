@@ -314,6 +314,17 @@
                 add(cancelar?'Propuesto histórico, no pagado':'Propuesto sin impuestos calculados',money(form.dataset.confirmAmount));
                 add('Motivo',form.querySelector('[name="motivo"]')?.value||'');
                 note.textContent=cancelar?'Cancela sólo el borrador y libera a sus empleados para otra preparación. Conserva todas las revisiones; no cancela pagos ni altera salarios o cuentas.':'Guarda una copia histórica revisable, no una nómina fiscal ni autorizada. No calcula impuestos, prorrateos o préstamos y no ejecuta pagos. Las aportaciones de la escuela no restan al empleado. Cancelar conserva la captura sin guardar.';
+            } else if(['nomina-configurar','nomina-finalizar','nomina-cancelar'].includes(kind)) {
+                const value=n=>form.querySelector('[name="'+n+'"]')?.value?.trim()||'';
+                const date=n=>value(n)?value(n).split('-').reverse().join('/'):'Sin fecha de fin';
+                const configuring=kind==='nomina-configurar';
+                title.textContent=configuring?(value('anteriorId')?'Confirmar nueva vigencia del concepto':'Confirmar concepto de nómina'):kind==='nomina-cancelar'?'Confirmar cancelación de programación':'Confirmar fin de vigencia';
+                cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar';
+                if(configuring){add('Empleado',value('empleadoTexto'));add('Concepto',value('conceptoTexto'));add('Importe de referencia · '+(form.dataset.confirmCurrency||''),money(value('importe')));add('Efecto',form.dataset.confirmEffect||'');
+                    add('Aplicación',value('modalidad')==='UNICA'?'Una sola vez':'Recurrente');add('Frecuencia',value('modalidad')==='UNICA'?'Importe íntegro para el periodo':form.querySelector('[name="frecuenciaImporte"]')?.selectedOptions?.[0]?.textContent||value('frecuenciaImporte'));
+                    if(value('modalidad')==='UNICA')add('Periodo único',value('periodoTexto'));add('Aplicar desde',date('inicio'));add('Último día incluido',date('fin'));
+                }else{add('Concepto',form.dataset.confirmSubject||'');if(kind==='nomina-finalizar')add('Último día que sí se aplica',date('fin'));}
+                add('Motivo',value('motivo'));note.textContent='Sólo configuración: no calcula ni paga nómina y no mueve dinero. Conserva historial; una nueva vigencia no cambia importes anteriores ni nóminas guardadas. Cancelar cierra este resumen sin guardar.';
             } else if(kind==='nomina-calendario'||kind==='nomina-periodo'||kind==='nomina-periodo-cancelar') {
                 const campo=name=>form.querySelector('[name="'+name+'"]');
                 const texto=name=>campo(name)?.value?.trim()||'';
@@ -321,7 +332,7 @@
                 const opcion=name=>campo(name)?.selectedOptions?.[0]?.textContent||({MENSUAL:'Mensual',QUINCENAL:'Quincenal',SEMANAL:'Semanal'}[texto(name)]||texto(name));
                 cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar';
                 if(kind==='nomina-calendario'){
-                    title.textContent='Confirmar calendario de nómina';add('Código',texto('codigo'));add('Nombre',texto('nombre'));add('Frecuencia',opcion('frecuencia'));add('Descripción',texto('descripcion')||'Sin descripción');add('Estado',campo('activo').checked?'Activo':'Inactivo');
+                    title.textContent='Confirmar calendario de nómina';add('Código',texto('codigo'));add('Nombre',texto('nombre'));add('Frecuencia',opcion('frecuencia'));add('Horas semanales',texto('horasSemanales')||'Sin registrar');add('Sueldo mensual',money(texto('sueldoMensual')));add('Descripción',texto('descripcion')||'Sin descripción');add('Estado',campo('activo').checked?'Activo':'Inactivo');
                     note.textContent='Guarda sólo el catálogo. Desactivar no cancela periodos existentes. No asigna empleados ni genera periodos, nóminas o movimientos de dinero. Cancelar conserva la captura sin guardar.';
                 }else if(kind==='nomina-periodo'){
                     title.textContent='Confirmar periodo de nómina';add('Calendario',texto('calendarioTexto'));add('Código',texto('codigo'));add('Nombre',texto('nombre'));add('Días cubiertos',fecha('inicio')+' — '+fecha('fin'));add('Pago previsto',fecha('pago'));add('Fecha límite para recibir incidencias de nómina · Opcional',texto('corte')?fecha('corte'):'Sin definir');add('Motivo',texto('motivo'));
@@ -393,6 +404,14 @@
                     add('Empleado',form.dataset.confirmSubject);add('Inicio programado',form.dataset.confirmStart);add('Sueldo bruto base',money(form.dataset.confirmAmount));add('Motivo',texto('motivo'));
                     note.textContent='Sólo puede cancelarse la última programación que aún no inicia. Se conserva el historial y se restaura la vigencia anterior cuando corresponde. No hay egresos ni devoluciones. Cancelar sólo cierra este resumen sin ejecutar cambios.';
                 }
+            } else if(kind==='puesto-empleado') {
+                const valor=n=>form.querySelector('[name="'+n+'"]')?.value||'';
+                title.textContent='Confirmar asignación de puesto';cancel.textContent='Cancelar';accept.textContent='Confirmar y asignar';
+                add('Empleado',form.dataset.confirmSubject);add('Puesto',valor('puestoTexto'));
+                add('Horas semanales',form.querySelector('[data-puesto-horas]')?.value||'');
+                add('Sueldo mensual',form.querySelector('[data-puesto-sueldo]')?.value||'');
+                add('Aplicar desde',valor('inicio').split('-').reverse().join('/'));add('Motivo',valor('motivo'));
+                note.textContent='Se registra una sola fuente salarial. La asignación anterior termina el día previo sin perder su historial. No se calcula nómina ni se mueve dinero. Cancelar conserva la captura sin guardar.';
             } else if(kind.startsWith('empleado-')) {
                 const titles={'empleado-registro':'Confirmar datos personales','empleado-laboral':'Confirmar información laboral','empleado-plantel':'Confirmar asignación de plantel','empleado-perfil':'Confirmar actividad docente','empleado-vigencia':'Confirmar fin de vigencia'};
                 title.textContent=titles[kind]||'Confirmar operación de personal';cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar';

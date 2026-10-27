@@ -1,4 +1,17 @@
 SISTEMA ADMINISTRATIVO ESCOLAR
+ACTUALIZACION 26/10/2026 — REDISEÑO NOMINA, ENTREGA1 V135:
+PuestoLaboral añade horasSemanales5,2 y sueldoMensual19,2. Nuevos puestos completos,
+legados NULL sin inferencia. Una asignación de puesto usa CondicionSalarial existente
+como fuente salarial: copia código/nombre/horas/importe/moneda/versionPuesto, base y
+frecuencia MENSUAL, vigencia/motivo/actor. No otra fuente de salario en EmpleadoLaboral.
+Cambio cierra anterior día previo, conserva historia y restricciones de rangos/versiones.
+Editar catálogo no cambia asignaciones. Datos laborales confirma ingreso/actividad sin
+exigir texto de puesto; asignación por acción privada del empleado sin recapturar salario.
+Columnas horas_puesto/puesto_version nullable distinguen snapshots nuevos de legados;
+no reescribir revisiones/aplicaciones ni inventar jornada. Carga hasta168 es límite
+técnico, no validación legal. Sin nuevo cálculo proporcional ni pagos multicuenta aún.
+Plan vigente destino: PLAN_REDISENO_NOMINA_20261026.md, entregas2–7 pendientes.
+
 ACTUALIZACION 24/10/2026 — NOMINA INDIVIDUAL V134:
 NominaAutorizacion congela revision/empleados sin dinero. NominaPagoIntento privado,
 solicitud UUID, PAGADO/RECHAZADO/REVERTIDO, egreso unico y un pago vigente por fila.
@@ -1079,3 +1092,26 @@ no duplicar Sueldo en concepto_empleado. No hereda jornada de un esquema al suel
 Bloqueo/versión/revisiones y auditorías originales; no cambiar nóminas históricas al editar.
 Etapa3 conectará calendario y periodo con generador; préstamos/pagos individuales futuros.
 V131 vigente, sin migración en esta entrega. Plan:PLAN_SIMPLIFICACION_NOMINA.md.
+
+ACTUALIZACIÓN V135 — PUESTO CON SUELDO Y ASIGNACIÓN ÚNICA (26/10/2026)
+PuestoLaboral incorpora horas_semanales/sueldo_mensual opcionales juntos para
+compatibilidad; nuevas capturas exigen ambos. CondicionSalarial conserva la fuente
+única salarial y añade fotografía horas_puesto/puesto_version. No reescribe salarios
+al editar el catálogo. Cambiar puesto crea vigencia y cierra anterior el día previo.
+EmpleadoLaboral ACTIVO exige ingreso, no puesto textual. Sin backfill de salarios.
+
+ACTUALIZACIÓN V136 — CONCEPTOS DE NÓMINA EN EMPLEADO (26/10/2026)
+ConceptoEmpleado sigue siendo fuente canónica. modelo LEGADO conserva importe por
+nómina sin frecuencia inferida; modelo V2 añade frecuencia_importe MENSUAL/QUINCENAL/
+SEMANAL y modalidad RECURRENTE, o UNICA con frecuencia UNICA y snapshot de periodo
+(ID/código/inicio/fin/versión). FK institucional y cobertura exacta para únicos.
+Fotografía inmutable y auditoría V123 abarcan campos nuevos. Cambiar importe/frecuencia
+crea vigencia con Aplicar desde, conserva anterior y exige motivo; cancelación futura
+restaura fin anterior, terminación vigente incluye último día y no borra historia.
+No duplica sueldo base ni cuotas Con saldo; bloquea duplicados/traslapes, selecciones
+obsoletas y cruces con la captura ocasional anterior. Nuevos permisos privados
+EMPLEADO_NOMINA_LEER/ADMINISTRAR más paquete laboral/salarial, sin grants automáticos.
+Nuevo motor no habilitado: candidatos con V2 quedan en Revisión ante motor anterior;
+resumen legado sólo suma LEGADO. Sin impuestos, conversiones, consumo de únicos,
+pagos ni movimientos financieros en esta entrega. Rutas previas se conservan para
+compatibilidad; jornadas/plantillas dejan de aparecer bajo Puestos.

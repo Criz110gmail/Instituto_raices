@@ -48,7 +48,7 @@ public class PreparacionNominaService {
  WITH datos AS (
  SELECT e.id,e.codigo,concat_ws(' ',e.nombres,e.primer_apellido,e.segundo_apellido) nombre,e.activo,
  l.situacion,l.fecha_ingreso,l.fecha_baja,sc.n sueldos,sc.sueldo,sc.base,sc.frecuencia,sc.moneda sueldo_moneda,sc.cubre sueldo_cubre,
- ec.calendario_id calendario_asignado,coalesce(pr.reservado,false) prestamo_reservado,
+ ec.calendario_id calendario_asignado,coalesce(pr.reservado,false) prestamo_reservado,coalesce(ce.nueva_configuracion,false) nueva_configuracion,
  coalesce(ce.percepciones,0)+coalesce(oc.percepciones,0) percepciones,coalesce(ce.deducciones,0)+coalesce(oc.deducciones,0)+coalesce(pr.cuotas,0) deducciones,
  coalesce(ce.aportaciones,0)+coalesce(oc.aportaciones,0) aportaciones,coalesce(ce.cubre,true) AND coalesce(oc.cubre,true) AND coalesce(pr.moneda_valida,true) conceptos_cubren,
  EXISTS(SELECT 1 FROM nomina_borrador_empleado ne WHERE ne.empleado_id=e.id AND ne.activo AND ne.borrador_id<>:ignorar AND daterange(ne.fecha_inicio,ne.fecha_fin,'[]') && daterange(:inicio,:fin,'[]')) ocupado,
@@ -59,7 +59,7 @@ public class PreparacionNominaService {
  bool_and(s.fecha_inicio<=:inicio AND (s.fecha_fin IS NULL OR s.fecha_fin>=:fin)) cubre,jsonb_agg(to_jsonb(s) ORDER BY s.id) fuentes
  FROM condicion_salarial s WHERE s.empleado_id=e.id AND s.institucion_id=:institucion AND s.estado='ACTIVA' AND s.fecha_inicio<=:fin AND (s.fecha_fin IS NULL OR s.fecha_fin>=:inicio)) sc ON true
  LEFT JOIN LATERAL (SELECT sum(a.importe) FILTER(WHERE a.naturaleza='PERCEPCION') percepciones,sum(a.importe) FILTER(WHERE a.naturaleza='DEDUCCION') deducciones,sum(a.importe) FILTER(WHERE a.naturaleza='APORTACION_PATRONAL') aportaciones,
- bool_and(a.fecha_inicio<=:inicio AND (a.fecha_fin IS NULL OR a.fecha_fin>=:fin) AND a.moneda=:moneda) cubre,jsonb_agg(to_jsonb(a) ORDER BY a.id) fuentes
+ bool_or(a.modelo='V2') nueva_configuracion,bool_and(a.fecha_inicio<=:inicio AND (a.fecha_fin IS NULL OR a.fecha_fin>=:fin) AND a.moneda=:moneda) cubre,jsonb_agg(to_jsonb(a) ORDER BY a.id) fuentes
  FROM concepto_empleado a WHERE a.empleado_id=e.id AND a.institucion_id=:institucion AND a.estado='ACTIVA' AND a.fecha_inicio<=:fin AND (a.fecha_fin IS NULL OR a.fecha_fin>=:inicio)) ce ON true
  LEFT JOIN LATERAL (SELECT sum(o.importe) FILTER(WHERE o.naturaleza='PERCEPCION') percepciones,
  sum(o.importe) FILTER(WHERE o.naturaleza='DEDUCCION') deducciones,sum(o.importe) FILTER(WHERE o.naturaleza='APORTACION_PATRONAL') aportaciones,
@@ -81,6 +81,7 @@ public class PreparacionNominaService {
  WHEN NOT activo THEN 'NO_INCLUIDO|El expediente del empleado está inactivo.'
  WHEN fecha_ingreso>:fin THEN 'NO_INCLUIDO|El ingreso laboral es posterior al periodo.'
  WHEN fecha_baja<:inicio THEN 'NO_INCLUIDO|La baja laboral es anterior al periodo.'
+ WHEN nueva_configuracion THEN 'REVISION|Configuración por frecuencias del nuevo proceso: el motor proporcional corresponde a la siguiente entrega. No calcular ni pagar con el motor anterior.'
  WHEN calendario_asignado IS NULL THEN 'REVISION|Falta asignar calendario en Configuración de nómina; no se asigna automáticamente.'
  WHEN calendario_asignado<>:calendarioActual THEN 'NO_INCLUIDO|El empleado pertenece a otro calendario de nómina.'
  WHEN :frecuencia<>'MENSUAL' THEN 'NO_INCLUIDO|Frecuencia de calendario no mensual; requiere otra regla.'

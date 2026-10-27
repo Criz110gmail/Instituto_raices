@@ -32,6 +32,10 @@ public class EmpleadoService {
   actor("EMPLEADO_LEER");actor("EMPLEADO_LABORAL_LEER");
   return actor(escritura?"CONDICION_SALARIAL_ADMINISTRAR":"CONDICION_SALARIAL_LEER");
  }
+ public UsuarioPrincipal autorizarNomina(boolean escritura){
+  autorizarSalarios(escritura);
+  return actor(escritura?"EMPLEADO_NOMINA_ADMINISTRAR":"EMPLEADO_NOMINA_LEER");
+ }
  private UsuarioPrincipal actor(String permiso){
   var a=SecurityContextHolder.getContext().getAuthentication();
   if(a==null||!(a.getPrincipal() instanceof UsuarioPrincipal p)||p.usuarioId()==null||p.accesoRecuperacion()||!p.alcanceInstitucional()||!(permitido(permiso)||permiso.endsWith("_LEER")&&permitido(permiso.replace("_LEER","_ADMINISTRAR"))))throw new AccessDeniedException("Sin autorización de personal institucional");
@@ -105,7 +109,7 @@ public class EmpleadoService {
  @Transactional public void guardarLaboral(Long id,LaboralForm f){var e=autorizar(id,true,true);empleados.bloquear(id).orElseThrow();var l=laborales.findByEmpleadoId(id).orElseThrow();ValidacionVersion.verificar(l,f.getVersion(),"Datos laborales");
   String puesto=resolverPuestoLaboral(e,l,f);
   if(f.getFechaIngreso()!=null&&f.getFechaIngreso().isAfter(LocalDate.now(ZoneId.of(e.getInstitucion().getZonaHoraria()))))throw new ReglaNegocioException("La fecha de ingreso no puede ser futura");
-  if(f.getSituacion().equals("ACTIVO")&&(f.getFechaIngreso()==null||f.getPuesto()==null||f.getPuesto().isBlank()))throw new ReglaNegocioException("Para confirmar actividad laboral indica puesto y fecha de ingreso");
+  if(f.getSituacion().equals("ACTIVO")&&f.getFechaIngreso()==null)throw new ReglaNegocioException("Para confirmar actividad laboral indica la fecha de ingreso. El puesto y sueldo se asignan desde Asignar o cambiar puesto.");
   if(f.getSituacion().equals("BAJA")&&(f.getFechaBaja()==null||f.getMotivoBaja()==null||f.getMotivoBaja().isBlank()))throw new ReglaNegocioException("La baja laboral requiere fecha y motivo; no desactiva cuenta ni grupos");
   if(f.getFechaBaja()!=null&&(f.getFechaIngreso()!=null&&f.getFechaBaja().isBefore(f.getFechaIngreso())||f.getFechaBaja().isAfter(LocalDate.now(ZoneId.of(e.getInstitucion().getZonaHoraria())))))throw new ReglaNegocioException("Revisa las fechas de ingreso y baja");
   l.setPuesto(puesto);l.setFechaIngreso(f.getFechaIngreso());l.setSituacion(f.getSituacion());l.setFechaBaja(f.getSituacion().equals("BAJA")?f.getFechaBaja():null);l.setMotivoBaja(f.getSituacion().equals("BAJA")?limpiar(f.getMotivoBaja()):null);laborales.saveAndFlush(l);

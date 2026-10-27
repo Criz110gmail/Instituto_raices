@@ -1,7 +1,43 @@
 # Pagos individuales y recuperación de préstamos — fase 5
 
+> **Retoma26/10/2026:** este ensayo describe V134, no el nuevo diseño aprobado.
+> El usuario pidió documentar [el rediseño](PLAN_REDISENO_NOMINA_20261026.md).
+> No continuar automáticamente estas capturas ni marcar este ensayo como concluido.
+> Confirmó calendario de Bruce y Ana9000/calendario/sin adicionales al15/06/2027;
+> no consta confirmación del resto del caso. Las secciones de inventario inferior
+> corresponden a consultas anteriores, no al estado actual verificado de DB.
+
 24/10/2026. Ejemplo propuesto, pendiente de aceptación humana. No publica todavía
 la guía integrada confirmada ni implica cálculo fiscal, timbrado o dispersión bancaria.
+
+## Retoma verificada en esta computadora — 26/10/2026
+
+La base local estaba en V131 y ya se actualizó a V134 con respaldo, salud UP y huellas
+de datos anteriores idénticas. Aquí BOR-000001 está **Borrador/revisión1**, NO Aplicada.
+Carlos y Ana no existen; sí existe **Bruce Wayne · DOC-PRUEBA-02**, activo, con sueldo
+mensual $12,000 y bono habitual $500 desde enero2027, sin fin y sin calendario asignado.
+NOM-MENSUAL-TEST está activo; sólo hay enero programado y febrero cancelado.
+
+Para adaptar el ejemplo inferior sin duplicar empleados ni alterar enero:
+
+- Usar Bruce donde dice Carlos, conservando su sueldo y bono; asignarle el calendario
+  mensual. Todavía no se ha realizado esa asignación.
+- Crear únicamente a Ana con sueldo $9,000, calendario y datos laborales confirmados.
+  Al abrir Configurar nómina para su primer sueldo se propone el puesto de su
+  expediente si coincide con un único puesto activo de la institución. Verificarlo,
+  activar Registrar o programar un nuevo puesto y sueldo y capturar9000mensual,
+  inicio01/06/2027 sin fin. Asignar NOM-MENSUAL-TEST en Calendario y no agregar
+  conceptos adicionales. Si ya tiene sueldo registrado, consultar al15/06/2027;
+  no volver a registrar. La propuesta no activa ni guarda sueldo por sí sola.
+- Crear un periodo nuevo de junio2027 y una cuenta exclusiva de capacitación con
+  $30,000; no modificar el saldo inicial de las cuentas existentes.
+- Crear el concepto Deducción/Con saldo para préstamo: todavía no existe aquí.
+- Mantener principal3000/cuota500/inicio01/06/2027. Los resultados numéricos del
+  ejemplo no cambian: Bruce12000, Ana9000, total21000.
+
+Todo lo anterior es preparación pendiente del usuario, no registros hechos por el
+agente. Conservar BOR-000001 de enero sin pagar, autorizar, actualizar ni cancelar
+para esta prueba. La aplicación histórica mencionada abajo es de otra computadora.
 
 ## Flujo disponible
 
@@ -58,7 +94,8 @@ Semanal/quincenal/proporcionales y fórmulas legales siguen fuera del cálculo a
 
 ## Ejemplo manual controlado — no tocar la aplicación histórica
 
-No repetir BOR-000001/rev1/APLICADA/$12,500.00/movimiento10 de esta computadora.
+No repetir BOR-000001/rev1/APLICADA/$12,500.00/movimiento10 de la computadora anterior.
+En el equipo verificado26/10 seguir la adaptación anterior: BOR-000001 aquí es Borrador.
 Usar cuentas y empleados exclusivamente de capacitación y datos no confundibles con reales.
 Antes de capturar, comprobar cuáles ya existen y no duplicarlos.
 
