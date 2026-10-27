@@ -10,7 +10,7 @@
   <th:block th:if="${totalesAnteriores!=null}"><h2>Última revisión guardada</h2><div th:replace="~{admin/fragments/nomina-comun :: totales(${totalesAnteriores},${lote.moneda})}"></div><h2>Nueva propuesta</h2></th:block>
   <div th:replace="~{admin/fragments/nomina-comun :: totales(${totales},${lote.moneda})}"></div>
   <div class="nomina-classifications nomina-bulk-counts"><span>Incluidos <strong th:text="${conteos.get('INCLUIDOS')}"></strong></span><span>Elegibles excluidos <strong th:text="${conteos.get('EXCLUIDOS')}"></strong></span><span>Requieren revisión <strong th:text="${conteos.get('REVISION')}"></strong></span><span>No incluidos <strong th:text="${conteos.get('NO_INCLUIDO')}"></strong></span></div>
-  <p class="field-help">Los casos que requieren revisión no se calculan como cero ni se prorratean. Consulta su motivo en la tabla. Esta vista conserva los empleados y configuraciones identificados al prepararla; no agrega personas nuevas silenciosamente.</p>
+  <p class="field-help">Los casos incompatibles requieren revisión: no se pagan como cero ni se inventan importes. Las configuraciones válidas sí se calculan proporcionalmente por días reales. Consulta su motivo en la tabla. Esta vista conserva los empleados y configuraciones identificados al prepararla; no agrega personas nuevas silenciosamente.</p>
   <div th:if="${lote.estado!='ABIERTA'}" class="form-notice">Esta vista ya fue confirmada o descartada. No se puede volver a guardar ni modificar.</div>
   <section class="nomina-bulk-list" aria-labelledby="nomina-bulk-titulo">
    <div class="section-heading"><h2 id="nomina-bulk-titulo">Detalle por empleado</h2><a class="nomina-action" th:href="${consulta.url(filtro,rutaLote+'/excel',0)}">Exportar consulta a Excel</a></div>

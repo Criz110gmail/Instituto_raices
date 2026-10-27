@@ -2,6 +2,15 @@
 
 ### Seguimiento de implementación
 
+27/10/2026: usuario autorizó completar flujo base sin calendarios hasta pago desde
+varias cuentas/cancelación; chequeras y rediseño de préstamos expresamente después.
+V137/V138 desplegadas para el flujo ordinario: periodos independientes, cálculo por prefijos de referencia,
+fuentes por intento y pago directo sin borrador previo del usuario. No declarar todo
+el plan implementado: tratamientos por concepto/pospuestos, contabilidad neto0,
+recibos nuevos y permisos separados conservan pendientes. La conservación de tablas
+legadas no vuelve a exigir calendarios al usuario. Ensayo ordinario propuesto en
+PRUEBA_NOMINA_FLUJO_BASE_20261027.md; aceptación humana todavía pendiente.
+
 Entrega2 autorizada el26/10/2026: configuración por concepto dentro del empleado,
 frecuencias/vigencias, nueva aplicación única y permisos privados. V136 aditiva,
 sin convertir filas legadas ni habilitar cálculo/pagos nuevos. Ensayo humano propuesto

@@ -3,13 +3,13 @@
 <body class="form-page"><main class="form-shell finance-shell nomina-capture">
 <header th:replace="~{admin/fragments/nomina-comun :: barra}"></header>
 <section class="form-card employee-card">
- <div class="form-intro finance-intro"><span>Personal · Preparación de nómina</span><h1>Preparar nómina del periodo</h1><p>Elige el periodo. El sistema revisará los empleados del calendario asignado, sus vigencias y los conceptos de ese periodo antes de guardar.</p></div>
+ <div class="form-intro finance-intro"><span>Personal · Preparación de nómina</span><h1>Preparar nómina del periodo</h1><p>Elige el periodo. El sistema revisará las vigencias de los puestos y conceptos de cada empleado antes de guardar; no necesitas calendario.</p></div>
  <div th:replace="~{admin/fragments/laboral-comun :: avisos}"></div>
  <form class="entity-form" method="post" th:action="@{/admin/preparacion-nomina/preparar-periodo}">
   <th:block th:replace="~{admin/fragments/nomina-comun :: ocultos}"></th:block>
   <fieldset class="form-section"><legend>¿Qué periodo deseas preparar?</legend><div class="form-grid">
    <div class="wide" th:insert="~{admin/fragments/concepto-empleado-comun :: ayuda('periodo','Periodo programado *',${periodoId},${periodoTexto},'/admin/preparacion-nomina/periodos/buscar',true)}"></div>
-   <div class="wide"><small class="field-help">Incluye a todos los elegibles del calendario del periodo, no sólo a los primeros 25. Sin calendario asignado se explica Requiere revisión; no se asigna uno automáticamente. Podrás excluir empleados y consultar el detalle por páginas. Los empleados ya incluidos en otro borrador coincidente no se duplican.</small></div>
+   <div class="wide"><small class="field-help">Incluye a todos los elegibles del periodo, no sólo a los primeros 25. Los cambios de puesto y los conceptos se calculan por sus días de vigencia. Podrás excluir empleados y consultar el detalle por páginas. Los empleados ya incluidos en otro borrador coincidente no se duplican.</small></div>
   </div></fieldset>
   <details class="form-section nomina-options"><summary>Opciones de selección</summary><div class="form-grid"><label class="wide"><span>Empleados que deseas preparar</span><select name="modo"><option value="TODOS">Todos los elegibles del periodo · recomendado</option><option value="INDIVIDUAL">Elegir empleados específicos</option></select><small class="field-help">La selección específica comienza vacía y se conserva al cambiar de página.</small></label></div></details>
   <div class="nomina-preview-notice"><strong>Primero revisas; después confirmas</strong><p>Se creará una vista previa privada. Todavía no se guarda el borrador definitivo, no se autoriza nómina ni se registran pagos o movimientos financieros.</p></div>

@@ -20,7 +20,7 @@ public class NavegacionPersonalConfig implements WebMvcConfigurer, HandlerInterc
   if(!(lista instanceof List<?> enlaces)||!enlaces.stream().allMatch(ModuloCatalogo.class::isInstance))return;
   var autorizados=enlaces.stream().map(ModuloCatalogo.class::cast).toList();
   // Si una lista parcial no contiene al padre, conservar el acceso autorizado original.
-  view.addObject("modulos",autorizados.stream().filter(m->m.menuPersonal()!=ModuloCatalogo.CONFIGURACION_NOMINA).filter(m->m.menuPersonal()==m||!autorizados.contains(m.menuPersonal())).toList());
+  view.addObject("modulos",autorizados.stream().filter(m->m!=ModuloCatalogo.CALENDARIOS_NOMINA).filter(m->m.menuPersonal()!=ModuloCatalogo.CONFIGURACION_NOMINA).filter(m->m.menuPersonal()==m||!autorizados.contains(m.menuPersonal())).toList());
   if(view.getModel().get("moduloActual") instanceof ModuloCatalogo actual){
    view.addObject("moduloPersonalOrigen",actual);
    if(actual.menuPersonal()==ModuloCatalogo.CONFIGURACION_NOMINA&&autorizados.contains(ModuloCatalogo.EMPLEADOS))view.addObject("moduloActual",ModuloCatalogo.EMPLEADOS);

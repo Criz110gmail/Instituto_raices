@@ -13,7 +13,7 @@ for(const tipo of ['nomina-calendario','nomina-periodo','nomina-periodo-cancelar
  vm.runInNewContext(fs.readFileSync('src/main/resources/static/js/money-input.js','utf8'),{document,Intl,WeakMap,WeakSet,setTimeout,MutationObserver:class{observe(){}}});
  emitir();assert.equal(enviados,0);const dialog=body.children.find(e=>e.tag==='dialog'),details=dialog.children[2],actions=dialog.children[4];assert.equal(dialog.open,true);assert.equal(actions.children[0].textContent,'Cancelar');assert.ok(details.children.length>2);
  actions.children[0].fire('click');assert.equal(enviados,0);emitir();dialog.fire('cancel',{preventDefault(){}});assert.equal(enviados,0);emitir();actions.children[1].fire('click');actions.children[1].fire('click');assert.equal(enviados,1);
- if(tipo==='nomina-periodo'){fields.corte.value='';emitir();assert.ok(details.children.some(e=>e.textContent==='Sin definir'));assert.ok(details.children.some(e=>e.textContent==='Fecha límite para recibir incidencias de nómina · Opcional'));actions.children[0].fire('click');assert.equal(enviados,1);}
+ if(tipo==='nomina-periodo'){fields.corte.value='';emitir();assert.ok(details.children.some(e=>e.textContent==='Código'));assert.ok(details.children.some(e=>e.textContent==='Días cubiertos'));assert.ok(!details.children.some(e=>e.textContent==='Calendario'));actions.children[0].fire('click');assert.equal(enviados,1);}
 });
 test('periodo: consulta al seleccionar, ignora respuestas atrasadas y bloquea contexto eliminado',async()=>{
  const form=new E('form'),id=new E(),texto=new E(),version=new E(),boton=new E(),estado=new E(),error=new E(),frecuencia=new E();form.dataset.edicion='false';

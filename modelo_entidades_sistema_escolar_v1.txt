@@ -1115,3 +1115,24 @@ Nuevo motor no habilitado: candidatos con V2 quedan en Revisión ante motor ante
 resumen legado sólo suma LEGADO. Sin impuestos, conversiones, consumo de únicos,
 pagos ni movimientos financieros en esta entrega. Rutas previas se conservan para
 compatibilidad; jornadas/plantillas dejan de aparecer bajo Puestos.
+
+REDISEÑO V137/V138 — FLUJO ORDINARIO SIN CALENDARIOS (27/10/2026)
+PeriodoNomina nuevo no tiene calendario ni frecuencia propios: código, inicio/fin
+inclusivos y pago previsto. Conserva columnas/referencias antiguas sólo para historial.
+No reescribir un periodo utilizado. Sueldos/conceptos se intersecan con ingreso/baja y
+vigencias; referencias mensuales reales, quincenas1–15/16–fin y semanaslunes–domingo.
+Importe de tramo=ROUND(importe*días_acumulados_fin/divisor,2)−ROUND(importe*días_previos/
+divisor,2). Prefijos deterministas sin depender de orden de cálculo/pagos/cancelaciones.
+Conserva referencia original e importe calculado por fuente. LEGADO no se convierte
+silenciosamente por frecuencia inferida; fuera del caso compatible requiere revisión.
+NominaPagoFuente conserva intento,ordinal,cuenta/texto histórico,medio EFECTIVO o
+TRANSFERENCIA,importe y movimiento único. FK diferida para insertar fuentes y pago
+atómicamente; trigger valida total/institución/moneda y conserva fuentes inmutables.
+NominaPagoFuenteReversa liga cada compensación a su movimiento original. Cancelación
+exige recuperación real; exacta por fuente, sin cambios en fotografía. Reintentos,
+versiones, reservas por cobertura, bloqueos y transacción impiden duplicar efectos.
+Pago individual nuevo crea fotografía técnica y paga en una sola operación de usuario,
+sin borrador previo. No mezclar periodos. Cancelados se pagan desde pendiente original,
+no se suman al colectivo. No hay cheque ni integración multicuenta de préstamos todavía.
+No dar por implementados tratamientos No aplicar/Posponer, obligaciones complementarias,
+asientos de neto0, recibos nuevos ni segregación de permisos por esta ampliación.

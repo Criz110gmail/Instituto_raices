@@ -16,9 +16,8 @@
   <p class="personal-navigation-caption">Periodos y frecuencia de pago</p>
   <nav class="personal-section-nav" aria-label="Secciones de periodos de nómina">
    <a href="/admin/periodos-nomina" th:attr="aria-current=${origen.name()=='PERIODOS_NOMINA'?'page':null}"><strong>Periodos de nómina</strong><small>Cobertura y pago previsto</small></a>
-   <a href="/admin/calendarios-nomina" th:attr="aria-current=${origen.name()=='CALENDARIOS_NOMINA'?'page':null}"><strong>Calendarios y frecuencias</strong><small>Organización de periodos</small></a>
   </nav>
-  <p class="field-help">Primero define un calendario y después sus periodos. La organización de fechas no calcula ni aplica pagos.</p>
+  <p class="field-help">Define inicio, fin y pago previsto. Cada concepto del empleado conserva su propia frecuencia; ya no necesitas un calendario.</p>
  </th:block>
 </section>
 </body></html>

@@ -1,0 +1,11 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+for(const kind of ['nomina-multifuente','nomina-cancelar-todos'])test(kind+': resumen por cuenta, Cancelar y confirmación única',()=>{
+ class E{constructor(tag){this.tag=tag;this.children=[];this.listeners={};this.dataset={};}append(...x){this.children.push(...x);}replaceChildren(){this.children=[];}setAttribute(){}hasAttribute(){return false;}focus(){}close(){this.open=false;}showModal(){this.open=true;}addEventListener(n,f){(this.listeners[n]??=[]).push(f);}fire(n,e={}){for(const f of this.listeners[n]||[])f(e);}}
+ const document=new E('document'),body=new E('body');document.body=body;document.readyState='complete';body.classList={add(){},remove(){}};document.querySelectorAll=()=>[];document.createElement=t=>new E(t);
+ const form=new E('form');form.dataset={moneyConfirm:kind,confirmAmount:'1000.00',confirmPeople:'2'};form.reportValidity=()=>true;
+ form.querySelector=()=>({value:'Fondos recuperados de prueba'});form.querySelectorAll=selector=>selector==='.assignment-summary-card'?[{querySelector:s=>({value:s.includes('autocomplete')?'Caja QA':'1000.00'})}]:[];form.closest=()=>({querySelectorAll:()=>[{querySelector:s=>({textContent:s==='dt'?'Caja QA':'$1,000.00'})}]});let enviados=0;
+ const emitir=()=>{const event={target:form,submitter:new E('button'),defaultPrevented:false,preventDefault(){this.defaultPrevented=true;}};document.fire('submit',event);if(!event.defaultPrevented)enviados++;};form.requestSubmit=emitir;
+ vm.runInNewContext(fs.readFileSync('src/main/resources/static/js/money-input.js','utf8'),{document,Intl,WeakMap,WeakSet,setTimeout,MutationObserver:class{observe(){}}});
+ emitir();const dialog=body.children.find(e=>e.tag==='dialog'),details=dialog.children[2],actions=dialog.children[4];assert.equal(enviados,0);assert.equal(dialog.open,true);assert.ok(details.children.some(e=>e.textContent==='Caja QA'));assert.equal(actions.children[0].textContent,'Cancelar');
+ actions.children[0].fire('click');assert.equal(enviados,0);emitir();dialog.fire('cancel',{preventDefault(){}});assert.equal(enviados,0);emitir();actions.children[1].fire('click');actions.children[1].fire('click');assert.equal(enviados,1);
+});

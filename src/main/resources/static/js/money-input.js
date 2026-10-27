@@ -194,6 +194,7 @@
             const form = event.target, kind = form.dataset.moneyConfirm;
             if (!kind || event.defaultPrevented || approved.has(form)) return;
             if(kind==='anticipo-propuesta' && event.submitter?.id!=='anticipation-save')return;
+            if(kind==='nomina-multifuente' && event.submitter?.hasAttribute('formaction'))return;
             event.preventDefault();
             if (!form.reportValidity()) return;
             dialog.setAttribute('data-confirm-kind', kind);
@@ -211,7 +212,22 @@
                 if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
                 if (form.dataset.confirmSubject) add('Titular del pago', form.dataset.confirmSubject);
             }
-            if(kind==='pendiente-guardar'||kind==='pendiente-estado') {
+            if(kind==='nomina-cancelar-todos') {
+                title.textContent='Confirmar cancelación de los pagos';cancel.textContent='Cancelar';accept.textContent='Confirmar cancelación completa';
+                add('Empleados',form.dataset.confirmPeople);add('Total recuperado',money(form.dataset.confirmAmount));
+                form.closest('section').querySelectorAll('[data-cancel-source]').forEach(row=>add(row.querySelector('dt').textContent,row.querySelector('dd').textContent));
+                add('Justificación',form.querySelector('[name="motivo"]').value);
+                note.textContent='Devuelve cada importe a su cuenta original y conserva el historial. Confirma únicamente si los fondos se recuperaron realmente. Los empleados quedarán pendientes para pago individual de este mismo periodo. Cancelar cierra el resumen sin registrar cambios.';
+            } else if(kind==='nomina-multifuente') {
+                title.textContent='Confirmar pago de nómina';cancel.textContent='Cancelar';accept.textContent='Confirmar y registrar pagos';
+                add('Empleados',form.dataset.confirmPeople);add('Total a pagar',money(form.dataset.confirmAmount));
+                form.querySelectorAll('.assignment-summary-card').forEach(row=>{
+                    const cuenta=row.querySelector('.autocomplete-input')?.value;
+                    const monto=row.querySelector('input[name$=".importe"]')?.value;
+                    if(cuenta&&monto)add(cuenta,money(monto));
+                });
+                note.textContent='Se registrarán salidas reales en las cuentas indicadas y se conservará su distribución por empleado. No envía transferencias al banco. Cancelar cierra este resumen sin mover dinero.';
+            } else if(kind==='pendiente-guardar'||kind==='pendiente-estado') {
                 cancel.textContent='Cancelar';accept.textContent=kind==='pendiente-guardar'?'Confirmar y guardar pendiente':'Confirmar cambio de estado';
                 title.textContent=kind==='pendiente-guardar'?'Confirmar mi pendiente':'Confirmar seguimiento';
                 const campo=name=>form.querySelector('[name="'+name+'"]');
@@ -335,7 +351,7 @@
                     title.textContent='Confirmar calendario de nómina';add('Código',texto('codigo'));add('Nombre',texto('nombre'));add('Frecuencia',opcion('frecuencia'));add('Horas semanales',texto('horasSemanales')||'Sin registrar');add('Sueldo mensual',money(texto('sueldoMensual')));add('Descripción',texto('descripcion')||'Sin descripción');add('Estado',campo('activo').checked?'Activo':'Inactivo');
                     note.textContent='Guarda sólo el catálogo. Desactivar no cancela periodos existentes. No asigna empleados ni genera periodos, nóminas o movimientos de dinero. Cancelar conserva la captura sin guardar.';
                 }else if(kind==='nomina-periodo'){
-                    title.textContent='Confirmar periodo de nómina';add('Calendario',texto('calendarioTexto'));add('Código',texto('codigo'));add('Nombre',texto('nombre'));add('Días cubiertos',fecha('inicio')+' — '+fecha('fin'));add('Pago previsto',fecha('pago'));add('Fecha límite para recibir incidencias de nómina · Opcional',texto('corte')?fecha('corte'):'Sin definir');add('Motivo',texto('motivo'));
+                    title.textContent='Confirmar periodo de nómina';add('Código',texto('codigo'));add('Días cubiertos',fecha('inicio')+' — '+fecha('fin'));add('Pago previsto',fecha('pago'));
                     note.textContent='Sólo programa fechas. No selecciona empleados ni calcula sueldos, impuestos o pagos. Los casos parciales tendrán revisión explícita al preparar nómina. Cancelar conserva la captura sin guardar.';
                 }else{
                     title.textContent='Confirmar cancelación del periodo';accept.textContent='Confirmar cancelación';add('Periodo',form.dataset.confirmSubject);add('Calendario histórico',form.dataset.confirmCalendar);add('Días cubiertos',form.dataset.confirmStart+' — '+form.dataset.confirmEnd);add('Motivo',texto('motivo'));

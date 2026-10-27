@@ -113,3 +113,7 @@
 .conceptos-periodo .panel-actions .new-button{color:var(--ink)}
 .prestamo-captura fieldset > .field-help{display:block;margin:14px 0 0;line-height:1.65}
 .prestamo-captura textarea,.prestamo-detail textarea{font:inherit;line-height:1.5}
+/* Pago multicuenta: misma paleta del sistema, total alineado y fuentes separadas. */
+.nomina-multiple .nomina-totales { grid-template-columns:minmax(0,1fr); margin:20px 0; }
+.nomina-multiple .assignment-summary-card + .assignment-summary-card { margin-top:16px; }
+.nomina-multiple .form-section { min-width:0; }

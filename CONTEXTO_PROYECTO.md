@@ -1,5 +1,33 @@
 # Contexto del proyecto
 
+## Nómina ordinaria sin calendarios — V137/V138, 27/10/2026
+
+Usuario autorizó flujo base hasta pago multicuenta/cancelación y dejó cheques y
+rediseño de préstamos para después. Confirmó capturas recurrentes de Diana; julio
+no existía. Se conservan sin reescribir las tablas/referencias de calendarios legadas,
+pero las altas nuevas sólo capturan código/inicio/fin/pago previsto.
+
+Motor proporcional por días reales, vigencias de sueldo/conceptos e ingreso/baja;
+prefijos HALF_UP por referencia permiten calcular fuera de orden sin perder centavos.
+Sin puesto y con conceptos se calcula con advertencia. Conceptos LEGADO conservan
+su interpretación compatible; no inferirles una frecuencia. Borrador conserva fotos.
+Pago colectivo/individual multicuenta guarda cada fuente/empleado y sus movimientos;
+cancelación recuperada devuelve exactamente a orígenes. Pago directo no requiere que
+el usuario cree borrador: fotografía técnica y pago son una sola transacción.
+
+Despliegue sólo app/UP, esquema138. Package1019Java,134JS; IT PG17 aislada adicional
+verificó2empleados/uno sin sueldo, fallo segunda fuente, dobleconfirmación, cancelación
+individual/completa y fallo segundoempleado con rollback total. Capturas/saldos
+operativos intactos por huellas de5tablas,46movimientos. Respaldo e imagen anterior
+privados en AGENT.md. Sin .env, grants, commit ni push. Ensayo propuesto en
+PRUEBA_NOMINA_FLUJO_BASE_20261027.md; ninguna confirmación humana del flujo nuevo aún.
+
+Entrega PARCIAL respecto al plan completo: No aplicar/Posponer por concepto y sus
+obligaciones, contabilidad real de neto0, recibos nuevos y permisos separados siguen
+pendientes. No declarar cerrada la implementación integral. Casos neto0 y cuotas de
+préstamos multicuenta bloqueados expresamente, sin egresos ficticios. Guía integrada
+se actualiza después de confirmar el ensayo, no por aprobar pruebas automatizadas.
+
 ## Privacidad aislada confirmada por el usuario — 27/10/2026
 
 Con Empleados + Laboral y sin Salarios, **prueba** ve Datos laborales/Planteles pero

@@ -1,5 +1,74 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Despliegue parcial del flujo ordinario V137/V138 — 27/10/2026
+
+Estado más reciente, supera “en desarrollo/no desplegado” de la nota siguiente:
+V137/V138 desplegadas sólo en app, saludUP18080. Periodos nuevos sin calendario,
+motor proporcional por días/prefijos, borrador, pago ordinario colectivo/individual
+multicuenta, individual sin borrador previo del usuario y cancelación individual o
+completa con fuentes exactas. No declarar TODO el rediseño terminado: faltan
+tratamientos No aplicar/Posponer por concepto y obligaciones complementarias,
+liquidación neto0 con contrapartida contable, recibos nuevos y permisos segregados.
+Chequeras/préstamos expresamente para después. Los casos no soportados se bloquean,
+no se inventan egresos0 ni recuperaciones de préstamos desde multicuenta.
+
+Package integrado1019pruebas Java(1018generales+1IT PG17),134JS. IT ampliada después
+pasó también colectivo2empleados/uno sin sueldo y rollback de cancelación del segundo
+empleado; /tmp/nexo-flujo-dos-empleados-it.log. VisualQA20combinaciones1440/390 y
+claro/oscuro, sin overflow ni erroresJS (log /tmp/nexo-flujo-visual-final.log).
+QA temporal/tmpfs y Dockerfile temporal retirados; PostgreSQL operativo intacto.
+Respaldo validado .respaldos-locales/flujo-nomina-v137.DTjlKn/antes.dump,
+imagen anterior nexo-pre-flujo-v138:20261027. Huellas de movimientos/cuentas/conceptos/
+borradores/salarios idénticas antes/después;46movimientos,3cuentas,6conceptos_empleado,
+1borrador,8salarios. Nuevas tablas de fuentes operativas vacías; no pagos por herramientas.
+No .env, cambios de roles, commit/push ni alteración de contenedores ajenos.
+
+Ensayo siguiente PRUEBA_NOMINA_FLUJO_BASE_20261027.md: retomar creando julio SIN
+calendario y único250para Diana; NO repetir sus recurrentes ya capturados. Julio:
+14000sueldo+80transporte+300quincenal+250único−442.85semanal=14187.15.
+Usar selección específica y sólo Diana para no pagar otros empleados de ensayo.
+Fuentes propuestas banco10000/caja4187.15; consulta real antes de ensayo:
+BBVA_COBROS33330,CAJA16950. No consta aceptación humana del nuevo flujo; no publicarlo
+en guía confirmada todavía. El manual antiguo entrega2 remite al nuevo ensayo.
+
+## Trabajo en curso: flujo base sin calendarios — 27/10/2026
+
+Usuario confirmó entrega2 pasos1–5 (Diana: transporte50hasta30/06,80desde01/07;
+deducción100semanal; percepción150quincenal). Se detuvo antes de crear julio porque
+el formulario todavía pedía calendario. Autorizó completar flujo base hasta pago
+multicuenta/cancelación; chequeras y rediseño de préstamos DESPUÉS. También autoriza
+retirar tablas de calendario si es necesario, pero se conservan referencias legadas
+para no destruir revisiones. No marcar estas funciones como aceptadas manualmente.
+
+EN DESARROLLO, NO DESPLEGADO: V137 periodos nuevos sin calendario y motor por días
+con prefijos HALF_UP deterministas; V138 fuentes exactas por pago/empleado, egresos
+multicuenta y compensaciones. Servicios nuevos PagoMultipleNominaService y formulario,
+PagoIndividualNominaController permite confirmar pago sin borrador previo del usuario:
+crea fotografía técnica y paga atómicamente. Falta cerrar QA/alcance antes de declarar
+terminado el flujo. No habilitar netos0 fingiendo un egreso ni cuotas de préstamos
+multicuenta: bloqueados por depender de contabilidad/entrega posterior. Excepciones por
+concepto/obligaciones pospuestas y recibos nuevos NO se declaran implementados.
+
+Base operativa SIGUE V136,46movimientos. Respaldo validado privado:
+.respaldos-locales/flujo-nomina-v137.DTjlKn/antes.dump. No se leyó .env. Sólo cambios
+locales de código, no commit/push ni migración operativa todavía. Contenedor QA temporal
+aislado nexo-flujo-nomina-qa (Postgres17 tmpfs), DB EXACTA nexo_flujo_nomina_qa;
+no tocar chatgpt_proyectos-postgres-1 con dropdb/reset. QA explícita:
+QA_FLUJO_NOMINA_JDBC=jdbc:postgresql://127.0.0.1:5432/nexo_flujo_nomina_qa.
+NominaProporcionalPostgresIT pasó motor+fuentes+fallo forzado segunda fuente/rollback+
+cancelación exacta+directo sin borrador+duplicado; último log /tmp/nexo-flujo-directo-it.log.
+Se agregaron después cancelación completa/UI y faltan repetir. Suite general:
+1018 pruebas,1fallo de contrato antiguo que exigía calendario (NominaEtapaTresTest);
+ya adaptado a motor nuevo, falta repetir paquete. Últimos cambios NO package verificado.
+
+Precaución: al generar parches con Node, usar SIEMPRE replace(patron,()=>texto) si hay
+expresiones Thymeleaf con dólar/comilla. Se corrigieron duplicaciones accidentales en
+nomina-pago-multiple.html y nomina-pago-empleado.html; repetir render/QA visual antes de
+entregar. MockMvc limpia SecurityContext; IT lo restaura antes de llamadas a servicios.
+No afirmar que la nueva aplicación ya corre: seguir pruebas, backup/huellas/despliegue
+sólo app cuando esté seguro, y escribir manual actualizado retomando paso6 sin duplicar
+los pasos1–5. Chequeras/préstamos quedan pendientes explícitos, no incluidos por inferencia.
+
 ## Privacidad salarial aprobada; siguiente ensayo entrega2 — 27/10/2026
 
 Usuario **prueba** con Empleados + Datos laborales y sin Salarios confirmó menú

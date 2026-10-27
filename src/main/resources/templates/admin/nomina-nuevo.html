@@ -5,7 +5,7 @@
 <main class="form-shell finance-shell nomina-capture">
   <header th:replace="~{admin/fragments/nomina-comun :: barra}"></header>
   <section class="form-card employee-card">
-    <div class="form-intro finance-intro"><span>Personal · Preparación de nómina</span><h1>Nuevo borrador mensual</h1><p>Consulta el periodo, selecciona empleados y revisa los importes antes de guardar. No se realizan pagos.</p></div>
+    <div class="form-intro finance-intro"><span>Personal · Preparación de nómina</span><h1>Nuevo borrador de nómina</h1><p>Consulta el periodo, selecciona empleados y revisa los importes antes de guardar. No se realizan pagos.</p></div>
     <div th:replace="~{admin/fragments/laboral-comun :: avisos}"></div>
     <form class="entity-form nomina-query" method="get" action="/admin/preparacion-nomina/seleccion-manual">
       <th:block th:replace="~{admin/fragments/nomina-comun :: ocultos}"></th:block>
@@ -17,7 +17,7 @@
           <label><span>Búsqueda adicional del empleado</span><input name="buscar" th:value="${consultaCandidatos.q}" placeholder="Código, nombre o apellido"></label>
           <label><span>Clasificación</span><select name="grupo"><option value="LISTO" th:selected="${grupo=='LISTO'}">Listos para preparar</option><option value="REVISION" th:selected="${grupo=='REVISION'}">Requieren revisión</option><option value="NO_INCLUIDO" th:selected="${grupo=='NO_INCLUIDO'}">No incluidos</option></select></label>
           <label><span>Empleados por página</span><select name="tamanioCandidatos"><option th:each="n:${ {10,25,50,100} }" th:value="${n}" th:selected="${n==consultaCandidatos.tamanio}" th:text="${n}"></option></select></label>
-          <div class="wide"><small class="field-help">Sólo mensual completo, con sueldo base mensual y frecuencia mensual vigentes durante todo el periodo. Los casos parciales requieren revisión, sin prorrateo.</small></div>
+          <div class="wide"><small class="field-help">El sueldo mensual y los conceptos se calculan por sus vigencias y días de referencia, incluso cuando el puesto cambia durante el periodo.</small></div>
         </div>
       </fieldset>
       <footer class="form-actions"><button type="submit">Consultar empleados</button></footer>

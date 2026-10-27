@@ -3,22 +3,19 @@
 26/10/2026. **Pendiente de aceptación humana.** No genera nómina ni movimientos
 financieros. No continuar el ejemplo antiguo de calendarios/configuración integrada.
 
-## Antes de empezar mañana
+## Antes de empezar
 
 Esta computadora tiene a Diana (empleado6) y dos asignaciones confirmadas:
 APOYO_TECNICO_40,10000,01–15/06/2027; APOYO_TECNICO_48,14000,desde16/06/2027.
 No volver a crearlas, no cambiar sus salarios para este ensayo. En otra computadora
 verificar primero los datos locales. No usar nombres como clave de identidad.
 
-Tres bloques de entrega1 quedan expresamente pendientes para **27/10/2026**:
-
-1. Asignación antes del ingreso o de hoy: rechazar sin guardar.
-2. Dos pestañas asignando puesto desde la misma revisión: sólo una debe guardar;
-   no confundir con las pruebas ya aprobadas de edición del catálogo y selección
-   obsoleta. Realizar con empleado de ensayo y vigencias planificadas, no alterar
-   el resultado de Diana sin definir previamente el nuevo resultado esperado.
-3. Permisos salariales: sólo consulta frente a administración y cuenta sin salario,
-   incluidas URL directa y Excel. No quitar permisos a cuentas reales de operación.
+Actualización27/10/2026: el usuario terminó los casos manuales viables de entrega1:
+selector de fechas, concurrencia de asignación con Elena, acceso salarial autorizado
+y privacidad con Laboral permitido/Salarios omitido, incluida URL/Excel. No repetir.
+La separación sólo consulta/administración sigue pendiente: la interfaz actual
+concede paquetes completos por módulo. No atribuir al usuario un POST de fecha
+inválida forzado; esa validación de servidor tiene cobertura automatizada.
 
 Las pruebas ya confirmadas no se vuelven a marcar pendientes: historial y Excel,
 consulta por fecha, bloqueo de asignación intermedia, puesto inactivo, código
@@ -30,9 +27,10 @@ crear otra asignación y conservar ambas originales.
 
 En **Administración → Seguridad y soporte → Roles y permisos**, editar el rol
 administrativo autorizado. Ubicar **Empleados — Configuración de nómina**.
-Marcar Consultar/Administrar conforme a la función del usuario; revisar y confirmar
-el modal. Mantener los permisos existentes de Empleados, Datos laborales y Puestos
-y condiciones salariales, necesarios para consultar datos privados.
+Activar su casilla de módulo, revisar y confirmar el modal. Mantener Empleados,
+Datos laborales y Puestos y condiciones salariales. En este ensayo usar el rol
+QA_SALARIOS_CONSULTA del usuario **pruebas**, con s; pese al nombre no es sólo
+lectura. No modificar PRUEBA_PERSONAL_BASE del usuario **prueba**, sin s.
 
 La migración no concede estos permisos a ningún rol. Cerrar sesión y entrar de
 nuevo tras modificar el rol para renovar las autoridades. No usar recuperación,
@@ -60,6 +58,7 @@ crear. Usar Nuevo registro, guardar con revisión/modal y regresar al listado.
 |---|---|---|---|
 | TRANS-RED-TEST | Transporte de prueba de rediseño | Percepción | Habitual |
 | DED-RED-TEST | Deducción semanal de prueba | Deducción | Habitual |
+| QUIN-RED-TEST | Apoyo quincenal de prueba | Percepción | Habitual |
 | EXTRA-RED-TEST | Apoyo extraordinario de prueba | Percepción | Ocasional |
 
 Descripción: `Concepto de ensayo de configuración; sin cálculo fiscal automático.`
@@ -112,19 +111,23 @@ recurrente, **Una semana**, inicio01/06/2027, sin fin y motivo:
 Revisar modal y confirmar. Debe verse100/ Semanal. No sumar50mensuales y100semanales
 como si fueran una misma frecuencia; el neto y las conversiones serán entrega3.
 
+Después agregar **QUIN-RED-TEST**, importe150, recurrente, **Una quincena**,
+inicio01/06/2027,sin fin,motivo `Apoyo quincenal fijo de prueba desde junio2027.`
+Revisar y confirmar. Debe verse150/Quincenal. Así se prueban las tres frecuencias,
+sin calcular todavía un neto ni asumir mensual/2 o mensual/4.
+
 ## 7. Concepto de una sola vez
 
 Se necesita un periodo programado que comience después del ingreso de Diana.
 Si ya existe uno julio2027, comprobar fechas y reutilizarlo. Si no existe:
 
 1. **Personal y nómina → Periodos de nómina → Nuevo periodo**.
-2. Durante esta transición el formulario anterior aún requiere calendario:
-   NOM-MENSUAL-TEST (verificar activo). Esto se elimina en entrega3, no se asigna
-   calendario al empleado para configurar sus conceptos nuevos.
-3. Código JUL-2027-RED-TEST, nombre Julio2027 prueba rediseño, inicio01/07/2027,
-   fin31/07/2027, pago previsto31/07/2027, incidencias sin definir, motivo de prueba.
-4. Revisar y confirmar. Si informa traslape, no crear otro calendario para eludirlo:
-   reutilizar el periodo programado que cubra esas fechas.
+2. El nuevo formulario ya no solicita calendario. Captura únicamente código,
+   inicio, fin y pago previsto.
+3. Código JUL-2027-RED-TEST, inicio01/07/2027, fin31/07/2027 y pago31/07/2027.
+4. Revisar y confirmar. Si ya existe esa cobertura, reutilizar el periodo. No crear
+   calendarios para eludir validaciones. Para continuar hasta el pago ordinario,
+   seguir `PRUEBA_NOMINA_FLUJO_BASE_20261027.md`; el cálculo nuevo se valida allí.
 
 En **Empleados → Diana → Configuración de nómina → Agregar concepto**:
 EXTRA-RED-TEST, importe250, **Una sola vez, en un periodo**. Se oculta frecuencia
@@ -143,6 +146,7 @@ con el motor posterior; esta etapa sólo guarda la configuración.
    importes50/80, frecuencia, fechas, estado y motivos; no incluir deducción/extra.
 5. Abrir Ver y Volver a configuración: conservar filtros y página.
 6. Limpiar; filtrar Semanal: sólo deducción100; Una sola vez: sólo extra250.
+   Quincenal: sólo apoyo150.
 7. Rango Desde posterior a Hasta: error claro, sin consulta engañosa.
 8. Si hay conceptos legados, se muestran como **Por nómina · anterior**, no mensual
    inferido. Para convertir uno, programar cambio con nueva frecuencia y fecha
@@ -167,9 +171,10 @@ Los conceptos únicos conservan su cobertura; no se recorta arbitrariamente el p
 
 ## 10. Seguridad y diseño
 
-- Sin permisos de Configuración de nómina: no pestaña; URL, contexto y Excel no
-  autorizados, aunque tenga acceso a datos personales. Sólo consulta: no Agregar,
-  cambios, terminación o cancelación, incluidas URL/POST directos.
+- Sin el módulo Configuración de nómina: no pestaña; URL, contexto y Excel no
+  autorizados, aunque tenga acceso a datos personales. La prueba manual de sólo
+  lectura queda fuera: los roles de interfaz conceden paquetes completos. No
+  prometer que el nombre QA_SALARIOS_CONSULTA impida administrar.
 - No permitir concepto Sueldo base ni préstamo Con saldo como concepto adicional.
 - Rechazar importe0/negativo/decimales extra, fechas inválidas, duplicados y versiones
   obsoletas. El catálogo no cambia el tipo/nombre histórico de una fila guardada.

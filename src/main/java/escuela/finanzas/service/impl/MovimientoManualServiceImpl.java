@@ -87,7 +87,7 @@ public class MovimientoManualServiceImpl implements MovimientoManualService {
         var a=SecurityContextHolder.getContext().getAuthentication();
         for(String permiso:reversa?java.util.List.of("CONDICION_SALARIAL_ADMINISTRAR","MOVIMIENTO_FINANCIERO_REGISTRAR","MOVIMIENTO_FINANCIERO_REVERTIR"):java.util.List.of("CONDICION_SALARIAL_ADMINISTRAR","MOVIMIENTO_FINANCIERO_REGISTRAR"))
             if(a==null||a.getAuthorities().stream().noneMatch(p->p.getAuthority().equals(permiso)))throw new AccessDeniedException("Falta autorización salarial/financiera para esta operación");
-        if(r.direccion()!=(reversa?DireccionMovimiento.INGRESO:DireccionMovimiento.EGRESO)||r.claveIdempotencia()==null||!r.claveIdempotencia().matches((reversa?"NOMINA-REV:":"NOMINA-EMP:")+"[0-9]+"))throw new ReglaNegocioException("Movimiento de nómina individual no identificable");
+        if(r.direccion()!=(reversa?DireccionMovimiento.INGRESO:DireccionMovimiento.EGRESO)||r.claveIdempotencia()==null||!r.claveIdempotencia().matches((reversa?"NOMINA-REV:":"NOMINA-EMP:")+"[0-9]+(?::[0-9]+)?"))throw new ReglaNegocioException("Movimiento de nómina individual no identificable");
     }
 
     private MovimientoFinancieroResponse registrar(MovimientoManualRequest request,ClaseMovimiento clase) {
