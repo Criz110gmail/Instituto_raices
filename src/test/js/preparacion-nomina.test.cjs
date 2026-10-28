@@ -23,8 +23,17 @@ for(const modo of ['guardar','actualizar','cancelar'])test('borrador: modal '+mo
 test('selección de página: marcar/desmarcar, contador y bloqueo vacío sin guardar',()=>{
  const form=new E(),status=new E(),error=new E(),checks=[new E(),new E()],todos=new E(),ninguno=new E();todos.dataset.nominaSelect='todos';ninguno.dataset.nominaSelect='ninguno';
  form.querySelector=s=>s.includes('status')?status:error;form.querySelectorAll=s=>s.startsWith('input')?checks:[todos,ninguno];
- vm.runInNewContext(fs.readFileSync('src/main/resources/static/js/preparacion-nomina.js','utf8'),{document:{querySelector:()=>form}});
+ vm.runInNewContext(fs.readFileSync('src/main/resources/static/js/preparacion-nomina.js','utf8'),{document:{querySelector:()=>form,querySelectorAll:()=>[]}});
  let prevenido=false;form.fire('submit',{preventDefault(){prevenido=true;}});assert.equal(prevenido,true);assert.equal(error.hidden,false);assert.equal(error.scrolled,true);
  todos.fire('click');assert.equal(checks.filter(e=>e.checked).length,2);assert.match(status.textContent,/2 empleados/);assert.equal(error.hidden,true);
  prevenido=false;form.fire('submit',{preventDefault(){prevenido=true;}});assert.equal(prevenido,false);ninguno.fire('click');assert.match(status.textContent,/0 empleados/);checks[1].checked=true;checks[1].fire('change');assert.match(status.textContent,/1 empleados/);
+});
+test('fuentes: medio automático informativo según cuenta, y se limpia al quitar selección',()=>{
+ const fuente=new E(),medio=new E(),cuenta=new E();medio.value='EFECTIVO';
+ fuente.querySelector=s=>s==='.nomina-source-medium'?medio:cuenta;
+ vm.runInNewContext(fs.readFileSync('src/main/resources/static/js/preparacion-nomina.js','utf8'),{document:{querySelector:()=>null,querySelectorAll:()=>[fuente]}});
+ assert.equal(medio.value,'Efectivo');
+ cuenta.value='1';cuenta.dataset.detalle='BANCO';cuenta.fire('change',{target:cuenta});assert.equal(medio.value,'Transferencia');
+ cuenta.dataset.detalle='CAJA';cuenta.fire('change',{target:cuenta});assert.equal(medio.value,'Efectivo');
+ cuenta.value='';cuenta.fire('change',{target:cuenta});assert.equal(medio.value,'');
 });

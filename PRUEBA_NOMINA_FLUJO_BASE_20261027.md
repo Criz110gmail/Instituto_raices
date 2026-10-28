@@ -3,6 +3,39 @@
 Estado: **propuesto; pendiente de confirmación manual del usuario**. No repetir las
 capturas ya aprobadas. Este ensayo no implica timbrado ni dispersión bancaria real.
 
+## Retoma actual — paso5, 28/10/2026
+
+El usuario ya avanzó a **Autorización y pagos por empleado**. Verificado:
+**BOR-000002 · JUL-2027-RED-TEST · Borrador · 1 empleado (Diana) · $14,187.15**.
+No repetir preparación, Incluir ni guardar otro borrador. El apartado histórico
+siguiente describe el punto anterior. Continuar directamente en **5. Revisar fuentes
+y registrar el pago**, desde Preparar pago colectivo. Usar banco10,000/caja4,187.15,
+agregando la segunda cuenta; todavía no consta pago confirmado. BOR-000001 de enero intacto.
+
+## Punto exacto para retomar mañana — confirmado el 27/10/2026
+
+Ya existe julio `JUL-2027-RED-TEST` y Diana tiene el concepto único EXTRA250 asignado.
+No repetir los apartados 2–3. El usuario llegó a la vista previa, filtró a Diana y
+confirmó **14,000 + 630 − 442.85 = $14,187.15**. Su fila decía **No incluido**.
+Todavía no confirmó Incluir, guardar borrador, aplicar ni pagar esta nómina.
+
+1. Iniciar sesión con el administrador persistido, no el usuario restringido `prueba`.
+2. Entrar a **Personal y nómina → Nóminas** y comprobar primero si ya existe un
+   borrador de julio con Diana. Si existe, abrirlo y revisar; no crear otro.
+3. Si no existe, **Nuevo borrador → Periodo JUL-2027-RED-TEST → Opciones de selección
+   → Elegir empleados específicos → Preparar nómina del periodo**.
+   La vista previa anterior puede haber caducado; no reutilizar a ciegas su URL UUID.
+4. En el filtro Empleado seleccionar a Diana. Filtrar no la incluye automáticamente.
+5. Pulsar **Incluir** en su fila. Comprobar **1 empleado y $14,187.15** globales;
+   sueldo14,000, percepciones630, deducciones442.85. Los demás no deben estar incluidos.
+6. Guardar el borrador siguiendo los pasos restantes del apartado 4, probar Cancelar
+   en su confirmación y confirmar después. Guardar no mueve dinero.
+7. Seguir apartados 5 en adelante para revisar fuentes/pago/cancelación. Anotar saldos
+   actuales de cuentas antes de pagar: los saldos viejos escritos aquí no son garantía.
+8. **No aplicar tratamientos a este ensayo de julio**: su referencia permanece en
+   $14,187.15. Las nuevas decisiones se prueban aparte con
+   `PRUEBA_TRATAMIENTOS_NOMINA_20261027.md` después de cerrar este caso ordinario.
+
 ## Alcance y límites de esta entrega
 
 Periodos independientes, cálculo proporcional, fotografía del borrador, pago ordinario
@@ -112,13 +145,20 @@ no exige pagarlo ni mezclarlo con julio.
    Ambos, categoría Personal, activo. Reutilizarlo si ya existe.
 4. Volver a **Nóminas → Ver** del borrador → **Pagos por empleado** y pulsar
    **Preparar pago colectivo**. No hace falta una autorización previa separada.
-5. Completar fuentes:
+5. Se muestra **una sola fuente**. Al enfocar **Cuenta de origen** aparecen hasta diez
+   cuentas activas de la institución (incluidas las vinculadas a planteles); al escribir
+   tres caracteres se filtran las sugerencias. Completar la primera fuente y pulsar
+   **Agregar otra cuenta** para capturar la segunda. Si sobra una fuente, pulsar
+   **Quitar cuenta** en su tarjeta: conserva las demás y exige revisar de nuevo. Siempre
+   debe quedar al menos una fuente. Completar así:
 
-| Fuente | Cuenta | Medio | Importe |
+El **Medio de pago · automático** es informativo y está bloqueado: no se captura.
+Al elegir caja muestra Efectivo y al elegir banco muestra Transferencia.
+
+| Fuente | Cuenta | Medio automático (no editar) | Importe |
 |---|---|---|---:|
 | 1 | BBVA_COBROS | Transferencia · banco | $10,000.00 |
 | 2 | CAJA | Efectivo · caja | $4,187.15 |
-| 3 | Vacía | No se utiliza | Vacío |
 
 6. Seleccionar el motivo financiero anterior. Referencia `NOM-RED-JUL-2027`.
    Motivo: `Pago íntegro de Diana para julio2027 desde banco y caja.`
@@ -135,6 +175,59 @@ no exige pagarlo ni mezclarlo con julio.
 
 Si una cuenta no alcanza, el mensaje indica disponible, solicitado y faltante;
 ninguna cuenta cambia. No compensar el faltante automáticamente con otra fuente.
+
+### Navegación de Autorización y pagos por empleado
+
+La pantalla se organiza en pestañas, con el mismo diseño del sistema:
+
+- **Resumen:** empleados pagados, importe pagado y pendiente global. Antes de pagar,
+  aquí aparece **Preparar pago colectivo**; después ya no se ofrece si no corresponde.
+- **Pagos por empleado:** enfocar **Buscar empleado** para ver hasta diez empleados
+  incluidos en esa nómina; escribir `Dia` para buscar desde tres caracteres y seleccionar
+  la sugerencia de Diana. Elegir **Pagado**, pulsar **Aplicar filtros** y después
+  **Ver pago e intentos → Historial de intentos** para comprobar las dos cuentas.
+  Si sólo está Diana, la ayuda sólo muestra a Diana, no todo el catálogo de empleados.
+  Excel respeta la selección por identificador y el estado. Al volver del detalle se
+  conservan selección, filtros y pestaña. Quitar la selección con × permite buscar a
+  otro empleado; **Limpiar** quita los filtros. También se admite texto sin seleccionar.
+- **Decisiones y pendientes:** consultar conceptos pospuestos y decisiones de esta
+  revisión. No hace falta confirmar decisiones nuevamente para este caso ya pagado.
+- **Cancelación de pagos:** sólo aparece con permisos de cancelación y pagos vigentes.
+  No ejecutarla mientras estés comprobando el resultado; corresponde al ensayo siguiente.
+
+Cambiar pestañas no guarda datos ni realiza movimientos financieros.
+
+### Simular el importe a pagar desde el expediente del empleado
+
+1. Entra a **Personal y nómina → Empleados**.
+2. Busca **Diana Prueba Puestos** y abre su expediente.
+3. Pulsa **Configuración de nómina** en el expediente. Se abre una pantalla independiente del mismo empleado; entra a **Simulador por fechas**.
+4. En **Vigencia desde**, captura **01/07/2027**.
+5. En **Vigencia hasta**, captura **31/07/2027**.
+6. Pulsa **Simular nómina**. Permaneces en esa pestaña y el resultado aparece debajo de las fechas.
+7. Comprueba:
+
+| Dato del simulador | Resultado esperado |
+|---|---:|
+| Sueldo base proporcional | $14,000.00 |
+| Percepciones adicionales | $630.00 |
+| Total de percepciones | **$14,630.00** |
+| Total de deducciones | **$442.85** |
+| Total estimado a pagar | **$14,187.15** |
+
+Se reconoce el periodo **JUL-2027-RED-TEST** por sus fechas exactas, incluyendo el
+concepto único de250. No agregarlo nuevamente. El simulador usa la configuración actual
+aplicable a las fechas y el mismo cálculo proporcional/redondeo de la preparación.
+Concepto, búsqueda, estado y frecuencia sólo filtran la tabla, no recortan la nómina
+simulada. No equivale a un histórico guardado ni a dinero pendiente de pagar.
+Si modificaste configuración posteriormente, la estimación puede diferir del histórico.
+
+Sin ambas fechas se solicita un rango; fechas invertidas o rangos mayores a366días
+muestran explicación sin importe inventado. Si un rango parcial cruza un concepto
+de un periodo específico, solicita las fechas completas en lugar de omitirlo sin aviso.
+
+**No genera periodos, borradores, reservas ni movimientos.** Puede consultarse aunque
+julio ya esté pagado: eso no autoriza otro pago ni modifica su recibo/histórico.
 
 ## 6. Cancelar y volver a pagar el mismo periodo
 

@@ -2,6 +2,15 @@
 
 ### Seguimiento de implementación
 
+27/10/2026 V139: decisiones No aplicar/Posponer auditadas por empleado/concepto en
+borrador; vista efectiva sin reescribir copias. Pendiente completo sólo individual;
+complementario positivo por copia del periodo original y fuentes/cancelación exactas.
+Captura separada, modales, seguimiento/Excel. Obligaciones complementarias firmadas
+netas cero/negativas conservadas, pero recuperación/liquidación especializada todavía
+pendiente, al igual que contabilidad neto0, recibos nuevos y permisos separados. No
+declarar entregas4–7 totalmente cerradas. Prueba humana propuesta en
+PRUEBA_TRATAMIENTOS_NOMINA_20261027.md, después del julio ordinario de Diana.
+
 27/10/2026: usuario autorizó completar flujo base sin calendarios hasta pago desde
 varias cuentas/cancelación; chequeras y rediseño de préstamos expresamente después.
 V137/V138 desplegadas para el flujo ordinario: periodos independientes, cálculo por prefijos de referencia,

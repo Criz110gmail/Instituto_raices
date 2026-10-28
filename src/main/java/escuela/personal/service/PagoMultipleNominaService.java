@@ -33,20 +33,20 @@ public class PagoMultipleNominaService {
  private void texto(String valor,int max,String campo){if(valor==null||valor.isBlank()||valor.length()>max)throw regla("Captura "+campo+" con máximo "+max+" caracteres.");}
  private static ReglaNegocioException regla(String s){return new ReglaNegocioException(s);}
  private List<PagoEmpleadoNominaService.Fila> filas(Long id,Long fila){
-  if(fila!=null){var r=pagos.fila(id,fila);if(r.pagoId()!=null)throw regla("Este empleado ya tiene un pago vigente; no se movió dinero.");return List.of(r);}
+  if(fila!=null){var r=pagos.fila(id,fila);if(r.estado().equals("NO_APLICAR"))throw regla("El empleado está excluido de este periodo con motivo.");if(r.pagoId()!=null)throw regla("Este empleado ya tiene un pago vigente; no se movió dinero.");return List.of(r);}
   var out=new ArrayList<PagoEmpleadoNominaService.Fila>();int pagina=0;org.springframework.data.domain.Page<PagoEmpleadoNominaService.Fila> page;
   do{page=pagos.listar(id,"","PENDIENTE",pagina++,100);out.addAll(page.getContent());}while(page.hasNext());
   // Las cancelaciones se pagan individualmente en su periodo original.
-  long cancelados=jdbc.queryForObject("SELECT count(*) FROM nomina_pago_intento ni JOIN nomina_borrador_empleado ne ON ne.id=ni.fila_id WHERE ne.borrador_id=:id AND ni.estado='REVERTIDO' AND NOT EXISTS(SELECT 1 FROM nomina_pago_intento x WHERE x.fila_id=ne.id AND x.estado='PAGADO')",p().addValue("id",id),Long.class);
+  long cancelados=jdbc.queryForObject("SELECT count(*) FROM nomina_pago_intento ni JOIN nomina_fila_efectiva ne ON ne.id=ni.fila_id WHERE ne.borrador_id=:id AND ni.estado='REVERTIDO' AND NOT EXISTS(SELECT 1 FROM nomina_pago_intento x WHERE x.fila_id=ne.id AND x.estado='PAGADO')",p().addValue("id",id),Long.class);
   if(cancelados>0)throw regla("Hay pagos cancelados: vuelve a pagarlos individualmente desde Pagos por empleado; no se incorporan a otro pago colectivo.");
-  return List.copyOf(out);
+  out.removeIf(x->!x.estado().equals("PENDIENTE"));return List.copyOf(out);
  }
  private Fuente cuenta(PagoMultipleNominaForm.Fuente f,String moneda){
   if(f.getCuentaId()==null||f.getImporte()==null||f.getImporte().signum()<=0||f.getImporte().scale()>2)throw regla("Cada fuente requiere cuenta e importe positivo con máximo dos decimales.");
   var par=p().addValue("cuenta",f.getCuentaId()).addValue("moneda",moneda);
-  return jdbc.query("SELECT c.id,c.codigo||' · '||c.nombre texto,c.tipo,coalesce((SELECT saldo_posterior FROM movimiento_financiero WHERE cuenta_id=c.id ORDER BY secuencia_cuenta DESC LIMIT 1),c.saldo_inicial) saldo FROM cuenta_financiera c WHERE c.id=:cuenta AND c.institucion_id=:inst AND c.activo AND c.plantel_id IS NULL AND c.moneda=:moneda AND c.tipo IN ('CAJA','BANCO')",par,(r,n)->{
+  return jdbc.query("SELECT c.id,c.codigo||' · '||c.nombre texto,c.tipo,coalesce((SELECT saldo_posterior FROM movimiento_financiero WHERE cuenta_id=c.id ORDER BY secuencia_cuenta DESC LIMIT 1),c.saldo_inicial) saldo FROM cuenta_financiera c WHERE c.id=:cuenta AND c.institucion_id=:inst AND c.activo AND c.moneda=:moneda AND c.tipo IN ('CAJA','BANCO')",par,(r,n)->{
    String medio=r.getString("tipo").equals("CAJA")?"EFECTIVO":"TRANSFERENCIA";
-   if(!medio.equals(f.getMedio()))throw regla("Elige Efectivo para caja o Transferencia para banco. Cheques se implementarán después.");
+   f.setMedio(medio);
    return new Fuente(r.getLong("id"),r.getString("texto"),medio,f.getImporte(),r.getBigDecimal("saldo"));
   }).stream().findFirst().orElseThrow(()->regla("Selecciona una cuenta institucional activa de la moneda de la nómina."));
  }
@@ -125,12 +125,13 @@ public class PagoMultipleNominaService {
  }
  public List<escuela.admin.dto.OpcionAutocompletado> buscarCuentas(String q){
   var texto=OrganizacionLaboralService.texto(q,200);if(!texto.isBlank()&&texto.length()<3)return List.of();
-  return jdbc.query("SELECT c.id,c.codigo,c.nombre,c.tipo FROM cuenta_financiera c JOIN institucion i ON i.id=c.institucion_id WHERE c.institucion_id=:inst AND c.activo AND c.plantel_id IS NULL AND c.tipo IN ('CAJA','BANCO') AND c.moneda=i.moneda_predeterminada AND strpos(lower(c.codigo||' '||c.nombre),lower(:q))>0 ORDER BY c.id LIMIT 11",p().addValue("q",texto),(r,n)->new escuela.admin.dto.OpcionAutocompletado(r.getLong("id"),r.getString("codigo")+" · "+r.getString("nombre"),r.getString("tipo")));
+  return jdbc.query("SELECT c.id,c.codigo,c.nombre,c.tipo FROM cuenta_financiera c JOIN institucion i ON i.id=c.institucion_id WHERE c.institucion_id=:inst AND c.activo AND c.tipo IN ('CAJA','BANCO') AND c.moneda=i.moneda_predeterminada AND strpos(lower(c.codigo||' '||c.nombre),lower(:q))>0 ORDER BY c.id LIMIT 11",p().addValue("q",texto),(r,n)->new escuela.admin.dto.OpcionAutocompletado(r.getLong("id"),r.getString("codigo")+" · "+r.getString("nombre"),r.getString("tipo")));
  }
  public List<escuela.admin.dto.OpcionAutocompletado> buscarMotivos(String q){
   var texto=OrganizacionLaboralService.texto(q,200);if(!texto.isBlank()&&texto.length()<3)return List.of();
   return jdbc.query("SELECT id,codigo,nombre FROM motivo_financiero WHERE institucion_id=:inst AND activo AND naturaleza IN ('EGRESO','AMBOS') AND strpos(lower(codigo||' '||nombre),lower(:q))>0 ORDER BY id LIMIT 11",p().addValue("q",texto),(r,n)->new escuela.admin.dto.OpcionAutocompletado(r.getLong("id"),r.getString("codigo")+" · "+r.getString("nombre"),"Pago de nómina"));
  }
- private void estado(Long id,String motivo){jdbc.update("UPDATE nomina_borrador SET estado=(SELECT CASE WHEN count(ni.id)=0 THEN 'AUTORIZADA' WHEN count(ni.id)=count(*) THEN 'PAGADA' ELSE 'PARCIALMENTE_PAGADA' END FROM nomina_borrador_empleado ne LEFT JOIN nomina_pago_intento ni ON ni.fila_id=ne.id AND ni.estado='PAGADO' WHERE ne.borrador_id=:id AND ne.revision=nomina_borrador.revision_actual),motivo_operacion=:motivo,actualizado_por_id=:actor,actualizado_en=CURRENT_TIMESTAMP,version=version+1 WHERE id=:id AND institucion_id=:inst",p().addValue("id",id).addValue("motivo",motivo));}
+ private void estado(Long id,String motivo){jdbc.update("UPDATE nomina_borrador SET estado=nomina_estado_vigente(:id),motivo_operacion=:motivo,actualizado_por_id=:actor,actualizado_en=CURRENT_TIMESTAMP,version=version+1 WHERE id=:id AND institucion_id=:inst",p().addValue("id",id).addValue("motivo",motivo));}
+ public BigDecimal totalColectivo(Long id){return jdbc.queryForObject("SELECT coalesce(sum(ne.propuesto),0) FROM nomina_fila_efectiva ne JOIN nomina_borrador b ON b.id=ne.borrador_id WHERE ne.borrador_id=:id AND ne.revision=b.revision_actual AND ne.tratamiento='APLICAR' AND NOT EXISTS(SELECT 1 FROM nomina_pago_intento ni WHERE ni.fila_id=ne.id AND ni.estado='PAGADO')",p().addValue("id",id),BigDecimal.class);}
  private LocalDateTime ahora(){return LocalDateTime.now(ZoneId.of(jdbc.queryForObject("SELECT zona_horaria FROM institucion WHERE id=:inst",p(),String.class))).withSecond(0).withNano(0);}
 }

@@ -1,5 +1,295 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Configuración de nómina independiente y organizada — 28/10/2026
+
+Por petición del usuario, el acceso Configuración de nómina del expediente abre
+/admin/empleados/{id}/nomina, ya no incrusta toda la consulta en la pestaña del
+expediente. Conserva condición de permisos. Pantalla independiente con navegación
+existente: Conceptos configurados (filtros, tabla, Excel, paginación), Simulador por
+fechas (rango y resultado) y Puesto y sueldo (consulta e historial). Cambiar pestaña
+no guarda ni paga. GET del simulador vuelve a su pestaña por hash; filtros a conceptos.
+Cada formulario conserva los parámetros de la otra consulta; el cálculo sigue usando
+sólo fechas. Inputs alineados, tres columnas/ dos/ una según espacio. Sugerencias con
+altura automática corrigen solapamiento por altura fija heredada de .filters button.
+No se cambió fórmula ni configuración operativa. La comprobación humana del pago de
+julio de Diana sigue pendiente: no repetir ni darla por aceptada. Manual actualizado
+para entrar a Simulador por fechas y pulsar Simular nómina.
+
+QA de esta reorganización:1024Java/package y139JS correctas.24vistas ficticias de
+Chrome (con resultado, sin fechas y cálculo bloqueado;4anchos y2temas): pestañas,
+hash, selección/focus10/búsqueda>=3, sugerencias sin solaparse, sin overflow ni POST.
+Sólo contenedor app actualizado; no reinicio de BD ni cambios operativos/.env/Git.
+
+## Simulador por fechas sustituye totales de referencia — 28/10/2026
+
+CORRECCIÓN de intención confirmada: usuario no quiere sumas de referencias, sino
+importe estimado como nómina completa del empleado. Retirados ResumenReferencias,
+resumir y tarjetas por frecuencia. Nueva simulación GET desde fechas desde/hasta,
+misma pestaña de empleado; sin fechas pide rango. Tras Aplicar filtros ancla a
+#simulacion-nomina. Otros filtros afectan sólo tabla, explícito: no quitar sueldo
+o conceptos al simular por buscar un nombre/tipo. Sueldo+adicionales=percepciones;
+deducciones y neto destacados. CasoDiana julio14000+630−442.85=14187.15.
+
+PreparacionNominaService.simularEmpleado reutiliza CANDIDATOS y función proporcional,
+no copia fórmulas. Param interno simulacion=true sólo en lectura efímera; helper de
+TODAS las operaciones reales fija false: no eludir reservas al preparar/pagar. Se
+ignora ocupación por nómina/ préstamo reservado únicamente para estimar configuración
+actual, aun con cobertura ya pagada. Resto de elegibilidad/moneda/vigencias intacto.
+No exponer Candidato/token como orden de pago. Requiere autorización de configuración
+de nómina y empleado/institución. No writes/locks financieros ni registro de periodo.
+
+Reconoce periodo PROGRAMADO con mismas fechas para incluir única/ocasionales. Si no
+hay periodo exacto y hay conceptos ligados a periodo, explica que seleccione fechas
+completas; no dar total parcial engañoso. Sin conceptos ligados permite rango libre
+con contexto sólo en memoria. Máximo366días; invertido/incompleto explicado. Estado
+inactivo/configuración incompatible/neto negativo muestra motivo sin importe falso.
+Estimación con configuración actual, no saldo pendiente ni reconstrucción histórica.
+Manual de ensayo actualizado, no aceptación humana ni duplicar julio.
+
+QA:1024Java/package,139JS;1IT PostgreSQL17 aislada adicional: caso exacto14000+630−
+442.85=14187.15 (incluye única250), simular cobertura usada sin habilitar candidatos
+de pago, rangos sin periodo/únicas parciales, fechas inválidas, permisos y sin nuevas
+filas de nómina/movimientos.6Java focales/package final.40vistas ficticias en4tamaños/
+2temas para resultado/sin fechas/bloqueado/expediente/resultado SQL real: sin overflow,
+erroresJS, POST ni textos encimados. Sólo app actualizada; sin pagos/datos operativos,
+SQL/roles/.env/commit/push. Retirado nexo-simulador-qa ficticio/tmpfs y Dockerfile temporal.
+
+## Totales filtrados en configuración de nómina del empleado — 28/10/2026
+
+Usuario especifica Empleados→Configuración de nómina. Fragmento compartido muestra
+tarjetas Total de percepciones y Total de deducciones entre filtros y tabla; aportación
+patronal histórica separada sólo si existe. SUM/count en BD con el MISMO WHERE/parámetros
+de listar, sin LIMIT/OFFSET: incluye todas las páginas y respeta concepto/búsqueda/
+estado/naturaleza/frecuencia/fechas/empleado/institución y permisos privados.
+
+No sumar frecuencias ni monedas incompatibles: desglose por frecuencia y moneda;
+LEGADO conserva grupo anterior. Son importes de referencia del listado, NO neto ni
+simulación del periodo; sueldo base aparte. Versiones canceladas/anteriores cuentan
+si los filtros las incluyen, explícito en ayuda. Sin resultados muestra0 y aviso.
+Ambos controladores cargan resumen: expediente inicial y listado filtrado independiente.
+CSS en forms.css, compartida por ambas vistas; no cargar nómina.css global al expediente.
+Nota obsoleta de motor futuro reemplazada por explicación de preparación ya existente.
+Manual explica julio:80mensual/150quincenal/250única y100semanal de referencia, distintos
+de630/442.85 calculados. No confirmar aún prueba humana ni duplicar pago de julio.
+
+QA:1024Java/package,139JS;1IT PostgreSQL17 aislada adicional valida SUM por frecuencia,
+filtros/fechas vacíos e invertidos y total independiente de página.24vistas Chrome
+ficticias4tamaños/2temas (con importes/sin registros/expediente real sintético) sin
+overflow ni erroresJS, ambas rutas renderizan. Sólo app actualizada, sin pagos/datos
+operativos/roles/.env/commit/push. Retirado nexo-totales-config-qa ficticio/tmpfs.
+
+## Autocompletado de empleados incluidos en nómina — 28/10/2026
+
+Buscar empleado en Pagos por empleado reutiliza ayuda focus10/búsqueda>=3, limitada
+por nómina/institución/revisión actual (fuentes históricas, no catálogo global).
+Nuevo GET /admin/preparacion-nomina/{id}/pagos/empleados/buscar valida acceso salarial,
+consulta máximo11, devuelve10+hayMas/noStore. Selección usa empleadoPagoId, no etiqueta
+concatenada; texto e ID se conservan en URL/página/detalle/volver y capturas. Sin
+selección aún admite texto libre; Limpiar restaura lista. FiltroPagoNomina mantiene
+constructor4argumentos compatible y añade ID/texto. Tabla y Excel aplican mismo ID,
+estado y ámbito; resumen global no cambia. No ampliar alcance a otros empleados.
+Manual añade foco→Dia→seleccionar→Pagado→Aplicar filtros→Ver pago e intentos.
+Usuario sigue comprobando pago de julio/Diana, no aceptación financiera integral aún.
+
+QA:1024Java/package y1IT PostgreSQL17 aislada adicional con filtro por ID/etiqueta,
+scoping de nómina, búsqueda corta y Excel de un empleado;139JS.8vistas4tamaños/2temas
+validan foco10,2caracteres sin consulta/3con consulta, selección/limpiar/ID y sin
+overflow/erroresJS; altura automática de opciones evita superposición móvil. Cierre
+focal6Java/package correcto. Sólo app actualizada; sin pagos/datos operativos/SQL/
+roles/.env/commit/push. Retirado nexo-empleado-pagos-qa ficticio/tmpfs.
+
+## Pagos por empleado organizado por pestañas — 28/10/2026
+
+Usuario está comprobando el resultado de julio y solicita ordenar Autorización y pagos
+por empleado. Pantalla nomina-pagos usa student-tabs existente: Resumen (totales/CTA),
+Pagos por empleado (filtros/tabla/Excel/enlace intentos), Decisiones y pendientes
+(importes/pospuestos/autorizar sin dinero), Cancelación de pagos sólo con permiso y
+pagados>0. Sin inventar historial global: el historial por persona continúa en Ver pago
+e intentos. Colores/controles/modales existentes, responsive y navegación por teclado.
+
+Filtros/paginación/Limpiar vuelven a #empleados; volver desde detalle conserva filtros
+y ese hash. POST de decisiones fuerza pestaña decisiones y conserva motivo; cancelación
+fallida fuerza cancelacion conservando captura, éxito vuelve resumen porque puede
+desaparecer la pestaña. No cambios de cálculo, SQL, pagos ni permisos. El importe de
+decisiones ahora se etiqueta Importe incluido en la revisión (no implica deuda tras pago).
+Manual añade navegación; no declarar aceptación financiera integral sin confirmación
+del usuario ni repetir borrador/pago de julio. Continúa comprobación de Diana14,187.15.
+
+QA:1022Java/package,139JS y40vistas sintéticas (borrador/pagada/lectura/filtros/error,
+4tamaños/2temas) correctas; pestaña activa única, hashes/teclado compartido, permisos,
+filtros y modal Cancelar sin POST comprobados; sin overflow/erroresJS. Sólo app
+actualizada; no pagos ni cambios de datos/SQL/roles/.env/commit/push.
+
+## Medio de pago automático por fuente — 28/10/2026
+
+Usuario pidió retirar selector redundante y luego precisó mostrar el medio automático
+sin permitir editarlo. Fuente sólo captura cuenta e importe; medio readonly informativo:
+caja→Efectivo, banco→Transferencia. Se actualiza al seleccionar y se limpia al borrar
+cuenta. Autocomplete conserva detalle del resultado en hidden.dataset.detalle y usa
+su evento change existente; lógica específica aislada en preparacion-nomina.js.
+Endpoints de cuentas devuelven tipo CAJA/BANCO como detalle. Servidor ignora el medio
+enviado y siempre lo deriva de cuenta_financiera.tipo al revisar/confirmar, conservando
+medio histórico por fuente. No implementar cheques ni permitir cambiar cuenta/tipo.
+Manual actualizado; retoma sigue paso5 BOR-000002/Diana14,187.15, sin pago humano aún.
+
+Verificación:5Java/package inclIT PostgreSQL17 aislada con caja y banco, medio enviado
+incorrectamente ignorado y sustituido por tipo real;139JS;8vistas focus/cambio/limpieza/
+readonly y24de diseño en4tamaños/2temas sin erroresJS ni overflow. Sólo app actualizada,
+saludUP18080; sin pagos operativos ni cambios de datos/roles/.env/commit/push.
+Retirados sólo contenedor temporal nexo-medio-qa (ficticio/tmpfs) y Dockerfile temporal.
+
+## Fuentes dinámicas y cuentas de plantel — 28/10/2026
+
+Preparar pago colectivo/individual inicia con una fuente. Agregar otra cuenta conserva
+captura (máximo20); Quitar cuenta elimina sólo esa fila y renumera, mínimo1. Ambas
+acciones invalidan sello/confirmación y exigen nueva revisión; no registran movimientos.
+Se reutiliza template, permisos, CSRF y diseño responsive con botones module-action.
+
+Causa comprobada de lista vacía: todas las cuentas operativas tienen plantel_id=1 y
+las búsquedas/validaciones de nómina exigían plantel_id IS NULL. Se permiten cuentas
+de plantel o generales de la MISMA institución, activas, caja/banco y misma moneda.
+Se conserva autorización institucional salarial/financiera; MovimientoManualService
+valida alcance y deriva plantel de la cuenta en egresos y compensaciones. No cambiar
+alcance de roles ni cuentas operativas. Autocomplete compartido ya consultaba al focus;
+no requería modificar JS global. Primeras10, búsqueda>=3, paginado de sugerencias vigente.
+
+Pruebas unitarias de1/20fuentes, quitar intermedia/conservar campos/invalidar revisión;
+IT PostgreSQL17 aislada verifica endpoint sin texto, cuenta de plantel, agregar/quitar
+con binding/CSRF sin egresos y pago/cancelación con plantel contable correcto. Chrome
+ficticio:8combinaciones4tamaños/2temas,10sugerencias al focus/búsqueda3/selección y sin
+overflow/erroresJS. Manual actualizado: paso5 BOR-000002/Diana14,187.15, agregar segunda
+cuenta banco10,000/caja4,187.15. No consta pago humano; no repetir borrador ni conceptos.
+
+Verificación final:1022Java/package correctas (más1IT aislada explícita),138JS,
+24vistas de pago/revisión/listado sin overflow/erroresJS, además8de autocompletado.
+Actualizada sólo app, saludUP18080; sin cambios de datos operativos, roles, .env,
+commit/push. Retirado únicamente contenedor temporal nexo-fuentes-qa con datos ficticios
+y Dockerfile temporal; PostgreSQL operativo no se reinició.
+
+## Botones de decisiones homologados — 28/10/2026
+
+Usuario pidió mismo estilo de Preparar pago colectivo en Ver conceptos pospuestos y
+Confirmar decisiones sin mover dinero. Ambos usan nomina-primary-action, encabezado
+separado de la captura, texto explícito sin salida de dinero y adaptación móvil. Se
+conservan rutas/permisos/motivo/modal con Cancelar y lógica de congelación intactos.
+13Java focalizadas/package,5JS de confirmaciones y8vistas4tamaños/2temas sin errores
+ni overflow. Sólo app actualizada, sin datos/SQL/pagos/roles/commit/push. Ensayo sigue
+en BOR-000002/julio/Diana14,187.15, paso5 Preparar pago colectivo. Estos botones de
+pendientes/congelación no son necesarios para ese caso ordinario.
+
+## Ensayo en pago colectivo y diseño — 28/10/2026
+
+Usuario avanzó a Autorización y pagos por empleado, paso5 del ensayo. Consulta acotada
+confirmó BOR-000002/JUL-2027-RED-TEST,estadoBORRADOR,1empleado Diana6,total14,187.15.
+No repetir Incluir/guardar ni crear otro borrador. BOR-000001 de enero se conserva.
+Falta elegir Preparar pago colectivo, bancoBBVA_COBROS10,000 yCAJA4,187.15, tercera
+fuente vacía, revisar y confirmar con modal. No consta pago ni aceptación financiera.
+
+Cambio solicitado sólo visual: CTA Preparar pago colectivo usa nomina-primary-action
+igual a Autorización y pagos; tarjeta de siguiente paso separa explicación y acción.
+Formulario multicuenta incorpora employee-card (variables de tema), controles uniformes
+incluidos selects, importes, referencia y motivo, fuentes en tarjetas con etiquetas
+alineadas, ayudas sin invadir el texto y respuesta móvil. Gestión de pagos también
+uniforma sus textarea/selects. Sin cambios de montos/reglas/BD/permisos o rutas.
+QA:13Java focalizadas/package,138JS y24vistas de listado/captura/revisión en
+1440/768/390/320 claro/oscuro sin overflow ni erroresJS. Controles fuente1 alineados
+(misma coordenada superior),44px,borde10px y fondo temático uniforme. Sólo app
+actualizada; no capturas/pagos por herramientas ni commit/push.
+
+## Guardar borrador sin selección — 28/10/2026
+
+Usuario reportó que Guardar borrador revisado no abría modal. Consulta operativa
+acotada confirmó vistas ABIERTA/vigentes,versión0,0incluidos,total0: no había pulsado
+Incluir. No se guardó ni pagó nada. Se conserva bloqueo sin selección y se añade
+aviso junto al botón: filtrar no incluye, pulsar Incluir en fila y verificar1empleado/
+14,187.15; enlace Ir a seleccionar empleados. Modal titula Borrador de nómina, no
+mensual; texto ya no niega el cálculo proporcional que la vista sí realizó.
+Render distingue0/1incluidos.13Java focalizadas/package y138JS correctos. Chrome
+sintético verificó0sin selección,modal con14,187.15 al incluir,Cancelar/Escape0POST,
+confirmación1POST interceptado (sin base real). Retomar julio Incluir→guardar,
+no repetir periodo/conceptos ni afirmar aceptación humana del guardado/pago.
+
+## Cierre técnico V139 y retoma sin duplicar — 28/10/2026
+
+V139 aplicada correctamente; comparación posterior confirmó huellas idénticas de
+borradores(1), movimientos(46), cuentas(3) y conceptos_empleado(7). Tablas nuevas
+de tratamientos/pendientes operativos en0: no se registró nómina/pago con herramientas.
+Se verificó respaldo legible y se retiró sólo nexo-tratamientos-qa (datos ficticios
+en tmpfs), además del Dockerfile temporal. No tocar contenedores ajenos ni volúmenes.
+
+Suite general/package:1019Java; integración PostgreSQL aislada adicional1IT correcta
+con decisiones/restauración, sello/versión, pospuesto completo/complementario, pago,
+cancelación/reapertura, no duplicidad, CSRF, Excel filtrado, lectura/sin escritura y
+rollback de decisión que dejaría neto0.138JS sin fallos.32vistas1440/768/390/320 en
+claro/oscuro sin overflow/erroresJS; corrección final del total monetario en una línea
+en320px y ocultación de Preparar colectivo cuando no hay importe inmediato. Último
+ajuste sólo visual:13Java focalizadas/package correctos, app recreada sin PostgreSQL.
+
+Retoma: NO repetir julio ni EXTRA250. Usuario dejó Diana «No incluido», neto14,187.15.
+Seguir PRUEBA_NOMINA_FLUJO_BASE_20261027.md desde su bloque inicial; nuevos escenarios
+en PRUEBA_TRATAMIENTOS_NOMINA_20261027.md DESPUÉS. No aceptación humana integrada aún.
+Recuperaciones complementarias netas cero/negativas siguen pendientes explícitas;
+recibos nuevos, permisos segregados, cheques y préstamos no se declaran terminados.
+No commit/push ni lectura de .env.
+
+## Retoma humana de julio y tratamientos V139 — 27/10/2026
+
+Usuario autorizó implementar No aplicar/Posponer y conservar la prueba para mañana.
+NO continuar otra entrega automáticamente. Primero retomar julio de Diana: el usuario
+confirmó $14,187.15 en vista previa y «No incluido»; falta Incluir y guardar borrador.
+Julio y EXTRA250 ya existen; no repetir conceptos ni cambiar sus importes. La vista
+UUID puede caducar: recalcular sólo si no hay borrador/reserva de julio. Manual ordinario
+PRUEBA_NOMINA_FLUJO_BASE_20261027.md actualizado al inicio; los tratamientos se prueban
+DESPUÉS, aparte, con PRUEBA_TRATAMIENTOS_NOMINA_20261027.md. No aceptación humana aún.
+
+V139 aditiva: nomina_tratamiento append-only por fila/clave/acción/motivo/actor/fecha;
+vista efectiva superpuesta a snapshot original inmutable. Decidir sólo en borrador
+actual con versión/confirmación. Todo empleado o conceptos adicionales; sueldo base y
+cuotas protegidos. No mezclar decisiones globales y por concepto; restablecer a Aplicar
+antes de recalcular para no descartarlas silenciosamente. Configuración no se modifica.
+Confirmar autorización materializa nomina_pendiente de conceptos pospuestos; origen,
+importe firmado y copia quedan fijos. No se suman a otro colectivo. Pospuesto completo
+se paga por fila original individual; percepción complementaria positiva usa liquidación
+técnica separada mismo empleado/periodo, sin reserva duplicada ni repetir sueldo. Fuentes
+y cancelaciones exactas existentes; cancelar pago complementario reabre pendiente y
+actualiza estado del origen. Nueva pantalla de decisiones, captura separada/modal y
+seguimiento paginado/Excel; filtros de Pagos añaden Pospuesto/No aplicar y resumen separado.
+
+Límite explícito: obligaciones complementarias netas cero/negativas se conservan como
+recuperación/liquidación especializada pendiente; no convertirlas a egresos ni sumarlas
+a otro mes. Cuotas de préstamos no editables desde tratamientos. Contabilidad neto0,
+recibos nuevos, permisos de operación segregados, cheques y rediseño préstamos continúan
+pendientes. No declarar cerrado todo el rediseño. Se reutilizan permisos existentes,
+sin grants ni cambios de roles. Modales Cancelar/Escape no escriben operación final.
+
+Respaldo privado ignorado: .respaldos-locales/tratamientos-v139.IqjLKl/antes.dump;
+imagen previa nexo-pre-tratamientos-v139:20261027. Huellas previas:1borrador,
+46movimientos,3cuentas,7conceptos_empleado; comparar tras despliegue, sin capturar pagos.
+QA en PostgreSQL17 temporal nexo-tratamientos-qa, base EXACTA nexo_flujo_nomina_qa;
+nunca dropdb/reset en el contenedor operativo. No leer .env, commit ni push.
+
+## Alineación visual de nómina y total de Diana — 27/10/2026
+
+Usuario ya consultó julio para Diana y confirma sueldo $14,000, percepciones $630,
+deducciones $442.85 y propuesto $14,187.15. Figura «No incluido»: filtrar no selecciona;
+siguiente acción humana es Incluir, verificar un empleado/$14,187.15 y guardar borrador.
+Todavía NO consta nómina guardada/aplicada ni aceptación del flujo de pago.
+Se alinean filtros de Nóminas/Periodos y consulta de empleados, controles de formularios,
+Limpiar con module-action y tarjeta compartida de importe neto en ambos desgloses.
+Sin cambios de cálculo, esquema o datos. QA aislada: 13 pruebas Java, 135 JS y 20 vistas
+1440/390 claro/oscuro sin desbordamientos/errores JS; fixture ficticio en target.
+Desplegado únicamente app; actuator UP. Sin cambios de datos ni pagos por herramientas.
+
+## Ensayo manual en curso y botón Limpiar — 27/10/2026
+
+Usuario confirmó tabla de Diana con EXTRA-RED-TEST250único JUL-2027-RED-TEST,
+TRANS80desdejulio/50hasta junio, QUIN150 y DED100; todas Próximas por fechas futuras.
+No duplicar esas capturas. Siguiente: Nóminas→Nuevo borrador→julio→Opciones de
+selección→Elegir empleados específicos→Preparar→seleccionar sólo Diana y revisar
+14000+630−442.85=14187.15. Todavía no consta cálculo guardado ni pago humano.
+Se corrige Limpiar de listado de periodos añadiendo module-action, mismo borde/
+tema que Empleados/Puestos; sin lógica ni BD. Prueba de contrato JS específica.
+
 ## Despliegue parcial del flujo ordinario V137/V138 — 27/10/2026
 
 Estado más reciente, supera “en desarrollo/no desplegado” de la nota siguiente:

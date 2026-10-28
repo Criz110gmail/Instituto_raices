@@ -19,6 +19,7 @@ public class NominaEmpleadoService {
  private final EmpleadoService empleados;
  private final ConceptoEmpleadoService conceptos;
  private final NamedParameterJdbcTemplate jdbc;
+ private final PreparacionNominaService preparacion;
  public record Fila(Long id,String codigo,String nombre,String naturaleza,BigDecimal importe,String moneda,
   LocalDate inicio,LocalDate fin,String estado,String modelo,String frecuencia,String modalidad,String periodo,
   Long periodoId,Long periodoVersion,Long version,String motivo,boolean modificable,boolean cancelable){
@@ -39,7 +40,7 @@ public class NominaEmpleadoService {
     OR :estado='PROXIMA' AND a.fecha_inicio>:hoy OR :estado='ANTERIOR' AND a.fecha_fin<:hoy))
   """;
  public Page<Fila> listar(Long id,FiltroNominaEmpleado original){
-  var f=original.normalizado();f.validar();var par=p(id,false).addValue("concepto",f.filtroConceptoId(),java.sql.Types.BIGINT).addValue("q",f.q()).addValue("estado",f.estado()).addValue("naturaleza",f.naturaleza()).addValue("frecuencia",f.frecuencia()).addValue("desde",f.desde(),java.sql.Types.DATE).addValue("hasta",f.hasta(),java.sql.Types.DATE);
+  var f=original.normalizado();var par=parametros(id,f);
   var pg=PageRequest.of(f.pagina(),f.tamanio());Long n=jdbc.queryForObject("SELECT count(*) "+WHERE,par,Long.class);
   par.addValue("limite",pg.getPageSize()).addValue("offset",pg.getOffset());var hoy=(LocalDate)par.getValue("hoy");
   return new PageImpl<>(jdbc.query("SELECT a.* "+WHERE+" ORDER BY a.fecha_inicio DESC,a.id DESC LIMIT :limite OFFSET :offset",par,(r,i)->{
@@ -47,6 +48,12 @@ public class NominaEmpleadoService {
    String estado=!activa?"Cancelada":ini.isAfter(hoy)?"Próxima":fin!=null&&fin.isBefore(hoy)?"Anterior":"Vigente";
    return new Fila(r.getLong("id"),r.getString("concepto_codigo"),r.getString("concepto_nombre"),r.getString("naturaleza"),r.getBigDecimal("importe"),r.getString("moneda"),ini,fin,estado,r.getString("modelo"),r.getString("frecuencia_importe"),r.getString("modalidad"),r.getString("periodo_codigo"),r.getObject("periodo_id",Long.class),r.getObject("periodo_version",Long.class),r.getLong("version"),r.getString("motivo"),activa&&(fin==null||!fin.isBefore(hoy)),activa&&ini.isAfter(hoy));
   }),pg,n==null?0:n);
+ }
+ private MapSqlParameterSource parametros(Long id,FiltroNominaEmpleado f){
+  f.validar();return p(id,false).addValue("concepto",f.filtroConceptoId(),java.sql.Types.BIGINT).addValue("q",f.q()).addValue("estado",f.estado()).addValue("naturaleza",f.naturaleza()).addValue("frecuencia",f.frecuencia()).addValue("desde",f.desde(),java.sql.Types.DATE).addValue("hasta",f.hasta(),java.sql.Types.DATE);
+ }
+ public PreparacionNominaService.Simulacion simular(Long id,FiltroNominaEmpleado original){
+  var f=original.normalizado();f.validar();return preparacion.simularEmpleado(id,f.desde(),f.hasta());
  }
  public Map<String,Object> metadatos(Long empleado,Long asignacion){var par=p(empleado,false).addValue("id",asignacion);return jdbc.queryForList("SELECT modelo,frecuencia_importe,modalidad,periodo_id,periodo_codigo,periodo_version FROM concepto_empleado WHERE id=:id AND empleado_id=:empleado AND institucion_id=:institucion",par).stream().findFirst().orElseThrow(()->new AccessDeniedException("Concepto no autorizado"));}
  public String etiquetaConcepto(Long empleado,Long concepto){var par=p(empleado,false).addValue("concepto",concepto);return jdbc.query("SELECT codigo||' · '||nombre FROM concepto_nomina WHERE id=:concepto AND institucion_id=:institucion",par,(r,i)->r.getString(1)).stream().findFirst().orElseThrow(()->new AccessDeniedException("Concepto no autorizado"));}

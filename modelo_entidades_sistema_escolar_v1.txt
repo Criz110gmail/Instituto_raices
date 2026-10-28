@@ -1,4 +1,18 @@
 SISTEMA ADMINISTRATIVO ESCOLAR
+ACTUALIZACION V139 — TRATAMIENTOS Y OBLIGACIONES DE NOMINA (27/10/2026):
+NominaTratamiento append-only por fila histórica y clave EMPLEADO o fuente:id,
+APLICAR/NO_APLICAR/POSPONER, motivo/actor/instante. Vista efectiva descuenta conceptos
+excluidos/pospuestos sin tocar snapshot original ni configuración. Decisión sólo en
+borrador actual, control de versión, confirmación y permisos privados. No mezclar
+tratamiento completo y por concepto; sueldo base/cuotas protegidos. Recalcular exige
+restablecer decisiones para no borrarlas silenciosamente. Al autorizar, NominaPendiente
+complementaria única por fila guarda importe firmado y detalle inmutable del periodo.
+Percepción positiva pagable individualmente por liquidación técnica ligada al origen,
+sin repetir base ni mezclar periodos/reservas. Cancelación exacta reabre pendiente y
+estado agregado; empleado completo pospuesto se paga por fila original. Obligaciones
+complementarias cero/negativas se conservan como recuperación/liquidación especializada
+pendiente, sin egresos inventados. No hay grants nuevos, cheques ni préstamos rediseñados.
+
 ACTUALIZACION 26/10/2026 — REDISEÑO NOMINA, ENTREGA1 V135:
 PuestoLaboral añade horasSemanales5,2 y sueldoMensual19,2. Nuevos puestos completos,
 legados NULL sin inferencia. Una asignación de puesto usa CondicionSalarial existente

@@ -202,6 +202,7 @@
             if (entrada.readOnly) return;
             entrada.value = opcion.titulo;
             valor.value = opcion.id;
+            valor.dataset.detalle = opcion.detalle || '';
             valor.dispatchEvent(new Event('change', {bubbles: true}));
             etiquetaSeleccionada = opcion.titulo;
             cerrarLista();

@@ -194,7 +194,7 @@
             const form = event.target, kind = form.dataset.moneyConfirm;
             if (!kind || event.defaultPrevented || approved.has(form)) return;
             if(kind==='anticipo-propuesta' && event.submitter?.id!=='anticipation-save')return;
-            if(kind==='nomina-multifuente' && event.submitter?.hasAttribute('formaction'))return;
+            if(['nomina-multifuente','nomina-tratamiento'].includes(kind) && event.submitter?.hasAttribute('formaction'))return;
             event.preventDefault();
             if (!form.reportValidity()) return;
             dialog.setAttribute('data-confirm-kind', kind);
@@ -212,7 +212,18 @@
                 if (form.dataset.confirmFolio) add('Folio del pago', form.dataset.confirmFolio);
                 if (form.dataset.confirmSubject) add('Titular del pago', form.dataset.confirmSubject);
             }
-            if(kind==='nomina-cancelar-todos') {
+            if(kind==='nomina-tratamiento'||kind==='nomina-pendiente'||kind==='nomina-congelar') {
+                cancel.textContent='Cancelar';accept.textContent='Confirmar operación';
+                title.textContent=kind==='nomina-tratamiento'?'Confirmar tratamiento del periodo':kind==='nomina-pendiente'?'Preparar pendiente individual':'Confirmar decisiones y congelar revisión';
+                add('Empleado',form.dataset.confirmPerson||'Empleados de esta revisión');
+                if(form.dataset.confirmAmount)add('Pago inmediato',money(form.dataset.confirmAmount));
+                if(kind==='nomina-tratamiento'){
+                    add('Alcance',form.querySelector('[name="clave"]').selectedOptions[0].textContent);
+                    add('Tratamiento',form.querySelector('[name="accion"]').selectedOptions[0].textContent);
+                    add('Motivo',form.querySelector('[name="motivo"]').value);
+                }
+                note.textContent='Conserva el historial y el periodo original. Esta acción no mueve dinero ni modifica la configuración del empleado. Cancelar cierra el resumen sin guardar.';
+            } else if(kind==='nomina-cancelar-todos') {
                 title.textContent='Confirmar cancelación de los pagos';cancel.textContent='Cancelar';accept.textContent='Confirmar cancelación completa';
                 add('Empleados',form.dataset.confirmPeople);add('Total recuperado',money(form.dataset.confirmAmount));
                 form.closest('section').querySelectorAll('[data-cancel-source]').forEach(row=>add(row.querySelector('dt').textContent,row.querySelector('dd').textContent));
@@ -322,14 +333,14 @@
                 note.textContent='Se descarta únicamente esta vista previa y su selección. No se cancelan borradores existentes, no se modifican configuraciones y no se mueve dinero.';
             } else if(kind==='nomina-borrador'||kind==='nomina-borrador-cancelar') {
                 const cancelar=kind==='nomina-borrador-cancelar',actualizar=form.dataset.confirmUpdate==='true';
-                title.textContent=cancelar?'Confirmar cancelación del borrador':actualizar?'Confirmar nueva revisión':'Confirmar borrador mensual';
+                title.textContent=cancelar?'Confirmar cancelación del borrador':actualizar?'Confirmar nueva revisión':'Confirmar borrador de nómina';
                 cancel.textContent='Cancelar';accept.textContent=cancelar?'Confirmar cancelación':actualizar?'Confirmar actualización':'Confirmar y guardar';
                 if(form.dataset.confirmSubject)add('Borrador',form.dataset.confirmSubject);
                 add('Periodo',form.dataset.confirmPeriod);add('Empleados',form.dataset.confirmPeople);
                 if(actualizar)add('Propuesto guardado anteriormente',money(form.dataset.confirmBefore));
                 add(cancelar?'Propuesto histórico, no pagado':'Propuesto sin impuestos calculados',money(form.dataset.confirmAmount));
                 add('Motivo',form.querySelector('[name="motivo"]')?.value||'');
-                note.textContent=cancelar?'Cancela sólo el borrador y libera a sus empleados para otra preparación. Conserva todas las revisiones; no cancela pagos ni altera salarios o cuentas.':'Guarda una copia histórica revisable, no una nómina fiscal ni autorizada. No calcula impuestos, prorrateos o préstamos y no ejecuta pagos. Las aportaciones de la escuela no restan al empleado. Cancelar conserva la captura sin guardar.';
+                note.textContent=cancelar?'Cancela sólo el borrador y libera a sus empleados para otra preparación. Conserva todas las revisiones; no cancela pagos ni altera salarios o cuentas.':'Conserva el cálculo revisado del periodo como borrador, no como nómina fiscal ni pago autorizado. No calcula impuestos automáticamente ni ejecuta pagos o egresos. Las aportaciones de la escuela no restan al empleado. Cancelar conserva la captura sin guardar.';
             } else if(['nomina-configurar','nomina-finalizar','nomina-cancelar'].includes(kind)) {
                 const value=n=>form.querySelector('[name="'+n+'"]')?.value?.trim()||'';
                 const date=n=>value(n)?value(n).split('-').reverse().join('/'):'Sin fecha de fin';

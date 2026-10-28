@@ -1,4 +1,15 @@
 /* Sólo selección de la página actual. Los importes y la elegibilidad se verifican en servidor. */
+/* El medio visible es informativo: el servidor lo determina de nuevo al revisar y pagar. */
+document.querySelectorAll('.nomina-payment-source').forEach(fuente=>{
+ const medio=fuente.querySelector('.nomina-source-medium');
+ if(!medio)return;
+ const mostrar=valor=>medio.value=valor==='EFECTIVO'?'Efectivo':valor==='TRANSFERENCIA'?'Transferencia':valor||'';
+ mostrar(medio.value);
+ fuente.querySelector('.autocomplete-value')?.addEventListener('change',event=>{
+  const tipo=event.target.value?event.target.dataset.detalle:'';
+  mostrar(tipo==='CAJA'?'EFECTIVO':tipo==='BANCO'?'TRANSFERENCIA':'');
+ });
+});
 (() => {
  const form=document.querySelector('[data-preparacion-selection]');if(!form)return;
  const checks=()=>Array.from(form.querySelectorAll('input[name="seleccion"]'));

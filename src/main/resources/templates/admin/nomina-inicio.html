@@ -5,7 +5,7 @@
 <section class="form-card employee-card">
  <div class="form-intro finance-intro"><span>Personal · Preparación de nómina</span><h1>Preparar nómina del periodo</h1><p>Elige el periodo. El sistema revisará las vigencias de los puestos y conceptos de cada empleado antes de guardar; no necesitas calendario.</p></div>
  <div th:replace="~{admin/fragments/laboral-comun :: avisos}"></div>
- <form class="entity-form" method="post" th:action="@{/admin/preparacion-nomina/preparar-periodo}">
+ <form class="entity-form payroll-aligned-form" method="post" th:action="@{/admin/preparacion-nomina/preparar-periodo}">
   <th:block th:replace="~{admin/fragments/nomina-comun :: ocultos}"></th:block>
   <fieldset class="form-section"><legend>¿Qué periodo deseas preparar?</legend><div class="form-grid">
    <div class="wide" th:insert="~{admin/fragments/concepto-empleado-comun :: ayuda('periodo','Periodo programado *',${periodoId},${periodoTexto},'/admin/preparacion-nomina/periodos/buscar',true)}"></div>
