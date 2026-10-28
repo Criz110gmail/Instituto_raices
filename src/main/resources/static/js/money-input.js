@@ -232,6 +232,9 @@
             } else if(kind==='nomina-multifuente') {
                 title.textContent='Confirmar pago de nómina';cancel.textContent='Cancelar';accept.textContent='Confirmar y registrar pagos';
                 add('Empleados',form.dataset.confirmPeople);add('Total a pagar',money(form.dataset.confirmAmount));
+                form.querySelectorAll('[data-payment-review-source]').forEach(row=>{
+                    add(row.dataset.account,money(row.dataset.amount));
+                });
                 form.querySelectorAll('.assignment-summary-card').forEach(row=>{
                     const cuenta=row.querySelector('.autocomplete-input')?.value;
                     const monto=row.querySelector('input[name$=".importe"]')?.value;

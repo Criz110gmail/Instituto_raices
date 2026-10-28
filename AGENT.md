@@ -1,5 +1,59 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Revisión de pago protegida y edición explícita — 28/10/2026
+
+Usuario autoriza separación captura/revisión. nomina-pago-multiple compartida por
+colectivo, pago por fila y directo: tras Revisar distribución sólo muestra tarjetas
+con cuenta/medio/saldo anterior/importe/saldo posterior, referencia/motivo y botones
+Cancelar, Editar distribución, Confirmar y registrar pagos. No inputs visibles ni
+altas/bajas de fuente durante revisión; selector de empleado/periodo directo oculto.
+Campos hidden conservan payload y filtros. POST /editar en ambos controladores vuelve
+a captura, conserva fuentes/datos/solicitud/versión/fila/periodo/empleado, e invalida
+sello/confirmado. Requiere revisar otra vez. No usar Atrás del navegador.
+Modal toma cuenta/importe de snapshot visible data-payment-review-source; Cancelar
+no paga. Sello/transacciones/bloqueos/idempotencia/saldos siguen intactos en servidor.
+Errores al confirmar vuelven a captura conservada. No cambia motor ni SQL.
+Re-pago Diana aún pendiente de aceptación humana; no ejecutarlo por agente.
+
+QA:1031Java/package y140JS correctos. Tests de POST editar colectivo/fila y directo:
+conservan datos/filtros, invalidan revisión y no invocan pago.8vistas Chrome ficticias
+4anchos/2temas: ningún input editable en revisión, modal con ambas cuentas/importes,
+Cancelar sin POST y Editar/Revisar conservan captura. Sólo app actualizada; sin DB,
+operaciones financieras ni roles/.env/commit/push.
+
+## Botón de pago multicuenta y revisión por aclarar — 28/10/2026
+
+Pagar desde una o varias cuentas en Registrar resultado ahora usa nomina-primary-action
+turquesa y encabezado flex alineado con título/ayuda; móvil apila sin desbordar.
+Usuario pregunta si cuentas/importes deberían editarse tras Revisar distribución.
+No modificar todavía ese flujo: actualmente formulario sigue editable y Volver a revisar
+recalcula sello; confirmar coteja captura/saldos y bloquea si cambiaron. Recomendación:
+revisión sólo lectura con Editar distribución que regrese a captura preservada, no
+dependencia del Atrás del navegador. Pendiente autorización de esa UX. Re-pago Diana
+sigue sin confirmación; no registrar dinero ni marcar prueba completa.
+
+QA:3Java/package y8vistas ficticias Chrome4anchos/2temas: botón turquesa, enlace/fila
+conservados, sin solaparse con texto, overflow ni POST. Sólo app actualizada.
+
+## Ubicación de pantallas e intento cancelado — 28/10/2026
+
+Usuario confirma cancelación de NPI-1 de Diana: ambas cuentas restauradas; nómina
+BOR-000002 Pendiente de pago correcto. Historial interno REVERTIDO, fuentes originales
+47/48 y recuperaciones49/50. Nuevo pago aún NO confirmado; no ejecutarlo por agente.
+Sólo mejorar presentación: Intento.estadoTexto muestra Pago cancelado (BD REVERTIDO
+sin cambiar), distintivo ámbar, explicación y tarjeta de recuperación con referencia,
+motivo, fecha/usuario separados. No afirmar deuda actual en cada fila histórica si
+después se vuelve a pagar. Encabezado ubicacion compartido en15pantallas de Nóminas,
+preparación, desglose, autorización/pagos, multifuente, intentos, decisiones y pendientes.
+Multifuente distingue Preparar pago colectivo / Preparar pago por empleado. Main de
+autorización dice Autorización y pagos por empleado. Sin modificar rutas/permisos ni
+comportamiento financiero. Continuar prueba desde nuevo pago de Diana, no cancelar otra vez.
+
+QA:1026Java/package,139JS, cierre focal3Java/package; test de cobertura de las15
+pantallas y etiqueta sin cambiar REVERTIDO.32vistas ficticias Chrome4anchos/2temas
+para autorización, multifuente, intento cancelado y decisiones; sin overflow ni POST.
+Sólo app actualizada; sin migración/DB/operaciones ni roles/.env/commit/push.
+
 ## Julio de Diana pagado y confirmado por usuario — 28/10/2026
 
 CIERRE HUMANO: confirma simulador14000+630−442.85=14187.15 y egresos NOMINA del

@@ -3,7 +3,7 @@
 <body class="form-page"><main class="form-shell finance-shell nomina-capture">
 <header th:replace="~{admin/fragments/nomina-comun :: barra}"></header>
 <section class="form-card employee-card">
- <div class="form-intro finance-intro"><span>Personal · Preparación de nómina</span><h1>Preparar nómina del periodo</h1><p>Elige el periodo. El sistema revisará las vigencias de los puestos y conceptos de cada empleado antes de guardar; no necesitas calendario.</p></div>
+ <nav th:replace="~{admin/fragments/nomina-comun :: ubicacion('Preparar nómina del periodo')}"></nav><div class="form-intro finance-intro"><span>Personal · Preparación de nómina</span><h1>Preparar nómina del periodo</h1><p>Elige el periodo. El sistema revisará las vigencias de los puestos y conceptos de cada empleado antes de guardar; no necesitas calendario.</p></div>
  <div th:replace="~{admin/fragments/laboral-comun :: avisos}"></div>
  <form class="entity-form payroll-aligned-form" method="post" th:action="@{/admin/preparacion-nomina/preparar-periodo}">
   <th:block th:replace="~{admin/fragments/nomina-comun :: ocultos}"></th:block>

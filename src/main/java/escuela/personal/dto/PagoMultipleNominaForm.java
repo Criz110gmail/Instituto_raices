@@ -25,7 +25,7 @@ public class PagoMultipleNominaForm {
   if(fuentes==null||fuentes.size()<=1||indice<0||indice>=fuentes.size())return false;
   fuentes.remove(indice);invalidarRevision();return true;
  }
- private void invalidarRevision(){sello=null;confirmado=false;}
+ public void invalidarRevision(){sello=null;confirmado=false;}
  @Getter @Setter public static class Fuente {
   private Long cuentaId;
   private String cuentaTexto;

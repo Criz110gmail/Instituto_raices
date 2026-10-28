@@ -33,6 +33,9 @@ public class PagoMultipleNominaController {
  @PostMapping("/agregar-fuente") String agregar(@PathVariable("idNomina")Long id,@ModelAttribute("formMultiple")PagoMultipleNominaForm f,@ModelAttribute FiltroNomina filtro,Model m){
   if(!f.agregarFuente())m.addAttribute("errorOperacion","Puedes distribuir el pago entre una y veinte cuentas.");return pantalla(id,filtro,m);
  }
+ @PostMapping("/editar") String editar(@PathVariable("idNomina")Long id,@ModelAttribute("formMultiple")PagoMultipleNominaForm f,@ModelAttribute FiltroNomina filtro,Model m){
+  f.invalidarRevision();return pantalla(id,filtro,m);
+ }
  @PostMapping("/quitar-fuente") String quitar(@PathVariable("idNomina")Long id,@RequestParam int indiceFuente,@ModelAttribute("formMultiple")PagoMultipleNominaForm f,@ModelAttribute FiltroNomina filtro,Model m){
   if(!f.quitarFuente(indiceFuente))m.addAttribute("errorOperacion","Conserva al menos una cuenta y selecciona una fuente válida para quitar.");return pantalla(id,filtro,m);
  }

@@ -1,5 +1,43 @@
 # Contexto del proyecto
 
+## Captura y confirmación de pago separadas — 28/10/2026
+
+Autorizado: revisar muestra sólo lectura (cuentas, importes, saldos, referencia,
+motivo). Editar distribución POST devuelve captura preservada e invalida sello y
+confirmación; misma solución para colectivo/fila/directo. Selección de periodo y
+empleado oculta en revisión. Modal final extrae snapshot de ambas fuentes y conserva
+Cancelar. Sin modificaciones de cálculo/SQL/operaciones; sello y revalidación financiera
+siguen vigentes. Se requiere revisar nuevamente tras editar. Re-pago Diana no confirmado.
+
+QA:1031Java/package,140JS y8vistas ficticias Chrome4anchos/2temas. Edición conserva
+datos e invalida sello sin pagar, revisión sin inputs editables, modal muestra ambas
+fuentes y Cancelar no registra. Sólo app actualizada, sin SQL ni movimientos operativos.
+
+## Acceso a pago multicuenta más visible — 28/10/2026
+
+Botón Pagar desde una o varias cuentas: turquesa existente y encabezado alineado con
+título/ayuda, apilado responsivo. Sin cambiar pago ni revisión. Usuario consulta por
+campos editables tras revisar; comportamiento actual exige revisar de nuevo si cambia
+captura/saldos (sello servidor). Se propone revisión sólo lectura y Editar distribución
+conservando captura, pendiente confirmar cambio. No dar por concluido re-pago Diana.
+
+QA:3Java/package y8vistas ficticias Chrome4anchos/2temas; color y alineación correctos,
+sin overflow/POST. Sólo app actualizada; sin cambios financieros ni de DB.
+
+## Cancelación confirmada y claridad de navegación — 28/10/2026
+
+Usuario confirma NPI-1 cancelado, fondos regresados a banco/caja. BOR-000002 vuelve
+Pendiente de pago; correcto, no cancelar nómina. Historial REVERTIDO se presenta ahora
+Pago cancelado (sólo etiqueta, no cambio de estado almacenado), distintivo ámbar,
+recuperación por fuente y motivo/referencia/fecha/usuario separados en tarjeta.
+Encabezado de ubicación en15formularios vinculados a Nóminas; identifica autorización,
+pago colectivo/por empleado, historial, desgloses y otras gestiones. Re-pago pendiente;
+no documentado como caso completo ni ejecutado automáticamente. No alterar saldos.
+
+QA:1026Java generales y139JS; cierre3Java/package incluye15pantallas con ubicación
+y REVERTIDO conservado internamente.32vistas ficticias Chrome4anchos/2temas, sin
+overflow/POST. Sólo app actualizada, sin migración ni movimientos financieros.
+
 ## Prueba humana de nómina multicuenta cerrada — 28/10/2026
 
 Usuario confirma Diana/BOR-000002/JUL-2027-RED-TEST y simulador14,187.15; NOMINA/NPI-1:

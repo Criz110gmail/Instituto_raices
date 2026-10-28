@@ -6,6 +6,13 @@ aprobado. Este ensayo no implica timbrado ni dispersión bancaria real.
 
 ## Retoma actual — pago de julio confirmado, 28/10/2026
 
+**Avance posterior confirmado:** el usuario ya canceló NPI-1 y verificó recuperación
+íntegra en ambas cuentas: BBVA_COBROS33,330 y CAJA16,950. BOR-000002 vuelve Pendiente
+de pago. En Historial de intentos, REVERTIDO era el código interno; ahora se presenta
+como Pago cancelado con su tarjeta de recuperación. Egresos47/48, recuperaciones49/50
+según evidencia del usuario. **Continuar apartado6 desde paso6, volver a pagar; no
+repetir cancelación.** El nuevo pago aún no está confirmado ni cerrado en la guía.
+
 El usuario confirma **BOR-000002 · JUL-2027-RED-TEST · Diana · $14,187.15** pagados
 con dos fuentes. El simulador coincide: sueldo14,000 + adicionales630 −442.85.
 Movimientos de 28/10/2026 11:32, referencia NPI-1, egresos NOMINA:
@@ -174,6 +181,11 @@ Al elegir caja muestra Efectivo y al elegir banco muestra Transferencia.
    Motivo: `Pago íntegro de Diana para julio2027 desde banco y caja.`
 7. Pulsar **Revisar distribución**. Verificar1empleado, total14,187.15 y los dos saldos
    posteriores. Se puede volver a revisar sin registrar dinero.
+   La revisión es sólo lectura: cuentas, importes, referencia y motivo ya no son
+   editables. Para corregir, pulsa **Editar distribución**: regresas a la captura
+   completa sin perder fuentes ni datos. Cambia lo necesario y pulsa nuevamente
+   **Revisar distribución**. No uses Atrás del navegador. Al editar se invalida la
+   revisión anterior; no se mueve dinero.
 8. Pulsar Confirmar y registrar pagos. Probar **Cancelar dentro del modal**: cero
    egresos. Revisar y confirmar sólo después de comprobar las cifras.
 9. Resultado esperado: empleado Pagado, dos fuentes guardadas y dos egresos en
@@ -258,6 +270,9 @@ Sólo para ensayo autorizado y cuando el dinero realmente no salió o fue recupe
    o varias cuentas**. Se usa la fotografía original, no la configuración actual.
 7. Capturar las fuentes y una nueva referencia, revisar y confirmar. Debe existir
    un folio nuevo, por14,187.15, sin editar ni borrar el intento cancelado.
+   Antes de confirmar, prueba **Editar distribución**: comprueba que conserva
+   BBVA_COBROS10,000, CAJA4,187.15, referencia y motivo. Vuelve a revisar y prueba
+   Cancelar en el modal; después confirma sólo una vez el nuevo pago autorizado.
 8. Un pago cancelado no se reincorpora automáticamente a otro colectivo.
 
 ## 7. Pago individual sin borrador previo

@@ -30,4 +30,11 @@ class PagoMultipleFuentesTest {
   var f=new PagoMultipleNominaForm();for(int i=1;i<20;i++)assertThat(f.agregarFuente()).isTrue();
   assertThat(f.agregarFuente()).isFalse();assertThat(f.getFuentes()).hasSize(20);
  }
+ @Test void editarInvalidaSoloLaRevisionYConservaLaCaptura(){
+  var f=new PagoIndividualNominaForm();f.setPeriodoId(3L);f.setEmpleadoId(6L);f.setVersion(7L);f.setFilaId(2L);f.setMotivoPagoId(4L);f.setReferencia("REPAGO");f.setMotivo("Motivo conservado");
+  var solicitud=f.getSolicitud();var fuente=f.getFuentes().getFirst();fuente.setCuentaId(1L);fuente.setImporte(new BigDecimal("14187.15"));f.setSello("sello-anterior");f.setConfirmado(true);
+  f.invalidarRevision();
+  assertThat(f.getSello()).isNull();assertThat(f.isConfirmado()).isFalse();assertThat(f.getSolicitud()).isEqualTo(solicitud);
+  assertThat(f.getPeriodoId()).isEqualTo(3L);assertThat(f.getEmpleadoId()).isEqualTo(6L);assertThat(f.getFilaId()).isEqualTo(2L);assertThat(f.getVersion()).isEqualTo(7L);assertThat(f.getMotivoPagoId()).isEqualTo(4L);assertThat(f.getReferencia()).isEqualTo("REPAGO");assertThat(f.getMotivo()).isEqualTo("Motivo conservado");assertThat(f.getFuentes()).containsExactly(fuente);assertThat(fuente.getImporte()).isEqualByComparingTo("14187.15");
+ }
 }

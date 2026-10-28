@@ -25,7 +25,9 @@ public class PagoEmpleadoNominaService {
  public record Resumen(long empleados,long pagados,BigDecimal total,BigDecimal pagado){public BigDecimal pendiente(){return total.subtract(pagado);}}
  public record Cuenta(Long id,String texto,BigDecimal saldo,Long version){}
  public record Vista(Fila fila,Cuenta cuenta,String motivoFinanciero,BigDecimal saldoPosterior,String sello){}
- public record Intento(Long id,String estado,BigDecimal monto,String moneda,Long movimientoId,String referencia,String motivo,String fecha,String usuario,Long reversaMovimiento,String referenciaReversa,String motivoReversa,String fechaReversa,String usuarioReversa){}
+ public record Intento(Long id,String estado,BigDecimal monto,String moneda,Long movimientoId,String referencia,String motivo,String fecha,String usuario,Long reversaMovimiento,String referenciaReversa,String motivoReversa,String fechaReversa,String usuarioReversa){
+  public String estadoTexto(){return switch(estado){case "REVERTIDO"->"Pago cancelado";case "PAGADO"->"Pagado";case "RECHAZADO"->"Rechazado";default->estado;};}
+ }
  public record Cuota(Long id,String concepto,BigDecimal importe,BigDecimal saldo,String moneda){}
  public record CuentaCancelacion(String texto,BigDecimal importe){}
  public List<CuentaCancelacion> cuentasCancelar(Long id){

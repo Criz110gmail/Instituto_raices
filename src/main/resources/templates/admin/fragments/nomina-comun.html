@@ -25,4 +25,5 @@
  <p class="field-help">El enlace financiero muestra exclusivamente este movimiento, respetando tus permisos. El ID del movimiento no es su secuencia dentro de la cuenta.</p>
  <p class="field-help">Aplicada y bloqueada. Se registró un egreso consolidado en el sistema; no se envió una transferencia bancaria. La corrección de pagos individuales todavía no está disponible.</p>
 </section>
+<nav th:fragment="ubicacion(seccion)" class="nomina-location" aria-label="Ubicación en nómina"><div><a th:href="${filtro!=null?filtro.url('/admin/preparacion-nomina'):'/admin/preparacion-nomina'}">Personal y nómina · Nóminas</a><span aria-hidden="true"> / </span><strong th:text="${seccion}"></strong></div><p>Sección actual: <span th:text="${seccion}"></span></p></nav>
 </body></html>

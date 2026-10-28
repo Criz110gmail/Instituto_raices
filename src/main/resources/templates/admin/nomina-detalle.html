@@ -4,7 +4,7 @@
 <body class="form-page"><main class="form-shell finance-shell nomina-detail">
 <header th:replace="~{admin/fragments/nomina-comun :: barra}"></header>
 <section class="form-card employee-card">
- <div class="form-intro finance-intro"><span th:text="${borrador.folio()+' · Nóminas'}"></span><h1 th:text="${borrador.nombre}"></h1><p>Consulta el periodo, los empleados y sus conceptos. El registro interno del egreso no envía transferencias bancarias ni emite un recibo fiscal.</p></div>
+ <nav th:replace="~{admin/fragments/nomina-comun :: ubicacion('Detalle de la nómina')}"></nav><div class="form-intro finance-intro"><span th:text="${borrador.folio()+' · Nóminas'}"></span><h1 th:text="${borrador.nombre}"></h1><p>Consulta el periodo, los empleados y sus conceptos. El registro interno del egreso no envía transferencias bancarias ni emite un recibo fiscal.</p></div>
  <div th:replace="~{admin/fragments/laboral-comun :: avisos}"></div>
  <div class="form-error" th:if="${advertencia!=null and !advertencia.empty}" th:text="${advertencia}"></div>
  <section class="nomina-status-summary" aria-label="Estado actual de la nómina">
