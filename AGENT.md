@@ -1,5 +1,23 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Julio de Diana pagado y confirmado por usuario — 28/10/2026
+
+CIERRE HUMANO: confirma simulador14000+630−442.85=14187.15 y egresos NOMINA del
+28/10/2026 11:32, BOR-000002/JUL-2027-RED-TEST, NPI-1. BBVA_COBROS33,330−10,000=
+23,330; CAJA16,950−4,187.15=12,762.85. CAJA-CORTE-TEST1,150 no participa.
+No repetir pago ni preparación. V140 sólo agrega guía CONFIRMADA de8pasos detallados,
+con permisos de consulta y advertencias; no marca cancelación/re-pago/concurrencia
+como probados. Manual retoma apartado6: cancelación y nuevo pago pendientes. Revisar
+saldos antes de ensayo: otros movimientos posteriores pueden modificar la referencia.
+Botón Configuración de nómina del expediente adopta referencia aprobada turquesa con
+texto centrado y flecha en segunda línea, sin cambiar permisos ni ruta.
+
+QA:4Java focales/package incluyen integración PostgreSQL17 ficticia con V140;
+guía insertada CONFIRMADA,8pasos y6permisos. Cierre3Java/package,8vistas Chrome
+4anchos/2temas: botón turquesa, navegación y sin overflow/POST. En móvil ocupa fila
+completa para no cortar palabras. Retirado contenedor ficticio/tmpfs. Sólo app y
+contenido de guía actualizados; sin cambios de pagos/saldos/roles/.env/commit/push.
+
 ## Configuración de nómina independiente y organizada — 28/10/2026
 
 Por petición del usuario, el acceso Configuración de nómina del expediente abre

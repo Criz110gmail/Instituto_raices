@@ -1,16 +1,26 @@
 # Ensayo del flujo ordinario de nómina sin calendarios
 
-Estado: **propuesto; pendiente de confirmación manual del usuario**. No repetir las
-capturas ya aprobadas. Este ensayo no implica timbrado ni dispersión bancaria real.
+Estado: **pago colectivo y simulador de julio confirmados por el usuario el 28/10/2026**.
+Cancelación y nuevo pago siguen pendientes. No repetir las capturas ni el pago ya
+aprobado. Este ensayo no implica timbrado ni dispersión bancaria real.
 
-## Retoma actual — paso5, 28/10/2026
+## Retoma actual — pago de julio confirmado, 28/10/2026
 
-El usuario ya avanzó a **Autorización y pagos por empleado**. Verificado:
-**BOR-000002 · JUL-2027-RED-TEST · Borrador · 1 empleado (Diana) · $14,187.15**.
-No repetir preparación, Incluir ni guardar otro borrador. El apartado histórico
-siguiente describe el punto anterior. Continuar directamente en **5. Revisar fuentes
-y registrar el pago**, desde Preparar pago colectivo. Usar banco10,000/caja4,187.15,
-agregando la segunda cuenta; todavía no consta pago confirmado. BOR-000001 de enero intacto.
+El usuario confirma **BOR-000002 · JUL-2027-RED-TEST · Diana · $14,187.15** pagados
+con dos fuentes. El simulador coincide: sueldo14,000 + adicionales630 −442.85.
+Movimientos de 28/10/2026 11:32, referencia NPI-1, egresos NOMINA:
+
+| Cuenta | Antes | Egreso | Después confirmado |
+|---|---:|---:|---:|
+| BBVA_COBROS | $33,330.00 | $10,000.00 | $23,330.00 |
+| CAJA | $16,950.00 | $4,187.15 | $12,762.85 |
+
+CAJA-CORTE-TEST permanece $1,150.00: no fue fuente del pago. Total egresado14,187.15.
+La guía del sistema incorpora este caso confirmado. No repetir preparación, Incluir,
+borrador ni pago. BOR-000001 de enero intacto. Siguiente ensayo pendiente: apartado6,
+cancelar este pago y volver a pagarlo; comprobar primero que no hubo otros movimientos
+posteriores antes de esperar los mismos saldos. Los apartados siguientes son el
+recorrido de referencia, no una instrucción de repetir el pago confirmado.
 
 ## Punto exacto para retomar mañana — confirmado el 27/10/2026
 
@@ -233,7 +243,7 @@ julio ya esté pagado: eso no autoriza otro pago ni modifica su recibo/históric
 
 Sólo para ensayo autorizado y cuando el dinero realmente no salió o fue recuperado.
 
-1. **Nóminas → Ver → Pagos por empleado → Ver pago e intentos → Gestión**.
+1. **Personal y nómina → Nóminas → Ver BOR-000002 → Autorización y pagos por empleado → Pagos por empleado → Ver pago e intentos de Diana → Registrar resultado**.
 2. En **Cancelar sólo este pago**, elegir motivo financiero de ingreso/Ambos,
    referencia `RECUP-NOM-RED-JUL`, motivo
    `Recuperación íntegra del pago de prueba en sus dos cuentas de origen.`

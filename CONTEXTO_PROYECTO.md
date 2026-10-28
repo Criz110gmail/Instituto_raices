@@ -1,5 +1,19 @@
 # Contexto del proyecto
 
+## Prueba humana de nómina multicuenta cerrada — 28/10/2026
+
+Usuario confirma Diana/BOR-000002/JUL-2027-RED-TEST y simulador14,187.15; NOMINA/NPI-1:
+BBVA_COBROS egreso10,000 (33,330→23,330), CAJA4,187.15 (16,950→12,762.85).
+CAJA-CORTE-TEST mantiene1,150. Guía V140 CONFIRMADA de8pasos; sólo contenido editorial.
+Manual cambia retoma al ensayo6 pendiente: cancelar y volver a pagar; no ejecutado
+por agente ni aceptado como prueba. Referencia de botón solicitada: turquesa sólido,
+texto centrado y flecha debajo. Sin modificar fuentes, conceptos ni importes.
+
+Verificación:4Java con integración PostgreSQL17 temporal; V140 produce guía
+CONFIRMADA con8pasos y6permisos. Cierre3Java/package y8vistas Chrome4anchos/2temas,
+botón de fila completa móvil, sin desbordes/POST. Base ficticia retirada; actualización
+sólo app/contenido editorial, no operaciones financieras ni roles/.env/Git.
+
 ## Reorganización de configuración de nómina — 28/10/2026
 
 Usuario autoriza abrir configuración desde empleado como pantalla independiente con
