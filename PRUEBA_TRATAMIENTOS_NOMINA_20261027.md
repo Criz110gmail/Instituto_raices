@@ -4,12 +4,14 @@ Estado: **pendiente de ejecución manual y confirmación del usuario**. Las prue
 automatizadas aisladas no significan que el usuario ya haya aprobado estos casos.
 No ingresar datos con herramientas ni alterar julio para preparar este ejemplo.
 
-## Primero: terminar la prueba de julio donde quedamos
+## Julio ya está cerrado; no repetirlo
 
-El punto exacto está al principio de `PRUEBA_NOMINA_FLUJO_BASE_20261027.md`.
-Julio ya tiene los conceptos de Diana y muestra $14,187.15, todavía No incluido.
-Retomar incluyendo únicamente a Diana, guardar el borrador, revisar y pagar con el
-manual ordinario. No duplicar EXTRA250, julio ni sus conceptos recurrentes.
+El usuario confirmó julio, cancelación NPI-1 y nuevo pago NPI-2 por $14,187.15 el
+28/10/2026. No incluir otra vez, crear borrador, cancelar ni pagar julio. El siguiente
+ensayo ordinario es pago individual sin borrador (apartado7 del manual de flujo base);
+después continuar estos tratamientos. Antes de usar agosto revisa si ese ensayo ocupó
+su cobertura: elige otro periodo libre sin solapamientos si corresponde, ajustando el
+cálculo por días reales. No usar importes de agosto a ciegas para otro mes.
 
 ## Qué incorpora esta entrega
 

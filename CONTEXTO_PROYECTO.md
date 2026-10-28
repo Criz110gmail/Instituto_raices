@@ -1,5 +1,19 @@
 # Contexto del proyecto
 
+## Cancelación y nuevo pago confirmados por usuario — 28/10/2026
+
+NPI-1 cancelado15:32 y NPI-2 pagado16:41 para Diana/julio/BOR-000002. Usuario confirma
+ingresos NOMINA_REVERSO10,000+4,187.15 y nuevos egresos NOMINA iguales. BBVA_COBROS
+23,330 y CAJA12,762.85 finales; CAJA-CORTE-TEST1,150 sin cambios. V141 editorial:
+guía de8pasos CONFIRMADA y actualización del cierre de la guía inicial, sin pagar nada.
+No repetir julio. Siguiente ensayo pendiente: pago individual sin borrador, otro periodo
+no superpuesto; revisar datos/cálculo antes de dar importes. Luego tratamientos. No
+confundir esta aceptación con otros escenarios de fondos insuficientes o concurrencia.
+
+Verificado4Java/package e integración PostgreSQL17 temporal: guía nueva CONFIRMADA
+8pasos/6permisos; guía inicial versión2 mantiene8pasos. Actualización editorial sólo,
+sin pagos/cancelaciones operativos. Contenedor de QA retirado; sin roles/.env/Git.
+
 ## Captura y confirmación de pago separadas — 28/10/2026
 
 Autorizado: revisar muestra sólo lectura (cuentas, importes, saldos, referencia,

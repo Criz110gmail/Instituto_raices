@@ -1,17 +1,25 @@
 # Ensayo del flujo ordinario de nómina sin calendarios
 
-Estado: **pago colectivo y simulador de julio confirmados por el usuario el 28/10/2026**.
-Cancelación y nuevo pago siguen pendientes. No repetir las capturas ni el pago ya
-aprobado. Este ensayo no implica timbrado ni dispersión bancaria real.
+Estado: **pago colectivo, simulador, cancelación y nuevo pago de julio confirmados
+por el usuario el 28/10/2026**. No repetir capturas, cancelación ni pagos aprobados.
+Este ensayo no implica timbrado ni dispersión bancaria real.
 
-## Retoma actual — pago de julio confirmado, 28/10/2026
+## Retoma actual — ciclo de julio cerrado, 28/10/2026
 
-**Avance posterior confirmado:** el usuario ya canceló NPI-1 y verificó recuperación
-íntegra en ambas cuentas: BBVA_COBROS33,330 y CAJA16,950. BOR-000002 vuelve Pendiente
-de pago. En Historial de intentos, REVERTIDO era el código interno; ahora se presenta
-como Pago cancelado con su tarjeta de recuperación. Egresos47/48, recuperaciones49/50
-según evidencia del usuario. **Continuar apartado6 desde paso6, volver a pagar; no
-repetir cancelación.** El nuevo pago aún no está confirmado ni cerrado en la guía.
+**Cierre posterior confirmado:** NPI-1 cancelado con recuperación íntegra a las15:32;
+NPI-2 pagado a las16:41 el28/10/2026. Mismo BOR-000002/JUL-2027-RED-TEST/Diana.
+
+| Cuenta | Tras cancelar NPI-1 | Nuevo egreso NPI-2 | Saldo final confirmado |
+|---|---:|---:|---:|
+| BBVA_COBROS | $33,330.00 | $10,000.00 | $23,330.00 |
+| CAJA | $16,950.00 | $4,187.15 | $12,762.85 |
+
+CAJA-CORTE-TEST permanece $1,150.00. Historial conserva NPI-1 cancelado y NPI-2 vigente;
+movimientos conservan recuperación y nuevos egresos. Guía V141 documenta este ciclo.
+**Siguiente prueba: apartado7, pago individual sin borrador en otro periodo disponible.**
+No repetir julio ni cancelar NPI-2. Luego seguir manual de tratamientos.
+
+### Referencia histórica del primer pago de julio
 
 El usuario confirma **BOR-000002 · JUL-2027-RED-TEST · Diana · $14,187.15** pagados
 con dos fuentes. El simulador coincide: sueldo14,000 + adicionales630 −442.85.
@@ -24,9 +32,8 @@ Movimientos de 28/10/2026 11:32, referencia NPI-1, egresos NOMINA:
 
 CAJA-CORTE-TEST permanece $1,150.00: no fue fuente del pago. Total egresado14,187.15.
 La guía del sistema incorpora este caso confirmado. No repetir preparación, Incluir,
-borrador ni pago. BOR-000001 de enero intacto. Siguiente ensayo pendiente: apartado6,
-cancelar este pago y volver a pagarlo; comprobar primero que no hubo otros movimientos
-posteriores antes de esperar los mismos saldos. Los apartados siguientes son el
+borrador ni pago. BOR-000001 de enero intacto. El apartado6 ya fue confirmado con
+NPI-1 cancelado/NPI-2 pagado. Los apartados siguientes son el
 recorrido de referencia, no una instrucción de repetir el pago confirmado.
 
 ## Punto exacto para retomar mañana — confirmado el 27/10/2026
@@ -292,10 +299,15 @@ consultar sus importes primero; julio no se combina con él.
    individual. Si aparece reservada en un borrador previo, resolver ese borrador en
    lugar de crear otro periodo para eludir el bloqueo.
 
-## Aceptación pendiente
+## Confirmado y pendiente de aceptación
+
+Confirmado manualmente: julio, simulador, pago multicuenta NPI-1, cancelación con
+recuperación exacta y nuevo pago NPI-2. Guías V140/V141 publican sólo esos recorridos.
+Pendientes: pago individual sin borrador, falta de fondos, concurrencia y tratamientos
+No aplicar/Posponer. No repetir el ciclo confirmado para probar esos casos.
 
 El ensayo automatizado aislado verificó proporciones, sumas de centavos fuera de
 orden, borrador sin dinero, pago multicuenta, fallo forzado de segunda fuente con
 rollback completo, doble confirmación, cancelación exacta e individual sin borrador.
-Eso **no sustituye** la confirmación del usuario ni publica estos casos como guía
-confirmada. Incorporar a la guía integrada sólo después de validar las capturas.
+La automatización **no sustituye** la confirmación del usuario de los casos aún
+pendientes. Incorporarlos a la guía integrada sólo después de validar sus capturas.

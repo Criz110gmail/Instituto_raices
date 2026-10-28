@@ -2,6 +2,13 @@
 
 ### Seguimiento de implementación
 
+28/10/2026: aceptación humana del ciclo de Diana/julio/BOR-000002: cálculo14,187.15,
+primer pago NPI-1, cancelación con recuperación por fuente y nuevo pago NPI-2.
+Saldos finales banco23,330/caja12,762.85; caja de corte1,150 sin cambios. Guías
+V140/V141 confirmadas sólo para esos recorridos. No repetir julio. Próximo ensayo:
+pago individual sin borrador en otro periodo; luego No aplicar/Posponer y controles
+pendientes. No equiparar integración automatizada con aceptación manual del resto.
+
 27/10/2026 V139: decisiones No aplicar/Posponer auditadas por empleado/concepto en
 borrador; vista efectiva sin reescribir copias. Pendiente completo sólo individual;
 complementario positivo por copia del periodo original y fuentes/cancelación exactas.

@@ -1,5 +1,23 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Cancelación y nuevo pago de julio cerrados — 28/10/2026
+
+CONFIRMACIÓN HUMANA: NPI-1 recuperado a las15:32 (banco10,000/caja4,187.15) y NPI-2
+pagado a las16:41, mismo BOR-000002/JUL-2027-RED-TEST/Diana. Egresos nuevos10,000 y
+4,187.15; saldos finales BBVA_COBROS23,330 y CAJA12,762.85. CAJA-CORTE-TEST1,150
+sin cambios. Total vigente14,187.15; no repetir cancelación ni pago. Usuario dice todo
+correcto. V141 añade guía CONFIRMADA de8pasos, corrige paso8 de guía inicial V140
+mediante UPDATE editorial (nunca editar migración previa) y deja otros casos pendientes.
+Manual retoma apartado7: pago individual sin borrador en periodo independiente; primero
+revisar disponibilidad y cálculo, no usar julio. Después No aplicar/Posponer según manual
+de tratamientos. Falta de fondos/concurrencia/núcleos0/negativo no aceptados por esta
+confirmación. No ejecutar operaciones financieras ni publicar esos ensayos como probados.
+
+QA:4Java/package con integración PostgreSQL17 ficticia. V141 produce guía confirmada
+8pasos/6permisos y guía inicial versión2 con8pasos; no datos financieros operativos.
+Test del encabezado de revisión en integración alineado al texto actual. Sólo app
+y contenido editorial actualizados; sin roles/.env/commit/push. QA temporal retirada.
+
 ## Revisión de pago protegida y edición explícita — 28/10/2026
 
 Usuario autoriza separación captura/revisión. nomina-pago-multiple compartida por
