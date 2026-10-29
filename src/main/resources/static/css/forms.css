@@ -1014,6 +1014,10 @@
 .employee-position-heading>div { flex:1 1 240px;min-width:0; }
 .employee-position-heading h2 { margin:5px 0;font:750 1rem/1.5 Manrope,system-ui,sans-serif;color:var(--ink); }
 .employee-position-heading p { margin:0;color:var(--muted);font-size:.78rem;line-height:1.6; }
+.employee-position-heading .employee-position-access { display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;max-width:100%;box-sizing:border-box;padding:12px 16px;border:1px solid var(--aqua);border-radius:11px;background:var(--aqua);color:#062b31;font:800 .82rem/1.5 Manrope,system-ui,sans-serif;text-align:center;text-decoration:none;white-space:normal;box-shadow:none; }
+.employee-position-heading .employee-position-access:hover { background:var(--aqua);color:#062b31;filter:brightness(.96); }
+.employee-position-heading .employee-position-access:focus-visible { outline:2px solid var(--blue);outline-offset:3px; }
+.employee-position-heading .employee-position-access>span[aria-hidden] { color:inherit; }
 .employee-position-caption { color:var(--muted);font-size:.67rem;font-weight:750;letter-spacing:.07em;text-transform:uppercase; }
 .employee-position-card .module-action { flex:0 0 auto; }
 .employee-position-card h3 { margin:0 0 12px;font-size:.9rem;line-height:1.5; }

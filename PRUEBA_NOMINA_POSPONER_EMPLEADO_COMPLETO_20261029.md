@@ -1,7 +1,22 @@
 # Posponer todo el pago y entregarlo individualmente
 
-Estado: **propuesta pendiente de prueba humana**. No operar altas, decisiones ni
-pagos con herramientas. No tocar nóminas pagadas de Bruce.
+Estado: **prueba humana confirmada el 29/10/2026**. Conservar el ejemplo como referencia;
+no repetir ni cancelar los pagos de Luis o Bruce para comprobarlo otra vez.
+
+## Resultado confirmado
+
+El usuario confirmó el punto 10 completo: BOR-000008, pago individual NPI-9 por
+$1,000.00 desde CAJA, referencia NOV-LUIS-POSPUESTO-TOTAL, a las 16:04 del
+29/10/2026. Un egreso de nómina: movimiento global #61 (secuencia de cuenta #20).
+CAJA pasó de $4,762.85 a $3,762.85; BBVA_COBROS conserva $274.29 y CAJA-CORTE-TEST
+$1,150.00. Historial de intentos: NPI-9 Pagado, fuente CAJA / EFECTIVO por $1,000.00.
+El historial laboral conserva DOC-PRI-TEST, 30 horas, sueldo mensual de $1,000.00,
+desde 01/11/2026 sin fecha de fin y su motivo original.
+
+Guardar el borrador por sí solo no pospone ni paga. Se decidió **Posponer todo el
+pago del empleado** y se confirmaron las decisiones sin mover dinero. Después se
+liquidó individualmente el pendiente del mismo periodo, sin acumularlo en otra nómina.
+La publicación de este caso en la guía integrada queda pendiente.
 
 ## Preparación cercana e independiente
 

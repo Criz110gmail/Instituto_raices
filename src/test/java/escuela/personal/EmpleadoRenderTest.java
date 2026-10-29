@@ -29,7 +29,7 @@ class EmpleadoRenderTest {
  }
  String render(String ruta,boolean edicion,boolean laboral)throws Exception{var r=new ClassLoaderTemplateResolver();r.setPrefix("templates/");r.setSuffix(".html");r.setCharacterEncoding("UTF-8");var e=new SpringTemplateEngine();e.setTemplateResolver(r);var v=new ThymeleafViewResolver();v.setTemplateEngine(e);v.setCharacterEncoding("UTF-8");var mvc=MockMvcBuilders.standaloneSetup(new Vista()).setViewResolvers(v).build();var response=mvc.perform(get(ruta).param("edicion",String.valueOf(edicion)).param("laboral",String.valueOf(laboral))).andReturn().getResponse();assertThat(response.getStatus()).isEqualTo(200);return response.getContentAsString();}
  @Test void accionesDiscretasYFiltrosCompartidosSinExponerSalarios()throws Exception{
-  var ficha=render("/test/empleado-puesto-diseno",true,true);assertThat(ficha).contains("employee-position-card","class=\"module-action\"","Ver puesto e historial","10,000.00");
+  var ficha=render("/test/empleado-puesto-diseno",true,true);assertThat(ficha).contains("employee-position-card","class=\"module-action employee-position-access\"","href=\"/admin/empleados/2/puesto\"","Ver puesto e historial","10,000.00");
   assertThat(render("/test/empleado-puesto-diseno",true,false)).doesNotContain("employee-position-card","10,000.00","Ver puesto e historial");
   var tabla=render("/test/resumen-laboral?tabla=true",true,true);assertThat(tabla).contains("personal-list-panel","module-filters","module-filter-actions","class=\"module-action\"");
   var dir=java.nio.file.Path.of("target/qa-personal");java.nio.file.Files.createDirectories(dir);java.nio.file.Files.writeString(dir.resolve("puesto-diseno.html"),ficha);java.nio.file.Files.writeString(dir.resolve("acciones-tabla.html"),tabla);

@@ -1,5 +1,17 @@
 # Contexto del proyecto
 
+## Pago completo pospuesto de Luis confirmado — 29/10/2026
+
+Usuario confirma punto10 completo: BOR-000008/NPI-9, pago individual1000 desdeCAJA,
+referencia NOV-LUIS-POSPUESTO-TOTAL, 16:04. Un egreso global61/secuencia cuenta20;
+CAJA4762.85→3762.85, banco274.29/corte1150 intactos. Puesto DOC-PRI-TEST30h/1000
+mensual desde01/11/2026 sin fin conservado. Prueba manual actualizada; no repetir ni
+cancelar NPI9. Guía integrada del caso aún pendiente de publicación.
+Guardar borrador no paga ni pospone: Posponer TODO + Confirmar decisiones sin mover
+dinero deja pendiente del mismo periodo, después pagado individualmente.
+Ver puesto e historial en Datos laborales usa acceso turquesa, alineado al encabezado,
+con foco visible y ajuste móvil; conserva ruta y permisos, sin cambios de dinero.
+
 ## Publicación de dos pestañas y ejemplo de pago completo pospuesto — 29/10/2026
 
 V145 guía9pasos/6permisoslectura sobre BOR7/NPI8, segunda confirmación bloqueada,
