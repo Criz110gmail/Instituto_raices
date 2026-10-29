@@ -1,6 +1,12 @@
 # Duplicación de pago de nómina desde dos pestañas
 
-Estado: **propuesta pendiente de aceptación humana**. No operar pagos con herramientas.
+Estado: **CONFIRMADA por el usuario el 29/10/2026**. BOR-000007/NPI-8,
+único egreso6193.55 desdeCAJA a15:21; saldo10956.40→4762.85, banco274.29 y
+corte1150 intactos. B bloqueó con La nómina cambió. Recarga antes de revisar;
+no se movió dinero. Historial sóloNPI-8 Pagado, referenciaDIC-BRUCE-DOBLE-A.
+No repetir ni cancelar este pago. Guía integrada de este caso por publicar;
+recorrido original conservado abajo como evidencia, no como retoma pendiente.
+No operar pagos con herramientas. Este cierre no afirma transacciones simultáneas.
 
 ## Punto de partida comprobado
 

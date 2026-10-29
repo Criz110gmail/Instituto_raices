@@ -1,5 +1,39 @@
 # Contexto del proyecto
 
+## Publicación de dos pestañas y ejemplo de pago completo pospuesto — 29/10/2026
+
+V145 guía9pasos/6permisoslectura sobre BOR7/NPI8, segunda confirmación bloqueada,
+con referencia actualizada desdeV144. Editorial sólo, no repetir pagos.
+Datos actuales consultados: DOC-PRI-TEST activo30h/sueldo1000; saldosCAJA4762.85,
+banco274.29/corte1150. Para no irse a meses lejanos se propone nuevo empleadoLuis
+Prueba Posposición EMP-POSP-TOTAL-TEST, ingreso29/10 y puesto desde01/11/2026,
+sin perfil docente ni cuenta requeridos. Reusar periodoNOV-2026-DEC-TEST, sóloLuis,
+neto1000. Posponer TODO y confirmar decisiones sin dinero. Localizar en Pagos por
+empleado/Pospuesto (no lista de conceptoscomplementarios), pagarCAJA1000 después,
+saldo3762.85. Prueba completa aún NO hecha. Configuración de otros empleados intacta.
+Vista previa posterior diciembre1–15 paraLuis daría483.87, no arrastra1000; no guardar
+ni pagar esa vista y descartarla. No marcar aceptación humana por QA automatizada.
+
+QA:3Java/package con PostgreSQL17 temporal correctos; guía CONFIRMADA9pasos y
+6permisos de lectura, acciones numeradas y referencia editorialV144 verificadas.
+Base ficticia retirada; sólo app/contenido editorial actualizados, sin operaciones
+financieras ni .env/commit/push.
+
+## Duplicación bloqueada; filtros sin subir — 29/10/2026
+
+Cierrehumano: BOR-000007/NPI-8 por6193.55, un egresoCAJA, saldo4762.85. Banco274.29,
+corte1150 sin cambios. PestañaB rechazó La nómina cambió. Recarga antes de revisar;
+no se movió dinero. Historial sólo8Pagado/DIC-BRUCE-DOBLE-A. No repagar/cancelar.
+Manual confirmado; pendiente publicar guía integrada (no afirma carrera simultánea).
+Mejora de Aplicar filtros en Autorización/pagos: conservar posición relativa de
+tabla y foco del botón al volverGET/#empleados; guardar/restaurar una vez por nómina,
+alternativa tabla sin almacenamiento, no desplazar si otra pestaña está activa.
+Sin cambios de consultas/criterios/selección/pagos ni migraciones.
+
+QA:render/package y dos testsJS (scroll de filtros y aviso vacío) correctos;
+12GET ficticios Chrome3anchos/2temas conservaron posición de tabla y pestaña.
+Sólo app actualizada, sin datos operativos ni .env/commit/push.
+
 ## Cierre de fondos y siguiente prueba de dos pestañas — 29/10/2026
 
 Confirmación humana: Cancelar no movió nada; luego confirmó pago5806.45 desde

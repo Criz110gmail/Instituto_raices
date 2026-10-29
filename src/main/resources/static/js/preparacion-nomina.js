@@ -1,3 +1,22 @@
+/* Los filtros de pagos vuelven a los resultados, no a la cabecera de la nómina. */
+(() => {
+ const form=document.querySelector('[data-nomina-payments-filter]');
+ const table=document.querySelector('[data-nomina-payments-table]');if(!form||!table)return;
+ const key='nomina-pagos-filtros-scroll:'+location.pathname;
+ form.addEventListener('submit',()=>{
+  try{sessionStorage.setItem(key,JSON.stringify({y:window.scrollY,offset:table.getBoundingClientRect().top}));}catch(_){/* Sin almacenamiento se vuelve a la tabla. */}
+ });
+ let saved;try{const raw=sessionStorage.getItem(key);sessionStorage.removeItem(key);if(raw)saved=JSON.parse(raw);}catch(_){}
+ if(location.hash!=='#empleados')return;
+ const restore=()=>requestAnimationFrame(()=>{
+  if(table.closest('[data-student-panel]')?.hidden)return;
+  if(saved&&Number.isFinite(saved.y)&&Number.isFinite(saved.offset)){
+   window.scrollTo({top:Math.max(0,window.scrollY+table.getBoundingClientRect().top-saved.offset),behavior:'instant'});
+  }else table.scrollIntoView({block:'start',behavior:'instant'});
+  form.querySelector('button[type="submit"],.module-action--primary')?.focus({preventScroll:true});
+ });
+ if(document.readyState==='complete')restore();else window.addEventListener('load',restore,{once:true});
+})();
 /* El servidor marca únicamente la cuenta recién agregada; revisar/errores no desplazan. */
 (() => {
  const source=document.querySelector('.nomina-payment-source[data-new-source="true"]');if(!source)return;

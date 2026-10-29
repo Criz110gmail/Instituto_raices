@@ -1,5 +1,37 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Guía V145 y ejemplo próximo sin fechas lejanas — 29/10/2026
+
+V145 publica Nómina: impedir un segundo pago desde otra pestaña, CONFIRMADA9pasos,
+6permisoslectura. Evidencia BOR7/NPI8, CAJA6193.55/saldo4762.85, B bloqueó versión;
+sin afirmar carrera simultánea. Actualiza referencia editorial de V144, no archivos
+de migraciones anteriores. No repetir/cancelar diciembre de Bruce.
+Siguiente ensayo propuesto NO realizado: Luis Prueba Posposición, empleado nuevo
+EMP-POSP-TOTAL-TEST para evitar tocar empleados existentes o avanzar hasta2027.
+Catálogo leído DOC-PRI-TEST activo30horas/sueldo1000 (no cambiar catálogo ni Bruce,
+quien conserva snapshot12000). Crear Luis, activar laboral e ingreso29/10/2026,
+Ver puesto e historial → Asignar o cambiar puesto desde01/11/2026 DOC-PRI-TEST.
+Reusar NOV-2026-DEC-TEST existente, borrador sóloLuis/neto1000. Decidir sobre TODO
+empleado → Posponer; ahora0/pospuesto1000. Autorizar con Confirmar decisiones sin
+mover dinero; cuentasintactas4762.85/274.29/1150. Pago completo se localiza en
+Pagos por empleado → estadoPospuesto, NO en Ver conceptos pospuestos (esos son
+complementarios). Pagar individual desdeCAJA1000; esperado3762.85, otrasintactas.
+Opcional comprobar vista previa próxima primeraquincena diciembre Luis483.87,
+no1483.87; NO incluir/guardar/pagar diciembre, descartar sólo esa vista efímera.
+No crear ni pagar registros de prueba por agente; todo pendiente de aceptación humana.
+
+## Dos pestañas aceptadas y scroll de filtros — 29/10/2026
+
+Usuario confirma BOR-000007/NPI-8, un egreso6193.55 desdeCAJA a15:21, saldo4762.85;
+banco274.29/corte1150 intactos. B rechazó versión obsoleta: La nómina cambió.
+Recarga antes de revisar; no se movió dinero. Historial sóloNPI-8 Pagado. No repetir
+ni cancelar diciembre. Confirmación secuencial desde página obsoleta, no carrera
+de transacciones simultáneas. Manual actualizado; guía integrada de caso por publicar.
+Filtro de Autorización y pagos por empleado mantiene posición relativa de tabla
+tras GET/#empleados usando sessionStorage por nómina; alternativa sin dato vuelve
+a tabla. Respeta activación de pestañas y errores/otros paneles; servidor/filtros
+sin cambios. No movimientos ni consultas financieras por agente para esta mejora.
+
 ## Fondos insuficientes y pago multifuente confirmados — 29/10/2026
 
 Usuario confirmó secuencia completa: error banco5000>4274.29/faltan725.71 con

@@ -20,6 +20,7 @@
 .nomina-period-edit>div{min-width:0;flex:1}.nomina-period-edit h2{margin:0 0 10px}.nomina-period-edit .field-help{display:block;position:static;margin:0;line-height:1.7}
 .nomina-period-edit>.nomina-primary-action{flex:0 0 auto;box-sizing:border-box}
 .nomina-payment-source{scroll-margin-top:24px}
+[data-nomina-payments-table]{scroll-margin-top:24px}
 .nomina-detail .nomina-empty-selection-warning:not([hidden]){border:1px solid #dfbb70;border-left:4px solid #c78b18;background:#fff6e2;color:#674500}
 .nomina-empty-selection-warning strong{display:block;line-height:1.6}.nomina-empty-selection-warning p{line-height:1.8}
 [data-theme=dark] .nomina-detail .nomina-empty-selection-warning:not([hidden]){border-color:#8e6d30;background:#342b1b;color:#ffdda0}
