@@ -1,5 +1,33 @@
 # Contexto del proyecto
 
+## Partidas del pago individual visibles — 28/10/2026
+
+Tras confirmar sólo consulta de neto6975.71, usuario solicita desglose. Tabla debajo
+del total muestra sueldo7000/transporte40/apoyo150/deducción−214.29, percepciones7190,
+deducciones214.29 y neto6975.71, con tipos/frecuencias y fechas. No valores hardcoded:
+proyección SQL del JSON de candidato calculado, con permisos existentes. Sin cambiar
+motor/importes ni crear nóminas/pagos. Aportación patronal histórica se distingue
+si existe; móvil apila filas e importes. Septiembre aún no pagado/aceptado; continuar
+desde consulta del desglose de Diana, sin volver a crear periodo ni tocar julio.
+
+QA:4Java con integración PostgreSQL17 ficticia:4partidas exactas7000/40/150/214.29,
+percepciones7190/neto6975.71 y HTTP sin nuevos pagos/borradores. Cierre3Java/package,
+140JS y16vistas Chrome4anchos/2temas, sin overflow/POST. Base QA retirada; sólo app
+actualizada, sin migraciones ni operaciones financieras reales.
+
+## Ayudas de pago individual corregidas — 28/10/2026
+
+Usuario creó septiembre SEP-2027-IND-TEST y está en selección antes de pagar. Esperado
+6975.71 para Diana01–15/09/2027; pago pendiente de prueba. Alineación2columnas iguales
+y1móvil, etiquetas uniformes y bloque separado para consultar. Dropdown no hereda
+altura42px de botones .filters; altoauto, multilínea y scroll. Overflow de form-card
+liberado sólo en pago directo para no cortar opciones. Mismos GET/IDs/endpoints y
+focus10/query>=3. Sin modificar configuración ni cálculos ni registrar dinero.
+
+QA:3Java/package,140JS,16vistas Chrome ficticias4anchos/2temas con/sin cálculo;
+ambas ayudas alineadas, listas sin recortes ni solapes, focus/búsqueda/IDs/GET
+preservados. Sin overflow/POST. Sólo app actualizada; sin SQL ni pagos operativos.
+
 ## Cancelación y nuevo pago confirmados por usuario — 28/10/2026
 
 NPI-1 cancelado15:32 y NPI-2 pagado16:41 para Diana/julio/BOR-000002. Usuario confirma

@@ -1,5 +1,45 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Desglose del cálculo individual antes de pagar — 28/10/2026
+
+Usuario confirma consulta SEP-2027-IND-TEST/Diana neto6975.71 pero pide partidas
+visibles. Nueva tabla ¿Cómo se calcula este pago? debajo de neto: sueldo7000,
+transporte40, apoyoquincenal150, deducción−214.29; totalpercepciones7190,
+deducciones214.29 y neto6975.71. Código/nombre/frecuencia, periodo y fechas; salario
+se identifica Sueldo base proporcional. Aportación patronal separada si existe,
+sin disminuir neto. En móvil filas apiladas, importe visible sin scroll horizontal.
+PreparacionNominaService.partidasIndividuales proyecta JSON de Candidato ya calculado
+(sueldos/conceptos/ocasionales/préstamos), no recalcula fórmulas ni consulta importes
+de referencia para sustituirlos. Autoriza lectura salarial y empleado; JSON interno,
+no parámetro HTTP. Controller carga tabla/periodo del mismo candidato antes de exponer
+resultado. Se muestra durante captura y revisión directa. Colectivo y pagos previos
+sin cambio. No repetir julio ni declarar pagada septiembre: reanudar revisión de
+desglose y después continuar pago individual, todavía pendiente de aceptación humana.
+
+QA:4Java/package con PostgreSQL17 temporal: candidato y4partidas reales exactas
+7000/40/150/214.29, total7190/neto6975.71; consulta HTTP no crea borradores/movimientos.
+Cierre3Java/package,140JS y16vistas Chrome4anchos/2temas (fixture y render SQL),
+sin campos editables en tabla/overflow/POST. QA temporal retirada. Sólo app
+actualizada; sin SQL de migración ni pagos/datos operativos/roles/.env/commit/push.
+
+## Pago individual: ayudas y alineación — 28/10/2026
+
+Usuario está en selección de Pago individual, ya creó SEP-2027-IND-TEST (01–15/09/2027)
+y todavía no confirmó el pago. Caso esperado Diana7000+40+150−214.29=6975.71,
+BBVA_COBROS23330→16354.29, cajas intactas. No crear otro periodo ni repetir julio.
+Corrige UI de periodo/empleado: bloque propio nomina-direct-selection y grid2columnas
+iguales (1móvil), etiquetas y inputs alineados. Se sobreescribe alto fijo de botones
+de sugerencias de .filters sólo en esta ayuda; texto multilínea/altura auto/scroll.
+Body nomina-direct libera overflow de form-card para no recortar dropdown antes del
+cálculo. Sin cambiar endpoints, focus10/query>=3, parámetros GET ni reglas/pagos.
+Retomar seleccionando periodo existente y Diana → Consultar cálculo, luego ensayo
+de pago individual propuesto. No declarar ese ensayo confirmado aún.
+
+QA:3Java/package,140JS y16vistas ficticias Chrome4anchos/2temas, antes/después de
+calcular. Anchos/alturas alineados, listas multilínea sin recortes/solapes, focus10
+y query>=3, selección por ID y GET de consulta preservados, sin overflow ni POST.
+Sólo app actualizada; sin SQL ni operaciones financieras ni roles/.env/commit/push.
+
 ## Cancelación y nuevo pago de julio cerrados — 28/10/2026
 
 CONFIRMACIÓN HUMANA: NPI-1 recuperado a las15:32 (banco10,000/caja4,187.15) y NPI-2

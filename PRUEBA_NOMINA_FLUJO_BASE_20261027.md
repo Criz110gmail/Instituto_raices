@@ -290,6 +290,21 @@ consultar sus importes primero; julio no se combina con él.
 
 1. **Personal y nómina → Nóminas → Pago individual**.
 2. Seleccionar un periodo programado y un empleado elegible; **Consultar cálculo**.
+   Punto actual de la prueba: Diana y SEP-2027-IND-TEST, del01/09/2027 al15/09/2027,
+   ya creados/seleccionados; usuario confirmó sólo el neto $6,975.71. No pagar todavía
+   si no coincide el desglose. Debajo del total, **¿Cómo se calcula este pago?**:
+
+   | Partida | Importe calculado |
+   |---|---:|
+   | Sueldo base proporcional | $7,000.00 |
+   | Transporte mensual proporcional | $40.00 |
+   | Apoyo quincenal | $150.00 |
+   | Total de percepciones | $7,190.00 |
+   | Deducción semanal proporcional | − $214.29 |
+   | Total a pagar | $6,975.71 |
+
+   Los $250 únicos de julio no deben aparecer en septiembre. Es consulta del cálculo:
+   no crea otra nómina ni mueve dinero. Verificar partidas antes de capturar fuentes.
 3. Revisar el neto obtenido. Seleccionar fuentes que sumen exactamente ese importe,
    motivo financiero, referencia y justificación.
 4. **Revisar distribución → Confirmar y registrar pagos → modal**.

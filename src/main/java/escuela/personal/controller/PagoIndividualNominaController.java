@@ -21,7 +21,10 @@ public class PagoIndividualNominaController {
  private static final String RUTA="/admin/preparacion-nomina/pago-individual";
  private String pantalla(PagoIndividualNominaForm f,FiltroNomina filtro,Model m){
   empleados.autorizarSalarios(true);m.addAttribute("filtro",filtro.normalizado());m.addAttribute("formMultiple",f);m.addAttribute("individualDirecto",true);m.addAttribute("rutaMultiple",RUTA);m.addAttribute("volverUrl",filtro.url("/admin/preparacion-nomina"));m.addAttribute("tituloReferencia","Pago individual · un empleado y un periodo");m.addAttribute("cuentasEndpoint",RUTA+"/cuentas");m.addAttribute("motivosEndpoint",RUTA+"/motivos");
-  if(f.getEmpleadoId()!=null&&f.getPeriodoId()!=null)try{var c=service.calculoIndividual(f);m.addAttribute("totalSolicitado",c.propuesto());m.addAttribute("empleadoIndividual",c);m.addAttribute("lineasIndividuales",preparacion.contexto(f.getPeriodoId()).periodo());}catch(ReglaNegocioException e){m.addAttribute("errorOperacion",e.getMessage());}
+  if(f.getEmpleadoId()!=null&&f.getPeriodoId()!=null)try{
+   var c=service.calculoIndividual(f);var lineas=preparacion.partidasIndividuales(c);var periodo=preparacion.contexto(f.getPeriodoId()).periodo();
+   m.addAttribute("totalSolicitado",c.propuesto());m.addAttribute("empleadoIndividual",c);m.addAttribute("lineasIndividuales",lineas);m.addAttribute("periodoIndividual",periodo);
+  }catch(ReglaNegocioException e){m.addAttribute("errorOperacion",e.getMessage());}
   return "admin/nomina-pago-multiple";
  }
  @GetMapping String nuevo(@ModelAttribute("formMultiple")PagoIndividualNominaForm f,@ModelAttribute FiltroNomina filtro,Model m){return pantalla(f,filtro,m);}

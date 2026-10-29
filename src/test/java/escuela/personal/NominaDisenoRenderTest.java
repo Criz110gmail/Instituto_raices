@@ -36,6 +36,16 @@ class NominaDisenoRenderTest {
     return "admin/empleado-nomina";
    }
    if(vista.equals("periodos")){m.addAttribute("filtro",new FiltroProgramacionNomina("","TODOS","",null,"",null,"",null,null,0,25).normalizado(true));m.addAttribute("tipo","periodos-nomina");m.addAttribute("esPeriodo",true);m.addAttribute("titulo","Periodos de nómina");m.addAttribute("moduloActual",ModuloCatalogo.PERIODOS_NOMINA);return "admin/programacion-nomina-listado";}
+   if(vista.startsWith("directo-")){
+    var pago=new PagoIndividualNominaForm();m.addAttribute("individualDirecto",true);m.addAttribute("formMultiple",pago);m.addAttribute("rutaMultiple","/admin/preparacion-nomina/pago-individual");m.addAttribute("tituloReferencia","Pago individual · un empleado y un periodo");m.addAttribute("cuentasEndpoint","/qa/cuentas");m.addAttribute("motivosEndpoint","/qa/motivos");
+    if(!vista.equals("directo-vacio")){
+     pago.setPeriodoId(9L);pago.setPeriodoTexto("SEP-2027-IND-TEST · Primera quincena de septiembre");pago.setEmpleadoId(6L);pago.setEmpleadoTexto("EMP-QA · Diana de prueba");m.addAttribute("totalSolicitado",money("6975.71"));
+     m.addAttribute("empleadoIndividual",new Candidato(6L,"EMP-QA","Diana de prueba","LISTO","Configuración por vigencias",money("7000"),money("190"),money("214.29"),money("0"),money("6975.71"),"MXN","{}","sello"));
+     var septiembre=LocalDate.of(2027,9,1);m.addAttribute("periodoIndividual",new escuela.personal.service.ProgramacionNominaService.Periodo(9L,null,"SEP-2027-IND-TEST","Primera quincena",null,null,null,null,septiembre,septiembre.plusDays(14),null,septiembre.plusDays(14),"PROGRAMADO","Prueba","Prueba",0L,"Próximo"));
+     m.addAttribute("lineasIndividuales",List.of(new PartidaIndividual("APOYO_48","Apoyo técnico","SUELDO","MENSUAL",money("7000")),new PartidaIndividual("TRANS","Transporte mensual de prueba","PERCEPCION","MENSUAL",money("40")),new PartidaIndividual("QUIN","Apoyo quincenal de prueba","PERCEPCION","QUINCENAL",money("150")),new PartidaIndividual("DED","Deducción semanal de prueba","DEDUCCION","SEMANAL",money("214.29"))));
+    }
+    return "admin/nomina-pago-multiple";
+   }
    if(vista.equals("intento-cancelado")){
     m.addAttribute("borrador",new Borrador(2L,1L,"Julio Diana","AUTORIZADA",1,0L,"Motivo","JUL-2027-RED-TEST","Julio","Periodo independiente",inicio,fin,fin,"MXN","sello",1,money("14187.15")));
     m.addAttribute("empleadoPago",new escuela.personal.service.PagoEmpleadoNominaService.Fila(2L,6L,"EMP-QA","Diana de prueba",money("14187.15"),"MXN","PENDIENTE",null));
@@ -87,7 +97,7 @@ class NominaDisenoRenderTest {
  @Test void filtrosUniformesYDesglosesCompartenResumenSinModificarImportes()throws Exception{
   var r=new ClassLoaderTemplateResolver();r.setPrefix("templates/");r.setSuffix(".html");r.setCharacterEncoding("UTF-8");var engine=new SpringTemplateEngine();engine.setTemplateResolver(r);var resolver=new ThymeleafViewResolver();resolver.setTemplateEngine(engine);resolver.setCharacterEncoding("UTF-8");
   var mvc=MockMvcBuilders.standaloneSetup(new Vista()).setViewResolvers(resolver).build();var dir=Files.createDirectories(Path.of("target/qa-nomina-alineacion"));
-  for(String vista:List.of("nominas","periodos","previa","previa-vacia","desglose","historico","tratamientos","decision","pendientes","pagos","pagos-pagados","pagos-lectura","pagos-filtrados","pagos-error","pago","pago-revision","intento-cancelado","configuracion","configuracion-vacia","configuracion-bloqueada")){
+  for(String vista:List.of("nominas","periodos","previa","previa-vacia","desglose","historico","tratamientos","decision","pendientes","pagos","pagos-pagados","pagos-lectura","pagos-filtrados","pagos-error","pago","pago-revision","directo-vacio","directo-calculado","intento-cancelado","configuracion","configuracion-vacia","configuracion-bloqueada")){
    var response=mvc.perform(get("/qa/nomina/"+vista)).andReturn().getResponse();assertThat(response.getStatus()).isEqualTo(200);var html=response.getContentAsString();
    if(List.of("desglose","historico").contains(vista))assertThat(html).contains("nomina-net-summary","nomina-net-amount","$14,187.15","$14,000.00","+ $630.00","− $442.85");
    else if(List.of("nominas","periodos","previa","pendientes").contains(vista)) {assertThat(html).contains("payroll-aligned-filters");assertThat(html).containsPattern("<a class=\"module-action\"[^>]*>Limpiar</a>");}
@@ -96,6 +106,9 @@ class NominaDisenoRenderTest {
    if(vista.equals("pagos"))assertThat(html).contains("nomina-collective-entry","class=\"nomina-primary-action\"","Preparar pago colectivo","nomina-decisions-heading","nomina-decisions-form").containsPattern("<a class=\"nomina-primary-action\"[^>]*>Ver conceptos pospuestos").contains("<button class=\"nomina-primary-action\">Confirmar decisiones sin mover dinero</button>","data-money-confirm=\"nomina-congelar\"");
    if(vista.equals("pago")||vista.equals("pago-revision"))assertThat(html).contains("form-card employee-card","BBVA-QA","CAJA-QA","fuentes[0].importe","fuentes[1].medio","motivoPagoTexto","referencia");
    if(vista.equals("pago"))assertThat(html).contains("nomina-source-grid","nomina-payment-source","Revisar distribución").doesNotContain("data-payment-review-source","Editar distribución");
+   if(vista.startsWith("directo-"))assertThat(html).contains("nomina-direct-selection","nomina-direct-query","Selecciona el periodo y el empleado","name=\"periodoId\"","name=\"empleadoId\"","Consultar cálculo","data-refresh-on-focus=\"true\"");
+   if(vista.equals("directo-vacio"))assertThat(html).doesNotContain("nomina-payment-source","Total a pagar");
+   if(vista.equals("directo-calculado"))assertThat(html).contains("$6,975.71","SEP-2027-IND-TEST","EMP-QA · Diana de prueba","nomina-payment-source","nomina-individual-breakdown","Sueldo base proporcional","$7,000.00","$40.00","$150.00","− $214.29","Total de percepciones","$7,190.00","Total de deducciones","01/09/2027","15/09/2027");
    if(vista.equals("pago-revision"))assertThat(html).contains("Sólo revisión","nomina-payment-review","Editar distribución","data-payment-review-source","/editar","data-money-confirm=\"nomina-multifuente\"").doesNotContain("nomina-source-grid","autocomplete-input","Agregar otra cuenta","Quitar cuenta","Volver a revisar");
    if(vista.startsWith("pagos"))assertThat(html).contains("data-student-tabs","data-student-panel=\"resumen\"","data-student-panel=\"empleados\"","data-student-panel=\"decisiones\"","#empleados","Pagos por empleado","data-refresh-on-focus=\"true\"","name=\"empleadoPagoId\"","name=\"empleadoPagoTexto\"","/pagos/empleados/buscar");
    if(vista.equals("pagos-pagados"))assertThat(html).contains("data-student-panel=\"cancelacion\"","nomina-cancelar-todos").doesNotContain("Preparar pago colectivo");

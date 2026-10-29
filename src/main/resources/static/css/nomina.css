@@ -175,6 +175,41 @@
 .nomina-location a { color:var(--muted);text-decoration:none; }.nomina-location a:hover { text-decoration:underline; }
 .nomina-location strong { color:var(--ink);font-weight:800; }.nomina-location p { margin:7px 0 0;color:var(--muted);font-size:.75rem;line-height:1.6; }
 .nomina-attempt-status { white-space:normal;line-height:1.6; }
+.nomina-individual-breakdown { margin:20px 0 26px;padding:22px;border:1px solid var(--line);border-radius:15px;background:var(--surface);min-width:0; }
+.nomina-individual-breakdown header { margin-bottom:18px; }.nomina-individual-breakdown h2 { margin:8px 0 12px;font-size:1.15rem;line-height:1.5; }.nomina-individual-breakdown header p { margin:0;color:var(--muted);font-size:.8rem;line-height:1.7;overflow-wrap:anywhere; }
+.nomina-individual-breakdown td { vertical-align:top; }.nomina-individual-breakdown td:last-child { text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap; }.nomina-individual-breakdown .nomina-cell small { line-height:1.6; }
+.nomina-individual-breakdown tfoot th,.nomina-individual-breakdown tfoot td { padding:16px 14px;border-top:1px solid var(--line);font-size:.85rem;line-height:1.7; }.nomina-individual-breakdown tfoot th { text-align:left;text-transform:none;letter-spacing:normal;overflow-wrap:anywhere;min-width:0; }.nomina-individual-breakdown tfoot small { display:block;margin-top:4px;font-size:.74rem;font-weight:500;color:var(--muted); }
+.nomina-individual-breakdown .nomina-breakdown-net { background:var(--soft,var(--surface)); }.nomina-individual-breakdown .nomina-breakdown-net th,.nomina-individual-breakdown .nomina-breakdown-net td { border-top:2px solid var(--aqua);font-size:1.12rem;font-weight:800; }
+.nomina-individual-breakdown>.field-help { display:block;margin:18px 0 0;line-height:1.8; }
+@media(max-width:620px){
+ .nomina-individual-breakdown{padding:16px}.nomina-individual-breakdown .table-wrap{overflow:visible}
+ .nomina-individual-breakdown table,.nomina-individual-breakdown tbody,.nomina-individual-breakdown tfoot{display:block;width:100%;min-width:0}
+ .nomina-individual-breakdown thead{display:none}
+ .nomina-individual-breakdown tbody tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;padding:16px 0;border-top:1px solid var(--line)}
+ .nomina-individual-breakdown tbody td{display:block;min-width:0;padding:0;border:0;font-size:.8rem}
+ .nomina-individual-breakdown td[data-label="Partida calculada"],.nomina-individual-breakdown td[data-label=Tipo]{grid-column:1;text-align:left;white-space:normal}
+ .nomina-individual-breakdown .nomina-cell,.nomina-individual-breakdown .nomina-cell strong,.nomina-individual-breakdown .nomina-cell small{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left}
+ .nomina-individual-breakdown td[data-label=Tipo]{color:var(--muted);font-size:.74rem}
+ .nomina-individual-breakdown td[data-label="Importe del periodo"]{grid-column:2;grid-row:1 / span 2;font-weight:800}
+ .nomina-individual-breakdown td::before{display:none}
+ .nomina-individual-breakdown tfoot tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+ .nomina-individual-breakdown tfoot th,.nomina-individual-breakdown tfoot td{display:block;padding:0;border:0;font-size:.8rem}
+ .nomina-individual-breakdown .nomina-breakdown-net{padding:16px 10px;border-top:2px solid var(--aqua)}
+ .nomina-individual-breakdown .nomina-breakdown-net th,.nomina-individual-breakdown .nomina-breakdown-net td{border:0;font-size:.95rem}
+}
+/* Pago directo: dos ayudas del mismo ancho, sin recortar ni apilar sugerencias. */
+.nomina-direct .form-card { overflow:visible; }
+.nomina-direct-selection { position:relative;z-index:5;min-width:0;margin:0 0 24px;padding:22px;border:1px solid var(--line);border-radius:15px;background:var(--soft,var(--surface));overflow:visible; }
+.nomina-direct-selection>header { margin-bottom:20px; }.nomina-direct-selection h2 { margin:0 0 10px;font-size:1.05rem;line-height:1.6; }.nomina-direct-selection>header p { margin:0;color:var(--muted);font-size:.8rem;line-height:1.8; }
+.nomina-direct-selection .filters.nomina-direct-query { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;margin:0;padding:0;border:0; }
+.nomina-direct-query>.autocomplete { min-width:0;grid-column:auto; }
+.filters.nomina-direct-query>.autocomplete>label { min-height:32px;margin:0 0 8px;line-height:1.6; }.nomina-direct-query .autocomplete-status { min-height:36px;line-height:1.6; }
+.nomina-direct-query .autocomplete .autocomplete-option { display:grid;height:auto!important;min-height:0!important;grid-column:auto;line-height:1.6;white-space:normal;overflow-wrap:anywhere;padding:11px 12px;background:transparent;color:var(--ink); }
+.nomina-direct-query .autocomplete-option strong,.nomina-direct-query .autocomplete-option small { display:block;position:static;margin:0;line-height:1.6;white-space:normal;overflow-wrap:anywhere; }
+.nomina-direct-query .autocomplete .autocomplete-option:hover,.nomina-direct-query .autocomplete .autocomplete-option.active { background:var(--soft,var(--paper)); }
+.nomina-direct-query .autocomplete-results { max-height:min(320px,55vh);max-width:100%;overflow-y:auto;overscroll-behavior:contain;z-index:50; }
+.nomina-direct-query>.module-filter-actions { grid-column:1 / -1;justify-content:flex-end; }
+@media(max-width:620px){.nomina-direct-selection{padding:16px}.nomina-direct-selection .filters.nomina-direct-query{grid-template-columns:minmax(0,1fr);gap:16px}.nomina-direct-query .autocomplete-status{min-height:0}}
 .nomina-payment-review { min-width:0; }.nomina-review-heading h2 { margin:14px 0 10px;line-height:1.5; }.nomina-review-heading p { line-height:1.8; }
 .nomina-review-source .nomina-source-heading h3 { margin:0 0 8px;line-height:1.6;overflow-wrap:anywhere; }.nomina-review-source .nomina-source-heading p { margin:0;color:var(--muted);font-size:.8rem;line-height:1.7; }
 .nomina-review-source .employee-labor-dates,.nomina-review-reason .employee-labor-dates { margin-top:20px;gap:18px; }.nomina-review-source dd,.nomina-review-reason dd { line-height:1.7;overflow-wrap:anywhere; }.nomina-review-source .nomina-review-amount { font-size:1.4rem;font-weight:800;font-variant-numeric:tabular-nums; }

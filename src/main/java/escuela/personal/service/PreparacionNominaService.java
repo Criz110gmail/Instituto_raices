@@ -27,6 +27,30 @@ public class PreparacionNominaService {
  public record Guardado(Long id,Long empleadoId,String codigo,String nombre,BigDecimal sueldo,BigDecimal percepciones,BigDecimal deducciones,BigDecimal aportaciones,BigDecimal propuesto,String moneda,String sello,int revision){}
  public record Cobertura(String calendario,String codigo,String nombre,LocalDate inicio,LocalDate fin,LocalDate pago,String moneda){}
  public record Linea(String codigo,String nombre,String naturaleza,BigDecimal importe,String inicio,String fin){}
+ public record PartidaIndividual(String codigo,String nombre,String naturaleza,String frecuencia,BigDecimal importe){
+  public String tipo(){return switch(naturaleza){case "SUELDO","PERCEPCION"->"Percepción";case "DEDUCCION"->"Deducción";default->"Aportación de la escuela";};}
+  public String frecuenciaTexto(){return switch(frecuencia==null?"LEGADO":frecuencia){case "MENSUAL"->"Mensual · Importe proporcional del periodo";case "QUINCENAL"->"Quincenal · Importe correspondiente al periodo";case "SEMANAL"->"Semanal · Importe proporcional del periodo";case "UNICA"->"Una sola vez · Sólo este periodo";case "PRESTAMO"->"Cuota de préstamo";default->"Importe por nómina · Configuración anterior";};}
+ }
+ public List<PartidaIndividual> partidasIndividuales(Candidato candidato){
+  var par=p(false);empleados.autorizar(candidato.id(),true,false);
+  return jdbc.query("""
+   WITH datos AS (SELECT cast(:fuentes as jsonb) contenido), partidas AS (
+    SELECT x->>'puesto_codigo' codigo,x->>'puesto_nombre' nombre,'SUELDO' naturaleza,'MENSUAL' frecuencia,(x->>'importe_bruto')::numeric importe,0 grupo,n orden
+    FROM datos CROSS JOIN LATERAL jsonb_array_elements(contenido->'sueldos') WITH ORDINALITY s(x,n)
+    UNION ALL
+    SELECT x->>'concepto_codigo',x->>'concepto_nombre',x->>'naturaleza',coalesce(x->>'frecuencia_importe','LEGADO'),(x->>'importe')::numeric,1,n
+    FROM datos CROSS JOIN LATERAL jsonb_array_elements(contenido->'conceptos') WITH ORDINALITY s(x,n)
+    UNION ALL
+    SELECT x->>'concepto_codigo',x->>'concepto_nombre',x->>'naturaleza','UNICA',(x->>'importe')::numeric,2,n
+    FROM datos CROSS JOIN LATERAL jsonb_array_elements(contenido->'ocasionales') WITH ORDINALITY s(x,n)
+    UNION ALL
+    SELECT x->>'concepto_codigo',x->>'concepto_nombre','DEDUCCION','PRESTAMO',(x->>'cuota')::numeric,3,n
+    FROM datos CROSS JOIN LATERAL jsonb_array_elements(contenido->'prestamos') WITH ORDINALITY s(x,n)
+   )
+   SELECT codigo,nombre,naturaleza,frecuencia,importe FROM partidas
+   ORDER BY CASE naturaleza WHEN 'SUELDO' THEN 0 WHEN 'PERCEPCION' THEN 1 WHEN 'DEDUCCION' THEN 2 ELSE 3 END,grupo,orden
+   """,par.addValue("fuentes",candidato.fuentes()),(r,n)->new PartidaIndividual(r.getString("codigo"),r.getString("nombre"),r.getString("naturaleza"),r.getString("frecuencia"),r.getBigDecimal("importe")));
+ }
  public record Historia(String fecha,String usuario,String operacion,String motivo,int revision){}
  public record Revision(int numero,String fecha,String usuario,String motivo){}
  private MapSqlParameterSource p(boolean escritura){var a=empleados.autorizarSalarios(escritura);return new MapSqlParameterSource("institucion",a.institucionId()).addValue("actor",a.usuarioId());}
