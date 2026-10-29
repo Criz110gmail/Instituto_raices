@@ -1,5 +1,25 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Pago individual de septiembre confirmado — 29/10/2026
+
+CIERRE HUMANO: Diana/SEP-2027-IND-TEST (01–15/09/2027), BOR-000003/NPI-3 generado
+sin borrador previo. Egreso banco6975.71 a08:44; BBVA_COBROS23330→16354.29.
+CAJA12762.85 y CAJA-CORTE-TEST1150 intactas. Usuario confirmó también bloqueo al
+consultar mismo empleado/fechas. No repetir septiembre ni cancelar NPI-3.
+V142 agrega guía CONFIRMADA9pasos con desglose/revisión/edición/modal/movimiento y
+duplicación. No marca como probado No aplicar/Posponer ni concurrencia.
+Mensaje CANDIDATOS distingue pago vigente ya registrado de reserva en borrador/nómina
+pendiente. EXISTS con mismos empleado/fechas/activo/ignorar y pago PAGADO; primero
+aviso pagado, luego reservado, ambos NO_INCLUIDO y no aplican en simulación. Misma
+regla de bloqueo, sin cambiar saldos ni elegibilidad. Cancelación restaura aviso de
+pendiente, no afirmar que hay pago vigente cancelado. Próximo: No aplicar concepto
+en agosto según manual de tratamientos (comprobar periodo/reservas antes).
+
+QA:4Java/package con PostgreSQL17 temporal: distingue reserva/pagado/cancelado;
+HTTP de pago duplicado devuelve aviso claro sin formulario de pago ni otro movimiento.
+V142 guía CONFIRMADA9pasos/6permisos. QA ficticia retirada; sólo app/contenido
+editorial actualizados, sin pagos/roles/.env/commit/push operativos.
+
 ## Desglose del cálculo individual antes de pagar — 28/10/2026
 
 Usuario confirma consulta SEP-2027-IND-TEST/Diana neto6975.71 pero pide partidas

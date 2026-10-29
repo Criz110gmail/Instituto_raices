@@ -6,12 +6,12 @@ No ingresar datos con herramientas ni alterar julio para preparar este ejemplo.
 
 ## Julio ya está cerrado; no repetirlo
 
-El usuario confirmó julio, cancelación NPI-1 y nuevo pago NPI-2 por $14,187.15 el
-28/10/2026. No incluir otra vez, crear borrador, cancelar ni pagar julio. El siguiente
-ensayo ordinario es pago individual sin borrador (apartado7 del manual de flujo base);
-después continuar estos tratamientos. Antes de usar agosto revisa si ese ensayo ocupó
-su cobertura: elige otro periodo libre sin solapamientos si corresponde, ajustando el
-cálculo por días reales. No usar importes de agosto a ciegas para otro mes.
+El usuario confirmó julio/NPI-2 por $14,187.15 el28/10/2026 y pago directo de primera
+quincena de septiembre/BOR-000003/NPI-3 por$6,975.71 el29/10/2026, con duplicación
+bloqueada. No incluir otra vez, crear borrador, cancelar ni pagar esos periodos.
+El siguiente ensayo es Caso A, No aplicar. Antes de usar agosto revisa reservas;
+si está ocupado, no duplicarlo ni cancelarlo a ciegas. Para otro periodo disponible
+hay que ajustar el cálculo por días reales; no usar importes de agosto sin verificar.
 
 ## Qué incorpora esta entrega
 

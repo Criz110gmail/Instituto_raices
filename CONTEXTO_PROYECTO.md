@@ -1,5 +1,20 @@
 # Contexto del proyecto
 
+## Pago directo y duplicación aceptados — 29/10/2026
+
+Usuario confirma pago individual sin borrador: Diana/SEP-2027-IND-TEST,
+BOR-000003/NPI-3, EGRESO NOMINA6975.71 a08:44. Banco23330→16354.29; cajas
+12762.85/1150 intactas. Segunda consulta bloqueada. V142 publica guía9pasos
+CONFIRMADA, sin repetir operaciones. Mensaje ahora distingue pago vigente
+registrado de nómina/borrador pendiente, usando misma cobertura/activo/ignorar.
+NO_INCLUIDO y simulación conservan reglas. No cambiar dinero ni repetir septiembre.
+Siguiente ensayo: No aplicar concepto sin quitarlo de configuración; luego Posponer.
+
+QA:4Java/package e integración PostgreSQL17 temporal: reserva y pago vigente
+diferenciados, al cancelar no afirma pago vigente; HTTP bloqueado sin otro egreso.
+Guía9pasos/6permisos confirmada. QA retirada; sólo app/contenido editorial actualizados,
+sin repetir pagos ni modificar saldos operativos/roles/.env/Git.
+
 ## Partidas del pago individual visibles — 28/10/2026
 
 Tras confirmar sólo consulta de neto6975.71, usuario solicita desglose. Tabla debajo

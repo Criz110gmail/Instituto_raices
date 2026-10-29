@@ -2,6 +2,11 @@
 
 ### Seguimiento de implementación
 
+29/10/2026: pago individual sin borrador y bloqueo de duplicación confirmados:
+Diana/SEP-2027-IND-TEST/BOR-000003/NPI-3, egreso6975.71, banco16354.29 final,
+cajas sin cambio. V142 guía confirmada. Sigue No aplicar/Posponer; no repetir septiembre.
+Mensajes diferencian pago vigente de reserva sin cambiar reglas de cobertura.
+
 28/10/2026: aceptación humana del ciclo de Diana/julio/BOR-000002: cálculo14,187.15,
 primer pago NPI-1, cancelación con recuperación por fuente y nuevo pago NPI-2.
 Saldos finales banco23,330/caja12,762.85; caja de corte1,150 sin cambios. Guías

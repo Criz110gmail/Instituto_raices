@@ -1,10 +1,19 @@
 # Ensayo del flujo ordinario de nómina sin calendarios
 
-Estado: **pago colectivo, simulador, cancelación y nuevo pago de julio confirmados
-por el usuario el 28/10/2026**. No repetir capturas, cancelación ni pagos aprobados.
+Estado: **julio confirmado el28/10/2026 y pago individual de septiembre con bloqueo
+de duplicación confirmado el29/10/2026**. No repetir capturas, cancelación ni pagos aprobados.
 Este ensayo no implica timbrado ni dispersión bancaria real.
 
-## Retoma actual — ciclo de julio cerrado, 28/10/2026
+## Retoma actual — pago individual de septiembre cerrado, 29/10/2026
+
+Usuario confirmó el ejemplo completo: Diana/SEP-2027-IND-TEST (01–15/09/2027),
+BOR-000003/NPI-3, egreso6975.71 en banco a08:44. Saldo BBVA_COBROS16354.29
+(antes23330), CAJA12762.85 y CAJA-CORTE-TEST1150 sin cambio. Segunda consulta
+del mismo periodo/empleado bloqueada sin otro egreso. V142 documenta la guía.
+**Siguiente: Caso A de PRUEBA_TRATAMIENTOS_NOMINA_20261027.md, No aplicar un concepto.**
+No repetir septiembre ni cancelar NPI-3. Revisar agosto antes de crear/reservar.
+
+### Cierre histórico de julio
 
 **Cierre posterior confirmado:** NPI-1 cancelado con recuperación íntegra a las15:32;
 NPI-2 pagado a las16:41 el28/10/2026. Mismo BOR-000002/JUL-2027-RED-TEST/Diana.
@@ -16,8 +25,8 @@ NPI-2 pagado a las16:41 el28/10/2026. Mismo BOR-000002/JUL-2027-RED-TEST/Diana.
 
 CAJA-CORTE-TEST permanece $1,150.00. Historial conserva NPI-1 cancelado y NPI-2 vigente;
 movimientos conservan recuperación y nuevos egresos. Guía V141 documenta este ciclo.
-**Siguiente prueba: apartado7, pago individual sin borrador en otro periodo disponible.**
-No repetir julio ni cancelar NPI-2. Luego seguir manual de tratamientos.
+El apartado7 ya fue confirmado el29/10/2026. No repetir julio ni cancelar NPI-2.
+Continuar manual de tratamientos en otro periodo disponible.
 
 ### Referencia histórica del primer pago de julio
 
@@ -290,9 +299,8 @@ consultar sus importes primero; julio no se combina con él.
 
 1. **Personal y nómina → Nóminas → Pago individual**.
 2. Seleccionar un periodo programado y un empleado elegible; **Consultar cálculo**.
-   Punto actual de la prueba: Diana y SEP-2027-IND-TEST, del01/09/2027 al15/09/2027,
-   ya creados/seleccionados; usuario confirmó sólo el neto $6,975.71. No pagar todavía
-   si no coincide el desglose. Debajo del total, **¿Cómo se calcula este pago?**:
+   Caso confirmado: Diana y SEP-2027-IND-TEST, del01/09/2027 al15/09/2027, pagado
+   como NPI-3. No repetir. Para consulta histórica, el desglose esperado fue:
 
    | Partida | Importe calculado |
    |---|---:|
@@ -318,8 +326,9 @@ consultar sus importes primero; julio no se combina con él.
 
 Confirmado manualmente: julio, simulador, pago multicuenta NPI-1, cancelación con
 recuperación exacta y nuevo pago NPI-2. Guías V140/V141 publican sólo esos recorridos.
-Pendientes: pago individual sin borrador, falta de fondos, concurrencia y tratamientos
-No aplicar/Posponer. No repetir el ciclo confirmado para probar esos casos.
+Confirmado el29/10/2026: pago individual sin borrador y bloqueo de cobertura duplicada.
+Pendientes: falta de fondos, concurrencia y tratamientos No aplicar/Posponer.
+No repetir los ciclos confirmados para probar esos casos.
 
 El ensayo automatizado aislado verificó proporciones, sumas de centavos fuera de
 orden, borrador sin dinero, pago multicuenta, fallo forzado de segunda fuente con
