@@ -1,5 +1,62 @@
 # Contexto del proyecto
 
+## Captura continua de fuentes y retoma fondos — 29/10/2026
+
+Usuario ya comprobó error de banco: solicitado5000/disponible4274.29/faltan725.71,
+y cuentas intactas4274.29/12762.85/1150. Todavía no confirma revisión corregida/modal
+cancelado. No pagar por agente ni agregar tercera fuente al ejemplo de doscuentas.
+Mejora Agregar otra cuenta: marcador sólo de nueva tarjeta en respuesta de éxito,
+scroll hasta ella y foco en cuenta; conserva fuentes/importes/referencia/motivo.
+Reutilizado en colectivo/por empleado/directo. Sin cambios financieros/migración.
+
+QA:7Java/package correctos (render, agregar/límite y preservación de captura),
+testJS de aviso previo correcto.6altas ficticias Chrome3anchos/2temas: nueva cuenta
+visible y enfocada, fuente anterior y referencia conservadas. Sólo app actualizada;
+sin pagos/datos operativos ni .env/commit/push.
+
+## Posición de selección en borrador — 29/10/2026
+
+Usuario pide no regresar al inicio al Incluir. Selección mantiene POST y validación,
+versión y filtros; éxito vuelve con ancla de fila estable. JS conserva scroll y
+offset en sessionStorage por UUID, lo consume una sola vez y restaura en recarga,
+manteniendo foco en botón de esa fila. Si fila desaparece usa scroll guardado;
+si falla selección no restaura para que se vea error. Sin almacenamiento queda
+alternativa de ancla. No cálculos/pagos/selecciones operativas ni migración.
+
+QA:3Java/package (render y éxito/error de selección conservando filtros/página)
+y testJS de aviso previo correctos.12redirecciones ficticias en Chrome3anchos/2temas
+mantuvieron offset de fila al incluir/excluir. Sólo app actualizada, sin datos
+operativos ni .env/commit/push.
+
+## Aviso al intentar guardar sin empleados — 29/10/2026
+
+Usuario no podía guardar: lectura de base confirmó tres vistas diciembre con0incluidos
+(una descartada), ningún borrador diciembre. Cambia UX solicitado: Guardar queda
+habilitado si selección0 y muestra aviso ámbar enfocado con explicación y acceso
+Ir a seleccionar empleados, sin modal ni POST. Con selección global>=1 abre modal.
+No cuenta filas de página ni confunde filtrar con incluir; servidor sigue rechazando
+guardado vacío. Bloqueos distintos de actualización incompatible preservados.
+Sin operaciones financieras ni selección/guardado de datos reales por agente.
+
+QA: render/package y testJS de selección global (0/1/125) correctos.12vistas
+Chrome ficticias3anchos/2temas: aviso/enlace/foco sin incluidos y modal/Cancelar
+con incluidos, sin POST ni erroresJS. Sólo app actualizada; sin migración ni
+operaciones ni .env/commit/push.
+
+## Borrador y gestión de periodo legibles — 29/10/2026
+
+Antes de continuar fondos insuficientes, usuario solicita ajustar Editar en Gestión
+del periodo y acceso Ir a seleccionar empleados al turquesa compartido. Gestión
+alinea texto/botón, apila móvil. Ayudas de captura/revisión del borrador corrigen
+altura fija heredada de botones en filtros (origen de opciones superpuestas): alto
+auto, nombres/detalles multilínea y scroll. Sin cambios de selección ni cálculos,
+permisos ni operaciones. Ensayo diciembre todavía pendiente de aceptación humana.
+
+QA:7Java/package correctos, render de Gestión del periodo y vista previa vacía;
+12vistas Chrome ficticias (3anchos/2temas): Editar alineado, CTA turquesa, foco10,
+búsqueda>=3/selección por ID y opciones sin solapamiento de nombres/descripciones.
+Sólo app actualizada; sin migración, cambios operativos ni .env/commit/push.
+
 ## Guía de los tres tratamientos y prueba siguiente — 29/10/2026
 
 V143 documenta casos humanos confirmados de Bruce con15pasos/6permisos privados de

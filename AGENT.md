@@ -1,5 +1,44 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Agregar otra cuenta lleva a la fuente nueva — 29/10/2026
+
+Preparar pago colectivo/por empleado y directo mantienen POST Agregar fuente y toda
+captura. Sólo si agregarFuente tiene éxito, controller marca índicefuenteNueva;
+plantilla da id estable/marcador a esa tarjeta y JS desplaza/focaliza su ayuda de
+cuenta tras carga. Sin marker en consultas/revisión/errores/límite20, no salto.
+No cambia cuentas, sumas, CSRF, sello, permisos ni pagos. Usuario confirmó bloqueo
+por banco5000>4274.29/faltan725.71 y saldos intactos; falta corregir distribución
+caja1806.45/banco4000, revisar y Cancelar modal SIN pagar. No tercerafuente en ensayo.
+
+## Incluir/excluir sin regresar arriba — 29/10/2026
+
+POST de selección conserva servidor/CSRF/versiones/filtros/página y devuelve fragmento
+de fila en éxito. Cada fila tiene id estable nomina-empleado-ID. JS guarda posición
+vertical y offset de fila por vista UUID en sessionStorage y restaura tras redirect;
+si desapareció la fila por filtro usa scroll anterior. Sin almacenamiento/JS queda
+ancla de fila como alternativa; errores sin ancla para no ocultar el aviso. No AJAX,
+no cambio de cálculo ni seleccionar empleados por agente. Ensayo diciembre pendiente.
+
+## Guardar borrador sin incluidos muestra aviso — 29/10/2026
+
+Diagnóstico sólo lectura: vistas de diciembre con0incluidos y ningún borrador creado.
+Usuario pide botón habilitado con aviso, no silencio. Vista previa ya no deshabilita
+por0; conserva bloqueo de actualización incompatible. Submit de nomina-bulk-save
+consulta data-confirm-people global (no filas visibles), si0 previene submit antes
+del modal, revela aviso ámbar accesible y enfoca/desplaza hasta él. CTA turquesa lleva
+a Detalle por empleado → Incluir. Con>=1 sigue modal habitual. Servidor conserva
+validación sin selección. No incluir ni guardar registros por el usuario.
+
+## Preparación diciembre: botones y sugerencias — 29/10/2026
+
+Usuario aún preparando ensayo de fondos insuficientes Bruce01–15/12/2026, neto5806.45.
+No declarar bloqueo ni pago confirmados; no duplicar noviembre. Ajuste visual:
+periodo → Gestión → Editar usa nomina-primary-action y bloque alineado con explicación;
+plantilla carga nomina.css y nomina-detail. En revisión del borrador Ir a seleccionar
+empleados usa mismo turquesa. Ayudas de nomina-capture usan alturaauto/multilínea
+para no heredar42px de .filters button; nombres y detalles en flujo, lista con scroll.
+Sin cambiar endpoints/focus10/query>=3, selección, cálculo, fechas ni operaciones.
+
 ## Guía integrada de decisiones V143 y siguiente ensayo — 29/10/2026
 
 V143 publica Nómina: no aplicar, posponer y pagar conceptos por separado, CONFIRMADA,

@@ -31,7 +31,7 @@ public class PagoMultipleNominaController {
   try{var vista=service.revisar(id,f);f.setSello(vista.sello());m.addAttribute("vistaMultiple",vista);}catch(ReglaNegocioException e){m.addAttribute("errorOperacion",e.getMessage());}return pantalla(id,filtro,m);
  }
  @PostMapping("/agregar-fuente") String agregar(@PathVariable("idNomina")Long id,@ModelAttribute("formMultiple")PagoMultipleNominaForm f,@ModelAttribute FiltroNomina filtro,Model m){
-  if(!f.agregarFuente())m.addAttribute("errorOperacion","Puedes distribuir el pago entre una y veinte cuentas.");return pantalla(id,filtro,m);
+  if(!f.agregarFuente())m.addAttribute("errorOperacion","Puedes distribuir el pago entre una y veinte cuentas.");else m.addAttribute("fuenteNueva",f.getFuentes().size()-1);return pantalla(id,filtro,m);
  }
  @PostMapping("/editar") String editar(@PathVariable("idNomina")Long id,@ModelAttribute("formMultiple")PagoMultipleNominaForm f,@ModelAttribute FiltroNomina filtro,Model m){
   f.invalidarRevision();return pantalla(id,filtro,m);
