@@ -1,5 +1,25 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Guía integrada de decisiones V143 y siguiente ensayo — 29/10/2026
+
+V143 publica Nómina: no aplicar, posponer y pagar conceptos por separado, CONFIRMADA,
+15pasos/6permisoslectura, evidencia Bruce/noviembre original4/liquidación5/NPI5cancelado
+yNPI6vigente. Rutas actuales verificadas: Detalle por empleado → Ver desglose →
+Decisiones y pendientes de este periodo; pospuestos desde original4, no liquidación5.
+Actualiza advertencia editorial de guía V142 sin alterar migraciones previas. Sólo
+contenido guía, ningún pago/configuración/rol/cuenta. No repetir casos concluidos.
+
+Siguiente ensayo propuesto (NO realizado): fondos insuficientes, Bruce01–15/12/2026,
+periodo DIC-2026-FONDOS-TEST aún no creado. Consulta operativa sólo lectura confirmó
+sin reserva/periodo diciembre, sueldo12000 mensual vigente hasta31/12, conceptos
+transporte sólo noviembre y bono desdeenero. Función real calcula5806.45 (12000*15/31).
+Saldos actuales banco4274.29/caja12762.85/cajacorte1150. Preparar borrador sólo Bruce;
+fuente1 CAJA806.45, fuente2 banco5000 (suma5806.45), faltan725.71 al banco; Revisar
+distribución debe bloquear sin descontar ninguna cuenta. Corregir a caja1806.45 y
+banco4000 permite revisar; Cancelar modal sin pagar, conservar borrador para continuar.
+NO confirmar pago ni crear operaciones con herramientas. Aún falta aceptación humana
+de fondos/concurrencia. Verificar saldos y ocupación si cambian antes de ese ensayo.
+
 ## Cierre humano de Posponer, cancelar y reponer80 — 29/10/2026
 
 Usuario confirma todos los controles del punto9 del ensayo: Bruce/noviembre2026,

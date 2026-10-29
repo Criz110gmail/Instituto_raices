@@ -1,5 +1,24 @@
 # Contexto del proyecto
 
+## Guía de los tres tratamientos y prueba siguiente — 29/10/2026
+
+V143 documenta casos humanos confirmados de Bruce con15pasos/6permisos privados de
+lectura: No aplicar/restablecer, Posponer/pago80 aparte, cancelarNPI5 y reponerNPI6.
+Nómina original4 y liquidación5 identificadas explícitamente en cada consulta; no
+repetir pagos. Ajuste editorial de guía V142, sin cambiar sus checksums anteriores.
+
+Sólo lectura actual confirmó Bruce sin cobertura diciembre y sueldo12000 aplicable,
+sin transporte/bono ese mes. Próximo ejemplo pendiente: DIC-2026-FONDOS-TEST,
+01–15/12/2026, neto5806.45. Banco4274.29, CAJA12762.85, corte1150. Probar dosfuentes:
+caja806.45 válida primero y banco5000 insuficiente (faltan725.71), sin movimientos.
+Después corregir caja1806.45/banco4000, revisar y cancelar modal SIN pagar. Mantener
+borrador para continuidad. Agente no creó periodo/borrador ni movió dinero; sólo guía.
+
+QA:4Java/package correctos, incluidos PostgreSQL17 temporal y parser de acciones:
+V143 CONFIRMADA15pasos/6permisos. Revisión de etiquetas/rutas contra plantillas
+actuales. Base ficticia retirada. Sólo app/contenido editorial actualizados; sin
+operaciones financieras operativas ni .env/commit/push.
+
 ## Posponer80 y cancelación/reposición aceptados — 29/10/2026
 
 Usuario confirma punto9 completo: Bruce, originalBOR-000004 y liquidaciónBOR-000005,
