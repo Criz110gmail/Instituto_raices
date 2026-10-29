@@ -1,6 +1,7 @@
 package escuela.personal.service;
 
 import escuela.common.exception.ReglaNegocioException;
+import escuela.admin.dto.OpcionAutocompletado;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,9 +73,16 @@ public class TratamientoNominaService {
   jdbc.update("INSERT INTO nomina_borrador_empleado(borrador_id,revision,institucion_id,periodo_id,empleado_id,empleado_codigo,empleado_nombre,fecha_inicio,fecha_fin,sueldo,percepciones,deducciones,aportaciones,propuesto,moneda,fuentes,sello,activo) SELECT :nuevo,1,ne.institucion_id,ne.periodo_id,ne.empleado_id,ne.empleado_codigo,ne.empleado_nombre,ne.fecha_inicio,ne.fecha_fin,0,coalesce((SELECT sum((x->>'importe')::numeric) FROM jsonb_array_elements(p.detalle) x WHERE x->>'naturaleza'='PERCEPCION'),0),coalesce((SELECT sum((x->>'importe')::numeric) FROM jsonb_array_elements(p.detalle) x WHERE x->>'naturaleza'='DEDUCCION'),0),0,p.importe,ne.moneda,jsonb_build_object('conceptos',(SELECT jsonb_agg((x->'fuente')||jsonb_build_object('importe',(x->>'importe')::numeric,'concepto_codigo',x->>'codigo','concepto_nombre',x->>'nombre','naturaleza',x->>'naturaleza')) FROM jsonb_array_elements(p.detalle) x),'sueldos','[]'::jsonb,'ocasionales','[]'::jsonb),ne.sello,false FROM nomina_pendiente p JOIN nomina_borrador_empleado ne ON ne.id=p.fila_origen_id WHERE p.id=:pendiente AND p.institucion_id=:inst",par);
   return nuevo;
  }
- public Page<Pendiente> pendientes(Long id,String buscar,String estado,int pagina){
+ public List<OpcionAutocompletado> buscarEmpleadosPendientes(Long id,String q){
+  preparacion.obtener(id);var texto=OrganizacionLaboralService.texto(q,200);
+  if(!texto.isBlank()&&texto.length()<3)return List.of();
+  return jdbc.query("SELECT DISTINCT ne.empleado_id,ne.empleado_codigo,ne.empleado_nombre FROM nomina_pendiente p JOIN nomina_borrador_empleado ne ON ne.id=p.fila_origen_id WHERE ne.borrador_id=:id AND ne.institucion_id=:inst AND p.institucion_id=:inst AND strpos(lower(ne.empleado_codigo||' '||ne.empleado_nombre),lower(:q))>0 ORDER BY ne.empleado_nombre,ne.empleado_id LIMIT 11",p(false).addValue("id",id).addValue("q",texto),(r,n)->new OpcionAutocompletado(r.getLong("empleado_id"),r.getString("empleado_codigo")+" · "+r.getString("empleado_nombre"),"Empleado con conceptos pospuestos en esta nómina"));
+ }
+ public Page<Pendiente> pendientes(Long id,String buscar,String estado,int pagina){return pendientes(id,buscar,estado,pagina,null);}
+ public Page<Pendiente> pendientes(Long id,String buscar,String estado,int pagina,Long empleadoId){
   preparacion.obtener(id);var pg=PageRequest.of(Math.max(0,pagina),25);var par=p(false).addValue("id",id).addValue("q",OrganizacionLaboralService.texto(buscar,200)).addValue("estado",Set.of("PENDIENTE","PAGADO").contains(Objects.toString(estado,""))?estado:"TODOS");
-  String sql=" FROM nomina_pendiente p JOIN nomina_borrador_empleado ne ON ne.id=p.fila_origen_id JOIN periodo_nomina pe ON pe.id=ne.periodo_id LEFT JOIN nomina_borrador hijo ON hijo.pendiente_origen_id=p.id WHERE ne.borrador_id=:id AND p.institucion_id=:inst AND strpos(lower(ne.empleado_codigo||' '||ne.empleado_nombre),lower(:q))>0 ";
+  par.addValue("empleado",empleadoId);
+  String sql=" FROM nomina_pendiente p JOIN nomina_borrador_empleado ne ON ne.id=p.fila_origen_id JOIN periodo_nomina pe ON pe.id=ne.periodo_id LEFT JOIN nomina_borrador hijo ON hijo.pendiente_origen_id=p.id WHERE ne.borrador_id=:id AND p.institucion_id=:inst AND ne.institucion_id=:inst AND (CAST(:empleado AS bigint) IS NULL OR ne.empleado_id=:empleado) AND strpos(lower(ne.empleado_codigo||' '||ne.empleado_nombre),lower(:q))>0 ";
   String pagado="EXISTS(SELECT 1 FROM nomina_borrador_empleado h JOIN nomina_pago_intento ni ON ni.fila_id=h.id AND ni.estado='PAGADO' WHERE h.borrador_id=hijo.id)";
   sql+=" AND (:estado='TODOS' OR (:estado='PAGADO')="+pagado+") ";
   long n=jdbc.queryForObject("SELECT count(*)"+sql,par,Long.class);

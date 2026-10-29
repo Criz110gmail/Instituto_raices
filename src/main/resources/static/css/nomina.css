@@ -68,6 +68,36 @@
 .nomina-status-actions,.nomina-application-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.nomina-status-actions{flex-direction:column;align-items:stretch;justify-content:center}
 .nomina-detail .nomina-primary-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:12px 16px;border:1px solid var(--aqua);border-radius:11px;background:var(--aqua);color:#062b31;font:800 .82rem/1.5 Manrope,system-ui,sans-serif;text-align:center;text-decoration:none;white-space:normal;overflow-wrap:anywhere;max-width:100%}
 .nomina-detail .nomina-primary-action:hover{filter:brightness(.96)}.nomina-detail .nomina-primary-action:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.nomina-treatment-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:20px 0}
+/* Colores semánticos sólo del listado; se conserva el nombre explícito del estado. */
+.nomina-list-panel .nomina-list-state{line-height:1.5;white-space:normal;max-width:100%;box-sizing:border-box;border:1px solid transparent;margin-bottom:6px}
+.nomina-list-panel .nomina-list-state[data-payroll-state=BORRADOR]{background:#e8f1ff;color:#1957a6;border-color:#b9d4fb}
+.nomina-list-panel .nomina-list-state[data-payroll-state=AUTORIZADA]{background:#fff1d6;color:#805000;border-color:#e5c077}
+.nomina-list-panel .nomina-list-state[data-payroll-state=PARCIALMENTE_PAGADA]{background:#f0eaff;color:#6940a5;border-color:#cdb9ed}
+.nomina-list-panel .nomina-list-state[data-payroll-state=PAGADA]{background:#e5f9f3;color:#08785f;border-color:#9cd8c6}
+.nomina-list-panel .nomina-list-state[data-payroll-state=APLICADA]{background:#eaf1f6;color:#405b73;border-color:#becdd8}
+.nomina-list-panel .nomina-list-state[data-payroll-state=CANCELADO]{background:#fff0ef;color:#a52e2e;border-color:#e9b6b2}
+[data-theme=dark] .nomina-list-panel .nomina-list-state[data-payroll-state=BORRADOR]{background:#173453;color:#a9ceff;border-color:#345c85}
+[data-theme=dark] .nomina-list-panel .nomina-list-state[data-payroll-state=AUTORIZADA]{background:#3b2d18;color:#ffd58a;border-color:#796039}
+[data-theme=dark] .nomina-list-panel .nomina-list-state[data-payroll-state=PARCIALMENTE_PAGADA]{background:#302447;color:#d9beff;border-color:#66517f}
+[data-theme=dark] .nomina-list-panel .nomina-list-state[data-payroll-state=PAGADA]{background:#103b31;color:#8ce9cb;border-color:#296754}
+[data-theme=dark] .nomina-list-panel .nomina-list-state[data-payroll-state=APLICADA]{background:#263544;color:#c1d2e1;border-color:#485e73}
+[data-theme=dark] .nomina-list-panel .nomina-list-state[data-payroll-state=CANCELADO]{background:#402327;color:#ffb9b4;border-color:#7a4348}
+.nomina-detail .nomina-treatment-decision{display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-width:0;max-width:100%;text-align:left}
+.nomina-detail .nomina-treatment-decision>.status{position:static;align-self:flex-start;flex:none;margin:0;line-height:1.5;white-space:normal}
+.nomina-detail .nomina-treatment-decision>.field-help{position:static;display:block;margin:0;line-height:1.7;overflow-wrap:anywhere;max-width:100%}
+/* Pendientes: ayuda compartida, sin heredar el alto fijo de botones del filtro. */
+.nomina-pending-page .form-card,.nomina-pending-page .employee-list-panel{overflow:visible}
+.filters.nomina-pending-filters{position:relative;z-index:5;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:20px}
+.nomina-pending-filters>.autocomplete{min-width:0}
+.filters.nomina-pending-filters>.autocomplete>label{min-height:26px;line-height:1.6;margin:0 0 8px}
+.filters.nomina-pending-filters>label>span{display:block;min-height:26px;line-height:1.6;margin:0 0 8px}
+.nomina-pending-filters .autocomplete .autocomplete-option{display:grid;height:auto!important;min-height:0!important;line-height:1.6;white-space:normal;overflow-wrap:anywhere;padding:11px 12px;background:transparent;color:var(--ink)}
+.nomina-pending-filters .autocomplete-option strong,.nomina-pending-filters .autocomplete-option small{display:block;position:static;margin:0;line-height:1.6;white-space:normal;overflow-wrap:anywhere}
+.nomina-pending-filters .autocomplete .autocomplete-option:hover,.nomina-pending-filters .autocomplete .autocomplete-option.active{background:var(--soft,var(--paper))}
+.nomina-pending-filters .autocomplete-results{max-height:min(320px,55vh);max-width:100%;overflow-y:auto;overscroll-behavior:contain;z-index:50}
+@media(max-width:620px){.filters.nomina-pending-filters{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:480px){.nomina-treatment-actions{align-items:stretch;flex-direction:column}.nomina-treatment-actions>.nomina-primary-action{width:100%;box-sizing:border-box}}
 .nomina-application-card h3{margin:6px 0}.nomina-application-amount{font-size:1.2rem;font-weight:800}.nomina-application-actions{margin:22px 0 14px}
 .nomina-detail .employee-card .student-tablist.payment-record-tabs{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
 @media(max-width:900px){.nomina-status-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.nomina-status-actions{grid-column:1/-1;flex-direction:row;justify-content:flex-start}}

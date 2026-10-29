@@ -1,8 +1,42 @@
 # Pruebas propuestas — No aplicar, Posponer y pendientes de nómina
 
+## Confirmación de Bruce — 29/10/2026 (prevalece sobre retomas antiguas)
+
+Usuario confirmó punto9 completo del ensayo de cancelación/reposición del pendiente:
+original **BOR-000004 — Noviembre — decisiones de Bruce**, liquidación **BOR-000005**.
+Sueldo12000 pagado sin cancelarse; transporte80 pospuesto, pagadoNPI-5, cancelado
+y vuelto a pagar con nuevo intento (no fijar folio). Banco4274.29→4354.29→4274.29;
+cajas12762.85/1150 sin cambios; configuración80 01/11–30/11 intacta. Historial conserva
+pago cancelado, recuperación y nuevo egreso. No repetir estas operaciones.
+
+Para consultar el transporte pagado: Personal y nómina → Nóminas → Ver
+**Noviembre — decisiones de Bruce (BOR-000004)** → Autorización y pagos por empleado
+→ Decisiones y pendientes → Ver conceptos pospuestos → Limpiar → estado Pagado
+→ Aplicar filtros. Debe mostrar80 y Ver liquidación. Desde BOR-000005 esa lista
+está vacía porque no hay otros conceptos pospuestos derivados de la liquidación.
+Guía integrada por publicar; los casos de Diana de abajo son propuestas, no ensayos
+humanos adicionales confirmados por este cierre.
+
 Estado: **pendiente de ejecución manual y confirmación del usuario**. Las pruebas
 automatizadas aisladas no significan que el usuario ya haya aprobado estos casos.
 No ingresar datos con herramientas ni alterar julio para preparar este ejemplo.
+
+Ruta visible verificada: **Personal y nómina → Nóminas → Ver → Detalle por
+empleado → Ver desglose → Decisiones y pendientes de este periodo**. La pestaña
+no se llama «Empleados». Verificar nombres actuales antes de reutilizar esta guía.
+Al pulsar Cambiar decisión en Transporte, el selector abre ese concepto pero puede
+cambiarse antes de confirmar: conservar Transporte para probar sólo esa partida.
+
+Retoma actual: Bruce Wayne, noviembre2026 (01/11–30/11), sueldo12000 y transporte80
+configurado sólo ese mes; neto12080. Usuario confirmó exclusión/restablecimiento
+en historial/Excel y que pasos1–5 de Posponer coincidieron, incluido pago inmediato
+12000. NO repetir ese pago. Continúa punto6: Nóminas → Ver noviembre → Autorización
+y pagos por empleado → Decisiones y pendientes → Ver conceptos pospuestos.
+Buscar empleado: enfocar para primeras10 opciones, o escribir Bru y seleccionar
+Bruce; estado Pendiente → Aplicar filtros. Debe mostrar80 del periodo original;
+Excel debe coincidir. Continuar Preparar pago individual sólo de esos80; verificar
+cuenta/saldo actual antes de confirmar. Todavía NO liquidado ni ensayo completo.
+No reutilizar importes/fechas de los ejemplos de Diana de abajo para esta retoma.
 
 ## Julio ya está cerrado; no repetirlo
 
@@ -15,7 +49,7 @@ hay que ajustar el cálculo por días reales; no usar importes de agosto sin ver
 
 ## Qué incorpora esta entrega
 
-- **Nóminas → Ver → Empleados → Ver desglose → Decisiones y pendientes de este
+- **Nóminas → Ver → Detalle por empleado → Ver desglose → Decisiones y pendientes de este
   periodo**. Listado de la copia original, tratamiento por concepto y auditoría.
 - **Cambiar decisión** abre captura separada; Revisar muestra el neto inmediato;
   Confirmar abre un modal con Cancelar. Motivo obligatorio, versión y permisos.
@@ -64,7 +98,7 @@ tenga ya un borrador/reserva de Diana; si lo hay, no duplicarlo ni cancelarlo a 
 
 6. Guardar como `Agosto — prueba de decisiones`, motivo `Revisar exclusiones y
    posposiciones sin modificar la configuración de Diana.` Anotar folio BOR.
-7. En **Ver del borrador → Empleados → Ver desglose**, abrir **Decisiones y
+7. En **Ver del borrador → Detalle por empleado → Ver desglose**, abrir **Decisiones y
    pendientes de este periodo**.
 8. En Transporte, pulsar **Cambiar decisión**, seleccionar **No aplicar en este
    periodo**, motivo `No otorgar transporte en esta nómina de prueba.`
@@ -83,7 +117,7 @@ tenga ya un borrador/reserva de Diana; si lo hay, no duplicarlo ni cancelarlo a 
 
 Continuar sobre agosto, sin cambiar sueldo ni conceptos del empleado.
 
-1. En **Nóminas → Ver agosto → Empleados → Ver desglose → Decisiones y pendientes
+1. En **Nóminas → Ver agosto → Detalle por empleado → Ver desglose → Decisiones y pendientes
    de este periodo**, localizar el apoyo quincenal, cuyo cálculo del mes es300.
 2. **Cambiar decisión → Posponer**, motivo `Entregar los300 del apoyo quincenal
    posteriormente, conservando el periodo de agosto.` Revisar y confirmar con modal.

@@ -1,5 +1,65 @@
 # Contexto del proyecto
 
+## Posponer80 y cancelación/reposición aceptados — 29/10/2026
+
+Usuario confirma punto9 completo: Bruce, originalBOR-000004 y liquidaciónBOR-000005,
+sueldo12000 vigente, transporte80 pagado después por separado; cancelaciónNPI-5 y
+nuevo intento pagado conservados. Banco4274.29→4354.29→4274.29, cajas sin cambios
+(12762.85 y1150), configuración80 01/11–30/11 intacta. NO ejecutar otra cancelación
+ni pago; publicar guía integrada queda pendiente. Para ver pendiente/historial usar
+Conceptos pospuestos desde nómina original4; desde liquidación5 vacío es correcto.
+Cambio sólo visual del listado Nóminas: borrador azul, pendiente ámbar, con pendientes
+violeta, sin pendientes verde, aplicada histórica gris azulado, cancelada rojo; temas
+claro/oscuro y texto visible. Sin cambios en saldos, estados, filtros ni exportación.
+
+QA:3Java/package correctos y6vistas Chrome ficticias (3anchos/2temas), seis colores
+distintos y contraste texto/fondo>=4.5. Sólo app actualizada; sin migración ni
+operaciones financieras ni .env/commit/push.
+
+## Pospuestos: filtro asistido y retoma punto6 — 29/10/2026
+
+Usuario acepta pasos1–5 del ensayo Bruce/noviembre2026: transporte80 pospuesto y
+pago inmediato12000. Está localizando pendiente80; no repetir pago ni declararlo
+liquidado. Resumen → Ver pagos por empleado pasa al turquesa compartido. Filtro
+de conceptos pospuestos usa ayuda focus10/búsqueda>=3 y consulta privada de empleados
+que tienen conceptos pospuestos en esa nómina, por institución. Selección se filtra
+por ID (no etiqueta concatenada) y se conserva en Excel/paginación/estado; Limpiar
+restaura todos. El servidor sigue admitiendo el parámetro textual previo. No cambia
+cálculos, decisiones, permisos ni pagos; sin migración ni datos operativos.
+
+QA:4Java/package con PostgreSQL17 temporal ficticia, consulta inicial/búsqueda
+corta/ámbito de nómina/ID ajeno/tabla y Excel por selección concatenada correctos.
+6vistas Chrome3anchos/2temas: foco10,2letras sin consulta,3con consulta, selección
+por ID y opciones sin solape. Cierre3Java/package. Base QA retirada; sólo app
+actualizada, sin ejecutar pagos operativos ni leer .env ni commit/push.
+
+## Decisiones legibles — 29/10/2026
+
+Corrección visual: etiqueta y motivo separados verticalmente por10px en la tabla
+de conceptos; historial agrupa en nomina-cell fecha/usuario y destino/acción.
+Usuario aporta eventos NO_APLICAR09:39 y APLICAR09:43, conceptos:8, y Excel con
+Transporte80/sueldo12000 ambos APLICAR. Coinciden con exclusión y restablecimiento.
+No se ejecutaron decisiones/pagos ni se cambió Excel. Posponer aún no probado.
+
+QA: render Thymeleaf y package correctos;18vistas ficticias Chrome (Aplicar,
+No aplicar, Posponer;3anchos/2temas) con distancia mínima10px entre distintivo y
+motivo, sin recorte. Sólo app actualizada; sin migraciones ni datos financieros.
+
+## Rutas reales y acciones de decisiones — 29/10/2026
+
+Guías: comprobar siempre nombres visibles y enlaces reales antes de entregarlas.
+Ruta corregida: Personal y nómina → Nóminas → Ver → Detalle por empleado →
+Ver desglose → Decisiones y pendientes de este periodo. Acceso, Decidir sobre todo
+el empleado y Exportar decisiones a Excel usan el botón turquesa existente;
+nomina-empleado incorpora nomina-detail para aplicar la clase compartida.
+Selector de alcance sigue editable antes de confirmar (comportamiento anterior),
+sin cambiar permisos, sello, cálculo ni operaciones. Usuario aún no confirma el
+tratamiento de transporte de Bruce/noviembre2026: ensayo no aceptado todavía.
+
+QA: render Thymeleaf y package correctos; doce vistas ficticias Chrome (tres anchos,
+dos temas) comprobaron botones visibles. Ajuste final de separación y apilado
+móvil verificado adicionalmente. Sin decisiones ni pagos operativos ni migración.
+
 ## Pago directo y duplicación aceptados — 29/10/2026
 
 Usuario confirma pago individual sin borrador: Diana/SEP-2027-IND-TEST,

@@ -1,5 +1,53 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Cierre humano de Posponer, cancelar y reponer80 — 29/10/2026
+
+Usuario confirma todos los controles del punto9 del ensayo: Bruce/noviembre2026,
+BOR-000004 original, BOR-000005 liquidación; NPI-5 cancelado y nuevo intento pagado
+(no asumir su número). Banco4274.29→4354.29→4274.29; cajas12762.85/1150 intactas.
+Sueldo12000 no cancelado; pendiente80 pagado y configuración mensual80 conservada
+01/11–30/11. NO repetir ni cancelar pagos para documentar. Se conserva intento y
+compensación. La lista de conceptos pospuestos se consulta desde BOR-000004,
+no desde BOR-000005 (la liquidación no tiene otros pendientes derivados).
+Listado Nóminas ahora distingue estado con CSS acotado: borrador azul, pendiente
+ámbar, parcial violeta, pagada verde, aplicada histórica gris azulado, cancelada rojo.
+Etiquetas y estados internos/filtros/exportación sin cambio. Falta publicar guía
+integrada de estos tratamientos; continuidad y manual sí registran aceptación.
+
+## Retoma Posponer transporte de Bruce — 29/10/2026
+
+Usuario confirma que los puntos1–5 del ensayo Posponer coinciden y está en punto6,
+Conceptos pospuestos de noviembre2026. No repetir el egreso inmediato12000.
+Pendiente entregar los80 de transporte por separado (todavía NO pagados/aceptados).
+Ver pagos por empleado del Resumen usa nomina-primary-action turquesa. Filtro de
+pendientes incorpora autocompletado compartido, focus10 y búsqueda>=3; endpoint
+acotado a nómina/institución y empleados con conceptos pospuestos, no catálogo global.
+ID/etiqueta separados con FiltroPendienteNomina: tabla/Excel/paginación usan mismo
+ID, conservan etiqueta/estado; búsqueda textual previa compatible. Sin migración.
+
+## Separación de decisión y motivo — 29/10/2026
+
+Usuario confirma historial Bruce/noviembre: NO_APLICAR29/10 09:39 y APLICAR09:43
+para conceptos:8; Excel actual Transporte80 y sueldo12000 ambos APLICAR. No repetir
+operaciones. Falta confirmar explícitamente neto12080/configuración/cuentas para
+cerrar todos los controles; Posponer sigue pendiente. Corrige solape visual con
+wrapper nomina-treatment-decision (flex vertical, gap10px, motivo en flujo normal).
+Historial usa nomina-cell para separar fecha/usuario y destino/acción. No modificar
+datos ni cálculos ni exportación por este ajuste.
+
+## Regla de guías y acciones de decisiones — 29/10/2026
+
+Antes de entregar o publicar una guía, verificar los nombres visibles, rutas y botones
+en las plantillas/controladores actuales. No confundir IDs técnicos con etiquetas:
+Nóminas → Ver → Detalle por empleado → Ver desglose → Decisiones y pendientes de
+este periodo. No se llama Empleados la pestaña del detalle. Los tres accesos de
+decisiones (abrir, decidir todo el empleado y Excel) reutilizan nomina-primary-action
+turquesa; el desglose incorpora nomina-detail para activar el estilo compartido.
+El selector de alcance conserva su comportamiento previo: puede cambiar antes de
+confirmar y el sello valida el alcance revisado. No se bloqueó ni cambió el cálculo.
+Ensayo humano actual: Bruce/noviembre2026/No aplicar transporte80, aún SIN confirmar.
+No publicar ese caso como probado ni ejecutar decisiones/pagos con herramientas.
+
 ## Pago individual de septiembre confirmado — 29/10/2026
 
 CIERRE HUMANO: Diana/SEP-2027-IND-TEST (01–15/09/2027), BOR-000003/NPI-3 generado
