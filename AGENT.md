@@ -1,5 +1,20 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Fondos insuficientes y pago multifuente confirmados — 29/10/2026
+
+Usuario confirmó secuencia completa: error banco5000>4274.29/faltan725.71 con
+trescuentas intactas; corregir caja1806.45/banco4000; Cancelar modal SIN movimientos;
+después Confirmar, BOR-000006/NPI-7 PAGADO5806.45. Lectura operativa verificó pago
+y saldos CAJA10956.40/banco274.29/cajacorte1150. No repetir ni cancelar primera
+quincena de diciembre. V144 guía CONFIRMADA9pasos/6permisos y referencia desdeV143.
+Sólo documentación; no selección, pagos ni cuentas con herramientas.
+Siguiente ensayo propuesto, aún NO realizado: Bruce16–31/12/2026, sin reserva ni
+periodo en lecturaactual, sueldo proporcional6193.55. Crear DIC-2026-DOS-PESTANAS-TEST,
+borrador sóloBruce; abrir mismo registro en2pestañas, preparar/revisar ambas con
+fuente CAJA6193.55 ANTES de confirmar primera; confirmarA y luegoB sin recargar.
+Debe existir1pago/1egreso, CAJA4762.85, banco274.29/corte1150 intactos. AvisoB puede
+indicar versión cambiada/ya pagada; no asumir texto exacto. No usar enero ya reservado.
+
 ## Agregar otra cuenta lleva a la fuente nueva — 29/10/2026
 
 Preparar pago colectivo/por empleado y directo mantienen POST Agregar fuente y toda

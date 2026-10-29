@@ -1,6 +1,11 @@
 # Nómina: fondos insuficientes en una de dos fuentes
 
-Estado: **propuesta pendiente de confirmación humana**. No ejecutar pagos con herramientas.
+Estado: **CONFIRMADA por el usuario el 29/10/2026**, incluida confirmación final
+después de Cancelar del modal sin movimientos. BOR-000006/NPI-7 PAGADO5806.45:
+CAJA1806.45 y banco4000; saldos finales10956.40/274.29/cajacorte1150.
+No repetir ni cancelar este pago. V144 publica guía9pasos del caso concluido.
+El recorrido original siguiente se conserva como referencia histórica, no retoma.
+No ejecutar pagos con herramientas.
 Casos de noviembre de Bruce ya terminados: no cancelar ni repetir BOR-000004/5 o NPI-6.
 
 ## Datos comprobados, sólo lectura, el 29/10/2026

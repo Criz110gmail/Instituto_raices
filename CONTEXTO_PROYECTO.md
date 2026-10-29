@@ -1,5 +1,20 @@
 # Contexto del proyecto
 
+## Cierre de fondos y siguiente prueba de dos pestañas — 29/10/2026
+
+Confirmación humana: Cancelar no movió nada; luego confirmó pago5806.45 desde
+CAJA1806.45/banco4000. Consulta sólo lectura: BOR-000006/NPI-7 PAGADO, cobertura
+01–15/12/2026, saldos caja10956.40/banco274.29/corte1150. Bloqueo anterior de725.71
+y cuentas intactas aceptados. V144 guía9pasos,6permisos, sin repetir operaciones.
+Próximo ensayo pendiente: Bruce16–31/12/2026, sin cobertura reservada en lectura;
+neto6193.55, fuenteúnicaCAJA. Dos revisiones del MISMO borrador antes de confirmarA;
+B sin recargar debe bloquear sin otra salida. Cajaesperada4762.85; otros sin cambio.
+No marcar concurrencia como probada todavía. No cancelar ni repagar NPI-7.
+
+QA:3Java/package y PostgreSQL17 temporal correctos; V144 CONFIRMADA9pasos/6permisos,
+acciones enumeradas y actualización editorial V143 verificadas. Base ficticia retirada.
+Sólo app/contenido guía publicados, sin pagos/configuración operativa ni .env/Git.
+
 ## Captura continua de fuentes y retoma fondos — 29/10/2026
 
 Usuario ya comprobó error de banco: solicitado5000/disponible4274.29/faltan725.71,
