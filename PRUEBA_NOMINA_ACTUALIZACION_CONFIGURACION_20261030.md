@@ -32,7 +32,12 @@ Empleados → Luis → Ver expediente → Configuración de nómina → Concepto
 el empleado y sección actual. ← Volver a configuración conserva los filtros y
 paginación. El detalle no modifica permisos ni permite borrar historial.
 
-## Siguiente ensayo pendiente
+## Ensayo posterior también confirmado
+
+Actualización 30/10/2026: No aplicar TODO se ejecutó y confirmó en BOR-000010,
+sin pagos ni pendientes y cuentas intactas. Ver PRUEBA_NOMINA_NO_APLICAR_EMPLEADO_20261030.md.
+Los permisos también están confirmados en V148. La propuesta original siguiente
+se conserva como referencia, no como una instrucción de volver a ejecutarla:
 
 No aplicar TODO el pago de Luis en la segunda parte de diciembre, reusando
 DIC-2026-DOS-PESTANAS-TEST (16–31/12/2026), disponible para él aunque Bruce ya lo pagó.
@@ -44,4 +49,5 @@ excluido557.42. Confirmar decisiones sin mover dinero conserva la exclusión con
 motivo; no registra pago/egreso ni pendiente. El listado puede indicar Aplicada · sin
 pendientes por cierre de decisiones: no significa dinero pagado. Revisar fila de
 Luis No aplicar, historial, Excel, cuentas intactas y configuración original igual.
-No marcar este siguiente caso como confirmado hasta aceptación humana.
+La aceptación humana ya se recibió; no repetirlo. Para continuar usar
+RETOMAR_NOMINA_20261030.md.

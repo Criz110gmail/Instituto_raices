@@ -1,5 +1,29 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Retoma en otra computadora: permisos confirmados — 30/10/2026
+
+QA final:2tests Java/package con PostgreSQL17 temporal correctos; V148 verificada
+6pasos/6permisos requeridos. Prueba IT crea su directorio de fixtures para correr
+sola tras clean. Base temporal retirada; sóloapp/guíaeditorial desplegados, healthUP.
+Sin escrituras operativas de roles/usuarios/pagos y sin commit/push por agente.
+
+PRIORIDAD ACTUAL: leer RETOMAR_NOMINA_20261030.md. Usuario confirmó todas las pruebas
+privadas de nómina (pantalla/URL/Excel, quitar sólo configuración y restaurar).
+V148 documenta CONFIRMADA6pasos/6permisos requeridos; no cambia roles por migración.
+Lectura de cierre: prueba=PRUEBA_PERSONAL_BASE sin salarial/nomina; pruebas=
+QA_SALARIOS_CONSULTA con LEER+ADMINISTRAR salarial/nomina RESTAURADOS. Nombre consulta
+no implica sólolectura. No tocar permisos de admin ni guardar contraseñas.
+Tres ejemplos del plan aún pendientes: 1variosempleados y cancelar sólo1pago (SIGUE),
+2sin sueldo base con conceptos y advertencia, 3bloqueo netocero/negativo sin egresos.
+Primero inspeccionar DB nueva y rutas reales, fechas cercanas, no operar por usuario.
+BOR9 sigue Borrador/rev2/522.58 (rev1 483.87), no pagar/actualizar/cancelar. BOR10
+Confirmada sin pagos, NO_APLICAR, sin pagos/pendientes; no repetirlo. Luis transporte80
+activo, apoyos10/11cancelados. CuentasCAJA3762.85/banco274.29/corte1150 verificadas.
+Git NO traslada base ni archivos; IDs/saldos locales sólo referencia. No vaciar ni
+sobrescribir DB, no .env ni backups en Git. No commit/push solicitado por usuario.
+Cheques/préstamosrediseño/recibos/permisosoperación separados son entregas futuras;
+simultaneidad real técnica pendiente distinta a dobleconfirmaciónsecuencialaprobada.
+
 ## No aplicar confirmado, guía sencilla y organización — 30/10/2026
 
 QA:3tests Java con PostgreSQL17 temporal correctos (guía6pasos/6permisos), ajuste

@@ -42,8 +42,9 @@ la consulta si el navegador impide sessionStorage; script versionado evita cach�
 
 ## Qué sigue
 
-Pendiente de prueba humana: permisos de nómina separados del acceso general al
-expediente, mediante rol/usuario de prueba existente si es adecuado. Comprobar menú,
-pestaña Configuración de nómina, acceso directo y Excel sin exponer sueldo/conceptos.
-Inspeccionar permisos y datos antes de dar instrucciones; no cambiar cuentas reales,
-roles del administrador ni crear pagos para ese ensayo.
+Permisos de nómina confirmados por el usuario el 30/10/2026: prueba sin salarios,
+pruebas con salarios/configuración, retirar sólo configuración y restaurarla;
+pantallas, enlaces y Excel protegidos. Guía V148. No repetir sin necesidad.
+Sigue nómina con varios empleados y cancelar sólo uno de sus pagos; después empleado
+sin sueldo base con conceptos y bloqueo de neto cero/negativo. Ver
+RETOMAR_NOMINA_20261030.md antes de preparar datos en otra computadora.
