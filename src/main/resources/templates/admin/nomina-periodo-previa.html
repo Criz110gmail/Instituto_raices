@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{admin/fragments/nomina-comun :: head('Revisar nómina del periodo')}"></head>
 <body class="form-page"><main class="form-shell finance-shell nomina-capture nomina-detail nomina-bulk">
-<header th:replace="~{admin/fragments/nomina-comun :: barra}"></header>
+<header class="form-top"><a class="payment-back-link" th:href="${lote.borradorId!=null?filtro.url('/admin/preparacion-nomina/'+lote.borradorId)+'#gestion':volverUrl}" th:text="${lote.borradorId!=null?'← Volver al borrador sin actualizar':'← Volver al listado'}"></a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
 <section class="form-card employee-card">
  <nav th:replace="~{admin/fragments/nomina-comun :: ubicacion('Revisar y guardar borrador')}"></nav><div class="form-intro finance-intro"><span>Vista previa · No aplicada</span><h1 th:text="${lote.borradorId==null?'Así quedará la nómina del periodo':'Revisar actualización del borrador'}"></h1><p th:text="${lote.codigo+' · '+lote.periodo}"></p><p class="nomina-period-dates" th:text="${#temporals.format(lote.inicio,'dd/MM/yyyy')+' — '+#temporals.format(lote.fin,'dd/MM/yyyy')+' · Pago previsto '+#temporals.format(lote.pago,'dd/MM/yyyy')}"></p></div>
  <div th:replace="~{admin/fragments/laboral-comun :: avisos}"></div>
@@ -13,7 +13,7 @@
   <p class="field-help">Los casos incompatibles requieren revisión: no se pagan como cero ni se inventan importes. Las configuraciones válidas sí se calculan proporcionalmente por días reales. Consulta su motivo en la tabla. Esta vista conserva los empleados y configuraciones identificados al prepararla; no agrega personas nuevas silenciosamente.</p>
   <div th:if="${lote.estado!='ABIERTA'}" class="form-notice">Esta vista ya fue confirmada o descartada. No se puede volver a guardar ni modificar.</div>
   <section class="nomina-bulk-list" aria-labelledby="nomina-bulk-titulo">
-   <div class="section-heading"><h2 id="nomina-bulk-titulo">Detalle por empleado</h2><a class="nomina-action" th:href="${consulta.url(filtro,rutaLote+'/excel',0)}">Exportar consulta a Excel</a></div>
+   <div class="section-heading"><h2 id="nomina-bulk-titulo">Detalle por empleado</h2><a class="nomina-primary-action" th:href="${consulta.url(filtro,rutaLote+'/excel',0)}">Exportar consulta a Excel</a></div>
    <form class="filters filters-billing employee-filters payroll-aligned-filters" method="get" th:action="${rutaLote}">
     <th:block th:replace="~{admin/fragments/nomina-comun :: ocultos}"></th:block>
     <div th:replace="~{admin/fragments/concepto-empleado-comun :: ayuda('consultaEmpleado','Empleado',${consulta.consultaEmpleadoId},${consultaEmpleadoTexto},'/admin/conceptos-empleado/empleados/buscar',false)}"></div>

@@ -22,6 +22,8 @@ class NominaProporcionalPostgresIT {
  @Test void periodosIndependientesProporcionesCentavosYBorrador()throws Exception{
   try(var app=new SpringApplicationBuilder(SistemaAdministrativoEscolarApplication.class).run("--server.port=0","--spring.config.import=","--spring.datasource.url="+System.getenv("QA_FLUJO_NOMINA_JDBC"),"--spring.datasource.username=postgres","--spring.datasource.password=qa-sintetica","--spring.security.user.name=qa-recuperacion","--spring.security.user.password=qa-sintetica","--app.archivos.directorio=target/qa-flujo-nomina")){
    var j=app.getBean(JdbcTemplate.class);
+   assertThat(j.queryForObject("SELECT count(*) FROM guia_proceso_paso p JOIN guia_proceso g ON g.id=p.guia_id WHERE g.slug='nomina-actualizacion-configuracion-confirmada' AND g.estado='CONFIRMADA'",Long.class)).isEqualTo(8L);
+   assertThat(j.queryForObject("SELECT count(*) FROM guia_proceso_permiso p JOIN guia_proceso g ON g.id=p.guia_id WHERE g.slug='nomina-actualizacion-configuracion-confirmada'",Long.class)).isEqualTo(6L);
    assertThat(j.queryForObject("SELECT count(*) FROM guia_proceso_paso p JOIN guia_proceso g ON g.id=p.guia_id WHERE g.slug='nomina-dos-pestanas-confirmada' AND g.estado='CONFIRMADA'",Long.class)).isEqualTo(9L);
    assertThat(j.queryForObject("SELECT count(*) FROM guia_proceso_permiso p JOIN guia_proceso g ON g.id=p.guia_id WHERE g.slug='nomina-dos-pestanas-confirmada'",Long.class)).isEqualTo(6L);
    assertThat(j.queryForObject("SELECT count(*) FROM guia_proceso_paso p JOIN guia_proceso g ON g.id=p.guia_id WHERE g.slug='nomina-fondos-insuficientes-confirmados' AND g.estado='CONFIRMADA'",Long.class)).isEqualTo(9L);

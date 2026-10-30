@@ -2,7 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{admin/fragments/nomina-comun :: head('Detalle de nómina')}"></head>
 <body class="form-page"><main class="form-shell finance-shell nomina-detail">
-<header th:replace="~{admin/fragments/nomina-comun :: barra}"></header>
+<header class="form-top"><a class="payment-back-link" th:href="${consultaRevisionExplicita==true?filtro.url('/admin/preparacion-nomina/'+borrador.id)+'#historial':volverUrl}" th:text="${consultaRevisionExplicita==true?'← Volver al historial del borrador':'← Volver al listado'}"></a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
 <section class="form-card employee-card">
  <nav th:replace="~{admin/fragments/nomina-comun :: ubicacion('Detalle de la nómina')}"></nav><div class="form-intro finance-intro"><span th:text="${borrador.folio()+' · Nóminas'}"></span><h1 th:text="${borrador.nombre}"></h1><p>Consulta el periodo, los empleados y sus conceptos. El registro interno del egreso no envía transferencias bancarias ni emite un recibo fiscal.</p></div>
  <div th:replace="~{admin/fragments/laboral-comun :: avisos}"></div>
@@ -51,7 +51,7 @@
  </section>
  <section th:if="${puedeEditar and borrador.estado=='BORRADOR'}" id="panel-nomina-gestion" class="student-tab-panel employee-panel detail-section" data-student-panel="gestion" role="tabpanel" aria-labelledby="tab-nomina-gestion" hidden>
   <h2>Actualizar desde configuración</h2><p class="field-help">Revisa diferencias antes de guardar otra revisión. Conserva los empleados originales; una fuente incompatible bloquea toda actualización.</p>
-  <form class="nomina-refresh" method="post" th:action="@{/admin/preparacion-nomina/{id}/preparar-actualizacion(id=${borrador.id})}"><th:block th:replace="~{admin/fragments/nomina-comun :: ocultos}"></th:block><button class="nomina-action">Revisar actualización →</button></form>
+  <form class="nomina-refresh" method="post" th:action="@{/admin/preparacion-nomina/{id}/preparar-actualizacion(id=${borrador.id})}"><th:block th:replace="~{admin/fragments/nomina-comun :: ocultos}"></th:block><button class="nomina-primary-action">Revisar actualización →</button></form>
   <details class="nomina-options" th:open="${motivoCapturado!=null}"><summary>Cancelar este borrador</summary><p class="field-help">Esta acción no es un pago ni una reversa. Libera a los empleados para otra preparación y conserva las revisiones.</p>
    <form class="entity-form" method="post" th:action="@{/admin/preparacion-nomina/{id}/cancelar(id=${borrador.id})}" data-money-confirm="nomina-borrador-cancelar" th:attr="data-confirm-subject=${borrador.folio()+' · '+borrador.nombre},data-confirm-period=${borrador.periodoCodigo},data-confirm-people=${borrador.cantidad},data-confirm-amount=${borrador.propuesto},data-confirm-currency=${borrador.moneda}">
     <th:block th:replace="~{admin/fragments/nomina-comun :: ocultos}"></th:block><input type="hidden" name="version" th:value="${borrador.version}">

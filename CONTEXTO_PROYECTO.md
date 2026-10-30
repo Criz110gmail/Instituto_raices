@@ -1,5 +1,40 @@
 # Contexto del proyecto
 
+## Guía V146: actualización y rechazo obsoleto confirmados — 30/10/2026
+
+QA:3tests Java/package correctos, Flyway/PostgreSQL17 aislado con8pasos/6permisos;
+12vistas ficticias en390/1440 claro/oscuro sin desbordamiento y retorno con filtros.
+Base temporal retirada; despliegue sóloapp, sin pagos ni cambios de configuración
+operativos, sin lectura .env ni commit/push.
+
+Cierre humano BOR9: rechazo real en A sin recargar mientras apoyo temporal11 activo;
+mensaje Cambió la configuración o inclusión de uno o más empleados. No se guardó nada.
+Después canceló11;10tambiéncancelado, transporte9activo80mensual. Revisiones1=483.87,
+2=522.58 conservadas y ambas propuestas522.58; cuentas3762.85/274.29/1150 intactas.
+V146 publica guía CONFIRMADA8pasos/6permisoslectura; manual específico actualizado.
+No pagar/cancelar ni crear revisión3 de BOR9. Aviso general no identifica empleados.
+Detalle de concepto desde Configuración de nómina → Ver/Resumen, alta y cambio
+incluyen ubicación Empleados → Configuración de nómina → sección y empleado.
+Volver a configuración con flecha arriba/abajo conserva filtros; no cambia permisos.
+Siguiente pendiente humano: Luis16–31/12/2026, periodoexistenteDIC-2026-DOS-PESTANAS-TEST,
+neto557.42=516.13sueldo+41.29transporte. SóloLuis en nuevoBOR; No aplicar TODO,
+confirmar decisiones sin dinero: ahora0,pospuesto0,excluido557.42. Estado global puede
+ser Aplicada sin pendientes al cerrar exclusiones; no confundir con pago. No operar
+por herramientas ni tocar BOR9/noviembre. Caso todavía no confirmado.
+
+## Revisión histórica de Luis y regreso contextual — 29/10/2026
+
+Usuario confirma BOR-000009: revisión1 sueldo/neto483.87, revisión2 sueldo483.87 +
+transporte38.71 =522.58; guardada29/10 a16:29. Cuentas intactas CAJA3762.85,
+BBVA274.29/corte1150. No autorizar, pagar ni cancelar este borrador todavía.
+No marcar bloqueo de vista obsoleta como confirmado: no hay evidencia humana de
+rechazo del paso5; se confirmó conservación de revisiones e importes sin dinero.
+Vista de revisión explícita vuelve al historial del mismo borrador; entrada normal
+sigue al listado conservando filtros. Desglose conserva revisión al volver. Vista
+previa de actualización vuelve al borrador/Gestión, no al listado. Exportar consulta
+a Excel y Revisar actualización usan nomina-primary-action turquesa. Sin cambios
+financieros, permisos, cálculos ni escrituras operativas por agente.
+
 ## Pago completo pospuesto de Luis confirmado — 29/10/2026
 
 Usuario confirma punto10 completo: BOR-000008/NPI-9, pago individual1000 desdeCAJA,
