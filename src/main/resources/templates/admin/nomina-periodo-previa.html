@@ -14,7 +14,7 @@
   <div th:if="${lote.estado!='ABIERTA'}" class="form-notice">Esta vista ya fue confirmada o descartada. No se puede volver a guardar ni modificar.</div>
   <section class="nomina-bulk-list" aria-labelledby="nomina-bulk-titulo">
    <div class="section-heading"><h2 id="nomina-bulk-titulo">Detalle por empleado</h2><a class="nomina-primary-action" th:href="${consulta.url(filtro,rutaLote+'/excel',0)}">Exportar consulta a Excel</a></div>
-   <form class="filters filters-billing employee-filters payroll-aligned-filters" method="get" th:action="${rutaLote}">
+   <form class="filters filters-billing employee-filters payroll-aligned-filters" data-nomina-keep-filter="preparacion" method="get" th:action="${rutaLote}">
     <th:block th:replace="~{admin/fragments/nomina-comun :: ocultos}"></th:block>
     <div th:replace="~{admin/fragments/concepto-empleado-comun :: ayuda('consultaEmpleado','Empleado',${consulta.consultaEmpleadoId},${consultaEmpleadoTexto},'/admin/conceptos-empleado/empleados/buscar',false)}"></div>
     <label><span>Búsqueda adicional</span><input name="buscar" th:value="${consulta.buscar}" placeholder="Código, nombre o apellido"></label>

@@ -1,5 +1,46 @@
 # Contexto del proyecto
 
+## No aplicar confirmado, guía sencilla y organización — 30/10/2026
+
+QA:3tests Java con PostgreSQL17 temporal correctos (guía6pasos/6permisos), ajuste
+editorialV143 verificado en QA, package final correcto y testsJS scroll/selección.
+Chrome12GET ficticios: filtros conservan posición en pagos/pendientesvacíos/previa,
+390/1440 y claro/oscuro reales; navegación3tabs y paginaciónHistorial correctas.
+Temporal retirado; sóloapp y guíaeditorial desplegados. Sin pagos ni decisiones
+operativas por agente; BOR10 cerrado sin pagos conservado.
+
+Usuario confirma BOR10/Luis16–31diciembre: excluyó TODO557.42 con motivo, vista
+Confirmada sin pagos; cuentas3762.85/274.29/1150 intactas, cero movimientos y sin
+conceptos pospuestos. Lectura: NO_APLICAR efectivo0, sin intentos ni pendientes.
+No confundir estado internoPAGADA con dinero pagado. Configuraciónsueldo1000/
+transporte80 preservada, apoyos10/11cancelados. No repetir/cancelar BOR10 ni BOR9.
+V147 guía CONFIRMADA6pasos/6permisoslectura: lenguaje simple qué hace/qué cambia/
+qué no cambia; No aplicar no deja deuda, Posponer conserva pendiente. Cambia sólo
+contenido editorial de V143 para rutas de pestañas, nunca checksum anterior.
+Decisiones sobre conceptos ahora Resumen/Conceptos/Historial de decisiones;
+paginación mantiene Historial y acciones legibles, sólo consulta sin permisoeditar.
+Pendientes incorpora conservación de filtros. Restauración de filtros dobleframe
+postload y pageshow noBFCache; scriptversionadofiltros2 evita caché anterior.
+No nuevas operaciones de negocio por agente. Cancelar del modal no se declara
+confirmado individualmente por usuario. Próximo recomendado: permisos privados de
+nómina; revisar rol de prueba existente antes de dar pasos, sin tocar admin ni pagar.
+
+## Filtros sin salto y retomar No aplicar — 30/10/2026
+
+QA:tests JS de posición/selección y render Java/package correctos; 12GET sintéticos
+Chrome confirmaron posición relativa exacta de filtros en3pantallas/2anchos.
+Sólo app actualizada, healthUP, sin pagos ni escrituras de decisiones por agente.
+
+Lectura operativa: BOR10 Preparación · DIC-2026-DOS-PESTANAS-TEST, Luis fila11,
+Borrador/rev1/version0,557.42,tratamientoAPLICAR. Sin nomina_autorizacion ni decisión
+NO_APLICAR guardada; usuario indicó confirmar accidentalmente pero la base conserva
+inclusión. Retomar ese BOR10, NO crear duplicado ni tocar BOR9. Ensayo aún pendiente.
+Filtros marcados en pagos por empleado, vista previa de borrador y configuración de
+conceptos/simulador conservan la posición del FORMULARIO tras GET, no la tabla.
+Clave por ruta y formulario, consumo único, panel oculto respetado, foco preventScroll;
+si formulario estaba fuera por arriba lo lleva a16px. Sin storage sigue GET normal.
+No cambios de consultas, permisos, decisiones ni dinero por agente.
+
 ## Guía V146: actualización y rechazo obsoleto confirmados — 30/10/2026
 
 QA:3tests Java/package correctos, Flyway/PostgreSQL17 aislado con8pasos/6permisos;

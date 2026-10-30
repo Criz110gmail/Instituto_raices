@@ -1,21 +1,20 @@
-/* Los filtros de pagos vuelven a los resultados, no a la cabecera de la nómina. */
+/* Sólo formularios de consulta marcados: conservar los filtros, no saltar a resultados. */
 (() => {
- const form=document.querySelector('[data-nomina-payments-filter]');
- const table=document.querySelector('[data-nomina-payments-table]');if(!form||!table)return;
- const key='nomina-pagos-filtros-scroll:'+location.pathname;
+ document.querySelectorAll('[data-nomina-keep-filter]').forEach(form=>{
+ const key='nomina-filtros-scroll:'+location.pathname+':'+form.dataset.nominaKeepFilter;
  form.addEventListener('submit',()=>{
-  try{sessionStorage.setItem(key,JSON.stringify({y:window.scrollY,offset:table.getBoundingClientRect().top}));}catch(_){/* Sin almacenamiento se vuelve a la tabla. */}
+  try{sessionStorage.setItem(key,JSON.stringify({offset:Math.max(16,form.getBoundingClientRect().top)}));}catch(_){/* La consulta normal sigue funcionando sin almacenamiento. */}
  });
  let saved;try{const raw=sessionStorage.getItem(key);sessionStorage.removeItem(key);if(raw)saved=JSON.parse(raw);}catch(_){}
- if(location.hash!=='#empleados')return;
- const restore=()=>requestAnimationFrame(()=>{
-  if(table.closest('[data-student-panel]')?.hidden)return;
-  if(saved&&Number.isFinite(saved.y)&&Number.isFinite(saved.offset)){
-   window.scrollTo({top:Math.max(0,window.scrollY+table.getBoundingClientRect().top-saved.offset),behavior:'instant'});
-  }else table.scrollIntoView({block:'start',behavior:'instant'});
+ if(!saved||!Number.isFinite(saved.offset))return;
+ const restore=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  if(form.closest('[data-student-panel]')?.hidden)return;
+  window.scrollTo({top:Math.max(0,window.scrollY+form.getBoundingClientRect().top-saved.offset),behavior:'instant'});
   form.querySelector('button[type="submit"],.module-action--primary')?.focus({preventScroll:true});
- });
+ }));
  if(document.readyState==='complete')restore();else window.addEventListener('load',restore,{once:true});
+ window.addEventListener('pageshow',event=>{if(!event.persisted)restore();},{once:true});
+ });
 })();
 /* El servidor marca únicamente la cuenta recién agregada; revisar/errores no desplazan. */
 (() => {
