@@ -1,5 +1,50 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Prueba directa cero aprobada; siguiente chequeras — 03/11/2026
+
+QA2tests Java/package con PostgreSQL17 temporal correctos; V151 validada6pasos/
+6permisos lectura, sin grants. Sóloapp desplegada, healthUP, saldos intactos y
+guíaCONFIRMADA verificada en base local. Temporal retirada. No commit/push.
+PLAN_CHEQUERAS_ENTREGA1.md propone catálogo y permisos Consultar/Administrar;
+pendiente decisión humana sobre permisos, no implementación de chequeras aún.
+
+Usuario confirmó todos los pasos y duplicado bloqueado con mensaje específico.
+Lectura identifica BOR15/rev1/fila20/Diego12, cierre0 con motivo, conceptos19/20
+EXTRA200/DESC200 únicos16–31dic2026 periodo7. Visible Confirmada sin pagos;
+sin NPI/egreso. Cuentas1195.11/274.29/1150 confirmadas por usuario, sin cambios.
+Manual PRUEBA_NOMINA_CERO_DIRECTO_20261103.md actualizado a CONFIRMADA. No repetir,
+cancelar ni recapturar. Guía editorial V151, sin grants ni operaciones de negocio.
+Ejemplos humanos base concluidos, no equivale terminar todo el dominio.
+Siguiente: chequeras según PLAN_REDISENO_NOMINA_20261026.md sección9. Aún no hay
+implementación de chequeras en finanzas; no crear cuenta tipoCHEQUE. Proponer primera
+entrega catálogo dentro de cuentaBANCO con permisos explícitos; luego integración
+de emisión/cancelación atómica en nómina. Acceso específico aún por definir en plan.
+Cheques, recibos nuevos, cuotas0préstamo y rediseño préstamos no declararlos hechos.
+
+## Neto cero en Pago individual directo — 03/11/2026
+
+Desplegado sóloapp, health verificado al cierre. Chrome8vistas390/1440claro/oscuro
+sin desbordamiento; modal Cancelar/Escape con ceroPOST, captura conserva detalle.
+
+Usuario autorizó completar captura directa cero y pide ejemplo completo. Implementado
+sin nueva tabla ni migración: revisarIndividual separa cero del pago positivo;
+sólo motivo, sin cuentas/referencia/motivo financiero. Confirmación con Cancelar,
+revisión protegida y Editar justificación. Snapshot técnico y autorización/cierre
+V149 en una transacción; no exige borrador previo, no genera NPI ni movimiento0.
+Permisos financieros/salariales existentes, sello de configuración/motivo/solicitud,
+bloqueos periodo/empleado y reserva de cobertura evitan duplicados. Neto negativo
+sigue bloqueado; cero con préstamo sigue fuera de alcance, con error explícito.
+Mensaje específico si ya existe un cierre cero para fechas coincidentes.
+
+QA142pruebas Personal incluyendo PostgreSQL17 temporal: cero directo, sin permiso,
+captura/revisión HTTP, sello alterado, cuenta indebida, rollback total ante fallo,
+concurrencia real2intentos/1éxito, cero NPI/egresos adicionales; colectivo20 previo
+y regresión positivos correctos. Manual PRUEBA_NOMINA_CERO_DIRECTO_20261103.md
+PENDIENTE aceptación humana: Diego12 + EXTRA200/DESC200 únicos en periodo7
+DIC-2026-DOS-PESTANAS-TEST16–31dic2026. No crear por herramientas estos conceptos.
+Lectura confirma aún no capturados en ese intervalo; CAJA1195.11/banco274.29/corte1150.
+No repetir BOR13/BOR14 ni tocar BOR9. Cheques/préstamos especializados diferidos.
+
 ## Todos aprobado: BOR14 y guía V150 — 03/11/2026
 
 QA141unitarias correctas, ITproporcional y migración editorial aislada8pasos/6permisos

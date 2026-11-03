@@ -9,6 +9,12 @@ Estado agregado considera el cierre para no dejar pendiente ficticio. Colectivo
 mixto conserva todos los empleados, financia sólo positivos y cierra ceros al
 confirmar; fallo revierte cierres/autorizacion/pagos. PK y bloqueos evitan doble
 confirmacion. Sin backfill financiero ni cambios de configuraciones/historiales.
+Captura directa Pago individual admite neto0 sin borrador previo del usuario:
+crea fotografia tecnica y autoriza/cierra en una transaccion, con motivo y modal,
+sin fuentes, referencia financiera, NPI ni egresos. Reutiliza NominaCierreCero;
+reserva por cobertura y bloqueos de periodo/empleado impiden repetirlo. El sello
+incluye configuracion, solicitud y motivo; una revision alterada no se confirma.
+No aplica a netos negativos ni a cero con cuotas de prestamos.
 
 ACTUALIZACION V139 — TRATAMIENTOS Y OBLIGACIONES DE NOMINA (27/10/2026):
 NominaTratamiento append-only por fila histórica y clave EMPLEADO o fuente:id,

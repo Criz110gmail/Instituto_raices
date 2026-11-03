@@ -1,5 +1,36 @@
 # Contexto del proyecto
 
+## Confirmación humana: pago individual cero y paso a chequeras — 03/11/2026
+
+GuíaV151 desplegada/verificada6pasos/6permisoslectura, healthUP. QA2tests Java
+incluyendo ITaislado con PostgreSQL17 y package correctos. Temporal retirada.
+PLAN_CHEQUERAS_ENTREGA1.md deja alcance propuesto; permisos separados por confirmar.
+
+Usuario aprobó ejemplo completo, incluido rechazo al repetir Pago individual.
+BOR15/rev1/fila20/Diego12 cierre0, periodo7del16–31dic2026. Conceptos19/20
+percepción200/deducción200 conservados. Cuentas1195.11/274.29/1150 intactas.
+Manual cero directo CONFIRMADO y guía editorialV151 sin pagos/grants. No repetir.
+Siguiente recomendado: catálogo chequeras bajo cuenta bancaria (plan26oct/sección9),
+después emisión segura ligada a nómina. No hay todavía soporte de chequeras;
+no crear saldo separado ni tratar un cheque como cuenta. Préstamos quedan después.
+
+## Pago individual directo con neto cero — 03/11/2026
+
+Chrome8vistas390/1440claro/oscuro aprobadas, sin cuentas ni desbordamiento,
+modal Cancelar/Escape sinPOST. Despliegue sóloapp; sin cambios financieros.
+
+Implementación autorizada: si el cálculo da0, captura sólo motivo y revisa/cierra
+con modal Cancelar. No exige una nómina previa ni cuenta; copia técnica y cierre
+auditable inmutable en transacción única, sin NPI ni egreso. Duplicado informa
+que ya existe neto cero confirmado; configuración/cobertura se revisan al confirmar.
+Positivos conservan distribución de fuentes. Negativos y cero con préstamos siguen
+bloqueados. No nuevas tablas, migraciones ni operaciones reales por herramientas.
+QA142pruebas incluyendo IT real PostgreSQL aislado correctas: concurrencia, rollback,
+auditoría, permisos y HTTP captura/revisión. Prueba manual todavía PENDIENTE, no
+confundir con BOR13/BOR14 ya aprobados. Retomar PRUEBA_NOMINA_CERO_DIRECTO_20261103.md:
+Diego12, EXTRA200/DESC200 únicos16–31dic2026, periodo7existente. Lectura sin cambios
+confirma saldos1195.11/274.29/1150 y sin esos conceptos aún en la segunda quincena.
+
 ## Cierre humano del colectivo Todos y etiquetas correctas — 03/11/2026
 
 QA141unitarias y regresiónITproporcional correctas; V150validada8pasos/6permisos.

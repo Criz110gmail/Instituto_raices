@@ -194,7 +194,7 @@
             const form = event.target, kind = form.dataset.moneyConfirm;
             if (!kind || event.defaultPrevented || approved.has(form)) return;
             if(kind==='anticipo-propuesta' && event.submitter?.id!=='anticipation-save')return;
-            if(['nomina-multifuente','nomina-tratamiento'].includes(kind) && event.submitter?.hasAttribute('formaction'))return;
+            if(['nomina-multifuente','nomina-cero-directo','nomina-tratamiento'].includes(kind) && event.submitter?.hasAttribute('formaction'))return;
             event.preventDefault();
             if (!form.reportValidity()) return;
             dialog.setAttribute('data-confirm-kind', kind);
@@ -235,6 +235,11 @@
                 form.closest('section').querySelectorAll('[data-cancel-source]').forEach(row=>add(row.querySelector('dt').textContent,row.querySelector('dd').textContent));
                 add('Justificación',form.querySelector('[name="motivo"]').value);
                 note.textContent='Devuelve cada importe a su cuenta original y conserva el historial. Confirma únicamente si los fondos se recuperaron realmente. Los empleados quedarán pendientes para pago individual de este mismo periodo. Cancelar cierra el resumen sin registrar cambios.';
+            } else if(kind==='nomina-cero-directo') {
+                title.textContent='Confirmar neto cero';cancel.textContent='Cancelar';accept.textContent='Confirmar neto cero';
+                add('Empleado',form.dataset.confirmPerson);add('Periodo',form.dataset.confirmPeriod);add('Total a pagar',money(form.dataset.confirmAmount));
+                add('Justificación',form.querySelector('[name="motivo"]').value);
+                note.textContent='Conserva el desglose con fecha, usuario y motivo, sin utilizar cuentas ni registrar salidas de dinero. El empleado queda con neto cero confirmado para este periodo, sin un pago pendiente. Cancelar no guarda nada.';
             } else if(kind==='nomina-multifuente') {
                 title.textContent='Confirmar pago de nómina';cancel.textContent='Cancelar';accept.textContent='Confirmar y registrar pagos';
                 add('Empleados',form.dataset.confirmPeople);add('Total a pagar',money(form.dataset.confirmAmount));

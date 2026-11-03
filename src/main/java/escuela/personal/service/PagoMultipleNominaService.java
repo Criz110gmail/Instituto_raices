@@ -108,12 +108,19 @@ public class PagoMultipleNominaService {
   throw regla("No hay configuración aplicable para ese empleado y periodo.");
  }
  public Vista revisarIndividual(escuela.personal.dto.PagoIndividualNominaForm f){
-  var c=calculoIndividual(f);var row=new PagoEmpleadoNominaService.Fila(c.id(),c.id(),c.codigo(),c.nombre(),c.propuesto(),c.moneda(),"PENDIENTE",null);
+  var c=calculoIndividual(f);
+  if(c.propuesto().signum()==0){
+   texto(f.getMotivo(),2000,"motivo");if(f.getSolicitud()==null)throw regla("Recarga el formulario antes de confirmar.");
+   if(f.getMotivoPagoId()!=null||(f.getFuentes()!=null&&(f.getFuentes().size()>20||f.getFuentes().stream().anyMatch(x->x==null||x.getCuentaId()!=null||x.getImporte()!=null))))throw regla("El neto cero no utiliza cuentas ni importes de salida. Vuelve a consultar el cálculo.");
+   if(jdbc.queryForObject("SELECT jsonb_array_length(coalesce(cast(:fuentes AS jsonb)->'prestamos','[]'::jsonb))>0",new MapSqlParameterSource("fuentes",c.fuentes()),Boolean.class))throw regla("Este neto cero tiene cuotas de préstamo; requiere resolverlas antes de confirmar.");
+   return new Vista(0L,List.of(),1,c.propuesto(),PreparacionNominaService.sello("CERO_DIRECTO|"+c.sello()+"|"+f.getSolicitud()+"|"+f.getMotivo().strip()));
+  }
+  var row=new PagoEmpleadoNominaService.Fila(c.id(),c.id(),c.codigo(),c.nombre(),c.propuesto(),c.moneda(),"PENDIENTE",null);
   var vista=revisarDatos(0L,0L,c.moneda(),List.of(row),f);
   return new Vista(0L,vista.fuentes(),1,c.propuesto(),PreparacionNominaService.sello(c.sello()+"|"+vista.sello()));
  }
  @Transactional public Long pagarIndividual(escuela.personal.dto.PagoIndividualNominaForm f){
-  if(!f.isConfirmado())throw regla("Confirma el pago individual antes de registrar dinero.");
+  if(!f.isConfirmado())throw regla("Revisa y confirma la operación individual antes de guardarla.");
   jdbc.queryForObject("SELECT id FROM periodo_nomina WHERE id=:periodo AND institucion_id=:inst FOR UPDATE",p().addValue("periodo",f.getPeriodoId()),Long.class);
   jdbc.queryForObject("SELECT id FROM empleado WHERE id=:empleado AND institucion_id=:inst FOR UPDATE",p().addValue("empleado",f.getEmpleadoId()),Long.class);
   var vista=revisarIndividual(f);if(!Objects.equals(vista.sello(),f.getSello()))throw regla("Cambió la configuración o el saldo. Consulta nuevamente antes de pagar.");
@@ -121,7 +128,9 @@ public class PagoMultipleNominaService {
   if(!Objects.equals(revisarIndividual(f).sello(),f.getSello()))throw regla("Cambió un saldo; revisa de nuevo. No se movió dinero.");
   var c=calculoIndividual(f);var borrador=new escuela.personal.dto.BorradorNominaForm();borrador.setPeriodoId(f.getPeriodoId());borrador.setSelloPeriodo(preparacion.contexto(f.getPeriodoId()).sello());borrador.setNombre("Pago individual · "+c.codigo());borrador.setMotivo(f.getMotivo());borrador.setSeleccion(List.of(c.token()));
   // Fotografía técnica creada y pagada en una sola transacción; no exige borrador previo al usuario.
-  Long id=preparacion.guardar(borrador);f.setVersion(preparacion.obtener(id).version());f.setFilaId(null);f.setSello(revisar(id,f).sello());pagar(id,f);return id;
+  Long id=preparacion.guardar(borrador);f.setVersion(preparacion.obtener(id).version());
+  if(c.propuesto().signum()==0){pagos.autorizar(id,f.getVersion(),f.getMotivo());return id;}
+  f.setFilaId(null);f.setSello(revisar(id,f).sello());pagar(id,f);return id;
  }
  public List<escuela.admin.dto.OpcionAutocompletado> buscarCuentas(String q){
   var texto=OrganizacionLaboralService.texto(q,200);if(!texto.isBlank()&&texto.length()<3)return List.of();

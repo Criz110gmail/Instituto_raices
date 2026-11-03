@@ -74,6 +74,7 @@ public class PreparacionNominaService {
  ec.calendario_id calendario_asignado,coalesce(pr.reservado,false) prestamo_reservado,coalesce(ce.nueva_configuracion,false) nueva_configuracion,
  coalesce(ce.percepciones,0)+coalesce(oc.percepciones,0) percepciones,coalesce(ce.deducciones,0)+coalesce(oc.deducciones,0)+coalesce(pr.cuotas,0) deducciones,
  coalesce(ce.aportaciones,0)+coalesce(oc.aportaciones,0) aportaciones,coalesce(ce.cubre,true) AND coalesce(oc.cubre,true) AND coalesce(pr.moneda_valida,true) conceptos_cubren,
+ EXISTS(SELECT 1 FROM nomina_fila_efectiva ne JOIN nomina_cierre_cero cc ON cc.fila_id=ne.id AND cc.institucion_id=ne.institucion_id WHERE ne.empleado_id=e.id AND ne.activo AND ne.borrador_id<>:ignorar AND daterange(ne.fecha_inicio,ne.fecha_fin,'[]') && daterange(:inicio,:fin,'[]')) cero_confirmado,
  EXISTS(SELECT 1 FROM nomina_fila_efectiva ne WHERE ne.empleado_id=e.id AND ne.activo AND ne.borrador_id<>:ignorar AND daterange(ne.fecha_inicio,ne.fecha_fin,'[]') && daterange(:inicio,:fin,'[]')) ocupado,
  EXISTS(SELECT 1 FROM nomina_fila_efectiva ne JOIN nomina_pago_intento ni ON ni.fila_id=ne.id AND ni.institucion_id=ne.institucion_id AND ni.estado='PAGADO'
  WHERE ne.empleado_id=e.id AND ne.activo AND ne.borrador_id<>:ignorar AND daterange(ne.fecha_inicio,ne.fecha_fin,'[]') && daterange(:inicio,:fin,'[]')) ya_pagado,
@@ -110,6 +111,7 @@ public class PreparacionNominaService {
  ), evaluados AS (
  SELECT *,CASE
  WHEN ya_pagado AND NOT :simulacion THEN 'NO_INCLUIDO|Ya tiene un pago registrado para estas fechas. Consulta su nómina en Personal y nómina → Nóminas antes de intentar otro pago. No se registró ningún movimiento adicional.'
+ WHEN cero_confirmado AND NOT :simulacion THEN 'NO_INCLUIDO|Este empleado ya tiene un neto cero confirmado para fechas coincidentes. Consulta el detalle en Personal y nómina → Nóminas. No se registró otro cierre ni salida de dinero.'
  WHEN ocupado AND NOT :simulacion THEN 'NO_INCLUIDO|Ya existe un borrador o una nómina para este empleado y estas fechas. Consulta su estado en Personal y nómina → Nóminas y continúa desde ese registro si está pendiente; no prepares otro pago.'
  WHEN NOT activo THEN 'NO_INCLUIDO|El expediente del empleado está inactivo.'
  WHEN fecha_ingreso>:fin THEN 'NO_INCLUIDO|El ingreso laboral es posterior al periodo.'

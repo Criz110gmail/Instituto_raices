@@ -74,6 +74,33 @@ class NominaCeroPostgresIT {
    assertThat(j.queryForObject("SELECT count(*) FROM nomina_pago_intento",Long.class)).isEqualTo(19);assertThat(j.queryForObject("SELECT sum(monto) FROM movimiento_financiero",BigDecimal.class)).isEqualByComparingTo("3800");
    assertThat(j.queryForObject("SELECT saldo_posterior FROM movimiento_financiero WHERE cuenta_id=480000 ORDER BY secuencia_cuenta DESC LIMIT 1",BigDecimal.class)).isEqualByComparingTo("1200");
    assertThatThrownBy(()->multiple.pagar(lote,f)).isInstanceOf(RuntimeException.class);assertThat(pagos.resumenCero(lote).confirmados()).isEqualTo(1);
+
+   long agosto=periodo(periodos,"AGO-DIRECTO-CERO-QA",LocalDate.of(2027,8,1),LocalDate.of(2027,8,31));
+   var directo=new PagoIndividualNominaForm();directo.setPeriodoId(agosto);directo.setEmpleadoId(480019L);directo.setMotivo("Cierre directo sin cuentas ni salida de dinero");
+   assertThat(multiple.calculoIndividual(directo).propuesto()).isZero();
+   var revisionCero=multiple.revisarIndividual(directo);assertThat(revisionCero.fuentes()).isEmpty();directo.setSello(revisionCero.sello());
+   long cabezas=j.queryForObject("SELECT count(*) FROM nomina_borrador",Long.class);
+   assertThatThrownBy(()->multiple.pagarIndividual(directo)).isInstanceOf(RuntimeException.class);
+   directo.setConfirmado(true);directo.getFuentes().getFirst().setCuentaId(480000L);
+   assertThatThrownBy(()->multiple.pagarIndividual(directo)).hasMessageContaining("no utiliza cuentas");directo.getFuentes().getFirst().setCuentaId(null);
+   directo.setMotivo("Justificación alterada después de revisar");assertThatThrownBy(()->multiple.pagarIndividual(directo)).hasMessageContaining("Cambió la configuración");directo.setMotivo("Cierre directo sin cuentas ni salida de dinero");
+   assertThat(j.queryForObject("SELECT count(*) FROM nomina_borrador",Long.class)).isEqualTo(cabezas);
+   var captura=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/admin/preparacion-nomina/pago-individual").session(session).param("periodoId",Long.toString(agosto)).param("empleadoId","480019")).andReturn().getResponse();
+   assertThat(captura.getStatus()).isEqualTo(200);assertThat(captura.getContentAsString()).contains("Revisar neto cero","Justificación del neto cero").doesNotContain("nomina-payment-source","name=\"motivoPagoId\"","name=\"referencia\"");java.nio.file.Files.writeString(dir.resolve("directo-cero.html"),captura.getContentAsString());
+   SecurityContextHolder.getContext().setAuthentication(auth);
+   j.execute("CREATE FUNCTION qa_directo_fallo() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.motivo='Cierre directo sin cuentas ni salida de dinero' THEN RAISE EXCEPTION 'Fallo ficticio cierre directo'; END IF; RETURN NEW; END $$");j.execute("CREATE TRIGGER qa_directo_fallo BEFORE INSERT ON nomina_cierre_cero FOR EACH ROW EXECUTE FUNCTION qa_directo_fallo()");
+   assertThatThrownBy(()->multiple.pagarIndividual(directo)).isInstanceOf(RuntimeException.class);assertThat(j.queryForObject("SELECT count(*) FROM nomina_borrador",Long.class)).isEqualTo(cabezas);j.execute("DROP TRIGGER qa_directo_fallo ON nomina_cierre_cero");
+   var revisionHttp=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/admin/preparacion-nomina/pago-individual/revisar").session(session).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).param("periodoId",Long.toString(agosto)).param("empleadoId","480019").param("solicitud",directo.getSolicitud().toString()).param("motivo",directo.getMotivo())).andReturn().getResponse();
+   assertThat(revisionHttp.getStatus()).isEqualTo(200);assertThat(revisionHttp.getContentAsString()).contains("data-money-confirm=\"nomina-cero-directo\"","Editar justificación","Confirmar neto cero").doesNotContain("data-payment-review-source");java.nio.file.Files.writeString(dir.resolve("directo-cero-revision.html"),revisionHttp.getContentAsString());
+   SecurityContextHolder.getContext().setAuthentication(auth);
+   var negativo=new PagoIndividualNominaForm();negativo.setPeriodoId(junio);negativo.setEmpleadoId(480021L);assertThatThrownBy(()->multiple.calculoIndividual(negativo)).hasMessageContaining("deducciones superan");
+   SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(new UsuarioPrincipal(480000L,480000L,Set.of(),true,false,"qa.cero","",sinPermiso),"",sinPermiso));assertThatThrownBy(()->multiple.revisarIndividual(directo)).isInstanceOf(org.springframework.security.access.AccessDeniedException.class);SecurityContextHolder.getContext().setAuthentication(auth);
+   var paralelo=java.util.concurrent.Executors.newFixedThreadPool(2);var salida=new java.util.concurrent.CountDownLatch(1);
+   try{var tareas=new ArrayList<java.util.concurrent.Future<Long>>();for(int k=0;k<2;k++)tareas.add(paralelo.submit(()->{SecurityContextHolder.getContext().setAuthentication(auth);try{salida.await();return multiple.pagarIndividual(directo);}catch(escuela.common.exception.ReglaNegocioException ex){return null;}finally{SecurityContextHolder.clearContext();}}));salida.countDown();var exitos=new ArrayList<Long>();for(var tarea:tareas){Long id=tarea.get(30,java.util.concurrent.TimeUnit.SECONDS);if(id!=null)exitos.add(id);}assertThat(exitos).hasSize(1);assertThat(nominas.obtener(exitos.getFirst()).estadoTexto()).isEqualTo("Confirmada sin pagos");}finally{paralelo.shutdownNow();}
+   SecurityContextHolder.getContext().setAuthentication(auth);
+   assertThat(j.queryForObject("SELECT count(*) FROM nomina_borrador",Long.class)).isEqualTo(cabezas+1);assertThat(j.queryForObject("SELECT count(*) FROM nomina_cierre_cero WHERE motivo=?",Long.class,directo.getMotivo())).isEqualTo(1);
+   assertThatThrownBy(()->multiple.revisarIndividual(directo)).hasMessageContaining("ya tiene un neto cero confirmado");
+   assertThat(j.queryForObject("SELECT count(*) FROM nomina_pago_intento",Long.class)).isEqualTo(19);assertThat(j.queryForObject("SELECT sum(monto) FROM movimiento_financiero",BigDecimal.class)).isEqualByComparingTo("3800");
   }finally{SecurityContextHolder.clearContext();}
  }
  private static long periodo(ProgramacionNominaService s,String codigo,LocalDate inicio,LocalDate fin){var f=new PeriodoNominaForm();f.setCodigo(codigo);f.setInicio(inicio);f.setFin(fin);f.setPago(fin);return s.guardarPeriodo(null,f);}
