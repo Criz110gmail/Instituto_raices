@@ -1,5 +1,101 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Pago de nómina por cheque V153 — 03/11/2026
+
+Implementación solicitada: pago nominativo por empleado con cuentaBANCO/chequera
+activa/folio/fecha/beneficiario, revisión protegida, modal Cancelar y fuentes mixtas.
+Colectivo conserva efectivo/transferencias; entrar por Pagos por empleado para
+cheques. No imprime ni transmite al banco; Emitido no significa cobro bancario.
+Folio único por cuenta incluso cancelado; revisar no reserva. Emisión y egreso
+atómicos, sellos y bloqueos cuenta/chequera, restricción diferida documento/fuente.
+Cancelación exige confirmación explícita no cobrable y fondos recuperados/liberados,
+compensa fuentes originales y conserva cheque cancelado no reutilizable. No cambiar
+rango tras emisión. Historial privado por empleado, sin duplicar botones/capturas.
+Permisos salariales/financieros previos + acceso cuenta y Chequeras Consultar o
+Administrar; sin grants nuevos. Préstamos especializados no ampliados.
+
+UI: columna Acciones usa mismo fondo que otros encabezados, Cancelar en cuenta
+es botón y regreso inferior de chequera igual al superior. CSS acotado.
+QA147 pruebas Personal/cuentas con ITPostgreSQL17 aislado: cheque repetido,
+fecha/rango/cuenta/permiso, modificación de sello, fallo de emisión rollbacktotal,
+carrera real dos empleados/mismo folio1éxito, cancelación/reintento/fuentes mixtas,
+HTTP revisión ISO y colectivo cheque rechazado. Dos ITregresión separados: neto
+cero20empleados y proporciones/multifuente/cancelación correctos. Chrome18vistas
+cheque+36vistascatálogo,390/768/1440claro/oscuro; Cancelar/Escape0POST, sin desbordes.
+
+Prueba humana PENDIENTE: PRUEBA_NOMINA_CHEQUE_20261103.md. No ejecutar pagos por
+herramientas. Nueva Clara EMP-CHEQUE-TEST-01 + EXTRA-RED-TEST100 único en periodo8
+NOV-2026-CIERRE-TEST16–30nov2026 (ya existe). Chequera1 BBVA1001–1050/version1,
+sin emisiones previas a esta entrega. Banco274.29→174.29→274.29→174.29 con pago,
+cancelación y segundo cheque; caja1195.11/corte1150 intactos. No recapturar otros
+empleados ni BOR9/BOR15. Seguir por misma fila después de cancelar, no nuevo directo.
+Siguiente tras aceptación: recibos/rediseño préstamos según plan, no declararlos hechos.
+Desplegada sóloapp con V153success. Lectura posterior:0cheques, chequera1/rango/
+activo/version1 intactos; saldos274.29/1195.11/1150 sin cambios. QA retirada,
+sin commit/push. HealthUP verificado al cierre.
+
+## Chequeras aprobadas funcionalmente; ajustes visuales — 03/11/2026
+
+Sóloapp desplegada/healthUP, sin nueva migración. Chequera1 sigue activa/version1/
+1001–1050; saldos274.29/1195.11/1150 intactos. Temporal QA retirada, sin commit/push.
+
+QA152regresiones/roles/cuentas/Personal + ITaislado PostgreSQL17 correctos, y
+regresión catálogo. Chrome36vistas3anchos/2temas: botones mismaaltura/visibles,
+navactivo correcto, ayuda separada>=12px, filtros/Cancelar sin pérdida niPOST.
+
+Usuario reporta todas las pruebas correctas y pide uniformar botones/nav/folios.
+Lectura: chequera1/cuenta1 BBVA,1001–1050 activa/version1, dosentradas dehistorial.
+No recapturar ni modificar para verificar diseño. Manual marcado CONFIRMADO en
+funcionalidad; últimos ajustes visuales pendientes de aceptación separada.
+Cuenta y Chequeras comparten cuenta-financiera-nav con Datos de la cuenta/Chequeras,
+indicador activo y restricciones actuales. Acciones de catálogo sóloCUENTAS con
+module-action uniforme; chequeras Editar/Historial mismaaltura/grid. Ayuda de
+folios deja field-help margen negativo y se vuelve tarjeta aparte con18px margen,
+ejemplo50folios y aria-describedby. No cambios de cálculos, roles ni dinero.
+CSS cuentas-financieras-ui acotado; no refactor global de catálogos.
+Siguiente: integrar emisión segura de cheque a pago, sin cuentaCheque/saldo propio,
+según plan26oct sección9. No está implementado aún; préstamos van después.
+
+## Chequeras: primera entrega V152 implementada — 03/11/2026
+
+Despliegue sóloapp completado, healthUP/V152success. Lectura operativa confirma0
+chequeras y0asignaciones de los dos permisos nuevos a roles; saldos274.29/1195.11/
+1150 intactos. No captura por agente. PostgreSQL QA retirado, sin commit/push.
+
+Usuario autorizó implementar catálogo. CuentaBANCO → Chequeras, listado/filtros/
+paginación/Excel, alta y edición separadas con modal Cancelar, historial paginado.
+Autocompletado10/3 y filtros sin salto de scroll. Acciones module-action y principal
+turquesa reutilizados; temas responsivos. No cuenta tipoCheque ni saldo propio.
+V152 chequera/rango inclusivo1..999999999999/exclusiónGiST inclusoinactivas, actor/
+motivo/version y ChequeraHistorial inmutable; noDELETE/cambio de dueño. Bloquea cuenta
+al guardar, solapamientos y versiones obsoletas. Cuenta con chequeras no cambia tipo/
+institución. No tablaCheque ni reserva/emisión/cobro/pagos/egresos en esta entrega.
+CHEQUERA_LEER y CHEQUERA_ADMINISTRAR en DOS ModuloPermiso distintos: consultar no
+expande a administrar. ADMIN incluye consulta en servicio/HTTP; requieren acceso
+a cuenta y administrativoactivo persistido/alcance; no recuperación ni grants.
+URL /admin/cuentas-financieras/{cuentaId}/chequeras; entrada desde fila de banco en
+Cuentas financieras o pestaña en Editar banco. No ofrecer paraCAJA/INVERSION.
+
+QA175regresiones de cuentas/roles/alcance/Personal correctas e ITPostgreSQL17 aislado:
+rangos, inactivas, dos concurrentes1éxito, versión, permisoslectura/URL/POST/Excel,
+institución/alcance/cuenta inactiva, historial/DELETE, filtrosretorno/errores y0egresos.
+Chrome24vistas390/768/1440dostemas: filtros alineados, sugerencias sin solapes,
+Cancelar conserva captura sinPOST, posición filtros conservada. No operación real.
+PRUEBA_CHEQUERAS_ENTREGA1_20261103.md PENDIENTEhumana: asignar explícitamente permiso
+enRoles sin quitar actuales, renovar sesión, BBVA_COBROS/nueva1001–1050/50folios.
+No crear por herramientas chequeras reales ni cambiar roles/cuentas para probar.
+Saldos de referencia banco274.29/caja1195.11/corte1150. BOR15yaaprobado no repetir.
+Siguiente tras aceptación: integración segura de cheque y pago, luego préstamos.
+
+## Permisos de chequeras aprobados — 03/11/2026
+
+Usuario aprobó nombres Chequeras - Consultar y Chequeras - Administrar. Consultar
+incluye listado/historial/filtros/Excel sin cambios; Administrar añade alta, edición
+y activación/inactivación con auditoría. Ninguno concede pagos/cancelaciones por
+sí solo: requieren permiso financiero y acceso a cuenta. No grants automáticos.
+Actualizados PLAN_CHEQUERAS_ENTREGA1.md y plan26oct; ya no falta decidir nombres.
+Sólo decisión documentada en este turno, aún no creados permisos ni módulo en app.
+
 ## Prueba directa cero aprobada; siguiente chequeras — 03/11/2026
 
 QA2tests Java/package con PostgreSQL17 temporal correctos; V151 validada6pasos/

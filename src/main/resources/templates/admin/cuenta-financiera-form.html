@@ -8,6 +8,7 @@
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/admin.css">
     <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/cuentas-financieras-ui.css">
     <script src="/js/theme.js"></script>
     <script src="/js/cuenta-financiera-form.js" defer></script>
 <link rel="stylesheet" href="/css/money-input.css"><script src="/js/money-input.js" defer></script></head>
@@ -31,6 +32,7 @@
             <p>Puede ser compartida por la institución o quedar limitada a un plantel. Los listados y Excel protegen sus identificadores.</p>
         </div>
 
+        <th:block th:if="${edicion and form.tipo!=null and form.tipo.name()=='BANCO' and puedeConsultarChequeras==true}"><nav th:replace="~{admin/fragments/cuenta-financiera-nav :: tabs('datos',${'/admin/cuentas-financieras/'+id+'/editar'},${'/admin/cuentas-financieras/'+id+'/chequeras'},true)}"></nav></th:block>
         <form class="entity-form" th:object="${form}" method="post"
               th:action="${edicion ? '/admin/cuentas-financieras/' + id : '/admin/cuentas-financieras'}">
             <input type="hidden" th:field="*{version}">
@@ -108,7 +110,7 @@
                 <p>El número y la CLABE completos sólo se muestran dentro de este formulario autorizado. El listado y su Excel presentan únicamente los últimos cuatro caracteres.</p>
             </div>
             <footer class="form-actions">
-                <a href="/admin/catalogos/cuentas-financieras">Cancelar</a>
+                <a class="detail-close-button" href="/admin/catalogos/cuentas-financieras">Cancelar</a>
                 <button type="submit" th:text="${edicion ? 'Guardar cambios' : 'Crear cuenta'}">Guardar</button>
             </footer>
         </form>

@@ -19,6 +19,7 @@ public class PagoMultipleNominaController {
  private String ruta(Long id){return "/admin/preparacion-nomina/"+id+"/pago-multiple";}
  private String pantalla(Long id,FiltroNomina filtro,Model m){
   if(!pagos.puedePagar())throw new org.springframework.security.access.AccessDeniedException("Falta autorización financiera");
+  m.addAttribute("permiteCheque",service.puedeUsarCheques()&&m.getAttribute("formMultiple") instanceof PagoMultipleNominaForm f&&f.getFilaId()!=null);var fc=(PagoMultipleNominaForm)m.getAttribute("formMultiple");if(fc!=null&&fc.getFilaId()!=null)m.addAttribute("beneficiarioPropuesto",pagos.fila(id,fc.getFilaId()).nombre());
   m.addAttribute("resumenCero",pagos.resumenCero(id));m.addAttribute("borrador",preparacion.obtener(id));m.addAttribute("filtro",filtro.normalizado());m.addAttribute("rutaMultiple",ruta(id));
   m.addAttribute("tituloReferencia",preparacion.obtener(id).folio()+" · "+preparacion.obtener(id).periodoCodigo());m.addAttribute("cuentasEndpoint","/admin/preparacion-nomina/"+id+"/pagos/cuentas");m.addAttribute("motivosEndpoint","/admin/preparacion-nomina/"+id+"/pagos/motivos");var form=(PagoMultipleNominaForm)m.getAttribute("formMultiple");m.addAttribute("totalSolicitado",form!=null&&form.getFilaId()!=null?pagos.fila(id,form.getFilaId()).neto():service.totalColectivo(id));
   m.addAttribute("volverUrl",filtro.url("/admin/preparacion-nomina/"+id+"/pagos"));return "admin/nomina-pago-multiple";

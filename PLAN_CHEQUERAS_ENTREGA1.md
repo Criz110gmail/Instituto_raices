@@ -1,10 +1,22 @@
-# Siguiente entrega propuesta: catálogo de chequeras
+# Catálogo de chequeras — primera entrega implementada
+
+## Continuidad V153 — 03/11/2026
+
+Integrado pago nominativo por empleado con chequera/folio/fecha/beneficiario,
+revisión protegida y modal Cancelar. Emisión consume folio y registra egreso
+atómicamente; cancelación exige no cobrable y fondos recuperados/liberados,
+devuelve a las fuentes originales y conserva el folio sin reutilización.
+Colectivo sigue efectivo/transferencias; cheques se entregan por empleado.
+No imprime ni transmite al banco. Sin cambios automáticos de permisos o saldos.
+Prueba humana pendiente: PRUEBA_NOMINA_CHEQUE_20261103.md. Catálogo ya aprobado
+no debe recapturarse. Después: rediseño de préstamos y recibos según plan vigente.
 
 ## Punto de partida
 
 La prueba de neto cero directo de Diego terminó y fue aprobada el 03/11/2026.
-BOR-000015 no debe modificarse ni repetirse. Chequeras todavía no está implementado.
-Este documento detalla el siguiente alcance, no acredita funcionalidad disponible.
+BOR-000015 no debe modificarse ni repetirse. Catálogo implementado con V152.
+El usuario confirmó la prueba funcional: PRUEBA_CHEQUERAS_ENTREGA1_20261103.md.
+Pendiente revisar los ajustes visuales solicitados después de esa confirmación.
 Referencia: PLAN_REDISENO_NOMINA_20261026.md, sección9.
 
 ## Qué verá el usuario
@@ -31,12 +43,23 @@ superpuesto con otras chequeras de la misma cuenta, incluso inactivas. Dos pesta
 no pueden crear rangos incompatibles. Conservar auditoría, no eliminar historia.
 No presentar folios como emitidos mientras no exista una emisión registrada.
 
-## Seguridad pendiente de concretar antes de implementar
+## Seguridad aprobada por el usuario — 03/11/2026
 
-El plan acordado dejó el permiso de chequeras por definir. Recomendación:
-**Chequeras — Consultar** y **Chequeras — Administrar**, independientes de registrar
-pagos, además del acceso autorizado a su cuenta. No conceder permisos automáticamente
-a roles existentes. Validación en servidor para pantalla, URL directa, ayuda y Excel.
+Nombres aprobados: **Chequeras - Consultar** y **Chequeras - Administrar**.
+
+- Consultar: ver chequeras, rangos, estados e historial, buscar y exportar Excel;
+  no permite modificar datos.
+- Administrar: además de consultar, crear, editar los datos permitidos y activar
+  o desactivar chequeras, con confirmación y auditoría.
+
+Ninguno autoriza por sí solo emitir pagos o cancelarlos. Una emisión ligada a nómina
+también requerirá el permiso de pagos y acceso a la cuenta bancaria correspondiente.
+No conceder permisos automáticamente a roles existentes. Validación en servidor
+para pantalla, URL directa, ayuda y Excel, con alcance institucional y de plantel.
+Permisos implementados como CHEQUERA_LEER y CHEQUERA_ADMINISTRAR, en paquetes de
+roles separados para impedir que seleccionar Consultar conceda Administrar.
+El usuario debe asignarlos expresamente y renovar sesión; no se cambian sus roles
+ni se conceden accesos automáticamente al desplegar.
 
 ## Qué no hace aún esta primera entrega
 

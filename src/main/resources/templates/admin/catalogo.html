@@ -11,6 +11,7 @@
     <script th:src="@{/js/theme.js}"></script>
     <script th:src="@{/js/navigation.js}" defer></script>
     <link rel="stylesheet" th:href="@{/css/catalogo-rangos.css}">
+    <link th:if="${resultado.modulo.name()=='CUENTAS_FINANCIERAS'}" rel="stylesheet" href="/css/cuentas-financieras-ui.css">
     <script th:src="@{/js/catalogo-rangos.js}" defer></script>
     <link rel="stylesheet" th:if="${resultado.modulo.name() == 'PAGOS'}" th:href="@{/css/autocomplete-filter.css}">
     <script th:if="${resultado.modulo.name() == 'PAGOS'}" th:src="@{/js/autocomplete.js}" defer></script>
@@ -109,12 +110,12 @@
         <p class="field-help" th:if="${resultado.modulo.name() == 'CARGOS'}">Con saldo pendiente incluye todos los adeudos por pagar. Un pago parcial puede estar vencido y aparecer en ambos filtros. Liquidado significa saldo $0 por pagos o ajustes; no necesariamente dinero recibido.</p>
 
         <div class="table-wrap" th:if="${!resultado.pagina.empty}">
-            <table>
+            <table th:classappend="${resultado.modulo.name()=='CUENTAS_FINANCIERAS'?'financial-accounts-table':''}">
                 <thead><tr><th th:each="columna : ${resultado.columnas}" th:text="${columna}">Columna</th><th th:text="${resultado.modulo.name() == 'CARGOS' ? 'Situación del adeudo' : 'Estado'}">Estado</th><th th:if="${resultado.modulo.mantenimientoDisponible()}">Acciones</th></tr></thead>
                 <tbody><tr th:each="fila : ${resultado.pagina.content}">
                     <td th:each="celda, iter : ${fila.celdas}" th:text="${celda}" th:attr="data-label=${resultado.columnas[iter.index]}">Dato</td>
                     <td data-label="Estado"><span class="status" th:classappend="${fila.tono}" th:text="${fila.estado}">Activo</span></td>
-                    <td data-label="Acciones" th:if="${resultado.modulo.mantenimientoDisponible()}"><a class="edit-link" th:class="${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'AJUSTES_CARGO' ? 'new-button' : 'edit-link'}" th:href="${retornoListado == null} ? ${resultado.modulo.rutaMantenimiento() + '/' + fila.id + '/editar'} : @{${resultado.modulo.rutaMantenimiento() + '/' + fila.id + '/editar'}(retorno=${retornoListado})}" th:text="${resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'AJUSTES_CARGO' or resultado.modulo.name() == 'PAGOS' ? 'Ver' : 'Editar'}">Editar</a></td>
+                    <td data-label="Acciones" th:if="${resultado.modulo.mantenimientoDisponible()}"><th:block th:unless="${resultado.modulo.name()=='CUENTAS_FINANCIERAS'}"><a class="edit-link" th:class="${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'AJUSTES_CARGO' ? 'new-button' : 'edit-link'}" th:href="${retornoListado == null} ? ${resultado.modulo.rutaMantenimiento() + '/' + fila.id + '/editar'} : @{${resultado.modulo.rutaMantenimiento() + '/' + fila.id + '/editar'}(retorno=${retornoListado})}" th:text="${resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'AJUSTES_CARGO' or resultado.modulo.name() == 'PAGOS' ? 'Ver' : 'Editar'}">Editar</a></th:block><div class="account-row-actions" th:if="${resultado.modulo.name()=='CUENTAS_FINANCIERAS'}"><a class="module-action" th:href="${retornoListado == null} ? ${resultado.modulo.rutaMantenimiento() + '/' + fila.id + '/editar'} : @{${resultado.modulo.rutaMantenimiento() + '/' + fila.id + '/editar'}(retorno=${retornoListado})}" th:text="${resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'AJUSTES_CARGO' or resultado.modulo.name() == 'PAGOS' ? 'Ver' : 'Editar'}">Editar</a><a class="module-action" th:if="${resultado.modulo.name()=='CUENTAS_FINANCIERAS' and puedeConsultarChequeras==true and fila.celdas[3]=='Cuenta bancaria'}" th:href="${'/admin/cuentas-financieras/'+fila.id+'/chequeras'}">Chequeras</a></div></td>
                 </tr></tbody>
             </table>
         </div>

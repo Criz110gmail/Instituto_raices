@@ -1,4 +1,35 @@
 SISTEMA ADMINISTRATIVO ESCOLAR
+ACTUALIZACION V153 — CHEQUES NOMINATIVOS EN PAGO DE NOMINA (03/11/2026):
+ChequeNomina inmutable pertenece a una fuente de pago, cuentaBANCO y chequera.
+Folio único por cuenta incluso cancelado; guarda nombre/version de chequera,
+beneficiario/fecha/importe/moneda/actor/instante. Emisión sólo al confirmar con
+egreso exacto en transacción única; revisar no reserva. Locks cuenta/chequera,
+sellos/versión y restricciones diferidas impiden fuenteCHEQUE sin documento.
+ChequeNominaCancelacion inmutable referencia compensación exacta de su fuente,
+usuario/motivo/referencia y confirmación de no cobrable. Devolución y cancelación
+son atómicas. No libera folio; rango de chequera emitida no puede cambiar.
+Permisos salariales/financieros actuales + acceso cuenta y consulta/administración
+de chequeras, sin grants nuevos. Pago nominativo por empleado, no un cheque
+global para varios empleados. Permite fuente cheque y otras cuentas en un pago.
+No saldoCheque, impresión, instrucciones al banco ni confirmación de cobro.
+Estado Emitido es interno; no afirmar conciliación. Préstamos rediseñados diferidos.
+
+ACTUALIZACION V152 — CATALOGO DE CHEQUERAS (03/11/2026):
+Chequera pertenece a CuentaFinanciera de tipoBANCO y a su misma institución.
+Nombre, rango de folios numéricos inclusivos1..999999999999, activo, motivo,
+usuario/instantes y versión optimista. Exclusión GiST por cuenta/rango para todas
+las chequeras incluso inactivas; no se libera un rango por desactivar. Padre
+bloqueado al guardar, versión y trigger evitan traslapes/concurrencia y cambiar
+cuenta/institución. No DELETE; ChequeraHistorial inmutable conserva snapshots,
+actor/fecha y motivo. Cuenta con chequeras no cambia tipo ni institución.
+CHEQUERA_LEER y CHEQUERA_ADMINISTRAR son paquetes separados, sin expansión de
+lectura a escritura ni grants automáticos. Requieren acceso a la cuenta, actor
+administrativo activo persistido y alcance institucional/plantel. Recuperación
+no opera. Autorización en servicio, HTTP, búsquedas, historial y Excel.
+Esta entrega no tiene Cheque, emisión/reserva/consumo de folios, pagos ni egresos;
+no crea una cuenta tipoCheque ni un saldo propio. Estado del catálogo no es
+estado bancario de cobro. La integración de pagos/cancelación requiere otra entrega.
+
 ACTUALIZACION V149 — CIERRE AUDITABLE DE NETO CERO (03/11/2026):
 NominaCierreCero inmutable por fila historica: autorizacion/borrador, institucion,
 revision, usuario/instante/motivo y fotografia JSON de fila efectiva. Sólo APLICAR

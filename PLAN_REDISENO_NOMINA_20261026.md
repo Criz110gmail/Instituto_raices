@@ -389,6 +389,11 @@ abono y reabre el saldo correspondiente, conservando origen.
 
 ## 9. Chequeras vinculadas a cuentas bancarias
 
+Implementación V153 del03/11/2026: pago nominativo por empleado, fuentes mixtas,
+consumo atómico y cancelación exacta sin reutilizar folios. No emisión colectiva
+de un cheque para varios empleados. Manual pendiente de aceptación humana:
+PRUEBA_NOMINA_CHEQUE_20261103.md. Impresión/cobro bancario no incluidos.
+
 No crear cuenta financiera “Cheque” con saldo propio. Chequera pertenece a banco;
 cheque es medio/documento de pago, no otra bolsa de dinero.
 
@@ -428,7 +433,10 @@ Permisos legibles, separados por operación:
 - Nóminas — Preparar borradores / Aplicar pago colectivo.
 - Pagos de nómina — Consultar / Registrar pago individual / Cancelar pagos.
 - Préstamos — Consultar / Administrar / Entregar / Reestructurar.
-- Cuentas financieras — acceso a chequeras sujeto a autorización específica a definir.
+- Chequeras - Consultar / Chequeras - Administrar (nombres aprobados el03/11/2026).
+  Consultar no modifica; Administrar añade alta, edición y activación/inactivación.
+  No autorizan pagos ni cancelaciones por sí solos; también se requiere acceso a
+  la cuenta. No conceder estos permisos automáticamente a roles existentes.
 
 Sin permiso de configuración, no ver pestaña ni salarios por rutas, autocompletados,
 Excel o documentos. Autorización en servidor, alcance institucional/plantel, sin

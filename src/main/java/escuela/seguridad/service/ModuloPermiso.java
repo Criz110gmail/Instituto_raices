@@ -77,6 +77,8 @@ public enum ModuloPermiso {
             "MOTIVO_FINANCIERO_LEER", "MOTIVO_FINANCIERO_ADMINISTRAR"),
     CUENTAS_FINANCIERAS("Cuentas financieras", "Acceso completo a cuentas financieras",
             "CUENTA_FINANCIERA_LEER", "CUENTA_FINANCIERA_ADMINISTRAR"),
+    CHEQUERAS_CONSULTAR("Chequeras - Consultar", "Consultar chequeras, folios e historial y exportar Excel; requiere acceso a la cuenta bancaria", "CHEQUERA_LEER"),
+    CHEQUERAS_ADMINISTRAR("Chequeras - Administrar", "Crear, editar y activar o desactivar chequeras; incluye consulta, no autoriza pagos ni cancelaciones", "CHEQUERA_ADMINISTRAR"),
     PROVEEDORES("Proveedores", "Consulta, alta, edición y desactivación de proveedores",
             "PROVEEDOR_LEER", "PROVEEDOR_ADMINISTRAR"),
     COMPRAS("Compras", "Captura, consulta, confirmación financiera y cancelación controlada de compras",

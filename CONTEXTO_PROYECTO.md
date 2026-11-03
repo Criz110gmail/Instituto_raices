@@ -1,5 +1,69 @@
 # Contexto del proyecto
 
+## Cheques en nómina y detalles visuales — 03/11/2026
+
+Usuario pidió color uniforme de Acciones, botones Cancelar/Volver a chequeras e
+integrar pago por cheque. UI corregida acotadamente. V153 añade cheque por fuente
+de pago de un empleado, snapshot inmutable y cancelación ligada a compensación
+exacta. Folio único aun cancelado, emisión/salida atómica, no reserva en consulta.
+Fecha no futura/chequera activa/rango/cuenta/actor, permisos privados+financieros+
+chequeras. Sin grants ni pagos operativos por agente. No saldoCheque/impresión/
+instrucción bancaria. Cancelar exige cheque no cobrable y fondos disponibles;
+cancelado conserva folio y empleado pendiente. Colectivo cheque no incluido;
+usar pago por empleado, admite combinación con caja/otro banco. Préstamos después.
+
+QA147pruebas incluyendo ITcheque real en PostgreSQL17 efímero, más ITnetocero20 y
+ITproporcional en bases separadas, correctos. Carrera mismo folio1éxito y rollback
+completo ante fallo técnico. Chrome18vistascheque y36catálogo,3anchos/2temas,
+alineación y helpers correctos, cambio banco→caja deshabilita cheque, revisión
+protegida, Cancelar/Escape sinPOST. No confundir QA automática con prueba humana.
+Manual nuevo PRUEBA_NOMINA_CHEQUE_20261103.md PENDIENTE: Clara nueva apoyo100,
+periodo8existente16–30nov2026, BBVA chequera1folio1001 y luego1002. Lectura previa
+banco274.29/caja1195.11/corte1150; Clara no existe. No tocar operaciones aprobadas.
+Desplegada sóloapp/V153success;0cheques, chequera1/version1 y los tres saldos
+intactos por lectura. QA retirada. Sin commit/push; aceptación humana pendiente.
+
+## Aceptación funcional de chequeras y diseño uniforme — 03/11/2026
+
+Desplegado sóloapp, healthUP; chequera1/version1 y saldos sin cambios. Sin migración
+ni nuevas operaciones. Base QA retirada, no commit/push.
+
+QA152regresiones más ITPostgreSQL17 y catálogo correctos; Chrome36vistas verifica
+alineación/visibilidad de acciones, navactivo y separación de ayuda, sinPOST.
+
+Usuario confirmó todas las pruebas del catálogo; sólo pide ajustes visuales.
+Chequera1 BBVA1001–1050 activa/version1/dosauditorías leídos, sin escrituras.
+Manual actualizado como aprobado funcional, pendiente visualnuevo. Botones de
+cuentas discretos/parejos; menú común Datos de la cuenta y Chequeras con activo;
+ayuda de folios separada de inputs y acciones Editar/Historial alineadas.
+Sin cambios de permisos/captura/pagos. Próximo: integración de cheques con nómina,
+todavía pendiente y separada del rediseño de préstamos.
+
+## Catálogo de chequeras implementado V152 — 03/11/2026
+
+Sóloapp desplegada, healthUP y V152success; chequeras reales0 y grants de nuevos
+permisos0 verificados por lectura. Banco274.29/caja1195.11/corte1150 sin cambios.
+Base QA retirada. No cambios de roles ni pagos/capturas por herramientas.
+
+Banco → Chequeras con tabla, ayudas10/3, filtros/paginación/Excel y captura aparte,
+modal Cancelar y auditoría. Rangos inclusivos únicos/no solapados por cuenta incluso
+inactiva, versión y bloqueo para dospestañas. No borrar ni mover dueño/cuenta.
+Permisos separados CHEQUERA_LEER/ADMINISTRAR en Roles con nombres aprobados; no
+expansión leer→administrar ni concesión automática. Exigen acceso a banco y alcance.
+No emite cheques ni reserva números ni mueve dinero. Siguiente etapa integra pagos.
+QA175regresiones + ITPostgreSQL17 efímero correctos y24vistasChrome3anchos/2temas,
+filtros alineados/sin salto y Cancelar sinPOST. Manual PRUEBA_CHEQUERAS_ENTREGA1_20261103.md
+PENDIENTE aceptación: permiso explícito y logout/login, BBVA/rango1001–1050 ficticio.
+No crear registros o pagar por usuario. Saldos274.29/1195.11/1150 de referencia.
+
+## Decisión aprobada: permisos de chequeras — 03/11/2026
+
+Chequeras - Consultar y Chequeras - Administrar aprobados por usuario. Consultar
+es lectura/búsqueda/Excel; Administrar incluye consulta y gestión del catálogo.
+Separados de pagar/cancelar y sujetos al acceso de cuenta/institución/plantel.
+Planes actualizados, sin grants a roles ni cambios financieros. Implementación
+del módulo y registro de permisos aún pendientes; no anunciar disponibilidad.
+
 ## Confirmación humana: pago individual cero y paso a chequeras — 03/11/2026
 
 GuíaV151 desplegada/verificada6pasos/6permisoslectura, healthUP. QA2tests Java

@@ -21,6 +21,7 @@ public class PagoEmpleadoNominaService {
  private final EmpleadoService empleados;
  private final NamedParameterJdbcTemplate jdbc;
  private final MovimientoManualService movimientos;
+ private final ChequeNominaService cheques;
  public record Fila(Long id,Long empleadoId,String codigo,String nombre,BigDecimal neto,String moneda,String estado,Long pagoId){public String estadoTexto(){return estado.equals("CERO_CONFIRMADO")?"Neto cero confirmado":estado;}}
  public record CierreCero(int revision,String motivo,String fecha,String usuario){}
  public record ResumenCero(long porConfirmar,long confirmados){}
@@ -82,12 +83,14 @@ public class PagoEmpleadoNominaService {
   Long rev=jdbc.queryForObject("INSERT INTO nomina_pago_reversa(pago_id,institucion_id,movimiento_id,referencia,motivo,usuario_id) VALUES(:pago,:inst,:mov,:ref,:motivo,:actor) RETURNING id",par.addValue("mov",mov.id()).addValue("ref",f.getReferencia().strip()).addValue("motivo",f.getMotivo().strip()),Long.class);jdbc.update("INSERT INTO prestamo_abono_compensacion(reversa_id,pago_id,prestamo_id,importe) SELECT :rev,pago_id,prestamo_id,importe FROM prestamo_abono_nomina WHERE pago_id=:pago",par.addValue("rev",rev));jdbc.update("UPDATE nomina_pago_intento SET estado='REVERTIDO' WHERE id=:pago AND institucion_id=:inst",par);jdbc.queryForList("SELECT prestamo_id FROM prestamo_abono_nomina WHERE pago_id=:pago ORDER BY prestamo_id",par,Long.class).forEach(prestamo->estadoPrestamo(prestamo,"Compensación de abono NPI-"+pago));estadoNomina(id,"Reversa individual NPI-"+pago+"; vuelve a pendiente sin afectar otros empleados");
  }
  private void devolverFuentes(Long id,Long pago,PagoEmpleadoNominaForm f){
+  cheques.comprobarCancelacion(pago,f.isChequesAnulados());
   var par=p(true).addValue("pago",pago);var fuentes=jdbc.queryForList("SELECT * FROM nomina_pago_fuente WHERE pago_id=:pago ORDER BY cuenta_id,ordinal",par);
   for(var fuente:fuentes)cuenta(((Number)fuente.get("cuenta_id")).longValue(),fila(id,jdbc.queryForObject("SELECT fila_id FROM nomina_pago_intento WHERE id=:pago",par,Long.class)).moneda(),true);
   motivo(f.getMotivoPagoId(),true,true);Long primero=null;
   for(var fuente:fuentes){int ordinal=((Number)fuente.get("ordinal")).intValue();Long cuenta=((Number)fuente.get("cuenta_id")).longValue(),original=((Number)fuente.get("movimiento_id")).longValue();
    var mov=movimientos.compensarNominaEmpleado(new MovimientoManualRequest(empleados.autorizarSalarios(true).institucionId(),cuenta,null,ahora(),DireccionMovimiento.INGRESO,f.getMotivoPagoId(),(BigDecimal)fuente.get("importe"),"Cancelación del pago NPI-"+pago,"NPI-"+pago,"Personal de la institución","NOMINA-REV:"+pago+":"+ordinal),original);
    if(primero==null)primero=mov.id();jdbc.update("INSERT INTO nomina_pago_fuente_reversa(pago_id,ordinal,movimiento_id) VALUES(:pago,:ordinal,:mov)",p(true).addValue("pago",pago).addValue("ordinal",ordinal).addValue("mov",mov.id()));
+   cheques.cancelarFuente(pago,ordinal,mov.id(),f.getReferencia(),f.getMotivo());
   }
   jdbc.update("INSERT INTO nomina_pago_reversa(pago_id,institucion_id,movimiento_id,referencia,motivo,usuario_id) VALUES(:pago,:inst,:mov,:ref,:motivo,:actor)",par.addValue("mov",primero).addValue("ref",f.getReferencia().strip()).addValue("motivo",f.getMotivo().strip()));
   jdbc.update("UPDATE nomina_pago_intento SET estado='REVERTIDO' WHERE id=:pago AND institucion_id=:inst",par);estadoNomina(id,"Cancelación individual NPI-"+pago+"; fondos recuperados en sus cuentas originales");

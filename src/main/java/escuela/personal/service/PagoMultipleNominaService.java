@@ -22,7 +22,8 @@ public class PagoMultipleNominaService {
  private final PreparacionNominaService preparacion;
  private final PagoEmpleadoNominaService pagos;
  private final MovimientoManualService movimientos;
- public record Fuente(Long id,String texto,String medio,BigDecimal importe,BigDecimal saldo){}
+ private final ChequeNominaService cheques;
+ public record Fuente(Long id,String texto,String medio,BigDecimal importe,BigDecimal saldo,ChequeNominaService.Documento cheque){public Fuente(Long id,String texto,String medio,BigDecimal importe,BigDecimal saldo){this(id,texto,medio,importe,saldo,null);}}
  public record Vista(Long version,List<Fuente> fuentes,long empleados,BigDecimal total,String sello){}
  public record FuenteHistorica(Long pago,String cuenta,String medio,BigDecimal importe,Long movimiento,Long compensacion){}
  public List<FuenteHistorica> fuentes(Long id,Long fila){
@@ -45,9 +46,13 @@ public class PagoMultipleNominaService {
   if(f.getCuentaId()==null||f.getImporte()==null||f.getImporte().signum()<=0||f.getImporte().scale()>2)throw regla("Cada fuente requiere cuenta e importe positivo con máximo dos decimales.");
   var par=p().addValue("cuenta",f.getCuentaId()).addValue("moneda",moneda);
   return jdbc.query("SELECT c.id,c.codigo||' · '||c.nombre texto,c.tipo,coalesce((SELECT saldo_posterior FROM movimiento_financiero WHERE cuenta_id=c.id ORDER BY secuencia_cuenta DESC LIMIT 1),c.saldo_inicial) saldo FROM cuenta_financiera c WHERE c.id=:cuenta AND c.institucion_id=:inst AND c.activo AND c.moneda=:moneda AND c.tipo IN ('CAJA','BANCO')",par,(r,n)->{
-   String medio=r.getString("tipo").equals("CAJA")?"EFECTIVO":"TRANSFERENCIA";
+   String entrega=Objects.toString(f.getTipoEntrega(),"AUTO");if(!Set.of("AUTO","CHEQUE").contains(entrega))throw regla("Selecciona una forma de entrega válida.");
+   boolean esCheque=entrega.equals("CHEQUE");if(esCheque&&!r.getString("tipo").equals("BANCO"))throw regla("Sólo una cuenta bancaria puede pagar con cheque; una caja usa efectivo.");
+   if(!esCheque&&(f.getChequeraId()!=null||f.getFolioCheque()!=null||f.getFechaCheque()!=null||f.getBeneficiarioCheque()!=null&&!f.getBeneficiarioCheque().isBlank()))throw regla("La captura contiene datos de cheque. Selecciona Cheque o limpia esos datos antes de revisar.");
+   String medio=esCheque?"CHEQUE":r.getString("tipo").equals("CAJA")?"EFECTIVO":"TRANSFERENCIA";
    f.setMedio(medio);
-   return new Fuente(r.getLong("id"),r.getString("texto"),medio,f.getImporte(),r.getBigDecimal("saldo"));
+   var cheque=esCheque?cheques.revisar(f.getCuentaId(),f.getChequeraId(),f.getFolioCheque(),f.getFechaCheque(),f.getBeneficiarioCheque()):null;if(cheque!=null)f.setChequeraTexto(cheque.chequera());
+   return new Fuente(r.getLong("id"),r.getString("texto"),medio,f.getImporte(),r.getBigDecimal("saldo"),cheque);
   }).stream().findFirst().orElseThrow(()->regla("Selecciona una cuenta institucional activa de la moneda de la nómina."));
  }
  public Vista revisar(Long id,PagoMultipleNominaForm f){
@@ -64,10 +69,12 @@ public class PagoMultipleNominaService {
   if(f.getMotivoPagoId()==null||jdbc.queryForObject("SELECT count(*) FROM motivo_financiero WHERE id=:mot AND institucion_id=:inst AND activo AND naturaleza IN ('EGRESO','AMBOS')",p().addValue("mot",f.getMotivoPagoId()),Long.class)!=1)throw regla("Selecciona un motivo financiero activo de egreso.");
   var fuentes=new ArrayList<Fuente>();var ids=new HashSet<Long>();
   for(var x:f.getFuentes()){
+   if(x==null)throw regla("Revisa las fuentes de pago antes de confirmar.");
    if(x.getCuentaId()==null&&x.getImporte()==null)continue;
    var c=cuenta(x,moneda);x.setCuentaTexto(c.texto());if(!ids.add(c.id()))throw regla("No repitas una cuenta; reúne su importe en una sola fuente.");
    if(c.saldo().compareTo(c.importe())<0)throw regla(c.texto()+": disponible $"+c.saldo()+", solicitado $"+c.importe()+", faltan $"+c.importe().subtract(c.saldo())+". No se movió dinero.");fuentes.add(c);
   }
+  if(fuentes.stream().anyMatch(x->x.cheque()!=null)&&filas.size()!=1)throw regla("Cada cheque corresponde a un empleado. Abre Pagos por empleado → Ver pago e intentos → Pagar desde una o varias cuentas; no uses un cheque para varios beneficiarios.");
   if(fuentes.isEmpty()||fuentes.stream().map(Fuente::importe).reduce(BigDecimal.ZERO,BigDecimal::add).compareTo(total)!=0)throw regla("La suma de las fuentes debe ser exactamente $"+total+". No se aceptan pagos parciales de sueldo.");
   String sello=PreparacionNominaService.sello(id+"|"+version+"|"+filas+"|"+fuentes+"|"+f.getSolicitud()+"|"+f.getMotivoPagoId()+"|"+f.getReferencia().strip()+"|"+f.getMotivo().strip());
   return new Vista(version,List.copyOf(fuentes),filas.size(),total,sello);
@@ -80,6 +87,7 @@ public class PagoMultipleNominaService {
   var rows=filas(id,f.getFilaId());
   for(var row:rows)jdbc.queryForObject("SELECT id FROM empleado WHERE id=:empleado AND institucion_id=:inst FOR UPDATE",p().addValue("empleado",row.empleadoId()),Long.class);
   for(var fuente:previo.fuentes().stream().sorted(Comparator.comparing(Fuente::id)).toList())jdbc.queryForObject("SELECT id FROM cuenta_financiera WHERE id=:cuenta AND institucion_id=:inst FOR UPDATE",p().addValue("cuenta",fuente.id()),Long.class);
+  for(var fuente:previo.fuentes())if(fuente.cheque()!=null)jdbc.queryForObject("SELECT id FROM chequera WHERE id=:chequera AND cuenta_id=:cuenta FOR UPDATE",p().addValue("chequera",fuente.cheque().chequeraId()).addValue("cuenta",fuente.id()),Long.class);
   if(!Objects.equals(revisar(id,f).sello(),f.getSello()))throw regla("El saldo cambió. Revisa nuevamente; ninguna cuenta fue afectada.");
   // Congela sólo al confirmar la operación final, en la misma transacción del pago.
   if(preparacion.obtener(id).estado().equals("BORRADOR"))pagos.autorizar(id,f.getVersion(),f.getMotivo());
@@ -89,8 +97,9 @@ public class PagoMultipleNominaService {
    if(!pagos.cuotas(id,row.id()).isEmpty())throw regla("Este empleado tiene cuotas de préstamo. Su integración multicuenta queda pendiente; no se aplicó ningún pago.");
    Long pago=jdbc.queryForObject("SELECT nextval(pg_get_serial_sequence('nomina_pago_intento','id'))",par,Long.class);BigDecimal restante=row.neto();Long primero=null;int ordinal=0;
    while(restante.signum()>0){var fuente=previo.fuentes().get(indice);BigDecimal importe=restante.min(restanteFuente);ordinal++;
-    var mov=movimientos.registrarNominaEmpleado(new MovimientoManualRequest(empleados.autorizarSalarios(true).institucionId(),fuente.id(),null,ahora(),DireccionMovimiento.EGRESO,f.getMotivoPagoId(),importe,"Pago de nómina "+preparacion.obtener(id).folio(),"NPI-"+pago,"Personal de la institución","NOMINA-EMP:"+pago+":"+ordinal));
+    var mov=movimientos.registrarNominaEmpleado(new MovimientoManualRequest(empleados.autorizarSalarios(true).institucionId(),fuente.id(),null,ahora(),DireccionMovimiento.EGRESO,f.getMotivoPagoId(),importe,"Pago de nómina "+preparacion.obtener(id).folio()+(fuente.cheque()==null?"":" · Cheque "+fuente.cheque().folio()),"NPI-"+pago,"Personal de la institución","NOMINA-EMP:"+pago+":"+ordinal));
     if(primero==null)primero=mov.id();jdbc.update("INSERT INTO nomina_pago_fuente(pago_id,ordinal,cuenta_id,cuenta_texto,medio,importe,movimiento_id) VALUES(:pago,:ordinal,:cuenta,:textoCuenta,:medio,:importe,:mov)",p().addValue("pago",pago).addValue("ordinal",ordinal).addValue("cuenta",fuente.id()).addValue("textoCuenta",fuente.texto()).addValue("medio",fuente.medio()).addValue("importe",importe).addValue("mov",mov.id()));
+    if(fuente.cheque()!=null)cheques.emitir(pago,ordinal,fuente.id(),fuente.cheque(),importe,row.moneda());
     restante=restante.subtract(importe);restanteFuente=restanteFuente.subtract(importe);if(restanteFuente.signum()==0&&indice+1<previo.fuentes().size())restanteFuente=previo.fuentes().get(++indice).importe();
    }
    // Identidad por operación y empleado: el mismo reintento no genera otro intento.
@@ -111,7 +120,7 @@ public class PagoMultipleNominaService {
   var c=calculoIndividual(f);
   if(c.propuesto().signum()==0){
    texto(f.getMotivo(),2000,"motivo");if(f.getSolicitud()==null)throw regla("Recarga el formulario antes de confirmar.");
-   if(f.getMotivoPagoId()!=null||(f.getFuentes()!=null&&(f.getFuentes().size()>20||f.getFuentes().stream().anyMatch(x->x==null||x.getCuentaId()!=null||x.getImporte()!=null))))throw regla("El neto cero no utiliza cuentas ni importes de salida. Vuelve a consultar el cálculo.");
+   if(f.getMotivoPagoId()!=null||(f.getFuentes()!=null&&(f.getFuentes().size()>20||f.getFuentes().stream().anyMatch(x->x==null||x.getCuentaId()!=null||x.getImporte()!=null||"CHEQUE".equals(x.getTipoEntrega())||x.getChequeraId()!=null||x.getFolioCheque()!=null))))throw regla("El neto cero no utiliza cuentas ni importes de salida. Vuelve a consultar el cálculo.");
    if(jdbc.queryForObject("SELECT jsonb_array_length(coalesce(cast(:fuentes AS jsonb)->'prestamos','[]'::jsonb))>0",new MapSqlParameterSource("fuentes",c.fuentes()),Boolean.class))throw regla("Este neto cero tiene cuotas de préstamo; requiere resolverlas antes de confirmar.");
    return new Vista(0L,List.of(),1,c.propuesto(),PreparacionNominaService.sello("CERO_DIRECTO|"+c.sello()+"|"+f.getSolicitud()+"|"+f.getMotivo().strip()));
   }
@@ -136,6 +145,7 @@ public class PagoMultipleNominaService {
   var texto=OrganizacionLaboralService.texto(q,200);if(!texto.isBlank()&&texto.length()<3)return List.of();
   return jdbc.query("SELECT c.id,c.codigo,c.nombre,c.tipo FROM cuenta_financiera c JOIN institucion i ON i.id=c.institucion_id WHERE c.institucion_id=:inst AND c.activo AND c.tipo IN ('CAJA','BANCO') AND c.moneda=i.moneda_predeterminada AND strpos(lower(c.codigo||' '||c.nombre),lower(:q))>0 ORDER BY c.id LIMIT 11",p().addValue("q",texto),(r,n)->new escuela.admin.dto.OpcionAutocompletado(r.getLong("id"),r.getString("codigo")+" · "+r.getString("nombre"),r.getString("tipo")));
  }
+ public boolean puedeUsarCheques(){return cheques.habilitado();}
  public List<escuela.admin.dto.OpcionAutocompletado> buscarMotivos(String q){
   var texto=OrganizacionLaboralService.texto(q,200);if(!texto.isBlank()&&texto.length()<3)return List.of();
   return jdbc.query("SELECT id,codigo,nombre FROM motivo_financiero WHERE institucion_id=:inst AND activo AND naturaleza IN ('EGRESO','AMBOS') AND strpos(lower(codigo||' '||nombre),lower(:q))>0 ORDER BY id LIMIT 11",p().addValue("q",texto),(r,n)->new escuela.admin.dto.OpcionAutocompletado(r.getLong("id"),r.getString("codigo")+" · "+r.getString("nombre"),"Pago de nómina"));

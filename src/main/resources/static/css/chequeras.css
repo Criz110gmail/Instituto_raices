@@ -1,0 +1,31 @@
+/* Catálogo de chequeras: conserva la paleta y acciones comunes del sistema. */
+.chequera-page .form-shell{max-width:1440px;min-width:0}
+.chequera-page .chequera-tabs{display:flex;gap:.75rem;padding:0 0 1.25rem;flex-wrap:wrap}
+.chequera-page .chequera-filters{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:1rem;align-items:start;overflow:visible}
+.chequera-page .filters.chequera-filters>label,.chequera-page .filters.chequera-filters>.autocomplete{grid-column:span 2;min-width:0}
+.chequera-page .filters.chequera-filters>.autocomplete,.chequera-page .filters.chequera-filters>label:first-of-type{grid-column:span 3}
+.chequera-page .filters.chequera-filters>label>span,.chequera-page .filters.chequera-filters>.autocomplete>label{min-height:64px}
+.chequera-filters>.module-filter-actions{grid-column:1/-1;justify-content:flex-end}
+.chequera-page label{min-width:0}
+.chequera-page .field-error{display:block;color:var(--danger,#b22b3a);font-weight:700;margin-top:.35rem}
+.chequera-page input:not([type=checkbox]),.chequera-page select,.chequera-page textarea{width:100%;box-sizing:border-box}
+.chequera-page .autocomplete-results{z-index:60;max-height:20rem;overflow:auto}
+.chequera-page .autocomplete-option{display:flex;flex-direction:column;gap:.35rem;height:auto;white-space:normal;line-height:1.45}
+.chequera-page td{overflow-wrap:anywhere;vertical-align:top}
+.chequera-page .panel-heading{gap:1rem;flex-wrap:wrap}
+.chequera-page .module-filter-actions{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap}
+.chequera-page .chequera-tabs,.chequera-page .nomina-preview-notice{margin-inline:24px}
+.chequera-page .chequera-tabs .module-action--primary{background:var(--aqua);border-color:var(--aqua);color:#062b31}
+.chequera-page .data-panel{margin:24px;border:1px solid var(--line);border-radius:16px;overflow:visible}
+.chequera-page .table-wrap{max-width:100%;overflow-x:auto}
+.chequera-page .form-actions .payment-back-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 14px;border:1px solid var(--line);border-radius:11px;background:var(--surface,var(--white));color:var(--ink);font-size:.8rem;font-weight:750;text-decoration:none;box-sizing:border-box}
+.chequera-page .chequera-range-help{position:static;display:block;clear:both;margin:18px 0 0;padding:14px 16px;border:1px solid var(--line);border-radius:11px;background:var(--soft,var(--paper));color:var(--muted);font-size:.78rem;line-height:1.7}
+.chequera-page .chequera-range-help strong{display:block;color:var(--ink);margin:0 0 6px}
+.chequera-page .chequera-range-help p{position:static;margin:0;line-height:1.7}
+.chequera-page .chequera-range-help p+p{margin-top:8px}
+.chequera-page td[data-label="Acciones"]{vertical-align:middle}
+.chequera-page td .chequera-row-actions{display:grid;grid-template-columns:repeat(2,minmax(104px,1fr));align-items:stretch;gap:8px;min-width:224px;margin:0;padding:0}
+.chequera-page td .chequera-row-actions .module-action{min-height:40px;height:100%;margin:0;padding:9px 12px;box-sizing:border-box;align-self:stretch}
+.chequera-page td .chequera-row-actions .module-action:only-child{grid-column:1/-1}
+@media(max-width:1000px){.chequera-page .chequera-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.chequera-page .filters.chequera-filters>label,.chequera-page .filters.chequera-filters>.autocomplete,.chequera-page .filters.chequera-filters>label:first-of-type{grid-column:span 1}}
+@media(max-width:600px){.chequera-page .chequera-filters{grid-template-columns:minmax(0,1fr)}.chequera-page .form-grid{grid-template-columns:minmax(0,1fr)}.chequera-page .module-filter-actions{flex-wrap:wrap}.chequera-page .form-top{gap:1rem;flex-wrap:wrap}}

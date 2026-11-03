@@ -32,5 +32,12 @@ public class PagoMultipleNominaForm {
   // Sólo presentación; al revisar/pagar se deriva nuevamente del tipo de cuenta en BD.
   private String medio;
   private BigDecimal importe;
+  private String tipoEntrega="AUTO";
+  private Long chequeraId;
+  private String chequeraTexto;
+  private Long folioCheque;
+  @org.springframework.format.annotation.DateTimeFormat(iso=org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
+  private java.time.LocalDate fechaCheque;
+  private String beneficiarioCheque;
  }
 }

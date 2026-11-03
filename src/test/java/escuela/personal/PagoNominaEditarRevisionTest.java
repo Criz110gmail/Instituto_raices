@@ -35,7 +35,7 @@ class PagoNominaEditarRevisionTest {
   var mvc=MockMvcBuilders.standaloneSetup(new PagoMultipleNominaController(multiple,pagos,preparacion)).build();
   var view=mvc.perform(captura("/admin/preparacion-nomina/2/pago-multiple/editar")).andReturn().getModelAndView();
   assertThat(view.getViewName()).isEqualTo("admin/nomina-pago-multiple");conservado((PagoMultipleNominaForm)view.getModel().get("formMultiple"));assertThat(view.getModel()).doesNotContainKey("vistaMultiple");
-  assertThat(((FiltroNomina)view.getModel().get("filtro")).q()).isEqualTo("origen");verifyNoInteractions(multiple);
+  assertThat(((FiltroNomina)view.getModel().get("filtro")).q()).isEqualTo("origen");verify(multiple).puedeUsarCheques();verifyNoMoreInteractions(multiple);
  }
  @Test void editarPagoDirectoConservaEmpleadoYPeriodoSinPagar()throws Exception{
   var multiple=mock(PagoMultipleNominaService.class);var empleados=mock(EmpleadoService.class);var preparacion=mock(PreparacionNominaService.class);

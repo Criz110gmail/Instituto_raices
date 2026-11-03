@@ -82,6 +82,7 @@ public class CatalogoAdminController {
         model.addAttribute("filtro", filtro);
         model.addAttribute("retornoListado",escuela.admin.support.RetornoListadoCobranza.listado(modulo,filtro));
         model.addAttribute("modulos", modulos);
+        model.addAttribute("puedeConsultarChequeras",authentication.getAuthorities().stream().anyMatch(a->a.getAuthority().equals("CHEQUERA_LEER")||a.getAuthority().equals("CHEQUERA_ADMINISTRAR")));
         model.addAttribute("puedeRegistrarPago", authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("PAGO_REGISTRAR")));
         return "admin/catalogo";

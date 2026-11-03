@@ -1,0 +1,16 @@
+.nomina-cheque-mode{display:flex;flex-direction:column;gap:8px;margin:18px 0 0;max-width:100%}
+.nomina-cheque-mode>span{font-size:.8rem;font-weight:750}
+.nomina-cheque-mode select,.nomina-source-cheque input{width:100%;min-width:0;box-sizing:border-box;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);background:var(--surface,var(--white))}
+.nomina-cheque-mode small,.nomina-source-cheque small{color:var(--muted);font-size:.74rem;line-height:1.6}
+.nomina-source-cheque{min-width:0;margin:20px 0 0;padding:18px;border:1px solid var(--line);border-radius:13px;background:var(--soft,var(--paper))}
+.nomina-source-cheque[hidden]{display:none!important}
+.nomina-source-cheque legend{padding:0 8px;color:var(--ink);font-size:.8rem;font-weight:750}
+.nomina-source-cheque .form-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
+.nomina-source-cheque .autocomplete-results{z-index:80;max-height:300px;overflow:auto}
+.nomina-source-cheque .autocomplete-option{height:auto!important;line-height:1.6;white-space:normal}
+.nomina-cheque-status{position:static;display:block;margin:16px 0 0;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:.76rem;line-height:1.7;color:var(--muted)}
+.nomina-cheque-review{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.nomina-cheque-history>.field-help{display:block;position:static;margin:12px 0;line-height:1.7}
+.nomina-cheque-cancel{align-items:flex-start;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--soft,var(--paper))}
+.nomina-cheque-cancel small{display:block;margin-top:6px;line-height:1.7}
+@media(max-width:650px){.nomina-source-cheque .form-grid{grid-template-columns:minmax(0,1fr)}.nomina-source-cheque{padding:14px}}

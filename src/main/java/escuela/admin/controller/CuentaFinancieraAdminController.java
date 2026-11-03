@@ -102,6 +102,8 @@ public class CuentaFinancieraAdminController {
     }
 
     private void preparar(Model model, CuentaFinancieraForm form, Long id) {
+        var autenticacion=org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        model.addAttribute("puedeConsultarChequeras",autenticacion!=null&&autenticacion.getAuthorities().stream().anyMatch(a->a.getAuthority().equals("CHEQUERA_LEER")||a.getAuthority().equals("CHEQUERA_ADMINISTRAR")));
         List<InstitucionResponse> instituciones = alcance.filtrarInstituciones(institucionService.listar());
         List<PlantelResponse> planteles = alcance.filtrarPlanteles(plantelService.listar());
         if (form.getInstitucionId() == null && instituciones.size() == 1) {

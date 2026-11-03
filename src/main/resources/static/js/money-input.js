@@ -235,6 +235,14 @@
                 form.closest('section').querySelectorAll('[data-cancel-source]').forEach(row=>add(row.querySelector('dt').textContent,row.querySelector('dd').textContent));
                 add('Justificación',form.querySelector('[name="motivo"]').value);
                 note.textContent='Devuelve cada importe a su cuenta original y conserva el historial. Confirma únicamente si los fondos se recuperaron realmente. Los empleados quedarán pendientes para pago individual de este mismo periodo. Cancelar cierra el resumen sin registrar cambios.';
+                if(form.querySelector('[name="chequesAnulados"]')){add('Cheques','Anulados o recuperados; ya no pueden cobrarse');note.textContent+=' Los importes de cheques deben estar recuperados o liberados en el banco. Sus folios no podrán reutilizarse.';}
+            } else if(kind==='chequera-guardar') {
+                title.textContent='Confirmar chequera';cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar chequera';
+                const campo=name=>form.querySelector('[name="'+name+'"]');
+                add('Cuenta bancaria',form.dataset.confirmAccount);add('Chequera',campo('nombre').value.trim());
+                add('Folios incluidos',campo('folioInicial').value+' — '+campo('folioFinal').value);
+                add('Estado',campo('activo').checked?'Activa':'Inactiva');add('Motivo',campo('motivo').value.trim());
+                note.textContent='Guarda el catálogo y su historial. No emite cheques, no reserva folios ni mueve dinero. Cancelar cierra el resumen y conserva la captura sin guardar.';
             } else if(kind==='nomina-cero-directo') {
                 title.textContent='Confirmar neto cero';cancel.textContent='Cancelar';accept.textContent='Confirmar neto cero';
                 add('Empleado',form.dataset.confirmPerson);add('Periodo',form.dataset.confirmPeriod);add('Total a pagar',money(form.dataset.confirmAmount));
@@ -247,12 +255,16 @@
                 form.querySelectorAll('[data-payment-review-source]').forEach(row=>{
                     add(row.dataset.account,money(row.dataset.amount));
                 });
+                form.querySelectorAll('[data-cheque-review]').forEach(row=>{
+                    add('Cheque',row.dataset.folio+' · '+row.dataset.chequera);add('Beneficiario',row.dataset.beneficiario);add('Fecha de emisión',row.dataset.fecha);
+                });
                 form.querySelectorAll('.assignment-summary-card').forEach(row=>{
                     const cuenta=row.querySelector('.autocomplete-input')?.value;
                     const monto=row.querySelector('input[name$=".importe"]')?.value;
                     if(cuenta&&monto)add(cuenta,money(monto));
                 });
                 note.textContent='Se registrarán salidas reales en las cuentas indicadas y se conservará su distribución por empleado. No envía transferencias al banco. Cancelar cierra este resumen sin mover dinero.';
+                if(form.querySelector('[data-cheque-review]'))note.textContent='Registra el cheque y descuenta una sola vez la disponibilidad interna del banco. No imprime el documento ni confirma que el banco lo cobró. El folio queda conservado y no podrá reutilizarse, aunque se cancele. Cancelar no guarda ni mueve dinero.';
             } else if(kind==='pendiente-guardar'||kind==='pendiente-estado') {
                 cancel.textContent='Cancelar';accept.textContent=kind==='pendiente-guardar'?'Confirmar y guardar pendiente':'Confirmar cambio de estado';
                 title.textContent=kind==='pendiente-guardar'?'Confirmar mi pendiente':'Confirmar seguimiento';
@@ -292,6 +304,7 @@
                 if(reversa)add('Pago que se revierte','NPI-'+form.dataset.confirmPayment+' · devolución a su cuenta original');
                 if(!autorizar)add('Referencia',campo('referencia').value.trim());add('Motivo',campo('motivo').value.trim());
                 note.textContent=autorizar?'Congela esta revisión y sus empleados, sin pagar ni abonar préstamos. No podrá editarse o cancelarse como borrador. Cancelar conserva la revisión sin autorizar.':pagar?'Registra un egreso por el neto completo y abona únicamente las cuotas de este empleado. No envía una transferencia bancaria. Cancelar no mueve dinero ni reduce préstamos.':reversa?'Confirma que los fondos regresaron realmente: publica el ingreso compensatorio exacto, restaura sus abonos y vuelve a pendiente. Los otros empleados no cambian. No borra el pago original. Cancelar no registra devolución.':'No salió dinero: se conserva el intento rechazado, sigue pendiente y no abona a préstamos ni genera movimientos. Cancelar no registra el intento.';
+                if(reversa&&form.querySelector('[name="chequesAnulados"]')){add('Cheques','Anulados o recuperados; ya no pueden cobrarse');note.textContent='El importe debe estar recuperado o liberado en el banco y el cheque ya no debe poder cobrarse. Se registra la compensación exacta; el empleado vuelve a pendiente y el folio queda conservado, sin posibilidad de reutilizarlo. Cancelar no guarda ni devuelve dinero.';}
             } else if(kind==='prestamo-guardar'||kind==='prestamo-cancelar'||kind==='prestamo-entregar') {
                 const campo=n=>form.querySelector('[name="'+n+'"]');
                 const entregar=kind==='prestamo-entregar',cancelar=kind==='prestamo-cancelar';

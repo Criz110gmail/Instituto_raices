@@ -14,4 +14,5 @@ public class PagoEmpleadoNominaForm {
  @NotBlank(message="Captura referencia o comprobante.") @Size(max=150) private String referencia;
  @NotBlank(message="Explica el motivo.") @Size(max=2000) private String motivo;
  private boolean confirmado;
+ private boolean chequesAnulados;
 }
