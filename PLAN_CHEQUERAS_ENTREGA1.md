@@ -1,5 +1,10 @@
 # Catálogo de chequeras — primera entrega implementada
 
+Consulta bancaria implementada03/11/2026 sin nueva migración: pestañaCheques,
+Ver cheques por chequera, filtros/paginación/Excel/totales y estados conservados.
+Prueba humana de chequeClara1001cancelado/1002emitido aprobada; no repetirla.
+Nueva aceptación pendiente sóloconsulta: PRUEBA_CONSULTA_CHEQUES_20261103.md.
+
 ## Continuidad V153 — 03/11/2026
 
 Integrado pago nominativo por empleado con chequera/folio/fecha/beneficiario,

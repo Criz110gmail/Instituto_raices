@@ -1,5 +1,31 @@
 # Contexto del proyecto
 
+## Clara aprobada y nuevo listado de cheques — 03/11/2026
+
+Usuario ve1002emitido/NPI18 y1001cancelado/NPI17; segundo intento bloqueado y
+BBVA174.29/caja1195.11/corte1150. Prueba de pago/cancelación/repago y dospestañas
+documentada en PRUEBA_NOMINA_CHEQUE_20261103.md. No repetir sus movimientos.
+Solicita consulta por cuenta/chequera: nueva pestaña Cheques junto a Datos y
+Chequeras y acción Ver cheques en cada fila del catálogo. Sólolectura, filtros
+alineados10/3/estado/folio/beneficiario/fechas/paginación, Excel completo filtrado,
+resumen emitidos/cancelados, fecha/motivo cancelación y snapshots históricos.
+Permisos consulta/adminchequeras + cuenta/alcance validados servidor/Excel;
+no acceso a expedientes ni desglose salarial. No nueva tabla/migración/grants.
+QA147incluyendo ITreal efímero y regresión ITcatálogo, permisos/ajenos/Excel/sin
+cambios financieros correctos. Chrome6vistaslistado+36catálogo3anchos2temas.
+Siguiente: PRUEBA_CONSULTA_CHEQUES_20261103.md, consultar1001/1002 y filtrar sin pagar.
+Sóloapp desplegada/healthUP, sin migración. Lectura final cheques1001/1002 y tres
+saldos intactos. Bases QA retiradas; sin commit/push ni escrituras operativas.
+
+## Prueba cheque en curso, punto8 — 03/11/2026
+
+Usuario solicita ámbar para sin sueldo y formato uniforme de confirmaciones al
+cancelar. Se refuerza aviso compartido claro/oscuro y se usa en pago individual;
+confirmado de fondos se vuelve tarjeta igual a chequesAnulados, sin cambiar
+nombres/required/servidor. Lectura sólo consulta confirma cheque1001/NPI17/Clara100,
+BBVA174.29/caja1195.11/corte1150. No movimientos por agente. Retomar punto8 en el
+mismo pago; no repetir alta/configuración/pago1001. Aceptación completa pendiente.
+
 ## Cheques en nómina y detalles visuales — 03/11/2026
 
 Usuario pidió color uniforme de Acciones, botones Cancelar/Volver a chequeras e

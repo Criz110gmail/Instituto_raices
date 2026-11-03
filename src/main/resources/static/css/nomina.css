@@ -53,14 +53,15 @@
 .nomina-row-reason{font-size:.74rem;line-height:1.6;color:var(--muted);margin:10px 0 0}
 .nomina-evaluation{display:flex;align-items:flex-start;gap:10px;box-sizing:border-box;min-width:0;max-width:100%;margin:12px 0;padding:14px;border:1px solid var(--line);border-left-width:4px;border-radius:12px;background:var(--soft);color:var(--ink);text-align:left;white-space:normal}
 .nomina-evaluation--danger{background:#fff0ef;color:#a52e2e;border-color:#e9b6b2}
-.nomina-evaluation--warning{background:#fff1d6;color:#805000;border-color:#e5c077}
+.nomina-evaluation.nomina-evaluation--warning{background:#fff1d6;color:#805000;border-color:#d69b28;border-left-color:#c48412}
+.nomina-evaluation--warning .context-help-trigger{color:inherit;border-color:currentColor;background:transparent}
 .nomina-evaluation.nomina-evaluation--compact{align-items:center;gap:8px;padding:9px 11px;border-left-width:3px}.nomina-evaluation--compact>.nomina-evaluation-copy{flex:1}.nomina-evaluation.nomina-evaluation--compact .nomina-evaluation-copy>strong{font-size:.75rem;line-height:1.5}
 .nomina-evaluation-icon{display:flex;align-items:center;justify-content:center;flex:0 0 22px;width:22px;height:22px;border:1px solid currentColor;border-radius:50%;font-weight:800;line-height:1}
 .nomina-evaluation-copy{min-width:0;flex:1}.nomina-evaluation .nomina-evaluation-copy>strong{display:block;margin:0;font-size:.8rem;line-height:1.5;color:inherit;white-space:normal;overflow-wrap:anywhere}
 .nomina-evaluation .nomina-evaluation-copy>p{display:block;margin:8px 0 0;font-size:.76rem;line-height:1.65;color:inherit;white-space:normal;overflow-wrap:anywhere}.nomina-evaluation .nomina-evaluation-copy>.nomina-evaluation-help{font-weight:500}
 .nomina-simulation-blocked>h4{margin:0 0 12px;font-size:.9rem}
 [data-theme=dark] .nomina-evaluation--danger{background:#402327;color:#ffb9b4;border-color:#7a4348}
-[data-theme=dark] .nomina-evaluation--warning{background:#3b2d18;color:#ffd58a;border-color:#796039}
+[data-theme=dark] .nomina-evaluation.nomina-evaluation--warning{background:#493414;color:#ffd58a;border-color:#b17f2c;border-left-color:#f0b84b}
 @media(max-width:480px){.nomina-evaluation{gap:8px;padding:12px}.nomina-evaluation-icon{flex-basis:20px;width:20px;height:20px}}
 .nomina-money{font-weight:700;font-variant-numeric:tabular-nums}
 .nomina-concept-breakdown{margin:0;display:grid;gap:8px}

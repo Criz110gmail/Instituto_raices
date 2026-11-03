@@ -2,5 +2,6 @@
 <nav th:fragment="tabs(activa,datosUrl,chequerasUrl,verDatos)" class="account-section-nav" aria-label="Secciones de la cuenta bancaria">
  <a th:if="${verDatos}" th:href="${datosUrl}" th:classappend="${activa=='datos'?'is-active':''}" th:attr="aria-current=${activa=='datos'?'page':null}"><span class="account-section-number" aria-hidden="true">01</span><span><strong>Datos de la cuenta</strong><small>Identificación y saldos</small></span></a>
  <a th:href="${chequerasUrl}" th:classappend="${activa=='chequeras'?'is-active':''}" th:attr="aria-current=${activa=='chequeras'?'page':null}"><span class="account-section-number" aria-hidden="true">02</span><span><strong>Chequeras</strong><small>Catálogo y folios</small></span></a>
+ <a th:href="${(#strings.contains(chequerasUrl,'?')?#strings.substringBefore(chequerasUrl,'?'):chequerasUrl)+'/cheques'}" th:classappend="${activa=='cheques'?'is-active':''}" th:attr="aria-current=${activa=='cheques'?'page':null}"><span class="account-section-number" aria-hidden="true">03</span><span><strong>Cheques</strong><small>Emitidos y cancelados</small></span></a>
 </nav>
 </body></html>

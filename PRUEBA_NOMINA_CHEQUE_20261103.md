@@ -1,6 +1,16 @@
 # Prueba pendiente: pagar nómina con cheque
 
-Estado: **IMPLEMENTADA V153; pendiente de prueba manual del usuario**.
+Estado: **Pago, cancelación, nuevo cheque y bloqueo de dos pestañas CONFIRMADOS
+por el usuario el 03/11/2026**.
+
+Resultado confirmado: BOR-000016 de Clara, cheque1001/NPI17 cancelado y cheque1002/
+NPI18 emitido con pago vigente100. PestañaB bloqueada con «La nómina cambió.
+Recarga antes de revisar; no se movió dinero». BBVA174.29/caja1195.11/corte1150.
+El usuario ve ambos documentos en el historial. No repetir pagos ni cancelaciones
+para comprobar la nueva consulta bancaria. Los pasos siguientes conservan el
+ejemplo realizado, no son instrucciones para volver a capturarlo en esta base.
+
+Nuevo listado bancario: ver PRUEBA_CONSULTA_CHEQUES_20261103.md, sólo lectura.
 Las pruebas automáticas usaron datos ficticios aislados. No se emitieron cheques
 ni se modificaron saldos, empleados o permisos de esta base para prepararlas.
 

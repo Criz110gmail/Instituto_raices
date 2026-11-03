@@ -1,5 +1,43 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Consulta bancaria de cheques; prueba de Clara aprobada — 03/11/2026
+
+Usuario confirma historial1001cancelado/NPI17 y1002emitido/NPI18, rechazo pestañaB
+por versión y saldosBBVA174.29/caja1195.11/corte1150. BOR16 no repetir ni cancelar
+para probar el listado. Manual cheque actualizado con evidencia humana.
+Nueva consulta sólolectura /admin/cuentas-financieras/{cuentaId}/chequeras/cheques:
+navcuenta3secciones Datos/Chequeras/Cheques y acción Ver cheques por chequera.
+Filtros chequera10/3, búsqueda beneficiario/chequera/folio/NPI, estado, folioexacto,
+emisión desde/hasta, paginación y Excel filtrado completo. Resumen de emitidos y
+cancelados para todo el filtro, no sólo página. Snapshots y motivo/fecha cancelación;
+no confirma cobro bancario ni ofrece editar/emisión/cancelación en esta consulta.
+CHEQUERA_LEER oADMIN + acceso a cuenta y alcance/actoradministrativo persistido;
+no exige ni concede acceso salarial. Oculta Datos si no puedeeditar cuenta.
+Sin nueva migración ni grants. Reutiliza ChequeraService para autorización y
+relación cuenta/chequera; no cambia documentos, estados, saldos ni pagos.
+QA147incluyendo ITPostgreSQL17 aislado: filtros/fechas, totales, Excel, lector sin
+salarios, cuenta/chequera ajena/caja, historial preservado y0movimientos por consulta.
+Regresión ITcatálogo aislado correcta; Chrome listado6vistas ycatálogo36vistas.
+Manual de siguiente prueba SIN PAGAR: PRUEBA_CONSULTA_CHEQUES_20261103.md.
+Desplegada sóloapp, healthUP; sin migración. Lectura final conserva1001cancelado/
+1002emitido y saldos174.29/1195.11/1150. QA retirada, sin commit/push.
+Tras aceptación, continuar recibos/préstamos según plan; no marcarlos implementados.
+
+## Retoma cheque punto8 y ajustes visuales — 03/11/2026
+
+Usuario llegó al punto8 de PRUEBA_NOMINA_CHEQUE_20261103.md. Lectura: cheque1001,
+NPI17, Clara Prueba Cheque100; banco174.29/caja1195.11/corte1150. NO cancelar ni
+pagar por herramientas. Prueba aún en curso, no marcar completa. Reanudar en el
+mismo pago → Registrar resultado → Cancelar sólo este pago. No crear otra nómina.
+Aviso sin sueldo usa ámbar más visible en ambos temas; conserva explicación modal
+compacta. Pago individual usa ese mismo aviso cuando el motivo indica sin sueldo.
+Confirmo importe recuperado/liberado reutiliza policy-card/nomina-cheque-cancel,
+igual a cheques no cobrables; ambas casillas siguen independientes/obligatorias.
+Sólo presentación, sin cambio de reglas/datos ni migración.
+QA3pruebasrender/edición y package correctos; Chrome8vistas390/1440claro/oscuro,
+ámbar computado/ayuda modal/doscasillas required independientes/sinPOST. Sóloapp
+desplegada, healthUP, sin operaciones de negocio.
+
 ## Pago de nómina por cheque V153 — 03/11/2026
 
 Implementación solicitada: pago nominativo por empleado con cuentaBANCO/chequera

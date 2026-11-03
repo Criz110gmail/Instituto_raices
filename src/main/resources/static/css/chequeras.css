@@ -24,8 +24,15 @@
 .chequera-page .chequera-range-help p{position:static;margin:0;line-height:1.7}
 .chequera-page .chequera-range-help p+p{margin-top:8px}
 .chequera-page td[data-label="Acciones"]{vertical-align:middle}
-.chequera-page td .chequera-row-actions{display:grid;grid-template-columns:repeat(2,minmax(104px,1fr));align-items:stretch;gap:8px;min-width:224px;margin:0;padding:0}
+.chequera-page td .chequera-row-actions{display:grid;grid-template-columns:repeat(3,minmax(94px,1fr));align-items:stretch;gap:8px;min-width:298px;margin:0;padding:0}
 .chequera-page td .chequera-row-actions .module-action{min-height:40px;height:100%;margin:0;padding:9px 12px;box-sizing:border-box;align-self:stretch}
 .chequera-page td .chequera-row-actions .module-action:only-child{grid-column:1/-1}
+.chequera-page .filters.cheques-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;align-items:start;overflow:visible}
+.chequera-page .cheques-filters>label,.chequera-page .cheques-filters>.autocomplete{min-width:0;grid-column:auto}
+.chequera-page .cheques-filters>label>span,.chequera-page .cheques-filters>.autocomplete>label{min-height:64px}
+.chequera-page .cheques-filters>.module-filter-actions{grid-column:1/-1;justify-content:flex-end}
+.chequera-page .cheques-summary{grid-template-columns:repeat(2,minmax(0,1fr));margin:24px}
+@media(max-width:1000px){.chequera-page .filters.cheques-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.chequera-page .filters.cheques-filters,.chequera-page .cheques-summary{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:1000px){.chequera-page .chequera-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.chequera-page .filters.chequera-filters>label,.chequera-page .filters.chequera-filters>.autocomplete,.chequera-page .filters.chequera-filters>label:first-of-type{grid-column:span 1}}
 @media(max-width:600px){.chequera-page .chequera-filters{grid-template-columns:minmax(0,1fr)}.chequera-page .form-grid{grid-template-columns:minmax(0,1fr)}.chequera-page .module-filter-actions{flex-wrap:wrap}.chequera-page .form-top{gap:1rem;flex-wrap:wrap}}

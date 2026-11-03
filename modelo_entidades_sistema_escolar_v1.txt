@@ -1,4 +1,11 @@
 SISTEMA ADMINISTRATIVO ESCOLAR
+CONSULTA BANCARIA DE CHEQUES (03/11/2026, SIN NUEVA MIGRACION):
+CuentaBANCO/Chequeras → Cheques lista documentos inmutables y su cancelación,
+filtrados por cuenta/institución, chequera, estado, folio, texto y emisión.
+CHEQUERA_LEER/ADMIN + acceso cuenta/alcance permiten consulta y Excel; no conceden
+acceso a expedientes o salarios. Sólo datos de documento bancario, sin nueva
+operación/estado ni cambios financieros. Resumen agregado de todo el filtro.
+
 ACTUALIZACION V153 — CHEQUES NOMINATIVOS EN PAGO DE NOMINA (03/11/2026):
 ChequeNomina inmutable pertenece a una fuente de pago, cuentaBANCO y chequera.
 Folio único por cuenta incluso cancelado; guarda nombre/version de chequera,
