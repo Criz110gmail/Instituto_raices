@@ -1,5 +1,10 @@
 # Retomar nómina en otra computadora
 
+**Actualización 03/11/2026:** el usuario continuó en esta misma computadora. El
+ejemplo colectivo avanzó hasta cancelar sólo el pago de Pablo; falta repagarlo.
+Consultar primero PRUEBA_NOMINA_COLECTIVA_CANCELACION_PARCIAL_20261103.md y las notas
+más recientes de AGENT.md. El estado descrito abajo corresponde al cierre del 30/10.
+
 Actualizado el **30/10/2026**. Este documento resume el punto más reciente; no
 reemplaza la lectura completa de AGENT.md ni las restricciones del repositorio.
 

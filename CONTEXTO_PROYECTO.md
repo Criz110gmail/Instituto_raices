@@ -1,5 +1,30 @@
 # Contexto del proyecto
 
+## Reanudación local: pagar de nuevo sólo a Pablo — 03/11/2026
+
+Verificación final: 25 pruebas Java correctas, pruebas JS de filtros y borrador
+correctas; navegador sintético verificó 84 navegaciones GET y cuatro vistas del
+pago único en móvil/escritorio y temas claro/oscuro. Sólo app actualizada, health UP;
+JS desplegado verificado. Lectura posterior confirma saldos 3262.85/274.29/1150 y
+NPI10 pagado/NPI11 cancelado intactos. Falta repago manual del usuario, no cierre.
+
+Usuario NO trabajó en otra computadora. Prueba colectiva avanzó hasta cancelar sólo
+Pablo; aún falta repago individual y confirmación de cierre. Ver manual nuevo
+PRUEBA_NOMINA_COLECTIVA_CANCELACION_PARCIAL_20261103.md, prioridad sobre retoma30Oct.
+Lectura: BOR11 Parcialmente pagada, Marta empleado9/fila12 NPI10pagado500; Pablo
+empleado10/fila13 NPI11cancelado/pendiente500. CAJA3262.85/banco274.29/corte1150.
+No tocar Marta ni repetir colectivo. Retomar Registrar resultado → Pagar desde una
+o varias cuentas, sóloPablo/CAJA500/refREPAGO-PABLO-NOV-01; esperadoCAJA2762.85.
+UI elimina Ver pagos por empleado duplicado enResumen (queda pestaña) y captura/
+confirmación antigua monofuente enRegistrar resultado; conservar rechazo/cancelar,
+servicios históricos y permisos. Ningún pago realizado por agente.
+Filtros GET de Personal/nómina usan nomina-filtros.js?v=20261103: submit y Limpiar,
+posición relativa incluso offsetnegativo, pestaña preservada al limpiar, clic ya
+limpio sin salto, enlaces modificados y externos respetados. No POST ni otras áreas.
+Incluye puestos/empleados/conceptos/periodos/nóminas/vistas/directo/simulador/legado.
+Restantes ejemplos sin sueldo conconceptos y cero/negativo aún pendientes. Revisar
+capturas disponibles antes de instrucciones; no modificar BOR9/BOR10 ni roles.
+
 ## Retoma en otra computadora: permisos confirmados — 30/10/2026
 
 QA final:2tests Java/package con PostgreSQL17 temporal correctos; V148 verificada

@@ -1,21 +1,3 @@
-/* Sólo formularios de consulta marcados: conservar los filtros, no saltar a resultados. */
-(() => {
- document.querySelectorAll('[data-nomina-keep-filter]').forEach(form=>{
- const key='nomina-filtros-scroll:'+location.pathname+':'+form.dataset.nominaKeepFilter;
- form.addEventListener('submit',()=>{
-  try{sessionStorage.setItem(key,JSON.stringify({offset:Math.max(16,form.getBoundingClientRect().top)}));}catch(_){/* La consulta normal sigue funcionando sin almacenamiento. */}
- });
- let saved;try{const raw=sessionStorage.getItem(key);sessionStorage.removeItem(key);if(raw)saved=JSON.parse(raw);}catch(_){}
- if(!saved||!Number.isFinite(saved.offset))return;
- const restore=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
-  if(form.closest('[data-student-panel]')?.hidden)return;
-  window.scrollTo({top:Math.max(0,window.scrollY+form.getBoundingClientRect().top-saved.offset),behavior:'instant'});
-  form.querySelector('button[type="submit"],.module-action--primary')?.focus({preventScroll:true});
- }));
- if(document.readyState==='complete')restore();else window.addEventListener('load',restore,{once:true});
- window.addEventListener('pageshow',event=>{if(!event.persisted)restore();},{once:true});
- });
-})();
 /* El servidor marca únicamente la cuenta recién agregada; revisar/errores no desplazan. */
 (() => {
  const source=document.querySelector('.nomina-payment-source[data-new-source="true"]');if(!source)return;
