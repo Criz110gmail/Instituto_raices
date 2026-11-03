@@ -1,5 +1,59 @@
 # Contexto del proyecto
 
+## Confirmación humana de neto cero y organización visual — 03/11/2026
+
+Render/package aprobado; Chrome6vistas/tresanchos/dostemas y navegación de pestañas
+correctos. App desplegada, healthUP. Sin operaciones financieras ni otra migración.
+
+Usuario confirmó el cierre de Diego y demás controles; pendiente sólo diseño.
+Lectura BOR13/fila15 con cierre y motivo correctos, cuentas2462.85/274.29/1150.
+Tarjeta dentro de Resumen en Ver pago e intentos, grid revisión/fecha/usuario,
+motivo separado, importe0 destacado. No fuera del menú ni aviso de devolución
+para un cierre que no movió dinero. No tocar datos para repetir prueba.
+Se documenta aceptación en PRUEBA_NOMINA_NETO_CERO_20261103.md; no declarar
+dos pestañas humanas si sólo está técnicamente verificado. Siguiente recomendado:
+prueba humana de selección Todos (mixto positivos/cero), luego alcance futuro.
+
+## Neto cero: implementación V149 para terminar prueba — 03/11/2026
+
+Despliegue final healthUP/V149success; lectura confirma BOR13 Borrador/rev1/version0,
+ningún cierre real ni variación de saldos2462.85/274.29/1150.140unitarias + regresión
+proporcional + ITcero concurrencia/rollback/colectivo20/render/Excel correctos.
+Chrome4combinaciones de ancho/tema y Cancelar sin POST correctos; bases QA retiradas.
+
+Usuario autorizó implementación y ajuste del botón inferior Volver a configuración.
+Lectura BOR13/fila15/revisión1/versión0, Diego12,200percepción/200deducción/neto0;
+sin autorización anterior. No recapturar ni confirmar por herramientas. Manual
+PRUEBA_NOMINA_NETO_CERO_20261103.md conserva ruta real y pruebas pendientes.
+Nuevo cierre inmutable sin cuenta ni egreso; se genera al autorizar, congela detalle
+efectivo y motivo/actor/fecha. Pagos por empleado/Excel muestran Neto cero confirmado.
+Mixto TODOS20 probado técnicamente:20filas,19pagos,1cierre0; sólo positivos financian
+fuentes, fallo revierte también autorización/cierres. Concurrencia2 confirma sólo1.
+Sin nuevos grants, sin cambios de conceptos/pagos existentes ni lectura .env.
+No cerrar ejemplo manual hasta que usuario confirme. Cero directo en captura Pago
+individual y cuotas de préstamos cero no habilitados; flujo actual desde borrador.
+
+## Diego: neto negativo y botón Agregar concepto — 03/11/2026
+
+Usuario localizó Diego en Requieren revisión. Nuevas alertas visuales compartidas:
+QA render/package aprobado, Chrome16alertas390/1440claro/oscuro sin solapes;
+desplegado sóloapp, sin operaciones de negocio ni cambios de configuración.
+rojo Neto negativo · requiere revisión y ámbar Sin sueldo base asignado, con icono,
+título y párrafos separados en tabla, desglose y simulador. El mensaje del simulador
+es bloqueo existente (200 percepción/300 deducción), no fallo de consulta. No cambiar
+conceptos ni autorizar cero con este ajuste visual; cero continúa pendiente.
+
+Usuario confirmó BOR11 aplicado sin pendientes y BOR12/Sofía/NPI13 por300:
+CAJA2462.85, banco274.29, cajacorte1150. Diego12 capturó EXTRA200 y DESC300
+únicos NOV-2026-CIERRE-TEST16–30noviembre; sin sueldo ni borrador guardado.
+Lectura encuentra vista REVISION (deducciones superan percepciones) y vistas
+anteriores NO_INCLUIDO sin conceptos. Usar vista nueva y Mostrar Requieren revisión.
+Botón Agregar concepto cambia a turquesa reutilizando nomina-primary-action;
+sin cambios de permisos, cálculo ni datos operativos.
+Cero NO terminado: autorización y multifuente lo bloquean actualmente. No presentar
+como prueba aprobada ni inventar movimientos cero. Pendiente autorización para
+completar tratamiento contable sin cuenta/salida antes de cerrar flujo base.
+
 ## Reanudación local: pagar de nuevo sólo a Pablo — 03/11/2026
 
 Verificación final: 25 pruebas Java correctas, pruebas JS de filtros y borrador

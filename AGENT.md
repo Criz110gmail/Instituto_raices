@@ -1,5 +1,71 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Cierre cero confirmado y tarjeta dentro de Resumen — 03/11/2026
+
+QA render/package aprobado y6vistasChrome390/768/1440claro/oscuro sin solapes,
+tarjeta oculta fuera de Resumen y retorno correcto. Desplegado sóloapp, healthUP.
+No nuevos pagos, cierres, decisiones ni cambios de configuración por agente.
+
+Usuario confirmó todo el ejemplo funcional de Diego; sólo pidió corregir diseño.
+Lectura BOR13 PAGADA (visible Confirmada sin pagos), revisión1/fila15 con cierre
+cero/motivo. Cuentas2462.85/274.29/1150 intactas. No repetir ni cancelar el cierre.
+Ver pago e intentos: tarjeta cero se mueve DENTRO de pestaña Resumen; campos en
+grid, importe separado y motivo ancho completo. Se ocultan avisos de reversa/préstamo
+que no aplican al cierre0; Registrar resultado explica que ya quedó confirmado.
+Sin cambio financiero ni migración. Manual PRUEBA_NOMINA_NETO_CERO_20261103.md
+actualizado con aprobación funcional; falta aceptación visual, no nuevo pago.
+Los3ejemplos humanos pendientes originales ya completados (colectivo cancelar1,
+sin sueldo con conceptos, cero/negativo). Siguiente recomendado: prueba MANUAL
+modo Todos con positivos+cero; técnica20ya aprobada pero no confundir con humana.
+Captura directa0/cuotas de préstamo0/cheques/préstamosrediseño siguen pendientes.
+
+## V149: cierre cero implementado, falta aceptación humana — 03/11/2026
+
+Desplegado sóloapp, healthUP y V149success. BOR13 continúa BORRADOR/rev1/version0,
+tabla cierres reales0 y saldos2462.85/274.29/1150 verificados después de desplegar.
+QA:140unitarias Personal,7regresión incluida IT proporcional y3incluida IT cero
+aprobadas; JSscroll/selección y sintaxis correctos. Chrome4combinaciones390/1440
+claro/oscuro: tarjeta cero, regreso inferior y Cancelar modal sin POST correctos.
+Dos bases temporales retiradas. No commit/push, no operaciones por el usuario.
+
+Continuar PRUEBA_NOMINA_NETO_CERO_20261103.md desde BOR13/fila15, NO duplicar.
+Diego12 conserva percepción200/deducción200, descuento300 cancelado; usuario
+confirmó cálculo0 y bloqueo anterior. Solicita implementar y también diseño pendiente.
+V149 agrega nomina_cierre_cero inmutable, fotografía efectiva/actor/fecha/motivo,
+generada al autorizar APLICAR/neto0 sin préstamos. No pagos/egresos0 ni backfill.
+Consulta/Excel CERO_CONFIRMADO distinto de PAGADO/NO_APLICAR. Estado agregado
+sin pendientes ficticios; positivo colectivo excluye ceros de fuentes y los cierra
+atómicamente al autorizar. Modal explica sin cuenta y detalle conserva auditoría.
+Inferior Volver a configuración ahora payment-back-link como superior.
+QA aislada: cierre cero, concurrencia real1éxito/2, inmutabilidad, permiso, render,
+Excel; colectivo TODOS20 conserva20, paga19, cierra1, rollback total ante fallo.
+No confirmar BOR13 por herramientas. Saldos leídos2462.85/274.29/1150 intactos.
+Captura directa Pago individual mantiene importe positivo; cero con préstamos
+especializado pendiente. Cheques/préstamosrediseño siguen diferidos, no afirmar
+terminado todo el dominio. No cierre humano del ejemplo0 todavía.
+
+## Diego: neto negativo y botón Agregar concepto — 03/11/2026
+
+Usuario confirma localizar Diego en Requieren revisión y solicita avisos visibles.
+QA render/package correcto y 16 alertas en Chrome sintético (390/1440 claro/oscuro)
+sin solapes/desbordamiento; app desplegada. No pagos ni cambios de captura por agente.
+Alertas compartidas en tabla/desglose/simulador: negativo rojo con título y bloqueo;
+sin sueldo ámbar, aclara que sólo se consideran conceptos adicionales. Simulador
+negativo conserva validación existente, separa título/motivo/ayuda, no devuelve
+un importe pagable ni convierte a cero. Sin cambios del motor o escrituras operativas.
+
+Usuario confirmó cierre de BOR11 (repago sólo Pablo) y BOR12 Sofía sin sueldo:
+NPI13/300 desde CAJA, saldo2462.85; banco274.29/corte1150 intactos.
+Diego empleado12 ya capturó EXTRA200 y DESC300 únicos del16–30/11/2026,
+NOV-2026-CIERRE-TEST. No tiene sueldo ni borrador guardado. Vista previa actual
+lo clasifica REVISION por deducciones mayores; otras vistas anteriores conservan
+NO_INCLUIDO sin conceptos. Retomar vista nueva con selección específica y Mostrar
+Requieren revisión/Todos, no repetir conceptos ni guardar negativo.
+Agregar concepto usa nomina-primary-action turquesa, misma ruta y permiso.
+PENDIENTE REAL: cero todavía se bloquea al autorizar y en pago multifuente;
+no afirmar que se registra en cero ni marcar flujo terminado. Usuario aún prueba
+negativo. No implementar cero sin autorización, no inventar egresos cero.
+
 ## Reanudación local: pagar de nuevo sólo a Pablo — 03/11/2026
 
 Verificación final: 25 pruebas Java correctas, pruebas JS de filtros y borrador

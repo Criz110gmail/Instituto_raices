@@ -51,6 +51,16 @@
 .nomina-candidates .nomina-checkbox{gap:6px;padding:8px 6px;font-size:.73rem;border:0;background:transparent}
 .nomina-candidates .nomina-checkbox input{flex:0 0 18px;width:18px;height:18px}
 .nomina-row-reason{font-size:.74rem;line-height:1.6;color:var(--muted);margin:10px 0 0}
+.nomina-evaluation{display:flex;align-items:flex-start;gap:10px;box-sizing:border-box;min-width:0;max-width:100%;margin:12px 0;padding:14px;border:1px solid var(--line);border-left-width:4px;border-radius:12px;background:var(--soft);color:var(--ink);text-align:left;white-space:normal}
+.nomina-evaluation--danger{background:#fff0ef;color:#a52e2e;border-color:#e9b6b2}
+.nomina-evaluation--warning{background:#fff1d6;color:#805000;border-color:#e5c077}
+.nomina-evaluation-icon{display:flex;align-items:center;justify-content:center;flex:0 0 22px;width:22px;height:22px;border:1px solid currentColor;border-radius:50%;font-weight:800;line-height:1}
+.nomina-evaluation-copy{min-width:0;flex:1}.nomina-evaluation .nomina-evaluation-copy>strong{display:block;margin:0;font-size:.8rem;line-height:1.5;color:inherit;white-space:normal;overflow-wrap:anywhere}
+.nomina-evaluation .nomina-evaluation-copy>p{display:block;margin:8px 0 0;font-size:.76rem;line-height:1.65;color:inherit;white-space:normal;overflow-wrap:anywhere}.nomina-evaluation .nomina-evaluation-copy>.nomina-evaluation-help{font-weight:500}
+.nomina-simulation-blocked>h4{margin:0 0 12px;font-size:.9rem}
+[data-theme=dark] .nomina-evaluation--danger{background:#402327;color:#ffb9b4;border-color:#7a4348}
+[data-theme=dark] .nomina-evaluation--warning{background:#3b2d18;color:#ffd58a;border-color:#796039}
+@media(max-width:480px){.nomina-evaluation{gap:8px;padding:12px}.nomina-evaluation-icon{flex-basis:20px;width:20px;height:20px}}
 .nomina-money{font-weight:700;font-variant-numeric:tabular-nums}
 .nomina-concept-breakdown{margin:0;display:grid;gap:8px}
 .nomina-concept-breakdown>div{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
@@ -205,6 +215,15 @@
 @media(max-width:800px){.nomina-detail .nomina-collective-entry{align-items:stretch;flex-direction:column;gap:16px;padding:20px}.nomina-collective-copy{flex:auto}.nomina-collective-entry .nomina-primary-action{align-self:flex-start}.nomina-multiple .nomina-source-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:480px){.nomina-multiple .form-section,.nomina-multiple .nomina-payment-source{padding:14px}.nomina-source-heading{align-items:flex-start}.nomina-collective-entry .nomina-primary-action{width:100%}}
 .nomina-net-summary { padding:clamp(18px,3vw,26px);margin:0 0 24px;border:1px solid var(--line);border-top:3px solid var(--aqua);border-radius:16px;background:var(--soft);min-width:0; }
+.nomina-zero-closure{box-sizing:border-box;min-width:0;border:1px solid var(--line);border-top:3px solid var(--aqua);border-radius:16px;background:var(--soft);padding:clamp(16px,3vw,26px)}
+.nomina-zero-header{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,.38fr);align-items:start;gap:24px;margin-bottom:24px}.nomina-zero-heading{min-width:0}
+.nomina-zero-heading>.status{display:inline-flex;max-width:100%;box-sizing:border-box;margin:0 0 14px;padding:6px 10px;white-space:normal;line-height:1.6}
+.nomina-zero-heading>h2{margin:0 0 10px;font-size:clamp(1.05rem,2vw,1.3rem);line-height:1.5;overflow-wrap:anywhere}.nomina-zero-heading>p{margin:0;color:var(--muted);font-size:.81rem;line-height:1.8}
+.nomina-zero-amount{min-width:0;display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--white);text-align:right}.nomina-zero-amount>span{font-size:.73rem;font-weight:700;color:var(--muted)}.nomina-zero-amount>strong{font-size:1.9rem;line-height:1.2;font-variant-numeric:tabular-nums;color:var(--ink)}.nomina-zero-amount>small{font-size:.72rem;line-height:1.6;color:var(--muted)}
+.nomina-zero-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0;padding:0}.nomina-zero-meta>div{min-width:0;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--white)}.nomina-zero-meta dt{margin:0 0 8px;color:var(--muted);font-size:.72rem;font-weight:600;line-height:1.6}.nomina-zero-meta dd{margin:0;color:var(--ink);font-size:.84rem;font-weight:800;line-height:1.7;overflow-wrap:anywhere}
+.nomina-zero-reason{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--white)}.nomina-zero-reason>h3{margin:0 0 10px;font-size:.8rem;line-height:1.6}.nomina-zero-reason>p{margin:0;color:var(--ink);font-size:.82rem;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}.nomina-zero-closure>.nomina-zero-footnote{margin:18px 0 0;color:var(--muted);font-size:.74rem;line-height:1.8}
+[data-theme=dark] .nomina-zero-amount,[data-theme=dark] .nomina-zero-meta>div,[data-theme=dark] .nomina-zero-reason{background:var(--soft)}
+@media(max-width:800px){.nomina-zero-header{grid-template-columns:1fr;gap:18px}.nomina-zero-amount{text-align:left}.nomina-zero-meta{grid-template-columns:1fr;gap:10px}}
 .nomina-net-heading { display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap; }
 .nomina-net-heading h2 { margin:0;font:750 .9rem/1.5 Manrope,system-ui,sans-serif; }
 .nomina-net-amount { display:block;margin:14px 0 8px;font:800 clamp(2.1rem,5vw,3.1rem)/1.15 Manrope,system-ui,sans-serif;letter-spacing:-.035em;font-variant-numeric:tabular-nums;color:var(--ink);overflow-wrap:anywhere; }

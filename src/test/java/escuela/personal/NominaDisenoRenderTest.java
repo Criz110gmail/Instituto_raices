@@ -46,7 +46,9 @@ class NominaDisenoRenderTest {
    if(vista.startsWith("configuracion")){
     m.addAttribute("id",6L);m.addAttribute("empleado",new EmpleadoVista(6L,1L,"EMP-QA","Diana","Prueba",null,null,null,true,false,0L,null,false,null,null));m.addAttribute("filtroNomina",FiltroNominaEmpleado.inicial());m.addAttribute("puedeEditarNomina",true);m.addAttribute("conceptosNomina",Page.empty());
     if(!vista.equals("configuracion-vacia"))m.addAttribute("filtroNomina",new FiltroNominaEmpleado("","TODAS","","",inicio,fin,0,25));
-    if(vista.equals("configuracion-bloqueada"))m.addAttribute("simulacionNomina",new Simulacion(inicio,fin,"","MXN","Selecciona las fechas completas del periodo.",null,null,null,null));
+    if(vista.equals("configuracion-negativo"))m.addAttribute("simulacionNomina",new Simulacion(inicio,fin,"","MXN","Las deducciones superan el sueldo y las percepciones; no se propone un importe negativo.",null,null,null,null));
+    else if(vista.equals("configuracion-sin-sueldo"))m.addAttribute("simulacionNomina",new Simulacion(inicio,fin,"JUL-2027-RED-TEST","MXN","Sin sueldo base: se calcularán únicamente conceptos adicionales.",money("0"),money("300"),money("0"),money("300")));
+    else if(vista.equals("configuracion-bloqueada"))m.addAttribute("simulacionNomina",new Simulacion(inicio,fin,"","MXN","Selecciona las fechas completas del periodo.",null,null,null,null));
     else if(!vista.equals("configuracion-vacia"))m.addAttribute("simulacionNomina",new Simulacion(inicio,fin,"JUL-2027-RED-TEST","MXN","Configuración calculada por fechas",money("14000"),money("630"),money("442.85"),money("14187.15")));
     return "admin/empleado-nomina";
    }
@@ -65,13 +67,14 @@ class NominaDisenoRenderTest {
     }
     return "admin/nomina-pago-multiple";
    }
-   if(List.of("intento-cancelado","intento-sin-permiso").contains(vista)){
+   if(List.of("intento-cancelado","intento-sin-permiso","intento-cero").contains(vista)){
     m.addAttribute("borrador",new Borrador(2L,1L,"Julio Diana","AUTORIZADA",1,0L,"Motivo","JUL-2027-RED-TEST","Julio","Periodo independiente",inicio,fin,fin,"MXN","sello",1,money("14187.15")));
     m.addAttribute("empleadoPago",new escuela.personal.service.PagoEmpleadoNominaService.Fila(2L,6L,"EMP-QA","Diana de prueba",money("14187.15"),"MXN","PENDIENTE",null));
     m.addAttribute("autorizada",true);m.addAttribute("puedePagar",true);m.addAttribute("puedeRevertir",true);m.addAttribute("puedeEditar",true);m.addAttribute("pagoTab","historial");m.addAttribute("pagoFiltro",new FiltroPagoNomina("","TODOS",0,25).normalizado());m.addAttribute("rutaPagos","/admin/preparacion-nomina/2/pagos");m.addAttribute("formPago",new PagoEmpleadoNominaForm());m.addAttribute("cuotas",List.of());
     m.addAttribute("intentos",new PageImpl<>(List.of(new escuela.personal.service.PagoEmpleadoNominaService.Intento(1L,"REVERTIDO",money("14187.15"),"MXN",47L,"NOM-RED-JUL-2027","Pago original de prueba","28/10/2026 11:32","qa",49L,"RECUP-NOM-RED-JUL-01","Recuperación de banco y caja de prueba","28/10/2026 15:32","qa"))));
     m.addAttribute("fuentesPago",List.of(Map.of("pago",1L,"cuenta","BBVA-QA · Banco ficticio","medio","TRANSFERENCIA","importe",money("10000"),"movimiento",47L,"compensacion",49L),Map.of("pago",1L,"cuenta","CAJA-QA · Caja ficticia","medio","EFECTIVO","importe",money("4187.15"),"movimiento",48L,"compensacion",50L)));
     if(vista.equals("intento-sin-permiso")){m.addAttribute("puedePagar",false);m.addAttribute("puedeEditar",false);m.addAttribute("puedeRevertir",false);}
+    if(vista.equals("intento-cero")){m.addAttribute("pagoTab","resumen");m.addAttribute("empleadoPago",new escuela.personal.service.PagoEmpleadoNominaService.Fila(15L,12L,"EMP-NETO-TEST","Diego Prueba Validaciones",money("0"),"MXN","CERO_CONFIRMADO",null));m.addAttribute("cierreCero",new escuela.personal.service.PagoEmpleadoNominaService.CierreCero(1,"Confirmar el neto cero: percepción de 200 y deducción de 200, sin salida de dinero.","03/11/2026 12:00","Usuario ficticio"));m.addAttribute("intentos",Page.empty());m.addAttribute("fuentesPago",List.of());}
     return "admin/nomina-pago-empleado";
    }
    var fila=new FilaPreparacion(6L,"EMP-QA","Diana de prueba","LISTO","Configuración por vigencias; cálculo proporcional por días reales.",!vista.equals("previa-vacia"),money("14000"),money("630"),money("442.85"),money("0"),money("14187.15"));
@@ -96,6 +99,8 @@ class NominaDisenoRenderTest {
     if(vista.equals("pago-revision"))m.addAttribute("vistaMultiple",new escuela.personal.service.PagoMultipleNominaService.Vista(0L,List.of(new escuela.personal.service.PagoMultipleNominaService.Fuente(1L,"BBVA-QA · Banco ficticio","TRANSFERENCIA",money("10000"),money("33330")),new escuela.personal.service.PagoMultipleNominaService.Fuente(2L,"CAJA-QA · Caja ficticia","EFECTIVO",money("4187.15"),money("16950"))),1,fila.propuesto(),"sello"));
     return "admin/nomina-pago-multiple";
    }
+   if(vista.equals("previa-negativo"))fila=new FilaPreparacion(12L,"EMP-NETO-TEST","Diego Prueba","REVISION","Las deducciones superan el sueldo y las percepciones; no se propone un importe negativo.",false,null,null,null,null,null);
+   if(vista.equals("previa-sin-sueldo"))fila=new FilaPreparacion(11L,"EMP-SIN-SUELDO-TEST","Sofía Prueba","LISTO","Sin sueldo base: se calcularán únicamente conceptos adicionales.",true,money("0"),money("300"),money("0"),money("0"),money("300"));
    m.addAttribute("empleado",fila);m.addAttribute("lote",new Preparacion(uuid,1L,null,null,"INDIVIDUAL","ABIERTA",0L,"JUL-2027-RED-TEST","Julio2027","Periodo independiente",inicio,fin,fin,"MXN","Ensayo visual","Motivo ficticio","sello","27/10/2026 20:00"));m.addAttribute("volverLote","/admin/preparacion-nomina/vista/"+uuid);
    if(vista.equals("actualizacion")){m.addAttribute("lote",new Preparacion(uuid,1L,9L,1L,"INDIVIDUAL","ABIERTA",0L,"JUL-2027-RED-TEST","Julio2027","Periodo independiente",inicio,fin,fin,"MXN","Ensayo visual","Motivo ficticio","sello","27/10/2026 20:00"));m.addAttribute("totalesAnteriores",new Totales(1,fila.sueldo(),money("0"),fila.deducciones(),fila.aportaciones(),money("13557.15")));}
    m.addAttribute("lineas",List.of(new Linea("APOYO_48","Apoyo técnico","SUELDO",money("14000"),"2027-06-16",null),new Linea("TRANS","Transporte","PERCEPCION",money("80"),"2027-07-01",null),new Linea("QUIN","Apoyo quincenal","PERCEPCION",money("300"),"2027-06-01",null),new Linea("EXTRA","Apoyo único","PERCEPCION",money("250"),"2027-07-01","2027-07-31"),new Linea("DED","Deducción semanal","DEDUCCION",money("442.85"),"2027-06-01",null)));
@@ -119,11 +124,11 @@ class NominaDisenoRenderTest {
  @Test void filtrosUniformesYDesglosesCompartenResumenSinModificarImportes()throws Exception{
   var r=new ClassLoaderTemplateResolver();r.setPrefix("templates/");r.setSuffix(".html");r.setCharacterEncoding("UTF-8");var engine=new SpringTemplateEngine();engine.setTemplateResolver(r);var resolver=new ThymeleafViewResolver();resolver.setTemplateEngine(engine);resolver.setCharacterEncoding("UTF-8");
   var mvc=MockMvcBuilders.standaloneSetup(new Vista()).setViewResolvers(resolver).build();var dir=Files.createDirectories(Path.of("target/qa-nomina-alineacion"));
-  for(String vista:List.of("concepto-detalle","concepto-alta","concepto-cambio","detalle","revision","actualizacion","nominas","periodos","periodo-detalle","previa","previa-vacia","desglose","historico","tratamientos","tratamientos-historial","tratamientos-lectura","decision","pendientes","pagos","pagos-pagados","pagos-lectura","pagos-filtrados","pagos-error","pago","pago-nueva-fuente","pago-revision","directo-vacio","directo-calculado","intento-cancelado","intento-sin-permiso","configuracion","configuracion-vacia","configuracion-bloqueada")){
+  for(String vista:List.of("concepto-detalle","concepto-alta","concepto-cambio","detalle","revision","actualizacion","nominas","periodos","periodo-detalle","previa","previa-vacia","desglose","historico","tratamientos","tratamientos-historial","tratamientos-lectura","decision","pendientes","pagos","pagos-pagados","pagos-lectura","pagos-filtrados","pagos-error","pago","pago-nueva-fuente","pago-revision","directo-vacio","directo-calculado","intento-cancelado","intento-sin-permiso","intento-cero","configuracion","configuracion-vacia","configuracion-bloqueada","configuracion-negativo","configuracion-sin-sueldo","previa-negativo","previa-sin-sueldo")){
    var request=get("/qa/nomina/"+vista);if(vista.equals("revision"))request.param("revisionConsulta","1");
    var response=mvc.perform(request).andReturn().getResponse();assertThat(response.getStatus()).isEqualTo(200);var html=response.getContentAsString();
    if(vista.startsWith("concepto-"))assertThat(html).contains("Ubicación en configuración de nómina","Personal y nómina · Empleados","Empleado: <span>Luis Prueba</span>","Sección actual:","← Volver a configuración","q=transporte&amp;estado=TODAS&amp;pagina=1&amp;tamanio=10").doesNotContain("← Volver al listado");
-   if(vista.equals("concepto-detalle"))assertThat(html).contains("Detalle del concepto","<span aria-hidden=\"true\">←</span> Volver a configuración","data-money-confirm=\"nomina-cancelar\"");
+   if(vista.equals("concepto-detalle"))assertThat(html).contains("Detalle del concepto","← Volver a configuración","data-money-confirm=\"nomina-cancelar\"").containsPattern("<footer[^>]*><a class=\"payment-back-link\"");
    if(vista.equals("concepto-alta"))assertThat(html).contains("Agregar concepto","data-money-confirm=\"nomina-configurar\"");
    if(vista.equals("concepto-cambio"))assertThat(html).contains("Programar cambio de concepto","Concepto que cambiará").doesNotContain("Ubicación en nómina");
    if(vista.equals("revision"))assertThat(html).contains("Volver al historial del borrador","/admin/preparacion-nomina/9?q=&amp;estado=TODOS&amp;pagina=0&amp;tamanio=25#historial");
@@ -163,11 +168,22 @@ class NominaDisenoRenderTest {
    if(vista.equals("intento-cancelado"))assertThat(html).contains("Pago cancelado","nomina-attempt-cancelled","Recuperación del pago cancelado","Recuperación #49","Recuperación #50","Ver pago e intentos","nomina-location","nomina-individual-entry","class=\"nomina-primary-action\"","Pagar desde una o varias cuentas").doesNotContain(">REVERTIDO<");
    if(vista.equals("intento-cancelado"))assertThat(html).contains("filaId=2","Registrar rechazo sin salida de dinero").doesNotContain("Cuenta de origen *","Revisar pago</button>","Confirmar pago individual","nomina-empleado-pagar");
    if(vista.equals("intento-sin-permiso"))assertThat(html).doesNotContain("Pagar desde una o varias cuentas","Revisar pago</button>","Registrar rechazo sin salida de dinero");
+   if(vista.equals("intento-cero")){
+    assertThat(html).contains("nomina-zero-meta","nomina-zero-reason","Fecha de confirmación","Confirmado por","Neto cero confirmado · sin salida de dinero","Usuario ficticio","03/11/2026 12:00").doesNotContain("Pagar desde una o varias cuentas","Cuotas de préstamos incluidas","Registrar rechazo sin salida de dinero","Cancelar sólo este pago");
+    assertThat(html.indexOf("class=\"nomina-zero-closure\"")).isGreaterThan(html.indexOf("id=\"pago-resumen\""));
+    assertThat(html.indexOf("class=\"nomina-zero-closure\"")).isLessThan(html.indexOf("id=\"pago-gestion\""));
+   }
    if(List.of("pagos","pago","previa","desglose","historico","tratamientos","decision","pendientes").contains(vista))assertThat(html).contains("nomina-location","Sección actual:");
    if(vista.startsWith("configuracion"))assertThat(html).contains("Simulador de nómina del empleado","no reserva pagos","no cambian esta estimación","data-student-tabs","data-student-panel=\"conceptos\"","data-student-panel=\"simulador\"","data-student-panel=\"sueldo\"","Simular nómina","nomina-config-grid").doesNotContain("Totales de los conceptos filtrados");
-   if(vista.equals("configuracion"))assertThat(html).contains("$14,000.00","$630.00","$14,630.00","$442.85","$14,187.15","Total estimado a pagar","01/07/2027","31/07/2027");
+   if(vista.equals("configuracion")){
+    assertThat(html).contains("$14,000.00","$630.00","$14,630.00","$442.85","$14,187.15","Total estimado a pagar","01/07/2027","31/07/2027");
+    assertThat(html).containsPattern("<a class=\"nomina-primary-action\"[^>]*href=\"[^\"]*/nomina/nuevo[^\"]*\"[^>]*>Agregar concepto");
+   }
    if(vista.equals("configuracion-vacia"))assertThat(html).contains("para simular cuánto correspondería pagar").doesNotContain("Total estimado a pagar");
    if(vista.equals("configuracion-bloqueada"))assertThat(html).contains("No es posible calcular este rango","Selecciona las fechas completas").doesNotContain("Total estimado a pagar");
+   if(List.of("configuracion-negativo","previa-negativo").contains(vista))assertThat(html).contains("nomina-evaluation--danger","Neto negativo · requiere revisión","Las deducciones superan","No se muestra un total pagable");
+   if(vista.equals("configuracion-negativo"))assertThat(html).doesNotContain("Total estimado a pagar");
+   if(List.of("configuracion-sin-sueldo","previa-sin-sueldo").contains(vista))assertThat(html).contains("nomina-evaluation--warning","Sin sueldo base asignado","No se agrega un sueldo automáticamente");
    if(vista.equals("pago"))assertThat(html).contains("nomina-source-medium","readonly","Medio de pago · automático").doesNotContain("<select id=\"fuentes0.medio");
    assertThat(html).doesNotContain("undefined");Files.writeString(dir.resolve(vista+".html"),html);
   }

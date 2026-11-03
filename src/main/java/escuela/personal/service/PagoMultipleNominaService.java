@@ -33,13 +33,13 @@ public class PagoMultipleNominaService {
  private void texto(String valor,int max,String campo){if(valor==null||valor.isBlank()||valor.length()>max)throw regla("Captura "+campo+" con máximo "+max+" caracteres.");}
  private static ReglaNegocioException regla(String s){return new ReglaNegocioException(s);}
  private List<PagoEmpleadoNominaService.Fila> filas(Long id,Long fila){
-  if(fila!=null){var r=pagos.fila(id,fila);if(r.estado().equals("NO_APLICAR"))throw regla("El empleado está excluido de este periodo con motivo.");if(r.pagoId()!=null)throw regla("Este empleado ya tiene un pago vigente; no se movió dinero.");return List.of(r);}
+  if(fila!=null){var r=pagos.fila(id,fila);if(r.estado().equals("CERO_CONFIRMADO"))throw regla("Este neto cero ya está confirmado sin salida de dinero; no requiere cuenta ni otro pago.");if(r.estado().equals("NO_APLICAR"))throw regla("El empleado está excluido de este periodo con motivo.");if(r.pagoId()!=null)throw regla("Este empleado ya tiene un pago vigente; no se movió dinero.");return List.of(r);}
   var out=new ArrayList<PagoEmpleadoNominaService.Fila>();int pagina=0;org.springframework.data.domain.Page<PagoEmpleadoNominaService.Fila> page;
   do{page=pagos.listar(id,"","PENDIENTE",pagina++,100);out.addAll(page.getContent());}while(page.hasNext());
   // Las cancelaciones se pagan individualmente en su periodo original.
   long cancelados=jdbc.queryForObject("SELECT count(*) FROM nomina_pago_intento ni JOIN nomina_fila_efectiva ne ON ne.id=ni.fila_id WHERE ne.borrador_id=:id AND ni.estado='REVERTIDO' AND NOT EXISTS(SELECT 1 FROM nomina_pago_intento x WHERE x.fila_id=ne.id AND x.estado='PAGADO')",p().addValue("id",id),Long.class);
   if(cancelados>0)throw regla("Hay pagos cancelados: vuelve a pagarlos individualmente desde Pagos por empleado; no se incorporan a otro pago colectivo.");
-  out.removeIf(x->!x.estado().equals("PENDIENTE"));return List.copyOf(out);
+  out.removeIf(x->!x.estado().equals("PENDIENTE")||x.neto().signum()==0);return List.copyOf(out);
  }
  private Fuente cuenta(PagoMultipleNominaForm.Fuente f,String moneda){
   if(f.getCuentaId()==null||f.getImporte()==null||f.getImporte().signum()<=0||f.getImporte().scale()>2)throw regla("Cada fuente requiere cuenta e importe positivo con máximo dos decimales.");
@@ -58,7 +58,7 @@ public class PagoMultipleNominaService {
  private Vista revisarDatos(Long id,Long version,String moneda,List<PagoEmpleadoNominaService.Fila> filas,PagoMultipleNominaForm f){
   texto(f.getReferencia(),150,"referencia");texto(f.getMotivo(),2000,"motivo");if(f.getSolicitud()==null)throw regla("Recarga el formulario antes de confirmar.");
   if(f.getFuentes()==null||f.getFuentes().size()>20)throw regla("Usa entre una y veinte fuentes de pago.");
-  if(filas.isEmpty())throw regla("No hay empleados pendientes de pago.");
+  if(filas.isEmpty())throw regla("No hay importes positivos pendientes de pago. Si hay netos cero, confírmalos desde Autorización y pagos por empleado → Decisiones y pendientes, sin capturar cuentas.");
   BigDecimal total=filas.stream().map(PagoEmpleadoNominaService.Fila::neto).reduce(BigDecimal.ZERO,BigDecimal::add);
   if(filas.stream().anyMatch(x->x.neto().signum()<=0))throw regla("Los netos cero o negativos requieren resolver su tratamiento contable. No se genera un egreso ficticio.");
   if(f.getMotivoPagoId()==null||jdbc.queryForObject("SELECT count(*) FROM motivo_financiero WHERE id=:mot AND institucion_id=:inst AND activo AND naturaleza IN ('EGRESO','AMBOS')",p().addValue("mot",f.getMotivoPagoId()),Long.class)!=1)throw regla("Selecciona un motivo financiero activo de egreso.");

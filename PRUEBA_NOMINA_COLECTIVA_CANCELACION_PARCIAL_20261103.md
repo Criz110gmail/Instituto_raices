@@ -1,7 +1,10 @@
 # Nómina colectiva: cancelar sólo un pago
 
-Estado: **en proceso**, falta volver a pagar a Pablo y recibir confirmación humana
-del cierre. No repetir el pago colectivo ni cancelar el de Marta.
+Estado: **confirmada por el usuario el 03/11/2026**. Volvió a pagar sólo a Pablo;
+BOR11 terminó Aplicada · sin pendientes, CAJA2762.85/banco274.29/corte1150.
+Lectura verificó NPI10 de Marta vigente, NPI11 cancelado y NPI12 de Pablo vigente.
+No repetir el colectivo ni cancelar pagos para repetir esta prueba. Los pasos
+inferiores conservan el procedimiento y sus saldos de ese momento.
 
 ## Punto actual verificado sólo en lectura
 

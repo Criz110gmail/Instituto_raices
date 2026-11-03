@@ -223,6 +223,12 @@
                     add('Motivo',form.querySelector('[name="motivo"]').value);
                 }
                 note.textContent='Conserva el historial y el periodo original. Esta acción no mueve dinero ni modifica la configuración del empleado. Cancelar cierra el resumen sin guardar.';
+                if(kind==='nomina-congelar'){
+                    add('Periodo',form.dataset.confirmPeriod||'Periodo de esta revisión');
+                    add('Netos cero a confirmar',form.dataset.confirmZero||'0');
+                    add('Motivo',form.querySelector('[name="motivo"]').value);
+                    note.textContent='Congela la revisión y conserva cada desglose. Los netos cero quedan confirmados sin cuenta ni salida de dinero; los importes positivos no se pagan con esta acción. Cancelar no guarda nada.';
+                }
             } else if(kind==='nomina-cancelar-todos') {
                 title.textContent='Confirmar cancelación de los pagos';cancel.textContent='Cancelar';accept.textContent='Confirmar cancelación completa';
                 add('Empleados',form.dataset.confirmPeople);add('Total recuperado',money(form.dataset.confirmAmount));
@@ -232,6 +238,7 @@
             } else if(kind==='nomina-multifuente') {
                 title.textContent='Confirmar pago de nómina';cancel.textContent='Cancelar';accept.textContent='Confirmar y registrar pagos';
                 add('Empleados',form.dataset.confirmPeople);add('Total a pagar',money(form.dataset.confirmAmount));
+                if(Number(form.dataset.confirmZero)>0)add('Netos cero · sin salida de dinero',form.dataset.confirmZero);
                 form.querySelectorAll('[data-payment-review-source]').forEach(row=>{
                     add(row.dataset.account,money(row.dataset.amount));
                 });

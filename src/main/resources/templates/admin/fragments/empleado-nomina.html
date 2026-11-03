@@ -5,7 +5,7 @@
  <input type="hidden" name="q" th:value="${filtroNomina.q}"><input type="hidden" name="estado" th:value="${filtroNomina.estado}"><input type="hidden" name="naturaleza" th:value="${filtroNomina.naturaleza}"><input type="hidden" name="frecuencia" th:value="${filtroNomina.frecuencia}"><input type="hidden" name="desde" th:value="${filtroNomina.desde}"><input type="hidden" name="hasta" th:value="${filtroNomina.hasta}"><input type="hidden" name="pagina" th:value="${filtroNomina.pagina}"><input type="hidden" name="tamanio" th:value="${filtroNomina.tamanio}">
 </th:block>
 <section th:fragment="contenido" class="detail-section payroll-configuration">
- <header class="employee-position-heading"><div><span class="employee-position-caption">Configuración privada</span><h2>Conceptos de nómina del empleado</h2><p>Define qué corresponde aplicar y durante qué fechas. Puedes simular importes sin generar ni pagar nómina.</p></div><a class="module-action" th:if="${puedeEditarNomina == true}" th:href="${filtroNomina.url(id,'/nuevo')}">Agregar concepto <span aria-hidden="true">＋</span></a></header>
+ <header class="employee-position-heading"><div><span class="employee-position-caption">Configuración privada</span><h2>Conceptos de nómina del empleado</h2><p>Define qué corresponde aplicar y durante qué fechas. Puedes simular importes sin generar ni pagar nómina.</p></div><a class="nomina-primary-action" th:if="${puedeEditarNomina == true}" th:href="${filtroNomina.url(id,'/nuevo')}">Agregar concepto <span aria-hidden="true">＋</span></a></header>
  <nav class="student-tablist standalone-record-tabs payment-record-tabs" data-student-tabs data-active-tab="conceptos" role="tablist" aria-label="Configuración de nómina del empleado">
  <button type="button" role="tab" id="tab-nomina-conceptos" aria-controls="panel-nomina-conceptos" data-student-tab="conceptos" data-tab-hash="#conceptos-nomina"><span>01</span><strong>Conceptos configurados</strong><small>Filtros y vigencias</small></button>
  <button type="button" role="tab" id="tab-nomina-simulador" aria-controls="panel-nomina-simulador" data-student-tab="simulador" data-tab-hash="#simulacion-nomina"><span>02</span><strong>Simulador por fechas</strong><small>Estimación sin pagos</small></button>
@@ -48,8 +48,8 @@
     <article class="nomina-config-total"><h4>Total de deducciones</h4><strong class="nomina-simulation-amount" th:text="${'$'+#numbers.formatDecimal(simulacionNomina.deducciones,1,'COMMA',2,'POINT')}"></strong><small th:text="${simulacionNomina.moneda}"></small><p class="field-help">Importe calculado para este rango; no descuenta dinero.</p></article>
     <article class="nomina-config-total nomina-simulation-net"><h4>Total estimado a pagar</h4><strong class="nomina-simulation-amount" th:text="${'$'+#numbers.formatDecimal(simulacionNomina.neto,1,'COMMA',2,'POINT')}"></strong><small th:text="${simulacionNomina.moneda+' · Sin cálculo fiscal automático'}"></small><p class="field-help">Percepciones menos deducciones.</p></article>
    </div>
-   <p th:unless="${simulacionNomina.disponible()}" class="nomina-preview-notice" role="status"><strong>No es posible calcular este rango</strong><span th:text="${simulacionNomina.mensaje}"></span></p>
-   <p th:if="${simulacionNomina.disponible() and simulacionNomina.sueldo.signum()==0}" class="field-help">Sin sueldo base aplicable: sólo se incluyen los conceptos adicionales.</p>
+   <section th:unless="${simulacionNomina.disponible()}" class="nomina-simulation-blocked"><h4>No es posible calcular este rango</h4><th:block th:insert="~{admin/fragments/nomina-comun :: evaluacion(${simulacionNomina.mensaje})}"></th:block></section>
+   <th:block th:if="${simulacionNomina.disponible() and #strings.containsIgnoreCase(simulacionNomina.mensaje,'sin sueldo')}" th:insert="~{admin/fragments/nomina-comun :: evaluacion(${simulacionNomina.mensaje})}"></th:block>
   </th:block>
   <p class="field-help">Sólo estimación con la configuración actual: no crea periodos ni borradores, no reserva pagos ni mueve dinero. No es un saldo pendiente ni reemplaza el histórico de nóminas pagadas.</p>
  </section>
@@ -58,7 +58,7 @@
  <section id="panel-nomina-sueldo" class="student-tab-panel nomina-config-tab" data-student-panel="sueldo" role="tabpanel" aria-labelledby="tab-nomina-sueldo" hidden>
  <details class="employee-position-card nomina-current-salary" open><summary><span><strong>Puesto y sueldo actuales</strong><small>Consulta el dato de hoy y su historial; la simulación usa las fechas que elijas.</small></span></summary><div class="nomina-current-salary-content"><h3>Sueldo base desde el puesto</h3>
   <th:block th:if="${sueldoNomina != null}"><p th:text="${sueldoNomina.puestoCodigo+' · '+sueldoNomina.puestoNombre}"></p><div class="salarial-amount"><strong th:text="${'$'+#numbers.formatDecimal(sueldoNomina.importeBruto,1,'COMMA',2,'POINT')+' '+sueldoNomina.moneda}"></strong><span th:text="${sueldoNomina.base+' · '+sueldoNomina.frecuencia}"></span></div></th:block>
-  <p class="field-help" th:if="${sueldoNomina == null}">Sin sueldo base aplicable hoy. Puedes configurar conceptos adicionales; no se inventará un sueldo. Consulta asignaciones futuras e históricas desde el puesto.</p>
+  <th:block th:if="${sueldoNomina == null}" th:insert="~{admin/fragments/nomina-comun :: evaluacion('Sin sueldo base aplicable hoy. Puedes configurar conceptos adicionales. Consulta asignaciones futuras e históricas desde el puesto.')}"></th:block>
   <p class="field-help">No agregues Sueldo base como otro concepto. Cambiar puesto o sueldo no modifica nóminas ya guardadas.</p><a class="module-action" th:href="@{/admin/empleados/{id}/puesto(id=${id})}">Ver puesto e historial <span aria-hidden="true">→</span></a>
  </div></details>
 

@@ -1,4 +1,15 @@
 SISTEMA ADMINISTRATIVO ESCOLAR
+ACTUALIZACION V149 — CIERRE AUDITABLE DE NETO CERO (03/11/2026):
+NominaCierreCero inmutable por fila historica: autorizacion/borrador, institucion,
+revision, usuario/instante/motivo y fotografia JSON de fila efectiva. Sólo APLICAR
+con neto exactamente0 y sin cuotas de prestamos; no simula pagos ni egresos0.
+Se registra al autorizar, en la misma transaccion. Neto negativo sigue bloqueado.
+Estado CERO_CONFIRMADO en consulta/Excel no equivale PAGADO ni NO_APLICAR.
+Estado agregado considera el cierre para no dejar pendiente ficticio. Colectivo
+mixto conserva todos los empleados, financia sólo positivos y cierra ceros al
+confirmar; fallo revierte cierres/autorizacion/pagos. PK y bloqueos evitan doble
+confirmacion. Sin backfill financiero ni cambios de configuraciones/historiales.
+
 ACTUALIZACION V139 — TRATAMIENTOS Y OBLIGACIONES DE NOMINA (27/10/2026):
 NominaTratamiento append-only por fila histórica y clave EMPLEADO o fuente:id,
 APLICAR/NO_APLICAR/POSPONER, motivo/actor/instante. Vista efectiva descuenta conceptos
