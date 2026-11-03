@@ -1,5 +1,36 @@
 # Contexto del proyecto
 
+## Cierre humano del colectivo Todos y etiquetas correctas — 03/11/2026
+
+QA141unitarias y regresiónITproporcional correctas; V150validada8pasos/6permisos.
+Render cubre todos los estados y cero, Excel único por revisión y Periodos sin
+botón autorreferente. App desplegada y temporal retirada; no pagos por herramientas.
+
+Usuario confirmó BOR14/rev1, cuatro incluidos, trespagosNPI14/15/16 por483.87,
+483.87 y300; cierre0Diego/fila19. Estado Aplicada sin pendientes, cuentas1195.11,
+274.29 y1150. Evidencia leída sin cambios. No repetir pagos para documentarlos.
+V150 documenta el proceso confirmado en Guía de procesos (8pasos/6permisos) y
+manual PRUEBA_NOMINA_TODOS_ELEGIBLES_20261103.md. No concede permisos.
+Se elimina Excel duplicado del panel Empleados, queda superior con revisionConsulta;
+se elimina botón autorreferente en listado Periodos sin quitar navegación real.
+Cancelado en Resumen era sólo una ternaria vieja, NO cancelación efectiva. Reusar
+estadoTexto() unifica pendiente/parcial/pagada/histórica/cancelada/cero sin reescribir
+datos. Siguiente: cero en Pago individual directo, después alcance futuro diferido.
+
+## Ayuda compacta sin sueldo; prueba Todos en resumen — 03/11/2026
+
+QA7testsJava y Chrome8vistas/temas/anchos correctos, sin POST/cambios de captura
+ni scroll al cerrar. App desplegada y healthUP, sin nueva migración.
+
+Usuario solicitó sólo título Sin sueldo base asignado e icono! con explicación en
+modal. Se reutiliza modal contextual; no dispara POST ni cambia selección/cálculos.
+Negativo no se compacta. Aviso aplicado en vista previa/desglose/simulador.
+Lectura preview178ad6cc-5cd7-4be4-9676-cd7d8239e116 abierta/TODOS DIC-FONDOS1–15dic:
+cuatroincluidos Marta/Pablo483.87cadauno, Sofía300 y Diego0. Neto1267.74. Usuario
+aún en resumen antes de guardar, no declarar pago. Siguiente Guardar borrador
+revisado con nombre Diciembre — todos los elegibles con neto cero; luego colectivo
+CAJA1267.74. Esperado1195.11/banco274.29/corte1150 sin otros movimientos.
+
 ## Confirmación humana de neto cero y organización visual — 03/11/2026
 
 Render/package aprobado; Chrome6vistas/tresanchos/dostemas y navegación de pestañas

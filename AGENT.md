@@ -1,5 +1,48 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Todos aprobado: BOR14 y guía V150 — 03/11/2026
+
+QA141unitarias correctas, ITproporcional y migración editorial aislada8pasos/6permisos
+correctas. Render prueba exportación única en revisión actual/histórica, estados
+pendiente/parcial/pagada/histórica/cancelada/cero y nav Periodos sin autorreferencia.
+Desplegado sóloapp, healthUP; base temporal retirada. No operaciones de pago por agente.
+
+Usuario confirma prueba manual TODOS: BOR14 Aplicada sin pendientes/rev1,
+Marta9 NPI14=483.87, Pablo10 NPI15=483.87, Sofía11 NPI16=300; Diego12 fila19
+cierre0, sin NPI. Lectura confirma4filas y saldosCAJA1195.11/banco274.29/corte1150.
+No repetir, cancelar ni modificar esas operaciones para probar documentación.
+Manual PRUEBA_NOMINA_TODOS_ELEGIBLES_20261103.md y guía integrada V150 slug
+nomina-todos-elegibles-cero-confirmada,8pasos/6permisoslectura, CONFIRMADA.
+UI: quitar sólo exportación duplicada del panel Detalle por empleado; conservar
+superior con misma revisiónConsulta incluso histórica. Periodos quita nav autorreferente
+en listado, conserva lateral y enlaces de regreso/formulario.
+Usuario reportó Cancelado falso en Resumen: ternaria antigua trataba PAGADA como
+cancelado. Ahora resumen y cabecera usan borrador.estadoTexto(), como listado;
+no cambia estados persistidos, pagos ni dinero. Pruebas cubren todos los estados y0.
+Siguientes pendientes reales: cero en captura directa Pago individual (sin borrador),
+cuotas préstamo cero especializadas; luego chequeras y rediseño préstamos. No afirmar
+completo todo el dominio ni inventar pruebas humanas de20/concurrencia simultánea.
+
+## Aviso sin sueldo compacto y retoma Todos — 03/11/2026
+
+QA7Java/render/package y sintaxisJS correctos; Chrome8vistas390/1440claro/oscuro:
+icono abre, Entendido/Escape cierran, foco/scroll/captura conservados, ceroPOST.
+Sóloapp desplegada, healthUP. Sin nueva migración ni operaciones de negocio.
+
+Aviso Sin sueldo base asignado ahora sólo título e icono!; explicación completa
+en modal contextual existente (Entendido/X/Escape), no párrafos en la tarjeta.
+Únicamente rama sin sueldo/sin puesto; negativo sigue visible en rojo completo.
+Se añade listener acotado data-nomina-salary-help; botón typebutton/tabindex-1,
+restaura foco sin scroll y no envía formularios. Sin cambios de cálculos/permisos.
+Usuario está en resumen del ejemplo TODOS, aún NO guardar/pagar. Lectura preview
+178ad6cc-5cd7-4be4-9676-cd7d8239e116 ABIERTA/TODOS para DIC-2026-FONDOS-TEST:
+Marta9/Pablo10 483.87cadauno, Sofía11 300, Diego12 0; cuatro incluidosautomáticos.
+Sueldo967.74/percepciones500/deducciones200/neto1267.74. No preparar otra vista
+si ésta sigue activa; primero guardar Diciembre — todos los elegibles con neto cero.
+Después pago colectivo CAJA1267.74, saldoesperado1195.11 si no hay otros movimientos.
+Banco274.29/corte1150. No tocar BOR9 ni otros pagos; Bruce/Luis no entran por reserva.
+Ensayo colectivo humano aún pendiente, técnico20aprobado no equivalehumano.
+
 ## Cierre cero confirmado y tarjeta dentro de Resumen — 03/11/2026
 
 QA render/package aprobado y6vistasChrome390/768/1440claro/oscuro sin solapes,

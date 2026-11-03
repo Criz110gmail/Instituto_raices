@@ -38,13 +38,13 @@ class NominaDetalleOrganizadoTest {
   var dir=Path.of("target/qa-nomina-organizacion");Files.createDirectories(dir);Files.writeString(dir.resolve(estado.toLowerCase()+"-"+financiero+"-"+revision+".html"),r.getContentAsString());return r.getContentAsString();
  }
  @Test void aplicadaDestacaEstadoAplicacionYMovimientoExactoSinOfrecerMutaciones()throws Exception{
-  var html=render("APLICADA",true,2);assertThat(html).contains("Nómina aplicada","$12,500.00 MXN","Detalle por empleado","data-tab-hash=\"#aplicacion\"","Ver egreso de esta nómina","movimientoId=37","institucionId=1","clase=NOMINA","Motivo de aplicación ficticio");
+  var html=render("APLICADA",true,2);assertThat(html).contains("Aplicada · histórica","$12,500.00 MXN","Detalle por empleado","data-tab-hash=\"#aplicacion\"","Ver egreso de esta nómina","movimientoId=37","institucionId=1","clase=NOMINA","Motivo de aplicación ficticio");
   assertThat(html).doesNotContain("preparar-actualizacion","/cancelar","Revisar y aplicar nómina","No autorizado");
   assertThat(render("APLICADA",false,2)).doesNotContain("Ver egreso de esta nómina","movimientoId=37");
  }
  @Test void historicaConservaRevisionConsultaEnExcelYPaginacionSinConfundirConEstadoActual()throws Exception{var html=render("APLICADA",true,1);assertThat(html).contains("Histórica, no es la última revisión","revisionConsulta=1","Ver revisión 1","Ver revisión 2","pagina=2");}
  @Test void borradorYCanceladoConservanConsultaYAccionesSegunEstado()throws Exception{
-  assertThat(render("BORRADOR",false,2)).contains("Borrador pendiente de autorizar","Autorización y pagos por empleado","Gestión del borrador","preparar-actualizacion","Revisar cancelación","data-money-confirm=\"nomina-borrador-cancelar\"").doesNotContain("tab-nomina-aplicacion");
-  assertThat(render("CANCELADO",false,2)).contains("Borrador cancelado","sólo consulta").doesNotContain("preparar-actualizacion","/cancelar","tab-nomina-gestion");
+  assertThat(render("BORRADOR",false,2)).contains(">Borrador</strong>","Autorización y pagos por empleado","Gestión del borrador","preparar-actualizacion","Revisar cancelación","data-money-confirm=\"nomina-borrador-cancelar\"").doesNotContain("tab-nomina-aplicacion");
+  assertThat(render("CANCELADO",false,2)).contains(">Cancelada</strong>","sólo consulta").doesNotContain("preparar-actualizacion","/cancelar","tab-nomina-gestion");
  }
 }

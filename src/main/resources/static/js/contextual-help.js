@@ -434,6 +434,20 @@
     };
 
     const start = () => {
+        // Aviso compacto de nómina: reutiliza el modal informativo, sin enviar formularios.
+        document.addEventListener('click', event => {
+            const trigger = event.target.closest?.('[data-nomina-salary-help]');
+            if (!trigger) return;
+            event.preventDefault();
+            event.stopPropagation();
+            openHelp({
+                title: 'Sin sueldo base asignado',
+                description: trigger.dataset.nominaSalaryDescription,
+                example: 'Si sólo corresponde un apoyo de $300 y no tiene sueldo asignado, se consideran esos $300; no se inventa un sueldo base.',
+                kind: 'Información de nómina',
+                note: 'Esta explicación no cambia la selección, los importes ni la configuración del empleado. No registra pagos.'
+            }, trigger, trigger);
+        });
         document.body.classList.toggle('context-help-family', window.location.pathname.startsWith('/portal')
             || window.location.pathname === '/familias');
         enhance();

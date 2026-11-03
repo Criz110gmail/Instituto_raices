@@ -14,7 +14,7 @@
  </th:block>
  <th:block th:if="${grupo=='PERIODOS_NOMINA'}">
   <p class="personal-navigation-caption">Periodos y frecuencia de pago</p>
-  <nav class="personal-section-nav" aria-label="Secciones de periodos de nómina">
+  <nav th:if="${actual.name()!='PERIODOS_NOMINA'}" class="personal-section-nav" aria-label="Secciones de periodos de nómina">
    <a href="/admin/periodos-nomina" th:attr="aria-current=${origen.name()=='PERIODOS_NOMINA'?'page':null}"><strong>Periodos de nómina</strong><small>Cobertura y pago previsto</small></a>
   </nav>
   <p class="field-help">Define inicio, fin y pago previsto. Cada concepto del empleado conserva su propia frecuencia; ya no necesitas un calendario.</p>
