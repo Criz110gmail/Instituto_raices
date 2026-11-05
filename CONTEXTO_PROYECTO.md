@@ -1,5 +1,94 @@
 # Contexto del proyecto
 
+## Prueba principal de préstamos cerrada — 05/11/2026
+
+Usuario confirma liquidación de Tomás. PRE1/version6/LIQUIDADO/saldo0, una entrega200;
+BOR17 NPI19cancelado445 yNPI20pagado445; BOR18 NPI21pagado135. Dos planes originales
+conservados, cap/interés recuperados200/20, sin nueva entrega al reprogramar.
+CAJA415.11/BBVA174.29/corte1150 verificados por lectura. No volver a pagar/cancelar.
+Manual y V158 guía integrada CONFIRMADOS sólo para este caso positivo. Paso final
+describe liquidación300−165=135; préstamo neto0 no se afirma probado manualmente.
+Siguiente recomendado préstamo con neto0 en caso nuevo; después recibos/consultas
+integrados. Filtros/Excel/rol lector manuales complementarios siguen separados.
+
+Sóloapp desplegada/V158success/healthUP, guíaCONFIRMADA/version4. QAeditorial y
+migración aislada correctas con0efectos operativos. PréstamoLIQUIDADO/version6 y
+saldos finales intactos; QA retirada, sin commit/push. No repetir este ejemplo.
+
+## Tomás: entrega confirmada, consulta de nómina lista — 05/11/2026
+
+Usuario veACTIVO y desglose individual EXTRA500 menos préstamo55. Pago aún no
+confirmado; lectura préstamo1 ACTIVO/version1/saldo220 y CAJA995.11/BBVA174.29/corte1150.
+Solicita resumen más ordenado y acceso nómina uniforme en menú de expediente.
+Implementado saldo destacado, desglosecapital/interés y tarjetas de plan/entrega;
+enlace07 Configuración de nómina igual al nav, sigue abriendo pantalla propia y
+con los mismos permisos. No cálculo nuevo ni pagos por agente ni migración.
+Retomar pago individual445 desdeCAJA, Cancelar modal primero; después confirmar
+humano. No recapturar préstamo ni EXTRA. EsperadoCAJA550.11/deuda165 al pagar.
+
+QA21pruebas+Chrome48vistas correctas; enlace conserva permisos/URL y navuniforme,
+resumen sin desbordes ambos temas. Sóloapp desplegada/healthUP, sin migración ni
+operaciones reales. EstadoACTIVO/version1/saldo220 y tres saldos intactos; pago
+de Tomás sigue pendiente. Temporal QA retirada, sin commit/push.
+
+## Tomás ya tiene borrador; nuevo submenú Gestión — 05/11/2026
+
+Usuario confirma4cuotas55 del préstamo200+20. Lectura préstamo1/version0/BORRADOR/
+0entregas, saldos1195.11/174.29/1150. No acciones reales por agente.
+Gestión se divide en Borrador, Entregar dinero al empleado y Cancelar borrador;
+menú local accesible, mantiene captura/subsección al revisar o ante errores.
+Activos mantienen Reprogramar saldo. Renombra principal en captura por dinero
+prestado sin intereses; no cambia cálculos, permisos ni confirmaciones.
+Excel turquesa y separado de Nuevo préstamo, autorizado en mensaje posterior.
+V157 sólo guía editorial paso3 y fecha; manual actualizado. Retomar entrega200
+desdeCAJA sobre el MISMO préstamo; probar Cancelar modal antes de confirmar.
+Entrega todavía pendiente, no declarar concluida la prueba humana.
+
+Desplegado sóloapp/V157success/healthUP. QA6pruebas+Chrome36vistas correctas,
+submenús accesibles sin solapes, Cancelar/Escape0POST. Lectura conserva préstamo1
+BORRADOR/version0/0entregas y saldos1195.11/174.29/1150. Temporal retirada, sin
+commit/push. Seguir con Gestión → Entregar dinero al empleado.
+
+## Dos permisos para préstamos — 04/11/2026
+
+Por solicitud del usuario, sólo Consultar y Administrar. ADMIN abarca crear,
+editar/cancelar borrador, entregar y reprogramar, además de lectura. V156 elimina
+los dos permisos especializados y sus asociaciones; conserva ADMIN/LEER existentes,
+no promueve lectores a administración. Entrega requiere además permisos financieros
+y cuenta autorizada. No cambia préstamos, cuotas, pagos ni saldos. Rol1 ya tenía
+los cuatro permisos, por lo que conserva su acceso completo mediante ADMIN.
+Documentación actualizada; cerrar sesión y volver a entrar al desplegar.
+
+Desplegado sóloapp/V156success/healthUP. Rol1 conserva sólo ADMINISTRAR y LEER;
+0préstamos/72movimientos y tres saldos intactos. QA1057+ITmigración aislado correctos,
+sin promoción de lectores ni dependencia salarial para entregar préstamos autorizados.
+Bases sintéticas retiradas; sin commit/push. Continuar prueba pendiente de Tomás.
+
+## Adaptación de préstamos al flujo actual — 04/11/2026
+
+Usuario aprobó interés TOTAL (no mensual), plazo finito/descuento por nómina,
+saldo pendiente visible y adelantar liquidación en1o2cuotas. Implementados módulo
+/admin/prestamos y cuatro permisos separados sin asignación automática. V154 aditiva
+con planes/cuotas/abonos capital-interés; V155 guía PENDIENTE. Guardar no entrega;
+entrega real principal una sola vez. Pago de nómina abona, cancelar restaura deuda
+y fuentes; reprogramar saldo no entrega otra vez ni vuelve a calcular interés viejo.
+Quincenal15/finmes, semanal7d, mensualdíaancla; último ajuste centavos. Sólo fechas
+dentro del periodo, no descuento infinito fuera del plazo. Préstamos anteriores
+se conservan. Neto0 programado compensación auxiliar sin NPI/egreso, no contabilidad
+general ni cancelación0. Reservas autorizadas bloquean reprogramación; deuda reabierta
+tras cambiar plan requiere revisión explícita. No alterar otros pagos para ensayar.
+Pruebas aisladas cubren ciclo financiero/rollback/concurrencia/permisos/Excel/HTTP;
+regresiones proporciones, neto0 y cheque; Chrome36vistas3anchos2temas correctas.
+Prueba humana aún PENDIENTE: PRUEBA_PRESTAMOS_FLUJO_NUEVO_20261104.md, Tomás nuevo,
+200principal+20interés, cuota55, después liquidación165. Saldos iniciales leídos
+CAJA1195.11/BBVA174.29/corte1150 y0préstamos. No datos operativos de prueba por agente,
+sin cambios de roles/commit/push. Ver AGENT.md y plan de adaptación para retomar.
+
+Activada sóloapp, V154/V155success y saludUP. 1056pruebas generales correctas;
+ITpréstamos y3regresionesPostgreSQL17 correctas. Lectura posterior mantiene
+0préstamos/0entregas/0grants nuevos,72movimientos/18intentos y tres saldos intactos.
+Guía integrada PENDIENTE; comenzar con permisos y Tomás siguiendo el manual nuevo.
+
 ## Clara aprobada y nuevo listado de cheques — 03/11/2026
 
 Usuario ve1002emitido/NPI18 y1001cancelado/NPI17; segundo intento bloqueado y

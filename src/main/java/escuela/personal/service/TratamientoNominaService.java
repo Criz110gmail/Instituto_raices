@@ -38,7 +38,7 @@ public class TratamientoNominaService {
   if(motivo==null||motivo.isBlank()||motivo.length()>2000)throw regla("Explica el motivo obligatorio con máximo 2000 caracteres.");
   if(!Set.of("APLICAR","NO_APLICAR","POSPONER").contains(Objects.toString(accion,"")))throw regla("Selecciona un tratamiento válido.");
   if(jdbc.queryForObject("SELECT count(*) FROM nomina_borrador WHERE id=:id AND pendiente_origen_id IS NOT NULL",par,Long.class)>0)throw regla("Una obligación ya confirmada conserva sus importes; no puede excluirse ni volver a posponerse.");
-  if(jdbc.queryForObject("SELECT jsonb_array_length(coalesce(fuentes->'prestamos','[]'::jsonb)) FROM nomina_borrador_empleado WHERE id=:fila",par,Integer.class)>0)throw regla("Las cuotas de préstamos conservan su flujo especializado; no cambies su recuperación desde estas excepciones.");
+  if(jdbc.queryForObject("SELECT count(*) FROM nomina_borrador_empleado ne CROSS JOIN LATERAL jsonb_array_elements(ne.fuentes->'prestamos') x WHERE ne.id=:fila AND (:clave<>'EMPLEADO' OR NOT coalesce((x->>'programado')::boolean,false))",par.addValue("clave",clave),Integer.class)>0)throw regla("Las cuotas de préstamos no se cambian como conceptos adicionales. Puedes posponer o no aplicar el pago completo del empleado; la deuda se conserva hasta liquidar su nómina.");
   var resumen=resumen(id,fila);var ls=lineas(id,fila);
   if(!"EMPLEADO".equals(clave)){
    var l=ls.stream().filter(x->x.clave().equals(clave)).findFirst().orElseThrow(()->regla("Selecciona un concepto de esta revisión."));

@@ -17,6 +17,7 @@ import java.util.*;
 /** Una transacción para toda la distribución; cada empleado conserva sus fuentes exactas. */
 @Service @RequiredArgsConstructor @Transactional(readOnly=true)
 public class PagoMultipleNominaService {
+ private final AbonoPrestamoProgramadoService abonosPrestamos;
  private final NamedParameterJdbcTemplate jdbc;
  private final EmpleadoService empleados;
  private final PreparacionNominaService preparacion;
@@ -94,7 +95,7 @@ public class PagoMultipleNominaService {
   BigDecimal restanteFuente=previo.fuentes().getFirst().importe();int indice=0;
   for(var row:rows){
    // La recuperación de préstamos conserva su flujo anterior; no se mezcla con esta entrega.
-   if(!pagos.cuotas(id,row.id()).isEmpty())throw regla("Este empleado tiene cuotas de préstamo. Su integración multicuenta queda pendiente; no se aplicó ningún pago.");
+   abonosPrestamos.validar(id,row.id(),true);
    Long pago=jdbc.queryForObject("SELECT nextval(pg_get_serial_sequence('nomina_pago_intento','id'))",par,Long.class);BigDecimal restante=row.neto();Long primero=null;int ordinal=0;
    while(restante.signum()>0){var fuente=previo.fuentes().get(indice);BigDecimal importe=restante.min(restanteFuente);ordinal++;
     var mov=movimientos.registrarNominaEmpleado(new MovimientoManualRequest(empleados.autorizarSalarios(true).institucionId(),fuente.id(),null,ahora(),DireccionMovimiento.EGRESO,f.getMotivoPagoId(),importe,"Pago de nómina "+preparacion.obtener(id).folio()+(fuente.cheque()==null?"":" · Cheque "+fuente.cheque().folio()),"NPI-"+pago,"Personal de la institución","NOMINA-EMP:"+pago+":"+ordinal));
@@ -105,6 +106,7 @@ public class PagoMultipleNominaService {
    // Identidad por operación y empleado: el mismo reintento no genera otro intento.
    UUID solicitud=UUID.nameUUIDFromBytes((f.getSolicitud()+":"+row.id()).getBytes(java.nio.charset.StandardCharsets.UTF_8));
    jdbc.update("INSERT INTO nomina_pago_intento(fila_id,institucion_id,id,solicitud,estado,monto,moneda,movimiento_id,referencia,motivo,usuario_id) VALUES(:fila,:inst,:pago,:solicitud,'PAGADO',:monto,:moneda,:mov,:ref,:motivo,:actor)",p().addValue("fila",row.id()).addValue("pago",pago).addValue("solicitud",solicitud).addValue("monto",row.neto()).addValue("moneda",row.moneda()).addValue("mov",primero).addValue("ref",f.getReferencia().strip()).addValue("motivo",f.getMotivo().strip()));
+   abonosPrestamos.abonar(id,row.id(),pago);
   }
   estado(id,f.getMotivo());
  }
@@ -121,7 +123,7 @@ public class PagoMultipleNominaService {
   if(c.propuesto().signum()==0){
    texto(f.getMotivo(),2000,"motivo");if(f.getSolicitud()==null)throw regla("Recarga el formulario antes de confirmar.");
    if(f.getMotivoPagoId()!=null||(f.getFuentes()!=null&&(f.getFuentes().size()>20||f.getFuentes().stream().anyMatch(x->x==null||x.getCuentaId()!=null||x.getImporte()!=null||"CHEQUE".equals(x.getTipoEntrega())||x.getChequeraId()!=null||x.getFolioCheque()!=null))))throw regla("El neto cero no utiliza cuentas ni importes de salida. Vuelve a consultar el cálculo.");
-   if(jdbc.queryForObject("SELECT jsonb_array_length(coalesce(cast(:fuentes AS jsonb)->'prestamos','[]'::jsonb))>0",new MapSqlParameterSource("fuentes",c.fuentes()),Boolean.class))throw regla("Este neto cero tiene cuotas de préstamo; requiere resolverlas antes de confirmar.");
+   if(jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM jsonb_array_elements(cast(:fuentes AS jsonb)->'prestamos') x WHERE NOT coalesce((x->>'programado')::boolean,false))",new MapSqlParameterSource("fuentes",c.fuentes()),Boolean.class))throw regla("Este neto cero tiene cuotas de préstamo; requiere resolverlas antes de confirmar.");
    return new Vista(0L,List.of(),1,c.propuesto(),PreparacionNominaService.sello("CERO_DIRECTO|"+c.sello()+"|"+f.getSolicitud()+"|"+f.getMotivo().strip()));
   }
   var row=new PagoEmpleadoNominaService.Fila(c.id(),c.id(),c.codigo(),c.nombre(),c.propuesto(),c.moneda(),"PENDIENTE",null);

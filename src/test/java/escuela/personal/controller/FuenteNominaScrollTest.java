@@ -21,6 +21,6 @@ class FuenteNominaScrollTest {
  }
  @Test void individualReutilizaLaMismaAyudaSinCrearPago(){
   var service=mock(PagoMultipleNominaService.class);var c=new PagoIndividualNominaController(service,mock(PreparacionNominaService.class),mock(EmpleadoService.class));var f=new PagoIndividualNominaForm();var m=new ExtendedModelMap();f.setReferencia("IND");c.agregar(f,filtro(),m);
-  assertThat(m.get("fuenteNueva")).isEqualTo(1);assertThat(f.getFuentes()).hasSize(2);assertThat(f.getReferencia()).isEqualTo("IND");verifyNoInteractions(service);
+  assertThat(m.get("fuenteNueva")).isEqualTo(1);assertThat(f.getFuentes()).hasSize(2);assertThat(f.getReferencia()).isEqualTo("IND");verify(service).puedeUsarCheques();verifyNoMoreInteractions(service);
  }
 }

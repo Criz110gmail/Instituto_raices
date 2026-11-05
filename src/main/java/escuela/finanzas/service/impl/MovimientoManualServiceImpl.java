@@ -58,7 +58,7 @@ public class MovimientoManualServiceImpl implements MovimientoManualService {
     @Override
     public MovimientoFinancieroResponse registrarPrestamo(MovimientoManualRequest request) {
         var a=SecurityContextHolder.getContext().getAuthentication();
-        if(a==null || a.getAuthorities().stream().noneMatch(p->p.getAuthority().equals("CONDICION_SALARIAL_ADMINISTRAR"))
+        if(a==null || a.getAuthorities().stream().noneMatch(p->p.getAuthority().equals("CONDICION_SALARIAL_ADMINISTRAR")||p.getAuthority().equals("PRESTAMO_ADMINISTRAR"))
                 || a.getAuthorities().stream().noneMatch(p->p.getAuthority().equals("MOVIMIENTO_FINANCIERO_REGISTRAR")))
             throw new AccessDeniedException("Se requiere administración salarial y registro de movimientos financieros");
         if(request.direccion()!=DireccionMovimiento.EGRESO || request.claveIdempotencia()==null || !request.claveIdempotencia().matches("PRESTAMO:[0-9]+"))

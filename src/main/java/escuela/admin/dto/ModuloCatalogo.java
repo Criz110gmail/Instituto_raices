@@ -12,6 +12,7 @@ public enum ModuloCatalogo {
     PERIODOS_NOMINA("periodos-nomina","Periodos de nómina",List.of()),
     CONFIGURACION_NOMINA("configuracion-nomina","Configuración de nómina",List.of()),
     PREPARACION_NOMINA("preparacion-nomina","Nóminas",List.of()),
+    PRESTAMOS("prestamos","Préstamos",List.of()),
     JORNADAS_LABORALES("jornadas","Jornadas laborales",List.of()),
     ESQUEMAS_REMUNERACION("esquemas","Puestos y sueldos configurados",List.of()),
     ASIGNACIONES_LABORALES("asignaciones","Asignaciones laborales",List.of()),
@@ -139,7 +140,7 @@ public enum ModuloCatalogo {
             case CONCEPTOS_COBRO, CUOTAS_ALUMNO, TIPOS_BECA, BECAS_ALUMNO, CARGOS, CONVENIOS_PAGO, AJUSTES_CARGO, POLITICAS_RECARGO -> "Operación escolar · Cobranza escolar";
             case EVENTOS_ESCOLARES, AVISOS -> "Operación escolar · Comunicación";
             case PAGOS, MOTIVOS_FINANCIEROS, CUENTAS_FINANCIERAS, MOVIMIENTOS_FINANCIEROS, RETIROS_FONDO, REPORTES_FINANCIEROS -> "Administración · Finanzas";
-            case EMPLEADOS, PUESTOS, JORNADAS_LABORALES, ESQUEMAS_REMUNERACION, ASIGNACIONES_LABORALES, CONCEPTOS_NOMINA, CONCEPTOS_EMPLEADO, CONFIGURACION_NOMINA, CALENDARIOS_NOMINA, PERIODOS_NOMINA, PREPARACION_NOMINA -> "Administración · Personal y nómina";
+            case EMPLEADOS, PUESTOS, JORNADAS_LABORALES, ESQUEMAS_REMUNERACION, ASIGNACIONES_LABORALES, CONCEPTOS_NOMINA, CONCEPTOS_EMPLEADO, CONFIGURACION_NOMINA, CALENDARIOS_NOMINA, PERIODOS_NOMINA, PREPARACION_NOMINA, PRESTAMOS -> "Administración · Personal y nómina";
             case PROVEEDORES, COMPRAS -> "Administración · Compras y proveedores";
             case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS -> "Administración · Configuración escolar";
             case ROLES, USUARIOS, AUDITORIA, PORTAL_TUTOR, PORTAL_MAESTRO, GUIAS -> "Administración · Seguridad y soporte";
@@ -147,6 +148,7 @@ public enum ModuloCatalogo {
     }
 
     public boolean visibleCon(Set<String> permisos) {
+        if(this==PRESTAMOS)return permisos.stream().anyMatch(p->Set.of("PRESTAMO_LEER","PRESTAMO_ADMINISTRAR").contains(p));
         String base = switch (this) {
             case INSTITUCIONES -> "INSTITUCION";
             case PLANTELES -> "PLANTEL";
@@ -162,6 +164,7 @@ public enum ModuloCatalogo {
             case ASISTENCIA -> "ASISTENCIA";
             case BOLETAS -> "BOLETA";
             case EMPLEADOS -> "EMPLEADO";
+            case PRESTAMOS -> "PRESTAMO";
             case PUESTOS, JORNADAS_LABORALES, ESQUEMAS_REMUNERACION, ASIGNACIONES_LABORALES, CONCEPTOS_NOMINA, CONCEPTOS_EMPLEADO, CONFIGURACION_NOMINA, CALENDARIOS_NOMINA, PERIODOS_NOMINA, PREPARACION_NOMINA -> "CONDICION_SALARIAL";
             case MAESTROS -> "MAESTRO";
             case PLANEACIONES -> "PLANEACION";
@@ -230,7 +233,7 @@ public enum ModuloCatalogo {
     }
 
     public boolean mantenimientoDisponible() {
-        return this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA || this == CONFIGURACION_NOMINA || this == CONCEPTOS_EMPLEADO || this == CALENDARIOS_NOMINA || this == PERIODOS_NOMINA || this == PREPARACION_NOMINA || this == PUESTOS || this == INSTITUCIONES || this == PLANTELES || this == NIVELES
+        return this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA || this == CONFIGURACION_NOMINA || this == CONCEPTOS_EMPLEADO || this == CALENDARIOS_NOMINA || this == PERIODOS_NOMINA || this == PREPARACION_NOMINA || this == PRESTAMOS || this == PUESTOS || this == INSTITUCIONES || this == PLANTELES || this == NIVELES
                 || this == OFERTA || this == GRADOS || this == CICLOS || this == PERIODOS
                 || this == GRUPOS || this == MATERIAS || this == CALIFICACIONES || this == ASISTENCIA || this == ALUMNOS || this == TUTORES || this == MAESTROS
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES
@@ -274,6 +277,7 @@ public enum ModuloCatalogo {
             case CALENDARIOS_NOMINA -> "/admin/calendarios-nomina";
             case PERIODOS_NOMINA -> "/admin/periodos-nomina";
             case PREPARACION_NOMINA -> "/admin/preparacion-nomina";
+            case PRESTAMOS -> "/admin/prestamos";
             case MAESTROS -> "/admin/maestros";
             case PLANEACIONES -> "/admin/planeaciones";
             case HORARIOS_CLASE -> "/admin/horarios-clases";
@@ -311,14 +315,14 @@ public enum ModuloCatalogo {
     }
 
     public String rutaListado() {
-        return this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA || this == CONFIGURACION_NOMINA || this == CONCEPTOS_EMPLEADO || this == CALENDARIOS_NOMINA || this == PERIODOS_NOMINA || this == PREPARACION_NOMINA || this == PUESTOS || this == EMPLEADOS || this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == ACTUALIZACIONES_EXPEDIENTE || this == PROVEEDORES || this == COMPRAS || this == CONVENIOS_PAGO || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
+        return this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA || this == CONFIGURACION_NOMINA || this == CONCEPTOS_EMPLEADO || this == CALENDARIOS_NOMINA || this == PERIODOS_NOMINA || this == PREPARACION_NOMINA || this == PRESTAMOS || this == PUESTOS || this == EMPLEADOS || this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == ACTUALIZACIONES_EXPEDIENTE || this == PROVEEDORES || this == COMPRAS || this == CONVENIOS_PAGO || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
                 || this == PORTAL_MAESTRO || this == GUIAS ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }
 
     public String segmentoNuevo() {
         if (this == CONFIGURACION_NOMINA) return ""; // Se abre el empleado existente; no se crea otro expediente.
-        if (this == PUESTOS || this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA || this == CONFIGURACION_NOMINA || this == CONCEPTOS_EMPLEADO || this == CALENDARIOS_NOMINA || this == PERIODOS_NOMINA || this == PREPARACION_NOMINA) return "/nuevo";
+        if (this == PUESTOS || this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA || this == CONFIGURACION_NOMINA || this == CONCEPTOS_EMPLEADO || this == CALENDARIOS_NOMINA || this == PERIODOS_NOMINA || this == PREPARACION_NOMINA || this == PRESTAMOS) return "/nuevo";
         return this == PLANTELES || this == NIVELES || this == GRADOS || this == CICLOS
                 || this == PERIODOS || this == GRUPOS || this == CALIFICACIONES || this == ASISTENCIA || this == ALUMNOS || this == TUTORES || this == MAESTROS
                 || this == VINCULOS_TUTOR || this == INSCRIPCIONES

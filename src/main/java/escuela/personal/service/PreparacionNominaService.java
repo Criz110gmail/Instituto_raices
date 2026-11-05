@@ -99,13 +99,13 @@ public class PreparacionNominaService {
  bool_and(o.fecha_inicio=:inicio AND o.fecha_fin=:fin AND o.moneda=:moneda AND o.sello_periodo=:selloActual) cubre,
  jsonb_agg(to_jsonb(o) ORDER BY o.id) fuentes FROM concepto_empleado_periodo o
  WHERE o.empleado_id=e.id AND o.institucion_id=:institucion AND o.periodo_id=:periodoActual AND o.estado='ACTIVA') oc ON true
- LEFT JOIN LATERAL (SELECT count(*) n,sum(least(p.parcialidad,s.saldo)) cuotas,bool_and(p.moneda=:moneda) moneda_valida,
- jsonb_agg(to_jsonb(p)||jsonb_build_object('saldo',s.saldo,'cuota',least(p.parcialidad,s.saldo)) ORDER BY p.id) fuentes,
+ LEFT JOIN LATERAL (SELECT count(*) n,sum((fp.fuente->>'cuota')::numeric) cuotas,bool_and(fp.fuente->>'moneda'=:moneda) moneda_valida,
+ jsonb_agg(fp.fuente ORDER BY (fp.fuente->>'id')::bigint) fuentes,
  bool_or(EXISTS(SELECT 1 FROM nomina_autorizacion au JOIN nomina_fila_efectiva ne ON ne.borrador_id=au.borrador_id AND ne.revision=au.revision
- WHERE ne.empleado_id=e.id AND ne.borrador_id<>:ignorar AND ne.fuentes->'prestamos' @> jsonb_build_array(jsonb_build_object('id',p.id))
- AND NOT EXISTS(SELECT 1 FROM nomina_pago_intento ni WHERE ni.fila_id=ne.id AND ni.estado='PAGADO'))) reservado
- FROM prestamo_empleado p JOIN prestamo_saldo s ON s.id=p.id
- WHERE p.empleado_id=e.id AND p.institucion_id=:institucion AND p.estado='ACTIVO' AND s.saldo>0 AND p.primer_descuento<=:fin) pr ON true
+ WHERE ne.empleado_id=e.id AND ne.borrador_id<>:ignorar AND ne.tratamiento<>'NO_APLICAR' AND ne.fuentes->'prestamos' @> jsonb_build_array(jsonb_build_object('id',(fp.fuente->>'id')::bigint))
+ AND NOT EXISTS(SELECT 1 FROM nomina_cierre_cero c WHERE c.fila_id=ne.id)
+ AND NOT EXISTS(SELECT 1 FROM nomina_pago_intento ni WHERE ni.fila_id=ne.id AND ni.estado='PAGADO')) OR coalesce((fp.fuente->>'requiere_reprogramar')::boolean,false)) reservado
+ FROM prestamo_fuentes_periodo(e.id,:institucion,:inicio,:fin) fp(fuente)) pr ON true
  WHERE e.institucion_id=:institucion AND (:empleado IS NULL OR e.id=:empleado) AND (:solo IS NULL OR e.id=:solo)
  AND strpos(lower(e.codigo||' '||concat_ws(' ',e.nombres,e.primer_apellido,e.segundo_apellido)),lower(:q))>0
  ), evaluados AS (
@@ -121,7 +121,7 @@ public class PreparacionNominaService {
  WHEN sueldos>0 AND NOT sueldo_cubre THEN 'REVISION|La configuración salarial tiene huecos, moneda incompatible o una base no mensual; revisa las vigencias.'
  WHEN sueldo_moneda<>:moneda THEN 'REVISION|La moneda salarial no coincide con la institucional.'
  WHEN NOT conceptos_cubren THEN 'REVISION|Un concepto no cubre el periodo, usa otra moneda o su periodo cambió; revisa la configuración sin prorrateo automático.'
- WHEN prestamo_reservado AND NOT :simulacion THEN 'REVISION|Un préstamo tiene cuota reservada en otra nómina autorizada pendiente de pago. Resuelve ese pago antes de preparar otro periodo.'
+ WHEN prestamo_reservado AND NOT :simulacion THEN 'REVISION|Un préstamo requiere revisar una cuota comprometida o reprogramar un saldo restaurado. Consulta Préstamos antes de preparar otro periodo.'
  WHEN deducciones>sueldo+percepciones THEN 'REVISION|Las deducciones superan el sueldo y las percepciones; no se propone un importe negativo.'
  WHEN greatest(sueldo,percepciones,deducciones,aportaciones,sueldo+percepciones-deducciones)>99999999999999999.99 THEN 'REVISION|Los importes exceden la capacidad de este borrador.'
  WHEN sueldos=0 THEN 'LISTO|Sin sueldo base: se calcularán únicamente conceptos adicionales.'

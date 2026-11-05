@@ -194,7 +194,7 @@
             const form = event.target, kind = form.dataset.moneyConfirm;
             if (!kind || event.defaultPrevented || approved.has(form)) return;
             if(kind==='anticipo-propuesta' && event.submitter?.id!=='anticipation-save')return;
-            if(['nomina-multifuente','nomina-cero-directo','nomina-tratamiento'].includes(kind) && event.submitter?.hasAttribute('formaction'))return;
+            if(['nomina-multifuente','nomina-cero-directo','nomina-tratamiento','prestamo-programa','prestamo-entrega-programa'].includes(kind) && event.submitter?.hasAttribute('formaction'))return;
             event.preventDefault();
             if (!form.reportValidity()) return;
             dialog.setAttribute('data-confirm-kind', kind);
@@ -305,6 +305,16 @@
                 if(!autorizar)add('Referencia',campo('referencia').value.trim());add('Motivo',campo('motivo').value.trim());
                 note.textContent=autorizar?'Congela esta revisión y sus empleados, sin pagar ni abonar préstamos. No podrá editarse o cancelarse como borrador. Cancelar conserva la revisión sin autorizar.':pagar?'Registra un egreso por el neto completo y abona únicamente las cuotas de este empleado. No envía una transferencia bancaria. Cancelar no mueve dinero ni reduce préstamos.':reversa?'Confirma que los fondos regresaron realmente: publica el ingreso compensatorio exacto, restaura sus abonos y vuelve a pendiente. Los otros empleados no cambian. No borra el pago original. Cancelar no registra devolución.':'No salió dinero: se conserva el intento rechazado, sigue pendiente y no abona a préstamos ni genera movimientos. Cancelar no registra el intento.';
                 if(reversa&&form.querySelector('[name="chequesAnulados"]')){add('Cheques','Anulados o recuperados; ya no pueden cobrarse');note.textContent='El importe debe estar recuperado o liberado en el banco y el cheque ya no debe poder cobrarse. Se registra la compensación exacta; el empleado vuelve a pendiente y el folio queda conservado, sin posibilidad de reutilizarlo. Cancelar no guarda ni devuelve dinero.';}
+            } else if(['prestamo-programa','prestamo-entrega-programa','prestamo-anular-programa'].includes(kind)) {
+                cancel.textContent='Cancelar';const entrega=kind==='prestamo-entrega-programa',anular=kind==='prestamo-anular-programa';
+                title.textContent=entrega?'Confirmar entrega del préstamo':anular?'Cancelar borrador de préstamo':form.dataset.confirmRestructure==='true'?'Confirmar reprogramación del saldo':'Confirmar programación del préstamo';
+                accept.textContent=entrega?'Confirmar y registrar entrega':anular?'Confirmar cancelación':'Confirmar y guardar';
+                if(form.dataset.confirmPerson)add('Empleado',form.dataset.confirmPerson);
+                if(form.dataset.confirmAmount)add(entrega?'Principal a entregar':'Total programado',money(form.dataset.confirmAmount));
+                if(entrega)add('Cuenta de origen',form.dataset.confirmAccount);
+                if(kind==='prestamo-programa'){add('Cuotas',form.dataset.confirmCount);add('Frecuencia',form.dataset.confirmFrequency);add('Interés nuevo total',money(form.dataset.confirmInterest));add('Primer descuento',form.querySelector('[name="inicio"]').value);add('Recuperación',form.querySelector('[name="descontarNomina"]').value==='true'?'Mediante nómina':'Sin descuento automático');}
+                add('Motivo',form.querySelector('[name="motivo"]').value);
+                note.textContent=entrega?'Registra una sola salida real por el principal. No envía una transferencia al banco. Cancelar conserva la captura sin mover dinero.':anular?'Cancela únicamente un borrador sin entrega. No devuelve dinero ni borra el historial. Cancelar no guarda cambios.':'Conserva la programación y sus cuotas. No entrega dinero ni abona al préstamo; la recuperación se registra al liquidar la nómina. Una reprogramación conserva los pagos y condiciones anteriores. Cancelar no guarda cambios.';
             } else if(kind==='prestamo-guardar'||kind==='prestamo-cancelar'||kind==='prestamo-entregar') {
                 const campo=n=>form.querySelector('[name="'+n+'"]');
                 const entregar=kind==='prestamo-entregar',cancelar=kind==='prestamo-cancelar';

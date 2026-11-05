@@ -353,6 +353,20 @@ que todos sus efectos puedan revertirse; si no, bloquear sin reversión a medias
 
 ## 8. Préstamos a empleados
 
+Caso principal CONFIRMADO05/11/2026: Tomás PRE1 liquidado, entrega200, interés20,
+primera recuperación55, cancelación/repago, reprogramación165 y cierre. CAJA415.11,
+BBVA174.29/corte1150. V158 documenta en guía integrada. No repetir sus operaciones.
+Sigue separado el ensayo manual de préstamo con neto0; después recibos/consultas
+de la entrega7. Ver manual actualizado para evidencia exacta y límites de aceptación.
+
+Adaptación implementada04/11/2026 en V154–V155. Módulo Préstamos independiente,
+entrega única principal, interés total, cuotas finitas, saldo capital/interés,
+abono al pagar y compensación al cancelar. Reprogramación permite1o2cuotas sin
+nueva entrega ni interés duplicado. Neto0: auxiliar cartera/nómina, no asiento
+de contabilidad general ni cancelación de cierre0. No convertir históricos.
+Ver PLAN_PRESTAMOS_ADAPTACION_20261104.md para límites y QA; prueba humana
+PENDIENTE en PRUEBA_PRESTAMOS_FLUJO_NUEVO_20261104.md. No marcarla aprobada aún.
+
 Módulo independiente con empleado, principal, condiciones, frecuencia de recuperación,
 cuotas, fecha inicial/final prevista, entrega desde cuenta y saldo visible. Tarjeta
 de préstamo en empleado. Calendario completo de cuotas y confirmación antes de aceptar.

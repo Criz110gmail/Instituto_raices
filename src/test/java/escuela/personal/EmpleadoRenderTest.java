@@ -5,6 +5,7 @@ import java.util.*;import static org.assertj.core.api.Assertions.*;import static
 class EmpleadoRenderTest {
  @Test void exportaFixturesFicticiasParaRevisionVisual()throws Exception{var dir=java.nio.file.Path.of("target/qa-personal");java.nio.file.Files.createDirectories(dir);java.nio.file.Files.writeString(dir.resolve("empleado.html"),render("/test/empleado",true,true));java.nio.file.Files.writeString(dir.resolve("empleados.html"),render("/test/empleados",true,true));}
  @Controller static class Vista {
+  @GetMapping("/test/empleado-nomina-nav") String nominaNav(@RequestParam(defaultValue="true")boolean nomina,@RequestParam(defaultValue="true")boolean laboral,Model m){var vista=render(true,laboral,m);m.addAttribute("puedeNomina",nomina);return vista;}
   @GetMapping("/test/empleado-puesto-diseno") String puestoDiseno(@RequestParam(defaultValue="true")boolean laboral,Model m){
    var vista=render(true,true,m);m.addAttribute("puestoUnificado",true);m.addAttribute("puedeSalarios",laboral);
    m.addAttribute("asignacionActual",new escuela.personal.service.OrganizacionLaboralService.Asignacion(1L,2L,"Ana Prueba","EMP-TEST","APOYO_40 · Apoyo técnico","Asignación desde puesto",null,new java.math.BigDecimal("40"),new java.math.BigDecimal("10000"),"MXN","MENSUAL","MENSUAL",java.time.LocalDate.of(2026,10,1),null,"Vigente","Asignación ficticia",0L,false));return vista;
@@ -44,6 +45,15 @@ class EmpleadoRenderTest {
   }
  }
  @Test void altaYEdicionRenderizanConPestanasModalesYFormulariosPost()throws Exception{for(boolean edicion:new boolean[]{true,false}){String html=render("/test/empleado",edicion,true);assertThat(html).contains("data-student-tabs","data-money-confirm=\"empleado-registro\"","method=\"post\"","Cancelar","/css/forms.css");if(edicion)assertThat(html).contains("data-money-confirm=\"empleado-laboral\"","data-money-confirm=\"empleado-perfil\"","data-money-confirm=\"empleado-plantel\"","PRIVADO-TEST","/planteles/buscar");}}
+ @Test void nominaEsEnlaceUniformeDentroDelMenuSoloConPermisos()throws Exception{
+  var html=render("/test/empleado-nomina-nav",true,true);
+  assertThat(html).contains("class=\"employee-nomina-access\"","href=\"/admin/empleados/2/nomina\"","Conceptos y simulador");
+  assertThat(html.indexOf("class=\"employee-nomina-access\"")).isLessThan(html.indexOf("</nav>"));
+  assertThat(html).doesNotContain("module-action employee-nomina-access");
+  assertThat(render("/test/empleado-nomina-nav?nomina=false",true,true)).doesNotContain("employee-nomina-access");
+  assertThat(render("/test/empleado-nomina-nav",true,false)).doesNotContain("employee-nomina-access");
+  java.nio.file.Files.createDirectories(java.nio.file.Path.of("target/qa-personal"));java.nio.file.Files.writeString(java.nio.file.Path.of("target/qa-personal/empleado-nomina-nav.html"),html);
+ }
  @Test void puestoLaboralUsaAyudaCompartidaYConservaTextoAnteriorSinCrearOtraFuenteSalarial()throws Exception{
   assertThat(render("/test/empleado",true,true)).contains("/admin/empleados/2/puestos/buscar","id=\"laboral-puesto\"","name=\"puestoId\"","autocomplete-input","data-no-scope","data-refresh-on-focus=\"true\"","value=\"PRIVADO-TEST\"","no asigna sueldo ni cambia nóminas");
  }

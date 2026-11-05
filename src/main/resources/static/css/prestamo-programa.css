@@ -1,0 +1,29 @@
+/* Sólo préstamos programados; componentes y paleta compartidos. */
+.nomina-detail .form-section small{position:static;display:block;margin-top:8px;line-height:1.6}
+.nomina-detail .form-section .autocomplete-status{margin-top:8px}
+.nomina-detail .form-section .policy-card small{margin-top:4px}
+.nomina-detail .form-section .form-grid{align-items:start;gap:22px}
+.nomina-detail .form-section .nomina-preview-notice{margin:0;padding:16px}
+.nomina-detail .form-section .field-error{color:var(--danger,#af273c)}
+.nomina-detail .form-section>p.field-help{margin:18px 0 0;line-height:1.6}
+.nomina-detail .form-section .form-grid>label.policy-card>span{display:grid;min-height:0;margin:0;gap:6px}
+.nomina-detail .prestamo-cancel-form .form-grid>label{display:grid;gap:8px}
+.prestamo-list-panel .nomina-primary-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:12px 16px;border:1px solid var(--aqua);border-radius:11px;background:var(--aqua);color:#062b31;font:800 .82rem/1.5 Manrope,system-ui,sans-serif;text-align:center;text-decoration:none;white-space:normal;overflow-wrap:anywhere;max-width:100%}
+.prestamo-list-panel .nomina-primary-action:hover{filter:brightness(.96)}
+.prestamo-list-panel .nomina-primary-action:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.prestamo-list-panel .prestamo-header-actions{display:flex;align-items:center;justify-content:flex-end;gap:18px;flex-wrap:wrap}
+.prestamo-gestion-intro h2{margin:6px 0 10px}
+.prestamo-gestion-intro p{color:var(--muted);line-height:1.7}
+.nomina-detail .prestamo-gestion-tabs{display:grid;overflow:visible;margin:20px 0 0;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line);border-radius:14px;padding:7px}
+.prestamo-gestion-tabs button{border-radius:10px}
+.prestamo-gestion>[data-prestamo-gestion-panel]{margin-top:18px}
+.nomina-detail .prestamo-gestion .policy-card>span{display:grid;gap:6px;min-height:0;margin:0}
+[data-prestamo-gestion-panel][hidden]{display:none!important}
+.prestamo-balance{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px;border:1px solid var(--aqua);border-left:4px solid var(--aqua);border-radius:16px;background:var(--white)}
+.prestamo-balance>div:first-child{flex:1;min-width:0}.prestamo-balance h2{margin:8px 0 10px;font-size:1.1rem}.prestamo-balance p{margin:0;color:var(--muted);font-size:.82rem;line-height:1.7;max-width:560px}
+.prestamo-balance-amount{flex:0 1 auto;min-width:0;text-align:right}.prestamo-balance-amount strong{display:block;font:800 clamp(1.8rem,4vw,2.6rem)/1.3 Manrope,system-ui,sans-serif;overflow-wrap:anywhere}.prestamo-balance-amount>span{display:block;margin-top:6px;color:var(--muted);font-size:.76rem;font-weight:700}
+.prestamo-amount-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0 24px}.prestamo-amount-grid>article{padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--white);min-width:0}.prestamo-amount-grid span,.prestamo-amount-grid small{display:block;color:var(--muted);font-size:.76rem;line-height:1.7}.prestamo-amount-grid strong{display:block;margin:10px 0;font:800 1.4rem/1.4 Manrope,system-ui,sans-serif;overflow-wrap:anywhere}
+.prestamo-summary-card{margin-top:20px;padding:24px;border:1px solid var(--line);border-radius:16px;background:var(--white)}.prestamo-summary-card h2{margin:6px 0 0;font-size:1.05rem}.prestamo-summary-card header>p{color:var(--muted);font-size:.8rem;line-height:1.7}
+.prestamo-key-values{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 24px;margin:20px 0 0}.prestamo-key-values>div{min-width:0;padding-top:14px;border-top:1px solid var(--line)}.prestamo-key-values dt{color:var(--muted);font-size:.76rem;line-height:1.5}.prestamo-key-values dd{margin:7px 0 0;font-size:.88rem;font-weight:750;line-height:1.6;overflow-wrap:anywhere}.prestamo-key-wide{grid-column:1/-1}
+@media(max-width:620px){.prestamo-balance{align-items:stretch;flex-direction:column;padding:20px;gap:16px}.prestamo-balance-amount{text-align:left}.prestamo-amount-grid,.prestamo-key-values{grid-template-columns:minmax(0,1fr)}.prestamo-summary-card{padding:20px}}
+@media(max-width:720px){.nomina-detail .prestamo-gestion-tabs{grid-template-columns:minmax(0,1fr)}.prestamo-list-panel .prestamo-header-actions{justify-content:flex-start;gap:14px}}

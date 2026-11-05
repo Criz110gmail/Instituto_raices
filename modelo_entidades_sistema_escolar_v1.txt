@@ -115,6 +115,28 @@ No prestamos ni pagos individuales todavia: pendientes etapas4–5 del plan vige
 Propuesta de entidades, atributos, relaciones y reglas de negocio
 Versión 1.0 | 11 de septiembre de 2026 | Documento para revisión
 
+Actualización implementada V154–V156 — 04/11/2026: préstamos programados
+PréstamoEmpleado conserva principal/snapshot/solicitud/estado/versión y distingue
+el modelo previo. PréstamoPlan es una programación inmutable ALTA o
+REESTRUCTURACION: capital restante, interés anterior y nuevo separados, porcentaje
+total (no tasa mensual), frecuencia, fechas, cantidad de cuotas, descuento automático,
+actor/motivo. PréstamoCuota distribuye capital e interés; últimos centavos ajustados.
+PréstamoEntrega enlaza el plan inicial aceptado, egreso único sólo por principal.
+PréstamoCuotaAbono enlaza cuota y pago real de nómina; cancelación conserva el abono
+original y restaura saldo mediante los mecanismos compensatorios existentes.
+PréstamoCuotaCero registra compensación auxiliar con cierre neto cero de nómina,
+sin NPI ni tesorería ficticia; no representa contabilidad general de partida doble.
+Saldo = principal entregado + intereses pactados − abonos vigentes − compensaciones0.
+Reprogramación no borra abonos, no entrega dinero ni capitaliza interés anterior;
+nuevo porcentaje sólo al capital pendiente, predeterminado0. Reservas autorizadas
+impagas bloquean reprogramar. Fuera del plazo conserva deuda visible, no cobra cuotas
+indefinidamente. Los préstamos previos no se convierten automáticamente.
+V156 simplifica a Consultar y Administrar. Administrar incluye entrega/reprogramación;
+permiso financiero y cuenta siguen siendo obligatorios. Retira los dos permisos
+especializados sin promover lectores ni asignar administración a otros roles.
+Detalle operativo y límites: PLAN_PRESTAMOS_ADAPTACION_20261104.md. Prueba humana
+pendiente; V155 sólo incorpora guía editorial, no hechos de pago.
+
 1. PROPÓSITO Y ALCANCE
 =====================
 Consolidar el análisis de la conversación «Análisis sistema escolar» en un

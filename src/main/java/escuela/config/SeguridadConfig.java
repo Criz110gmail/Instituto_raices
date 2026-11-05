@@ -132,6 +132,8 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/politicas-recargo/**").hasAuthority("POLITICA_RECARGO_ADMINISTRAR")
                         .requestMatchers("/admin/motivos-financieros/**").hasAuthority("MOTIVO_FINANCIERO_ADMINISTRAR")
                         .requestMatchers(HttpMethod.POST,"/admin/cuentas-financieras/*/chequeras", "/admin/cuentas-financieras/*/chequeras/**").hasAuthority("CHEQUERA_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.GET,"/admin/prestamos", "/admin/prestamos/**").hasAnyAuthority("PRESTAMO_LEER","PRESTAMO_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.POST,"/admin/prestamos", "/admin/prestamos/**").hasAuthority("PRESTAMO_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET,"/admin/cuentas-financieras/*/chequeras", "/admin/cuentas-financieras/*/chequeras/**").hasAnyAuthority("CHEQUERA_LEER","CHEQUERA_ADMINISTRAR")
                         .requestMatchers("/admin/cuentas-financieras/**").hasAuthority("CUENTA_FINANCIERA_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/pagos/*/editar", "/admin/pagos/*/comprobantes/*",

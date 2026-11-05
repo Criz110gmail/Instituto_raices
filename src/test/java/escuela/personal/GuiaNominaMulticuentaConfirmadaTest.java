@@ -20,6 +20,7 @@ class GuiaNominaMulticuentaConfirmadaTest {
  @Test void accesoDelExpedienteConservaPermisosYRutaYEstiloDeReferencia()throws Exception{
   var html=Files.readString(Path.of("src/main/resources/templates/admin/empleado-form.html"));
   assertThat(html).contains("edicion and puedeLaboral and puedeNomina == true","employee-nomina-access","/admin/empleados/{id}/nomina");
-  assertThat(Files.readString(Path.of("src/main/resources/static/css/forms.css"))).contains(".student-tablist .employee-nomina-access { display:flex;flex-direction:column","background:var(--aqua);color:#062b31");
+  assertThat(Files.readString(Path.of("src/main/resources/static/css/forms.css"))).contains(".student-tablist .employee-nomina-access { display:grid;grid-template-columns:auto minmax(0,1fr)","background:transparent;color:var(--muted)");
+  assertThat(html).contains("<strong>Configuración de nómina</strong><small>Conceptos y simulador</small>");
  }
 }
