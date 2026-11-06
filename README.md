@@ -1,5 +1,25 @@
 # Sistema administrativo escolar
 
+## Préstamos: neto cero y Excel aceptados — 06/11/2026
+
+Prueba humana de Sofía confirmada: préstamo de $100.00 liquidado con percepción
+$100.00 menos cuota $100.00, sin salida adicional al cerrar nómina. Reintento
+bloqueado, historial conservado y exportaciones Excel aprobadas por el usuario.
+[Resultado y procedimiento, no repetir](PRUEBA_PRESTAMO_NETO_CERO_20261106.md).
+También disponible dentro del sistema en **Guía de procesos → Préstamos: entrega,
+liquidación y neto cero**, pasos 9–13. V159 editorial, sin cambios de pagos ni saldos.
+
+## Instalación restaurada local — 06/11/2026
+
+En esta computadora el respaldo del 05/11 se restauró en el proyecto Docker separado
+`nexo-restaurado-20261106`, conservando intactos los volúmenes anteriores. Aplicación
+en `http://localhost:8080`. El arranque con el override privado está documentado al
+inicio de [AGENT.md](AGENT.md); `docker compose up` sin esos parámetros abre la
+instalación anterior, no la restaurada. No eliminar volúmenes ni repetir la importación.
+Validado: V158, 30 archivos con checksum correcto, compilación con 1,059 pruebas y
+salud UP. Confirmación visual del usuario pendiente. El override y los respaldos son
+locales, están excluidos de Git y no deben publicarse.
+
 ## Nómina: pagos por empleado — fase 5
 
 Nóminas → detalle → **Autorización y pagos por empleado**. Autorizar congela la revisión

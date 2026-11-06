@@ -1,5 +1,102 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Guía de procesos integrada: Sofía publicada — V159, 06/11/2026
+
+Usuario aclara que quería la guía DENTRO del sistema y autoriza incorporarla.
+V159 editorial actualiza /admin/guias/prestamos-programados-nomina, ahora título
+«Préstamos: entrega, liquidación y neto cero», CONFIRMADA/version_contenido5.
+Conserva caso Tomás/pasos1–8 y añade9–13 Sofía: condiciones, entrega original,
+cierre0, liquidación/duplicado y filtros/Excel. Retira advertencias obsoletas de
+netocero pendiente, distingue saldos históricos415.11 antes/315.11 después.
+No repite operaciones ni convierte préstamos; no nuevas concesiones/roles/rutas.
+Pendiente manual de rollector explícito; no atribuir concurrencia/paginaciónmasiva.
+
+Pruebas:1060Java correctas +1IT PostgreSQL17 efímero V158→159; verifica contenido/
+búsquedaSofía/permisosnegados,13pasos,version5, otrasguías/pasosanteriores/permisos
+intactos y0movimientos/préstamos generados. Sóloapp del proyecto restaurado
+nexo-restaurado-20261106 recreada, V159success/healthUP. Imagen local nueva
+nexo-restaurado-20261106-app:4e2c277-v159; mismo override privado para arranque.
+Respaldo previo .respaldos-locales/restauracion-20261106/antes-v159.dump privado,
+catálogo validado. Huellas antes/después de movimientos/cuentas/préstamos/planes/
+cuotas/abonos/compensacionescero/nóminas/cierres/pagos/rolpermiso idénticas.
+No operaciones financieras ni claves/usuarios modificados; reinicio cierra sesión,
+reingresar INSTITUTO_RAICES\criz. RecursosQA temporales retirados; sin commit/push.
+Siguiente: revisar guía publicada en menú Guía de procesos, buscar Préstamos o Sofía;
+después prueba de usuario sólo consulta si se desea cerrar seguridad manual.
+
+## Sofía: préstamo con neto cero y Excel aprobados — 06/11/2026
+
+Usuario realizó y confirmó el caso nuevo de Sofía Prueba Neto Cero,
+EMP-PREST-CERO-01, PRE-000002. Principal100 sin interés, programación1/ALTA,
+una cuota quincenal30/11/2026. Percepción única EXTRA-RED-TEST100 en
+NOV-2026-CIERRE-TEST menos cuota100: neto0. Préstamo LIQUIDADO y capital/interés/
+saldo0 confirmados por pantalla. Historial humano: BORRADOR09:50 → ACTIVO09:51 →
+LIQUIDADO09:55 del06nov, motivo «Compensación de préstamo en nómina con neto cero».
+Sin salida adicional por el cierre; conservar egreso original de entrega100.
+Saldos finales confirmados CAJA315.11/BBVA174.29/CAJA-CORTE-TEST1150; Tomás sigue
+LIQUIDADO. Reintento directo bloqueado por neto cero confirmado para fechas
+coincidentes, sin nuevo cierre ni salida. No inventar folio BOR/NPI no aportado;
+cierre0 no genera NPI y no se ofrece cancelación. NO repetir ni cancelar el caso.
+
+Usuario confirma «todo el excel pasó la prueba» tras recorrido propuesto Sofía/
+LIQUIDADO, ACTIVO sin resultados y ambos liquidados. Exportaciones aceptadas;
+no equivale aprobación de roles lectores, concurrencia ni paginación masiva.
+Programación1 e historial de gestiones confirmados; no atribuir captura explícita
+de tabla individual de cuotas porque pegó listado de programaciones, no esa tabla.
+Manual consolidado PRUEBA_PRESTAMO_NETO_CERO_20261106.md. Documentación local sólo:
+NO nueva migración/despliegue ni guía integrada modificada en BD por este registro.
+Guía integrada V158 mantiene caso Tomás; incorporar Sofía en app requerirá entrega
+editorial nueva si se solicita. Siguiente: prueba de rol sólo consulta con usuario
+separado si se quiere cerrar seguridad manual; luego definir recibos/consultas
+integrados pendientes de diseño, sin afirmar implementados. Sesiones/expedientes
+familiares continúan pendientes según historial; no cerrarlos por esta aceptación.
+
+Acceso humano restaurado confirmado: criz coincidía con usuario de recuperación
+local; login resuelve recuperación antes que cuentaBD. Acceder como
+`INSTITUTO_RAICES\criz` seleccionó cuenta restaurada y usuario confirmó entrada.
+No se cambió clave, cuenta ni .env; no confundir contraseña de recuperación local
+con la almacenada en respaldo. Override/proyecto aislado de sección siguiente sigue
+vigente; no reemplazarlo por compose simple. Documentos privados aún no aceptados
+visualmente sólo por confirmar login. Sin commit/push ni operaciones por agente.
+
+## Restauración aislada en esta computadora — 06/11/2026
+
+Usuario trajo respaldo de la otra computadora y autorizó restaurarlo SIN fusionar
+bases. Paquete local privado ignorado:
+`.respaldos-locales/respaldo-nexo-20261105-VRtekj/`. SHA256 de dump y tar correctos;
+dump PostgreSQL17.11/custom, catálogo legible; gzip íntegro, sin rutas de escape ni
+enlaces. Commit del paquete coincide con código `4e2c277dc64f2c0074746687b5e21215f052a0de`.
+
+Se creó proyecto Docker independiente `nexo-restaurado-20261106`. Base comprobada
+vacía antes de importar; pg_restore exit-on-error/single-transaction/no-owner/no-ACL
+terminó sin errores. Volúmenes nuevos `nexo-restaurado-20261106_postgres_data` y
+`nexo-restaurado-20261106_private_files`. NO se montaron, borraron ni fusionaron los
+anteriores `instituto_raices_postgres_data` / `instituto_raices_private_files`.
+Otros proyectos de Docker intactos. No lectura ni modificación de `.env`.
+
+Imagen nueva `nexo-restaurado-20261106-app:4e2c277`, compilación1059pruebas correctas.
+Restaurados158migraciones exitosas/30archivos/77movimientos/1préstamo. Los30archivos
+verificados contra BD por SHA256/tamaño,0diferencias. Permisos sólo en volumen nuevo
+para usuario escuela100:101. AppUP/login200, Flyway valida158sin ejecutar migraciones.
+Sin nuevas capturas/pagos/cancelaciones/entregas ni cambios de roles por herramientas.
+Usuario aún debe confirmar acceso visual y documentos con su cuenta restaurada.
+
+IMPORTANTE en ESTA computadora: se usa override LOCAL ignorado (no viaja por Git).
+Desde raíz del repositorio, iniciar/consultar con:
+
+```bash
+docker compose -p nexo-restaurado-20261106 -f compose.yaml -f .respaldos-locales/restauracion-20261106/compose.override.yaml up -d
+docker compose -p nexo-restaurado-20261106 -f compose.yaml -f .respaldos-locales/restauracion-20261106/compose.override.yaml ps
+```
+
+URL `http://localhost:8080`, enlace sólo127.0.0.1. Para detener, mismo prefijo y `stop`.
+`docker compose up` sin estos parámetros selecciona proyecto anterior, NO el restaurado.
+No usar down-v ni borrar volúmenes. Override/logs privados bajo
+`.respaldos-locales/restauracion-20261106/`; carpeta excluida Git/Docker.
+En otra computadora no asumir que existe este override ni cambiar credenciales.
+Siguiente funcional sigue sección05nov: caso NUEVO préstamo neto0, no repetir Tomás
+liquidado. No retomar fase5octubre como si no hubiera avances de noviembre.
+
 ## Préstamo de Tomás liquidado y prueba principal aprobada — 05/11/2026
 
 Usuario confirma CAJA415.11/BBVA174.29/corte1150, PRE-000001 LIQUIDADO, capital0/

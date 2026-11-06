@@ -2,6 +2,12 @@
 
 Estado: **CASO PRINCIPAL CONFIRMADO por el usuario el 05/11/2026**.
 
+Actualización 06/11/2026: el caso separado de Sofía con préstamo y neto cero,
+historial y exportaciones Excel también fue confirmado. Ver
+[prueba complementaria](PRUEBA_PRESTAMO_NETO_CERO_20261106.md).
+Las referencias posteriores a ese caso como pendiente describen el corte del 05/11.
+El rol de sólo consulta sigue sin aceptación manual; no confundirlo con Excel.
+
 Tomás completó entrega, primera cuota, cancelación y repago, reprogramación y
 liquidación anticipada. PRE-000001 está LIQUIDADO con capital e interés en $0.
 CAJA terminó en $415.11, BBVA en $174.29 y caja de corte en $1,150.00.

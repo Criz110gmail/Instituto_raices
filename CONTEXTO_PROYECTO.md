@@ -1,5 +1,56 @@
 # Contexto del proyecto
 
+## Sofía incorporada a Guía de procesos en la app — 06/11/2026, V159
+
+Aclaración del usuario: guía significa menú dentro del sistema, no sólo Markdown.
+Publicada migración editorial159 en proyecto restaurado: guía
+prestamos-programados-nomina CONFIRMADA/version5, nuevo título incluye neto cero.
+Tomás conservado, pasos9–13 documentan Sofía/entrega/cierre0/duplicado/Excel.
+Sin grants ni datos de negocio.1060tests generales+1IT aislado correctos;
+migración/servicio/búsqueda/permisos13pasos probados, otrasguías/pasos previos intactos.
+Respaldoantes-v159 privado validado; comparación de huellas operativas y roles
+idéntica antes/después. Sóloapp recreada/healthUP/Flyway159success, override local
+apunta imagen4e2c277-v159. Sin pagos/cancelaciones/contraseñas ni otras operaciones.
+QA temporal retirada, sin commit/push. Usuario debe volver a entrar y consultar
+Guía de procesos → Préstamos: entrega, liquidación y neto cero → pasos9–13.
+Rol sólo consulta manual sigue pendiente; no marcarlo aprobado por Excel.
+
+## Aceptación humana de préstamo neto cero y Excel — 06/11/2026
+
+Sofía EMP-PREST-CERO-01/PRE-000002 confirmada LIQUIDADO: principal100, sin interés,
+pendientes0. Percepción100 menos cuota100 en NOV-2026-CIERRE-TEST resolvió nómina
+sin salida adicional de dinero. Historial confirmado BORRADOR/ACTIVO/LIQUIDADO,
+último motivo compensación de préstamo en nómina con neto cero. Saldos humanos
+CAJA315.11/BBVA174.29/corte1150; conservar egreso de entrega100, no confundir
+sin movimiento por cierre con inexistencia del egreso original. Duplicado bloqueado
+por cierre coincidente. Tomás permanece liquidado; no repetir ninguno de los casos.
+Usuario confirma todos los Excel del recorrido complementario correctos.
+No dar por probados rollector/concurrencia ni tabla de cuotas no compartida.
+Manual PRUEBA_PRESTAMO_NETO_CERO_20261106.md conserva captura/resultados y límites.
+Sólo documentación, sin migración/guía integrada BD nueva ni despliegue.
+Pendiente opcional rol sólo consulta; después recibos/consultas por definir.
+
+Login restaurado confirmado usando INSTITUTO_RAICES\criz: nombre criz coincide
+con acceso de recuperación local, que tiene prioridad. Diagnóstico por lectura de
+estado/coincidencia, sin leer .env ni hashes, sin modificar claves/usuarios.
+Proyecto aislado/override siguen necesarios para operar copia restaurada.
+
+## Respaldo de otra computadora restaurado sin fusión — 06/11/2026
+
+Autorizada restauración del paquete05nov en proyectoDocker nuevo
+`nexo-restaurado-20261106`, con dos volúmenes nuevos; anteriores de instituto_raices
+conservados sin montar y otros proyectos intactos. Commit coincidente4e2c277,
+SHA256 de ambos artefactos correctos, dump PostgreSQL17.11 legible y tar íntegro.
+Importación transaccional en BD previamentevacía, sin errores.30archivos restaurados
+coinciden tamaño/checksumBD;158migraciones/77movimientos/1préstamo restaurados.
+Imagen independiente compilada con1059pruebas correctas; healthUP/login200 y
+Flyway158sin migración nueva. Sin operaciones de negocio ni lectura de.env.
+Arranque local requiere parámetros de proyecto/override documentados al inicio de
+AGENT.md; no usar compose simple porque abriría instalación anterior. Puerto8080
+sólo127.0.0.1. Override/logs/paquete privados ignorados, sin commit/push.
+Pendiente confirmar acceso visual/documentos con usuario humano. Siguiente prueba
+funcional es caso NUEVO préstamo neto0 según05nov, no repetir Tomásliquidado.
+
 ## Prueba principal de préstamos cerrada — 05/11/2026
 
 Usuario confirma liquidación de Tomás. PRE1/version6/LIQUIDADO/saldo0, una entrega200;
