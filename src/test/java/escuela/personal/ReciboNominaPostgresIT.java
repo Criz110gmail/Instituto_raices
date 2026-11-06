@@ -22,6 +22,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 /** Opera únicamente en base efímera sintética de recibos; no reutilizar respaldo humano. */
 @EnabledIfEnvironmentVariable(named="QA_RECIBOS_JDBC",matches="jdbc:postgresql://127.0.0.1:5432/nexo_recibos_qa")
@@ -94,9 +95,55 @@ class ReciboNominaPostgresIT {
         adminPortal();var sesionAlta=sesion((UsernamePasswordAuthenticationToken)SecurityContextHolder.getContext().getAuthentication());
         var antes=mvc.perform(get("/admin/empleados/680001/portal-recibos").session(sesionAlta)).andReturn().getResponse();assertThat(antes.getStatus()).isEqualTo(200);assertThat(antes.getContentAsString()).contains("name=\"username\"","name=\"email\"");Files.writeString(dir.resolve("cuenta-sin-usuario.html"),antes.getContentAsString());
         var login=mvc.perform(get("/personal/acceso")).andReturn().getResponse();assertThat(login.getStatus()).isEqualTo(200);assertThat(login.getContentAsString()).contains("data-login-refresh=\"personal\"","name=\"origen\" value=\"personal\"");Files.writeString(dir.resolve("login-personal.html"),login.getContentAsString());
-        var alta=accion(acceso,INST+1,"HABILITAR");alta.setUsername("sofia.recibos.qa");alta.setEmail("sofia-recibos@example.invalid");var enlace=acceso.gestionar(INST+1,alta);
+        var alta=accion(acceso,INST+1,"HABILITAR");
+        var altaHttp=mvc.perform(post("/admin/empleados/680001/portal-recibos").session(sesionAlta).with(csrf())
+                .param("version",alta.getVersion().toString()).param("accion","HABILITAR").param("confirmado","true")
+                .param("username","sofia.recibos.qa").param("email","sofia-recibos@example.invalid")).andReturn();
+        assertThat(altaHttp.getResponse().getStatus()).isEqualTo(302);
+        assertThat(altaHttp.getFlashMap().get("enlaceExpira")).isNotNull();
+        String primeraUrl=(String)altaHttp.getFlashMap().get("enlaceAcceso");assertThat(primeraUrl).contains("/activar-cuenta?token=");
+        var mostrado=mvc.perform(get("/admin/empleados/680001/portal-recibos").session(sesionAlta).flashAttrs(altaHttp.getFlashMap())).andReturn().getResponse();
+        assertThat(mostrado.getStatus()).isEqualTo(200);assertThat(mostrado.getContentAsString()).contains("Enlace de contraseña","/activar-cuenta?token=");
+        // El enlace puede recuperarse cuando la primera respuesta se perdió; el anterior se revoca.
+        var nueva=accion(acceso,INST+1,"ENLACE");
+        var nuevoHttp=mvc.perform(post("/admin/empleados/680001/portal-recibos").session(sesionAlta).with(csrf())
+                .param("version",nueva.getVersion().toString()).param("accion","ENLACE").param("confirmado","true")).andReturn();
+        assertThat(nuevoHttp.getResponse().getStatus()).isEqualTo(302);
+        String nuevaUrl=(String)nuevoHttp.getFlashMap().get("enlaceAcceso");assertThat(nuevaUrl).contains("/activar-cuenta?token=").isNotEqualTo(primeraUrl);
+        String token=nuevaUrl.substring(nuevaUrl.indexOf("token=")+6);
+        var sesionActivacion=new MockHttpSession();
+        assertThat(mvc.perform(get("/activar-cuenta").session(sesionActivacion).param("token",token)).andReturn().getResponse().getStatus()).isEqualTo(200);
+        var activacion=mvc.perform(post("/activar-cuenta").session(sesionActivacion).with(csrf()).param("token",token)
+                .param("password","Clave-Ficticia-Recibos-2030!").param("confirmarPassword","Clave-Ficticia-Recibos-2030!")).andReturn().getResponse();
+        assertThat(activacion.getStatus()).isEqualTo(200);assertThat(activacion.getContentAsString()).contains("Activación completada");
+        var sesionLogin=new MockHttpSession();
+        var ingreso=mvc.perform(post("/login").session(sesionLogin).with(csrf()).param("origen","personal")
+                .param("username","QA-RECIBOS\\sofia.recibos.qa").param("password","Clave-Ficticia-Recibos-2030!")).andReturn();
+        assertThat(ingreso.getResponse().getRedirectedUrl()).isEqualTo("/personal");
+        var sesionReal=(MockHttpSession)ingreso.getRequest().getSession(false);
+        assertThat(mvc.perform(get("/personal").session(sesionReal)).andReturn().getResponse().getContentAsString()).contains("RN-C-");
+        var duplicado=accion(acceso,INST+2,"HABILITAR");
+        var duplicadoHttp=mvc.perform(post("/admin/empleados/680002/portal-recibos").session(sesionAlta).with(csrf())
+                .param("version",duplicado.getVersion().toString()).param("accion","HABILITAR").param("confirmado","true")
+                .param("username","sofia.recibos.qa").param("email","otra-recibos@example.invalid")).andReturn().getResponse();
+        assertThat(duplicadoHttp.getStatus()).isEqualTo(200);assertThat(duplicadoHttp.getContentAsString()).contains("ya pertenece a otra cuenta");
+        assertThat(j.queryForObject("SELECT portal_recibos_habilitado FROM empleado WHERE id=680002",Boolean.class)).isFalse();
+        var recuperar=accion(acceso,INST+1,"ENLACE");
+        var recuperacionHttp=mvc.perform(post("/admin/empleados/680001/portal-recibos").session(sesionAlta).with(csrf())
+                .param("version",recuperar.getVersion().toString()).param("accion","ENLACE").param("confirmado","true")).andReturn();
+        assertThat(recuperacionHttp.getResponse().getStatus()).isEqualTo(302);
+        String recuperacion=(String)recuperacionHttp.getFlashMap().get("enlaceAcceso");assertThat(recuperacion).contains("/restablecer-password?token=");
+        String tokenRecuperacion=recuperacion.substring(recuperacion.indexOf("token=")+6);var sesionRecuperacion=new MockHttpSession();
+        assertThat(mvc.perform(get("/restablecer-password").session(sesionRecuperacion).param("token",tokenRecuperacion)).andReturn().getResponse().getStatus()).isEqualTo(200);
+        var restablecida=mvc.perform(post("/restablecer-password").session(sesionRecuperacion).with(csrf()).param("token",tokenRecuperacion)
+                .param("password","Nueva-Clave-Ficticia-2030!").param("confirmarPassword","Nueva-Clave-Ficticia-2030!")).andReturn().getResponse();
+        assertThat(restablecida.getStatus()).isEqualTo(200);assertThat(restablecida.getContentAsString()).contains("Contraseña actualizada");
+        var nuevoIngreso=mvc.perform(post("/login").session(new MockHttpSession()).with(csrf()).param("origen","personal")
+                .param("username","QA-RECIBOS\\sofia.recibos.qa").param("password","Nueva-Clave-Ficticia-2030!")).andReturn();
+        assertThat(nuevoIngreso.getResponse().getRedirectedUrl()).isEqualTo("/personal");
+        adminPortal();
+        assertThatThrownBy(()->activar.activar(new escuela.seguridad.dto.request.ActivacionUsuarioRequest(token,"Clave-Ficticia-Recibos-2030!"))).isInstanceOf(RuntimeException.class);
         assertThatThrownBy(()->acceso.gestionar(INST+1,alta)).isInstanceOf(RuntimeException.class);
-        activar.activar(new escuela.seguridad.dto.request.ActivacionUsuarioRequest(enlace.token(),"Clave-Ficticia-Recibos-2030!"));
         long usuarioPersonal=acceso.obtener(INST+1).usuarioId();assertThatThrownBy(()->j.update("UPDATE usuario SET tipo_cuenta='ADMINISTRATIVO' WHERE id=?",usuarioPersonal)).isInstanceOf(org.springframework.dao.DataAccessException.class);
         var propio=(UsuarioPrincipal)detalles.loadUserByUsername("QA-RECIBOS\\sofia.recibos.qa");var autenticado=new UsernamePasswordAuthenticationToken(propio,"",propio.getAuthorities());var sesionPersonal=sesion(autenticado);
         assertThat(propio.getAuthorities()).extracting(x->x.getAuthority()).containsExactly("PORTAL_EMPLEADO_ACCEDER");

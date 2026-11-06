@@ -1,8 +1,16 @@
 # Acceso opcional del empleado a sus recibos — etapa 2
 
-Estado: prueba humana pendiente. Las pruebas técnicas usan datos ficticios. Este
+Estado: el usuario confirmó el 06/11/2026 que pasó las pruebas; indicó expresamente
+que al quitar el acceso dejó de ver el módulo y al volver a habilitarlo lo vio de
+nuevo. No consta por separado si probó la cuenta docente compartida. Las pruebas técnicas usan datos ficticios. Este
 ejemplo utiliza el cierre de Sofía que ya existe: no volver a pagar ni modificar
 préstamos, nóminas o cuentas financieras.
+
+**Continuidad del intento del 06/11:** el primer alta de Sofía guardó el usuario
+`sofia.prueba.recibos` en estado invitado, pero se perdió la pantalla del enlace por
+un error. No volver a habilitar ni crear otra cuenta. En la pantalla de acceso de
+Sofía pulsa **Generar enlace de contraseña**, confirma y copia el nuevo enlace de
+activación de 48 horas; invalida la invitación anterior. Continúa en el apartado 2.
 
 ## 1. Habilitar desde Empleados
 

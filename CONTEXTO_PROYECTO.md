@@ -1,5 +1,64 @@
 # Contexto del proyecto
 
+## Diseño de accesos de empleados y maestros — 06/11/2026
+
+Botones de cuenta docente y recibos unificados en turquesa; ayudas de cuenta
+compartida separadas sin margen negativo. Login de maestros sustituye morado/coral
+por azul petróleo/celeste; probado en vistas ficticias escritorio y móvil, sin
+cambiar permisos ni cuentas. App restaurada `accesos-docente-v163`, sin migración.
+La prueba humana de recibos mediante cuenta docente compartida sigue pendiente.
+
+## Guía de recibos y acceso visual de personal — 06/11/2026
+
+V163 añade guía CONFIRMADA de acceso propio, cinco pasos y permisos de lectura de
+empleado/salario; no concede roles. Aceptación humana Sofía documentada y prueba
+docente compartida sigue pendiente. Login de personal tiene identidad verde/dorado,
+claro/oscuro y móvil, sin cambio de autenticación. 1081 Java correctas; migración
+probada en PostgreSQL17 sintético y publicada en base restaurada con respaldo
+`antes-v163.dump`, huellas financieras/roles idénticas y versión163 correcta.
+App `personal-guia-v163`. En revisión de esta base, tres maestros con cuenta y
+ninguno con recibos habilitados: para usar Mis recibos habilitar el acceso del
+empleado vinculado y renovar sesión; reutiliza sus credenciales docentes.
+
+## Confirmación humana acceso propio y pantalla 403 — 06/11/2026
+
+Usuario informó que pasó las pruebas de acceso personal; describió deshabilitar,
+dejar de ver el módulo y volver a verlo al habilitar. Cuenta docente compartida
+sin confirmación independiente. En pantalla 403 pidió separar reloj y tema; se
+agrupan con controles existentes, responsive, sin cambiar permisos ni sesión.
+QA ficticia escritorio/390px, reloj y selector funcionales, prueba JS y1081 Java
+correctas; app restaurada `acceso-denegado-v162` con healthUP, sin migración.
+Guía de prueba manual actualizada; incorporación a Guía de procesos pendiente.
+
+## Tarjeta de enlace personal — 06/11/2026
+
+La pantalla del enlace de Sofía mostraba campo y fecha encimados. Se reutilizó el
+diseño de invitaciones de Usuarios, con campo ancho, botón Copiar enlace, resultado
+y vigencia legible. QA con datos ficticios en escritorio/390px y copia correcta;
+1081 Java correctas. Imagen local `enlace-personal-v162`, sin migración ni nuevas
+cuentas/enlaces reales. Usuario puede generar otro enlace y seguir con la prueba.
+
+## Recuperación del enlace de Sofía — 06/11/2026
+
+Alta generó 500 tras guardar, por acceso a zona horaria de institución lazy fuera
+de sesión. Cuenta `sofia.prueba.recibos` quedó INVITADO y habilitada; enlace se
+perdió. Servicio devuelve ZoneId dentro de transacción; controlador ya no consulta
+entidad separada. IT PostgreSQL con POST y CSRF reales cubre alta, render del
+enlace, reemisión, activación, login, duplicado, restablecimiento y login nuevo,
+además de privacidad, permisos y desactivación: pasada. 1081 Java pasadas.
+App restaurada `personal-acceso-v162-corregido`, sin migraciones. Solicitar al
+usuario generar enlace nuevo desde acceso de Sofía, sin crear otra cuenta. Prueba
+humana pendiente. No se han creado datos reales adicionales durante diagnóstico.
+
+## Sugerencias en filtros de Personal y nómina — 06/11/2026
+
+Corrección de altura de opciones multilínea con alcance a filtros de Personal y
+nómina identificados por `data-nomina-keep-filter`. El estilo previo sólo cubría
+algunos filtros y la altura fija de botones encimaba texto. CSS versionado; QA
+ficticia escritorio/móvil y pruebas JS pertinentes correctas; 1081 Java correctas.
+Imagen local personal-filtros-v162, sin nueva migración ni movimientos. Usuario
+debe confirmar diseño y retomar prueba de acceso a recibos de Sofía.
+
 ## Acceso opcional a recibos: etapa 2 publicada — 06/11/2026
 
 Recibo PDF con conceptos aceptado por usuario; autorizó acceso propio opcional.

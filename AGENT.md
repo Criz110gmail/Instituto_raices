@@ -1,5 +1,101 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Diseño de accesos de empleado y login docente — 06/11/2026
+
+Usuario solicitó botones iguales turquesa en Empleados → Acceso y separar ayudas
+encimadas del acceso personal; se usó el patrón de acción turquesa existente y
+márgenes de párrafo acotados a esa pantalla. Conserva autorizaciones/rutas. La
+paleta morada/coral del login de maestros cambió a azul petróleo/celeste, con
+contraste claro/oscuro; el portal docente ya utilizaba azules. CSS versionado.
+QA con vistas ficticias en escritorio/390px; no se habilitaron cuentas ni se
+alteraron credenciales. Publicada sólo app restaurada `accesos-docente-v163`, sin
+migraciones. Pendiente prueba humana de habilitar recibos para maestro asociado,
+cerrar y volver a entrar, abrir Mis recibos y descargar PDF. La captura del usuario
+mostraba Bruce, pero no confirma que haya habilitado su acceso ni que haya probado.
+
+## Guía de acceso personal y nuevo login — 06/11/2026
+
+Usuario pidió documentar su aceptación y diferenciar visualmente el acceso del
+personal. V163 incorpora a Guía de procesos → Personal la guía CONFIRMADA
+`acceso-personal-recibos-confirmado`, cinco pasos, permisos de lectura Empleados y
+salario, sin roles ni operaciones. Registra sólo lo que el usuario confirmó con
+Sofía: pruebas pasaron, deshabilitación y reactivación comprobadas; navegación de
+cuenta docente compartida verificada técnicamente, falta aceptación humana aparte.
+
+`login-personal.html` usa CSS propio verde/dorado y diseño responsive claro/oscuro,
+sin alterar campos, CSRF ni rutas de acceso; portales admin/docente/familiar intactos.
+QA visual escritorio/390px y temas, sin credenciales. 1081 Java correctas. V163
+validada en PostgreSQL17 sintético (5 pasos/2 permisos) antes de publicar; app
+restaurada imagen `personal-guia-v163`, respaldo privado `antes-v163.dump`, huellas
+financieras y roles iguales antes/después. No habilita cuentas ni crea pagos.
+
+Usuario no veía Mis recibos al entrar como maestro: consulta de la instalación
+identificó 3 maestros con cuenta y 0 con acceso de recibos habilitado al momento
+de la revisión. Administración debe abrir el EMPLEADO asociado → Editar → Acceso →
+Administrar acceso a sus recibos → Habilitar; se reutiliza cuenta docente sin cambiar
+contraseña. Cerrar y volver a iniciar sesión en Maestros; enlace Mis recibos lleva
+a /personal y permite PDF. No activar cuentas reales automáticamente. La prueba
+docente humana sigue pendiente; usuario aún debe indicar qué maestro usará.
+
+## Acceso de Sofía probado; alineación de pantalla 403 — 06/11/2026
+
+Usuario confirma que sus pruebas del acceso personal pasaron: deshabilitó acceso,
+dejó de ver el módulo y al habilitarlo de nuevo lo vio. No consta explícitamente
+prueba humana con cuenta docente compartida. Solicitó separar reloj de sesión y
+botón de tema en pantalla 403: la plantilla agrupa ambos en un contenedor fijo,
+el reloj existente se inserta automáticamente allí y CSS mantiene separación en
+escritorio y móvil. QA ficticia en 390px y escritorio, ambos controles funcionales;
+test JS del reloj y1081 pruebas Java correctas. Publicada sólo app restaurada imagen
+`acceso-denegado-v162`, healthUP, sin migración. No cambia sesiones ni permisos. Manual de prueba actualizado;
+incorporación de esta aceptación a Guía de procesos queda por hacer si se solicita.
+Pendientes globales: pruebas de propuestas de expediente del portal familiar,
+revisar duración real de sesión y verificaciones de liberación; no contarlas como
+terminadas por esta aceptación.
+
+## Diseño del enlace de acceso personal — 06/11/2026
+
+Usuario generó el enlace de Sofía Neto Cero y observó campo/vencimiento encimados.
+`empleado-acceso-recibos.html` reutiliza `invitation-result` y `copy-row` de Usuarios,
+con botón Copiar enlace, indicación de copiado y selección manual si falla. CSS
+scoped y versión actualizada; enlace y vencimiento siguen como valores existentes.
+QA visual de escritorio/390px y botón copiar con enlace ficticio; 1081 Java pasan.
+App restaurada imagen `enlace-personal-v162`, sin migración ni nuevos enlaces reales.
+El reinicio cierra sesión; volver a generar enlace desde Sofía existente si se
+perdió la pantalla, ya que el enlace flash no se conserva. Continuar prueba humana.
+
+## Corrección de alta de acceso personal — 06/11/2026
+
+Usuario intentó habilitar Sofía EMP-PREST-CERO-01 y recibió 500. El alta SÍ
+confirmó `sofia.prueba.recibos`, estado INVITADO y acceso habilitado; el enlace
+se perdió al formatear vencimiento con institución lazy fuera de sesión. No crear
+otra cuenta ni volver a habilitar. Desde Empleados → Sofía → Editar → Acceso →
+Administrar acceso → Generar enlace de contraseña se emite nueva invitación48h y
+se revoca la anterior; usuario copia enlace y define contraseña personalmente.
+
+Corrección: obtener ZoneId de la institución en el servicio transaccional y
+devolverlo como valor al controlador; no consultar entidades lazy tras commit.
+Ampliada IT PostgreSQL ficticia para POST real con CSRF, redirect/flash/fecha,
+reemitir invitación perdida, activación, login real, usuario duplicado en pantalla,
+restablecimiento y segundo login, además de PDF propio, denegación a terceros,
+docente compartido y desactivación con sesión antigua. Corrida final correcta;
+1081 Java correctas. Se reconoce que la prueba anterior llamaba al servicio para
+el alta y no recorría el POST/render completo. No se alteraron cuentas reales en
+las pruebas. Publicada sólo app restaurada `personal-acceso-v162-corregido`, sin
+nueva migración. Prueba humana del acceso de Sofía pendiente; actualizar guía de
+procesos sólo tras confirmación. Detalle en PRUEBA_PORTAL_RECIBOS_EMPLEADO_20261106.md.
+
+## Filtros de Personal y nómina — 06/11/2026
+
+Usuario detectó sugerencias encimadas en Empleados y Periodos. `.filters button`
+imponía altura fija también a las opciones. `forms.css` ahora deja altura variable,
+una columna y ajuste de texto en autocompletados de filtros con
+`data-nomina-keep-filter` (23 plantillas/fragmentos de Personal y nómina); no cambia
+otros módulos. Se versionaron enlaces de CSS de las pantallas afectadas. QA con
+nombres largos en escritorio y 390px, pruebas JS pertinentes y compilación Java
+1081 correctas. Publicada sólo app restaurada con imagen `personal-filtros-v162`,
+sin migraciones nuevas ni operaciones de negocio. Falta aceptación visual humana.
+Siguiente: continuar prueba de Sofía en PRUEBA_PORTAL_RECIBOS_EMPLEADO_20261106.md.
+
 ## Etapa 2 publicada: acceso opcional del empleado — 06/11/2026
 
 Usuario confirmó el recibo con conceptos y subió Git. Aceptación de presentación/

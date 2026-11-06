@@ -1,0 +1,26 @@
+/* Identidad del acceso personal: verde profundo y acentos dorados. */
+.personal-login-page { --personal-green:#176a55; --personal-gold:#eac57a; background:radial-gradient(circle at 15% 18%,#b7ddc66b,transparent 31%),radial-gradient(circle at 88% 82%,#e9d7ab55,transparent 30%),#eff5ef; }
+.personal-login-shell { border:1px solid #d3e5d9;box-shadow:0 34px 90px #174c3829; }
+.personal-login-story { background:linear-gradient(150deg,#102d28 0%,#194f3d 58%,#277054 100%); }
+.personal-login-story::after { width:440px;height:440px;right:-210px;bottom:-220px;border-color:#eac57a35; }
+.personal-login-story .story-brand>span,.personal-login-panel .mobile-brand>span { background:var(--personal-gold);color:#173c31; }
+.personal-login-story .story-brand small { display:block;margin-top:4px;color:#bedbcc;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase; }
+.personal-login-story .eyebrow { color:#f1d49a; }
+.personal-login-story .story-copy { color:#d0e4d8; }
+.personal-orbit { position:absolute;right:-15px;top:32px;width:190px;height:190px;border:1px solid #e9d29d42;border-radius:50%;display:grid;place-items:center; }
+.personal-orbit::before { content:"";position:absolute;inset:23px;border:1px solid #ffffff20;border-radius:50%; }
+.personal-orbit-card { position:relative;width:120px;padding:12px;border:1px solid #ffffff50;border-radius:17px;background:#f8f8eae8;color:#174a38;box-shadow:0 18px 35px #001a1235;transform:rotate(8deg); }
+.personal-orbit-card span,.personal-orbit-card strong { display:block; }.personal-orbit-card span { color:#658374;font-size:.52rem;font-weight:800;letter-spacing:.1em; }.personal-orbit-card strong { margin:8px 0 14px;font-size:.85rem; }.personal-orbit-card i { display:block;width:85%;height:5px;margin:6px 0;border-radius:5px;background:#bbd2be; }.personal-orbit-card i:nth-of-type(2){width:65%}.personal-orbit-card b { display:grid;place-items:center;width:27px;height:27px;margin-top:12px;border-radius:50%;background:#287a57;color:white; }
+.personal-features { display:flex;flex-wrap:wrap;gap:8px; }.personal-features span { padding:7px 10px;border:1px solid #ffffff38;border-radius:999px;color:#e5f4e7;font-size:.68rem;font-weight:700; }
+.personal-login-panel { background:linear-gradient(155deg,#fff,#f8fbf6); }
+.personal-welcome { display:inline-flex;align-self:flex-start;margin-bottom:20px;padding:7px 11px;border-radius:999px;background:#e3f2e7;color:#19654d;font-size:.65rem;font-weight:800;letter-spacing:.09em; }
+.personal-login-panel .form-heading p { color:#237057; }.personal-login-panel input:focus { border-color:#27815f;box-shadow:0 0 0 4px #27815f24; }
+.personal-login-panel button[type=submit] { background:linear-gradient(110deg,#196647,#38875e);box-shadow:0 12px 24px #1a6a4933; }
+.personal-login-page .theme-toggle { border-color:#c8ddcf; }
+[data-theme=dark] .personal-login-page { background:radial-gradient(circle at 15% 18%,#2a785c30,transparent 31%),radial-gradient(circle at 88% 82%,#96733b20,transparent 30%),#081b17; }
+[data-theme=dark] .personal-login-shell { border-color:#285246; }
+[data-theme=dark] .personal-login-panel { background:linear-gradient(155deg,#10251f,#0d1e1a); }
+[data-theme=dark] .personal-welcome { background:#1c4032;color:#b8e9c6; }
+[data-theme=dark] .personal-login-panel .form-heading p { color:#9ad3ae; }
+[data-theme=dark] .personal-login-page .theme-toggle { border-color:#31594b; }
+@media(max-width:480px){.personal-login-panel{padding-top:36px}.personal-welcome{margin-bottom:18px}.personal-login-panel .mobile-brand{margin-bottom:40px}}

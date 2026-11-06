@@ -30,7 +30,7 @@ public class AccesoRecibosEmpleadoService {
  private final RecuperacionPasswordRepository recuperacionRepository;
  private final escuela.auditoria.service.RegistroAuditoriaService auditoria;
  public record Vista(Long empleadoId,String nombre,String codigo,Long version,Long usuarioId,String username,String email,String estado,boolean habilitado,boolean compartida){}
- public record Enlace(String token,Instant expira,boolean activacion){}
+ public record Enlace(String token,Instant expira,boolean activacion,ZoneId zonaHoraria){}
  public record Identidad(Long empleadoId,Long institucionId,String nombre,String codigo,boolean docente){}
  public Vista obtener(Long id){personal.autorizarSalarios(false);return vista(personal.autorizar(id,false,false));}
  private Usuario cuenta(Empleado e){
@@ -71,7 +71,7 @@ public class AccesoRecibosEmpleadoService {
   empleados.saveAndFlush(e);auditar(e,"DESHABILITAR");return null;
  }
  private void auditar(Empleado e,String operacion){auditoria.registrar(e.getInstitucion().getId(),escuela.auditoria.entity.AccionAuditoria.EMPLEADO_ACCESO_RECIBOS,"EMPLEADO",e.getId(),"Gestión de acceso personal a recibos",Map.of("operacion",operacion,"usuarioId",e.getUsuarioPortal().getId(),"habilitado",e.isPortalRecibosHabilitado()));}
- private Enlace emitir(Usuario u){if(u.getEstado()==EstadoUsuario.INVITADO){var r=invitaciones.emitir(u.getId(),Duration.ofHours(48));return new Enlace(r.token(),r.expiraEn(),true);}var r=recuperaciones.emitir(u.getId(),Duration.ofMinutes(30));return new Enlace(r.token(),r.expiraEn(),false);}
+ private Enlace emitir(Usuario u){var zona=ZoneId.of(u.getInstitucion().getZonaHoraria());if(u.getEstado()==EstadoUsuario.INVITADO){var r=invitaciones.emitir(u.getId(),Duration.ofHours(48));return new Enlace(r.token(),r.expiraEn(),true,zona);}var r=recuperaciones.emitir(u.getId(),Duration.ofMinutes(30));return new Enlace(r.token(),r.expiraEn(),false,zona);}
  public Identidad identidadActual(){
   var a=SecurityContextHolder.getContext().getAuthentication();if(a==null||!(a.getPrincipal() instanceof UsuarioPrincipal p)||p.usuarioId()==null||p.accesoRecuperacion())throw new AccessDeniedException("Acceso personal no disponible");
   var e=empleados.findByUsuarioPortalIdAndInstitucionId(p.usuarioId(),p.institucionId()).orElseThrow(()->new AccessDeniedException("Acceso a recibos no habilitado"));

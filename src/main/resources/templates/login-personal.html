@@ -2,22 +2,23 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#0b1930"><title>Acceso del personal · Nexo Escolar</title>
+    <meta name="theme-color" content="#153a32"><title>Acceso del personal · Nexo Escolar</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="stylesheet" href="/css/login.css"><link rel="stylesheet" href="/css/session.css"><script src="/js/theme.js"></script><script src="/js/login-session.js?v=2" defer></script>
+    <link rel="stylesheet" href="/css/login.css"><link rel="stylesheet" href="/css/personal-login.css?v=20261106"><link rel="stylesheet" href="/css/session.css"><script src="/js/theme.js"></script><script src="/js/login-session.js?v=2" defer></script>
 </head>
-<body>
+<body class="personal-login-page">
 <button class="theme-toggle" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button>
-<main class="login-shell">
-    <section class="login-story">
-        <div class="story-brand"><span>N</span><strong>Nexo Escolar</strong></div>
-        <div class="orbit" aria-hidden="true"><i></i><i></i><i></i><strong>NE</strong></div>
+<main class="login-shell personal-login-shell">
+    <section class="login-story personal-login-story">
+        <div class="story-brand"><span>N</span><strong>Nexo Escolar <small>Personal</small></strong></div>
+        <div class="personal-orbit" aria-hidden="true"><div class="personal-orbit-card"><span>MI ESPACIO</span><strong>Mis recibos</strong><i></i><i></i><i></i><b>✓</b></div></div>
         <div><p class="eyebrow">Espacio del personal</p><h1>Tu nómina, clara y a tu alcance.</h1><p class="story-copy">Consulta tus recibos personales con el detalle de percepciones, deducciones e importe neto.</p></div>
-        <div class="signal"><span></span>Conexión segura</div>
+        <div class="personal-features"><span>Consulta personal</span><span>Recibos en PDF</span><span>Acceso privado</span></div>
     </section>
-    <section class="login-panel">
+    <section class="login-panel personal-login-panel">
         <div class="mobile-brand"><span>N</span><strong>Nexo Escolar</strong></div>
-        <div class="form-heading"><p>Bienvenido</p><h2>Inicia sesión</h2><span>Usa las credenciales asignadas por administración.</span></div>
+        <div class="personal-welcome">ESPACIO DEL PERSONAL</div>
+        <div class="form-heading"><p>Bienvenido a tu espacio</p><h2>Inicia sesión</h2><span>Usa las credenciales asignadas por administración.</span></div>
         <div class="alert warning" role="alert" th:if="${param.sesionExpirada}"><strong>Tu sesión caducó</strong><span>Por seguridad, inicia sesión nuevamente para continuar. Los cambios que no alcanzaron a guardarse deben capturarse otra vez.</span></div>
         <div class="alert error" th:if="${param.error}">El usuario o la contraseña no son correctos.</div>
         <div class="alert success" th:if="${param.logout}">Tu sesión se cerró correctamente.</div>
