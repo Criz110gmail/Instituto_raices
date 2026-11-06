@@ -1,5 +1,68 @@
 # Contexto del proyecto
 
+## Aclaración de recibo detallado — 06/11/2026
+
+Usuario aclara que el PDF sí debe listar cada percepción y deducción por nombre e
+importe, seguido de sus totales y neto. Sueldo base es percepción, no duplicarlo;
+cuota de préstamo puede figurar como concepto, sin folio/saldo/capital/intereses.
+NO volver a incluir cuentas/medios/cheques/responsables/motivos ni notas internas.
+No aportaciones patronales o partidas0 noaplicadas. Historia congelada; si no hay
+partidas antiguas se reconoce sin desglose en vez de inventarlas. Admin/Excel
+intactos, sin cambios de permisos/BD/saldos. Manual de aceptación actualizado;
+confirmación humana y etapa2 de acceso opcional de empleados siguen pendientes.
+1071Java correctas;6tests Jasper incluyendo18conceptos largos sin dividir sus filas,
+sueldo/percepciones sin doble conteo, historia incompleta y exclusión de trazabilidad.
+PDFs sintéticos renderizados y páginas finales inspeccionadas. Sóloapp restaurada
+publicada imagen recibos-v161-conceptos/healthUP, Flyway161sin DDL; huellas operativas
+y roles idénticas. QA temporal retirada, sin operaciones/.env/commit/push. Siguiente:
+humano descarga otra vez PDF Sofía, percepción100/deducción100 nombradas y neto0;
+no repetir pago. Después de aceptación, etapa2 acceso propio opcional del empleado.
+
+## Privacidad del PDF de nómina — 06/11/2026
+
+Usuario aprueba PDF general para compartir: institución/logo, folio/estado,
+empleado/código/puesto, periodo por fechas, total percepciones (sueldo+adicionales),
+deducciones y neto. Se excluye TODO detalle interno: conceptos, préstamos, cuentas,
+cheques, responsables, motivos y códigos BOR/periodo. Advertencia de cancelado y
+leyenda noCFDI conservadas. Consulta administrativa completa y Excel intactos.
+Pruebas de exclusión en todos los estados y totalpercepciones actualizado; manual
+de aceptación refleja separación. No cambios financieros ni de permisos/BD.
+1070Java correctas y4PDFs sintéticos renderizados/inspeccionados, todos1página.
+Sóloapp restaurada publicada imagen recibos-v161-resumen/healthUP, sin migraciones;
+huellas operativas y roles idénticas. RecursosQA retirados, sin .env/commit/push.
+Aceptación humana del nuevo formato pendiente; volver a descargar, no cambiar PDFs
+que el usuario ya había guardado con el formato anterior.
+
+## Filtros de recibos: opciones multilínea — 06/11/2026
+
+Usuario ve PDFs correctamente; reporta textos encimados en Empleado/Periodo
+histórico. Se corrige únicamente .recibos-filters: elimina altura fija heredada de
+botones, título y descripción con wrapping/interlineado y scroll limitado. CSS
+versionado, sin tocar consultas/pagos/BD.1068Java correctas; QA sintética con nombres
+largos en ambos campos y móvil claro/oscuro correcta. Confirmación humana pendiente.
+Sóloapp restaurada publicada imagen recibos-v161-filtros/healthUP, mismo Flyway161;
+CSS servido verificado y huellas operativas/roles idénticas, sin operaciones de
+negocio ni .env/commit/push. QA cerrada y tema/viewport restaurados al terminar.
+
+## Recibos internos de nómina: etapa administrativa — 06/11/2026
+
+Implementada etapa 1 aprobada: Nóminas → Recibos internos. Listado paginado y Excel
+filtrado, consulta separada con pestañas y PDF Jasper/logo. Lectura de fotografías
+históricas: pago por intento, cancelado sin vigencia, neto cero sin tesorería y
+aplicación consolidada antigua claramente diferenciados. No CFDI ni cálculo fiscal.
+Cuenta opcional del empleado/portal propio y reutilización docente quedan etapa 2,
+todavía NO implementados. No nuevos permisos ni cambios de pagos/préstamos/saldos.
+V161 sólo tres índices. No tratar pruebas automáticas como aceptación humana ni
+repetir casos Tomás/Sofía/Clara. Manual propuesto PRUEBA_RECIBOS_NOMINA_ETAPA1_20261106.md.
+1067Java/142JS +1IT PostgreSQL17 sintético correcto: dos fuentes/cheque/cancelado/
+reintento/cero/legado, datos congelados, filtros/Excel/PDF y denegación institucional
+y de permisos. PDF rasterizado/QA móvil claro/oscuro; pestañas y acciones alineadas.
+Sóloapp restaurada publicada, imagen recibos-v161/healthUP; Flyway161success y3índices.
+Backupantes-v161 privado catalogado; huellas cuentas/movimientos/préstamos/nóminas/
+pagos/cheques/permisos idénticas. No operaciones humanas ni .env/claves/commit/push.
+QA temporal retirada al terminar. Aceptación humana de recibos pendiente; etapas
+anteriores ya confirmadas no se reabren. Detalles y límites al inicio de AGENT.md.
+
 ## Préstamos sólo lectura aprobado; dos bloques cerrados — 06/11/2026
 
 Usuario confirma todos los pasos de usuario separado sólo consulta, incluida

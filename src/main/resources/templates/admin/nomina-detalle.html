@@ -13,6 +13,7 @@
   <div class="nomina-status-actions"><a class="nomina-primary-action" th:if="${borrador.estado!='APLICADA' and borrador.estado!='CANCELADO'}" th:href="${filtro.url('/admin/preparacion-nomina/'+borrador.id+'/pagos')}">Autorización y pagos por empleado →</a>
    <a th:if="${aplicacionNomina!=null}" class="nomina-primary-action" href="#aplicacion">Ver aplicación y egreso →</a>
    <a th:if="${puedeAplicar and borrador.estado=='BORRADOR'}" class="nomina-primary-action" th:href="${filtro.url('/admin/preparacion-nomina/'+borrador.id+'/aplicacion')}">Revisar y aplicar nómina →</a>
+   <a class="nomina-action" th:href="@{/admin/recibos-nomina(q=${borrador.folio()})}">Recibos de esta nómina →</a>
    <a class="nomina-action" th:href="@{/admin/preparacion-nomina/{id}/excel(id=${borrador.id},revisionConsulta=${revisionConsulta})}">Exportar revisión a Excel</a>
   </div>
  </section>

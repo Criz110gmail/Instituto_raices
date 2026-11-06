@@ -1,5 +1,131 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## PDF de recibos: conceptos con nombre e importe — 06/11/2026
+
+ACLARACIÓN VIGENTE del usuario: quiere TODAS las percepciones y deducciones que
+integraron el pago, con nombre e importe, además de totales/neto. Esto sustituye
+la restricción anterior de sólo3totales; NO restaura trazabilidad administrativa.
+PDF conserva logo/institución, empleado/código/puesto, fechas, folio/estado/noCFDI.
+Percepciones agrupa sueldo base y adicionales; Deducciones muestra cada concepto
+incluida cuota de préstamo por NOMBRE e importe aplicado, sin folioPRE/saldo/capital/
+interés/programación. No repetir cuotas recorriendo préstamos aparte. No cuentas,
+medios, cheques, responsable, fecha operativa, motivos ni notas internas/códigosBOR.
+No aportaciones patronales ni partidas0 pospuestas/noaplicadas como deducciones.
+Fuente son líneas históricas de nómina, no configuración actual. Sueldo una sola
+vez; totales mantienen sueldo+otras percepciones, deducciones/neto congelados.
+Si foto antigua no conserva partidas, declarar sin desglose histórico y mostrar
+sólo su importe conocido, sin inventar conceptos. Paginación para nombres largos.
+Consulta administrativa/Excel intactos, no migración/operación financiera.
+Prueba humana del nuevo PDF pendiente; manual actualizado. Etapa2 sigue pendiente.
+
+1071Java correctas.6tests PDF: conceptos de cero/todos4estados, privacidad interna,
+18percepciones largas en2páginas conservando descripción/importe juntos (banda
+PREVENT), sueldo una sola vez y foto sin partidas con aviso. Revisión skillPDF
+renderizada correcta; última corrida verificada y QA de páginas finales conservada
+en target/qa-recibos-nomina/ (ignorado). Publicada sóloapp restaurada imagen
+recibos-v161-conceptos/healthUP, mismo Flyway161sin DDL. Huellas operativas y roles
+idénticas antes/después. Contenedor/etiquetaQA retirados; sin .env/claves/commit/push
+ni operaciones humanas. Siguiente humano: volver a descargar PDF de Sofía y revisar
+percepción100/deducción100 por nombre, totales100/100/neto0. No volver a pagar.
+Tras aceptación, documentar prueba confirmada y continuar etapa2: acceso opcional
+del empleado a sus recibos, reutilizando cuenta docente, sólo sus propios datos.
+
+## PDF de recibos: resumen para compartir — 06/11/2026
+
+Usuario pide minimizar información para entregar el PDF a terceros y aprueba la
+separación. NUEVO CRITERIO sustituye el PDF detallado descrito abajo: sólo logo/
+institución, folio/estado, empleado/código/puesto, fechas de cobertura y TOTALES de
+percepciones (sueldo + adicionales), deducciones y neto. No partidas de conceptos,
+préstamos/cuotas/capital/intereses, fuentes/cuentas/cheques, responsable/usuario,
+fecha de operación, motivos/notas/justificaciones ni código interno BOR/periodo.
+Se conserva advertencia CANCELADO sin vigencia, neto cero e histórica sin afirmar
+otro pago; leyenda interno/noCFDI. No es comprobante fiscal ni garantía de aceptación
+por terceros. El detalle administrativo autorizado y Excel no se cambian.
+Jasper usa lista explícita de campos permitidos, no recorre colecciones privadas.
+Pruebas PDF extraen texto de TODOS los estados y verifican exclusión; sueldo se
+incluye en totalpercepciones. Se elimina prueba antigua que exigía préstamos y
+cheques dentro del PDF: ahora exige que NO estén. Sin cambios de dominio/BD.
+Manual PRUEBA_RECIBOS_NOMINA_ETAPA1_20261106.md actualizado; aceptación humana del
+nuevo formato sigue pendiente. Etapa2/cuentas de empleados todavía pendiente.
+
+1070Java correctas;5tests PDF verifican cero/cancelado/70conceptos excluidos,
+los4estados sin datos privados y suma sueldo+percepciones. PDFs ficticios renderizados
+e inspeccionados con skillPDF: todos1página legible, logo/estado/totales correctos,
+sin información interna. Evidencia ignorada target/qa-recibos-nomina/resumen-*.pdf.
+Publicada sóloapp restaurada imagen recibos-v161-resumen/healthUP; mismo Flyway161,
+sin DDL ni operaciones humanas. Huellas financieras/nóminas/préstamos/roles/cheques
+idénticas antes/después; sin .env/claves/commit/push. RecursosQA retirados. Volver a
+abrir/descargar PDF: archivos ya descargados anteriormente NO se modifican.
+
+## Recibos: corrección de listas de filtros — 06/11/2026
+
+Usuario confirma visualización de PDFs y reporta títulos encimados en sugerencias
+Empleado/Periodo histórico. Altura42 heredada de .filters button no crecía con texto
+multilínea. Corrección ACOTADA .recibos-filters: opciones height:auto, una columna,
+grid-column:auto en móvil, título/descripción estáticos con interlineado y wrapping;
+lista con scroll propio/altura máxima. No cambia autocompletado ni backend/datos.
+CSSnomina versionado para invalidar caché; filtros de otros módulos sin refactor.
+1068Java correctas; regresión de alcance/reglas y QA sintética con10opciones y nombres
+largos para AMBOS campos, escritorio/390px y claro/oscuro. Confirmación visual humana
+del ajuste pendiente; aceptación de recibos no se da por cerrada todavía.
+
+Publicado sóloapp restaurada, imagen recibos-v161-filtros/healthUP; Flyway sigue161
+sin migraciones. HashCSS servido coincide con fuente. Huellas operativas y roles
+idénticas antes/después. No lectura.env, operaciones de negocio ni commit/push.
+Servidor/pestañaQA cerrados; viewport y tema restaurados. Recargar navegador para
+revisar ambos campos. No repetir pagos ni pruebas ya cerradas para este ajuste.
+
+## Recibos internos de nómina — etapa 1, 06/11/2026
+
+Usuario aprueba desarrollo por etapas. Etapa 1 implementa consulta administrativa
+desde Personal y nómina → Nóminas → Recibos internos. Listado paginado/filtros por
+empleado y periodo históricos (10 al enfocar/3 caracteres), texto, estado y fechas
+de COBERTURA de nómina; Excel de todas las páginas filtradas. Detalle separado por
+pestañas Resumen/Conceptos/Origen y trazabilidad, PDF Jasper imprimible con logo
+institucional y respaldo gráfico del sistema. Fechas dd/MM/yyyy, importes con dos
+decimales; claro/oscuro y móvil reutilizan diseño existente. Es comprobante INTERNO,
+NO CFDI, timbrado, cálculo fiscal ni orden bancaria. No alta/edición de recibos.
+
+Consulta deriva hechos guardados, NO crea nueva entidad ni pago: RN-P por intento
+PAGADO/REVERTIDO (cancelado conserva importe y motivo, no vigencia), RN-C por cierre
+neto cero (sin cuenta ni NPI), RN-H por fila de aplicación antigua consolidada (no
+inventar pago individual ni dividir el egreso). Desglose de nomina_fila_efectiva y
+revisión correspondiente, no configuración vigente. Préstamos muestran cuota y
+capital/interés de cuotas_programadas congeladas, no deuda actual ni otra deducción.
+Fuentes guardadas/cheques y cancelación conservados; no muestra números bancarios
+completos. Totales inconsistentes se rechazan en vez de emitir comprobante erróneo.
+No sumar cancelados + reintentos como egresos vigentes. Los rechazados y borradores
+no son recibos. Mismo permiso salarial/empleado e institución validados en servidor,
+también PDF/Excel/autocompletado; no ampliar roles. Respuestas privadas no-store.
+V161 añade sólo tres índices de consulta, no nuevas tablas ni grants/operaciones.
+
+Prueba humana propuesta: PRUEBA_RECIBOS_NOMINA_ETAPA1_20261106.md, PENDIENTE.
+No publicar como CONFIRMADA en Guía de procesos hasta aceptación humana. Cheques/
+préstamos previamente aceptados siguen cerrados; no recapturar ni pagar otra vez.
+Etapa 2 PENDIENTE: acceso opcional del empleado para ver sólo sus recibos, reutilizar
+cuenta docente existente, gestión desde Empleados sin mezclar con usuarios admin;
+crear cuenta NO será requisito del recibo administrativo. No implementado todavía.
+Las pruebas generales de expedientes familiares/sesión/liberación siguen pendientes.
+
+Verificado:1067Java/142JS correctos y1IT PostgreSQL17 efímero sintético con las161
+migraciones; pago dos fuentes/cheque, reversa y reintento, cierre0, legado, cobertura
+de fechas/folio, Excel filtrado/cero numérico, URLs/PDF/autocompletado denegados a
+lector Préstamos e institución ajena. Consulta mantiene conteo financiero. Excel
+unitario cubre101filas en2páginas; PDF cubre cancelado/cero y70conceptos largos.
+Primeros2intentos IT fallaron por fixtures incompletas (banco y textos de selección),
+corregidos; corrida final completa correcta. QA visual sintética claro/oscuro,
+escritorio/390px, pestañas sin scroll horizontal, PDF4estados rasterizados; cancelado
+simple cabe1página y continúa si hay más conceptos. SkillPDF guio revisión renderizada,
+no cambió motorJasper. Evidencia privada ignorada target/qa-recibos-nomina/.
+
+Publicada SÓLOapp restaurada: imagen nexo-restaurado-20261106-app:recibos-v161,
+healthUP, Flyway161success y3índices verificados. Mismo proyecto/override privado de
+restauración; no usar compose simple. Respaldo antes-v161.dump privado600/catalogado
+y huellas operativas/roles idénticas antes/después. No pagos/entregas/cancelaciones
+en BD humana; pruebas financieras únicamente en base efímera ficticia aislada.
+Contenedores/servidor/pestañaQA retirados y tema/viewport restaurados al terminar.
+Sin lectura de .env, cambios de claves/permisos, commit ni push por el agente.
+
 ## Dos bloques de consulta cerrados y guía V160 publicada — 06/11/2026
 
 Usuario confirma «pasaron todas las pruebas» con cuenta de sólo Préstamos - Consultar;

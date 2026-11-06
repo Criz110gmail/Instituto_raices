@@ -1,5 +1,17 @@
 # Sistema administrativo escolar
 
+## Recibos internos de nómina — etapa 1
+
+**Personal y nómina → Nóminas → Recibos internos**: consulta por empleado/periodo,
+estados y fechas de cobertura, Excel filtrado y PDF Jasper con logo. Conserva el
+desglose histórico y distingue pagos cancelados, cierres neto cero y aplicaciones
+antiguas consolidadas. Sólo consulta autorizada: no genera pagos ni es CFDI.
+El PDF para compartir muestra empleado/puesto, periodo, percepciones y deducciones
+por nombre e importe, totales y neto. No revela cuentas, cheques, responsables ni
+el saldo/capital/intereses de préstamos; la trazabilidad queda en el admin.
+El acceso opcional del empleado a sus propios recibos será la etapa 2.
+[Prueba propuesta, pendiente de aceptación](PRUEBA_RECIBOS_NOMINA_ETAPA1_20261106.md).
+
 ## Consulta de Préstamos y Cheques: pruebas cerradas — 06/11/2026
 
 El usuario confirmó los dos bloques inmediatos: consulta/Excel/fechas de Cheques y

@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/nomina-comun :: head('Recibos internos de nómina')}"></head>
+<body><th:block th:replace="~{admin/fragments/laboral-comun :: lateral}"></th:block>
+<main class="workspace">
+ <header class="topbar"><label class="menu-button" for="nav-toggle" aria-label="Abrir menú"><span></span><span></span><span></span></label><div><p>Administración · Personal y nómina</p><h1>Recibos de nómina</h1></div><div class="top-actions"><div th:replace="~{admin/fragments/session-actions :: controls}"></div></div></header>
+ <section class="data-panel employee-list-panel nomina-list-panel">
+  <header class="panel-heading"><div><h2>Comprobantes internos por empleado</h2><p>Consulta pagos, cancelaciones, cierres sin tesorería y aplicaciones históricas. No son CFDI ni generan movimientos.</p></div><div class="module-filter-actions"><a class="module-action" href="/admin/preparacion-nomina">Volver a Nóminas</a><a class="module-action module-action--primary" th:href="${filtro.url('/admin/recibos-nomina/excel')}">Exportar Excel</a></div></header>
+  <form method="get" action="/admin/recibos-nomina" class="filters employee-filters payroll-aligned-filters recibos-filters" data-nomina-keep-filter="recibos-nomina">
+   <div th:replace="~{admin/fragments/concepto-empleado-comun :: ayuda('empleado','Empleado',${filtro.empleadoId},${filtro.empleadoTexto},'/admin/recibos-nomina/empleados/buscar',false)}"></div>
+   <div th:replace="~{admin/fragments/concepto-empleado-comun :: ayuda('periodo','Periodo histórico',${filtro.periodoId},${filtro.periodoTexto},'/admin/recibos-nomina/periodos/buscar',false)}"></div>
+   <label><span>Buscar recibo, nómina o nombre</span><input name="q" th:value="${filtro.q}" maxlength="200" placeholder="RN-P, BOR o nombre"></label>
+   <label><span>Estado del comprobante</span><select name="estado"><option value="TODOS">Todos</option><option value="PAGADO" th:selected="${filtro.estado=='PAGADO'}">Pagados</option><option value="CANCELADO" th:selected="${filtro.estado=='CANCELADO'}">Pagos cancelados</option><option value="NETO_CERO" th:selected="${filtro.estado=='NETO_CERO'}">Neto cero confirmado</option><option value="HISTORICO" th:selected="${filtro.estado=='HISTORICO'}">Aplicación histórica</option></select></label>
+   <label><span>Periodo cubierto · desde</span><input type="date" name="desde" th:value="${filtro.desde}"></label>
+   <label><span>Periodo cubierto · hasta</span><input type="date" name="hasta" th:value="${filtro.hasta}"></label>
+   <label><span>Por página</span><select name="tamanio"><option th:each="n:${ {10,25,50,100} }" th:value="${n}" th:selected="${n==filtro.tamanio}" th:text="${n}"></option></select></label>
+   <div th:if="${errorOperacion}" class="form-error" role="alert" tabindex="-1" data-nomina-filter-error style="grid-column:1/-1;margin:0"><strong>Revisa los filtros</strong><p th:text="${errorOperacion}"></p></div>
+   <div class="module-filter-actions"><button class="module-action module-action--primary" type="submit">Aplicar filtros</button><a class="module-action" href="/admin/recibos-nomina">Limpiar</a></div>
+  </form>
+  <div class="form-notice" style="margin:20px 26px"><strong>Historial, no suma de gastos</strong><p>Los pagos cancelados conservan su importe original. Un cierre cero no entrega dinero. Una aplicación histórica no es un pago individual nuevo: no sumes todos los documentos como salidas vigentes.</p></div>
+  <div class="table-wrap"><table><thead><tr><th>Recibo / nómina</th><th>Empleado histórico</th><th>Periodo cubierto</th><th>Registro / estado</th><th>Importe</th><th>Consulta</th></tr></thead><tbody>
+   <tr th:each="r:${resultado.content}">
+    <td data-label="Recibo / nómina"><div class="nomina-cell"><strong th:text="${r.folio()}"></strong><small th:text="${r.nomina()}"></small></div></td>
+    <td data-label="Empleado histórico"><div class="nomina-cell"><strong th:text="${r.nombre}"></strong><small th:text="${r.codigo}"></small></div></td>
+    <td data-label="Periodo cubierto"><div class="nomina-cell"><strong th:text="${r.periodo}"></strong><small th:text="${#temporals.format(r.inicio,'dd/MM/yyyy')+' al '+#temporals.format(r.fin,'dd/MM/yyyy')}"></small></div></td>
+    <td data-label="Registro / estado"><div class="nomina-cell"><span class="status" th:classappend="${r.estado=='CANCELADO'?'nomina-attempt-cancelled':(r.estado=='PAGADO'?'positivo':'neutro')}" th:text="${r.estadoTexto()}"></span><small th:text="${r.fecha}"></small></div></td>
+    <td data-label="Importe"><div class="nomina-cell"><strong th:text="${'$'+#numbers.formatDecimal(r.neto,1,'COMMA',2,'POINT')}"></strong><small th:text="${r.moneda}"></small></div></td>
+    <td data-label="Consulta"><div class="module-filter-actions"><a class="module-action" th:href="${filtro.url(r.ruta())}">Ver recibo</a><a class="module-action" th:href="${r.ruta()+'/pdf'}" target="_blank" rel="noopener">PDF ↗</a></div></td>
+   </tr><tr th:if="${resultado.empty}"><td colspan="6">No hay recibos con estos filtros. Los borradores e intentos rechazados sin salida no son comprobantes de pago.</td></tr>
+  </tbody></table></div>
+  <footer class="pagination"><p th:text="${resultado.totalElements+' comprobantes · Página '+(resultado.number+1)}"></p><div><a th:if="${resultado.hasPrevious()}" th:href="${filtro.pagina(resultado.number-1).url('/admin/recibos-nomina')}">Anterior</a><a th:if="${resultado.hasNext()}" th:href="${filtro.pagina(resultado.number+1).url('/admin/recibos-nomina')}">Siguiente</a></div></footer>
+ </section>
+</main></body></html>

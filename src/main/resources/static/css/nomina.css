@@ -292,3 +292,30 @@
 .nomina-attempt-recovery>strong { display:block;font-size:.8rem;line-height:1.6; }
 .nomina-attempt-recovery dl { margin:10px 0 0; }.nomina-attempt-recovery dl>div { padding:7px 0; }.nomina-attempt-recovery dt { color:var(--muted);font-size:.72rem; }.nomina-attempt-recovery dd { margin:4px 0 0;font-size:.77rem;line-height:1.7;overflow-wrap:anywhere; }
 @media(max-width:620px){.nomina-location{margin:16px 14px;padding:12px 14px}.nomina-attempt-help{min-width:0}}
+.recibos-filters .autocomplete .autocomplete-option {
+    height:auto!important;
+    min-height:0!important;
+    grid-template-columns:minmax(0,1fr);
+    grid-column:auto;
+    align-content:start;
+    line-height:1.6;
+    white-space:normal;
+    overflow-wrap:anywhere;
+}
+.recibos-filters .autocomplete-option strong,
+.recibos-filters .autocomplete-option small {
+    display:block;
+    position:static;
+    min-width:0;
+    margin:0;
+    line-height:1.6;
+    white-space:normal;
+    overflow-wrap:anywhere;
+}
+.recibos-filters .autocomplete-results {
+    max-width:100%;
+    max-height:min(320px,55vh);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    z-index:50;
+}

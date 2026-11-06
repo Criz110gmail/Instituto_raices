@@ -36,6 +36,7 @@ public class SeguridadConfig {
                         .requestMatchers(HttpMethod.POST, "/acceso/comprobar").permitAll()
                         .requestMatchers(HttpMethod.POST, "/sesion/renovar").authenticated()
                         .requestMatchers("/admin/pendientes", "/admin/pendientes/**").authenticated()
+                        .requestMatchers(HttpMethod.GET,"/admin/recibos-nomina", "/admin/recibos-nomina/**").hasAnyAuthority("CONDICION_SALARIAL_LEER","CONDICION_SALARIAL_ADMINISTRAR")
                         .requestMatchers(HttpMethod.POST,"/admin/empleados/*/nomina","/admin/empleados/*/nomina/**").hasAuthority("EMPLEADO_NOMINA_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET,"/admin/empleados/*/nomina","/admin/empleados/*/nomina/**").hasAnyAuthority("EMPLEADO_NOMINA_LEER","EMPLEADO_NOMINA_ADMINISTRAR")
                         .requestMatchers(HttpMethod.POST,"/admin/configuracion-nomina", "/admin/configuracion-nomina/**", "/admin/preparacion-nomina", "/admin/preparacion-nomina/**", "/admin/calendarios-nomina", "/admin/calendarios-nomina/**", "/admin/periodos-nomina", "/admin/periodos-nomina/**", "/admin/conceptos-empleado", "/admin/conceptos-empleado/**", "/admin/conceptos-nomina", "/admin/conceptos-nomina/**", "/admin/jornadas", "/admin/jornadas/**", "/admin/esquemas", "/admin/esquemas/**", "/admin/asignaciones", "/admin/asignaciones/**", "/admin/puestos", "/admin/puestos/**", "/admin/empleados/*/condiciones", "/admin/empleados/*/condiciones/**", "/admin/empleados/*/puesto", "/admin/empleados/*/puesto/**")

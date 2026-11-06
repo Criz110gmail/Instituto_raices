@@ -1,4 +1,20 @@
 SISTEMA ADMINISTRATIVO ESCOLAR
+CONSULTA DE RECIBOS INTERNOS DE NOMINA (06/11/2026, V161):
+Privacidad vigente: PDF compartible institución/logo, folio/estado, empleado/
+código/puesto, fechas, nombres/importes de percepciones (sueldo+adicionales) y
+deducciones, totales/neto. Cuota préstamo sólo nombre/importe del concepto, no
+folioPRE/saldo/capital/intereses. No fuentes/cheques, responsables ni motivos.
+La trazabilidad completa descrita abajo queda sólo en consulta administrativa.
+Proyección de hechos existentes, NO tabla Recibo ni nueva operación financiera.
+RN-P identifica nomina_pago_intento PAGADO/REVERTIDO; conserva cada intento y
+cancelación. RN-C identifica nomina_cierre_cero por fila, sin pago/movimiento0.
+RN-H identifica fila de nomina_aplicacion antigua consolidada, no pago individual.
+Desglose usa nomina_fila_efectiva y revisión histórica; préstamo y capital/interés
+congelados de fuentes.cuotas_programadas, nunca saldo actual. Fuentes/cheques y
+cancelación trazables. Acceso salarial institucional servidor, sin nuevos grants.
+V161 añade tres índices, no columnas ni tablas. Portal propio/cuenta opcional del
+empleado pendientes etapa2. PDF interno Jasper, no CFDI/cálculo fiscal automático.
+
 CONSULTA BANCARIA DE CHEQUES (03/11/2026, SIN NUEVA MIGRACION):
 CuentaBANCO/Chequeras → Cheques lista documentos inmutables y su cancelación,
 filtrados por cuenta/institución, chequera, estado, folio, texto y emisión.
