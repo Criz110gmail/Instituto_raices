@@ -1,5 +1,29 @@
 # Contexto del proyecto
 
+## Acceso opcional a recibos: etapa 2 publicada — 06/11/2026
+
+Recibo PDF con conceptos aceptado por usuario; autorizó acceso propio opcional.
+V162 publicada en app restaurada, imagen portal-recibos-v162 y healthUP. Empleado.usuarioPortal único y flag
+false inicial, cuentas nuevas PORTAL_EMPLEADO o reutilizadas del Maestro vinculado;
+no roles/grants/operaciones. Gestión desde Acceso de Empleados con modales y enlaces
+temporales privados; permisos institucionales Empleados+salarioAdmin. Desactivar
+recibos no cierra acceso docente; clave compartida exige también MaestroAdmin.
+Portal /personal sólo propios y PDF existentes; validación por usuario e institución
+en cada lectura, no por IDs de captura. Login propio /personal/acceso y sesiónCSRF.
+1081Java/143JS correctas; IT PostgreSQL17 con162 migraciones sintética correcta:
+activación, cuenta docente compartida en ambos sentidos, propiedad de recibos/PDF,
+IDs ajenos, desactivación con sesión antigua, CSRF y triggers de identidad.
+QA visual ficticia escritorio/390px claro/oscuro, login y modal Cancelar correctos.
+Bloqueo build habitual evitado con Docker config temporal sin credenciales y bases
+fijadas; no configuración global modificada. Respaldo antes-v162.dump privado600;
+huellas financieras, roles, empleados y usuarios iguales antes/después. Migración
+no habilitó cuentas:0 empleados vinculados/activos en portal. Sin pagos reales.
+Manual PRUEBA_PORTAL_RECIBOS_EMPLEADO_20261106.md pendiente de aceptación humana,
+sin publicar caso CONFIRMADO en Guía hasta prueba real. Etapa1 PDF ya aceptada.
+Siguiente humano: Sofía existente → Editar → Acceso → Administrar acceso a sus
+recibos, activar enlace y entrar /personal/acceso. No volver a pagar su nómina.
+Límites/recursos/rutas operativas al inicio de AGENT.md. Sin .env/commit/push.
+
 ## Aclaración de recibo detallado — 06/11/2026
 
 Usuario aclara que el PDF sí debe listar cada percepción y deducción por nombre e

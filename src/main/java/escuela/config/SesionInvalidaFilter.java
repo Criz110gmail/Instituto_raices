@@ -13,7 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 /** Una cookie vieja no debe bloquear el acceso público ni sus archivos estáticos. */
 public class SesionInvalidaFilter extends OncePerRequestFilter {
     private static final Set<String> ACCESO_PUBLICO = Set.of("/", "/login", "/familias",
-            "/maestros/acceso", "/activar-cuenta", "/restablecer-password", "/acceso/csrf",
+            "/maestros/acceso", "/personal/acceso", "/activar-cuenta", "/restablecer-password", "/acceso/csrf",
             "/acceso-denegado", "/salud", "/actuator/health", "/favicon.svg", "/error");
     private final SesionExpiradaAccessDeniedHandler expiracion;
 

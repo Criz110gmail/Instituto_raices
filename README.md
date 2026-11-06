@@ -9,7 +9,10 @@ antiguas consolidadas. Sólo consulta autorizada: no genera pagos ni es CFDI.
 El PDF para compartir muestra empleado/puesto, periodo, percepciones y deducciones
 por nombre e importe, totales y neto. No revela cuentas, cheques, responsables ni
 el saldo/capital/intereses de préstamos; la trazabilidad queda en el admin.
-El acceso opcional del empleado a sus propios recibos será la etapa 2.
+El acceso opcional ya se administra desde **Empleados → Editar → Acceso**.
+Portal propio en `/personal/acceso`, sólo recibos de la persona autenticada;
+reutiliza su cuenta docente cuando existe. Ninguna cuenta se habilita automáticamente.
+[Prueba del acceso personal, pendiente de aceptación](PRUEBA_PORTAL_RECIBOS_EMPLEADO_20261106.md).
 [Prueba propuesta, pendiente de aceptación](PRUEBA_RECIBOS_NOMINA_ETAPA1_20261106.md).
 
 ## Consulta de Préstamos y Cheques: pruebas cerradas — 06/11/2026

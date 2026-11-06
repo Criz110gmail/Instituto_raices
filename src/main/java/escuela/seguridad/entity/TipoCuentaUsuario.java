@@ -3,5 +3,6 @@ package escuela.seguridad.entity;
 public enum TipoCuentaUsuario {
     ADMINISTRATIVO,
     PORTAL_TUTOR,
-    PORTAL_MAESTRO
+    PORTAL_MAESTRO,
+    PORTAL_EMPLEADO
 }

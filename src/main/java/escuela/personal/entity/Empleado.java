@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 @Getter @Setter @Entity @Table(name="empleado")
 public class Empleado extends EntidadAuditable {
+ @OneToOne(fetch=FetchType.LAZY) @JoinColumn(name="usuario_portal_id") private escuela.seguridad.entity.Usuario usuarioPortal;
+ @Column(name="portal_recibos_habilitado",nullable=false) private boolean portalRecibosHabilitado;
  @ManyToOne(fetch=FetchType.LAZY,optional=false) @JoinColumn(name="institucion_id",nullable=false) private Institucion institucion;
  @Column(nullable=false,length=50) private String codigo;
  @Column(nullable=false,length=150) private String nombres;

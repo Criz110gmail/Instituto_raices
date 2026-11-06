@@ -34,6 +34,7 @@ public class PerfilSesionService {
             case ADMINISTRATIVO -> "Administración";
             case PORTAL_TUTOR -> "Portal de familias";
             case PORTAL_MAESTRO -> "Portal de maestros";
+            case PORTAL_EMPLEADO -> "Recibos del empleado";
         };
         int cantidad = principal.plantelIds().size();
         String alcance = principal.alcanceInstitucional() ? "Toda la institución"

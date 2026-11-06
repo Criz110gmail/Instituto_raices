@@ -3,8 +3,9 @@
         if (document.querySelector('[data-session-clock-modal]')) return;
         const familia = /^\/portal(\/|$)/.test(location.pathname);
         const maestro = /^\/maestros(\/|$)/.test(location.pathname);
-        const acceso = familia ? '/familias' : maestro ? '/maestros/acceso' : '/login';
-        const origen = familia ? 'familias' : maestro ? 'maestros' : 'admin';
+        const personal = /^\/personal(\/|$)/.test(location.pathname);
+        const acceso = familia ? '/familias' : maestro ? '/maestros/acceso' : personal ? '/personal/acceso' : '/login';
+        const origen = familia ? 'familias' : maestro ? 'maestros' : personal ? 'personal' : 'admin';
         const fetchOriginal = window.fetch.bind(window);
         let vence = 0, csrfCabecera, csrfToken, consultando = false, renovando = false;
         let avisoPara = 0, ultimaSincronizacion = 0, ultimoServidor = 0, saliendo = false;

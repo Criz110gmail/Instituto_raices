@@ -44,6 +44,8 @@ public class SeguridadConfig {
                         .requestMatchers(HttpMethod.GET,"/admin/configuracion-nomina", "/admin/configuracion-nomina/**", "/admin/preparacion-nomina", "/admin/preparacion-nomina/**", "/admin/calendarios-nomina", "/admin/calendarios-nomina/**", "/admin/periodos-nomina", "/admin/periodos-nomina/**", "/admin/conceptos-empleado", "/admin/conceptos-empleado/**", "/admin/conceptos-nomina", "/admin/conceptos-nomina/**", "/admin/personal/filtros/**", "/admin/jornadas", "/admin/jornadas/**", "/admin/esquemas", "/admin/esquemas/**", "/admin/asignaciones", "/admin/asignaciones/**", "/admin/puestos", "/admin/puestos/**", "/admin/empleados/*/condiciones", "/admin/empleados/*/condiciones/**", "/admin/empleados/*/puesto", "/admin/empleados/*/puesto/**")
                         .hasAnyAuthority("CONDICION_SALARIAL_LEER","CONDICION_SALARIAL_ADMINISTRAR")
                         .requestMatchers("/", "/login", "/familias", "/maestros/acceso", "/activar-cuenta", "/restablecer-password", "/acceso-denegado", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
+                        .requestMatchers("/personal/acceso").permitAll()
+                        .requestMatchers("/personal", "/personal/**").hasAuthority("PORTAL_EMPLEADO_ACCEDER")
                         .requestMatchers("/maestros/**").hasAuthority("PORTAL_MAESTRO_ACCEDER")
                         .requestMatchers(HttpMethod.GET, "/portal/**")
                         .hasAuthority("PORTAL_TUTOR_ACCEDER")
@@ -271,23 +273,28 @@ public class SeguridadConfig {
                         .successHandler((request, response, authentication) -> {
                             boolean entradaFamiliar = "familias".equals(request.getParameter("origen"));
                             boolean entradaMaestro = "maestros".equals(request.getParameter("origen"));
+                            boolean entradaPersonal = "personal".equals(request.getParameter("origen"));
+                            boolean tienePersonal=authentication.getAuthorities().stream().anyMatch(a->a.getAuthority().equals("PORTAL_EMPLEADO_ACCEDER"));
                             boolean tienePortal = authentication.getAuthorities().stream()
                                     .anyMatch(a -> a.getAuthority().equals("PORTAL_TUTOR_ACCEDER"));
                             boolean tienePortalMaestro = authentication.getAuthorities().stream()
                                     .anyMatch(a -> a.getAuthority().equals("PORTAL_MAESTRO_ACCEDER"));
                             response.sendRedirect(request.getContextPath()
-                                    + (entradaFamiliar ? (tienePortal ? "/portal" : "/acceso-denegado")
+                                    + (entradaPersonal ? (tienePersonal ? "/personal" : "/acceso-denegado")
+                                    : entradaFamiliar ? (tienePortal ? "/portal" : "/acceso-denegado")
                                     : entradaMaestro ? (tienePortalMaestro ? "/maestros" : "/acceso-denegado")
                                     : tienePortalMaestro && !tienePortal ? "/maestros"
-                                    : tienePortal && !tienePortalMaestro ? "/portal" : "/admin"));
+                                    : tienePortal && !tienePortalMaestro ? "/portal" : tienePersonal ? "/personal" : "/admin"));
                         })
                         .failureHandler((request, response, exception) -> response.sendRedirect(
                                 request.getContextPath() + ("familias".equals(request.getParameter("origen"))
                                         ? "/familias?error" : "maestros".equals(request.getParameter("origen"))
-                                        ? "/maestros/acceso?error" : "/login?error")))
+                                        ? "/maestros/acceso?error" : "personal".equals(request.getParameter("origen")) ? "/personal/acceso?error" : "/login?error")))
                         .permitAll())
                 .httpBasic(Customizer.withDefaults())
                 .exceptionHandling(excepciones -> excepciones
+                        .defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint("/personal/acceso"),
+                                request -> request.getRequestURI().startsWith(request.getContextPath()+"/personal"))
                         .defaultAuthenticationEntryPointFor(new LoginUrlAuthenticationEntryPoint("/familias"),
                                 request -> request.getRequestURI().startsWith(
                                         request.getContextPath() + "/portal"))
@@ -307,6 +314,7 @@ public class SeguridadConfig {
     }
 
     static String rutaDespuesDeCerrarSesion(String origen) {
+        if ("personal".equals(origen)) return "/personal/acceso?logout";
         if ("familias".equals(origen)) return "/familias?logout";
         if ("maestros".equals(origen)) return "/maestros/acceso?logout";
         return "/login?logout";

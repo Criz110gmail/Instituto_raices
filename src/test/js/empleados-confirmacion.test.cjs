@@ -17,3 +17,12 @@ test('personal: todos los modales conservan captura al cancelar y confirman un �
  }
 });
 test('datos personales inválidos no abren confirmación',()=>{const ui=iniciar('empleado-registro',false);ui.enviar();assert.ok(!ui.dialog.open);assert.equal(ui.enviados(),0);});
+test('acceso a recibos: alta, enlace y desactivación requieren confirmar; cancelar no envía',()=>{
+ for(const accion of ['HABILITAR','ENLACE','DESHABILITAR']){
+  const ui=iniciar('empleado-acceso-recibos');ui.fields.accion={value:accion};ui.fields.username={value:'persona.ficticia'};ui.enviar();
+  const d=ui.dialog,acciones=d.children[4];assert.equal(d.open,true);assert.equal(ui.enviados(),0);assert.equal(acciones.children[0].textContent,'Cancelar');
+  assert.ok(d.children[2].children.some(x=>x.textContent==='Únicamente sus propios recibos de nómina'));
+  acciones.children[0].fire('click');assert.equal(ui.enviados(),0);assert.equal(ui.fields.username.value,'persona.ficticia');
+  ui.enviar();acciones.children[1].fire('click');acciones.children[1].fire('click');assert.equal(ui.enviados(),1);
+ }
+});

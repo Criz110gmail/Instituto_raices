@@ -32,7 +32,10 @@ public class JasperReciboNominaService {
     private static final DateTimeFormatter FECHA=DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public void exportar(String tipo,Long id,OutputStream salida){
-        Detalle d=recibos.obtener(tipo,id);
+        exportarAutorizado(recibos.obtener(tipo,id),salida);
+    }
+    /** El llamador debe haber validado pertenencia y acceso vigentes en el servicio. */
+    public void exportarAutorizado(Detalle d,OutputStream salida){
         try{
             var p=new HashMap<String,Object>();p.put("institucion",d.institucion());p.put("folio",d.recibo().folio());
             p.put("estado",d.recibo().estadoTexto().toUpperCase(Locale.ROOT));p.put("logo",logo(d.institucionId()));

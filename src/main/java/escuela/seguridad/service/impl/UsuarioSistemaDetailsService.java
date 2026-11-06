@@ -38,6 +38,7 @@ public class UsuarioSistemaDetailsService implements UserDetailsService {
     private final PermisoRepository permisoRepository;
     private final SecurityProperties securityProperties;
     private final PasswordEncoder passwordEncoder;
+    private final escuela.personal.repository.EmpleadoRepository empleados;
 
     @Override
     public UserDetails loadUserByUsername(String identificador) throws UsernameNotFoundException {
@@ -51,15 +52,22 @@ public class UsuarioSistemaDetailsService implements UserDetailsService {
                     false, false, usuario.getUsername(), usuario.getPasswordHash(),
                     List.of(new SimpleGrantedAuthority("PORTAL_TUTOR_ACCEDER")));
         }
+        if (usuario.getTipoCuenta() == TipoCuentaUsuario.PORTAL_EMPLEADO) {
+            if(!empleados.existsByUsuarioPortalIdAndPortalRecibosHabilitadoTrueAndActivoTrue(usuario.getId())) throw new DisabledException("Acceso personal no habilitado");
+            return new UsuarioPrincipal(usuario.getId(),usuario.getInstitucion().getId(),Set.of(),false,false,usuario.getUsername(),usuario.getPasswordHash(),List.of(new SimpleGrantedAuthority("PORTAL_EMPLEADO_ACCEDER")));
+        }
         if (usuario.getTipoCuenta() == TipoCuentaUsuario.PORTAL_MAESTRO) {
+            var autoridades=new java.util.ArrayList<SimpleGrantedAuthority>();autoridades.add(new SimpleGrantedAuthority("PORTAL_MAESTRO_ACCEDER"));
+            if(empleados.existsByUsuarioPortalIdAndPortalRecibosHabilitadoTrueAndActivoTrue(usuario.getId()))autoridades.add(new SimpleGrantedAuthority("PORTAL_EMPLEADO_ACCEDER"));
             return new UsuarioPrincipal(usuario.getId(), usuario.getInstitucion().getId(), Set.of(),
                     false, false, usuario.getUsername(), usuario.getPasswordHash(),
-                    List.of(new SimpleGrantedAuthority("PORTAL_MAESTRO_ACCEDER")));
+                    autoridades);
         }
         List<escuela.seguridad.entity.UsuarioRol> asignaciones = asignacionesActivas(usuario);
         Set<String> permisos = permisos(asignaciones);
         permisos.remove("PORTAL_TUTOR_ACCEDER");
         permisos.remove("PORTAL_MAESTRO_ACCEDER");
+        permisos.remove("PORTAL_EMPLEADO_ACCEDER");
         Set<Long> planteles = asignaciones.stream()
                 .filter(a -> a.getAlcance() == escuela.seguridad.entity.AlcanceRol.PLANTEL)
                 .map(a -> a.getPlantel().getId()).collect(java.util.stream.Collectors.toSet());

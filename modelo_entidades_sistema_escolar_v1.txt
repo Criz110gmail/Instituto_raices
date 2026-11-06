@@ -1,4 +1,15 @@
 SISTEMA ADMINISTRATIVO ESCOLAR
+ACCESO OPCIONAL A RECIBOS DEL EMPLEADO (06/11/2026, V162):
+empleado.usuario_portal_id nullable, unico, FK usuario; vínculo no reasignable.
+empleado.portal_recibos_habilitado boolean false inicial. No habilitación automática.
+usuario.tipo_cuenta admite PORTAL_EMPLEADO; sin roles administrativos. Comparte
+PORTAL_MAESTRO sólo con el perfil docente del mismo empleado/institución, conservando
+credenciales. Triggers protegen identidad, institución, tipo y coherencia docente.
+Gestión autorizada desde Empleados; invitación48h y recuperación30min existentes.
+Portal /personal identifica propietario por sesión, revalida habilitación en cada
+listado/PDF y no expone detalle administrativo, Excel ni recibos ajenos. Desactivar
+recibos de cuenta compartida no desactiva Maestros. No tabla Recibo ni movimientos.
+
 CONSULTA DE RECIBOS INTERNOS DE NOMINA (06/11/2026, V161):
 Privacidad vigente: PDF compartible institución/logo, folio/estado, empleado/
 código/puesto, fechas, nombres/importes de percepciones (sueldo+adicionales) y
@@ -13,7 +24,7 @@ Desglose usa nomina_fila_efectiva y revisión histórica; préstamo y capital/in
 congelados de fuentes.cuotas_programadas, nunca saldo actual. Fuentes/cheques y
 cancelación trazables. Acceso salarial institucional servidor, sin nuevos grants.
 V161 añade tres índices, no columnas ni tablas. Portal propio/cuenta opcional del
-empleado pendientes etapa2. PDF interno Jasper, no CFDI/cálculo fiscal automático.
+empleado implementados en V162 arriba. PDF interno Jasper, no CFDI/cálculo fiscal automático.
 
 CONSULTA BANCARIA DE CHEQUES (03/11/2026, SIN NUEVA MIGRACION):
 CuentaBANCO/Chequeras → Cheques lista documentos inmutables y su cancelación,

@@ -34,6 +34,8 @@ public class PortalMaestroController {
     void navegacion(Model model) {
         model.addAttribute("rutaPortal", "/maestros");
         model.addAttribute("soporte", false);
+        var a=org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        model.addAttribute("puedeRecibos",a!=null&&a.getAuthorities().stream().anyMatch(x->x.getAuthority().equals("PORTAL_EMPLEADO_ACCEDER")));
     }
 
     @GetMapping String inicio(@RequestParam(required=false)LocalDate desde,@RequestParam(required=false)LocalDate hasta,@RequestParam(required=false)EstadoPlaneacion estado,@RequestParam(defaultValue="0")int pagina,@AuthenticationPrincipal UsuarioPrincipal principal,Model m){var perfil=service.perfil(principal);m.addAttribute("perfil",perfil);m.addAttribute("fotoPerfil",fotografias.actual(perfil.id())!=null);m.addAttribute("desde",desde);m.addAttribute("hasta",hasta);m.addAttribute("estado",estado);m.addAttribute("estados",EstadoPlaneacion.values());if(desde!=null&&hasta!=null&&hasta.isBefore(desde))m.addAttribute("errorFiltro","La fecha final debe ser igual o posterior a la fecha inicial");m.addAttribute("planeaciones",service.listarMaestro(principal,desde,hasta,estado,pagina));return"maestros/inicio";}

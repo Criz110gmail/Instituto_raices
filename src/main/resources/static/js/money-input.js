@@ -477,6 +477,13 @@
                 add('Sueldo mensual',form.querySelector('[data-puesto-sueldo]')?.value||'');
                 add('Aplicar desde',valor('inicio').split('-').reverse().join('/'));add('Motivo',valor('motivo'));
                 note.textContent='Se registra una sola fuente salarial. La asignación anterior termina el día previo sin perder su historial. No se calcula nómina ni se mueve dinero. Cancelar conserva la captura sin guardar.';
+            } else if(kind==='empleado-acceso-recibos') {
+                const accion=form.querySelector('[name="accion"]')?.value;
+                title.textContent=accion==='DESHABILITAR'?'Desactivar acceso a recibos':accion==='ENLACE'?'Generar enlace de contraseña':'Habilitar acceso a recibos';
+                cancel.textContent='Cancelar';accept.textContent='Confirmar';
+                add('Empleado',form.dataset.confirmSubject);add('Usuario',form.querySelector('[name="username"]')?.value||form.dataset.confirmUser||'Cuenta existente');
+                add('Alcance','Únicamente sus propios recibos de nómina');
+                note.textContent=accion==='DESHABILITAR'?'Se conserva el historial. Si la cuenta es docente, su portal de maestros no se desactiva. Cancelar cierra este resumen sin guardar.':accion==='ENLACE'?'El enlace es temporal y de un solo uso. Si comparte cuenta docente, cambia la misma contraseña. No se enviarán correos. Cancelar no genera el enlace.':'Se crea una cuenta personal o se reutiliza su cuenta docente vinculada. No concede acceso administrativo ni modifica pagos. Cancelar conserva la captura.';
             } else if(kind.startsWith('empleado-')) {
                 const titles={'empleado-registro':'Confirmar datos personales','empleado-laboral':'Confirmar información laboral','empleado-plantel':'Confirmar asignación de plantel','empleado-perfil':'Confirmar actividad docente','empleado-vigencia':'Confirmar fin de vigencia'};
                 title.textContent=titles[kind]||'Confirmar operación de personal';cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar';

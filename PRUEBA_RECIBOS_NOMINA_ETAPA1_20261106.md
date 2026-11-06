@@ -1,6 +1,8 @@
 # Recibos internos de nómina — etapa 1
 
-Estado: propuesta de aceptación humana, NO confirmada. Sólo consulta; no volver a
+Estado: presentación del PDF con conceptos aceptada por el usuario el 06/11/2026.
+No atribuir aceptación humana de controles que no se hayan probado expresamente.
+Sólo consulta; no volver a
 pagar, cancelar cheques, entregar préstamos ni cambiar saldos para probarla.
 
 ## 1. Entrada y filtros

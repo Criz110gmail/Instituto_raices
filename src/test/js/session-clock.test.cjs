@@ -88,7 +88,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
     assert.equal(modal.open, false);
     e.channel.listeners.message({ data: { ahora: 1000000, fin: 1000001 } });
     assert.equal(badge.textContent, 'Sesión · 30:00'); // Respuesta vieja no acorta renovación.
-    for (const [path, login] of [['/portal/pagos', '/familias'], ['/maestros/planeaciones', '/maestros/acceso'], ['/admin/pagos', '/login']]) {
+    for (const [path, login] of [['/portal/pagos', '/familias'], ['/maestros/planeaciones', '/maestros/acceso'], ['/personal', '/personal/acceso'], ['/personal/recibos/CERO/7/pdf','/personal/acceso'], ['/admin/pagos', '/login']]) {
         const caso = entorno(path); await flush();
         assert.equal(caso.controls.children.at(-1), caso.logout);
         if (path.startsWith('/portal')) {

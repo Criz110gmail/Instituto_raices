@@ -51,7 +51,9 @@ public class SesionExpiradaAccessDeniedHandler implements AccessDeniedHandler {
         String ruta = request.getRequestURI().substring(request.getContextPath().length());
         boolean envioAcceso = ruta.equals("/logout") || ruta.equals("/login");
         String origen = envioAcceso ? request.getParameter("origen") : null;
-        String acceso = ruta.equals("/maestros") || ruta.startsWith("/maestros/") || "maestros".equals(origen)
+        String acceso = ruta.equals("/personal") || ruta.startsWith("/personal/") || "personal".equals(origen)
+                ? "/personal/acceso?sesionExpirada"
+                : ruta.equals("/maestros") || ruta.startsWith("/maestros/") || "maestros".equals(origen)
                 ? "/maestros/acceso?sesionExpirada"
                 : ruta.equals("/portal") || ruta.startsWith("/portal/") || ruta.equals("/familias") || "familias".equals(origen)
                 ? "/familias?sesionExpirada" : "/login?sesionExpirada";
@@ -65,7 +67,7 @@ public class SesionExpiradaAccessDeniedHandler implements AccessDeniedHandler {
         registrarRechazo(request, "login");
         String origen = request.getParameter("origen");
         String acceso = "familias".equals(origen) ? "/familias"
-                : "maestros".equals(origen) ? "/maestros/acceso" : "/login";
+                : "maestros".equals(origen) ? "/maestros/acceso" : "personal".equals(origen) ? "/personal/acceso" : "/login";
         response.sendRedirect(request.getContextPath() + acceso + "?accesoActualizado");
     }
 

@@ -36,6 +36,7 @@ class UsuarioSistemaDetailsServiceTest {
     private final RolPermisoRepository rolPermisoRepository = mock(RolPermisoRepository.class);
     private final PermisoRepository permisoRepository = mock(PermisoRepository.class);
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final escuela.personal.repository.EmpleadoRepository empleados=mock(escuela.personal.repository.EmpleadoRepository.class);
     private UsuarioSistemaDetailsService service;
     private Usuario usuario;
 
@@ -45,7 +46,7 @@ class UsuarioSistemaDetailsServiceTest {
         properties.getUser().setName("administrador-temporal");
         properties.getUser().setPassword("password-temporal");
         service = new UsuarioSistemaDetailsService(usuarioRepository, usuarioRolRepository,
-                rolPermisoRepository, permisoRepository, properties, passwordEncoder);
+                rolPermisoRepository, permisoRepository, properties, passwordEncoder, empleados);
 
         Institucion institucion = new Institucion();
         institucion.setId(1L);
@@ -170,5 +171,17 @@ class UsuarioSistemaDetailsServiceTest {
         assertThat(detalles.getAuthorities()).extracting("authority")
                 .containsExactly("PORTAL_MAESTRO_ACCEDER");
         org.mockito.Mockito.verifyNoInteractions(usuarioRolRepository, rolPermisoRepository);
+    }
+    @Test void cuentaPersonalSoloRecibePermisoPropioSinRoles(){
+        usuario.setTipoCuenta(TipoCuentaUsuario.PORTAL_EMPLEADO);when(usuarioRepository.findAllByUsernameIgnoreCase("criz110")).thenReturn(List.of(usuario));when(empleados.existsByUsuarioPortalIdAndPortalRecibosHabilitadoTrueAndActivoTrue(2L)).thenReturn(true);
+        assertThat(service.loadUserByUsername("criz110").getAuthorities()).extracting("authority").containsExactly("PORTAL_EMPLEADO_ACCEDER");org.mockito.Mockito.verifyNoInteractions(usuarioRolRepository,rolPermisoRepository);
+    }
+    @Test void docenteConRecibosConservaCuentaYAmbosAccesos(){
+        usuario.setTipoCuenta(TipoCuentaUsuario.PORTAL_MAESTRO);when(usuarioRepository.findAllByUsernameIgnoreCase("criz110")).thenReturn(List.of(usuario));when(empleados.existsByUsuarioPortalIdAndPortalRecibosHabilitadoTrueAndActivoTrue(2L)).thenReturn(true);
+        assertThat(service.loadUserByUsername("criz110").getAuthorities()).extracting("authority").containsExactlyInAnyOrder("PORTAL_MAESTRO_ACCEDER","PORTAL_EMPLEADO_ACCEDER");org.mockito.Mockito.verifyNoInteractions(usuarioRolRepository,rolPermisoRepository);
+    }
+    @Test void cuentaPersonalDeshabilitadaNoPuedeIniciarSesion(){
+        usuario.setTipoCuenta(TipoCuentaUsuario.PORTAL_EMPLEADO);when(usuarioRepository.findAllByUsernameIgnoreCase("criz110")).thenReturn(List.of(usuario));
+        assertThatThrownBy(()->service.loadUserByUsername("criz110")).isInstanceOf(org.springframework.security.authentication.DisabledException.class);
     }
 }

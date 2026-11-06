@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b1930"><title>Acceso del personal · Nexo Escolar</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/login.css"><link rel="stylesheet" href="/css/session.css"><script src="/js/theme.js"></script><script src="/js/login-session.js?v=2" defer></script>
+</head>
+<body>
+<button class="theme-toggle" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button>
+<main class="login-shell">
+    <section class="login-story">
+        <div class="story-brand"><span>N</span><strong>Nexo Escolar</strong></div>
+        <div class="orbit" aria-hidden="true"><i></i><i></i><i></i><strong>NE</strong></div>
+        <div><p class="eyebrow">Espacio del personal</p><h1>Tu nómina, clara y a tu alcance.</h1><p class="story-copy">Consulta tus recibos personales con el detalle de percepciones, deducciones e importe neto.</p></div>
+        <div class="signal"><span></span>Conexión segura</div>
+    </section>
+    <section class="login-panel">
+        <div class="mobile-brand"><span>N</span><strong>Nexo Escolar</strong></div>
+        <div class="form-heading"><p>Bienvenido</p><h2>Inicia sesión</h2><span>Usa las credenciales asignadas por administración.</span></div>
+        <div class="alert warning" role="alert" th:if="${param.sesionExpirada}"><strong>Tu sesión caducó</strong><span>Por seguridad, inicia sesión nuevamente para continuar. Los cambios que no alcanzaron a guardarse deben capturarse otra vez.</span></div>
+        <div class="alert error" th:if="${param.error}">El usuario o la contraseña no son correctos.</div>
+        <div class="alert success" th:if="${param.logout}">Tu sesión se cerró correctamente.</div>
+        <div class="alert warning" role="status" th:if="${param.accesoActualizado}"><strong>Acceso actualizado</strong><span>La sesión cambió en otra pestaña. Inicia sesión nuevamente desde esta pantalla.</span></div>
+        <!-- Sólo el acceso obtiene CSRF al enviar: cargar otra pestaña no crea una cookie de sesión. -->
+        <form data-login-refresh="personal" th:attr="data-csrf-url=@{/acceso/csrf},data-check-url=@{/acceso/comprobar},action=@{/login}" method="post">
+            <input type="hidden" name="_csrf" value=""><input type="hidden" name="origen" value="personal">
+            <noscript><p role="alert">Activa JavaScript para iniciar sesión de forma segura.</p></noscript>
+            <label><span>Usuario</span><input name="username" autocomplete="username" required autofocus placeholder="tu.usuario"></label>
+            <label><span>Contraseña</span><input type="password" name="password" autocomplete="current-password" required placeholder="••••••••••••"></label>
+            <div class="form-meta"><span>Si el usuario se repite, usa CÓDIGO_INSTITUCIÓN\usuario</span></div>
+            <button type="submit" disabled>Ver mis recibos <span>→</span></button>
+        </form>
+        <p class="support">¿Problemas para ingresar? Contacta al administrador de tu institución.</p>
+    </section>
+</main>
+</body>
+</html>

@@ -319,3 +319,11 @@
     overscroll-behavior:contain;
     z-index:50;
 }
+.portal-recibos .filters.payroll-aligned-filters { grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start; }
+.portal-recibos .form-session-actions { flex-wrap:wrap;justify-content:flex-end; }
+.acceso-recibos .module-filter-actions { display:flex;flex-wrap:wrap;align-items:center;gap:12px; }
+.acceso-recibos .module-filter-actions form { margin:0; }
+.acceso-recibos .form-section { margin-bottom:24px; }
+.acceso-recibos .module-action--primary { border-color:var(--blue);background:var(--blue);color:#fff; }
+@media(max-width:720px){.portal-recibos .filters.payroll-aligned-filters{grid-template-columns:repeat(2,minmax(0,1fr));}.portal-recibos .entity-form{padding:20px}.acceso-recibos .module-filter-actions{align-items:stretch}.acceso-recibos .module-filter-actions form,.acceso-recibos .module-filter-actions .module-action{max-width:100%;white-space:normal}}
+@media(max-width:480px){.portal-recibos .filters.payroll-aligned-filters{grid-template-columns:minmax(0,1fr)}.acceso-recibos .module-filter-actions{flex-direction:column}.acceso-recibos .module-filter-actions .module-action{width:100%;justify-content:center}}

@@ -1,5 +1,66 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Etapa 2 publicada: acceso opcional del empleado — 06/11/2026
+
+Usuario confirmó el recibo con conceptos y subió Git. Aceptación de presentación/
+contenido PDF registrada; no atribuir pruebas humanas específicas de IDOR/permisos.
+Autorizó continuar con acceso opcional desde Empleados, reutilizando cuenta docente.
+PUBLICADA en app restaurada: imagen portal-recibos-v162, Flyway162 correcto y healthUP.
+Prueba humana pendiente: PRUEBA_PORTAL_RECIBOS_EMPLEADO_20261106.md. Empezar con
+Sofía existente, sin repetir pago/cheque/préstamo. Presentación PDF etapa1 aceptada.
+Las entradas históricas inferiores que dicen etapa2 pendiente quedan sustituidas.
+
+V162 añade Empleado.usuario_portal_id único/institucional/tipo portal e inmutable
+una vez vinculado, portal_recibos_habilitado false predeterminado, sin habilitar
+cuentas existentes. Tipo PORTAL_EMPLEADO nuevo; no crear empleados, recibos, pagos,
+roles ni grants por migración. Validación de coherencia con Maestro por triggers.
+Empleados → Editar → Acceso → Administrar acceso a sus recibos, pantalla independiente con
+confirmaciones Cancelar. Gestionar requiere EMPLEADO_ADMINISTRAR + administración
+salarial/laboral/lectura institucional existentes; sin recuperación/bootstrap.
+Sugerencia nombre.apellido editable, no fusionar por texto/correo. Cuenta nueva e
+invitación48h atómicas. Enlace para cambiar contraseña30min; ambos de un uso y sólo
+flash privado/no-store; no correo automático. Auditoría sin tokens ni credenciales.
+Usuario dedicado no aparece en Usuarios administrativos ni recibe roles.
+
+Reutiliza cuenta del Maestro ya vinculado, sin clave nueva. Al crear cuenta docente
+posteriormente se reutiliza la personal, misma contraseña, sólo por acción explícita
+autorizada de Maestros. Desactivar recibos quita acceso incluso a sesión antigua;
+si cuenta compartida, NO desactiva docente. Cambiar clave compartida requiere además
+MAESTRO_ADMINISTRAR. Cuenta dedicada desactivada queda INACTIVO y revoca enlaces
+pendientes; reactivar conserva identidad/historial. Nada financiero ni académico
+se altera al habilitar recibos. Renovar sesión docente para mostrar Mis recibos.
+
+Portal /personal, login /personal/acceso: lista/paginación/filtros de recibos propios
+y PDF Jasper existente. Propietario se obtiene de usuario/institución autenticados,
+no de parámetros. Toda consulta/descarga revalida cuenta activa, empleado activo y
+habilitación; deniega PDFs ajenos, otros portales y rutas administrativas. No Excel
+salarial administrativo ni soporte para ver recibos de terceros. Mantiene formato
+PDF aprobado (conceptos/totales sin trazabilidad privada). Reloj/login/logout/CSRF
+reutilizados, con destino personal propio. No rebajar permisos para probar.
+
+1081Java y143JS correctas; IT PostgreSQL17/V162 sintética correcta (corrida final
+16.954s): alta/activación, cuentas docentes reutilizadas en ambos sentidos, recibos
+propios/PDF, manipulación de IDs/institución, rutas admin denegadas, desactivación
+con sesión antigua, CSRF y triggers de identidad. Sin movimientos ni roles nuevos.
+QA visual HTML renderizado real con datos ficticios en escritorio/390px, claro/
+oscuro y login; modal Cancelar conserva captura. CSS scoped y caché versionada.
+Docker build habitual se quedó esperando metadatos/credenciales; se cancelaron sólo
+sus2procesos. Solución aislada: --config target/docker-public-qa --host socketlocal,
+Dockerfile temporal target/Dockerfile.portal-recibos-qa con bases anteriores fijadas
+por checksum. No cambios globales de Docker ni lectura de sus credenciales/.env.
+Publicada sóloapp mediante compose restaurado, sin recrear PostgreSQL/volúmenes.
+Respaldo privado .respaldos-locales/restauracion-20261106/antes-v162.dump (600).
+Huellas financieras/nóminas/préstamos/roles/cheques idénticas; también usuarios y
+empleados preexistentes (se excluyen las2columnas nuevas del hash). Tras migración
+0 empleados vinculados/habilitados. No cuentas reales creadas ni correos enviados.
+No .env/contraseñas/commit/push. Override privado actualizado a portal-recibos-v162;
+otra computadora usa su configuración, nunca copiar el override de restauración.
+Evidencia ficticia ignorada target/qa-recibos-nomina/portal-personal-final.png.
+Recursos QA temporales se retiran al terminar; no retirar contenedores ajenos.
+Siguiente: aceptación humana del acceso propio, desactivación y docente si existe;
+después documentar sólo lo confirmado en Guía de procesos. Pendientes globales
+expedientes familiares/sesión/liberación no se consideran resueltos por esta etapa.
+
 ## PDF de recibos: conceptos con nombre e importe — 06/11/2026
 
 ACLARACIÓN VIGENTE del usuario: quiere TODAS las percepciones y deducciones que

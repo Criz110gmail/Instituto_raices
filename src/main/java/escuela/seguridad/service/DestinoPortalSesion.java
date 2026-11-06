@@ -12,6 +12,7 @@ public final class DestinoPortalSesion {
         boolean familia=authentication.getAuthorities().stream().anyMatch(a->a.getAuthority().equals("PORTAL_TUTOR_ACCEDER"));
         if (maestro && !familia) return "/maestros";
         if (familia && !maestro) return "/portal";
+        if(authentication.getAuthorities().stream().anyMatch(a->a.getAuthority().equals("PORTAL_EMPLEADO_ACCEDER")))return "/personal";
         return "/admin";
     }
 }

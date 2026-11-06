@@ -2,6 +2,8 @@
     'use strict';
 
     const MODULES = [
+        [/^\/personal(?:\/|$)/, 'Mis recibos de nómina', 'Consulta únicamente los comprobantes de tu propia cuenta. Filtra por fechas del periodo, estado o folio y abre el PDF para descargar o imprimir tus percepciones, deducciones y neto. No puedes ver información de otros empleados ni registrar pagos.', 'Abrir un recibo de neto cero muestra las percepciones y deducciones que se compensaron; un pago cancelado conserva su advertencia de no vigencia.'],
+        [/^\/admin\/empleados\/\d+\/portal-recibos/, 'Acceso personal a recibos', 'Habilita de forma opcional la consulta privada del empleado. Reutiliza su cuenta docente vinculada o crea una cuenta personal sin permisos administrativos. Genera enlaces temporales de contraseña; desactivar recibos conserva el historial y no desactiva la cuenta docente compartida.', 'Habilitar a una empleada sin cuenta permite copiar un enlace de activación. Un maestro que ya tiene cuenta usa el mismo usuario y contraseña para Mis recibos.'],
         [/^\/admin\/recibos-nomina/, 'Recibos internos de nómina', 'Consulta el comprobante histórico por empleado de pagos realizados, pagos cancelados, netos cero y aplicaciones consolidadas anteriores. Permite filtrar, exportar Excel y visualizar el PDF para imprimir. No calcula impuestos, no es CFDI, no registra pagos ni modifica la configuración actual del empleado.', 'Buscar Sofía y Neto cero confirmado: su percepción y cuota se compensan sin salida de dinero. Un comprobante cancelado conserva el importe original pero no es un pago vigente. Las aplicaciones históricas no se convierten en nuevos pagos individuales.'],
         [/^\/admin\/preparacion-nomina\/\d+\/pagos/, 'Pagos por empleado', 'Autoriza la revisión sin mover dinero y registra después el resultado de cada empleado. Un pago real genera su egreso y abona sus cuotas de préstamo; un rechazo sin salida conserva el intento y la deuda. Una reversa exige devolución real a la cuenta original, compensa abonos y deja al empleado pendiente, sin afectar a los demás. Las aplicaciones consolidadas antiguas no se dividen.', 'Dos empleados: uno pagado y otro rechazado dejan la nómina parcialmente pagada. Al devolver el pago del primero, sólo él vuelve a pendiente; sus cuotas de préstamo se restauran y puede registrarse un nuevo intento.'],
         [/^\/admin\/configuracion-nomina\/\d+\/prestamos/, 'Préstamos del empleado', 'Administra préstamos internos sin intereses. Guardar crea un borrador sin entregar dinero; la entrega confirmada registra un único egreso y activa el saldo. Preparar nómina no abona ni liquida. Las cuotas se incluyen en la nómina mensual y sólo se abonan al registrar el pago real del empleado. Revertir ese pago restaura la deuda; al quedar en cero el préstamo se liquida.', 'Autorizar $3,000.00, parcialidad mensual de $500.00 e inicio 01/06/2027. Sin entrega, saldo $0.00. Entregar registra un egreso y saldo pendiente $3,000.00, sin cobrar intereses ni abonar por meses transcurridos.'],
@@ -402,7 +404,7 @@
     };
 
     const addModuleHelp = module => {
-        const isAccessScreen = /^\/(login|familias|activar-cuenta|restablecer-password)$/.test(window.location.pathname);
+        const isAccessScreen = /^\/(login|familias|activar-cuenta|restablecer-password|personal\/acceso)$/.test(window.location.pathname);
         if (!module || isAccessScreen || document.querySelector('.context-module-help')) return;
         const main = document.querySelector('main');
         if (!main) return;

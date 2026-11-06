@@ -20,6 +20,7 @@ public class ReciboNominaService {
     private final EmpleadoService empleados;
     private final PreparacionNominaService preparacion;
     private final NamedParameterJdbcTemplate jdbc;
+    private final AccesoRecibosEmpleadoService accesos;
 
     public record Fila(String tipo,Long documentoId,Long filaId,Long nominaId,Long empleadoId,Long periodoId,
             String codigo,String nombre,String periodo,String estado,LocalDate inicio,LocalDate fin,
@@ -84,11 +85,25 @@ public class ReciboNominaService {
         long n=jdbc.queryForObject(EVENTOS+"SELECT count(*)"+DESDE+FILTROS,par,Long.class);
         return new PageImpl<>(jdbc.query(EVENTOS+COLUMNAS+DESDE+FILTROS+" ORDER BY ev.registrado_en DESC,ev.tipo,ev.documento_id DESC LIMIT :limite OFFSET :offset",par.addValue("limite",pg.getPageSize()).addValue("offset",pg.getOffset()),MAP),pg,n);
     }
+    public Page<Fila> listarPropios(FiltroReciboNomina original){
+        var identidad=accesos.identidadActual();var f=original.normalizado();f.validar();
+        if(f.empleadoId()!=null&&!f.empleadoId().equals(identidad.empleadoId())||f.periodoId()!=null)throw new AccessDeniedException("Filtro personal no autorizado");
+        var par=new MapSqlParameterSource("inst",identidad.institucionId()).addValue("estado",f.estado()).addValue("emp",identidad.empleadoId()).addValue("periodo",null,java.sql.Types.BIGINT).addValue("desde",f.desde(),java.sql.Types.DATE).addValue("hasta",f.hasta(),java.sql.Types.DATE).addValue("q",f.q());
+        var pg=PageRequest.of(f.pagina(),f.tamanio());long n=jdbc.queryForObject(EVENTOS+"SELECT count(*)"+DESDE+FILTROS,par,Long.class);
+        return new PageImpl<>(jdbc.query(EVENTOS+COLUMNAS+DESDE+FILTROS+" ORDER BY ev.registrado_en DESC,ev.tipo,ev.documento_id DESC LIMIT :limite OFFSET :offset",par.addValue("limite",pg.getPageSize()).addValue("offset",pg.getOffset()),MAP),pg,n);
+    }
     @Transactional(readOnly=true,isolation=Isolation.REPEATABLE_READ)
     public Detalle obtener(String tipo,Long documento){
-        var par=p().addValue("tipo",tipo).addValue("doc",documento);
+        return detalle(tipo,documento,p());
+    }
+    @Transactional(readOnly=true,isolation=Isolation.REPEATABLE_READ)
+    public Detalle obtenerPropio(String tipo,Long documento){
+        var i=accesos.identidadActual();return detalle(tipo,documento,new MapSqlParameterSource("inst",i.institucionId()).addValue("propietario",i.empleadoId()));
+    }
+    private Detalle detalle(String tipo,Long documento,MapSqlParameterSource par){
+        par.addValue("tipo",tipo).addValue("doc",documento);
         if(!Set.of("PAGO","CERO","HISTORICO").contains(tipo)||documento==null||documento<=0)throw new AccessDeniedException("Recibo no autorizado");
-        var fila=jdbc.query(EVENTOS+COLUMNAS+DESDE+" WHERE ev.tipo=:tipo AND ev.documento_id=:doc",par,MAP).stream().findFirst().orElseThrow(()->new AccessDeniedException("Recibo no autorizado"));
+        var fila=jdbc.query(EVENTOS+COLUMNAS+DESDE+" WHERE ev.tipo=:tipo AND ev.documento_id=:doc"+(par.hasValue("propietario")?" AND ne.empleado_id=:propietario":""),par,MAP).stream().findFirst().orElseThrow(()->new AccessDeniedException("Recibo no autorizado"));
         var datos=jdbc.queryForMap(EVENTOS+"SELECT i.nombre institucion,ne.sueldo,ne.percepciones,ne.deducciones,ne.aportaciones,ev.motivo,u.username "+DESDE+" JOIN usuario u ON u.id=ev.usuario_id WHERE ev.tipo=:tipo AND ev.documento_id=:doc",par);
         BigDecimal sueldo=(BigDecimal)datos.get("sueldo"),per=(BigDecimal)datos.get("percepciones"),ded=(BigDecimal)datos.get("deducciones");
         if(sueldo.add(per).subtract(ded).compareTo(fila.neto())!=0)throw new ReglaNegocioException("El importe histórico no coincide con su desglose. Conserva el registro y solicita revisión; no se generó un recibo incorrecto.");
@@ -103,7 +118,12 @@ public class ReciboNominaService {
             LEFT JOIN LATERAL (SELECT sum((c->>'capital')::numeric) capital,sum((c->>'interes')::numeric) interes FROM jsonb_array_elements(coalesce(x->'cuotas_programadas','[]'::jsonb)) c)q ON true
             WHERE ne.id=:fila AND ne.institucion_id=:inst ORDER BY (x->>'id')::bigint
             """,par,(r,n)->new Prestamo(r.getString("folio"),r.getString("concepto"),r.getBigDecimal("cuota"),r.getBigDecimal("capital"),r.getBigDecimal("interes")));
-        return new Detalle(fila,(Long)par.getValue("inst"),(String)datos.get("institucion"),sueldo,per,ded,(BigDecimal)datos.get("aportaciones"),(String)datos.get("motivo"),(String)datos.get("username"),cancelacion,puestos,preparacion.lineas(fila.nominaId(),fila.filaId()),fuentes,prestamos);
+        var lineas=jdbc.query("""
+            SELECT l.codigo,l.nombre||CASE WHEN ne.tratamiento='NO_APLICAR' THEN ' · No aplicar' WHEN l.accion='POSPONER' THEN ' · Pospuesto' WHEN l.accion='NO_APLICAR' THEN ' · No aplicar' ELSE '' END nombre,l.naturaleza,CASE WHEN ne.tratamiento='NO_APLICAR' OR l.accion<>'APLICAR' THEN 0 ELSE l.importe END importe,l.fuente->>'fecha_inicio' inicio,l.fuente->>'fecha_fin' fin
+            FROM nomina_linea_tratamiento l JOIN nomina_fila_efectiva ne ON ne.id=l.fila_id AND ne.institucion_id=l.institucion_id WHERE l.fila_id=:fila AND l.borrador_id=:nomina AND l.institucion_id=:inst
+            UNION ALL SELECT x->>'concepto_codigo',x->>'concepto_nombre','DEDUCCION',(x->>'cuota')::numeric,x->>'primer_descuento',NULL FROM nomina_borrador_empleado ne CROSS JOIN LATERAL jsonb_array_elements(ne.fuentes->'prestamos') x WHERE ne.id=:fila AND ne.borrador_id=:nomina AND ne.institucion_id=:inst
+            """,par,(r,n)->new PreparacionNominaService.Linea(r.getString("codigo"),r.getString("nombre"),r.getString("naturaleza"),r.getBigDecimal("importe"),r.getString("inicio"),r.getString("fin")));
+        return new Detalle(fila,(Long)par.getValue("inst"),(String)datos.get("institucion"),sueldo,per,ded,(BigDecimal)datos.get("aportaciones"),(String)datos.get("motivo"),(String)datos.get("username"),cancelacion,puestos,lineas,fuentes,prestamos);
     }
     private List<Fuente> fuentes(Fila r,MapSqlParameterSource par){
         if(r.tipo().equals("CERO"))return List.of();
