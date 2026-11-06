@@ -147,14 +147,15 @@ El historial y estados indicados arriba sí fueron compartidos expresamente.
 
 ## Pendientes y continuación
 
-- Prueba humana de rol sólo Préstamos - Consultar con usuario separado, sin quitar
-  permisos al administrador ni conceder acceso salarial por consultar préstamos.
+- Prueba humana de rol sólo Préstamos - Consultar: **CONFIRMADA el 06/11/2026**.
+  Lectura y Excel permitidos; nuevo, editar y reprogramar denegados por URL.
+  Ver [prueba de sólo consulta](PRUEBA_PRESTAMOS_SOLO_CONSULTA_20261106.md).
 - Tabla individual de cuotas y navegación/retorno pueden verificarse adicionalmente
   sin nuevas operaciones financieras si se desea evidencia visual específica.
 - Recibos y consultas integrados siguen sujetos al diseño acordado pendiente; este
   documento no los implementa ni acredita su aceptación.
-- La guía integrada, actualizada por V159, conserva a Tomás e incorpora a Sofía en
-  pasos 9–13. La migración sólo cambia contenido editorial; no repite operaciones.
+- La guía integrada conserva a Tomás e incorpora a Sofía en pasos 9–13 (V159).
+  V160 incorpora el cierre de permisos en el paso 14, sólo contenido editorial.
 - Sesiones y expedientes del portal familiar conservan sus pendientes independientes.
 
 No se ejecutaron operaciones sobre préstamos, nómina, roles o saldos al documentar.

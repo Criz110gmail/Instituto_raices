@@ -1,7 +1,37 @@
 # Consulta de cheques desde la cuenta bancaria
 
-Estado: implementada, **pendiente de aceptación visual y funcional del usuario**.
+Estado al 06/11/2026: **CONFIRMADA por el usuario**, incluida la repetición de
+fechas invertidas y scroll después de la corrección. El usuario respondió
+«listo pasó la prueba». Esto no acredita una prueba con otro rol de sólo consulta.
 Esta prueba no registra pagos, no cancela cheques y no cambia saldos.
+
+La guía integrada V160 incorpora este caso en **Guía de procesos → Cheques:
+consulta, filtros y Excel sin mover dinero**. Consulta de administrador confirmada;
+no atribuir aceptación de un rol lector de cheques por el ensayo separado de Préstamos.
+
+El usuario confirmó que los puntos anteriores hicieron lo esperado y aportó saldos
+BBVA $174.29, CAJA $315.11 y corte $1,150.00 después del caso de Sofía. El saldo de
+CAJA $1,195.11 al final del procedimiento original es histórico del 03/11, no el
+saldo actual esperado. No ajustar cuentas para repetir ese valor.
+
+## Retomar únicamente el problema visual
+
+Se corrigió el 06/11/2026 la restauración de scroll doble (load/pageshow) y se
+movió el aviso dentro de los filtros, con captura conservada. Una interacción manual
+de rueda/táctil/puntero o teclas de desplazamiento cancela un ajuste tardío pendiente.
+Publicado sin migración ni cambios de datos, con 1061 pruebas Java y 142 JS correctas
+y revisión visual sintética escritorio/móvil en ambos temas. Recorrido ya confirmado;
+se conserva como referencia, no es necesario repetirlo:
+
+1. Recarga la pantalla Cheques; si hubo reinicio entra como INSTITUTO_RAICES\criz.
+2. Filtra desde 04/11/2026 hasta 03/11/2026 y aplica.
+3. Debe verse un único aviso Revisa los filtros junto a la captura, conservando fechas.
+4. Desplaza arriba/abajo: no debe saltar de vuelta al aviso o al botón automáticamente.
+5. Corrige a 03/11/2026–04/11/2026 y aplica: desaparece el aviso.
+6. Pulsa Limpiar: sin aviso, sin perder el lugar de trabajo ni mover dinero.
+
+No acreditar permisos de usuario sólo consulta por probar con administrador;
+no volver a emitir ni cancelar los cheques 1001/1002 para revisar presentación.
 
 ## Qué queremos comprobar
 

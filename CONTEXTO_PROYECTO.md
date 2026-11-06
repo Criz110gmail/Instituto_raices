@@ -1,5 +1,46 @@
 # Contexto del proyecto
 
+## Préstamos sólo lectura aprobado; dos bloques cerrados — 06/11/2026
+
+Usuario confirma todos los pasos de usuario separado sólo consulta, incluida
+denegación de nuevo/editar/reprogramar por URL. Lectura/Excel correctos. No hubo
+concesiones ni operaciones por herramientas. Caso Cheques/scroll ya aprobado.
+No repetir ninguno de estos dos bloques para continuar; no afirmar cierre global.
+Manual PRUEBA_PRESTAMOS_SOLO_CONSULTA_20261106.md y guía integrada V160: Préstamos
+version6/14pasos y nueva consulta-cheques-cuenta-confirmada version1/5pasos,
+ambas CONFIRMADAS. No se acredita lector de cheques ni POST forzado por este ensayo.
+1062Java+1IT PostgreSQL17 aislado correctos; migración sólo editorial, sin datos
+financieros ni roles modificados. Backupantes-v160 privado validado y huellas
+operativas antes/después idénticas. App restaurada imagen4e2c277-v160/healthUP,
+guías/pasos comprobados por lectura. QA retirada; sin .env/commit/push.
+Siguiente nómina: revisar recibos/consultas integrados pendientes de diseño/cierre;
+expedientes familiares8casos/sesiones/liberación siguen separados.
+
+## Cheques: aceptación manual completa de consulta y scroll — 06/11/2026
+
+Usuario confirma «listo pasó la prueba» después de corrección. Consulta, filtros,
+Excel y validación visual de fechas invertidas quedan aceptados para caso existente;
+no nuevas emisiones/cancelaciones ni movimientos para documentarlo. Siguiente:
+rolusuario separado sólo Préstamos - Consultar, alcance institucional; lectura y
+Excel permitidos, escritura y rutas administrativas denegadas. No tocar permisos
+del administrador. Esa prueba de rol sigue pendiente, no cerrada por confirmar Excel.
+
+## Corrección visual del filtro de cheques — 06/11/2026
+
+Usuario confirma consulta/Excel previos y saldos315.11/174.29/1150. Pendiente reportado:
+fechas invertidas causan salto visual al hacer scroll. Autorizó arreglo compartido
+nomina-filtros: una restauración por carga, cancelada ante desplazamiento/interacción
+manual. Mensaje de Cheques reubicado en filtros, captura intacta, foco sin desplazar.
+VersionadoJS renovado.1061Java/142JS correctos; renderHTTP y regresiones scroll.
+Primer build falló sólo por aserción de versióncache antigua y se corrigió; fixture
+JS antigua simulaba todos los selectores como formulario, corregida sin cambio de
+producción ajeno. QA navegador sintético escritorio/móvil claro/oscuro correcta.
+Sóloapp restaurada publicada, imagen4e2c277-v159-scroll, healthUP/Flyway159sin migrar.
+HashJS servido correcto y huellas financieras/cheques/roles idénticas antes/después.
+Sin operaciones, .env, commit/push. Falta usuario repetir rango invertido y scroll
+para cerrar aceptación visual; no recapturar cheques ni nóminas. Manual de consulta
+actualizado como parcial, no declararlo totalmente confirmado hasta retest.
+
 ## Sofía incorporada a Guía de procesos en la app — 06/11/2026, V159
 
 Aclaración del usuario: guía significa menú dentro del sistema, no sólo Markdown.

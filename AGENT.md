@@ -1,5 +1,83 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Dos bloques de consulta cerrados y guía V160 publicada — 06/11/2026
+
+Usuario confirma «pasaron todas las pruebas» con cuenta de sólo Préstamos - Consultar;
+lectura/Excel permitidos y nuevo/editar/reprogramar muestran No tienes acceso a esta
+información también por URL. No atribuir ensayos de POST forzado/institución ajena
+ni rollector de cheques. Cheques funcional/Excel y scroll ya aceptados antes.
+Se cierran AMBOS bloques inmediatos: no volver a ofrecerlos como pendientes ni
+repetir préstamos/pagos/cheques de Tomás, Sofía o Clara. Manual nuevo
+PRUEBA_PRESTAMOS_SOLO_CONSULTA_20261106.md. Rol/usuario configurados por humano,
+no por agente; no modificar permisos de criz para verificar.
+
+V160 editorial publicada: guía prestamos-programados-nomina CONFIRMADA/version6/
+14pasos, paso14 permisos de consulta; nueva consulta-cheques-cuenta-confirmada
+CONFIRMADA/version1/5pasos en Guía de procesos. No altera migraciones previas ni
+asigna permisos a roles: sólo requisitos de lectura para visibilidad de nueva guía.
+Préstamos mantiene contexto Tomás/Sofía; Cheques diferencia catálogo de chequera/
+documentos, estados, filtros/Excel, fechas invertidas corregidas y saldos históricos.
+
+1062Java correctas +1IT PostgreSQL17 efímero V159→160; prueba conserva otras guías,
+pasos anteriores y rolpermiso, sólo dos requisitos lectura para nueva guía,
+0movimientos/préstamos/pagos/cheques generados. ITprevio V159 se fija target159 para
+seguir probando esa entrega exacta, no exige13pasos a una versión futura.
+Backupprivado .respaldos-locales/restauracion-20261106/antes-v160.dump validado.
+Sóloapp restaurada recreada, imagen4e2c277-v160/healthUP; guías consultadas enBD con
+versiones/pasos esperados. Huellas operativas antes/después idénticas incluyendo
+cheques/cancelaciones/cuentas/movimientos/préstamos/nóminas/pagos/cierres/roles.
+Sin operaciones de negocio, cambios de claves/.env, commit/push; QA temporal retirada.
+Saldos últimos humanos BBVA174.29/CAJA315.11/corte1150. Reinicio puede exigir login
+INSTITUTO_RAICES\criz. Mismo proyecto y override privados para arranque local.
+
+Siguiente NO es otra de estas dos pruebas. Nómina: revisar/cerrar diseño de recibos
+internos y consultas integradas según plan antes de implementar lo que falte;
+no afirmar funcionalidades nuevas por este cierre editorial. Generales siguen
+8escenarios expedientes familiares, sesión efectiva y requisitos de liberación.
+No afirmar que todo el sistema está listo para producción.
+
+## Consulta de cheques: corrección visual aprobada — 06/11/2026
+
+Usuario confirma «listo pasó la prueba» tras publicar arreglo de fechas invertidas/
+scroll. Se cierra aceptación de consulta/Excel de cheques y del arreglo visual;
+no repetir emisión, cancelación ni nómina de Clara. Saldos últimos confirmados
+BBVA174.29/CAJA315.11/corte1150. Sin nuevas operaciones por documentar aceptación.
+Siguiente y último bloque manual inmediato: usuario independiente con únicamente
+Préstamos - Consultar, alcance INSTITUCIÓN, no ADMINISTRAR ni permisos salariales/
+financieros. Ver/listar/filtrar/Excel permitido; nuevo/editar/reprogramar denegados
+también por URL. No quitar derechos de criz. Rollector todavía NO confirmado.
+No equivale cerrar recibos/consultas de nómina ni pendientes generales de liberación.
+
+## Cheques: validación de fechas sin salto de scroll — 06/11/2026
+
+Usuario prueba consulta bancaria/Excel y confirma puntos anteriores esperados y
+saldosCAJA315.11/BBVA174.29/corte1150. Reporta parpadeo/salto al invertir desde04nov/
+hasta03nov. Autoriza corrección. nomina-filtros restauraba en load Y pageshow:
+ahora programa un solo ajuste y lo cancela si usuario ya usa rueda/táctil/puntero/
+teclas de desplazamiento. Evita restauraciones tardías y conserva offset negativo,
+Limpiar/contexto/pestañas/foco preventScroll. Aviso de Cheques queda DENTRO de filtros,
+una fila completa junto a acciones; no duplicar aviso encima de cabecera. Captura
+y validación backend intactas. Aviso recibe foco sin scroll adicional. Actualizada
+versióncache de script compartido en sus8referencias, sin refactor de módulos.
+
+1061Java y142JS correctos; nuevo renderHTTP conserva ambas fechas/mensaje único,
+normal sin aviso; regresión load+pageshow doble y usuario desplazándose. FixtureJS
+previa de selección se corrigió para simular sólo su selector y no fingir una nueva
+fuente/página al consultar otros selectores. PruebaJava caché actualizada al recurso.
+QA visual sintética1280/390, oscuro/claro: aviso/botones alineados, móvil sin
+desbordamiento, scroll estable tras rueda. Evidencia ignorada target/qa-cheques-validacion/.
+Servidor sóloGET sin BD; nada financiero por navegador. Recursos QA retirados al
+terminar; viewport/tema restablecidos. Sin .env/commit/push.
+
+Sóloapp del proyecto restaurado publicada, imagen4e2c277-v159-scroll/healthUP;
+Flyway sigue159sin migración. ChecksumJS servido coincide con fuente. Huellas antes/
+después idénticas de cheques/cancelaciones/cuentas/movimientos/préstamos/nóminas/
+pagos/cierres/roles. No reiniciar otros proyectos ni usar compose simple sinoverride.
+Siguiente humano: recargar, probar fechas invertidas04/11/2026–03/11/2026 y scroll,
+corregir rango y Limpiar. Aceptación visual del arreglo pendiente; no declarar toda
+consulta de cheques aprobada antes de esa confirmación. Rol sóloconsulta Préstamos
+sigue pendiente independiente. No emitir/cancelar cheques para ensayar este fallo.
+
 ## Guía de procesos integrada: Sofía publicada — V159, 06/11/2026
 
 Usuario aclara que quería la guía DENTRO del sistema y autoriza incorporarla.

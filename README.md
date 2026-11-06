@@ -1,5 +1,20 @@
 # Sistema administrativo escolar
 
+## Consulta de Préstamos y Cheques: pruebas cerradas — 06/11/2026
+
+El usuario confirmó los dos bloques inmediatos: consulta/Excel/fechas de Cheques y
+Préstamos con usuario de sólo lectura, incluidas rutas de modificación denegadas.
+La Guía de procesos incorpora el cierre en Préstamos, paso 14, y una guía nueva
+**Cheques: consulta, filtros y Excel sin mover dinero**. V160 sólo editorial, sin
+concesiones de permisos ni operaciones financieras. No equivale liberar todo el sistema.
+
+## Cheques: filtros sin salto visual — 06/11/2026
+
+El aviso de fechas invertidas aparece junto a los filtros y conserva la captura.
+La posición se restaura una sola vez y no interfiere si el usuario ya se desplaza.
+Corrección publicada sin migración ni cambios financieros; confirmada por el usuario
+el 06/11/2026. [Prueba de consulta](PRUEBA_CONSULTA_CHEQUES_20261103.md).
+
 ## Préstamos: neto cero y Excel aceptados — 06/11/2026
 
 Prueba humana de Sofía confirmada: préstamo de $100.00 liquidado con percepción

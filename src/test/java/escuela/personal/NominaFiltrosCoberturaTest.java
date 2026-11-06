@@ -11,9 +11,9 @@ class NominaFiltrosCoberturaTest {
    var html=Files.readString(root.resolve(file));var forms=Pattern.compile("<form\\b[^>]*>").matcher(html);int get=0;
    while(forms.find()){var form=forms.group();if(form.contains("method=\"get\"")){get++;assertThat(form).as(file).contains("data-nomina-keep-filter");}else assertThat(form).as(file).doesNotContain("data-nomina-keep-filter");}
    assertThat(get).as(file).isPositive();
-   if(!file.startsWith("fragments/"))assertThat(html).as(file).satisfiesAnyOf(s->assertThat(s).contains("/js/nomina-filtros.js?v=20261103"),s->assertThat(s).contains("admin/fragments/nomina-comun :: head("));
+   if(!file.startsWith("fragments/"))assertThat(html).as(file).satisfiesAnyOf(s->assertThat(s).contains("/js/nomina-filtros.js?v=20261106-scroll"),s->assertThat(s).contains("admin/fragments/nomina-comun :: head("));
   }
-  assertThat(Files.readString(root.resolve("fragments/nomina-comun.html"))).contains("/js/nomina-filtros.js?v=20261103");
+  assertThat(Files.readString(root.resolve("fragments/nomina-comun.html"))).contains("/js/nomina-filtros.js?v=20261106-scroll");
   assertThat(Files.readString(Path.of("src/main/resources/static/js/preparacion-nomina.js"))).doesNotContain("nomina-filtros-scroll:");
  }
 }

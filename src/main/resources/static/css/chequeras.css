@@ -31,6 +31,9 @@
 .chequera-page .cheques-filters>label,.chequera-page .cheques-filters>.autocomplete{min-width:0;grid-column:auto}
 .chequera-page .cheques-filters>label>span,.chequera-page .cheques-filters>.autocomplete>label{min-height:64px}
 .chequera-page .cheques-filters>.module-filter-actions{grid-column:1/-1;justify-content:flex-end}
+.chequera-page .cheques-filters>.cheques-filter-error{grid-column:1/-1;min-width:0;margin:0;padding:14px 16px;overflow-wrap:anywhere}
+.chequera-page .cheques-filter-error strong{display:block;margin:0 0 6px}
+.chequera-page .cheques-filter-error p{margin:0;line-height:1.5}
 .chequera-page .cheques-summary{grid-template-columns:repeat(2,minmax(0,1fr));margin:24px}
 @media(max-width:1000px){.chequera-page .filters.cheques-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.chequera-page .filters.cheques-filters,.chequera-page .cheques-summary{grid-template-columns:minmax(0,1fr)}}

@@ -31,12 +31,23 @@
   });
   let saved;try{const raw=sessionStorage.getItem(key(location.pathname));sessionStorage.removeItem(key(location.pathname));if(raw)saved=JSON.parse(raw);}catch(_){}
   if(!saved||!Number.isFinite(saved.offset))return;
-  const restore=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
-   if(form.closest('[data-student-panel]')?.hidden)return;
-   window.scrollTo({top:Math.max(0,window.scrollY+form.getBoundingClientRect().top-saved.offset),behavior:'instant'});
-   const control=saved.clear?clearLinks[0]:form.querySelector('button[type="submit"],.module-action--primary,button:not([type])');
-   control?.focus({preventScroll:true});
-  }));
+  let restoreScheduled=false,userInteracted=false;
+  const cancelRestore=()=>{userInteracted=true;};
+  // Una carga puede disparar load y pageshow: nunca volver a mover al usuario.
+  ['wheel','touchstart','pointerdown'].forEach(type=>window.addEventListener(type,cancelRestore,{passive:true,once:true}));
+  window.addEventListener('keydown',event=>{
+   if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key))cancelRestore();
+  });
+  const restore=()=>{
+   if(restoreScheduled)return;
+   restoreScheduled=true;
+   requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    if(userInteracted||form.closest('[data-student-panel]')?.hidden)return;
+    window.scrollTo({top:Math.max(0,window.scrollY+form.getBoundingClientRect().top-saved.offset),behavior:'instant'});
+    const control=saved.clear?clearLinks[0]:form.querySelector('[data-nomina-filter-error]')||form.querySelector('button[type="submit"],.module-action--primary,button:not([type])');
+    control?.focus({preventScroll:true});
+   }));
+  };
   if(document.readyState==='complete')restore();else window.addEventListener('load',restore,{once:true});
   window.addEventListener('pageshow',event=>{if(!event.persisted)restore();},{once:true});
  });

@@ -26,7 +26,7 @@ class GuiaPrestamoNetoCeroPostgresIT {
         var permisos = j.queryForList("SELECT * FROM guia_proceso_permiso ORDER BY guia_id,permiso_id");
         var roles = j.queryForList("SELECT * FROM rol_permiso ORDER BY rol_id,permiso_id");
         var otrasGuias = j.queryForList("SELECT * FROM guia_proceso WHERE slug<>'prestamos-programados-nomina' ORDER BY id");
-        Flyway.configure().dataSource(ds).locations("classpath:db/migration").load().migrate();
+        Flyway.configure().dataSource(ds).locations("classpath:db/migration").target("159").load().migrate();
         assertThat(j.queryForList("SELECT s.* FROM guia_proceso_paso s JOIN guia_proceso g ON g.id=s.guia_id WHERE g.slug='prestamos-programados-nomina' AND s.numero<8 ORDER BY s.numero")).isEqualTo(previos);
         assertThat(j.queryForList("SELECT * FROM guia_proceso_permiso ORDER BY guia_id,permiso_id")).isEqualTo(permisos);
         assertThat(j.queryForList("SELECT * FROM rol_permiso ORDER BY rol_id,permiso_id")).isEqualTo(roles);

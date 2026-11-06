@@ -1,5 +1,12 @@
 # Préstamos integrados con nómina — 04/11/2026
 
+Actualización 06/11/2026: caso Sofía neto cero, Excel y usuario de sólo Préstamos -
+Consultar confirmados por el usuario. PRE-000002 LIQUIDADO, sin salida adicional
+por cierre; rutas de modificación denegadas. Consulta de cheques también aprobada.
+V160 documenta cierres en Guía de procesos. Ver PRUEBA_PRESTAMO_NETO_CERO_20261106.md
+y PRUEBA_PRESTAMOS_SOLO_CONSULTA_20261106.md. Las referencias inferiores a neto0
+pendiente son históricas. Siguiente: revisar recibos/consultas; no repetir ejemplos.
+
 Implementación del flujo aprobado. Caso humano principal CONFIRMADO el05/11/2026:
 PRE-000001 de Tomás liquidado, una entrega200, recuperación220 incluidos20interés,
 cancelación/repago conservados y liquidación anticipada. CAJA415.11/BBVA174.29/corte1150.
