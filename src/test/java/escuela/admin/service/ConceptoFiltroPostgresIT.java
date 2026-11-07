@@ -31,6 +31,9 @@ class ConceptoFiltroPostgresIT {
    var principal=new UsuarioPrincipal(1L,690000L,Set.of(690000L),false,false,"qa","",auth);
    SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(principal,"",auth));
    var service=app.getBean(ConceptoFiltroBusquedaService.class);
+   var alumnos=app.getBean(AlumnoCobranzaBusquedaService.class);
+   assertThat(alumnos.buscar("",false).resultados()).extracting(x->x.id()).containsExactly(690000L);
+   assertThat(alumnos.buscar("Beto",false).resultados()).isEmpty();
    assertThat(service.buscar("").resultados()).extracting(x->x.titulo()).containsExactly("COLE-A");
    assertThat(service.buscar("Colegiatura").resultados()).extracting(x->x.titulo()).containsExactly("COLE-A");
    assertThat(service.buscar("co").resultados()).isEmpty();
@@ -43,6 +46,12 @@ class ConceptoFiltroPostgresIT {
     assertThat(busqueda.getStatus()).isEqualTo(200);assertThat(busqueda.getContentAsString()).contains("COLE-A").doesNotContain("COLE-B");
     var lista=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/admin/catalogos/cuotas-alumno").session(session).param("conceptoCobro","COLE-A")).andReturn().getResponse();
     assertThat(lista.getStatus()).isEqualTo(200);assertThat(lista.getContentAsString()).contains("Colegiatura accesible", "conceptoCobro=COLE-A").doesNotContain("Colegiatura ajena");
+    var alumnoFiltrado=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/admin/catalogos/cuotas-alumno").session(session).param("alumnoId","690000").param("alumnoTexto","A · Ana Prueba")).andReturn().getResponse();
+    assertThat(alumnoFiltrado.getStatus()).isEqualTo(200);assertThat(alumnoFiltrado.getContentAsString()).contains("Ana Prueba","alumnoId=690000").doesNotContain("Beto Prueba");
+    var alumnoAjeno=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/admin/catalogos/cuotas-alumno").session(session).param("alumnoId","690001").param("alumnoTexto","B · Beto Prueba")).andReturn().getResponse();
+    assertThat(alumnoAjeno.getContentAsString()).doesNotContain("Colegiatura ajena");
+    var excelAlumno=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/admin/catalogos/cuotas-alumno/excel").session(session).param("alumnoId","690000").param("alumnoTexto","A · Ana Prueba")).andReturn().getResponse();
+    try(var libro=new org.apache.poi.xssf.usermodel.XSSFWorkbook(new java.io.ByteArrayInputStream(excelAlumno.getContentAsByteArray()))) {assertThat(libro.getSheetAt(0).getLastRowNum()).isEqualTo(1);}
     var excel=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/admin/catalogos/cuotas-alumno/excel").session(session).param("conceptoCobro","COLE-A")).andReturn().getResponse();
     assertThat(excel.getStatus()).isEqualTo(200);
     try(var libro=new org.apache.poi.xssf.usermodel.XSSFWorkbook(new java.io.ByteArrayInputStream(excel.getContentAsByteArray()))) {assertThat(libro.getSheetAt(0).getLastRowNum()).isEqualTo(1);}
@@ -62,6 +71,8 @@ class ConceptoFiltroPostgresIT {
    SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(cargoPrincipal,"",soloCargos));
    assertThat(service.buscar("cole").resultados()).extracting(x->x.titulo()).containsExactly("COLE-A");
 
+   assertThat(alumnos.buscar("Ana",true).resultados()).extracting(x->x.id()).containsExactly(690000L);
+   assertThat(alumnos.buscar("Beto",true).resultados()).isEmpty();
    verificarListado(app,cargoPrincipal,soloCargos,"cargos","Cargo ficticio");
   } finally {SecurityContextHolder.clearContext();}
  }
@@ -72,6 +83,11 @@ class ConceptoFiltroPostgresIT {
    sesion.setAttribute("SPRING_SECURITY_CONTEXT",new org.springframework.security.core.context.SecurityContextImpl(new UsernamePasswordAuthenticationToken(principal,"",auth)));
    var lista=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/admin/catalogos/"+modulo).session(sesion).param("conceptoCobro","COLE-A")).andReturn().getResponse();
    assertThat(lista.getStatus()).isEqualTo(200);assertThat(lista.getContentAsString()).contains(contenido,"conceptoCobro=COLE-A");
+   var porAlumno=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/admin/catalogos/"+modulo).session(sesion).param("alumnoId","690000").param("alumnoTexto","A · Ana Prueba")).andReturn().getResponse();
+   assertThat(porAlumno.getStatus()).isEqualTo(200);assertThat(porAlumno.getContentAsString()).contains(contenido,"alumnoId=690000");
+   var excelAlumno=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/admin/catalogos/"+modulo+"/excel").session(sesion).param("alumnoId","690000").param("alumnoTexto","A · Ana Prueba")).andReturn().getResponse();
+   assertThat(excelAlumno.getStatus()).isEqualTo(200);
+   try(var libro=new org.apache.poi.xssf.usermodel.XSSFWorkbook(new java.io.ByteArrayInputStream(excelAlumno.getContentAsByteArray()))) {assertThat(libro.getSheetAt(0).getLastRowNum()).isEqualTo(1);}
    var excel=mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/admin/catalogos/"+modulo+"/excel").session(sesion).param("conceptoCobro","COLE-A")).andReturn().getResponse();
    assertThat(excel.getStatus()).isEqualTo(200);
    try(var libro=new org.apache.poi.xssf.usermodel.XSSFWorkbook(new java.io.ByteArrayInputStream(excel.getContentAsByteArray()))) {assertThat(libro.getSheetAt(0).getLastRowNum()).isEqualTo(1);}

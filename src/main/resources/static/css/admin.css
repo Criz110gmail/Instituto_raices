@@ -72,3 +72,7 @@ html body table td a.table-action-standard.table-action-standard::after {content
 /* Las sugerencias de filtros crecen con su contenido, incluso con nombres largos. */
 html body .autocomplete .autocomplete-option,html body .payment-student-filter .autocomplete-option{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;box-sizing:border-box!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;gap:4px!important;line-height:1.5!important;white-space:normal!important;overflow-wrap:anywhere!important}
 html body .autocomplete .autocomplete-option strong,html body .autocomplete .autocomplete-option small{display:block!important;position:static!important;flex:none!important;width:100%!important;height:auto!important;max-height:none!important;margin:0!important;line-height:1.5!important;white-space:normal!important;overflow-wrap:anywhere!important;text-overflow:clip!important}
+
+/* El campo Buscar tiene un solo borde: lo dibuja el contenedor, no el input interior. */
+html body .filters .search-field > div > input,html body .filters .search-field > div > input:focus {border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;border-radius:0!important;min-width:0}
+html body .filters .search-field > div:focus-within {border-color:var(--blue);box-shadow:0 0 0 3px #2979ff30}

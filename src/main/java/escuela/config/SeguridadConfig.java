@@ -159,6 +159,8 @@ public class SeguridadConfig {
                         .hasAuthority("COMPRA_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/alumnos")
                         .hasAnyAuthority("VINCULO_TUTOR_ADMINISTRAR", "ALUMNO_ADMINISTRAR", "INSCRIPCION_ADMINISTRAR")
+                        .requestMatchers("/admin/autocompletado/alumnos-adeudos").hasAnyAuthority("CARGO_LEER", "CARGO_ADMINISTRAR")
+                        .requestMatchers("/admin/autocompletado/alumnos-cuotas").hasAnyAuthority("CUOTA_ALUMNO_LEER", "CUOTA_ALUMNO_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/conceptos-filtro")
                         .hasAnyAuthority("PAGO_LEER", "CARGO_LEER", "CARGO_ADMINISTRAR", "CUOTA_ALUMNO_LEER", "CUOTA_ALUMNO_ADMINISTRAR")
                         .requestMatchers("/admin/autocompletado/alumnos-pagos")

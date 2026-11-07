@@ -1,5 +1,26 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Ancho del autocompletado en Adeudos y Cuotas — 07/11/2026
+
+Se corrigió la posición del contenedor de autocompletado para que las sugerencias
+usen el ancho del campo en Adeudos y Cuotas, sin extenderse a la ventana. Se verificó
+visualmente con datos ficticios y nombres largos; 1083 pruebas Java correctas.
+Publicada app restaurada `ancho-autocompletado-v165`, sin migraciones. Pendiente
+que el usuario confirme el diseño en su pantalla. La revisión global de filtros de
+institución, plantel y ciclo continúa pendiente según la sección siguiente.
+
+## Alumno en Adeudos y Cuotas; marco de búsqueda — 06/11/2026
+
+Se añadió autocompletado de alumno a Adeudos de alumnos y Cuotas por alumno,
+con búsquedas limitadas a registros visibles por permiso y plantel, incluyendo
+alumnos inactivos relacionados. El filtro usa el id del alumno y se conserva en
+paginación y Excel. Se corrigió el doble marco al enfocar Buscar en el catálogo
+compartido. Lista y Excel por alumno y seguridad se probaron en PostgreSQL aislado;
+visualización del buscador en oscuro con datos ficticios; 1083 pruebas correctas.
+App restaurada `alumnos-filtros-v165`, sin migración. Pendiente validación manual.
+Continúa pendiente el pedido amplio de autocompletado en otros filtros de entidades
+(institución, plantel y ciclo); no darlo por finalizado.
+
 ## Filtros y sugerencias — avance parcial, 06/11/2026
 
 El usuario pidió autocompletado para filtros de entidades en todos los módulos y

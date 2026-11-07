@@ -6,14 +6,14 @@
     <meta name="theme-color" content="#0b1930">
     <title th:text="${resultado.modulo.titulo} + ' · Nexo Escolar'">Nexo Escolar</title>
     <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
-    <link rel="stylesheet" th:href="@{/css/admin.css(v=20261106-autocompletado)}">
+    <link rel="stylesheet" th:href="@{/css/admin.css(v=20261106-buscar)}">
     <link rel="stylesheet" th:href="@{/css/navigation.css}">
     <script th:src="@{/js/theme.js}"></script>
     <script th:src="@{/js/navigation.js}" defer></script>
     <link rel="stylesheet" th:href="@{/css/catalogo-rangos.css}">
     <link th:if="${resultado.modulo.name()=='CUENTAS_FINANCIERAS'}" rel="stylesheet" href="/css/cuentas-financieras-ui.css">
     <script th:src="@{/js/catalogo-rangos.js}" defer></script>
-    <link rel="stylesheet" th:if="${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'CUOTAS_ALUMNO'}" th:href="@{/css/autocomplete-filter.css(v=20261106-autocompletado)}">
+    <link rel="stylesheet" th:if="${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'CUOTAS_ALUMNO'}" th:href="@{/css/autocomplete-filter.css(v=20261106-ancho)}">
     <script th:if="${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'CUOTAS_ALUMNO'}" th:src="@{/js/autocomplete.js}" defer></script>
 </head>
 <body>
@@ -68,12 +68,12 @@
             <label><span>Por página</span><select name="tamanio">
                 <option th:each="n : ${ {10, 25, 50, 100} }" th:value="${n}" th:text="${n}" th:selected="${filtro.tamanio == n}">25</option>
             </select></label>
-            <div class="autocomplete payment-student-filter" th:if="${resultado.modulo.name() == 'PAGOS'}" data-autocomplete data-no-scope data-refresh-on-focus="true" data-empty-message="No encontramos alumnos con pagos relacionados dentro de tu alcance." data-endpoint="/admin/autocompletado/alumnos-pagos">
+            <div class="autocomplete payment-student-filter" th:if="${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'CUOTAS_ALUMNO'}" data-autocomplete data-no-scope data-refresh-on-focus="true" data-empty-message="No encontramos alumnos relacionados dentro de tu alcance." th:attr="data-endpoint=${resultado.modulo.name() == 'PAGOS' ? '/admin/autocompletado/alumnos-pagos' : (resultado.modulo.name() == 'CARGOS' ? '/admin/autocompletado/alumnos-adeudos' : '/admin/autocompletado/alumnos-cuotas')}">
                 <label for="alumnoTexto"><span>Alumno</span></label>
                 <div class="autocomplete-control"><input class="autocomplete-input" id="alumnoTexto" name="alumnoTexto" th:value="${filtro.alumnoTexto}" placeholder="Nombre o matrícula · Ej. Martha" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="alumnos-pagos-resultados"><button class="autocomplete-clear" type="button" aria-label="Quitar filtro de alumno">×</button></div>
                 <input class="autocomplete-value" type="hidden" name="alumnoId" th:value="${filtro.alumnoId}">
                 <div class="autocomplete-results" id="alumnos-pagos-resultados" role="listbox" hidden></div>
-                <small class="autocomplete-status">Selecciona un alumno con pagos relacionados. Incluye su historial, aunque esté inactivo.</small>
+                <small class="autocomplete-status">Selecciona un alumno de la lista. Incluye su historial, aunque esté inactivo.</small>
             </div>
             <div class="autocomplete payment-student-filter payment-concept-filter" th:if="${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'CUOTAS_ALUMNO'}" data-autocomplete data-no-scope data-refresh-on-focus="true" data-endpoint="/admin/autocompletado/conceptos-filtro" data-empty-message="No encontramos conceptos relacionados dentro de tu alcance."><label for="conceptoCobro"><span>Concepto de cobro</span></label><div class="autocomplete-control"><input id="conceptoCobro" class="autocomplete-input" type="search" name="conceptoCobro" th:value="${filtro.conceptoCobro}" placeholder="Código o nombre del concepto" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="conceptos-filtro-resultados"><button class="autocomplete-clear" type="button" aria-label="Quitar concepto">×</button></div><input class="autocomplete-value" type="hidden"><div class="autocomplete-results" id="conceptos-filtro-resultados" role="listbox" hidden></div><small class="autocomplete-status">Al enfocar se muestran hasta diez conceptos; busca desde tres caracteres.</small></div>
             <fieldset class="catalogo-rango catalogo-cobertura" th:if="${resultado.modulo.name() == 'PAGOS'}">

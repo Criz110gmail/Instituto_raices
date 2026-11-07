@@ -73,6 +73,7 @@ public class CatalogoAdminController {
         try {
             filtro.validarRango();
             if(modulo==ModuloCatalogo.PAGOS)filtro.validarCobertura();
+            if(modulo==ModuloCatalogo.CARGOS || modulo==ModuloCatalogo.CUOTAS_ALUMNO)filtro.validarAlumno();
             model.addAttribute("resultado", consultaService.consultar(modulo, filtro));
         } catch (escuela.common.exception.ReglaNegocioException e) {
             model.addAttribute("errorFiltro", e.getMessage());
@@ -131,6 +132,7 @@ public class CatalogoAdminController {
         FiltroCatalogo filtro=new FiltroCatalogo(q,estado,fecha,0,100,desde,hasta,tipoFecha,cobertura,anioCobertura,conceptoCobro,alumnoId,alumnoTexto).normalizado();
         filtro.validarRango();
         if(modulo==ModuloCatalogo.PAGOS)filtro.validarCobertura();
+        if(modulo==ModuloCatalogo.CARGOS || modulo==ModuloCatalogo.CUOTAS_ALUMNO)filtro.validarAlumno();
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         String nombre = URLEncoder.encode(modulo.slug() + "-filtrado.xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + nombre);

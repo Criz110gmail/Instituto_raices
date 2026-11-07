@@ -161,7 +161,8 @@ public class CatalogoConsultaService {
                             reglas(e)));
             case CUOTAS_ALUMNO -> consultar(modulo, cuotaAlumnoRepository,
                     textoCuota(f).and(escuela.admin.support.RangoFechasCatalogo.cuotas(f))
-                            .and(escuela.admin.support.FiltroConceptoCobro.especificacion(f)), estado(f, "estado"), pagina,
+                            .and(escuela.admin.support.FiltroConceptoCobro.especificacion(f))
+                            .and(alumnoInscripcion(f)), estado(f, "estado"), pagina,
                     e -> filaEstadoCuota(e,
                             e.getInscripcion().getAlumno().getMatricula() + " · "
                                     + nombreAlumno(e.getInscripcion().getAlumno()),
@@ -170,7 +171,8 @@ public class CatalogoConsultaService {
                             etiqueta(e.getFrecuencia().name()), vencimiento(e),
                             e.isGeneracionAutomatica() ? "Automática" : "Manual"));
             case CARGOS -> consultar(modulo, cargoRepository, textoCargo(f).and(escuela.admin.support.RangoFechasCatalogo.cargos(f))
-                            .and(escuela.admin.support.FiltroConceptoCobro.especificacion(f)),
+                            .and(escuela.admin.support.FiltroConceptoCobro.especificacion(f))
+                            .and(alumnoInscripcion(f)),
                     escuela.cobranza.support.SituacionAdeudo.filtro(f.estado(), LocalDate.now()), pagina, this::filaCargo);
             case TIPOS_BECA -> consultar(modulo, tipoBecaRepository,
                     texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
@@ -763,4 +765,8 @@ public class CatalogoConsultaService {
                 .map(parte -> Character.toUpperCase(parte.charAt(0)) + parte.substring(1))
                 .collect(java.util.stream.Collectors.joining(" "));
     }
+    private <T> org.springframework.data.jpa.domain.Specification<T> alumnoInscripcion(FiltroCatalogo filtro) {
+        return (root,query,cb)->filtro.alumnoId()==null ? cb.conjunction() : cb.equal(root.get("inscripcion").get("alumno").get("id"),filtro.alumnoId());
+    }
+
 }

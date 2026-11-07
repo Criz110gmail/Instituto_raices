@@ -28,6 +28,10 @@ public record FiltroCatalogo(String q, String estado, LocalDate fecha, int pagin
     }
 
     public boolean tieneRango() { return desde != null || hasta != null; }
+    public void validarAlumno(){
+        if ((alumnoId != null && alumnoId <= 0) || (alumnoId == null && alumnoTexto != null && !alumnoTexto.isBlank()))
+            throw new escuela.common.exception.ReglaNegocioException("Selecciona un alumno de la lista de sugerencias o limpia el filtro para consultar todos los registros.");
+    }
     public void validarCobertura(){
         if ((alumnoId != null && alumnoId <= 0) || (alumnoId == null && alumnoTexto != null && !alumnoTexto.isBlank()))
             throw new escuela.common.exception.ReglaNegocioException("Selecciona un alumno de la lista de sugerencias o limpia el filtro para consultar todos los pagos.");

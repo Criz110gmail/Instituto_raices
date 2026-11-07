@@ -1,3 +1,16 @@
+## Ancho de sugerencias — 07/11/2026
+
+Se ajustó el contenedor de sugerencias de alumno en Adeudos y Cuotas al ancho del
+campo; comprobado visualmente con datos ficticios. 1083 pruebas correctas. App
+restaurada `ancho-autocompletado-v165`; falta aceptación visual del usuario.
+
+## Alumno y marco de Buscar — 06/11/2026
+
+Adeudos y Cuotas incorporan alumno con búsqueda autorizada y filtro por id, con
+listados/Excel probados en PostgreSQL ficticio. El marco de Buscar se corrigió en
+el catálogo compartido. App restaurada `alumnos-filtros-v165`; falta aceptación
+visual del usuario y el barrido de otros filtros de entidades.
+
 ## Filtros con autocompletado: avance parcial — 06/11/2026
 
 Se corrigió CSS compartido y se añadieron sugerencias de concepto en Pagos recibidos,
