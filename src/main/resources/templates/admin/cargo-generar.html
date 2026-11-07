@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1930">
     <title>Generar adeudos de alumnos · Nexo Escolar</title>
-    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css?v=20261008-navegacion"><script src="/js/theme.js"></script><script src="/js/generation-preview.js" defer></script><script src="/js/generation-selection.js?v=20261006-1" defer></script>
+    <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css?v=20261106-acciones"><link rel="stylesheet" href="/css/forms.css?v=20261008-navegacion"><script src="/js/theme.js"></script><script src="/js/generation-preview.js" defer></script><script src="/js/generation-selection.js?v=20261006-1" defer></script>
     <link rel="stylesheet" href="/css/money-input.css"><script src="/js/money-input.js" defer></script>
 </head>
 <body class="form-page">
@@ -67,7 +67,7 @@
         <header class="surcharge-preview-header"><div><span>Información · sin generación</span><h2>Cuotas no incluidas y motivo</h2><p>Usa el mismo alcance y corte de la consulta. No se generan cargos desde esta lista.</p></div><span class="surcharge-preview-badge" th:text="${cuotasExcluidas.totalElements+' cuotas'}"></span></header>
         <p class="context-help" th:if="${cuotasExcluidas.empty}">No hay cuotas excluidas en esta página.</p>
         <div class="table-wrap surcharge-preview-table" th:if="${!cuotasExcluidas.empty}"><table><thead><tr><th>Cuota</th><th>Alumno</th><th>Concepto</th><th>Motivo</th><th>Consultar</th></tr></thead><tbody><tr th:each="fila:${cuotasExcluidas.content}">
-        <td data-label="Cuota" th:text="${'#'+fila.cuotaId}"></td><td data-label="Alumno" th:text="${fila.alumno}"></td><td data-label="Concepto" th:text="${fila.concepto}"></td><td data-label="Motivo" th:text="${fila.motivo}"></td><td data-label="Consultar"><a class="detail-close-button" th:if="${fila.cargoId != null}" th:href="@{/admin/cargos/{id}/editar(id=${fila.cargoId})}">Abrir cargo</a></td>
+        <td data-label="Cuota" th:text="${'#'+fila.cuotaId}"></td><td data-label="Alumno" th:text="${fila.alumno}"></td><td data-label="Concepto" th:text="${fila.concepto}"></td><td data-label="Motivo" th:text="${fila.motivo}"></td><td data-label="Consultar"><a class="table-action-standard detail-close-button" th:if="${fila.cargoId != null}" th:href="@{/admin/cargos/{id}/editar(id=${fila.cargoId})}">Abrir cargo</a></td>
         </tr></tbody></table></div>
         <footer class="pagination" th:if="${cuotasExcluidas.totalPages > 1}"><p th:text="${'Página '+(cuotasExcluidas.number+1)+' de '+cuotasExcluidas.totalPages}"></p><div><a th:if="${!cuotasExcluidas.first}" th:href="@{/admin/cargos/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},seleccionId=${vistaPrevia.seleccionId},paginaExcluidas=${cuotasExcluidas.number-1},mostrarExcluidas=true)}">Anterior</a><a th:if="${!cuotasExcluidas.last}" th:href="@{/admin/cargos/generar/vista-previa(institucionId=${form.institucionId},plantelId=${form.plantelId},fechaCorte=${form.fechaCorte},seleccionId=${vistaPrevia.seleccionId},paginaExcluidas=${cuotasExcluidas.number+1},mostrarExcluidas=true)}">Siguiente</a></div></footer>
         </section>

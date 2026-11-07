@@ -10,7 +10,7 @@
     <header class="form-top"><a href="/admin/catalogos/alumnos">← Volver a alumnos</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
     <section class="form-card">
         <div th:unless="${edicion}" class="form-intro"><span>Nuevo expediente</span><h1>Registrar alumno</h1><p>La trayectoria académica se administrará mediante inscripciones; aquí se conserva únicamente la identidad institucional.</p></div>
-        <nav th:if="${edicion}" class="student-tablist student-record-tabs" role="tablist" aria-label="Secciones del expediente del alumno" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'ficha' : pestanaActiva}">
+        <nav th:if="${edicion}" class="student-tablist student-record-tabs" role="tablist" aria-label="Secciones del expediente del alumno" data-student-tabs th:attr="data-active-tab=${pestanaActiva == null ? 'ficha' : pestanaActiva},data-force-active-tab=${pestanaActiva}">
             <button type="button" role="tab" id="tab-ficha" aria-controls="panel-ficha-resumen" data-student-tab="ficha" data-tab-hash="#panel-ficha-resumen"><span aria-hidden="true">01</span><strong>Ficha del alumno</strong><small>Identidad y fotografía</small></button>
             <button type="button" role="tab" id="tab-informacion" aria-controls="informacion-alumno" data-student-tab="informacion" data-tab-hash="#informacion-alumno"><span aria-hidden="true">02</span><strong>Información del alumno</strong><small>Identidad y datos personales</small></button>
             <button type="button" role="tab" id="tab-contacto" aria-controls="contacto-alumno" data-student-tab="contacto" data-tab-hash="#contacto-alumno"><span aria-hidden="true">03</span><strong>Contacto y domicilio</strong><small>Comunicación y ubicación</small></button>
@@ -85,7 +85,9 @@
         <section th:if="${edicion}" id="ficha-medica" class="student-record-section medical-record-section student-tab-panel" data-student-panel="medica" role="tabpanel" aria-labelledby="tab-medica ficha-medica-titulo">
             <div class="record-section-heading"><div><span>Información sensible</span><h2 id="ficha-medica-titulo">Ficha médica</h2><p>Registra información útil para la atención y seguridad del alumno. Debe mantenerse actualizada y consultarse sólo cuando sea necesario.</p></div><div class="record-heading-actions"><strong>Privada</strong><a target="_blank" rel="noopener" th:href="@{/admin/alumnos/{id}/ficha-medica.pdf(id=${id})}">Exportar PDF</a></div></div>
             <div class="form-error" role="alert" th:if="${errorFichaMedica}"><strong>No se pudo guardar la ficha médica</strong><p th:text="${errorFichaMedica}">Revisa los datos e intenta nuevamente.</p></div>
+            <div class="flash" role="status" th:if="${mensajeFichaMedica}"><strong th:text="${mensajeFichaMedica}">Ficha médica guardada correctamente</strong></div>
             <form class="medical-record-form" method="post" th:action="@{/admin/alumnos/{id}/ficha-medica(id=${id})}" th:object="${fichaMedicaForm}">
+                <div class="form-error" role="alert" th:if="${#fields.hasErrors('*')}"><strong>No se pudo guardar la ficha médica</strong><p>Revisa los siguientes datos; tu captura se conserva.</p><ul><li th:each="error : ${#fields.allErrors()}" th:text="${error}"></li></ul></div>
                 <input type="hidden" th:field="*{version}">
                 <fieldset class="form-section"><legend>Datos médicos esenciales</legend><div class="form-grid">
                     <label><span>Tipo sanguíneo *</span><select th:field="*{tipoSanguineo}"><option th:each="tipo : ${tiposSanguineos}" th:value="${tipo}" th:text="${tipo.etiqueta}">No especificado</option></select><small class="field-error" th:errors="*{tipoSanguineo}"></small></label>

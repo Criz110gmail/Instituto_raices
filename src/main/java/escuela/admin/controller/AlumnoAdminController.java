@@ -287,7 +287,7 @@ public class AlumnoAdminController {
             model.addAttribute("pestanaActiva", "medica");
             return "admin/alumno-form";
         }
-        flash.addFlashAttribute("mensaje", "Ficha médica actualizada correctamente");
+        flash.addFlashAttribute("mensajeFichaMedica", "Ficha médica guardada correctamente");
         return "redirect:/admin/alumnos/" + id + "/editar#ficha-medica";
     }
 

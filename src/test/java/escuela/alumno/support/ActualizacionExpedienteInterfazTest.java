@@ -16,7 +16,9 @@ class ActualizacionExpedienteInterfazTest {
         assertTrue(html.contains("desde=${filtro.desde}"));
         assertTrue(html.contains("pagina=${resultado.number+1}"));
         assertTrue(html.contains("class=\"filters update-filters\""));
-        assertTrue(html.contains("class=\"filter-actions\""));
+        assertTrue(html.contains("class=\"module-filter-actions\""));
+        assertTrue(html.contains("alumnoId=${filtro.alumnoId}"));
+        assertTrue(html.contains("/admin/actualizaciones-expediente/alumnos/buscar"));
     }
 
     @Test

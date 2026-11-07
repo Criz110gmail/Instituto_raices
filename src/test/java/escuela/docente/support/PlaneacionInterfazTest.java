@@ -32,7 +32,7 @@ class PlaneacionInterfazTest {
         assertThat(recurso("templates/admin/planeaciones.html")).contains("/admin/planeaciones/excel","estado=${filtro.estado}","desde=${filtro.desde}","hasta=${filtro.hasta}", "class=\"filter-actions\"",
                 "/admin/autocompletado/maestros-planeacion", "/admin/autocompletado/grupos-planeacion",
                 "name=\"proposito\"", "name=\"maestroId\"", "name=\"grupoId\"", "/js/autocomplete.js",
-                "class=\"table-action planning-review-button\"");
+                "class=\"table-action-standard table-action planning-review-button\"");
         assertThat(recurso("static/css/forms.css")).contains(".planning-filters .filter-actions", ".planning-filters .filter-actions button");
         assertThat(recurso("templates/admin/planeacion-detalle.html")).contains("target=\"_blank\"","/publicar","/reabrir","name=\"motivo\"", "class=\"admin-back\"");
         assertThat(recurso("static/css/maestros.css")).contains(".planning-review-button", ".admin-back{align-items:center");

@@ -20,7 +20,7 @@ class ComprasInterfazTest {
         assertTrue(html.contains("pagina=${resultado.number+1}"));
         assertTrue(html.contains("class=\"filters purchase-filters\""));
         assertTrue(html.contains("class=\"filter-actions\""));
-        assertTrue(html.contains("class=\"purchase-view-button\""));
+        assertTrue(html.contains("class=\"table-action-standard purchase-view-button\""));
     }
 
     @Test

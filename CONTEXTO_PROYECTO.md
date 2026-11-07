@@ -1,4 +1,46 @@
+## Guía de propuesta médica familiar — V165, 06/11/2026
+
+Usuario confirmó rechazo sin alterar la ficha y aprobación incorporada y visible en
+portal. Guía de procesos incorpora cuatro pasos y los resultados confirmados, sin
+datos médicos reales. V165 verificada en base aislada y publicada en restaurada;
+respaldo previo validado. Siguiente prueba sugerida: propuesta de documento ficticio,
+cuya aceptación humana queda pendiente.
+
+## Confirmación de actualizaciones familiares — 06/11/2026
+
+Corregido el envío que produjo 405, con destino explícito y CSRF; modales con
+Cancelar para aprobar y rechazar. Ambas rutas y sus efectos se verificaron con
+base aislada y datos ficticios; navegador verificó los modales. 1083 pruebas
+correctas. App restaurada `confirmacion-actualizaciones-v164`. La solicitud real
+permanece pendiente de prueba por el usuario.
+
+## Contraste y acciones de tablas — 06/11/2026
+
+Se corrigió la legibilidad del detalle de actualizaciones familiares en modo oscuro
+y se unificó el estilo de acciones de tablas administrativas con Cuentas financieras.
+Detalle oscuro revisado con datos ficticios; 1083 pruebas correctas. Publicada app
+restaurada `acciones-contraste-v164`. Pendiente revisión visual y rechazo por el
+usuario de su primera propuesta; no se modificaron propuestas reales.
+
+## Actualizaciones familiares — 06/11/2026
+
+Se publicó el filtro de alumno con autocompletado autorizado, botón Revisar y
+rediseño del detalle en Resumen, Propuesta y Revisión. También se maneja la
+respuesta de emergencia no especificada. Compilación: 1083 pruebas correctas;
+integración en PostgreSQL temporal correcta para filtros, autorización, Excel y
+renderizado. App restaurada `actualizaciones-v164`; ninguna propuesta real fue
+resuelta por el agente. Pendiente que el usuario compruebe diseño y continúe la
+prueba rechazando su primera propuesta y verificando que la ficha oficial no cambie.
+
 # Contexto del proyecto
+
+## Confirmación de ficha médica — 06/11/2026
+
+Usuario confirmó que la ficha médica de Black Widow Mendoza sí se guardó pero
+no mostraba aviso. Se presenta confirmación en la pestaña y resumen de validaciones,
+con captura conservada y pestaña priorizada. Sin consultar ni modificar datos
+médicos del alumno durante diagnóstico. Publicada `ficha-medica-avisos-v164`,
+1083 Java correctas y healthUP, sin migración. Confirmación visual humana pendiente.
 
 ## Confirmación docente incorporada — 06/11/2026
 

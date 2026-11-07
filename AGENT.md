@@ -1,5 +1,68 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Guía de actualización familiar médica confirmada — V165, 06/11/2026
+
+El usuario confirmó la prueba completa: rechazo visible en portal familiar con
+ficha oficial sin cambios; nueva propuesta aprobada visible en portal y observación
+incorporada a ficha oficial. V165 documenta estos resultados en Guía de procesos →
+Control escolar → Revisar una propuesta familiar de ficha médica, con cuatro pasos
+y sin datos médicos reales. Respaldo `antes-v165.dump` validado; integración y
+migración verificadas en PostgreSQL aislado; guía CONFIRMADA de cuatro pasos y tres
+permisos verificada en base restaurada. Publicada app `guia-familiar-v165`, login
+200. No se ejecutaron decisiones reales por el agente. Siguiente prueba sugerida:
+proponer y revisar un documento ficticio desde el portal familiar, separada de la
+aceptación médica; no afirmar que el flujo documental ya fue aceptado.
+
+## Confirmación de propuestas familiares — 06/11/2026
+
+El usuario reportó HTTP 405 al rechazar la propuesta de prueba. Se hizo explícita
+la acción del formulario y la protección CSRF; cada botón conserva su destino y
+el reenvío de confirmación fija ese destino. Se añadieron modales de aprobación y
+rechazo con alumno, tipo y respuesta, y Cancelar sin cambios. En PostgreSQL aislado
+se probaron las dos rutas: rechazo deja intacta la ficha, aprobación la incorpora;
+los modales se comprobaron en navegador con datos ficticios. 1083 pruebas Java
+correctas. Publicada app restaurada `confirmacion-actualizaciones-v164`. Ninguna
+propuesta real se resolvió por el agente. Pendiente que el usuario retome el paso
+3 y confirme el rechazo de su solicitud y el estado de la ficha oficial.
+
+## Contraste y acciones de tablas — 06/11/2026
+
+A solicitud del usuario se corrigió el fondo de los datos en Resumen y Propuesta
+para que siga el tema oscuro; la causa era el selector del tema. Las acciones de
+las tablas administrativas utilizan el formato discreto de Cuentas financieras,
+sin modificar permisos ni el destino de los enlaces. Verificado el detalle oscuro
+con datos ficticios; compilación 1083 pruebas correctas. Publicada app restaurada
+`acciones-contraste-v164`; login responde 200, sin migraciones. Pendiente que el
+usuario revise los cambios visuales y rechace la primera propuesta de prueba;
+no se rechazó ninguna solicitud por parte del agente.
+
+## Actualizaciones familiares: búsqueda y revisión — 06/11/2026
+
+Se incorporó autocompletado de alumno en la bandeja, limitado a alumnos con
+solicitudes de la institución autorizada: diez al enfocar y búsqueda desde tres
+caracteres. El filtro se conserva en paginación y Excel. El botón Revisar y la
+pantalla de detalle se adaptaron al diseño del sistema; el detalle separa Resumen,
+Propuesta y Revisión, conserva el retorno y muestra “No especificada” si no se
+informó la autorización de emergencia. No se revisó ni resolvió ninguna solicitud
+real. Pruebas: 1083 Java correctas y prueba de integración en PostgreSQL temporal
+para búsqueda, permisos, listado, Excel y detalle. Publicada únicamente la app
+restaurada `actualizaciones-v164`; login responde 200, sin migraciones.
+Pendiente la comprobación visual del usuario y el paso 3 de la prueba familiar:
+rechazar la primera propuesta y confirmar que no cambia la ficha oficial. No afirmar
+que la prueba pasó hasta que el usuario la confirme.
+
+## Aviso al guardar ficha médica — 06/11/2026
+
+Usuario indicó que la ficha médica de Black Widow Mendoza sí se guarda, pero no
+aparece confirmación. El controlador ya emitía flash `mensaje`, no mostrado en
+la plantilla del alumno. Se cambia a `mensajeFichaMedica` y se presenta en ficha
+médica; se añade resumen visible de validaciones, se conserva captura y se prioriza
+la pestaña devuelta por el servidor ante errores. No se consultaron ni modificaron
+datos médicos reales. Pruebas de controlador cubren éxito y validación/captura;
+1083 pruebas Java correctas. Publicada sólo app restaurada `ficha-medica-avisos-v164`,
+healthUP, sin migración. El reinicio cerró sesiones.
+No afirmar que el usuario confirmó la corrección visual hasta que la revise.
+
 ## Guía docente confirmada y publicada — 06/11/2026
 
 Usuario confirmó con Bruce Wayne DOC-PRUEBA-02: portal docente muestra recibos

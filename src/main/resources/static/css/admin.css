@@ -63,3 +63,9 @@
 [data-theme=dark] .form-top > a[href]:hover,[data-theme=dark] .workspace > a.admin-back[href]:hover,[data-theme=dark] .detail-actions > a[href]:hover {
     border-color:#6d9fbb; color:#eef5fd;
 }
+
+/* Acciones de registros: mismo tratamiento visual que Cuentas financieras. */
+html body table td a.table-action-standard.table-action-standard, html body table td a.table-action-standard.table-action-standard:visited {display:inline-flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;min-height:40px;min-width:94px;max-width:100%;padding:9px 13px;border:1px solid var(--line);border-radius:9px;background:var(--surface,var(--white));color:var(--ink)!important;font:650 .78rem/1.4 "DM Sans",system-ui,sans-serif;text-decoration:none;text-align:center;white-space:normal;box-shadow:none}
+html body table td a.table-action-standard.table-action-standard:hover {border-color:var(--blue);background:var(--soft,var(--paper));color:var(--ink)!important;transform:none;box-shadow:none}
+html body table td a.table-action-standard.table-action-standard:focus-visible {outline:2px solid var(--blue);outline-offset:3px}
+html body table td a.table-action-standard.table-action-standard::after {content:none}

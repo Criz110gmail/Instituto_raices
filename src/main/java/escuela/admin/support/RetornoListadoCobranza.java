@@ -12,7 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 /** Contexto explícito por navegación; no guarda búsquedas en sesión ni mezcla pestañas. */
 @Component
 public class RetornoListadoCobranza implements HandlerInterceptor,WebMvcConfigurer {
-    private static final Map<String,String> RUTAS=Map.of("pagos","/admin/catalogos/pagos","cargos","/admin/catalogos/cargos","cuotas-alumno","/admin/catalogos/cuotas-alumno","empleados","/admin/empleados");
+    private static final Map<String,String> RUTAS=Map.of("pagos","/admin/catalogos/pagos","cargos","/admin/catalogos/cargos","cuotas-alumno","/admin/catalogos/cuotas-alumno","empleados","/admin/empleados","actualizaciones-expediente","/admin/actualizaciones-expediente");
     public static String empleados(escuela.personal.dto.FiltroEmpleado original){var f=original.normalizado();return UriComponentsBuilder.fromPath("/admin/empleados").queryParam("q",f.q()).queryParam("estado",f.estado()).queryParam("pagina",f.pagina()).queryParam("tamanio",f.tamanio()).queryParamIfPresent("institucionId",java.util.Optional.ofNullable(f.institucionId())).queryParamIfPresent("empleadoId",java.util.Optional.ofNullable(f.empleadoId())).build().encode().toUriString().replace("+","%2B");}
     public static String listado(ModuloCatalogo modulo,FiltroCatalogo f) {
         if(!RUTAS.containsKey(modulo.slug()))return null;

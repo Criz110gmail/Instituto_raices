@@ -1,6 +1,7 @@
 package escuela.admin.controller;
 
 import escuela.admin.dto.AlumnoForm;
+import escuela.admin.dto.FichaMedicaAlumnoForm;
 import escuela.admin.service.JasperExpedienteAlumnoService;
 import escuela.alumno.dto.request.AlumnoRequest;
 import escuela.alumno.dto.response.AlumnoResponse;
@@ -117,6 +118,36 @@ class AlumnoAdminControllerTest {
         assertThat(vista).isEqualTo("admin/alumno-form");
         assertThat(model.get("form")).isSameAs(form);
         assertThat(model.get("errorOperacion")).asString().contains("matrícula");
+    }
+
+    @Test
+    void guardarFichaMedicaConfirmaEnLaMismaSeccion() {
+        when(service.obtener(10L)).thenReturn(alumno());
+        var form = new FichaMedicaAlumnoForm();
+        var flash = new RedirectAttributesModelMap();
+        var vista = controller.guardarFichaMedica(10L, form,
+                new BeanPropertyBindingResult(form, "fichaMedicaForm"), new ExtendedModelMap(), flash);
+        assertThat(vista).isEqualTo("redirect:/admin/alumnos/10/editar#ficha-medica");
+        assertThat(flash.getFlashAttributes().get("mensajeFichaMedica"))
+                .isEqualTo("Ficha médica guardada correctamente");
+        verify(fichaMedicaService).guardar(org.mockito.ArgumentMatchers.eq(10L), any());
+    }
+
+    @Test
+    void errorDeFichaMedicaConservaCapturaYAbreSuPestana() {
+        when(service.obtener(10L)).thenReturn(alumno());
+        when(institucionService.listar()).thenReturn(List.of());
+        var form = new FichaMedicaAlumnoForm();
+        form.setObservaciones("Captura ficticia");
+        var model = new ExtendedModelMap();
+        model.addAttribute("fichaMedicaForm", form);
+        var errores = new BeanPropertyBindingResult(form, "fichaMedicaForm");
+        errores.rejectValue("tipoSanguineo", "requerido", "Selecciona el tipo sanguíneo");
+        var vista = controller.guardarFichaMedica(10L, form, errores, model, new RedirectAttributesModelMap());
+        assertThat(vista).isEqualTo("admin/alumno-form");
+        assertThat(model.get("pestanaActiva")).isEqualTo("medica");
+        assertThat(model.get("fichaMedicaForm")).isSameAs(form);
+        org.mockito.Mockito.verify(fichaMedicaService, org.mockito.Mockito.never()).guardar(any(), any());
     }
 
     @Test
