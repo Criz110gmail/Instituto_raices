@@ -321,11 +321,14 @@
 }
 .portal-recibos .filters.payroll-aligned-filters { grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start; }
 .portal-recibos .form-session-actions { flex-wrap:wrap;justify-content:flex-end; }
+.portal-recibos .form-top { justify-content:flex-end; }
 .acceso-recibos .module-filter-actions { display:flex;flex-wrap:wrap;align-items:center;gap:12px; }
 .acceso-recibos .module-filter-actions form { margin:0; }
 .acceso-recibos .form-section { margin-bottom:24px; }
 .acceso-recibos .form-section > p.field-help { display:block;margin:14px 0;line-height:1.65; }
 .acceso-recibos .module-action--primary { border-color:var(--blue);background:var(--blue);color:#fff; }
+.acceso-recibos .module-action.acceso-recibos-turquesa { min-height:44px;padding:11px 16px;border-color:var(--aqua);background:var(--aqua);color:#062b31;font-weight:800; }
+.acceso-recibos .module-action.acceso-recibos-turquesa:hover { filter:brightness(.96); }
 .acceso-recibos .acceso-recibos-enlace { margin:24px 0; }
 .acceso-recibos .acceso-recibos-enlace .copy-row { min-width:0; }
 .acceso-recibos .acceso-recibos-enlace .copy-row input { width:100%;min-height:44px; }

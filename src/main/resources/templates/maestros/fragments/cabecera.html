@@ -5,7 +5,7 @@
     <div class="teacher-user"><img class="teacher-avatar" th:if="${fotoPerfil == true}" th:src="${rutaPortal + '/fotografia'}" alt="Fotografía del maestro"><div><strong th:text="${perfil.nombreCompleto}"></strong><small th:text="${perfil.numeroEmpleado}"></small></div>
         <button type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button>
         <a th:unless="${soporte == true}" class="agenda-notification" href="/maestros/pendientes" data-personal-agenda aria-label="Mis pendientes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span>Mis pendientes</span><b data-agenda-count hidden>0</b></a>
-        <a class="teacher-logout" th:if="${soporte != true and puedeRecibos == true}" href="/personal">Mis recibos</a>
+        <a class="agenda-notification" th:if="${soporte != true and puedeRecibos == true}" href="/personal" aria-label="Mis recibos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3zm3 5h6m-6 4h6"/></svg><span>Mis recibos</span></a>
         <a class="teacher-logout" th:if="${soporte == true}" href="/admin/portal-maestros-soporte">Cambiar maestro</a>
         <form th:unless="${soporte == true}" method="post" th:action="@{/logout}"><input type="hidden" name="origen" value="maestros"><button type="submit" class="teacher-logout">Cerrar sesión</button></form>
     </div>

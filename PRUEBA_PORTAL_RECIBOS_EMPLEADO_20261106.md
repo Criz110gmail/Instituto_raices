@@ -1,8 +1,14 @@
 # Acceso opcional del empleado a sus recibos — etapa 2
 
+El usuario confirmó además el recorrido docente con Bruce Wayne: listado propio,
+PDF RN-P-000008 pagado por $6,193.55 con puesto, RN-P-000005 cancelado y regreso
+al portal de maestros. RN-P-000006 pagado $80.00 indica que su fotografía no
+conserva puesto. Incorporado a la Guía de procesos mediante V164.
+
 Estado: el usuario confirmó el 06/11/2026 que pasó las pruebas; indicó expresamente
 que al quitar el acceso dejó de ver el módulo y al volver a habilitarlo lo vio de
-nuevo. No consta por separado si probó la cuenta docente compartida. Las pruebas técnicas usan datos ficticios. Este
+nuevo. La prueba de la cuenta docente compartida también fue confirmada como se
+describe arriba. Las pruebas técnicas usan datos ficticios. Este
 ejemplo utiliza el cierre de Sofía que ya existe: no volver a pagar ni modificar
 préstamos, nóminas o cuentas financieras.
 

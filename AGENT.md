@@ -1,5 +1,31 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Guía docente confirmada y publicada — 06/11/2026
+
+Usuario confirmó con Bruce Wayne DOC-PRUEBA-02: portal docente muestra recibos
+propios; RN-P-000008 pagado, puesto Docente de primaria, 16–31/12/2026, sueldo y
+neto $6,193.55, deducciones $0.00; RN-P-000005 muestra cancelado; RN-P-000006
+pagado $80.00 con puesto no conservado en su fotografía. Volver a maestros funciona
+sin volver a iniciar sesión. Solicitó incorporarlo a Guía de procesos.
+V164 actualiza guía V163 y añade paso6, sin modificar permisos ni operaciones.
+Verificada en PostgreSQL aislado y publicada: versión164 correcta, guía confirmada
+con6pasos/2permisos; huellas financieras y roles idénticas. Docker demoró, pero el
+respaldo antes-v164.dump terminó y pg_restore --list lo validó; app restaurada
+`guia-docente-v164`. Siguiente prueba sugerida: solicitudes de actualización de
+expediente desde portal familiar, pendientes; documentar únicamente lo probado.
+
+## Controles de acceso a recibos y navegación docente — 06/11/2026
+
+Usuario informó que habilitó el acceso y ya ve Mis recibos en el portal docente.
+No ha confirmado aún apertura/descarga del PDF ni regreso. Solicitó botones
+turquesa en acceso del empleado: abrir portal personal, generar enlace y desactivar.
+Mis recibos en cabecera docente reutiliza el estilo/icono adaptable de Mis pendientes.
+En portal personal se retiró Mi espacio personal y se coloca Volver a maestros con
+flecha a la derecha sólo cuando tiene perfil docente. Sin cambios a permisos,
+cuentas, enlaces o pagos. QA visual ficticia escritorio/390px; 1081 Java correctas.
+Publicada sólo app restaurada `controles-recibos-v163`, sin migración; queda probar
+con el usuario docente real la apertura del recibo/PDF y el botón de regreso.
+
 ## Diseño de accesos de empleado y login docente — 06/11/2026
 
 Usuario solicitó botones iguales turquesa en Empleados → Acceso y separar ayudas

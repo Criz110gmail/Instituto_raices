@@ -1,5 +1,23 @@
 # Contexto del proyecto
 
+## Confirmación docente incorporada — 06/11/2026
+
+Usuario verificó con Bruce recibo RN-P-000008 de $6,193.55/puesto Docente de
+primaria, RN-P-000005 cancelado y regreso sin nuevo login; también RN-P-000006
+pagado $80.00 sin puesto en fotografía histórica. V164 editorial publicada tras
+validación en base aislada. Respaldo antes-v164.dump completo y legible; guía con
+seis pasos y dos permisos de consulta, huellas financieras y roles iguales. Docker
+demoró inicialmente y luego respondió. Sin cambios en pagos ni permisos. Ver AGENT.md.
+
+## Controles de recibos y portal docente — 06/11/2026
+
+Usuario confirmó que, tras habilitar el acceso, Mis recibos aparece en portal
+docente. Pendientes confirmación humana de abrir PDF y regresar al portal docente.
+Tres acciones administrativas turquesa, Mis recibos con diseño de Mis pendientes,
+y regreso a maestros a la derecha en portal personal; no cambia autorización.
+QA visual ficticia en escritorio y 390px, 1081 Java correctas; app restaurada
+`controles-recibos-v163`, sin migración ni cambios de datos de negocio.
+
 ## Diseño de accesos de empleados y maestros — 06/11/2026
 
 Botones de cuenta docente y recibos unificados en turquesa; ayudas de cuenta
