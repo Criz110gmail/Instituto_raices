@@ -29,6 +29,9 @@ public class ConceptoCobro extends EntidadAuditable {
     @Column(nullable = false, length = 150)
     private String nombre;
 
+    @Column(name = "busqueda_autocomplete", insertable = false, updatable = false)
+    private String busquedaAutocomplete;
+
     @Column(length = 2000)
     private String descripcion;
 

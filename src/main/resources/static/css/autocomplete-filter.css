@@ -10,3 +10,4 @@
 .payment-student-filter .autocomplete-option:hover,.payment-student-filter .autocomplete-option.active{background:var(--paper)}
 .payment-student-filter .autocomplete-input:focus-visible,.payment-student-filter button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 [data-theme=dark] .payment-student-filter .autocomplete-input{border-color:#344a63}
+.filters .payment-concept-filter{grid-column:1/-1;position:relative;min-width:0;max-width:100%}

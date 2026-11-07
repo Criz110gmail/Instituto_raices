@@ -1,3 +1,11 @@
+## Filtros con autocompletado: avance parcial — 06/11/2026
+
+Se corrigió CSS compartido y se añadieron sugerencias de concepto en Pagos recibidos,
+Adeudos y Cuotas por alumno. Pruebas aisladas cubren alcance por plantel, listados y
+Excel; queda aceptación humana. Publicada app `filtros-autocompletado-v165`. Aún hay
+filtros de institución, plantel y ciclo con select en diversos módulos; falta el
+barrido solicitado y verificación visual amplia. No marcar terminado el pedido global.
+
 ## Guía de propuesta médica familiar — V165, 06/11/2026
 
 Usuario confirmó rechazo sin alterar la ficha y aprobación incorporada y visible en

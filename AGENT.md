@@ -1,5 +1,24 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Filtros y sugerencias — avance parcial, 06/11/2026
+
+El usuario pidió autocompletado para filtros de entidades en todos los módulos y
+que no se encimen sugerencias. Se corrigió CSS común para opciones de altura variable
+con nombres largos y se verificó visualmente una lista ficticia. En Pagos recibidos,
+Adeudos de alumnos y Cuotas por alumno el filtro textual de concepto ahora ofrece
+sugerencias de conceptos relacionados con registros visibles, incluidos inactivos;
+10 al enfocar y hasta 20 desde tres caracteres. Conserva semántica de búsqueda
+textual por código/nombre (seleccionar sugiere el código), paginación y Excel.
+Servicio aplica alcance y permisos por origen (pagos/cargos/cuotas). Prueba aislada
+PostgreSQL verificó búsquedas, segregación entre planteles, tres listados y Excel;
+1083 pruebas Java de compilación correctas. App restaurada
+`filtros-autocompletado-v165`, sin migraciones adicionales. Pendiente aceptación
+manual del usuario. IMPORTANTE: el pedido global aún no está terminado: filtros
+basados en institución, plantel y ciclo siguen usando select en varias pantallas
+(p.ej. Reportes financieros, Calendario escolar, Eventos y Boletas). Inventariar
+cada uno y convertir con endpoints limitados y autorización, respetando dependencias;
+no afirmar cobertura completa. También falta comprobar más vistas/temas/móvil.
+
 ## Guía de actualización familiar médica confirmada — V165, 06/11/2026
 
 El usuario confirmó la prueba completa: rechazo visible en portal familiar con
