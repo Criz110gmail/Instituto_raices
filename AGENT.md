@@ -1,5 +1,56 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Guía documental familiar confirmada — V166, 08/11/2026
+
+El usuario confirmó que la propuesta documental aprobada aparece en el expediente
+oficial y en el portal familiar; antes confirmó apertura durante revisión y aprobación
+administrativa. V166 incorpora la prueba a Guía de procesos → Control escolar →
+Enviar y aprobar un documento familiar, con tres pasos, sin datos reales. Migración
+y recorrido verificados en PostgreSQL aislado; respaldo privado `antes-v166.dump`
+validado; 1083 pruebas Java correctas. App restaurada `guia-documento-v166`, guía
+CONFIRMADA con tres pasos y login 200. La apertura desde el expediente oficial no
+se afirmó por separado; la presencia sí quedó confirmada. Pendientes: prueba de
+duración de sesión, revisión de filtros dentro de detalles y verificaciones para
+liberación. No retomar el barrido de selectores sin nueva solicitud del usuario.
+
+## Prueba documental familiar: aprobación confirmada parcialmente — 07/11/2026
+
+El usuario confirmó que el detalle administrativo permite abrir el documento, que
+aprobó la solicitud y que aparece Aprobada tanto en administración como en el portal
+familiar. Todavía falta que confirme que el documento aparece y abre desde el
+Expediente documental oficial del alumno. Solicitó el botón Abrir documento en
+color turquesa; cambio limitado al estilo del detalle administrativo. Publicada la
+app restaurada `documento-turquesa-v165`; 1083 pruebas correctas. La prueba
+completa y la guía se cierran sólo después de la comprobación de expediente oficial.
+
+## Carga compacta de documento familiar — 07/11/2026
+
+A solicitud del usuario, Proponer documento muestra una zona compacta para arrastrar
+un archivo o seleccionarlo con clic, junto al tipo de documento en escritorio y en
+su propia fila en móvil. Muestra nombre y tamaño, conserva el input y las validaciones
+existentes. Se comprobó visualmente con datos ficticios en escritorio y 390 px; una
+prueba aislada de JavaScript verificó arrastre y rechazo de selección múltiple; 1083
+pruebas Java correctas. App restaurada `portal-archivo-v165`, sin migraciones. No se
+envió ninguna propuesta; pendiente aceptación del usuario y continuar prueba documental.
+
+## Decisión sobre selectores de catálogos — 07/11/2026
+
+El usuario revisó las listas de institución, plantel, ciclo y demás filtros de
+catálogos y decidió conservar los select actuales por el momento, considerando
+que habrá pocas instituciones y que su presentación es adecuada. No convertirlos
+ni ofrecer ese barrido como pendiente inmediato salvo nueva solicitud. Esta decisión
+reemplaza las notas anteriores que lo marcaban pendiente. Próximos asuntos: prueba
+familiar de propuesta documental, duración de sesión, revisión de filtros dentro
+de detalles y verificaciones para liberación.
+
+## Confirmación visual de filtros — 07/11/2026
+
+El usuario confirmó que revisó las correcciones de alineación de filtros y que se
+ven correctamente. Queda cerrada esa aceptación visual; no repetirla como pendiente.
+Continúan pendientes el barrido de autocompletado de entidades, la prueba de
+propuesta documental familiar y la prueba de duración de sesión, entre las demás
+verificaciones de liberación descritas más abajo.
+
 ## Auditoría individual de filtros — 07/11/2026
 
 Se recorrieron las 51 entradas del menú administrativo con sesión autorizada,

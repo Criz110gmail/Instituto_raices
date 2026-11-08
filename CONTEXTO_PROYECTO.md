@@ -1,3 +1,34 @@
+## Guía documental familiar — V166, 08/11/2026
+
+Usuario confirmó propuesta aprobada en administración y portal familiar y documento
+visible en expediente oficial. Guía de tres pasos publicada; respaldo previo validado,
+integración aislada y 1083 pruebas correctas. App restaurada `guia-documento-v166`.
+
+## Propuesta documental familiar — 07/11/2026
+
+Usuario confirmó apertura del archivo en administración y estado Aprobada en
+administración y portal familiar. Pendiente confirmar archivo en Expediente
+documental oficial del alumno antes de cerrar/documentar la prueba completa.
+
+## Carga de documento familiar — 07/11/2026
+
+Se añadió zona compacta para arrastrar o seleccionar un archivo en Proponer documento;
+comprobación visual ficticia, lógica de arrastre y 1083 pruebas correctas. Publicada
+app `portal-archivo-v165`. No se envió una propuesta; pendiente prueba humana.
+
+## Selectores de catálogos — decisión del usuario, 07/11/2026
+
+El usuario revisó los selectores y decidió conservar los select actuales de
+institución, plantel, ciclo y demás catálogos por el momento. El barrido de
+conversión a autocompletado deja de ser pendiente inmediato; retomar solo a
+solicitud. Esta decisión sustituye las notas anteriores que lo consideraban pendiente.
+
+## Confirmación visual de filtros — 07/11/2026
+
+El usuario confirmó que los ajustes de alineación se ven correctamente. Esta
+aceptación visual queda cerrada. Siguen pendientes los autocompletados de entidades,
+la prueba documental familiar y la duración de sesión.
+
 ## Auditoría de filtros — 07/11/2026
 
 Revisadas las 51 entradas administrativas, cuatro reportes y autocompletados con

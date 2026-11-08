@@ -23,3 +23,7 @@ body{--panel:var(--white);--soft:#f5f8fc;--accent:var(--blue)}[data-theme="dark"
 .update-confirm-dialog dt{font-size:.72rem;font-weight:800;color:var(--muted);text-transform:uppercase}.update-confirm-dialog dd{margin:5px 0 0;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
 .update-confirm-actions{display:flex;justify-content:flex-end;gap:10px}.update-confirm-actions .module-action--primary{background:var(--blue);border-color:var(--blue);color:#fff}
 @media(max-width:550px){.update-confirm-dialog dl{grid-template-columns:1fr}.update-confirm-dialog dl .wide{grid-column:auto}.update-confirm-actions{flex-direction:column-reverse}.update-confirm-actions button{width:100%}}
+
+.proposal-title .proposal-document-button{background:var(--aqua,#36d6c3);border-color:var(--aqua,#36d6c3);color:#062b31;box-shadow:none}
+.proposal-title .proposal-document-button:hover{background:#2cc7b5;border-color:#2cc7b5;color:#062b31}
+.proposal-title .proposal-document-button:focus-visible{outline:3px solid var(--blue);outline-offset:3px}

@@ -2,3 +2,17 @@
 @media(max-width:700px){.expediente-hero{align-items:flex-start;padding:1.35rem}.privacy-seal{display:none}.proposal-actions,.family-form-grid{grid-template-columns:1fr}.family-form-grid .wide{grid-column:auto}.requests-card,.family-form-card{padding:1rem}.request-copy>div:first-child{align-items:flex-start;flex-direction:column;gap:.4rem}.family-form-actions{align-items:stretch;flex-direction:column-reverse;text-align:center}.family-form-actions button{width:100%}}
 [data-theme="dark"] .expediente-hero{color:#e9fffb;background:linear-gradient(135deg,#193d39,#1d3544)}[data-theme="dark"] .form-intro{background:linear-gradient(135deg,#442f2c,#352b31)}[data-theme="dark"] .form-intro.medical{background:linear-gradient(135deg,#183b35,#1c3440)}
 .back-family,.proposal-actions small,.request-copy small,.form-intro p,.file-field>small,.consent-box small{color:var(--muted)}
+/* Zona de archivo para propuestas familiares; el input sigue disponible con teclado. */
+.file-field .document-dropzone{display:none}
+.document-upload-ready input[type=file]{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.document-upload-ready .document-dropzone{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:112px;padding:12px;text-align:center;border:2px dashed #75c7b4;border-radius:18px;background:linear-gradient(145deg,#e8f8f2,#f4fbfa);color:#15483f;cursor:pointer;transition:border-color .18s,background .18s,box-shadow .18s}
+.document-dropzone-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#d2f0e6;color:#207e6b}
+.document-dropzone-icon svg{width:20px;height:20px}.document-dropzone strong{font-size:1rem}.document-dropzone-subtitle,.document-dropzone-types{font-size:.82rem;line-height:1.4}.document-dropzone-types{color:#52766e}
+.document-upload-ready:hover .document-dropzone,.document-upload-ready.is-dragging .document-dropzone{border-color:#218b72;background:#d9f4e9;box-shadow:0 8px 24px #257e651c}
+.document-upload-ready input[type=file]:focus-visible+.document-dropzone{outline:3px solid #298c7a;outline-offset:3px}
+.document-upload-ready.has-file .document-dropzone{border-style:solid;border-color:#26977d}
+.file-field .document-file-status{overflow-wrap:anywhere;font-weight:700;color:var(--ink)}
+[data-theme=dark] .document-upload-ready .document-dropzone{background:#102c32;border-color:#398f83;color:#e4fff5}
+[data-theme=dark] .document-dropzone-icon{background:#17463e;color:#8ce7cf}[data-theme=dark] .document-dropzone-types{color:#a0cbc2}
+[data-theme=dark] .document-upload-ready:hover .document-dropzone,[data-theme=dark] .document-upload-ready.is-dragging .document-dropzone{background:#153b3d;border-color:#79d6be}
+@media(max-width:590px){.document-upload-ready .document-dropzone{min-height:105px;padding:12px}.document-dropzone strong{font-size:.94rem}}
