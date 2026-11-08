@@ -40,3 +40,35 @@
 [data-theme=dark] .filters.filters-payments input:focus,[data-theme=dark] .filters.filters-payments select:focus{border-color:var(--blue)}
 @media(max-width:900px){.filters.filters-payments{grid-template-columns:repeat(2,minmax(0,1fr))}.filters.filters-payments>.search-field{grid-column:1/-1}.filters.filters-payments .catalogo-rango{grid-template-columns:repeat(2,minmax(0,1fr))}.filters.filters-payments .catalogo-cobertura>label:first-of-type{grid-column:auto}}
 @media(max-width:560px){.filters.filters-payments,.filters.filters-payments .catalogo-rango{grid-template-columns:minmax(0,1fr)}.filters.filters-payments>label,.filters.filters-payments .catalogo-cobertura>label:first-of-type{grid-column:1}.filters.filters-payments .catalogo-filter-actions{justify-content:flex-start}}
+
+/* Filtros compactos: priorizar búsquedas, sin estirar fechas y tamaños de página. */
+@media (min-width: 901px) {
+ .filters.filters-billing,.filters.filters-payments {grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:start}
+ .filters.filters-billing>.search-field,.filters.filters-payments>.search-field {grid-column:span 2;order:1}
+ .filters.filters-billing>label:has(select[name="estado"]),.filters.filters-payments>label:has(select[name="estado"]) {grid-column:span 1;order:2}
+ .filters.filters-billing>label:has(select[name="tamanio"]),.filters.filters-payments>label:has(select[name="tamanio"]) {grid-column:span 1;order:3;max-width:180px}
+ .filters.filters-billing>.payment-student-filter:not(.payment-concept-filter),.filters.filters-payments>.payment-student-filter:not(.payment-concept-filter) {grid-column:span 2;order:4}
+ .filters.filters-billing>.payment-concept-filter,.filters.filters-payments>.payment-concept-filter {grid-column:span 2;order:5}
+ .filters.filters-billing>.catalogo-rango,.filters.filters-payments>.catalogo-rango {order:6;grid-template-columns:repeat(auto-fit,minmax(150px,210px));gap:12px;padding-top:12px}
+ .filters.filters-payments>.catalogo-cobertura {order:6;grid-template-columns:minmax(200px,300px) minmax(140px,180px)}
+ .filters.filters-payments>.catalogo-cobertura>label:first-of-type {grid-column:auto}
+ .filters.filters-billing>.catalogo-filter-actions,.filters.filters-payments>.catalogo-filter-actions {order:7}
+}
+@media (min-width: 561px) and (max-width: 900px) {
+ .filters.filters-billing>.payment-student-filter,.filters.filters-payments>.payment-student-filter {grid-column:auto;min-width:0}
+ .filters.filters-billing>.payment-concept-filter,.filters.filters-payments>.payment-concept-filter {grid-column:auto}
+}
+@media (max-width: 560px) {
+ .filters.filters-billing,.filters.filters-payments {grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .filters.filters-billing>.search-field,.filters.filters-payments>.search-field,
+ .filters.filters-billing>.payment-student-filter,.filters.filters-payments>.payment-student-filter {grid-column:1/-1}
+ .filters.filters-billing>label,.filters.filters-payments>label {grid-column:auto}
+ .filters.filters-billing>.catalogo-rango,.filters.filters-payments>.catalogo-rango {grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-top:12px}
+ .filters.filters-billing>.catalogo-rango>.catalogo-rango-help,.filters.filters-payments>.catalogo-rango>.catalogo-rango-help {grid-column:1/-1}
+ .filters.filters-payments>.catalogo-cobertura>label:first-of-type {grid-column:1/-1}
+ .filters.filters-billing>.catalogo-filter-actions,.filters.filters-payments>.catalogo-filter-actions {justify-content:flex-end}
+}
+@media (max-width:560px){
+ .filters.filters-billing>.catalogo-rango>label,.filters.filters-payments>.catalogo-rango>label{grid-column:auto;min-width:0}
+ .filters.filters-billing>.catalogo-rango>label:has(select[data-range-preset]),.filters.filters-payments>.catalogo-rango>label:has(select[data-range-preset]){grid-column:1/-1}
+}

@@ -1,5 +1,58 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Auditoría individual de filtros — 07/11/2026
+
+Se recorrieron las 51 entradas del menú administrativo con sesión autorizada,
+verificando posición y desbordamiento de filtros a 1440, 1024 y 390 px; soporte
+familiar no tiene filtro. Se revisaron además las cuatro pestañas de reportes y
+los desplegables disponibles con opciones en 13 módulos, en escritorio y móvil.
+Se corrigieron desalineaciones de Por página en Pagos y Proveedores, Texto adicional
+en Puestos y etiquetas largas en rangos de fechas de Adeudos/Pagos. Pruebas: 1083
+Java; muestras visuales con datos ficticios. App restaurada `revision-filtros-v165`,
+sin migraciones. El portal familiar se revisó con sesión autorizada: ocho secciones, y los filtros de
+Horario y Pagos a 1440 y 390 px sin desbordamiento. También se revisaron Planeaciones, Horario, Alumnos, Pendientes y recibos personales
+con sesión docente autorizada, a 1440 y 390 px, sin desbordamientos detectados.
+Pendiente aceptación visual de las correcciones por el usuario.
+No se modifica la lógica ni la información operativa.
+
+## Orden en Pagos y alineación de filtros — 07/11/2026
+
+A petición del usuario, Pagos muestra Alumno, Concepto, Buscar, Estado y Por página
+en ese orden, también en el DOM para conservar el orden de teclado. En escritorio
+las secciones de cobertura y fechas quedan lado a lado. En Puestos se amplió la
+columna de Por página; en Conceptos de nómina las acciones van a la derecha; en
+Periodos de nómina las fechas y Por página ocupan el ancho de sus columnas. Se
+verificaron visualmente ejemplos ficticios de Pagos, Conceptos y Periodos. La
+prueba aislada PostgreSQL de filtros y Excel pasó, así como 1083 pruebas Java.
+Publicada app restaurada `pagos-orden-puestos-v165`, sin migraciones. Pendiente
+confirmación visual del usuario. El barrido de autocompletados institucionales
+sigue pendiente.
+
+## Alineación de filtros solicitados — 07/11/2026
+
+Se ajustaron visualmente los filtros de Actualizaciones familiares, Horarios,
+Planeaciones, Pagos recibidos, Puestos laborales, Conceptos de nómina, Nóminas,
+Proveedores y Compras. Se alinean etiquetas/controles y se compactan las acciones
+cuando cabe en escritorio; no cambia la lógica de filtros. Verificación visual con
+datos ficticios de Actualizaciones familiares, Horarios, Puestos y Pagos, y
+Horarios en móvil; 1083 pruebas Java correctas. App restaurada
+`filtros-alineados-v165`, sin migraciones. Pendiente aceptación visual humana de
+cada pantalla y tamaños; continúa pendiente el barrido de autocompletados de
+institución, plantel y ciclo.
+
+## Filtros compactos — 07/11/2026
+
+El usuario confirmó que los filtros de alumno y concepto funcionan correctamente,
+incluyendo Excel, y solicitó reducir el espacio de filtros en todos los módulos. Se
+reorganizaron Pagos, Adeudos y Cuotas: alumno y concepto juntos en escritorio,
+controles cortos, fechas compactas y dos columnas en móvil. Además se redujeron
+espacios de las tarjetas compartidas de filtros y se limitaron fechas y paginación
+en escritorio. Revisión visual con datos ficticios en 1280 y 390 px; 1083 pruebas
+correctas. Publicada app restaurada `filtros-compactos-v165`; sin migraciones.
+Pendiente aceptación visual del usuario y revisión individual del acomodo de los
+demás módulos; el cambio compartido no acredita revisión exhaustiva de cada uno.
+Continúa pendiente el barrido de autocompletados institucionales anteriormente acordado.
+
 ## Ancho del autocompletado en Adeudos y Cuotas — 07/11/2026
 
 Se corrigió la posición del contenedor de autocompletado para que las sugerencias

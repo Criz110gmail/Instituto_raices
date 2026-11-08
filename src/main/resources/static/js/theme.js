@@ -31,7 +31,7 @@
     if (!document.querySelector('link[data-ui-polish]')) {
         const uiStyles = document.createElement('link');
         uiStyles.rel = 'stylesheet';
-        uiStyles.href = '/css/ui-polish.css';
+        uiStyles.href = '/css/ui-polish.css?v=20261107-compacto';
         uiStyles.dataset.uiPolish = 'true';
         document.head.appendChild(uiStyles);
     }

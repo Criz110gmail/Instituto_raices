@@ -1,0 +1,121 @@
+/* Distribución acotada a las pantallas administrativas indicadas. */
+:is(.update-filters,.schedule-filters,.planning-independent-filters)>label,
+:is(.update-filters,.schedule-filters,.planning-independent-filters)>.autocomplete {align-self:start;min-width:0}
+:is(.update-filters,.schedule-filters,.planning-independent-filters)>label>span,
+:is(.update-filters,.schedule-filters,.planning-independent-filters)>.autocomplete>label {display:flex;align-items:center;min-height:24px;margin:0 0 6px;line-height:1.4}
+:is(.update-filters,.schedule-filters,.planning-independent-filters)>label>input,
+:is(.update-filters,.schedule-filters,.planning-independent-filters)>label>select,
+:is(.update-filters,.schedule-filters,.planning-independent-filters) .autocomplete-input,
+.planning-independent-filters .planning-purpose-control input {box-sizing:border-box;width:100%;min-width:0;height:44px}
+@media(min-width:1201px){
+ .filters.update-filters {grid-template-columns:repeat(12,minmax(0,1fr));align-items:start;gap:14px}
+ .update-filters>label:nth-child(1){grid-column:span 3}.update-filters>label:nth-child(2),.update-filters>label:nth-child(3){grid-column:span 2}
+ .update-filters>label:nth-child(4),.update-filters>label:nth-child(5){grid-column:span 2}
+ .update-filters>.update-search{grid-column:span 4}.update-filters>label:has(input[name="texto"]){grid-column:span 3}
+ .update-filters>label:has(select[name="tamanio"]){grid-column:span 2;max-width:160px}
+ .update-filters>.module-filter-actions{grid-column:span 3;align-self:start;padding-top:30px;justify-content:flex-end}
+ .filters.schedule-filters{grid-template-columns:repeat(12,minmax(0,1fr));align-items:start;gap:14px}
+ .schedule-filters>label:nth-child(1),.schedule-filters>label:nth-child(2){grid-column:span 4}
+ .schedule-filters>label:nth-child(3),.schedule-filters>label:nth-child(4),.schedule-filters>label:nth-child(5),.schedule-filters>label:nth-child(6){grid-column:span 2}
+ .schedule-filters>.filter-actions{grid-column:span 4;align-self:start;padding-top:30px}
+ .filters.planning-filters.planning-independent-filters {grid-template-columns:repeat(12,minmax(0,1fr));align-items:start;gap:14px}
+ .planning-independent-filters>.planning-filter-lookup,.planning-independent-filters>.planning-filter-purpose {grid-column:span 4}
+ .planning-independent-filters>label:not(.planning-filter-lookup):not(.planning-filter-purpose){grid-column:span 2}
+ .planning-independent-filters>.filter-actions {grid-column:span 4;align-self:start;padding-top:30px}
+ .filters[data-nomina-keep-filter="puestos-0"]{grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;align-items:start}
+ .filters[data-nomina-keep-filter="puestos-0"]>.autocomplete,.filters[data-nomina-keep-filter="puestos-0"]>label:has(input[name="q"]){grid-column:span 3}
+ .filters[data-nomina-keep-filter="puestos-0"]>label:has(select[name="estado"]){grid-column:span 2}
+ .filters[data-nomina-keep-filter="puestos-0"]>label:has(select[name="tamanio"]){grid-column:span 1}
+ .filters[data-nomina-keep-filter="puestos-0"]>.module-filter-actions{grid-column:span 3;align-self:start;padding-top:30px;justify-content:flex-end}
+ .filters[data-nomina-keep-filter="conceptos-nomina-0"]{grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;align-items:start}
+ .filters[data-nomina-keep-filter="conceptos-nomina-0"]>.autocomplete,.filters[data-nomina-keep-filter="conceptos-nomina-0"]>label:has(input[name="q"]){grid-column:span 3}
+ .filters[data-nomina-keep-filter="conceptos-nomina-0"]>label{grid-column:span 2}
+ .filters[data-nomina-keep-filter="conceptos-nomina-0"]>.billing-filter-actions{grid-column:span 4;align-self:start;padding-top:30px;justify-content:flex-end}
+ .filters[data-nomina-keep-filter="nomina-listado-0"]{grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;align-items:start}
+ .filters[data-nomina-keep-filter="nomina-listado-0"]>.autocomplete{grid-column:span 3}
+ .filters[data-nomina-keep-filter="nomina-listado-0"]>label:has(input[name="q"]){grid-column:span 2}
+ .filters[data-nomina-keep-filter="nomina-listado-0"]>label:has(select){grid-column:span 2}
+ .filters[data-nomina-keep-filter="nomina-listado-0"]>label:has(input[type="date"]){grid-column:span 2}
+ .filters[data-nomina-keep-filter="nomina-listado-0"]>.module-filter-actions{grid-column:span 4;align-self:start;padding-top:47px;justify-content:flex-end}
+ .filters.supplier-filters{grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;align-items:start}
+ .supplier-filters>label:nth-child(1){grid-column:span 3}.supplier-filters>label:nth-child(2){grid-column:span 2}
+ .supplier-filters>.search-wide{grid-column:span 3}.supplier-filters>label:has(select[name="tamanio"]){grid-column:span 1}
+ .supplier-filters>.filter-actions{grid-column:span 3;align-self:start;padding-top:30px;justify-content:flex-end}
+ .filters.purchase-filters[data-purchase-filters]>.search-wide{grid-column:span 6}
+ .filters.purchase-filters[data-purchase-filters]>.filter-actions{grid-column:span 6;align-self:start;padding-top:30px;border:0;justify-content:flex-end}
+ .filters.filters-payments:not([data-nomina-keep-filter]){grid-template-columns:repeat(12,minmax(0,1fr))}
+ .filters.filters-payments:not([data-nomina-keep-filter])>.search-field{grid-column:span 3}
+ .filters.filters-payments:not([data-nomina-keep-filter])>label:has(select[name="estado"]){grid-column:span 2}
+ .filters.filters-payments:not([data-nomina-keep-filter])>label:has(select[name="tamanio"]){grid-column:span 1}
+ .filters.filters-payments:not([data-nomina-keep-filter])>.payment-student-filter:not(.payment-concept-filter){grid-column:span 3}
+ .filters.filters-payments:not([data-nomina-keep-filter])>.payment-concept-filter{grid-column:span 3}
+}
+@media(max-width:1200px){
+ :is(.update-filters,.schedule-filters,.planning-independent-filters) {align-items:start}
+}
+@media(min-width:1201px){
+ .personal-list-panel.employee-list-panel .filters[data-nomina-keep-filter="puestos-0"],
+ .employee-list-panel .filters[data-nomina-keep-filter="conceptos-nomina-0"],
+ .employee-list-panel .filters[data-nomina-keep-filter="nomina-listado-0"]{grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;align-items:start}
+ .personal-list-panel.employee-list-panel .filters[data-nomina-keep-filter="puestos-0"]>.module-filter-actions{grid-column:span 3;padding-top:37px}
+ .employee-list-panel .filters[data-nomina-keep-filter="conceptos-nomina-0"]>.billing-filter-actions{grid-column:span 4;padding-top:37px}
+ .employee-list-panel .filters[data-nomina-keep-filter="nomina-listado-0"]>.module-filter-actions{grid-column:span 4;padding-top:47px}
+}
+@media(min-width:1201px){
+ .employee-list-panel .filters[data-nomina-keep-filter="conceptos-nomina-0"]>label{grid-column:span 2}
+ .employee-list-panel .filters[data-nomina-keep-filter="conceptos-nomina-0"]>label:has(input[name="q"]){grid-column:span 3}
+ .employee-list-panel .filters[data-nomina-keep-filter="puestos-0"]>label:has(input[name="q"]){grid-column:span 3}
+ .employee-list-panel .filters[data-nomina-keep-filter="puestos-0"]>label:has(select[name="estado"]){grid-column:span 2}
+ .employee-list-panel .filters[data-nomina-keep-filter="puestos-0"]>label:has(select[name="tamanio"]){grid-column:span 1}
+ .employee-list-panel .filters[data-nomina-keep-filter="nomina-listado-0"]>label{grid-column:span 2}
+}
+/* Pagos: alumno y concepto primero; cobertura y fechas comparten fila en escritorio. */
+.filters.filters-payments:not([data-nomina-keep-filter])>.payment-student-filter:not(.payment-concept-filter){order:1}
+.filters.filters-payments:not([data-nomina-keep-filter])>.payment-concept-filter{order:2}
+.filters.filters-payments:not([data-nomina-keep-filter])>.search-field{order:3}
+.filters.filters-payments:not([data-nomina-keep-filter])>label:has(select[name="estado"]){order:4}
+.filters.filters-payments:not([data-nomina-keep-filter])>label:has(select[name="tamanio"]){order:5}
+.filters.filters-payments:not([data-nomina-keep-filter])>.catalogo-cobertura{order:6}
+.filters.filters-payments:not([data-nomina-keep-filter])>.catalogo-rango:not(.catalogo-cobertura){order:7}
+.filters.filters-payments:not([data-nomina-keep-filter])>.catalogo-filter-actions{order:8}
+@media(min-width:1201px){
+ .filters.filters-payments:not([data-nomina-keep-filter])>.catalogo-cobertura,
+ .filters.filters-payments:not([data-nomina-keep-filter])>.catalogo-rango:not(.catalogo-cobertura){grid-column:span 6;min-width:0;align-self:start}
+ .filters.filters-payments:not([data-nomina-keep-filter])>.catalogo-cobertura{grid-template-columns:minmax(0,1fr) minmax(90px,.6fr)}
+ .filters.filters-payments:not([data-nomina-keep-filter])>.catalogo-rango:not(.catalogo-cobertura){grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(min-width:1201px){
+ .employee-list-panel .filters[data-nomina-keep-filter="puestos-0"]>label:has(input[name="q"]){grid-column:span 2}
+ .employee-list-panel .filters[data-nomina-keep-filter="puestos-0"]>label:has(select[name="tamanio"]){grid-column:span 2}
+}
+@media(min-width:1201px){
+ .employee-list-panel .filters[data-nomina-keep-filter="conceptos-nomina-0"]>.billing-filter-actions{grid-column:-5 / -1;justify-content:flex-end}
+}
+/* En Periodos de nómina, las fechas y la paginación igualan su columna. */
+.filters[data-nomina-keep-filter="programacion-nomina-listado-0"]>label>input[type="date"],
+.filters[data-nomina-keep-filter="programacion-nomina-listado-0"]>label>select[name="tamanio"]{width:100%;max-width:none}
+/* Reservar espacio para la etiqueta y su ayuda en ventanas de escritorio. */
+@media(min-width:1201px){
+ .filters.filters-payments:not([data-nomina-keep-filter]){grid-template-columns:repeat(13,minmax(0,1fr))}
+ .filters.filters-payments:not([data-nomina-keep-filter])>label:has(select[name="tamanio"]){grid-column:span 2}
+ .filters.filters-payments:not([data-nomina-keep-filter])>.catalogo-cobertura{grid-column:span 6}
+ .filters.filters-payments:not([data-nomina-keep-filter])>.catalogo-rango:not(.catalogo-cobertura){grid-column:span 7;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr)}
+ .personal-list-panel.employee-list-panel .filters[data-nomina-keep-filter="puestos-0"]{grid-template-columns:repeat(13,minmax(0,1fr))}
+ .employee-list-panel .filters[data-nomina-keep-filter="puestos-0"]>label:has(input[name="q"]){grid-column:span 3}
+ .filters.supplier-filters{grid-template-columns:repeat(13,minmax(0,1fr))}
+ .supplier-filters>label:has(select[name="tamanio"]){grid-column:span 2}
+}
+@media(min-width:1201px){
+ .personal-list-panel.employee-list-panel .filters[data-nomina-keep-filter="puestos-0"]{grid-template-columns:repeat(14,minmax(0,1fr))}
+ .personal-list-panel.employee-list-panel .filters[data-nomina-keep-filter="puestos-0"]>.module-filter-actions{grid-column:span 4}
+}
+@media(min-width:1201px){
+ .employee-list-panel .filters[data-nomina-keep-filter="puestos-0"]>label:has(input[name="q"]){grid-column:span 4}
+ .personal-list-panel.employee-list-panel .filters[data-nomina-keep-filter="puestos-0"]>.module-filter-actions{grid-column:span 3;gap:6px;flex-wrap:nowrap}
+ .personal-list-panel.employee-list-panel .filters[data-nomina-keep-filter="puestos-0"]>.module-filter-actions .module-action{padding-inline:9px;white-space:nowrap}
+}
+/* Igualar la altura de etiquetas de rangos con ayuda o texto en dos líneas. */
+@media(min-width:561px){
+ .filters.filters-billing>.catalogo-rango>label>span,
+ .filters.filters-payments>.catalogo-rango>label>span{display:flex;align-items:center;min-height:40px;line-height:1.3}
+}

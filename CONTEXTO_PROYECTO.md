@@ -1,3 +1,35 @@
+## Auditoría de filtros — 07/11/2026
+
+Revisadas las 51 entradas administrativas, cuatro reportes y autocompletados con
+opciones disponibles en escritorio y móvil; se corrigieron las desalineaciones de
+Pagos, Proveedores, Puestos y rangos de Adeudos/Pagos. App `revision-filtros-v165`,
+1083 pruebas correctas. Portal familiar: ocho secciones revisadas con sesión autorizada; filtros de Horario
+y Pagos sin desbordamiento en escritorio y móvil. Portal docente y recibos personales: cinco pantallas revisadas con sesión autorizada
+a 1440 y 390 px, sin desbordamientos detectados. Pendiente aceptación visual.
+
+## Orden de filtros y alineación — 07/11/2026
+
+Pagos prioriza Alumno y Concepto y alinea cobertura con fechas; Puestos alinea Por
+página; Conceptos de nómina coloca acciones a la derecha; Periodos de nómina iguala
+anchos de fechas y paginación. Prueba aislada de filtros/Excel y 1083 pruebas pasan;
+verificación visual ficticia de Pagos, Conceptos y Periodos. App restaurada
+`pagos-orden-puestos-v165`. Pendiente aceptación visual del usuario.
+
+## Alineación de filtros — 07/11/2026
+
+Ajustados los nueve módulos indicados por el usuario, sin modificar lógica;
+comprobación visual parcial con datos ficticios y 1083 pruebas correctas. App
+restaurada `filtros-alineados-v165`; pendiente verificación visual por el usuario.
+Sigue pendiente el barrido de autocompletados de institución, plantel y ciclo.
+
+## Filtros compactos — 07/11/2026
+
+Usuario confirmó filtros de alumno y concepto y pidió reorganizar el diseño.
+Pagos, Adeudos y Cuotas tienen distribución compacta; se ajustó espaciado común
+de tarjetas. Verificados escritorio/móvil con datos ficticios y 1083 pruebas.
+App restaurada `filtros-compactos-v165`. Falta aceptación visual y revisar cada
+módulo individualmente; sigue pendiente el barrido de autocompletados.
+
 ## Ancho de sugerencias — 07/11/2026
 
 Se ajustó el contenedor de sugerencias de alumno en Adeudos y Cuotas al ancho del

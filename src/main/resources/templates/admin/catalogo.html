@@ -10,12 +10,12 @@
     <link rel="stylesheet" th:href="@{/css/navigation.css}">
     <script th:src="@{/js/theme.js}"></script>
     <script th:src="@{/js/navigation.js}" defer></script>
-    <link rel="stylesheet" th:href="@{/css/catalogo-rangos.css}">
+    <link rel="stylesheet" th:href="@{/css/catalogo-rangos.css(v=20261107-compacto)}">
     <link th:if="${resultado.modulo.name()=='CUENTAS_FINANCIERAS'}" rel="stylesheet" href="/css/cuentas-financieras-ui.css">
     <script th:src="@{/js/catalogo-rangos.js}" defer></script>
     <link rel="stylesheet" th:if="${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'CUOTAS_ALUMNO'}" th:href="@{/css/autocomplete-filter.css(v=20261106-ancho)}">
     <script th:if="${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'CUOTAS_ALUMNO'}" th:src="@{/js/autocomplete.js}" defer></script>
-</head>
+<link rel="stylesheet" href="/css/filtros-alineados.css?v=20261107-revision-detallada"></head>
 <body>
 <input class="nav-toggle" type="checkbox" id="nav-toggle">
 <label class="nav-backdrop" for="nav-toggle" aria-hidden="true"></label>
@@ -59,6 +59,7 @@
         </div>
 
         <form class="filters" th:classappend="${resultado.modulo.name() == 'PAGOS' ? ' filters-payments' : ((resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'CUOTAS_ALUMNO') ? ' filters-billing' : '')}" method="get" th:action="@{/admin/catalogos/{slug}(slug=${resultado.modulo.slug})}">
+            <th:block th:unless="${resultado.modulo.name() == 'PAGOS'}">
             <label class="search-field"><span>Buscar</span><div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><input name="q" th:value="${filtro.q}" placeholder="Código, nombre o ubicación"></div></label>
             <label><span th:text="${resultado.modulo.name() == 'CARGOS' ? 'Situación del adeudo' : 'Estado'}">Estado</span><select name="estado">
                 <option th:each="opcion : ${resultado.modulo.estadosFiltro()}" th:value="${opcion.key}"
@@ -68,6 +69,7 @@
             <label><span>Por página</span><select name="tamanio">
                 <option th:each="n : ${ {10, 25, 50, 100} }" th:value="${n}" th:text="${n}" th:selected="${filtro.tamanio == n}">25</option>
             </select></label>
+            </th:block>
             <div class="autocomplete payment-student-filter" th:if="${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'CUOTAS_ALUMNO'}" data-autocomplete data-no-scope data-refresh-on-focus="true" data-empty-message="No encontramos alumnos relacionados dentro de tu alcance." th:attr="data-endpoint=${resultado.modulo.name() == 'PAGOS' ? '/admin/autocompletado/alumnos-pagos' : (resultado.modulo.name() == 'CARGOS' ? '/admin/autocompletado/alumnos-adeudos' : '/admin/autocompletado/alumnos-cuotas')}">
                 <label for="alumnoTexto"><span>Alumno</span></label>
                 <div class="autocomplete-control"><input class="autocomplete-input" id="alumnoTexto" name="alumnoTexto" th:value="${filtro.alumnoTexto}" placeholder="Nombre o matrícula · Ej. Martha" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="alumnos-pagos-resultados"><button class="autocomplete-clear" type="button" aria-label="Quitar filtro de alumno">×</button></div>
@@ -76,6 +78,17 @@
                 <small class="autocomplete-status">Selecciona un alumno de la lista. Incluye su historial, aunque esté inactivo.</small>
             </div>
             <div class="autocomplete payment-student-filter payment-concept-filter" th:if="${resultado.modulo.name() == 'PAGOS' or resultado.modulo.name() == 'CARGOS' or resultado.modulo.name() == 'CUOTAS_ALUMNO'}" data-autocomplete data-no-scope data-refresh-on-focus="true" data-endpoint="/admin/autocompletado/conceptos-filtro" data-empty-message="No encontramos conceptos relacionados dentro de tu alcance."><label for="conceptoCobro"><span>Concepto de cobro</span></label><div class="autocomplete-control"><input id="conceptoCobro" class="autocomplete-input" type="search" name="conceptoCobro" th:value="${filtro.conceptoCobro}" placeholder="Código o nombre del concepto" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="conceptos-filtro-resultados"><button class="autocomplete-clear" type="button" aria-label="Quitar concepto">×</button></div><input class="autocomplete-value" type="hidden"><div class="autocomplete-results" id="conceptos-filtro-resultados" role="listbox" hidden></div><small class="autocomplete-status">Al enfocar se muestran hasta diez conceptos; busca desde tres caracteres.</small></div>
+            <th:block th:if="${resultado.modulo.name() == 'PAGOS'}">
+            <label class="search-field"><span>Buscar</span><div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><input name="q" th:value="${filtro.q}" placeholder="Código, nombre o ubicación"></div></label>
+            <label><span th:text="${resultado.modulo.name() == 'CARGOS' ? 'Situación del adeudo' : 'Estado'}">Estado</span><select name="estado">
+                <option th:each="opcion : ${resultado.modulo.estadosFiltro()}" th:value="${opcion.key}"
+                        th:text="${opcion.value}" th:selected="${filtro.estado == opcion.key}">Todos</option>
+            </select></label>
+            <label th:if="${resultado.modulo.name() == 'ASISTENCIA'}"><span>Fecha</span><input type="date" name="fecha" th:value="${filtro.fecha}"></label>
+            <label><span>Por página</span><select name="tamanio">
+                <option th:each="n : ${ {10, 25, 50, 100} }" th:value="${n}" th:text="${n}" th:selected="${filtro.tamanio == n}">25</option>
+            </select></label>
+            </th:block>
             <fieldset class="catalogo-rango catalogo-cobertura" th:if="${resultado.modulo.name() == 'PAGOS'}">
                 <legend>Cobertura de mensualidades</legend>
                 <label><span>Tipo de cobertura</span><select name="cobertura">
