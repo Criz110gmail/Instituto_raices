@@ -83,8 +83,8 @@ public enum ModuloPermiso {
     CHEQUERAS_ADMINISTRAR("Chequeras - Administrar", "Crear, editar y activar o desactivar chequeras; incluye consulta, no autoriza pagos ni cancelaciones", "CHEQUERA_ADMINISTRAR"),
     PROVEEDORES("Proveedores", "Consulta, alta, edición y desactivación de proveedores",
             "PROVEEDOR_LEER", "PROVEEDOR_ADMINISTRAR"),
-    COMPRAS("Compras", "Captura, consulta, confirmación financiera y cancelación controlada de compras",
-            "COMPRA_LEER", "COMPRA_ADMINISTRAR", "COMPRA_CONFIRMAR", "COMPRA_CANCELAR"),
+    COMPRAS_CONSULTAR("Compras - Consultar", "Consultar compras y comprobantes y exportar Excel", "COMPRA_LEER"),
+    COMPRAS_ADMINISTRAR("Compras - Administrar", "Consultar y gestionar compras y comprobantes, confirmar egresos y cancelar compras", "COMPRA_ADMINISTRAR", "COMPRA_CONFIRMAR", "COMPRA_CANCELAR"),
     PAGOS("Pagos recibidos", "Acceso completo para registrar, validar, devolver y cancelar pagos",
             "PAGO_LEER", "PAGO_REGISTRAR", "PAGO_VALIDAR", "PAGO_DEVOLVER", "PAGO_CANCELAR"),
     MOVIMIENTOS_FINANCIEROS("Movimientos financieros", "Acceso completo al libro, transferencias, reversas y cortes de caja",
@@ -158,6 +158,7 @@ public enum ModuloPermiso {
         Arrays.stream(values())
                 .filter(modulo -> permisosOtorgados.stream().anyMatch(modulo::contiene))
                 .forEach(modulo -> resultado.addAll(modulo.permisos));
+        if (resultado.contains("COMPRA_ADMINISTRAR")) resultado.add("COMPRA_LEER");
         return resultado;
     }
 }

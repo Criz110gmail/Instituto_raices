@@ -1,3 +1,34 @@
+## Guía de comprobantes de compras confirmada — V169, 09/11/2026
+
+Usuario confirma funcionalidad y derechos. Guía de seis pasos publicada en Compras
+y proveedores tras respaldo y prueba editorial. No se realizaron compras ni pagos.
+
+## Permisos de Compras separados — V168, 09/11/2026
+
+Roles ahora muestra Compras - Consultar y Compras - Administrar; administrar incluye
+consulta, confirmación y cancelación. V168 conserva acceso de los roles anteriores;
+verificada con datos ficticios, respaldada y aplicada. Falta aceptación manual de
+consulta, administración y alcance por el usuario.
+
+## Comprobantes de compras — implementación V167, 09/11/2026
+
+Entregado expediente privado en Compras → Ver compra → Comprobantes: clasificación
+histórica (Sin comprobante con motivo, Ticket/recibo, CFDI con XML), adjuntos PDF,
+imagen optimizada y XML, retiro conservando original/motivo, filtros/Excel/paginación
+y formularios separados con confirmación. CFDI3.3/4.0 leído sin acceso externo,
+normalizado, UUID único por institución incluso retirado y diferencias justificadas.
+No valida sellos/estado SAT ni sustituye validación fiscal. Importación de partidas
+compatibles sólo en borrador tras vista previa/confirmación/versionado; sin egresos.
+Permisos COMPRA_* y alcance institucional/plantel, sin nuevos permisos concedidos.
+1087Java/147JS y prueba integral PostgreSQL17 aislado correctas; diseño revisado con
+datos ficticios en escritorio/móvil y ambos temas. Manual pendiente de aceptación:
+PRUEBA_COMPROBANTES_COMPRAS_20261109.md. No se crearon pagos/compras operativas.
+La sesión está actualmente configurada en30m; no se alteró en esta entrega.
+App local actualizada, V167 aplicada desde166 y saludUP. Base y archivos privados
+respaldados/validados antes de desplegar; imagen anterior conservada. Comparación
+por huellas confirma compras, movimientos y cuentas intactos; expediente operativo
+vacío hasta la prueba humana. No se alteraron roles ni se registraron pagos.
+
 ## Filtros de detalles de nómina aprobados — 09/11/2026
 
 Usuario confirma Autorización y pagos por empleado y sus conceptos pospuestos.

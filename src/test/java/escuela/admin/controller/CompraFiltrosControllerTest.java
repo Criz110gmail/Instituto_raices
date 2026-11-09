@@ -33,7 +33,7 @@ class CompraFiltrosControllerTest {
         var filtro=new FiltroCompra(1L,2L,3L,4L,EstadoCompra.CANCELADA,LocalDate.of(2026,10,16),LocalDate.of(2026,10,16),"COM-00000001",1,10);
         var fila=new CompraFila(1L,"COM-00000001",Instant.parse("2026-10-16T23:58:00Z"),"Proveedor de prueba",null,"Plantel de prueba","Cuenta de prueba","TICKET-PRUEBA-001",new BigDecimal("406.00"),EstadoCompra.CANCELADA,4L,0L);
         when(service.listar(filtro)).thenReturn(new PageImpl<>(List.of(fila),PageRequest.of(1,10),21));
-        var controller=new CompraAdminController(busqueda,service,excel,instituciones,planteles,alcance);
+        var controller=new CompraAdminController(mock(escuela.compras.service.CompraComprobanteService.class),busqueda,service,excel,instituciones,planteles,alcance);
         var resolver=new ClassLoaderTemplateResolver();resolver.setPrefix("templates/");resolver.setSuffix(".html");resolver.setCharacterEncoding("UTF-8");
         var engine=new SpringTemplateEngine();engine.setTemplateResolver(resolver);var vistas=new ThymeleafViewResolver();vistas.setTemplateEngine(engine);vistas.setCharacterEncoding("UTF-8");
         var mvc=MockMvcBuilders.standaloneSetup(controller).setViewResolvers(vistas).build();var ctx=mvc.getDispatcherServlet().getWebApplicationContext();var add=ctx.getClass().getDeclaredMethod("addBean",String.class,Object.class);add.setAccessible(true);add.invoke(ctx,"formatoMoneda",new escuela.common.support.FormatoMoneda());

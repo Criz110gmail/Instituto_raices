@@ -1914,14 +1914,18 @@ motivo, conserva el movimiento original y genera una reversa compensatoria audit
 Proveedores y compras tienen permisos independientes, alcance por institución/plantel,
 paginación real y exportación Excel que reutiliza los filtros de pantalla.
 
-Como ampliación pendiente, cada compra tendrá un expediente documental opcional. Admitirá
-PDF, fotografías optimizadas y XML CFDI, siempre en almacenamiento privado y con apertura
-inline. Los gastos sin factura seguirán siendo válidos —por ejemplo, una compra menor pagada
-desde caja—, pero la clasificación “sin comprobante” exigirá justificación. Para CFDI se
-conservará el XML original y se normalizarán encabezado, conceptos, impuestos y relaciones
-en tablas consultables, con control de UUID duplicado y comparación contra proveedor,
-moneda y totales de la compra. La importación de conceptos requerirá vista previa y
-confirmación del usuario.
+V167 incorpora el expediente privado en **Compras → Ver compra → Comprobantes**:
+PDF, fotografías optimizadas y XML CFDI; filtros, Excel, clasificación e historial
+de retiros sin borrar originales. Sin comprobante exige justificación; Factura CFDI
+requiere XML vigente. El UUID es único por institución incluso al retirar el documento.
+Se conserva el XML original y se normalizan encabezado, conceptos, impuestos y relaciones;
+se comparan RFC, moneda, tipo, subtotal y total y se justifican diferencias.
+La lectura es estructural local de CFDI3.3/4.0; no valida sellos, vigencia SAT ni XSD completo.
+Las partidas compatibles sólo se importan en borrador tras vista previa, motivo y modal;
+descuentos/retenciones/precisiones no representables requieren captura manual.
+Adjuntar o retirar no mueve dinero. La prueba humana está pendiente en
+`PRUEBA_COMPROBANTES_COMPRAS_20261109.md`; 1087 pruebas Java,147JS e integración
+PostgreSQL aislada correctas. Se reutilizan los permisos COMPRA_* y el alcance existente.
 
 La **Guía de procesos y casos prácticos integrada al sistema** ya tiene una primera
 entrega administrativa V56. Se ampliará progresivamente: cada proceso probado y confirmado se documentará

@@ -1,0 +1,34 @@
+<!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><body>
+<section th:fragment="expediente" class="purchase-documents" id="compra-documentos-filtros">
+ <article class="purchase-card">
+  <div class="document-heading"><div><span>Compras → Detalle → Comprobantes</span><h2>Respaldo de esta compra</h2><p>Adjunta facturas, tickets o fotografías. Los archivos no registran pagos ni cambian las partidas.</p></div>
+   <div class="module-filter-actions">
+    <a class="module-action" th:href="@{/admin/compras/{id}/comprobantes/excel(id=${detalle.id},documentoTipo=${documentoTipo},documentoEstado=${documentoEstado},documentoTexto=${documentoTexto})}">Exportar Excel</a>
+    <a th:if="${puedeAdministrar and detalle.estado.name()!='CANCELADA'}" class="module-action" th:href="@{/admin/compras/{id}/comprobantes/respaldo(id=${detalle.id},origen=${origen},retorno=${consulta})}">Clasificar respaldo</a>
+    <a th:if="${puedeAdministrar and detalle.estado.name()!='CANCELADA'}" class="module-action module-action--primary" th:href="@{/admin/compras/{id}/comprobantes/nuevo(id=${detalle.id},origen=${origen},retorno=${consulta})}">+ Adjuntar comprobante</a>
+   </div></div>
+  <div class="document-classification" th:if="${expediente.respaldo!=null}"><strong th:text="${expediente.respaldo.tipo=='CFDI'?'Factura CFDI':(expediente.respaldo.tipo=='TICKET_RECIBO'?'Ticket o recibo':'Sin comprobante')}"></strong><p th:text="${expediente.respaldo.justificacion}"></p></div>
+  <p class="field-help" th:unless="${expediente.respaldo!=null}">Respaldo sin clasificar. Puedes conservar la compra sin factura; al seleccionar Sin comprobante se solicita una justificación.</p>
+  <form class="filters purchase-document-filters" method="get" th:action="@{/admin/compras/{id}(id=${detalle.id})}+'#compra-comprobantes'" data-document-filter>
+   <input type="hidden" name="origen" th:value="${origen}">
+   <label><span>Tipo de archivo</span><select name="documentoTipo"><option value="">Todos</option><option value="PDF" th:selected="${documentoTipo=='PDF'}">PDF</option><option value="IMAGEN" th:selected="${documentoTipo=='IMAGEN'}">Fotografía</option><option value="XML" th:selected="${documentoTipo=='XML'}">XML CFDI</option></select></label>
+   <label><span>Estado del documento</span><select name="documentoEstado"><option value="VIGENTES" th:selected="${documentoEstado=='VIGENTES'}">Vigentes</option><option value="RETIRADOS" th:selected="${documentoEstado=='RETIRADOS'}">Retirados</option><option value="TODOS" th:selected="${documentoEstado=='TODOS'}">Todos</option></select></label>
+   <label><span>Nombre, descripción o UUID</span><input type="search" name="documentoTexto" th:value="${documentoTexto}" maxlength="300" placeholder="Buscar en este expediente"></label>
+   <div class="module-filter-actions"><button class="module-action module-action--primary">Aplicar filtros</button><a class="module-action" data-document-clear th:href="@{/admin/compras/{id}(id=${detalle.id},origen=${origen},retorno=${consulta})}+'#compra-comprobantes'">Limpiar</a></div>
+  </form>
+  <div class="table-wrap"><table><thead><tr><th>Archivo / descripción</th><th>Tipo / fecha</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>
+   <tr th:each="d:${expediente.documentos.content}"><td><strong th:text="${d.nombre}"></strong><small th:text="${d.descripcion}"></small><small th:if="${d.uuid!=null}" th:text="${'UUID: '+d.uuid}"></small><small th:text="${#numbers.formatDecimal(d.tamano/1024.0,1,1)+' KB'}"></small></td>
+    <td><strong th:text="${d.tipo=='IMAGEN'?'Fotografía':d.tipo}"></strong><small th:text="${#temporals.format(d.fecha.atZone(T(java.time.ZoneId).of('America/Mexico_City')),'dd/MM/yyyy HH:mm')}"></small></td>
+    <td><div class="document-status"><span class="purchase-status" th:classappend="${d.retirado==null?'confirmada':'cancelada'}" th:text="${d.retirado==null?'Vigente':'Retirado'}"></span><p class="field-help" th:if="${d.retirado!=null}" th:text="${d.motivoRetiro}"></p></div></td>
+    <td><div class="document-row-actions"><a class="module-action" target="_blank" rel="noopener" th:href="@{/admin/compras/{id}/comprobantes/{doc}/abrir(id=${detalle.id},doc=${d.id})}">Abrir archivo ↗</a>
+     <a class="module-action" th:if="${d.tipo=='XML'}" th:href="@{/admin/compras/{id}/comprobantes/{doc}/fiscal(id=${detalle.id},doc=${d.id},origen=${origen},retorno=${consulta})}">Ver datos CFDI</a>
+     <a class="module-action" th:if="${puedeAdministrar and d.retirado==null and detalle.estado.name()!='CANCELADA'}" th:href="@{/admin/compras/{id}/comprobantes/{doc}/retirar(id=${detalle.id},doc=${d.id},origen=${origen},retorno=${consulta})}">Retirar</a>
+    </div></td></tr>
+  </tbody></table></div><p class="empty" th:if="${expediente.documentos.empty}">No hay comprobantes para estos filtros.</p>
+  <footer class="pagination"><p th:text="${expediente.documentos.totalElements+' documentos · Página '+(expediente.documentos.number+1)}"></p><div>
+   <a class="module-action" th:if="${expediente.documentos.hasPrevious()}" th:href="@{/admin/compras/{id}(id=${detalle.id},origen=${origen},documentoTipo=${documentoTipo},documentoEstado=${documentoEstado},documentoTexto=${documentoTexto},documentoPagina=${expediente.documentos.number-1})}+'#compra-comprobantes'">Anterior</a>
+   <a class="module-action" th:if="${expediente.documentos.hasNext()}" th:href="@{/admin/compras/{id}(id=${detalle.id},origen=${origen},documentoTipo=${documentoTipo},documentoEstado=${documentoEstado},documentoTexto=${documentoTexto},documentoPagina=${expediente.documentos.number+1})}+'#compra-comprobantes'">Siguiente</a></div></footer>
+ </article>
+ <article class="purchase-card" th:if="${!expediente.historial.empty}"><h2>Historial de clasificación</h2><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Respaldo</th><th>Justificación</th></tr></thead><tbody><tr th:each="h:${expediente.historial}"><td th:text="${#temporals.format(h.fecha.atZone(T(java.time.ZoneId).of('America/Mexico_City')),'dd/MM/yyyy HH:mm')}"></td><td th:text="${h.tipo=='CFDI'?'Factura CFDI':(h.tipo=='TICKET_RECIBO'?'Ticket o recibo':'Sin comprobante')}"></td><td th:text="${h.justificacion}"></td></tr></tbody></table></div></article>
+</section>
+</body></html>

@@ -7,6 +7,11 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ModuloPermisoTest {
+    @Test void permisosComprasSeparanConsultaDeAdministracion() {
+        assertThat(ModuloPermiso.expandir(Set.of("COMPRA_LEER"))).containsExactly("COMPRA_LEER");
+        assertThat(ModuloPermiso.expandir(Set.of("COMPRA_ADMINISTRAR")))
+            .contains("COMPRA_LEER","COMPRA_ADMINISTRAR","COMPRA_CONFIRMAR","COMPRA_CANCELAR");
+    }
     @Test
     void expandeCualquierAccionAlModuloCompleto() {
         assertThat(ModuloPermiso.expandir(Set.of("PAGO_LEER")))

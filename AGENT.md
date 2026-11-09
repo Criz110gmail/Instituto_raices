@@ -1,5 +1,64 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Guía de comprobantes de compras confirmada — 09/11/2026
+
+Usuario confirmó la prueba de comprobantes y permisos. V169 incorpora seis pasos
+confirmados a la Guía de procesos: clasificación, archivos, XML, importación,
+retiro, filtros y permisos. Migración editorial probada y desplegada tras respaldo
+privado; no modifica compras, archivos ni pagos. No repetir la prueba como pendiente.
+
+## Compras: permisos separados — 09/11/2026
+
+Por solicitud del usuario, Roles ofrece Compras - Consultar y Compras - Administrar.
+Consultar sólo expande COMPRA_LEER; Administrar incluye consulta, captura,
+confirmación y cancelación. V168 conserva acceso completo de roles previamente
+activos en el antiguo paquete Compras. Migración verificada con roles ficticios,
+pruebas de compilación correctas y V168 desplegada tras respaldo privado validado.
+Pendiente prueba manual de permisos de comprobantes y alcance por el usuario.
+
+## Comprobantes de compras implementados — 09/11/2026
+
+Usuario autorizó implementar el expediente documental pendiente. V167 añade
+compra_respaldo (clasificación con historial), compra_documento (archivo privado y
+retiro con motivo), compra_cfdi, conceptos, impuestos, relaciones e importaciones
+auditadas. No reclasifica compras anteriores ni modifica datos financieros.
+Ruta real: Compras → Ver compra → Comprobantes. Alta y clasificación en formularios
+separados; PDF/fotografía/XML, filtros, paginación de 20, Excel filtrado, regreso al
+origen, conservación de scroll, confirmaciones con Cancelar y vistas claro/oscuro.
+Reutiliza archivo/AlmacenamientoArchivo/ProcesadorFotografia; imágenes optimizadas
+a JPEG. Límites: PDF10MB, imagen20MB de entrada, XML2MB y 200 documentos conservados
+por compra. Retirar conserva original, UUID y motivo; una compra cancelada sólo consulta.
+
+Lectura estructural local CFDI3.3/4.0 sin DTD, entidades externas ni acceso de red.
+XML original intacto, UUID único por institución incluso retirado. Comparaciones
+contra proveedor/RFC receptor/moneda/tipo/subtotal/total y justificación de diferencias.
+No es validación XSD completa, de sellos, vigencia SAT ni deducibilidad. El respaldo
+CFDI requiere XML vigente; no se retira el último sin cambiar antes la clasificación.
+Importación sólo en borrador, con vista previa, motivo, modal y versión; rechaza
+descuentos/retenciones/precisión/impuestos no representables o moneda distinta.
+Sustituye únicamente partidas y totales del borrador sin crear egresos. Si después
+cambian datos de la compra, confirmar vuelve a verificar diferencias del respaldo CFDI.
+
+Permisos existentes: lectura con COMPRA_LEER/ADMINISTRAR/CONFIRMAR/CANCELAR y cambios
+documentales sólo COMPRA_ADMINISTRAR; validación en rutas y servicio, con alcance
+institucional/plantel. No se concedieron permisos nuevos. Pruebas: 1087Java, 147JS y
+una integración PostgreSQL17 con todos los flujos ficticios, CSRF, lectura sin captura,
+acceso cruzado, UUID duplicado/retirado, XML original, normalización, filtros/Excel,
+importación/versiones y cero movimientos. Revisión visual con datos ficticios en
+escritorio y móvil, temas claro/oscuro; tablas con scroll propio. Guía manual:
+PRUEBA_COMPROBANTES_COMPRAS_20261109.md, PENDIENTE de aceptación del usuario.
+No repetir esta funcionalidad como pendiente de implementar ni declarar aprobada
+la prueba humana. La configuración actual de sesión ya está en30m; no se modificó.
+
+Desplegada únicamente app en el proyecto local chatgpt_proyectos, puerto18080.
+Flyway valida167 y aplica V167 desde166, saludUP. Respaldo previo de PostgreSQL y
+archivos privados validado bajo `.respaldos-locales/antes-comprobantes-v167-*`,
+sin publicar sus contenidos; imagen anterior conservada como
+`nexo-pre-comprobantes-v167:20261109`. Huellas de compras, movimientos y cuentas
+idénticas antes/después; compra_documento operativa permanece vacía. No se crearon
+compras, documentos operativos, pagos ni permisos por herramientas. La recreación
+cierra sesiones; iniciar de nuevo para probar. Entorno de QA separado y desechable.
+
 ## Filtros de detalles de nómina confirmados — 09/11/2026
 
 El usuario confirmó la prueba de Autorización y pagos por empleado: filtros,

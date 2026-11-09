@@ -95,6 +95,11 @@ public class SeguridadConfig {
                         .hasAuthority("PROVEEDOR_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/proveedores/**")
                         .hasAnyAuthority("PROVEEDOR_LEER", "PROVEEDOR_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.GET, "/admin/compras/*/comprobantes/nuevo", "/admin/compras/*/comprobantes/respaldo",
+                                "/admin/compras/*/comprobantes/*/retirar", "/admin/compras/*/comprobantes/*/importar")
+                        .hasAuthority("COMPRA_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.POST, "/admin/compras/*/comprobantes/**")
+                        .hasAuthority("COMPRA_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/admin/compras/nueva", "/admin/compras/*/editar")
                         .hasAuthority("COMPRA_ADMINISTRAR")
                         .requestMatchers(HttpMethod.POST, "/admin/compras/*/confirmar")

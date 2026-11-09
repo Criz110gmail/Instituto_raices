@@ -572,6 +572,25 @@
                 add('Subtotal',money(form.dataset.confirmSubtotal));add('Impuestos',money(form.dataset.confirmTax));
                 add('Total que se descontará',money(form.dataset.confirmAmount));
                 note.textContent='Al confirmar se registrará el egreso y se descontará este total de la cuenta indicada. La compra dejará de ser editable como borrador. Cancelar sólo cierra este resumen: no registra el egreso ni modifica el borrador.';
+            } else if(['compra-documento','compra-respaldo','compra-documento-retirar','compra-cfdi-importar'].includes(kind)) {
+                cancel.textContent='Cancelar';accept.textContent='Confirmar y guardar';
+                const valor = name => form.querySelector('[name="'+name+'"]')?.value.trim() || '';
+                title.textContent = {'compra-documento':'Adjuntar comprobante','compra-respaldo':'Guardar respaldo documental','compra-documento-retirar':'Retirar comprobante','compra-cfdi-importar':'Sustituir partidas del borrador'}[kind];
+                if(kind==='compra-documento') {
+                    add('Archivo',form.querySelector('[name="archivo"]')?.files?.[0]?.name || 'Sin archivo');
+                    add('Tipo',form.querySelector('[name="tipo"]')?.selectedOptions?.[0]?.textContent || valor('tipo'));
+                    add('Descripción',valor('descripcion') || 'Sin descripción');
+                    add('Justificación',valor('justificacion') || 'Sin diferencias justificadas');
+                } else if(kind==='compra-respaldo') {
+                    add('Respaldo',form.querySelector('[name="tipo"]')?.selectedOptions?.[0]?.textContent || valor('tipo'));
+                    add('Justificación',valor('justificacion') || 'Sin justificación adicional');
+                } else {
+                    add('Motivo',valor('motivo'));
+                    if(kind==='compra-cfdi-importar') {add('UUID',form.dataset.confirmUuid);add('Nuevo total del borrador',money(form.dataset.confirmAmount));}
+                }
+                note.textContent = kind==='compra-cfdi-importar'
+                    ? 'Se reemplazarán las partidas del borrador por la vista previa del XML. No cambia la cuenta ni registra un egreso. Cancelar conserva las partidas actuales.'
+                    : 'Se actualizará únicamente el expediente documental. No mueve dinero ni cambia las partidas. Los archivos e historial se conservan. Cancelar no guarda cambios.';
             } else if(kind==='proveedor' || kind==='compra-borrador') {
                 cancel.textContent='Cancelar';accept.textContent=kind==='proveedor'?'Confirmar y guardar proveedor':'Confirmar y guardar borrador';
                 const texto=name=>form.querySelector('[name="'+name+'"]').value.trim();

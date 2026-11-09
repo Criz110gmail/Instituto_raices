@@ -33,7 +33,7 @@ class CompraServiceTest {
         when(compras.saveAndFlush(any(Compra.class))).thenAnswer(inv->{Compra x=inv.getArgument(0);
             folios.add(x.getFolio());assertThat(x.getFolio()).hasSizeLessThanOrEqualTo(limite);x.setId(7L);return x;});
         var service=new CompraService(compras,proveedores,instituciones,mock(PlantelRepository.class),cuentas,motivos,
-            mock(MovimientoFinancieroRepository.class),mock(ReversionFinancieraRepository.class),mock(UsuarioRepository.class),movimientos,mock(ReversionFinancieraService.class),mock(AlcanceDatosService.class));
+            mock(MovimientoFinancieroRepository.class),mock(ReversionFinancieraRepository.class),mock(UsuarioRepository.class),movimientos,mock(ReversionFinancieraService.class),mock(AlcanceDatosService.class),mock(CompraComprobanteService.class));
         var f=new CompraForm();f.setInstitucionId(1L);f.setProveedorId(2L);f.setCuentaId(3L);f.setMotivoFinancieroId(4L);
         f.setFechaOperacion(LocalDateTime.of(2026,10,16,12,0));f.setPartidas(List.of(partida("2","100"),partida("3","50")));
         assertThat(service.crear(f)).isEqualTo(7L);
