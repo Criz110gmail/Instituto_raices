@@ -1,5 +1,14 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Apertura de documento familiar confirmada — 09/11/2026
+
+En esta base el usuario envió y aprobó una nueva propuesta documental y confirmó
+que aparece y abre correctamente desde Alumnos → Editar → Expediente documental.
+V170 actualiza el paso 3 de la guía propuesta-documento-familiar; probada en una
+base ficticia y publicada tras respaldo privado. No repetir la apertura como pendiente.
+El usuario dejó pendiente la prueba de sesión de 30 minutos para cuando tenga la
+otra computadora. Siguiente funcionalidad acordada: pago anticipado desde inscripción.
+
 ## Guía de comprobantes de compras confirmada — 09/11/2026
 
 Usuario confirmó la prueba de comprobantes y permisos. V169 incorpora seis pasos

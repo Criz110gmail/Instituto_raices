@@ -1,3 +1,10 @@
+## Apertura documental familiar confirmada — V170, 09/11/2026
+
+Usuario confirmó que el documento familiar aprobado aparece y abre desde el
+expediente oficial del alumno. Actualizado el paso 3 de la guía en V170 y publicado
+tras respaldo privado y prueba editorial. Sesión de 30 minutos queda pendiente
+por decisión del usuario hasta disponer de la otra computadora.
+
 ## Guía de comprobantes de compras confirmada — V169, 09/11/2026
 
 Usuario confirma funcionalidad y derechos. Guía de seis pasos publicada en Compras
