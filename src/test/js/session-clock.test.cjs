@@ -18,14 +18,14 @@ class Element {
     close() { this.open = false; }
     submit() { this.submitted = true; }
 }
-function entorno(pathname) {
+function entorno(pathname, duracion = 1800000) {
     let now = 0;
     const body = new Element(), header = new Element(), listeners = {}, intervals = [], intervalDelays = [], requests = [], redirects = [];
     const controls = new Element(), theme = new Element(), logout = new Element();
     controls.parts = { '[data-theme-toggle]': theme };
     controls.children = [new Element(), theme, logout];
     header.appendChild(controls);
-    let state = { ahora: 1000000, vence: 2800000, csrfCabecera: 'X-CSRF-TOKEN', csrfToken: 'csrf-prueba' };
+    let state = { ahora: 1000000, vence: 1000000 + duracion, csrfCabecera: 'X-CSRF-TOKEN', csrfToken: 'csrf-prueba' };
     let status = 200, offline = false, pendingStatuses = [];
     const channel = { listeners: {}, postMessage() {}, addEventListener(name, fn) { this.listeners[name] = fn; } };
     const document = { readyState: 'complete', hidden: false, body,
@@ -35,7 +35,7 @@ function entorno(pathname) {
     const window = { fetch: async (url, options) => {
         requests.push({ url, options });
         if(offline)throw new TypeError('servidor temporalmente fuera de línea');
-        if (url === '/sesion/renovar') state = { ...state, ahora: 1000000 + now, vence: 2800000 + now };
+        if (url === '/sesion/renovar') state = { ...state, ahora: 1000000 + now, vence: 1000000 + duracion + now };
         const actualStatus=pendingStatuses.length?pendingStatuses.shift():status;
         return { status:actualStatus, ok: actualStatus === 200, redirected: false, json: async () => state,
             headers: { get: name => name === 'X-Session-Now' ? String(state.ahora) : name === 'X-Session-Expires' ? String(state.vence) : null } };
@@ -49,6 +49,19 @@ function entorno(pathname) {
 }
 const flush = () => new Promise(resolve => setImmediate(resolve));
 (async () => {
+    const corto = entorno('/admin', 300000); await flush();
+    const indicadorCorto = corto.controls.children.find(child => child.dataset.sessionIndicator);
+    const avisoCorto = corto.body.children[0];
+    assert.equal(indicadorCorto.textContent, 'Sesión · 05:00');
+    corto.avanzar(179000); corto.intervals[0]();
+    assert.equal(indicadorCorto.textContent, 'Sesión · 02:01');
+    assert.equal(avisoCorto.open, false);
+    corto.avanzar(1000); corto.intervals[0]();
+    assert.equal(indicadorCorto.textContent, 'Sesión · 02:00');
+    assert.equal(avisoCorto.open, true);
+    avisoCorto.querySelector('[data-session-renew]').listeners.click(); await flush();
+    assert.equal(indicadorCorto.textContent, 'Sesión · 05:00');
+    assert.equal(avisoCorto.open, false);
     const salida=entorno('/admin');
     const consulta=salida.requests[0];
     salida.listeners.submit({target:{method:'post',action:'/logout'}});

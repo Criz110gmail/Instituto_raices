@@ -1,5 +1,23 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Revisión de caducidad de sesión — 08/11/2026
+
+Se revisó el cierre anticipado comunicado por el usuario. La configuración declara
+30 minutos y el contenedor activo no sobrescribe `SERVER_SERVLET_SESSION_TIMEOUT`.
+Una prueba HTTP aislada, con Tomcat y usuario ficticio, configuró cinco minutos:
+una navegación renovó el plazo, las consultas periódicas no lo prolongaron y la
+sesión permaneció activa hasta el vencimiento y respondió 401 después. Pasaron 32
+pruebas Java de sesión/seguridad y la suite JS, ampliada para aviso y renovación
+con cinco minutos. `SesionTiempoRealIT` es optativa por tardar más de cinco minutos:
+`mvn -Dtest=SesionTiempoRealIT -Dqa.sesion.tiempoReal=true test`.
+
+No se identificó la causa concreta del cierre anterior ni se cambió la aplicación
+activa. Escribir o mover el ratón no renueva por sí mismo: sí lo hacen peticiones
+funcionales y el botón Continuar sesión. Reiniciar la aplicación invalida sesiones.
+Pendiente confirmación visual del usuario con su sesión real y sin reinicios; no
+afirmar que esa prueba manual o una espera real de 30 minutos se han realizado.
+No se leyó `.env`, no se reinició la app ni se modificó la base de datos.
+
 ## Guía documental familiar confirmada — V166, 08/11/2026
 
 El usuario confirmó que la propuesta documental aprobada aparece en el expediente

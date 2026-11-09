@@ -1,3 +1,12 @@
+## Revisión de sesión — 08/11/2026
+Prueba aislada real de cinco minutos: navegación renueva, sondeo no renueva,
+sesión activa hasta vencer y 401 después. También pasaron 32 pruebas Java de
+sesión/seguridad y la suite JS con aviso y renovación en cinco minutos. Producción
+conserva 30 minutos; no se reinició ni se cambió su base de datos. Escribir en un
+formulario no renueva sin una petición; el botón Continuar sesión sí lo hace. El
+motivo del cierre anticipado previamente observado no quedó establecido. Pendiente
+comprobación visual del propietario con sesión real sin reiniciar la aplicación.
+
 ## Guía documental familiar — V166, 08/11/2026
 
 Usuario confirmó propuesta aprobada en administración y portal familiar y documento
