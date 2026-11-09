@@ -1,3 +1,24 @@
+## Filtros de detalles de nómina aprobados — 09/11/2026
+
+Usuario confirma Autorización y pagos por empleado y sus conceptos pospuestos.
+Consulta local identificó BOR-000004, Noviembre — decisiones de Bruce, con un
+concepto pospuesto de $80.00 ya pagado; filtros Todos/Pagado/Pendiente correctos.
+También confirma todos los filtros y Excel de Configuración de nómina del empleado.
+Se cierran estos recorridos, sin afirmar aprobación global de detalles de otros
+módulos. No se modificaron pagos ni datos. Pendientes: sesión en el otro equipo,
+duración real de 30 minutos, apertura específica del documento familiar desde el
+expediente oficial y verificaciones de liberación/respaldos.
+
+## Sesión manual confirmada en esta computadora — 09/11/2026
+
+Usuario confirma todas las pruebas de cinco minutos (aviso, renovación, actividad,
+vencimiento, varias pestañas, pestaña oculta y desconexión). Pendiente repetir en
+la otra computadora y validar los 30 minutos habituales. Guía reproducible:
+`PRUEBA_SESION_OTRA_COMPUTADORA_20261109.md`. Se conserva su cambio local de
+application.properties a 5m; no se restableció ni se reinició la aplicación.
+No se diagnosticó la causa del fallo anterior del otro equipo. Puede continuarse
+con filtros dentro de detalles mientras ese equipo no esté disponible.
+
 ## Revisión de sesión — 08/11/2026
 Prueba aislada real de cinco minutos: navegación renueva, sondeo no renueva,
 sesión activa hasta vencer y 401 después. También pasaron 32 pruebas Java de

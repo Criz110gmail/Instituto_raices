@@ -1,5 +1,35 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Filtros de detalles de nómina confirmados — 09/11/2026
+
+El usuario confirmó la prueba de Autorización y pagos por empleado: filtros,
+limpieza, posición de scroll, consulta y regreso desde detalle y exportación.
+También confirmó Conceptos pospuestos del periodo en BOR-000004, Noviembre —
+decisiones de Bruce: Bruce Wayne, $80.00, ya pagado; Todos/Pagado lo muestran y
+Pendiente no. No se creó ni repitió un pago para esta revisión.
+Después confirmó todos los filtros y Excel de Empleados → Ver expediente →
+Configuración de nómina, conforme al recorrido propuesto (combinar filtros,
+limpiar, regresar desde Ver y revisar acomodo). No repetir estos bloques como
+pendientes. Esto no cierra automáticamente todos los detalles de otros módulos.
+Siguen pendientes la sesión en la otra computadora y la duración habitual de
+30 minutos; ver PRUEBA_SESION_OTRA_COMPUTADORA_20261109.md. Siguiente comprobación
+breve recomendada: abrir el documento familiar aprobado desde el expediente
+oficial del alumno, cuya presencia ya estaba confirmada. Después, revisar la
+preparación de liberación, respaldos y recuperación con el alcance correspondiente.
+
+## Sesión: prueba manual local confirmada y otra computadora pendiente — 09/11/2026
+
+El usuario confirmó todas las pruebas manuales de cinco minutos: aviso, renovación
+sin guardar el formulario, navegación activa, vencimiento, varias pestañas, regreso
+desde pestaña oculta y desconexión. Queda pendiente repetir en la otra computadora,
+que no tiene disponible, y comprobar la duración habitual de 30 minutos. No atribuir
+el fallo anterior a caché sin evidencia ni declarar la sesión verificada en ambos equipos.
+Pasos y resultados en `PRUEBA_SESION_OTRA_COMPUTADORA_20261109.md`.
+Se preserva el cambio local del usuario en application.properties a 5m; falta volver
+a 30m al cerrar la prueba temporal. En esta documentación no se reconstruyó Docker,
+no se modificó la base ni se hicieron pagos. Siguiente revisión recomendada: filtros
+dentro de detalles; conservar los selectores de catálogo según la decisión del usuario.
+
 ## Revisión de caducidad de sesión — 08/11/2026
 
 Se revisó el cierre anticipado comunicado por el usuario. La configuración declara
