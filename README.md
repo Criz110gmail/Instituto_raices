@@ -1971,12 +1971,14 @@ con el cargo, saldo pendiente, institución, plantel, moneda y tutor responsable
 ya seleccionados. Los permisos de Cuotas, Adeudos de alumnos y Pagos recibidos continúan separados y
 se validan en cada paso.
 
-Como mejora pendiente, la pestaña Cobranza incorporará **Preparar pago anticipado**. El
-administrador podrá revisar inscripción y mensualidades futuras de un alumno, generar sólo
-los cargos faltantes después de una vista previa y abrir un único pago con aplicaciones
-separadas por concepto y periodo. El ingreso financiero será uno por el total validado; no
-se usarán importes sin identificar ni se generarán cargos de otros alumnos. Esta mejora está
-documentada para una etapa posterior y todavía no forma parte de la aplicación.
+La pestaña Cobranza incorpora **Preparar pago anticipado** (09/11/2026).
+Permite consultar conceptos y periodos de una sola inscripción, seleccionar hasta cien
+cargos, revisar el total y confirmar la generación de los faltantes. Los existentes
+se reutilizan sin duplicar; una vista antigua se rechaza si cambia la configuración.
+Después se abre el formulario habitual con una solicitud por cargo y el tutor
+responsable precargado. Registrar deja el pago pendiente; validar produce un ingreso
+por el total y aplicaciones individuales. No se generan cargos de otros alumnos.
+La prueba humana está pendiente en `PRUEBA_PAGO_ANTICIPADO_INSCRIPCION.md`.
 
 **Convenios de pago (V54)** permite sustituir varios saldos pendientes de una familia por
 un monto negociado sin borrar el historial. Los cargos originales quedan identificados como

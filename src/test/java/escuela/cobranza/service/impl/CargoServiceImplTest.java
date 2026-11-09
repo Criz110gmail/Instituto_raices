@@ -239,6 +239,54 @@ class CargoServiceImplTest {
         var r=service.generar(new GeneracionCargosRequest(1L,null,LocalDate.of(2026,2,28),null,java.util.Set.of("AUTO:1:90:2026-01"),null));
         assertThat(r.cargosGenerados()).isEqualTo(1);assertThat(cuota.getEstado()).isEqualTo(EstadoCuota.ACTIVA);
     }
+    private void autorizarIndividual() {
+        var permisos=java.util.stream.Stream.of("INSCRIPCION_ADMINISTRAR","CARGO_ADMINISTRAR","PAGO_REGISTRAR").map(org.springframework.security.core.authority.SimpleGrantedAuthority::new).toList();
+        var principal=new escuela.seguridad.service.UsuarioPrincipal(1L,1L,java.util.Set.of(20L),false,false,"qa","",permisos);
+        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(org.springframework.security.authentication.UsernamePasswordAuthenticationToken.authenticated(principal,"",permisos));
+    }
+    @Test void vistaIndividualNoEscribeYConfirmacionGeneraSoloElMesElegido() {
+        autorizarIndividual();try {
+            var q=cuotaMensual();q.setVersion(0L);q.getInscripcion().getAlumno().setActivo(true);
+            when(inscripcionRepository.findById(50L)).thenReturn(Optional.of(q.getInscripcion()));
+            when(inscripcionRepository.findByIdForUpdate(50L)).thenReturn(Optional.of(q.getInscripcion()));
+            when(cuotaRepository.findAllByInscripcionIdOrderByCreadoEnDescIdDesc(50L)).thenReturn(List.of(q));
+            when(cuotaRepository.findById(90L)).thenReturn(Optional.of(q));
+            var emitido=new java.util.concurrent.atomic.AtomicReference<Cargo>();
+            when(repository.findByClaveGeneracion(any())).thenAnswer(a->Optional.ofNullable(emitido.get()));
+            var desde=LocalDate.of(2026,1,1);var hasta=LocalDate.of(2026,2,28);
+            var vista=service.anticipables(50L,desde,hasta);assertThat(vista).hasSize(2);
+            org.mockito.Mockito.verify(repository,org.mockito.Mockito.never()).insertarAutomaticoSiAusente(any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any());
+            when(repository.insertarAutomaticoSiAusente(any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any())).thenAnswer(a->{var c=cargo();c.setId(201L);c.setImporteOriginal(new BigDecimal("3000.00"));c.setPeriodoCobroInicio(LocalDate.of(2026,2,1));c.setPeriodoCobroFin(hasta);c.setFechaVencimiento(hasta);emitido.set(c);return 1;});
+            var salida=service.confirmarAnticipo(50L,desde,hasta,vista,java.util.Set.of("AUTO:1:90:2026-02"));
+            assertThat(salida).hasSize(1);assertThat(salida.getFirst().id()).isEqualTo(201L);
+            verify(repository).insertarAutomaticoSiAusente(eq(50L),any(),eq(90L),eq("AUTO:1:90:2026-02"),any(),any(),any(),any(),any(),any(),any(),any());
+            org.mockito.Mockito.verify(cuotaRepository,org.mockito.Mockito.never()).buscarParaGeneracion(any(),any(),any(),any(),any());
+        }finally{org.springframework.security.core.context.SecurityContextHolder.clearContext();}
+    }
+    @Test void anticipoRechazaVistaObsoletaYClavesDeOtroAlumno() {
+        autorizarIndividual();try {
+            var q=cuotaMensual();q.setVersion(0L);q.getInscripcion().getAlumno().setActivo(true);
+            when(inscripcionRepository.findById(50L)).thenReturn(Optional.of(q.getInscripcion()));
+            when(inscripcionRepository.findByIdForUpdate(50L)).thenReturn(Optional.of(q.getInscripcion()));
+            when(cuotaRepository.findAllByInscripcionIdOrderByCreadoEnDescIdDesc(50L)).thenReturn(List.of(q));
+            var desde=LocalDate.of(2026,1,1);var hasta=LocalDate.of(2026,2,28);var vista=service.anticipables(50L,desde,hasta);
+            assertThatThrownBy(()->service.confirmarAnticipo(50L,desde,hasta,vista,java.util.Set.of("AUTO:1:999:2026-02"))).hasMessageContaining("no pertenece");
+            q.setImporteBase(new BigDecimal("3100.00"));
+            assertThatThrownBy(()->service.confirmarAnticipo(50L,desde,hasta,vista,java.util.Set.of("AUTO:1:90:2026-02"))).hasMessageContaining("Cambió");
+            org.mockito.Mockito.verify(repository,org.mockito.Mockito.never()).insertarAutomaticoSiAusente(any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any());
+        }finally{org.springframework.security.core.context.SecurityContextHolder.clearContext();}
+    }
+    @Test void anticipoReconoceUnCargoManualDelMismoConceptoYPeriodoSinDuplicarlo() {
+        autorizarIndividual();try {
+            var q=cuotaMensual();q.getInscripcion().getAlumno().setActivo(true);
+            when(inscripcionRepository.findById(50L)).thenReturn(Optional.of(q.getInscripcion()));
+            when(cuotaRepository.findAllByInscripcionIdOrderByCreadoEnDescIdDesc(50L)).thenReturn(List.of(q));
+            when(repository.findAllByInscripcionIdOrderByFechaVencimientoDescIdDesc(50L)).thenReturn(List.of(cargo()));
+            var filas=service.anticipables(50L,LocalDate.of(2026,1,1),LocalDate.of(2026,1,31));
+            assertThat(filas).hasSize(1);assertThat(filas.getFirst().cargoId()).isEqualTo(101L);assertThat(filas.getFirst().estado()).isEqualTo("Existente");
+            assertThat(filas.getFirst().importe()).isEqualByComparingTo("500");
+        }finally{org.springframework.security.core.context.SecurityContextHolder.clearContext();}
+    }
     private CuotaAlumno cuotaMensual() {
         CuotaAlumno cuota = new CuotaAlumno();
         cuota.setId(90L);

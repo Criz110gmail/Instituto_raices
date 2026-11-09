@@ -46,6 +46,13 @@
 
     function alternarFrecuencia() {
         const esMensual = mensual();
+        const opcionInmediata = campo('opcion-cargo-inmediato');
+        if (opcionInmediata) {
+            opcionInmediata.hidden = esMensual;
+            const casilla = opcionInmediata.querySelector('input[type="checkbox"]');
+            casilla.disabled = esMensual;
+            if (esMensual) casilla.checked = false;
+        }
         campo('calendario-mensual').hidden = !esMensual;
         campo('vencimiento-unico').hidden = esMensual;
         dia.disabled = !esMensual; dia.required = esMensual;

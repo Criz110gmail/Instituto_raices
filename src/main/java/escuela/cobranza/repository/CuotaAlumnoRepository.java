@@ -35,6 +35,10 @@ public interface CuotaAlumnoRepository extends JpaRepository<CuotaAlumno, Long>,
                                           @Param("inicio") LocalDate inicio,
                                           @Param("fin") LocalDate fin);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select c from CuotaAlumno c where c.inscripcion.id=:id order by c.id")
+    List<CuotaAlumno> bloquearPorInscripcion(@Param("id") Long id);
+
     boolean existsByConceptoCobroIdAndEstado(Long conceptoId, EstadoCuota estado);
 
     @Query(value="SELECT EXISTS(SELECT 1 FROM cargo WHERE cuota_alumno_id=:id)", nativeQuery=true)

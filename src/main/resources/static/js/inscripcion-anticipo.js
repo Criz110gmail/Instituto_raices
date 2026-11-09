@@ -1,0 +1,7 @@
+document.addEventListener('DOMContentLoaded',()=>{
+ const form=document.querySelector('[data-anticipation-selection]');if(!form)return;
+ const checks=[...form.querySelectorAll('input[name=elegidas]:not(:disabled)')],error=form.querySelector('[data-selection-error]');
+ const actualizar=()=>{let total=0n;const elegidas=checks.filter(c=>c.checked),monedas=new Set(elegidas.map(c=>c.dataset.chargeCurrency));for(const c of elegidas){const [a,b='']=c.dataset.chargeAmount.split('.');total+=BigInt(a)*100n+BigInt(b.padEnd(2,'0').slice(0,2));}form.querySelector('[data-selected-total]').textContent='$'+new Intl.NumberFormat('es-MX').format(total/100n)+'.'+String(total%100n).padStart(2,'0')+' '+[...monedas].join(' / ');form.querySelector('[data-selected-count]').textContent=elegidas.length+' cargos seleccionados';error.hidden=true;};
+ checks.forEach(c=>c.addEventListener('change',actualizar));form.querySelector('[data-select-charges]').addEventListener('click',()=>{checks.forEach((c,i)=>c.checked=i<100);actualizar();});form.querySelector('[data-clear-charges]').addEventListener('click',()=>{checks.forEach(c=>c.checked=false);actualizar();});
+ form.addEventListener('submit',event=>{const seleccion=checks.filter(c=>c.checked);if(!seleccion.length||seleccion.length>100||new Set(seleccion.map(c=>c.dataset.chargeCurrency)).size>1){event.preventDefault();error.hidden=false;error.textContent='Selecciona de uno a cien cargos de la misma moneda antes de continuar.';error.scrollIntoView({block:'nearest'});}});actualizar();
+});

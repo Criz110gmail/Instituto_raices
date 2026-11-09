@@ -306,6 +306,18 @@ public class PagoAdminController {
                 .forEach(s -> alcance.validarRecurso(ModuloCatalogo.CARGOS, s.getCargoId()));
     }
 
+    String prepararAnticipo(java.util.List<Long> ids,Long inscripcion,Model model) {
+        if(ids.isEmpty()||ids.size()>100)throw new ReglaNegocioException("Selecciona entre uno y cien cargos");
+        var form=new PagoForm();prepararDesdeCargo(form,ids.getFirst(),inscripcion,model);
+        form.getSolicitudes().clear();java.math.BigDecimal total=java.math.BigDecimal.ZERO;
+        for(Long id:ids) {
+            alcance.validarRecurso(ModuloCatalogo.CARGOS,id);var c=cargoService.obtener(id);
+            if(!c.inscripcionId().equals(inscripcion)||!c.moneda().equals(form.getMoneda())||c.estadoRegistro()!=escuela.cobranza.entity.EstadoRegistroCargo.EMITIDO||c.saldoPendiente().signum()<=0)throw new ReglaNegocioException("El cargo ya no está disponible para este pago");
+            var solicitud=new SolicitudAplicacionPagoForm();solicitud.setCargoId(id);solicitud.setCargoEtiqueta(c.alumnoMatricula()+" · "+c.descripcion());solicitud.setSaldoReferencia(c.saldoPendiente());solicitud.setMontoSolicitado(c.saldoPendiente());form.getSolicitudes().add(solicitud);total=total.add(c.saldoPendiente());
+        }
+        form.setMonto(total);preparar(model,form);model.addAttribute("anticipoPreparado",true);model.addAttribute("avisoOperacion","Pago anticipado preparado: revisa sus cargos y la cuenta antes de registrarlo. Todavía no se ha recibido ni aplicado dinero.");return "admin/pago-form";
+    }
+
     private void prepararDesdeCargo(PagoForm form, Long cargoId, Long retornoInscripcionId,
                                     Model model) {
         alcance.validarRecurso(ModuloCatalogo.CARGOS, cargoId);

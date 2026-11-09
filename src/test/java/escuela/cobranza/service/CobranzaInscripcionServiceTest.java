@@ -4,6 +4,7 @@ import escuela.alumno.repository.AlumnoTutorRepository;
 import escuela.cobranza.dto.request.CuotaAlumnoRequest;
 import escuela.cobranza.dto.response.CargoResponse;
 import escuela.cobranza.dto.response.CuotaAlumnoResponse;
+import escuela.cobranza.entity.FrecuenciaCuota;
 import escuela.cobranza.mapper.CargoMapper;
 import escuela.cobranza.mapper.CuotaAlumnoMapper;
 import escuela.cobranza.repository.CargoRepository;
@@ -28,6 +29,7 @@ class CobranzaInscripcionServiceTest {
         CuotaAlumnoResponse cuota = mock(CuotaAlumnoResponse.class);
         CargoResponse cargo = mock(CargoResponse.class);
         when(cuota.id()).thenReturn(44L);
+        when(request.frecuencia()).thenReturn(FrecuenciaCuota.UNICA);
         when(cuotaService.crear(request)).thenReturn(cuota);
         when(cargoService.generarCargoUnico(44L)).thenReturn(cargo);
 
@@ -36,6 +38,20 @@ class CobranzaInscripcionServiceTest {
         assertThat(resultado.cuota()).isSameAs(cuota);
         assertThat(resultado.cargo()).isSameAs(cargo);
         verify(cargoService).generarCargoUnico(44L);
+    }
+
+    @Test
+    void guardaCuotaMensualSinGenerarCargoUnicoAunqueSeEnvieLaOpcion() {
+        CuotaAlumnoRequest request = mock(CuotaAlumnoRequest.class);
+        CuotaAlumnoResponse cuota = mock(CuotaAlumnoResponse.class);
+        when(request.frecuencia()).thenReturn(FrecuenciaCuota.MENSUAL);
+        when(cuotaService.crear(request)).thenReturn(cuota);
+
+        var resultado = service.crearCuota(request, true);
+
+        assertThat(resultado.cuota()).isSameAs(cuota);
+        assertThat(resultado.cargo()).isNull();
+        verifyNoInteractions(cargoService);
     }
 
     @Test

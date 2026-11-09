@@ -41,6 +41,10 @@ public interface CargoRepository extends JpaRepository<Cargo, Long>, JpaSpecific
     @Query("select c from Cargo c where c.id = :id")
     Optional<Cargo> findByIdForUpdate(@Param("id") Long id);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select c from Cargo c where c.inscripcion.id=:id order by c.id")
+    List<Cargo> bloquearPorInscripcion(@Param("id")Long id);
+
     Optional<Cargo> findByClaveGeneracion(String claveGeneracion);
 
     Optional<Cargo> findByReemplazaCargoId(Long cargoId);

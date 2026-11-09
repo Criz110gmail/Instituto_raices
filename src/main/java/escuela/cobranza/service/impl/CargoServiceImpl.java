@@ -288,8 +288,15 @@ public class CargoServiceImpl implements CargoService {
     }
 
     private PlanCuota planificar(CuotaAlumno cuota, LocalDate fechaCorte) {
+        var candidatos = candidatos(cuota, fechaCorte);
+        Set<String> existentes = new HashSet<>(repository.clavesGeneradasPorCuota(cuota.getId()));
+        var pendientes = candidatos.stream().filter(p -> !existentes.contains(clave(cuota,p.clavePeriodo()))).toList();
+        return new PlanCuota(pendientes,candidatos.size()-pendientes.size());
+    }
+
+    private List<PeriodoCargo> candidatos(CuotaAlumno cuota, LocalDate fechaCorte) {
         LocalDate fin = menor(fechaCorte, cuota.getFechaFin());
-        if (fin.isBefore(cuota.getFechaInicio())) return new PlanCuota(List.of(), 0);
+        if (fin.isBefore(cuota.getFechaInicio())) return List.of();
         List<PeriodoCargo> candidatos = new ArrayList<>();
         if (cuota.getFrecuencia() == FrecuenciaCuota.UNICA) {
             candidatos.add(new PeriodoCargo(cuota.getFechaInicio(), cuota.getFechaFin(),
@@ -309,11 +316,76 @@ public class CargoServiceImpl implements CargoService {
                 mes = mes.plusMonths(1);
             }
         }
-        Set<String> existentes = new HashSet<>(repository.clavesGeneradasPorCuota(cuota.getId()));
-        List<PeriodoCargo> pendientes = candidatos.stream()
-                .filter(periodo -> !existentes.contains(clave(cuota, periodo.clavePeriodo())))
-                .toList();
-        return new PlanCuota(pendientes, candidatos.size() - pendientes.size());
+        return candidatos;
+    }
+
+    /** Operación individual: no recorre cuotas de otros alumnos ni cambia saldos. */
+    @Transactional(readOnly=true)
+    public List<escuela.cobranza.dto.FilaAnticipoInscripcion> anticipables(Long inscripcionId, LocalDate desde, LocalDate hasta) {
+        autorizarAnticipo(inscripcionId);
+        if(desde==null||hasta==null||hasta.isBefore(desde)||java.time.temporal.ChronoUnit.MONTHS.between(YearMonth.from(desde),YearMonth.from(hasta))>23)
+            throw new ReglaNegocioException("Selecciona un rango válido de hasta 24 meses");
+        var ins=inscripcionRepository.findById(inscripcionId).orElseThrow();
+        if(!INSCRIPCIONES_VIGENTES.contains(ins.getEstado())||!ins.getAlumno().isActivo())throw new ReglaNegocioException("La inscripción y el alumno deben estar vigentes");
+        var filas=new ArrayList<escuela.cobranza.dto.FilaAnticipoInscripcion>();
+        var registrados=repository.findAllByInscripcionIdOrderByFechaVencimientoDescIdDesc(inscripcionId);
+        for(var q:cuotaRepository.findAllByInscripcionIdOrderByCreadoEnDescIdDesc(inscripcionId)) {
+            if(q.getEstado()!=EstadoCuota.ACTIVA||!q.getConceptoCobro().isActivo())continue;
+            for(var p:candidatos(q,hasta)) {
+                if(p.fin().isBefore(desde))continue;
+                var cargo=repository.findByClaveGeneracion(clave(q,p.clavePeriodo()));
+                if(cargo.isEmpty()) {
+                    var coincidentes=registrados.stream().filter(c->c.getConceptoCobro().getId().equals(q.getConceptoCobro().getId())&&c.getPeriodoCobroInicio().equals(p.inicio())&&c.getPeriodoCobroFin().equals(p.fin())).toList();
+                    if(coincidentes.size()>1)throw new ReglaNegocioException("Hay varios cargos para el mismo concepto y periodo. Revisa los cargos antes de preparar el anticipo");
+                    if(!coincidentes.isEmpty())cargo=java.util.Optional.of(coincidentes.getFirst());
+                }
+                while(cargo.isPresent()) {var siguiente=repository.findByReemplazaCargoId(cargo.get().getId());if(siguiente.isEmpty())break;cargo=siguiente;}
+                var f=fila(q,p);var inicio=p.inicio();var fin=p.fin();var vencimiento=p.vencimiento();var moneda=f.moneda();var concepto=f.concepto();String estado="Por generar";Long cargoId=null;Long version=null;BigDecimal importe=f.importeNeto();boolean disponible=importe.signum()>0;
+                if(cargo.isPresent()) {
+                    var c=cargo.get();var v=mapper.respuesta(c);cargoId=c.getId();version=c.getVersion();importe=v.saldoPendiente();inicio=v.periodoCobroInicio();fin=v.periodoCobroFin();vencimiento=v.fechaVencimiento();moneda=v.moneda();concepto=v.conceptoNombre();
+                    estado=c.getEstadoRegistro()!=EstadoRegistroCargo.EMITIDO?"Cancelado o sustituido":importe.signum()<=0?"Liquidado":repository.tienePagoEnRevision(c.getId())?"Pago en revisión":"Existente";
+                    disponible=estado.equals("Existente")&&importe.signum()>0;
+                } else if(!disponible)estado="Sin importe por cobrar";
+                filas.add(new escuela.cobranza.dto.FilaAnticipoInscripcion(f.claveSeleccion(),q.getId(),q.getVersion(),cargoId,version,concepto,inicio,fin,vencimiento,importe,moneda,estado,disponible));
+                if(filas.size()>500)throw new ReglaNegocioException("El rango contiene más de 500 cargos; reduce los meses consultados");
+            }
+        }
+        return filas.stream().sorted(java.util.Comparator.comparing(escuela.cobranza.dto.FilaAnticipoInscripcion::inicio).thenComparing(escuela.cobranza.dto.FilaAnticipoInscripcion::clave)).toList();
+    }
+
+    public List<escuela.cobranza.dto.response.CargoResponse> confirmarAnticipo(Long inscripcionId,LocalDate desde,LocalDate hasta,List<escuela.cobranza.dto.FilaAnticipoInscripcion> esperadas,Set<String> elegidas) {
+        autorizarAnticipo(inscripcionId);
+        if(elegidas==null||elegidas.isEmpty()||elegidas.size()>100)throw new ReglaNegocioException("Selecciona entre uno y cien cargos");
+        inscripcionRepository.findByIdForUpdate(inscripcionId).orElseThrow();
+        cuotaRepository.bloquearPorInscripcion(inscripcionId);
+        repository.bloquearPorInscripcion(inscripcionId);
+        var actuales=anticipables(inscripcionId,desde,hasta);
+        var seleccionadas=new ArrayList<escuela.cobranza.dto.FilaAnticipoInscripcion>();
+        for(String clave:elegidas.stream().sorted().toList()) {
+            var anterior=esperadas.stream().filter(f->f.clave().equals(clave)).findFirst().orElseThrow(()->new ReglaNegocioException("La selección no pertenece a esta vista previa"));
+            var actual=actuales.stream().filter(f->f.clave().equals(clave)).findFirst().orElseThrow(()->new ReglaNegocioException("La configuración cambió; vuelve a consultar"));
+            if(!actual.equals(anterior)||!actual.disponible())throw new ReglaNegocioException("Cambió un cargo, su beca o configuración. Vuelve a consultar antes de confirmar");
+            seleccionadas.add(actual);
+        }
+        if(seleccionadas.stream().map(escuela.cobranza.dto.FilaAnticipoInscripcion::moneda).distinct().count()!=1)throw new ReglaNegocioException("Un pago sólo puede contener cargos de la misma moneda");
+        var resultado=new ArrayList<escuela.cobranza.dto.response.CargoResponse>();
+        for(var f:seleccionadas) {
+            if(f.cargoId()!=null){repository.findByIdForUpdate(f.cargoId());var v=obtener(f.cargoId());if(v.saldoPendiente().compareTo(f.importe())!=0||repository.tienePagoEnRevision(f.cargoId()))throw new ReglaNegocioException("El cargo cambió o ya tiene un pago en revisión");resultado.add(v);continue;}
+            var q=cuotaRepository.findById(f.cuotaId()).orElseThrow();
+            var p=candidatos(q,hasta).stream().filter(x->clave(q,x.clavePeriodo()).equals(f.clave())).findFirst().orElseThrow();
+            insertar(q,p.inicio(),p.fin(),p.vencimiento(),p.clavePeriodo(),p.descripcion());
+            var c=repository.findByClaveGeneracion(f.clave()).orElseThrow();var v=mapper.respuesta(c);
+            if(v.estadoRegistro()!=EstadoRegistroCargo.EMITIDO||v.saldoPendiente().compareTo(f.importe())!=0||repository.tienePagoEnRevision(c.getId()))throw new ReglaNegocioException("El cargo generado cambió; vuelve a consultar");
+            resultado.add(v);
+        }
+        return List.copyOf(resultado);
+    }
+
+    private void autorizarAnticipo(Long id) {
+        var a=SecurityContextHolder.getContext().getAuthentication();
+        if(a==null||!a.isAuthenticated()||Stream.of("INSCRIPCION_ADMINISTRAR","CARGO_ADMINISTRAR","PAGO_REGISTRAR").anyMatch(p->a.getAuthorities().stream().noneMatch(x->x.getAuthority().equals(p))))throw new org.springframework.security.access.AccessDeniedException("Se requieren permisos de inscripción, cargos y registro de pagos");
+        var i=inscripcionRepository.findById(id).orElseThrow(()->new RecursoNoEncontradoException("la inscripción",id));
+        if(!(a.getPrincipal() instanceof UsuarioPrincipal u)||u.usuarioId()==null||u.accesoRecuperacion()||!i.getAlumno().getInstitucion().getId().equals(u.institucionId())||!u.alcanceInstitucional()&&!u.plantelIds().contains(i.getPlantel().getId()))throw new org.springframework.security.access.AccessDeniedException("La inscripción está fuera de tu alcance");
     }
 
     private VistaPreviaCargoAutomaticoFila fila(CuotaAlumno cuota, PeriodoCargo periodo) {

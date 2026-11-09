@@ -1,3 +1,29 @@
+## Pago anticipado — pruebas manuales confirmadas 09/11/2026
+
+El usuario confirmó el pago validado PAG-20261109-000031 de $1,000, distribuido
+en noviembre y diciembre de ANT-MENS-TEST para Capitán. Al consultar, estos meses
+ya pagados no aparecen y enero ($500) sí está disponible. Sin los permisos requeridos
+el usuario de prueba no tuvo acceso; al otorgarlos pudo entrar. Caja estaba en
+$1,415.11. Para concurrencia registró desde una pestaña un pago ficticio pendiente
+de enero; otra pestaña anterior fue bloqueada. Canceló el pago ficticio, comprobó
+su historial y enero volvió a estar disponible. Confirmó todos los puntos de esta
+prueba. Después confirmó la prueba de alcance por plantel y la revisión de diseño en
+ambos temas y pantalla angosta; prueba manual de pago anticipado cerrada. La prueba
+de sesión de 30 minutos en la otra computadora sigue pendiente.
+
+## Pago anticipado desde inscripción — implementación 09/11/2026
+
+Implementado en Inscripciones → Editar → Cobranza → Preparar pago anticipado:
+consulta individual de periodos, selección, vista previa y modal, generación de
+faltantes sin duplicados y pago habitual con solicitudes separadas. Sin movimiento
+hasta validar. Incluye versión de cuotas/saldos, bloqueo transaccional y token de
+sesión, permisos y alcance. No se usa el generador global del plantel.
+1091Java/147JS e integración PostgreSQL aislado correctas: concurrencia, sin otros
+alumnos afectados, formulario real y un pago con dos aplicaciones/un único ingreso.
+Diseño probado en móvil/escritorio y ambos temas. No requiere migraciones. Respaldo
+privado de base/archivos/JAR anterior antes de actualizar app. La aceptación humana
+posterior está registrada al inicio y en PRUEBA_PAGO_ANTICIPADO_INSCRIPCION.md.
+
 ## Apertura documental familiar confirmada — V170, 09/11/2026
 
 Usuario confirmó que el documento familiar aprobado aparece y abre desde el
@@ -8524,3 +8550,11 @@ del propietario del nuevo caso de tope, no una nueva implementación de estos co
   719 fuentes principales y 130 de prueba y aprobó 461 pruebas. Se desplegó sólo el servicio
   `app`; PostgreSQL permaneció intacto, Flyway confirmó V54 y los recursos públicos
   respondieron HTTP 200. No hubo migración y V55 continúa libre.
+## Guía de pago anticipado publicada — V171, 09/11/2026
+
+Se incorporó a Guía de procesos → Cobranza «Preparar un pago anticipado desde la
+inscripción», con seis pasos y los permisos requeridos. La migración editorial se
+probó en una transacción revertida; se respaldó y validó PostgreSQL antes de actualizar
+la aplicación. V171 figura aplicada con seis pasos. No se registraron operaciones
+financieras. La sesión en la otra computadora continúa pendiente.
+

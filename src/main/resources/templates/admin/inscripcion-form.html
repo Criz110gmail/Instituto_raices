@@ -86,6 +86,7 @@
                 <div th:classappend="${!cobranza.cargos.empty ? ' complete' : (!cobranza.cuotas.empty ? ' current' : '')}"><span>2</span><strong>Cargo</strong><small th:text="${cobranza.cargos.empty ? 'Pendiente de generar' : 'Generado'}">Estado</small></div>
                 <div th:classappend="${cobranza.cargoPagado ? ' complete' : (!cobranza.cargos.empty ? ' current' : '')}"><span>3</span><strong>Pago</strong><small th:text="${cobranza.cargoPagado ? 'Con pago aplicado' : 'Pendiente'}">Estado</small></div>
             </div>
+            <div class="billing-primary-action" th:if="${puedeGenerarCargo and puedeRegistrarPago}"><div><span>Pago de varios periodos</span><strong>Preparar pago anticipado</strong><p>Elige conceptos y meses de este alumno. Revisa los cargos existentes y genera sólo los faltantes antes de registrar el pago.</p></div><a th:href="@{/admin/inscripciones/{id}/pago-anticipado(id=${id})}">Preparar pago anticipado →</a></div>
             <div class="billing-primary-action" th:if="${puedeConfigurarCuota}"><div><span>Siguiente acción sugerida</span><strong th:text="${cobranza.cuotas.empty ? 'Preparar cobro de inscripción' : 'Agregar otra cuota o concepto'}">Preparar cobro</strong><p>La inscripción, el plantel, la moneda y la vigencia se completarán automáticamente.</p></div><a th:href="@{/admin/cuotas-alumno/nuevo(inscripcionId=${id})}">Preparar cobro</a></div>
 
             <div class="billing-columns">

@@ -128,6 +128,7 @@ public class SeguridadConfig {
                         .requestMatchers("/admin/alumnos/**").hasAuthority("ALUMNO_ADMINISTRAR")
                         .requestMatchers("/admin/tutores/**").hasAuthority("TUTOR_ADMINISTRAR")
                         .requestMatchers("/admin/vinculos-tutor/**").hasAuthority("VINCULO_TUTOR_ADMINISTRAR")
+                        .requestMatchers("/admin/inscripciones/*/pago-anticipado", "/admin/inscripciones/*/pago-anticipado/**").hasAuthority("PAGO_REGISTRAR")
                         .requestMatchers("/admin/inscripciones/**").hasAuthority("INSCRIPCION_ADMINISTRAR")
                         .requestMatchers("/admin/conceptos-cobro/**").hasAuthority("CONCEPTO_COBRO_ADMINISTRAR")
                         .requestMatchers("/admin/cuotas-alumno/**").hasAuthority("CUOTA_ALUMNO_ADMINISTRAR")

@@ -591,6 +591,11 @@
                 note.textContent = kind==='compra-cfdi-importar'
                     ? 'Se reemplazarán las partidas del borrador por la vista previa del XML. No cambia la cuenta ni registra un egreso. Cancelar conserva las partidas actuales.'
                     : 'Se actualizará únicamente el expediente documental. No mueve dinero ni cambia las partidas. Los archivos e historial se conservan. Cancelar no guarda cambios.';
+            } else if(kind==='inscripcion-anticipo') {
+                title.textContent='Revisar pago anticipado de la inscripción';cancel.textContent='Cancelar';accept.textContent='Confirmar y preparar pago';
+                add('Selección',form.querySelector('[data-selected-count]').textContent);
+                add('Total a preparar',form.querySelector('[data-selected-total]').textContent);
+                note.textContent='Se generarán sólo los cargos faltantes seleccionados de este alumno. Los existentes se conservarán y se abrirá el formulario de pago. Esta acción todavía no registra dinero. Cancelar no genera cargos.';
             } else if(kind==='proveedor' || kind==='compra-borrador') {
                 cancel.textContent='Cancelar';accept.textContent=kind==='proveedor'?'Confirmar y guardar proveedor':'Confirmar y guardar borrador';
                 const texto=name=>form.querySelector('[name="'+name+'"]').value.trim();

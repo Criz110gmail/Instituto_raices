@@ -6,6 +6,7 @@ import escuela.cobranza.dto.request.CuotaAlumnoRequest;
 import escuela.cobranza.dto.response.CobranzaInscripcionResumen;
 import escuela.cobranza.dto.response.CobranzaInscripcionResumen.TutorPagoSugerido;
 import escuela.cobranza.dto.response.ResultadoCobranzaAsistida;
+import escuela.cobranza.entity.FrecuenciaCuota;
 import escuela.cobranza.mapper.CargoMapper;
 import escuela.cobranza.mapper.CuotaAlumnoMapper;
 import escuela.cobranza.repository.CargoRepository;
@@ -56,7 +57,8 @@ public class CobranzaInscripcionService {
     public ResultadoCobranzaAsistida crearCuota(CuotaAlumnoRequest request,
                                                   boolean generarCargoAhora) {
         var cuota = cuotaService.crear(request);
-        var cargo = generarCargoAhora ? cargoService.generarCargoUnico(cuota.id()) : null;
+        var cargo = generarCargoAhora && request.frecuencia() == FrecuenciaCuota.UNICA
+                ? cargoService.generarCargoUnico(cuota.id()) : null;
         return new ResultadoCobranzaAsistida(cuota, cargo);
     }
 

@@ -38,7 +38,7 @@
                 </div>
                 <label><span>Estado *</span><select id="estado-cuota" th:field="*{estado}"><option th:each="item : ${estados}" th:value="${item}" th:text="${#strings.capitalize(#strings.toLowerCase(item.name()))}">Estado</option></select><small class="field-error" th:errors="*{estado}"></small></label>
                 <label class="policy-card automatic-policy wide"><input id="generacion-automatica" type="checkbox" th:field="*{generacionAutomatica}"><span><strong>Incluir en generación automática de cargos</strong><small id="ayuda-generacion">El generador creará únicamente los cargos faltantes. Guardar la cuota no registra un pago recibido.</small></span></label>
-                <label class="policy-card automatic-policy wide" th:if="${modoAsistido and puedeGenerarCargo}"><input type="checkbox" th:field="*{generarCargoAhora}"><span><strong>Crear ahora el pago por cobrar</strong><small>Guarda la cuota y genera inmediatamente el cargo único. Volver a ejecutar esta acción no duplica el cargo.</small></span></label>
+                <label id="opcion-cargo-inmediato" class="policy-card automatic-policy wide" th:if="${modoAsistido and puedeGenerarCargo}" th:hidden="${form.frecuencia == null or form.frecuencia.name() != 'UNICA'}"><input type="checkbox" th:field="*{generarCargoAhora}"><span><strong>Crear ahora el pago por cobrar</strong><small>Guarda la cuota y genera inmediatamente el cargo único. Volver a ejecutar esta acción no duplica el cargo.</small></span></label>
                 <div class="form-notice wide" th:if="${modoAsistido and !puedeGenerarCargo}"><strong>Generación posterior</strong><p>La cuota se guardará preparada, pero un usuario con permiso de Adeudos de alumnos deberá generar el cargo.</p></div>
             </div></fieldset>
             <input th:if="${cuotaBloqueada == true}" type="hidden" name="importeBase" th:value="${form.importeBase}">
@@ -58,6 +58,6 @@
         </form>
     </section>
 </main>
-<script src="/js/cuota-alumno-form.js"></script>
+<script src="/js/cuota-alumno-form.js?v=20261109-mensual"></script>
 </body>
 </html>

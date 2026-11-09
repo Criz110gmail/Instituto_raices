@@ -1,5 +1,60 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Guía de pago anticipado publicada — V171, 09/11/2026
+
+La Guía de procesos incorpora «Preparar un pago anticipado desde la inscripción»,
+categoría Cobranza, seis pasos confirmados y acceso con permisos de inscripción,
+adeudos y registro de pagos. V171 editorial fue probada en transacción revertida,
+se realizó un respaldo local de PostgreSQL validado, Docker compiló y ejecutó las
+pruebas, y la migración figura exitosa con seis pasos. No registra cargos ni pagos.
+La prueba de sesión en la otra computadora sigue pendiente.
+
+## Prueba manual de pago anticipado — cerrada 09/11/2026
+
+El usuario confirmó pago de noviembre y diciembre de ANT-MENS-TEST en la inscripción
+de Capitán: PAG-20261109-000031 validado por $1,000, con $500 por mensualidad.
+En la selección sólo se muestran cargos disponibles; enero de 2027 ($500) permanece
+disponible, mientras noviembre y diciembre ya pagados no aparecen. Confirmó permisos:
+sin derechos no entra y al asignarlos sí. Caja quedó en $1,415.11 antes de la prueba
+concurrente. En dos pestañas, al registrar en A un pago de prueba pendiente para enero,
+B no permitió continuar; el usuario canceló ese pago, comprobó su historial y enero
+volvió a estar disponible. Confirmó que todos los puntos de esa prueba pasaron. No
+confundir el pago ficticio cancelado con el pago validado de noviembre y diciembre.
+El usuario confirmó también la prueba de alcance por plantel y la revisión visual en
+ambos temas y pantalla angosta. La prueba manual de pago anticipado queda cerrada.
+La sesión de 30 minutos en la otra computadora sigue pendiente.
+Antes de una liberación corresponde revisar respaldos/restauración y verificaciones
+generales; la confirmación de esta prueba no equivale a aceptar todo el sistema.
+
+## Pago anticipado desde inscripción implementado — 09/11/2026
+
+Ruta: Inscripciones → Editar → Cobranza → Preparar pago anticipado. Pantalla separada
+con rango de fechas, cargos por generar/existentes/liquidados/cancelados/en revisión,
+selección y total, confirmación con Cancelar y formulario habitual de pago precargado
+con una solicitud por cargo. Generar faltantes no registra dinero; registrar deja el
+pago pendiente y validar publica un único ingreso con aplicaciones separadas.
+
+Se exponen anticipables/confirmarAnticipo en CargoService reutilizando candidatos,
+becas, inserción y claves AUTO originales; no se llama al generador por plantel.
+Reconoce cargos manuales del mismo concepto y periodo, conserva reemplazos y usa
+saldo/fecha/moneda actuales del cargo existente. Inscripción, cuotas y cargos se
+bloquean al confirmar; selección antigua se rechaza. Vista previa sin escrituras,
+token de sesión de 20 minutos (hasta cinco vistas), máximo24meses/500filas y100
+cargos por pago en una sola moneda. La selección repetida conserva los cargos sin
+duplicar; un pago en revisión o liquidado ya no se ofrece. Se conservan permisos
+INSCRIPCION_ADMINISTRAR, CARGO_ADMINISTRAR y PAGO_REGISTRAR y alcance institución/plantel.
+
+1091Java/147JS correctas e integración PostgreSQL17 aislada: no cargos de otro alumno,
+vista previa sin escrituras, selección alterada/desactualizada, dos confirmaciones
+concurrentes sin duplicados, permisos/CSRF, formularios reales y un pago de dos
+mensualidades con un ingreso y dos aplicaciones. Diseño revisado con datos ficticios
+en escritorio/móvil y temas claro/oscuro; modal y mensaje de selección vacía comprobados.
+No requiere migración ni concede permisos. Avance y pendientes de aceptación manual:
+PRUEBA_PAGO_ANTICIPADO_INSCRIPCION.md.
+Respaldo previo privado de base, archivos y JAR anterior bajo
+.respaldos-locales/antes-anticipo-inscripcion-*. Se actualiza sólo app; no se crean
+cargos ni pagos operativos por herramientas. Sesión de30min en otro equipo sigue pendiente.
+
 ## Apertura de documento familiar confirmada — 09/11/2026
 
 En esta base el usuario envió y aprobó una nueva propuesta documental y confirmó
