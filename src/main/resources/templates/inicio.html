@@ -3,26 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sistema administrativo escolar</title>
-    <style>
-        :root { color-scheme: light; font-family: system-ui, sans-serif; }
-        body { margin: 0; background: #f4f7fb; color: #183153; }
-        main { max-width: 760px; margin: 12vh auto; padding: 3rem; background: white;
-               border-radius: 18px; box-shadow: 0 18px 50px rgba(24, 49, 83, .12); }
-        h1 { margin-top: 0; font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.05; }
-        p { color: #53657d; font-size: 1.1rem; line-height: 1.7; }
-        a { color: #0a66c2; }
-    </style>
+    <meta name="theme-color" content="#8ccc43">
+    <meta name="description" content="Instituto Raíces. Sembrando principios, transformando cultura. Conoce nuestra comunidad educativa.">
+    <title>Instituto Raíces · Sembrando principios, transformando cultura</title>
+    <link rel="icon" th:href="@{/favicon.svg}">
+    <link rel="stylesheet" th:href="@{/css/sitio-escolar.css}">
+    <script defer th:src="@{/js/sitio-escolar.js}"></script>
 </head>
 <body>
-<main>
-    <h1>Sistema administrativo escolar</h1>
-    <p>La base institucional y académica está lista para administrar múltiples
-        planteles, niveles, ciclos, periodos, grados y grupos.</p>
-    <p><a th:href="@{/familias}">Entrar como familia</a> ·
-        <a th:href="@{/maestros/acceso}">Entrar como maestro</a> ·
-        <a th:href="@{/login}">Acceso del personal</a> ·
-        <a th:href="@{/actuator/health}">Consultar estado del servicio</a></p>
+<a class="skip-link" href="#contenido">Ir al contenido</a>
+<section class="welcome" data-welcome hidden aria-label="Bienvenida a Instituto Raíces">
+    <div class="welcome-inner">
+        <span class="welcome-sun" aria-hidden="true">☀</span><span class="eyebrow">¡Aquí empiezan las grandes aventuras!</span>
+        <div class="welcome-logo"><img th:src="@{/images/logo.png}" data-essential-image alt="Instituto Raíces" width="4500" height="4500"></div>
+        <div class="welcome-garden" aria-hidden="true"><span class="garden-ground"></span><span class="garden-stem"></span><span class="garden-leaf leaf-left"></span><span class="garden-leaf leaf-right"></span><span class="garden-seed"></span></div>
+        <p class="welcome-motto"><span>SEMBRANDO PRINCIPIOS,</span><br><span>TRANSFORMANDO CULTURA.</span></p><p class="welcome-note">¡Estamos preparando algo bonito para ti!</p>
+        <div class="welcome-progress" role="progressbar" aria-label="Cargando identidad de la escuela" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
+        <p class="welcome-percent" data-percent>0 %</p>
+        <button class="text-button" type="button" data-skip>Omitir bienvenida →</button>
+    </div>
+</section>
+<header class="site-header">
+    <a class="wordmark" href="#inicio" aria-label="Instituto Raíces, inicio"><img class="header-logo" th:src="@{/images/logo.png}" alt="" width="64" height="64"><span>Instituto <strong>Raíces</strong></span></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navegacion" hidden>Menú <span aria-hidden="true">☰</span></button>
+    <nav id="navegacion" aria-label="Navegación principal">
+        <a href="#inicio">Inicio</a><a href="#nosotros">Quiénes somos</a><a href="#oferta">Oferta académica</a><a href="#inscripciones">Inscripciones</a><a href="#galeria">Galería</a><a href="#ubicaciones">Ubicaciones</a>
+        <a class="nav-access" href="#accesos">Accesos ↗</a>
+    </nav>
+</header>
+<main id="contenido">
+    <section class="hero section-shell" id="inicio" aria-labelledby="hero-title">
+        <div class="hero-copy">
+            <p class="eyebrow hero-label"><span aria-hidden="true">✦</span> PEQUEÑAS PERSONAS. GRANDES POSIBILIDADES.</p>
+            <h1 id="hero-title" tabindex="-1">Sembrando <em class="principles">principios,</em><br>transformando <em class="culture">cultura.</em></h1>
+            <p class="hero-intro">Aprender, descubrir y crecer juntos.<br>¡Bienvenidos a la aventura de ser Raíces!</p>
+            <div class="hero-actions"><a class="button button-green" href="#nosotros">¡Conoce Raíces! <span aria-hidden="true">↗</span></a><a class="text-link" href="#oferta">Explora nuestra oferta ↓</a></div>
+            <div class="hero-signature"><span aria-hidden="true">✳</span><p>Principios que nos unen.<br><strong>Cultura que transformamos juntos.</strong></p></div>
+        </div>
+        <div class="hero-art" aria-label="Nuestra comunidad escolar">
+            <span class="hero-sun" aria-hidden="true">☀</span>
+            <span class="hero-spark spark-one" aria-hidden="true">✦</span>
+            <span class="hero-spark spark-two" aria-hidden="true">✳</span>
+            <div class="photo-blob"><img th:src="@{/images/imagen.png}" data-essential-image alt="Niñas y niños de Instituto Raíces, juntos en su escuela" width="1213" height="449" fetchpriority="high"></div>
+            <div class="photo-sticker"><span aria-hidden="true">☺</span><div>¡Qué bonito<br><strong>es crecer juntos!</strong></div></div>
+            <span class="crayon crayon-green" aria-hidden="true"></span><span class="crayon crayon-yellow" aria-hidden="true"></span>
+            <span class="art-caption">MUCHO POR DESCUBRIR. MUCHO POR SER.</span>
+        </div>
+    </section>
+    <div class="motto-band" aria-hidden="true"><span>SEMBRANDO PRINCIPIOS</span><span>✳</span><span>TRANSFORMANDO CULTURA</span><span>✳</span><span>INSTITUTO RAÍCES</span></div>
+    <section class="section-shell about" id="nosotros" aria-labelledby="about-title">
+        <div><p class="eyebrow">NUESTRA ESENCIA</p><h2 id="about-title">Todo empieza<br>con <em>buenas raíces.</em></h2></div>
+        <div class="about-copy"><span class="about-doodle" aria-hidden="true">a b c<span>✦</span></span><p class="lead">SEMBRANDO PRINCIPIOS,<br>TRANSFORMANDO CULTURA.</p><p>Este es nuestro eslogan y el punto de partida de nuestra identidad como Instituto Raíces.</p><p class="editorial-note">Próximamente podrás conocer aquí nuestra historia, misión y visión.</p></div>
+    </section>
+    <section class="offer-section" id="oferta" aria-labelledby="offer-title"><div class="section-shell">
+        <div class="section-heading"><div><p class="eyebrow">CURIOSIDAD EN CADA PASO</p><h2 id="offer-title">Un mundo<br>por <em>explorar.</em></h2></div><p>Conoce las propuestas que dan vida<br>a nuestra comunidad educativa.</p></div>
+        <div class="feature-grid">
+            <article class="feature-card"><span class="card-tab">APRENDER</span><span class="feature-icon" aria-hidden="true">✎</span><h3>Oferta académica</h3><p>Los niveles y programas educativos de la escuela tendrán aquí su propio espacio.</p><span class="upcoming">Información por publicar</span></article>
+            <article class="feature-card workshops"><span class="card-tab">DESCUBRIR</span><span class="feature-icon" aria-hidden="true">✳</span><h3>Talleres</h3><p>Actividades, propuestas y experiencias para seguir descubriendo nuevos intereses.</p><span class="upcoming">Información por publicar</span></article>
+            <article class="feature-card admissions" id="inscripciones"><span class="card-tab">SER PARTE</span><span class="feature-icon" aria-hidden="true">☺</span><h3>Inscripciones</h3><p>Consulta aquí las convocatorias, sus fechas y los pasos para formar parte de Raíces.</p><span class="upcoming">Fechas por confirmar</span></article>
+        </div>
+    </div></section>
+    <section class="section-shell gallery-section" id="galeria" aria-labelledby="gallery-title"><div class="section-heading"><div><p class="eyebrow">ASÍ CRECEMOS JUNTOS</p><h2 id="gallery-title">Momentos que<br><em>echan raíces.</em></h2></div><p>Un espacio para compartir<br>la vida de nuestra escuela.</p></div><div class="gallery-empty"><span class="camera-doodle" aria-hidden="true">▣</span><div><h3>¡Hay mucho por compartir!</h3><p>La galería estará disponible cuando la escuela publique sus fotografías.</p></div></div></section>
+    <section class="visit-section" id="ubicaciones" aria-labelledby="visit-title"><div class="section-shell visit-inner"><div><p class="eyebrow">¡NOS ENCANTARÁ CONOCERTE!</p><h2 id="visit-title">¡Una nueva aventura<br>empieza <em>contigo!</em></h2><p>Próximamente encontrarás las direcciones de nuestros planteles,<br>sus horarios y el contacto por WhatsApp.</p></div><span class="visit-decoration" aria-hidden="true">¡Hola!<span>✦</span></span></div></section>
+    <section class="section-shell portal-section" id="accesos" aria-labelledby="portal-title"><div><p class="eyebrow">YA ERES PARTE DE RAÍCES</p><h2 id="portal-title">Tu espacio, <em>aquí.</em></h2></div><div class="portal-grid"><a th:href="@{/familias}">Familias <span>↗</span></a><a th:href="@{/maestros/acceso}">Maestros <span>↗</span></a><a th:href="@{/personal/acceso}">Personal <span>↗</span></a><a th:href="@{/login}">Administración <span>↗</span></a></div></section>
 </main>
+<footer class="site-footer"><div class="section-shell footer-inner"><div><p class="footer-name">Instituto Raíces<span aria-hidden="true">✳</span></p><p>SEMBRANDO PRINCIPIOS,<br>TRANSFORMANDO CULTURA.</p></div><a href="#inicio">Volver al inicio ↑</a></div><div class="section-shell footer-bottom"><span>Instituto Raíces · Comunidad educativa</span><span>Crecer desde lo que somos.</span></div></footer>
 </body>
 </html>

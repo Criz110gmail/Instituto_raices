@@ -1,5 +1,54 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Sitio público: rediseño infantil solicitado — 09/11/2026
+
+El usuario rechazó la primera dirección por demasiado formal. La dirección vigente
+es profesional y divertida para familias con niños, siguiendo imagen.png: verde lima,
+amarillo, acentos turquesa, letras sans redondeadas, fondos con útiles escolares,
+formas orgánicas, crayolas, sol, tarjetas/pegatinas y foto protagonista. No volver al
+estilo editorial serio con titulares serif. Logo original y eslogan exacto intactos.
+
+Rediseñados inicio.html y sitio-escolar.css/js: ilustraciones vectoriales originales
+integradas en CSS, encuadre CSS de imagen.png sin modificar el archivo, bienvenida
+con semilla/brote y logo/eslogan animados. Progreso real de imágenes, omitir/Escape,
+límite3.5s y movimiento reducido conservados; nueva clave de bienvenida v2 permite
+ver la versión nueva una vez por pestaña. Sin scripts/fuentes/recursos de terceros.
+
+Verificados renderizado/seguridad con tres pruebas Java y suite JS de bienvenida;
+revisión responsiva320/390/768/1440px y menú móvil abrir/elegir/cerrar. Corregido
+scroll horizontal provocado por decoración; sigue revisión visual del propietario.
+Vista previa http://localhost:18780/ actualizada. No desplegado en8080, no reiniciado
+Docker ni tocado BD. Pendientes del plan/editor/WhatsApp y V166→V171 conservados.
+
+## Sitio público escolar: etapa 1 — 09/11/2026
+
+Plan aprobado y documentado ANTES de implementar en PLAN_SITIO_WEB_ESCOLAR.md.
+Cuatro etapas: identidad/inicio, editor/publicación, galería/contacto, cierre QA.
+Usuario confirmó eslogan exacto SEMBRANDO PRINCIPIOS, TRANSFORMANDO CULTURA.
+Se conserva logo.png original; imagen.png aportada por el usuario se incorpora como
+banner institucional y referencia verde lima/amarillo. No modificar esos originales.
+
+Etapa1 implementada en inicio.html, sitio-escolar.css/js: composición verde/café,
+secciones públicas con contenido pendiente explícito, accesos correctos a los cuatro
+portales, menú móvil, eslogan y bienvenida con carga0–100, omitir/Escape, una vez por
+sesión, movimiento reducido y límite3.5s. Funciona sin JS y almacenamiento bloqueado.
+Sólo GET de los dos archivos de imagen públicos autorizado en SeguridadConfig;
+no abrir /images/** ni expedientes privados. Sin esquema ni migración nueva.
+
+Verificado: render Thymeleaf real sin sesión, imágenes/CSS/JS públicos y recursos
+privados protegidos; pruebas de login/cookies/inicio y suite JS bienvenida correctas.
+Revisión visual de vista previa a1440px y390px, sin desbordamiento; menú móvil probado.
+Vista previa local http://localhost:18780 (script ignorado en .respaldos-locales/sitio-etapa1).
+Es una vista de diseño, los enlaces de portal se probaron en Java, no en ese servidor
+estático. NO desplegado en8080: instancia local sigue guia-documento-v166 y código
+incluye migraciones167–171 de la otra computadora. Antes de actualizar, respaldar y
+validar esas migraciones sobre una copia; no afirmar que V171 ya corre en este equipo.
+
+Siguiente: aceptación visual y actualización controlada de instancia, después etapa2
+editor/colores/portada/contenido/publicación. WhatsApp configurable, galería y sedes
+siguen etapa3; no hay número inventado ni botón flotante operativo todavía. La sesión
+en la otra computadora conserva su pendiente. No se leyó .env ni se cambió la BD.
+
 ## Guía de pago anticipado publicada — V171, 09/11/2026
 
 La Guía de procesos incorpora «Preparar un pago anticipado desde la inscripción»,
