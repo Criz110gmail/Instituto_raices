@@ -1,4 +1,77 @@
+Objetos escolares en el diseñador: 36 ilustraciones vectoriales con búsqueda, categorías, color y arrastre. Guía: [PRUEBA_OBJETOS_ESCOLARES.md](PRUEBA_OBJETOS_ESCOLARES.md).
+
+## Siete diseños de galería y visor ampliado — 11/11/2026
+
+Se amplía la biblioteca visual con Cuadrícula, Mosaico, Muro de fotos, Tarjetas,
+Carrusel, Foto destacada y Tira panorámica. Propiedades → Contenido muestra tarjetas
+visuales para elegir diseño, columnas2..5 en diseños estáticos, descripciones,
+efectos ninguno/acercar/elevar/monocromo y transiciones deslizar/fundido/zoom para
+Carrusel y Foto destacada. El cambio conserva álbum y orden. JSONB, sin migración
+posterior a174; backend valida enums, columnas y tiempo. SSR y lienzo usan el mismo
+markup y sitio-galeria.css/js. Cache de diseñador:20261111-galerias.
+
+Clic en foto abre diálogo ampliado con navegación, miniaturas, zoom, contador,
+teclado/Escape y gesto táctil; no modifica el borrador. En editor el iframe envía
+sólo IDs a padre del mismo origen, que verifica componente/álbum/foto activos y
+construye URL privada propia: visor ocupa pantalla completa. Runtime rechaza URLs
+externas y esquemas noHTTP(S). Conserva permisos, CSRF y recursos protegidos.
+Autoplay se pausa al abrir visor; respeta foco, visibilidad y movimiento reducido.
+Tira sin desbordamiento centra fotos y oculta controles innecesarios.
+
+Verificación:1111Java,177JavaScript y9pruebas aisladas PostgreSQL aprobadas.
+Navegador con fixture: siete diseños, orden conservado, transiciones, vista ampliada,
+flechas/miniaturas/teclado/zoom/Escape; guardar y recargar conserva Mosaico/efecto/
+descripciones; público móvil390sin desbordamiento. Guía:PRUEBA_GALERIAS_DISENOS.md.
+Aceptación manual pendiente. No publicar ni sustituir el borrador operativo al probar.
+
 # Sistema administrativo escolar
+
+**Recursos del diseñador:** biblioteca visual integrada para imágenes, álbumes,
+carga múltiple y orden por arrastre. Galería en cuadrícula o carrusel; Ubicaciones,
+Contacto y Publicaciones en ventanas del editor.
+[Prueba de biblioteca visual](PRUEBA_BIBLIOTECA_VISUAL.md).
+
+**Diseño web: diseñador por secciones y componentes.** La entrada del módulo abre
+Estructura (Header/Detalle/Footer), página completa y paleta con Propiedades/Recursos.
+Selecciona textos, logo o menús; agrega componentes y secciones, arrastra, cambia
+su tamaño y revisa Computadora/Tableta/Celular. Guardar, Publicar y restaurar
+revisiones son acciones separadas. Guía actual: [Prueba del diseñador](PRUEBA_DISENADOR_PAGINA.md).
+Sin migración adicional a V174. Las notas del editor anterior siguen debajo como historial.
+
+**Diseño web: página escolar completa y edición por objeto.** En Diseños puedes
+cargar la publicación actual; el lienzo incluye logotipo, menús y las nueve secciones
+originales. Selecciona un texto, imagen o enlace para modificarlo y usa Mover objeto
+para colocarlo. Guardado, publicación y restauración conservan confirmaciones.
+Consulta [la prueba por objetos](PRUEBA_EDITOR_VISUAL_SITIO.md).
+
+## Editor visual de páginas — V174
+
+**Diseño web** abre un estudio visual: 14 tipos de bloques, cuatro puntos de partida,
+arrastrar y ordenar, textos editables, biblioteca de imágenes, propiedades, colores,
+fuentes y animaciones; vista de computadora/tableta/celular, deshacer/rehacer y
+recuperación local. Guardar conserva revisiones y publicar requiere confirmación y
+permiso. Se mantienen galerías, contacto, ubicaciones y publicaciones anteriores.
+[Prueba del editor visual](PRUEBA_EDITOR_VISUAL_SITIO.md), pendiente de aceptación.
+
+## Página web administrable completa — V173
+
+**Diseño web → Galería / Ubicaciones / Contacto y WhatsApp** completa el editor:
+álbumes,fotografías,orden,retiro con historial,sedes y contacto público. Listados
+con filtros y Excel;capturas separadas. Todos los cambios permanecen como borrador
+hasta publicar. Se conservan versiones y permisos institucionales. El botón de
+WhatsApp usa número y mensaje configurados,no envía mensajes automáticamente.
+[Prueba completa de principio a fin](PRUEBA_SITIO_WEB_COMPLETO.md),pendiente de
+confirmación del propietario. Las verificaciones técnicas ya fueron realizadas.
+
+
+## Diseño web — editor y publicación
+
+Menú **Diseño web**: identidad,colores,textos,logotipo y portada; borrador,vista previa,
+publicación e historial. Requiere Diseño web - Editar y,para publicar,Diseño web -
+Publicar,con alcance institucional. Cada escuela publica en `/sitio/{codigo}`.
+`APP_SITIO_CODIGO` permite usar su última publicación en `/` para esa instalación.
+Los borradores no cambian la página pública. Galería y contacto están integrados con V173.
+[Prueba manual de etapa2](PRUEBA_SITIO_WEB_ETAPA2.md).
 
 ## Recibos internos de nómina — etapa 1
 

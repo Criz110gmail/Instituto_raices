@@ -11,6 +11,8 @@ import java.util.Set;
  * conservan para proteger cada endpoint, pero nunca se conceden de forma aislada.
  */
 public enum ModuloPermiso {
+    SITIO_EDITAR("Diseño web - Editar", "Editar contenido y vista previa del sitio", "SITIO_WEB_EDITAR"),
+    SITIO_PUBLICAR("Diseño web - Publicar", "Publicar el contenido revisado", "SITIO_WEB_PUBLICAR"),
     INSTITUCIONES("Instituciones", "Acceso completo a instituciones",
             "INSTITUCION_LEER", "INSTITUCION_ADMINISTRAR"),
     PLANTELES("Planteles", "Acceso completo a planteles",

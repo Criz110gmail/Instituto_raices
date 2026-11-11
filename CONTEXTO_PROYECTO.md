@@ -1,3 +1,375 @@
+## Botones de zoom de precisión — 11/11/2026
+
+Barra fija del lienzo:Alejar(−),selector de porcentaje y Acercar(+). Rango25..300%,
+Ajustar muestra porcentaje real y vuelve a encajar la página; botones usan siguiente
+nivel desde escala calculada. Se conserva ancho/dispositivo de página, coordenadas,
+selección y enfoque. Zoom no ensucia borrador ni se publica. Tiradores/guías reciben
+escala hasta3. Barra fija también horizontalmente para que no desaparezca al ampliar.
+Controles accesibles también en móvil, sin duplicar selector en encabezado.
+
+Verificado:186JavaScript; navegador fixture:botones,150/300%,límites deshabilitados,
+X459conservada,estado guardado intacto y móvil390sin desbordamiento. No cambios de
+modelo persistido,permisos ni migración. Caché20261111-zoom. Aceptación manual pendiente.
+
+Desplegado en18080:1112Java/186JavaScript aprobadas,healthUP y JS/CSS servidos
+idénticos a fuente. Respaldo validado .respaldos-locales/antes-zoom-editor-VOU8Vg.
+Huellas de borrador/publicaciones y tablas financieras conservadas; sin publicar
+ni guardar el diseño operativo. Servidor de prueba detenido.
+
+## Arrastre y alineación precisa del diseñador — 11/11/2026
+
+Cuadrícula por superposición pointer-events:none sobre los fondos (no background
+oculto por hijos), por sección seleccionada y con origen del contenedor real. Paso
+4/8/16/24/32px;16por defecto. Ajuste absoluto a cuadrícula y guías rosas al borde/
+centro más cercano, incluidos bordes cruzados de objetos de distinto tamaño. Tolerancia
+6px de pantalla convertida a píxeles de página según zoom; geometría pura en
+NexoDisenador.ajustarMovimiento, cubierta por pruebas. Alt libera ajuste; Mayús
+bloquea eje. Cachea rectángulos al iniciar para no medir todo el DOM en cada movimiento.
+
+Iconos/imágenes/formas seleccionados admiten arrastre directo; textos conservan doble
+clic para editar y tirador para mover. Captura de puntero diferida hasta superar3px,
+clic posterior suprimido sólo tras mover/girar, Escape/pointercancel restaura. Se
+conserva multiselección Mayús/Ctrl/Cmd. Lectura X/Y durante arrastre y tras soltar;
+tiradores legibles a cualquier escala. Zoom enfoca selección vertical/horizontal sin
+cambiar modelo ni marcar borrador modificado. Vista sin guías omite overlays. No se
+modifican render público ni esquema/permisos; sigue V174. Caché20261111-precision.
+
+Verificado:184JavaScript; navegador con fixture, arrastre al50/100%, selección
+conservada, X/Y guardadas, pasos4px, flechas1/10px, doble clic de texto, vista sin
+guías y barra móvil390sin desbordamiento. Barra de precisión fija al desplazar.
+
+Guía:PRUEBA_POSICION_PRECISA.md. Aceptación manual pendiente. QA usa fixture local;
+no guardar ni publicar datos operativos para probar las posiciones.
+
+Despliegue18080 completado:1112Java y184JavaScript aprobadas;healthUP y
+recursos JS/CSS servidos idénticos al código verificado. Respaldo base/JAR validado
+en .respaldos-locales/antes-posicion-precisa-3m4Cx5. Huellas de borrador/publicaciones
+y pagos/movimientos/cuentas iguales antes/después. Sin guardado ni publicación del
+diseño operativo. Servidor de fixture detenido.
+
+## Paleta de objetos escolares — 11/11/2026
+
+Componentes → Objetos escolares abre paleta visual separada de Elementos, con36
+ilustraciones originales SVG, búsqueda sin acentos y categorías Útiles/Aprendizaje/
+Creatividad/Vida escolar/Decoraciones. Clic o drag al lienzo; mismo destino, límites,
+confirmaciones, copiar/pegar, deshacer, giro y estilos por dispositivo existentes.
+Propiedades → Contenido permite cambiar dibujo/color y descripción accesible;
+decorativo por defecto. No acepta SVG ni URLs de usuario: sólo clave cerrada validada
+en backend; tipo icono (div sin texto/hijos), campos icono/decorativo en JSONB actual.
+Recurso estático local /images/sitio-objetos-escolares.svg, GET público exacto y sin
+fotos ni datos privados. SVG externo por use, currentColor, proporciones64x64; mismo
+recurso y CSS en SSR/lienzo. Sin migraciones ni nuevos permisos. Caché20261111-objetos.
+Generador de ilustraciones:scripts/generar_objetos_escolares.py; test verifica paridad
+de claves Java/JS/sprite. No cambiar a SVG arbitrario cargado desde propiedades.
+
+Verificación:1112Java,180JavaScript y10pruebas aisladas aprobadas. Navegador
+con datos ficticios:clic/búsqueda/drag real al iframe,color/tamaño/giro,Cancelar/
+Guardar/recargar,SVG público y paleta móvil390sin desbordamiento.
+
+Guía manual:PRUEBA_OBJETOS_ESCOLARES.md. No guardar ni publicar datos operativos
+para QA; usar fixture/base temporal. Aceptación manual pendiente.
+
+Desplegado en18080:healthUP;JS/CSS/sprite servidos idénticos al código verificado,
+SVG público accesible sin sesión. Respaldo base/JAR validado en
+.respaldos-locales/antes-objetos-escolares-Fy471V. Huellas antes/después de borrador,
+publicaciones,pagos,movimientos y cuentas idénticas. Sin publicación ni guardado del
+diseño operativo. Contenedores QA retirados.
+
+## Siete diseños de galería y visor ampliado — 11/11/2026
+
+Se amplía la biblioteca visual con Cuadrícula, Mosaico, Muro de fotos, Tarjetas,
+Carrusel, Foto destacada y Tira panorámica. Propiedades → Contenido muestra tarjetas
+visuales para elegir diseño, columnas2..5 en diseños estáticos, descripciones,
+efectos ninguno/acercar/elevar/monocromo y transiciones deslizar/fundido/zoom para
+Carrusel y Foto destacada. El cambio conserva álbum y orden. JSONB, sin migración
+posterior a174; backend valida enums, columnas y tiempo. SSR y lienzo usan el mismo
+markup y sitio-galeria.css/js. Cache de diseñador:20261111-galerias.
+
+Clic en foto abre diálogo ampliado con navegación, miniaturas, zoom, contador,
+teclado/Escape y gesto táctil; no modifica el borrador. En editor el iframe envía
+sólo IDs a padre del mismo origen, que verifica componente/álbum/foto activos y
+construye URL privada propia: visor ocupa pantalla completa. Runtime rechaza URLs
+externas y esquemas noHTTP(S). Conserva permisos, CSRF y recursos protegidos.
+Autoplay se pausa al abrir visor; respeta foco, visibilidad y movimiento reducido.
+Tira sin desbordamiento centra fotos y oculta controles innecesarios.
+
+Verificación:1111Java,177JavaScript y9pruebas aisladas PostgreSQL aprobadas.
+Navegador con fixture: siete diseños, orden conservado, transiciones, vista ampliada,
+flechas/miniaturas/teclado/zoom/Escape; guardar y recargar conserva Mosaico/efecto/
+descripciones; público móvil390sin desbordamiento. Guía:PRUEBA_GALERIAS_DISENOS.md.
+Aceptación manual pendiente. No publicar ni sustituir el borrador operativo al probar.
+
+Despliegue local18080 completado: health UP y JS/CSS servidos idénticos a fuente.
+Respaldo validado en .respaldos-locales/antes-galerias-disenos-ZtFazS (dump y JAR
+anterior). Huellas antes/después de sitio_web,publicaciones,pago,movimientos/cuentas
+financieras idénticas. Contenedores QA retirados; no se publicó ni guardó el diseño
+operativo.
+
+## Biblioteca visual y carrusel dentro del diseñador — 11/11/2026
+
+Petición: ningún flujo de diseño debe sentirse como un catálogo administrativo.
+Recursos se organiza en tarjetas Imágenes, Álbumes y galerías, Ubicaciones y Contacto.
+Abren ds-library, una biblioteca modal con miniaturas, carga múltiple PNG/JPEG,
+álbum/nombre/descripción plegable, orden por drag o flechas, selección de archivos ya
+cargados, retiro/recuperación sin DELETE y Cancelar/Aplicar/Usar. La carga de bytes
+usa el endpoint privado existente y conserva límites100imágenes/20álbumes/100fotos,
+5MB/25MP; cancelar el álbum conserva las imágenes en biblioteca para reutilizarlas.
+Cambios de extras se aplican localmente y requieren Guardar borrador/Publicar después.
+Actualizar biblioteca sólo actualiza imágenes, sin recargar ni perder la captura.
+
+Propiedades de imagen usa miniatura y selector visual. Galería permite elegir/editar
+el álbum sin salir y Presentación Cuadrícula/Carrusel. SitioComponente añade campos
+presentacion(validado),automatico e intervalo3..15, persistidos en JSONB sin migración.
+SSR y lienzo comparten markup/CSS/runtime de carrusel: scroll-snap, flechas, puntos,
+contador, pausa/reproducción opcional, teclado, movimiento reducido, pausa en foco/
+hover/fuera de pantalla/documento oculto. Autoplay detenido mientras se edita.
+Doble clic en Galería/Ubicaciones abre su recurso. Contacto y ubicaciones se editan
+como tarjetas en la biblioteca; correo/teléfono públicos se muestran al pie si existen.
+Versiones → Ver publicaciones abre la biblioteca, no el resumen administrativo.
+Rutas clásicas se conservan sólo como compatibilidad, no enlaces del editor habitual.
+
+GET /admin/diseno-web/visual/recursos devuelve sólo planteles/imágenes/publicaciones
+propios y requiere SITIO_WEB_EDITAR/alcance institucional. Guardar rechaza IDs de álbum/
+fotos duplicados, imágenes activas repetidas y dos ubicaciones activas del mismo plantel.
+Se mantienen CSRF, versión esperada, recursos privados y revisión/publicación inmutable.
+Sin grants, sin .env, sin migración después de174 ni cambios al inicio configurado.
+
+Verificación:1110Java y175JavaScript aprobadas; integración PostgreSQL temporal8pruebas
+aprobadas. Navegador fixture: tres archivos en una selección, ordenar por arrastre,
+Cancelar preserva nombre/orden, reutilizar archivos, retirar/recuperar, flechas de
+carrusel, guardar/recargar, autoplay y pausa; móvil390 sin desbordamiento y claro/oscuro.
+Guía vigente adicional PRUEBA_BIBLIOTECA_VISUAL.md; aceptación manual pendiente.
+No se guardó ni publicó contenido operativo durante las verificaciones.
+
+Despliegue18080 completado: saludUP y biblioteca JS servida idéntica al código
+verificado. Respaldo de base/JAR .respaldos-locales/antes-biblioteca-visual-A7fZFf.
+Huellas de sitio/publicaciones y movimientos/pagos/cuentas idénticas antes/después.
+No se modificaron el borrador ni la publicación operativos.
+
+## Copiar, pegar, quitar y girar desde el objeto — 11/11/2026
+
+Diseñador: Ctrl+C/Ctrl+V y ⌘C/⌘V copian y pegan objetos completos, incluida su
+jerarquía. Captura local independiente; nuevos IDs y sin anclas duplicadas. Se puede
+pegar en otra sección/contenedor, con límites800componentes/60secciones/12niveles/
+100hijos directos, validados antes de modificar el árbol. Pegados repetidos desplazan
+la copia16px adicionales. No se importa HTML ni JSON externo del portapapeles; la
+copia estructurada es interna a esta sesión del diseñador. El evento nativo copy
+escribe sólo una leyenda textual y paste respeta los campos editables.
+
+Selección en lienzo: barra contextual Copiar/Pegar/Quitar y tirador circular para
+girar con mouse. Mayús ajusta el giro a15°, Escape cancela el arrastre y pointercancel
+restaura; giro se guarda por dispositivo en el mismo campo existente. Quitar conserva
+Cancelar/Confirmar y Deshacer. Texto directo empieza con doble clic para distinguir
+seleccionar un objeto de editar su contenido; copiar/pegar texto en campos y durante
+esa edición conserva comportamiento nativo. No se agregan permisos ni migraciones.
+
+Verificado en navegador con fixture: Ctrl y Meta C/V, copia independiente, giro a90°
+y53° con mouse, Cancelar/Quitar/Deshacer, copiar/pegar texto con⌘sin duplicar objetos.
+Pruebas de modelo cubren snapshot/grupos/IDs/estilos/imagen/destino/límite atómico y
+normalización/snap del giro. 1109Java y172JavaScript aprobadas. Guía manual ampliada;
+aceptación del usuario pendiente. No se guardó ni publicó el borrador operativo.
+
+Desplegado en18080, saludUP y JS servido idéntico al verificado. Respaldo base/JAR
+.respaldos-locales/antes-controles-objetos-6lZKHC. Huellas de sitio/publicaciones y
+movimientos/pagos/cuentas idénticas antes/después. Sin nuevas migraciones.
+
+## Igualdad entre lienzo, vista previa y publicación — 11/11/2026
+
+Causa reproducida de la diferencia del encabezado: Computadora estaba fija en1100px,
+justo en el breakpoint que centra el header; el navegador publicado era1720px.
+Se sustituye el valor inicial por «Esta ventana», usando innerWidth como ancho real
+del iframe y sólo transform scale para hacerlo caber entre paneles. El rótulo muestra
+ancho de página en px y escala por separado. Presets1720/1440/1280/1100/768/390;
+propiedades por dispositivo se derivan de los mismos cortes700/1000 del CSS compartido.
+Cambiar el tamaño de ventana actualiza ancho/estilos sin guardar ni modificar el modelo.
+
+Se unificó display inline de school-text entre edición y SSR; se eliminó geometría
+exclusiva de edición en placeholders/contenedores y se omiten ramas ocultas del DOM
+para conservar nth-child. Espacio de scrollbar estable compartido. El aviso de vista
+previa es flotante/cerrable y no desplaza verticalmente el documento. Caché nueva
+20261111-dimensiones. El estado informa publicación/revisión; sin publicación muestra
+«Aún sin publicar» y oculta el enlace inexistente. En esta base el borrador estaba en5
+y no había publicaciones: / seguía siendo la página escolar original. No publicar ni
+cambiar APP_SITIO_CODIGO automáticamente; conservar la captura del usuario.
+
+Verificación con SSR y datos ficticios en navegador:249componentes visibles, misma
+posición X/Y y tamaño ancho/alto (tolerancia0.5px) entre editor y publicación a1720,
+1280 y390px; vista previa también idéntica a1720px. Las animaciones se pausaron sólo
+en fixtures de QA para medir coordenadas estables. Logo de prueba desplazado24px a
+la izquierda incluido en las tres vistas. Integración PostgreSQL temporal7pruebas,
+1109Java y168JS aprobadas. Sin migración nueva; aceptación manual del ajuste pendiente.
+
+Despliegue local del ajuste completado en18080, saludUP y recursos nuevos servidos.
+Respaldo base/JAR .respaldos-locales/antes-dimensiones-editor-W3Fi0M.
+Huellas de borrador/publicaciones y movimientos/pagos/cuentas conservadas; borrador5
+sin publicar. No se cambió .env ni se aplicó nueva migración.
+
+## Diseñador por secciones y componentes — 11/11/2026
+
+Implementación solicitada tipo Jaspersoft: Estructura a la izquierda con secciones
+Header/Detalle/Footer y árbol real de objetos; página completa en el centro;
+Componentes/Propiedades/Recursos a la derecha. Nueva sección, drag-and-drop desde
+paleta y árbol, movimiento con tirador, ocho tiradores de tamaño, selección múltiple,
+alineación, cuadrícula/snap, propiedades por dispositivo, colores, bordes, tipografía
+y animación. Logo, entradas del menú y textos originales se editan por objeto.
+La importación generada desde inicio.html conserva las nueve secciones y decoración,
+incluida «Un mundo por explorar». No se publica ni convierte el borrador operativo
+al abrir: si el formato anterior no representa la página completa, se carga la página
+publicada como edición local y el borrador anterior sigue accesible en Versiones.
+
+Modelo nuevo: Bloque tipo seccion contiene árbol SitioComponente tipado (máximo60
+secciones,800componentes,12niveles,100hijos directos). Posición original conserva
+transformaciones/decoraciones CSS; flujo/libre para composiciones nuevas. Mismo árbol
+y reglas de estilo en lienzo JS y render público SSR; texto/atributos escapados,
+tags/estilos/enlaces limitados. CSS y renderer anteriores permanecen para el histórico.
+Referencias de imágenes/álbumes se calculan en servidor y son JSON READ_ONLY; no se
+exponen imágenes de ramas ocultas ni recursos privados ajenos. Iframe SAMEORIGIN
+únicamente GET exacto del lienzo; resto conserva DENY. Sin nuevos permisos ni migración:
+V174 sigue siendo la última. Nunca editar .env ni conceder derechos automáticamente.
+
+Guardar/publicar/restaurar tienen Cancelar y confirmación, CSRF y versión esperada;
+recuperación local por usuario/escuela/revisión y Deshacer/Rehacer. Publicar informa
+ruta y vínculo al inicio. APP_SITIO_CODIGO sigue siendo configuración explícita;
+no se selecciona escuela ni se cambia el inicio automáticamente.
+
+Verificación:1109Java,166JavaScript y7pruebas aisladas (integración PostgreSQL más
+modelo del diseñador) aprobadas. Navegador fixture: edición de menú/logo/texto,
+arrastre original y nuevo,tamaño,paleta,alineación,deshacer/rehacer,guardar/recarga,
+390px sin desbordamiento. No hubo publicación ni reemplazo de datos operativos.
+Despliegue local completado: app18080 actualizada, salud UP, JavaScript servido
+idéntico al verificado y lienzo SAMEORIGIN. Esquema V174. Respaldo de base/JAR
+en .respaldos-locales/antes-estudio-secciones-D3DVeu; huellas de movimientos,
+pagos y cuentas idénticas antes/después.
+Guía vigente: PRUEBA_DISENADOR_PAGINA.md; aceptación manual pendiente. Las guías
+anteriores del editor conservan contexto histórico; sus controles antiguos no son
+la ruta de prueba de este diseñador.
+
+## Composición completa y edición por objetos — 10/11/2026
+
+El usuario pidió que el editor mostrara toda la composición original y selección
+por objeto como Jaspersoft. Se añade tipo escolar con nueve secciones generadas
+desde inicio.html mediante scripts/generar_sitio_escolar.py; mismos fragmentos SSR
+y HTML confiable de lienzo. Incluye logo,menús,portada,franja,nosotros,oferta con
+«Un mundo por explorar» y tres tarjetas,galería,ubicaciones,accesos y pie.
+
+Cada texto/imagen/enlace tiene un identificador local en la sección. Clic abre
+propiedades del objeto y tirador Mover objeto. Posición,ancho,tamaño,giro,color y
+visibilidad validados; contenido textual escapado. Se agregan textos/imágenes libres
+por sección (20de cada tipo),con movimiento y Deshacer/Rehacer. Enlaces de menús
+editables,sin quitar autorización de rutas del sistema. Catálogos de galería/sedes
+siguen separados con sus permisos; se muestran en la misma composición.
+
+Diseños → Cargar página publicada usa la publicación de la escuela o la original
+si no existe,con confirmación y sin reemplazar borradores guardados automáticamente.
+Diseños → Página escolar completa también permite partir de la original. JSONB
+existente conserva compatibilidad; sin migraciones. Se extiende validación y acceso
+público de imágenes a objetos explícitos de bloques publicados visibles.
+
+Verificación:1103Java/158JS e integración PostgreSQL temporal aprobadas. Navegador
+fixture:selección del texto exacto,cambio y arrastre de posición,guardado/recarga,
+vista390px sin desbordamiento. App18080 actualizada,saludUP,lienzo SAMEORIGIN;
+respaldo actualizado en .respaldos-locales/antes-editor-objetos-*. Huellas financieras
+idénticas antes/después. No se publicó ni reemplazó el borrador operativo.
+Prueba manual vigente ampliada en PRUEBA_EDITOR_VISUAL_SITIO.md. La aceptación
+humana permanece pendiente. No afirmar que es HTML/CSS libre ni editor de código.
+
+## Diseño escolar y recuperación de borradores — 10/11/2026
+
+El usuario detectó que el editor simplificaba el diseño original. Se integra tema
+escolar compartido entre lienzo JS y render SSR: útiles de fondo,sol,crayolas,formas
+orgánicas,foto/pegatina y tarjetas decoradas. Tema escolar por defecto al abrir
+JSON antiguo;opción explícita Escolar/Limpio en Estilo global. Semilla usa Escolar;
+Editorial/Horizonte/Lienzo limpio eligen Limpio. Cambiar texto conserva decoración.
+Las decoraciones son del tema,no objetos de posición libre por separado.
+
+Diseños → Volver a una versión anterior permite ver revisiones y Restaurar como
+borrador con Cancelar/Confirmar. Backend restaura la copia completa,incluidos extras,
+creando nueva revisión con permiso Editar,alcance institucional y versión esperada.
+No publica,ni elimina revisiones previas. Restauración obsoleta rechazada.
+Integración PostgreSQL aislada pasó con restauración,concurrencia,aislamiento y
+render escolar; navegador fixture confirmó decoraciones al editar y deshacer título.
+App18080 desplegada,saludUP;1103Java/157JS aprobados. Respaldo actualizado bajo
+.respaldos-locales/antes-diseno-escolar-*. No se publicó ni restauró el borrador
+operativo. Sin migraciones nuevas. Prueba manual ampliada en PRUEBA_EDITOR_VISUAL_SITIO.md.
+
+## Corrección del lienzo incrustado — 10/11/2026
+
+El navegador rechazaba el iframe porque Spring Security escribía X-Frame-Options:
+DENY incluso después de fijar SAMEORIGIN en el controlador. Se reprodujo con
+SitioPostgresIT autenticado: la prueba falló con DENY. La corrección se trasladó
+al HeaderWriter de SeguridadConfig: sólo GET exacto de /admin/diseno-web/visual/lienzo
+recibe SAMEORIGIN; las demás respuestas conservan DENY. Se retiró el ajuste ineficaz
+del controlador. La prueba integrada comprueba ambas cabeceras y pasó sin fallos. Compilación con1103
+pruebas aprobada; app18080 desplegada,saludUP. Verificado GET real del lienzo con
+SAMEORIGIN y editor con DENY. Sin migraciones ni cambios en datos operativos.
+
+## Editor visual entregado — V174, 10/11/2026
+
+Diseño web (/admin/diseno-web) abre el editor visual de tres paneles. Paleta de14
+bloques,cuatro puntos de partida,arrastre/orden por capas,edición directa,propiedades
+por bloque y estilo global,imágenes,animación,dispositivos y zoom. Deshacer/rehacer,
+recuperación local por usuario/institución,confirmaciones Cancelar/Guardar/Publicar.
+Límites60bloques y100imágenes. Catálogos de galería,ubicaciones y contacto conservados.
+Resumen/publicaciones/historial en /admin/diseno-web/resumen; formulario clásico
+compatible en /admin/diseno-web/editar. Los cambios del catálogo de recursos requieren
+guardar y Actualizar recursos antes de continuar en el editor.
+
+V174 añade diseno JSONB al borrador/publicación. Render público en servidor sin
+HTML/scripts aportados por usuario;validación estructural,contraste,enlaces seguros,
+recursos propios,CSRF,versiones y permisos institucionales existentes. Publicaciones
+anteriores sin diseño visual conservan el render anterior. Edición/guardado no publica.
+No se concedieron derechos ni se publicó contenido operativo automáticamente.
+
+Verificación:1103Java y156JavaScript sin fallos. Integración PostgreSQL temporal
+aprobada:legacy,14bloques,guardado concurrente rechazado,publicación,imágenes visibles
+u ocultas y revisiones conservadas. Navegador sobre fixture aislado:agregar bloque,
+propiedades,Cancelar/Confirmar guardado,capas,selección y vista390px/escritorio1280.
+Pruebas visuales y guardados del navegador usaron fixture,no la base operativa.
+
+App18080 desplegada,V174 exitosa,saludUP. Respaldo de BD validado y JAR previo:
+.respaldos-locales/antes-sitio-v174-t3XiWA. Huellas de pagos,movimientos y cuentas
+idénticas antes/después. No se leyó ni modificó .env. Sin commit/push automático.
+
+Siguiente:aceptación manual PRUEBA_EDITOR_VISUAL_SITIO.md. No afirmar que la prueba
+humana pasó. Catálogos adicionales siguen en PRUEBA_SITIO_WEB_COMPLETO.md. Identidad
+administrativa por cliente y sesión30min en otra computadora permanecen pendientes.
+
+## Sitio web listo para prueba completa — V173, 10/11/2026
+
+Implementadas galería con álbumes/fotos ordenables,retiro con motivo y reactivación;
+ubicaciones vinculadas a planteles;contacto,privacidad y WhatsApp configurables.
+Se integran en el mismo borrador/publicación/historial de V172. Capturas separadas,
+filtros,Excel,paginación y retorno al listado. Cambiar textos no elimina extras.
+
+Pruebas:1097Java,148JS y PostgreSQL aislado con datos ficticios,publicación,retiro,
+reactivación,alcance,imágenes privadas,Excel,CSRF,concurrencia y render real. Revisión
+visual de catálogos/formularios/página pública en escritorio/390px y ambos temas.
+V173 aplicada en app18080,saludUP;respaldo de base validado y JAR anterior guardado.
+Comparación financiera confirma pagos,cuentas y movimientos intactos. No se crearon
+borradores/publicaciones operativas ni se concedieron permisos automáticamente.
+
+Prueba humana pendiente en PRUEBA_SITIO_WEB_COMPLETO.md;el usuario pidió terminar
+implementaciones antes de probar. Aún no afirmar aceptación. Colores del sistema
+interno y sesión en otra computadora son asuntos posteriores separados.
+
+## Sitio web administrable — etapa 2 entregada 10/11/2026
+
+Se entregó Diseño web (/admin/diseno-web): editor con pestañas de identidad,textos
+ e imágenes, borrador con confirmación, vista previa, revisiones y publicación.
+V172 añade permisos separados Editar/Publicar, sin asignarlos a roles existentes.
+Se exige alcance institucional; se conservan publicación y revisiones aunque cambie
+el borrador. Imágenes optimizadas propias del sitio; no usa archivos de expedientes.
+Página pública /sitio/{codigo}; APP_SITIO_CODIGO vincula explícitamente la raíz de
+cada instalación. Se conserva el diseño infantil aprobado, menú móvil y bienvenida.
+
+Pruebas:1095Java,148JS y recorrido PostgreSQL aislado con instituciones ficticias,
+CSRF,aislamiento,archivos,concurrencia y render real. Revisión visual escritorio y
+390px, claro/oscuro y Cancelar del modal. App18080 actualizada; V172 exitosa,saludUP.
+Base respaldada y JAR previo conservado; huellas financieras idénticas después.
+No se capturaron datos web operativos ni se concedieron permisos automáticamente.
+Prueba manual pendiente en PRUEBA_SITIO_WEB_ETAPA2.md. Galería/contacto/ubicaciones
+siguen en etapa3. No afirmar aceptación humana ni apariencia administrativa configurable.
+
 ## Sitio público: rediseño infantil solicitado — 09/11/2026
 
 El usuario rechazó la primera dirección por demasiado formal. La dirección vigente

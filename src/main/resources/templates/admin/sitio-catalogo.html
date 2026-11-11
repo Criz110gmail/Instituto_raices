@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diseño web · Nexo</title>
+<link rel="stylesheet" href="/css/admin.css">
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/sitio-editor.css?v=20261110">
+<script src="/js/theme.js">
+</script>
+<script src="/js/sitio-editor.js?v=20261110" defer>
+</script>
+</head>
+<body class="form-page">
+<main class="form-shell web-shell">
+<header class="form-top">
+<a class="module-action" href="/admin">← Administración</a>
+<div th:replace="~{admin/fragments/session-actions :: controls}">
+</div>
+</header>
+<section class="form-card">
+<header class="web-heading">
+<div>
+<span class="web-eyebrow">Configuración · Identidad y contenido público</span>
+<h1>Diseño web de tu escuela</h1>
+<p>Prepara el contenido, revisa cómo se verá y publica cuando esté listo.</p>
+</div>
+<span class="web-heading-art" aria-hidden="true">✎</span>
+</header>
+<div class="web-content">
+<nav class="web-section-links" aria-label="Secciones de diseño web">
+<a class="module-action" href="/admin/diseno-web">← Diseño web</a>
+<a class="module-action" href="/admin/diseno-web/galeria">Galería</a>
+<a class="module-action" href="/admin/diseno-web/ubicaciones">Ubicaciones</a>
+<a class="module-action" href="/admin/diseno-web/contacto">Contacto y WhatsApp</a>
+</nav>
+<div class="web-catalog-heading">
+<div>
+<span class="web-eyebrow">Contenido del borrador · Todavía no publicado</span>
+<h2 th:text="${titulo}">
+</h2>
+<p>Los cambios se verán en la página pública al publicar desde Diseño web.</p>
+</div>
+<div class="web-actions">
+<a class="module-action" th:if="${tipo=='foto'}" th:href="@{/admin/diseno-web/imagenes/nueva(volver=${origen+'#resultados'})}">Cargar imagen</a>
+<a class="module-action" th:href="@{${base+'/excel'}(q=${q},estado=${estado})}">Exportar Excel</a>
+<a class="module-action module-action--primary" th:href="@{${base+(tipo=='album'?'/nuevo':'/nueva')}(q=${q},estado=${estado},pagina=${pagina})}" th:text="${tipo=='album'?'Nuevo álbum':tipo=='foto'?'Agregar fotografía':'Nueva ubicación'}">
+</a>
+</div>
+</div>
+<section id="resultados" class="web-block">
+<form method="get" th:action="${base+'#resultados'}" class="web-catalog-filters">
+<label>
+<span>Buscar</span>
+<input name="q" th:value="${q}" maxlength="200" placeholder="Nombre o descripción">
+</label>
+<label>
+<span>Estado</span>
+<select name="estado">
+<option value="TODOS" th:selected="${estado=='TODOS'}">Todos</option>
+<option value="ACTIVO" th:selected="${estado=='ACTIVO'}">Activos</option>
+<option value="RETIRADO" th:selected="${estado=='RETIRADO'}">Retirados</option>
+</select>
+</label>
+<div class="module-filter-actions">
+<button class="module-action module-action--primary">Aplicar filtros</button>
+<a class="module-action" th:href="${base+'#resultados'}">Limpiar</a>
+</div>
+</form>
+<div class="web-table">
+<table>
+<thead>
+<tr>
+<th>Nombre / detalle</th>
+<th>Orden</th>
+<th>Estado</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody>
+<tr th:each="r:${filas}">
+<td>
+<img class="web-row-thumb" th:if="${r.imagen!=null}" th:src="${r.imagen}" th:alt="${r.titulo}">
+<strong th:text="${r.titulo}">
+</strong>
+<small th:text="${r.detalle}">
+</small>
+<small th:if="${!r.activo}" th:text="${r.motivo}">
+</small>
+</td>
+<td th:text="${r.orden}">
+</td>
+<td>
+<span class="web-state" th:classappend="${r.activo?' active':' retired'}" th:text="${r.activo?'Activo':'Retirado'}">
+</span>
+</td>
+<td>
+<div class="web-row-actions">
+<a class="module-action" th:href="@{${r.editar}(q=${q},estado=${estado},pagina=${pagina})}">Editar →</a>
+<a class="module-action" th:if="${r.fotos!=null}" th:href="${r.fotos}">Ver fotografías →</a>
+</div>
+</td>
+</tr>
+<tr th:if="${filas.empty}">
+<td colspan="4">No hay registros con estos filtros. Puedes agregar uno con el botón superior.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<footer class="web-actions web-pagination">
+<span th:text="${total+' registros · Página '+(pagina+1)+' de '+paginas}">
+</span>
+<a class="module-action" th:if="${pagina>0}" th:href="${anterior}">← Anterior</a>
+<a class="module-action" th:if="${pagina+1<paginas}" th:href="${siguiente}">Siguiente →</a>
+</footer>
+</section>
+</div>
+</section>
+</main>
+</body>
+</html>

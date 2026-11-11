@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diseño web · Nexo</title>
+<link rel="stylesheet" href="/css/admin.css">
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/sitio-editor.css?v=20261110">
+<script src="/js/theme.js">
+</script>
+<script src="/js/sitio-editor.js?v=20261110" defer>
+</script>
+</head>
+<body class="form-page">
+<main class="form-shell web-shell">
+<header class="form-top">
+<a class="module-action" href="/admin">← Administración</a>
+<div th:replace="~{admin/fragments/session-actions :: controls}">
+</div>
+</header>
+<section class="form-card">
+<header class="web-heading">
+<div>
+<span class="web-eyebrow">Configuración · Identidad y contenido público</span>
+<h1>Diseño web de tu escuela</h1>
+<p>Prepara el contenido, revisa cómo se verá y publica cuando esté listo.</p>
+</div>
+<span class="web-heading-art" aria-hidden="true">✎</span>
+</header>
+<div class="web-content">
+<div class="form-error" role="alert" th:if="${errorOperacion}">
+<strong>No se pudo completar</strong>
+<p th:text="${errorOperacion}">
+</p>
+</div>
+<div class="web-notice" role="status" th:if="${param.guardado}">Borrador guardado. Tu página pública sigue mostrando la última publicación.</div>
+<div class="web-notice" role="status" th:if="${param.publicado}">Versión publicada. Ya puede consultarse en la dirección de tu institución.</div>
+<div class="web-overview">
+<article>
+<small>Institución</small>
+<strong th:text="${form.nombre}">
+</strong>
+<span th:text="${codigo}">
+</span>
+</article>
+<article>
+<small>Borrador</small>
+<strong th:text="${form.version == 0 ? 'Por preparar' : 'Revisión '+form.version}">
+</strong>
+<span>Guardar todavía no publica</span>
+</article>
+<article>
+<small>Publicación</small>
+<strong th:text="${historial.empty ? 'Sin publicar' : 'Versión '+historial[0].version}">
+</strong>
+<span>Solo el contenido publicado es público</span>
+</article>
+</div>
+<div class="web-actions">
+<a class="module-action module-action--primary" href="/admin/diseno-web/visual">Abrir editor visual →</a>
+<a class="module-action" th:if="${form.version > 0}" href="/admin/diseno-web/vista-previa" target="_blank" rel="noopener">Ver borrador ↗</a>
+<a class="module-action" th:if="${!historial.empty}" th:href="@{/sitio/{codigo}(codigo=${codigo})}" target="_blank" rel="noopener">Abrir página pública ↗</a>
+</div>
+<nav class="web-section-links" aria-label="Secciones de diseño web"><a class="module-action" href="/admin/diseno-web">← Diseño web</a><a class="module-action" href="/admin/diseno-web/galeria">Galería</a><a class="module-action" href="/admin/diseno-web/ubicaciones">Ubicaciones</a><a class="module-action" href="/admin/diseno-web/contacto">Contacto y WhatsApp</a></nav><nav class="web-tabs" data-web-tabs aria-label="Diseño web">
+<button type="button" class="is-active" data-web-tab="publicacion">Publicar</button>
+<button type="button" data-web-tab="historial">Historial</button>
+</nav>
+<section id="publicacion" data-web-panel>
+<h2>Revisa antes de publicar</h2>
+<p>La publicación toma el último borrador guardado. Los cambios que hagas después necesitarán una nueva publicación.</p>
+<form method="post" th:if="${puedePublicar and form.version > 0}" th:action="@{/admin/diseno-web/publicar}" data-web-confirm="publicar">
+<input type="hidden" name="version" th:value="${form.version}">
+<button class="module-action module-action--primary">Revisar y publicar versión →</button>
+</form>
+<p class="field-help" th:if="${!puedePublicar}">Tu rol permite editar. Solicita la publicación a una persona con permiso Diseño web - Publicar.</p>
+<div class="web-callout">
+<strong>Una dirección para esta escuela</strong>
+<code th:text="${'/sitio/'+codigo}">
+</code>
+<p>Esta dirección muestra únicamente el contenido publicado de la institución. El sitio principal de la instalación puede vincularse mediante la configuración de despliegue.</p>
+</div>
+</section>
+<section id="historial" data-web-panel>
+<h2>Versiones conservadas</h2>
+<p>Consulta una revisión anterior sin reemplazar el borrador.</p>
+<div class="web-table">
+<table>
+<thead>
+<tr>
+<th>Revisión</th>
+<th>Guardada</th>
+<th>Consulta</th>
+</tr>
+</thead>
+<tbody>
+<tr th:each="r:${revisiones}">
+<td th:text="${'Revisión '+r.version}">
+</td>
+<td th:text="${#temporals.format(r.guardado_en,'dd/MM/yyyy HH:mm')}">
+</td>
+<td>
+<a class="module-action" th:href="@{/admin/diseno-web/vista-previa(revision=${r.version})}" target="_blank" rel="noopener">Ver revisión ↗</a>
+</td>
+</tr>
+<tr th:if="${revisiones.empty}">
+<td colspan="3">Todavía no hay revisiones guardadas.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Publicaciones</h3>
+<ul class="web-history">
+<li th:each="h:${historial}">
+<strong th:text="${'Versión '+h.version}">
+</strong>
+<span th:text="${#temporals.format(h.publicado_en,'dd/MM/yyyy HH:mm')}">
+</span>
+</li>
+</ul>
+<p th:if="${historial.empty}">La escuela todavía no ha publicado una versión.</p>
+</section>
+</div>
+</section>
+</main>
+</body>
+</html>

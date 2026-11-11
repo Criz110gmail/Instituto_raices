@@ -1,0 +1,14 @@
+/* Ilustraciones locales: mismo SVG y proporciones en editor, vista previa y publicación. */
+.nd-school-object{display:inline-block;vertical-align:middle;box-sizing:border-box;max-width:100%;aspect-ratio:1;color:var(--forest,#25aaa1)}
+.nd-school-object>svg{display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
+.ds-school-palette{border-top:1px solid var(--ds-line,#314653);padding-top:20px;margin-top:24px}
+.ds-school-palette h3{font-size:16px;margin:0 0 8px}.ds-school-palette>.ds-field{margin-block:12px}
+.ds-school-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ds-school-item{min-width:0;min-height:102px;border:1px solid var(--ds-line,#314653);border-radius:14px;background:var(--ds-panel,#102132);color:var(--ds-ink,#e9f4f6);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px 6px;cursor:grab;font:inherit;transition:background .18s,border-color .18s}
+.ds-school-item svg{width:44px;height:44px;color:#4ed6bf;pointer-events:none}.ds-school-item:nth-child(4n+2) svg{color:#f7c64c}.ds-school-item:nth-child(4n+3) svg{color:#a9d779}.ds-school-item:nth-child(4n) svg{color:#99b8f5}
+.ds-school-item span{font-size:11px;line-height:1.35;text-align:center;overflow-wrap:anywhere}.ds-school-item:hover,.ds-school-item:focus-visible{border-color:#4ed6bf;background:#4ed6bf12;outline:2px solid transparent}.ds-school-item:focus-visible{outline:2px solid #4ed6bf;outline-offset:2px}.ds-school-item:active{cursor:grabbing}
+.ds-school-preview{padding:14px;border:1px dashed var(--ds-line,#314653);border-radius:16px;text-align:center;background:#4ed6bf08}.ds-school-preview svg{width:100px;height:100px}
+
+@media(prefers-reduced-motion:reduce){.ds-school-item{transition:none}}
+.ds-object-tabs{display:flex;gap:6px;margin:0 0 18px}.ds-object-tabs .ds-button{flex:1;min-width:0;font-size:11px;padding:9px 8px}.ds-object-tabs [aria-pressed=true]{background:var(--ds-accent);color:var(--ds-on-accent);border-color:var(--ds-accent);font-weight:750}.ds-school-palette{margin-top:0;padding-top:0;border-top:0}
+.ds-school-filters{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:8px;margin-block:12px}.ds-school-filters .ds-field{min-width:0;margin:0}.ds-school-filters .ds-field>span{font-size:10px}.ds-school-filters input,.ds-school-filters select{min-width:0;width:100%;font-size:11px}.ds-school-palette>.ds-hint{margin:8px 0}

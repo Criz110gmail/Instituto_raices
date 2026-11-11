@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diseño web · Nexo</title>
+<link rel="stylesheet" href="/css/admin.css">
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/sitio-editor.css?v=20261110">
+<script src="/js/theme.js">
+</script>
+<script src="/js/sitio-editor.js?v=20261110" defer>
+</script>
+</head>
+<body class="form-page">
+<main class="form-shell web-shell">
+<header class="form-top">
+<a class="module-action" href="/admin">← Administración</a>
+<div th:replace="~{admin/fragments/session-actions :: controls}">
+</div>
+</header>
+<section class="form-card">
+<header class="web-heading">
+<div>
+<span class="web-eyebrow">Configuración · Identidad y contenido público</span>
+<h1>Diseño web de tu escuela</h1>
+<p>Prepara el contenido, revisa cómo se verá y publica cuando esté listo.</p>
+</div>
+<span class="web-heading-art" aria-hidden="true">✎</span>
+</header>
+<div class="web-content">
+<nav class="web-section-links" aria-label="Secciones de diseño web">
+<a class="module-action" href="/admin/diseno-web">← Diseño web</a>
+<a class="module-action" href="/admin/diseno-web/galeria">Galería</a>
+<a class="module-action" href="/admin/diseno-web/ubicaciones">Ubicaciones</a>
+<a class="module-action" href="/admin/diseno-web/contacto">Contacto y WhatsApp</a>
+</nav>
+<span class="web-eyebrow">Diseño web · Captura del borrador</span>
+<h2 th:text="${titulo}">
+</h2>
+<p>Esta captura se conserva en el historial del borrador. No cambia la página publicada hasta que confirmes una nueva publicación.</p>
+<div class="form-error" role="alert" th:if="${errorOperacion}">
+<strong>No se pudo guardar</strong>
+<p th:text="${errorOperacion}">
+</p>
+</div>
+<form id="web-editor" method="post" th:action="${accion}" th:object="${item}" data-web-confirm="guardar">
+<input type="hidden" name="version" th:value="${version}">
+<input type="hidden" name="q" th:value="${q}">
+<input type="hidden" name="estado" th:value="${estado}">
+<input type="hidden" name="pagina" th:value="${pagina}">
+<p>Los campos con * son obligatorios.</p>
+<div class="web-grid">
+<th:block th:if="${tipo=='album'}">
+<label>
+<span>Nombre del álbum *</span>
+<input th:field="*{titulo}" required maxlength="150">
+<small class="field-error" th:errors="*{titulo}">
+</small>
+</label>
+<label>
+<span>Descripción</span>
+<textarea th:field="*{descripcion}" maxlength="1000" rows="4">
+</textarea>
+<small class="field-error" th:errors="*{descripcion}">
+</small>
+</label>
+</th:block>
+<th:block th:if="${tipo=='foto'}">
+<label>
+<span>Imagen del sitio *</span>
+<select th:field="*{imagenId}" required data-web-image>
+<option value="">Selecciona una imagen</option>
+<option th:each="i:${imagenes}" th:value="${i.id}" th:text="${'Imagen #'+i.id}">
+</option>
+</select>
+<img class="web-image-preview" alt="Vista previa de la fotografía seleccionada" hidden>
+<small class="field-error" th:errors="*{imagenId}">
+</small>
+<small>Si necesitas otra imagen, guarda la captura o vuelve al editor antes de cargarla.</small>
+</label>
+<label>
+<span>Descripción de la fotografía *</span>
+<input th:field="*{descripcion}" required maxlength="200">
+<small class="field-error" th:errors="*{descripcion}">
+</small>
+</label>
+<p class="wide web-callout">Elige solo fotografías autorizadas para difusión pública. La descripción se utiliza como texto alternativo y pie de foto.</p>
+</th:block>
+<th:block th:if="${tipo=='ubicacion'}">
+<label>
+<span>Plantel vinculado *</span>
+<select th:field="*{plantelId}" required>
+<option value="">Selecciona un plantel</option>
+<option th:each="p:${planteles}" th:value="${p.id}" th:text="${p.codigo+' · '+p.nombre}">
+</option>
+</select>
+<small class="field-error" th:errors="*{plantelId}">
+</small>
+<small>No se publican automáticamente los datos privados del plantel.</small>
+</label>
+<label>
+<span>Nombre público de la sede *</span>
+<input th:field="*{nombre}" required maxlength="150">
+<small class="field-error" th:errors="*{nombre}">
+</small>
+</label>
+<label>
+<span>Dirección pública *</span>
+<textarea th:field="*{direccion}" required maxlength="500" rows="4">
+</textarea>
+<small class="field-error" th:errors="*{direccion}">
+</small>
+</label>
+<label>
+<span>Horario de atención *</span>
+<input th:field="*{horario}" required maxlength="200">
+<small class="field-error" th:errors="*{horario}">
+</small>
+</label>
+<label>
+<span>Teléfono público</span>
+<input th:field="*{telefono}" maxlength="30">
+<small class="field-error" th:errors="*{telefono}">
+</small>
+</label>
+</th:block>
+<th:block th:if="${tipo!='contacto'}">
+<label>
+<span>Orden de presentación *</span>
+<input th:field="*{orden}" required maxlength="3" type="number" min="0" max="999">
+<small class="field-error" th:errors="*{orden}">
+</small>
+</label>
+<label>
+<span>Estado</span>
+<select th:field="*{activo}">
+<option value="true">Activo · incluir al publicar</option>
+<option value="false">Retirado · ocultar al publicar</option>
+</select>
+</label>
+<label>
+<span>Motivo de retiro</span>
+<textarea th:field="*{motivoRetiro}" maxlength="1000" rows="4">
+</textarea>
+<small class="field-error" th:errors="*{motivoRetiro}">
+</small>
+</label>
+<p class="wide">Retirar conserva el registro y sus revisiones. La versión ya publicada sigue igual hasta que publiques los cambios.</p>
+</th:block>
+<th:block th:if="${tipo=='contacto'}">
+<label>
+<span>Teléfono público</span>
+<input th:field="*{telefono}" maxlength="30">
+<small class="field-error" th:errors="*{telefono}">
+</small>
+</label>
+<label>
+<span>Correo de contacto</span>
+<input th:field="*{correo}" maxlength="254" type="email">
+<small class="field-error" th:errors="*{correo}">
+</small>
+</label>
+<label>
+<span>WhatsApp</span>
+<select th:field="*{whatsappActivo}">
+<option value="false">Desactivado</option>
+<option value="true">Activar al publicar</option>
+</select>
+</label>
+<label>
+<span>Número internacional · solo dígitos</span>
+<input th:field="*{whatsapp}" maxlength="15">
+<small class="field-error" th:errors="*{whatsapp}">
+</small>
+</label>
+<small class="wide">Incluye el código de país, sin +, espacios ni guiones. El número es obligatorio para activar el botón. Usa un número real autorizado para la escuela.</small>
+<label>
+<span>Mensaje inicial de WhatsApp</span>
+<textarea th:field="*{mensaje}" maxlength="500" rows="4">
+</textarea>
+<small class="field-error" th:errors="*{mensaje}">
+</small>
+</label>
+<label>
+<span>Aviso de privacidad público</span>
+<textarea th:field="*{privacidad}" maxlength="5000" rows="4">
+</textarea>
+<small class="field-error" th:errors="*{privacidad}">
+</small>
+</label>
+<p class="wide">El botón abre WhatsApp al hacer clic. No envía mensajes automáticamente. Esta página no captura datos personales de inscripción.</p>
+</th:block>
+</div>
+<footer class="web-savebar">
+<a class="module-action" th:href="${origen}">← Volver al listado</a>
+<button class="module-action module-action--primary">Revisar y guardar borrador →</button>
+</footer>
+</form>
+</div>
+</section>
+</main>
+</body>
+</html>

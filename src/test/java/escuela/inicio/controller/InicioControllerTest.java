@@ -10,7 +10,7 @@ class InicioControllerTest {
 
     @Test
     void muestraLaPaginaInicial() {
-        assertThat(controller.inicio()).isEqualTo("inicio");
+        assertThat(controller.inicio(new org.springframework.ui.ExtendedModelMap())).isEqualTo("inicio");
     }
 
     @Test

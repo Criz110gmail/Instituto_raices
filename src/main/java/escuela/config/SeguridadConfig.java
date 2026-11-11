@@ -25,6 +25,12 @@ public class SeguridadConfig {
                                             SesionExpiradaAccessDeniedHandler accesoDenegadoHandler)
             throws Exception {
         return http
+                // Sólo el lienzo puede incrustarse en páginas de este mismo origen.
+                .headers(headers -> headers.frameOptions(frame -> frame.disable())
+                        .addHeaderWriter((request, response) -> response.setHeader("X-Frame-Options",
+                                "GET".equals(request.getMethod()) &&
+                                (request.getContextPath() + "/admin/diseno-web/visual/lienzo").equals(request.getRequestURI())
+                                        ? "SAMEORIGIN" : "DENY")))
                 .csrf(csrf -> csrf.csrfTokenRepository(new SesionCsrfTokenRepository()))
                 // El éxito ya determina el portal; no guardar peticiones antiguas en sesiones nuevas.
                 .requestCache(cache -> cache.requestCache(new org.springframework.security.web.savedrequest.NullRequestCache()))
@@ -32,6 +38,8 @@ public class SeguridadConfig {
                 .addFilterAfter(new SesionActividadFilter(accesoDenegadoHandler), CsrfFilter.class)
                 .addFilterAfter(new SesionInvalidaFilter(accesoDenegadoHandler), AnonymousAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.GET, "/sitio/*", "/sitio/*/imagenes/*").permitAll()
+                        .requestMatchers("/admin/diseno-web", "/admin/diseno-web/**").hasAuthority("SITIO_WEB_EDITAR")
                         .requestMatchers(HttpMethod.GET, "/sesion/estado", "/acceso/csrf").permitAll()
                         .requestMatchers(HttpMethod.POST, "/acceso/comprobar").permitAll()
                         .requestMatchers(HttpMethod.POST, "/sesion/renovar").authenticated()
@@ -44,7 +52,7 @@ public class SeguridadConfig {
                         .requestMatchers(HttpMethod.GET,"/admin/configuracion-nomina", "/admin/configuracion-nomina/**", "/admin/preparacion-nomina", "/admin/preparacion-nomina/**", "/admin/calendarios-nomina", "/admin/calendarios-nomina/**", "/admin/periodos-nomina", "/admin/periodos-nomina/**", "/admin/conceptos-empleado", "/admin/conceptos-empleado/**", "/admin/conceptos-nomina", "/admin/conceptos-nomina/**", "/admin/personal/filtros/**", "/admin/jornadas", "/admin/jornadas/**", "/admin/esquemas", "/admin/esquemas/**", "/admin/asignaciones", "/admin/asignaciones/**", "/admin/puestos", "/admin/puestos/**", "/admin/empleados/*/condiciones", "/admin/empleados/*/condiciones/**", "/admin/empleados/*/puesto", "/admin/empleados/*/puesto/**")
                         .hasAnyAuthority("CONDICION_SALARIAL_LEER","CONDICION_SALARIAL_ADMINISTRAR")
                         .requestMatchers("/", "/login", "/familias", "/maestros/acceso", "/activar-cuenta", "/restablecer-password", "/acceso-denegado", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/images/logo.png", "/images/imagen.png").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/images/logo.png", "/images/imagen.png", "/images/sitio-objetos-escolares.svg").permitAll()
                         .requestMatchers("/personal/acceso").permitAll()
                         .requestMatchers("/personal", "/personal/**").hasAuthority("PORTAL_EMPLEADO_ACCEDER")
                         .requestMatchers("/maestros/**").hasAuthority("PORTAL_MAESTRO_ACCEDER")

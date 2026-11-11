@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diseño web · Nexo</title>
+<link rel="stylesheet" href="/css/admin.css">
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/sitio-editor.css?v=20261110-drop">
+<script src="/js/sitio-imagen-carga.js?v=20261110" defer></script>
+<script src="/js/theme.js">
+</script>
+<script src="/js/sitio-editor.js?v=20261110" defer>
+</script>
+</head>
+<body class="form-page">
+<main class="form-shell web-shell">
+<header class="form-top">
+<a class="module-action" href="/admin">← Administración</a>
+<div th:replace="~{admin/fragments/session-actions :: controls}">
+</div>
+</header>
+<section class="form-card">
+<header class="web-heading">
+<div>
+<span class="web-eyebrow">Configuración · Identidad y contenido público</span>
+<h1>Diseño web de tu escuela</h1>
+<p>Prepara el contenido, revisa cómo se verá y publica cuando esté listo.</p>
+</div>
+<span class="web-heading-art" aria-hidden="true">✎</span>
+</header>
+<div class="web-content">
+<div class="form-error" role="alert" th:if="${errorOperacion}">
+<strong>No se pudo completar</strong>
+<p th:text="${errorOperacion}">
+</p>
+</div>
+<div class="web-notice" role="status" th:if="${param.guardado}">Borrador guardado. Tu página pública sigue mostrando la última publicación.</div>
+<div class="web-notice" role="status" th:if="${param.publicado}">Versión publicada. Ya puede consultarse en la dirección de tu institución.</div>
+<a class="module-action" th:href="${volver}">← Volver al editor</a>
+<h2>Cargar imagen para el sitio</h2>
+<p>Selecciona solo archivos autorizados para difusión pública. Cargar una imagen todavía no la publica.</p>
+<form method="post" enctype="multipart/form-data" th:action="@{/admin/diseno-web/imagenes}" data-web-confirm="imagen">
+<input type="hidden" name="volver" th:value="${volver}">
+<section class="web-drop" data-web-drop aria-labelledby="web-drop-title">
+  <div class="web-drop-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="6" y="8" width="36" height="32" rx="9" stroke="currentColor" stroke-width="2"/><circle cx="17" cy="19" r="4" stroke="currentColor" stroke-width="2"/><path d="m8 34 10-9 8 7 6-5 8 7M35 4v10m-5-5 5-5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <span class="web-drop-kicker">BIBLIOTECA DE TU SITIO</span>
+  <h3 id="web-drop-title" data-drop-title>Arrastra tu imagen aquí</h3>
+  <p>Un logotipo, una portada o un momento de tu escuela.</p>
+  <div class="web-drop-controls"><button type="button" class="module-action module-action--primary" data-drop-pick hidden>Seleccionar imagen</button><span data-drop-or hidden>o suéltala en este espacio</span></div>
+  <label class="web-drop-native" for="web-image-file">Seleccionar archivo PNG o JPEG</label>
+  <input id="web-image-file" type="file" name="archivo" accept="image/png,image/jpeg" required aria-describedby="web-file-help web-file-status web-file-error">
+  <small id="web-file-help">PNG o JPEG · hasta 5 MB · máximo 25 megapíxeles · una imagen a la vez</small>
+  <div class="web-drop-selected" data-drop-selected hidden>
+    <div class="web-drop-preview"><img data-drop-preview alt="Vista previa de la imagen seleccionada"></div>
+    <div class="web-drop-file"><span class="web-drop-ready">Lista para revisar</span><strong data-drop-name></strong><span data-drop-details></span><small data-drop-dimensions></small><button type="button" class="module-action" data-drop-remove>Quitar imagen</button></div>
+  </div>
+  <p id="web-file-status" class="web-drop-status" role="status" aria-live="polite">Todavía no has seleccionado una imagen.</p>
+  <p id="web-file-error" class="web-drop-error" role="alert" hidden></p>
+</section>
+<div class="web-drop-note"><span aria-hidden="true">i</span><p>La imagen se optimiza al guardarse. Cargarla la agrega a tu biblioteca; será pública cuando la selecciones y publiques el sitio.</p></div>
+<footer class="web-actions">
+<button class="module-action module-action--primary">Revisar y cargar</button>
+</footer>
+</form>
+</div>
+</section>
+</main>
+</body>
+</html>

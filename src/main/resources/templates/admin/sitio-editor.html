@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diseño web · Nexo</title>
+<link rel="stylesheet" href="/css/admin.css">
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/sitio-editor.css?v=20261110">
+<script src="/js/theme.js">
+</script>
+<script src="/js/sitio-editor.js?v=20261110" defer>
+</script>
+</head>
+<body class="form-page">
+<main class="form-shell web-shell">
+<header class="form-top">
+<a class="module-action" href="/admin">← Administración</a>
+<div th:replace="~{admin/fragments/session-actions :: controls}">
+</div>
+</header>
+<section class="form-card">
+<header class="web-heading">
+<div>
+<span class="web-eyebrow">Configuración · Identidad y contenido público</span>
+<h1>Diseño web de tu escuela</h1>
+<p>Prepara el contenido, revisa cómo se verá y publica cuando esté listo.</p>
+</div>
+<span class="web-heading-art" aria-hidden="true">✎</span>
+</header>
+<div class="web-content">
+<div class="form-error" role="alert" th:if="${errorOperacion}">
+<strong>No se pudo completar</strong>
+<p th:text="${errorOperacion}">
+</p>
+</div>
+<div class="web-notice" role="status" th:if="${param.guardado}">Borrador guardado. Tu página pública sigue mostrando la última publicación.</div>
+<div class="web-notice" role="status" th:if="${param.publicado}">Versión publicada. Ya puede consultarse en la dirección de tu institución.</div>
+<div class="web-notice" role="status" th:if="${param.imagen}">Imagen cargada. Selecciónala en Imágenes y guarda el borrador.</div>
+<div class="web-actions">
+<a class="module-action" href="/admin/diseno-web">← Volver a diseño web</a>
+<a class="module-action" th:if="${form.version > 0}" href="/admin/diseno-web/vista-previa" target="_blank" rel="noopener">Vista previa guardada ↗</a>
+</div>
+<form id="web-editor" method="post" th:action="@{/admin/diseno-web}" th:object="${form}" data-web-confirm="guardar">
+<input type="hidden" th:field="*{version}">
+<p class="web-help">Los campos con * son obligatorios. Guarda antes de abrir la vista previa para ver tus últimos cambios.</p>
+<nav class="web-tabs" data-web-tabs aria-label="Secciones del editor">
+<button type="button" class="is-active" data-web-tab="identidad">01 · Identidad</button>
+<button type="button" data-web-tab="contenido">02 · Contenido</button>
+<button type="button" data-web-tab="imagenes">03 · Imágenes</button>
+</nav>
+<section id="identidad" data-web-panel>
+<h2>Una identidad propia</h2>
+<p>Estos colores se usan en la página pública. Revisa la combinación en la vista previa.</p>
+<div class="web-grid">
+<label>
+<span>Nombre público *</span>
+<input th:field="*{nombre}" maxlength="200" required >
+<small>El nombre que verán las familias.</small>
+<small class="field-error" th:errors="*{nombre}">
+</small>
+</label>
+<label>
+<span>Eslogan *</span>
+<input th:field="*{eslogan}" maxlength="300" required >
+<small>La frase que identifica a tu escuela.</small>
+<small class="field-error" th:errors="*{eslogan}">
+</small>
+</label>
+<label>
+<span>Color principal *</span>
+<input th:field="*{principal}" maxlength="7" required pattern="#[0-9a-fA-F]{6}" placeholder="#2b5031" data-web-color>
+<small>Usa un color oscuro para que los botones con texto blanco se lean bien.</small>
+<small class="field-error" th:errors="*{principal}">
+</small>
+</label>
+<label>
+<span>Color de acento *</span>
+<input th:field="*{acento}" maxlength="7" required pattern="#[0-9a-fA-F]{6}" placeholder="#2b5031" data-web-color>
+<small>Usa un color claro para los detalles y fondos decorativos.</small>
+<small class="field-error" th:errors="*{acento}">
+</small>
+</label>
+</div>
+<div class="web-palette" aria-label="Colores seleccionados">
+<span data-color-preview="principal">Principal</span>
+<span data-color-preview="acento">Acento</span>
+</div>
+</section>
+<section id="contenido" data-web-panel>
+<h2>Habla de tu comunidad</h2>
+<p>Escribe información real y lista para compartir. Se publica como texto, sin etiquetas HTML.</p>
+<div class="web-grid">
+<label class="wide">
+<span>Bienvenida de portada *</span>
+<textarea th:field="*{portada}" maxlength="2000" required rows="5">
+</textarea>
+<small class="field-error" th:errors="*{portada}">
+</small>
+</label>
+<label >
+<span>Quiénes somos · misión, visión y valores *</span>
+<textarea th:field="*{nosotros}" maxlength="5000" required rows="5">
+</textarea>
+<small class="field-error" th:errors="*{nosotros}">
+</small>
+</label>
+<label >
+<span>Oferta académica *</span>
+<textarea th:field="*{oferta}" maxlength="5000" required rows="5">
+</textarea>
+<small class="field-error" th:errors="*{oferta}">
+</small>
+</label>
+<label >
+<span>Talleres *</span>
+<textarea th:field="*{talleres}" maxlength="5000" required rows="5">
+</textarea>
+<small class="field-error" th:errors="*{talleres}">
+</small>
+</label>
+<label >
+<span>Cómo inscribirse *</span>
+<textarea th:field="*{inscripciones}" maxlength="5000" required rows="5">
+</textarea>
+<small class="field-error" th:errors="*{inscripciones}">
+</small>
+</label>
+</div>
+</section>
+<section id="imagenes" data-web-panel>
+<h2>Tu imagen, elegida por ti</h2>
+<p>Solo se publicarán las imágenes que elijas y guardes en el borrador.</p>
+<div class="web-grid">
+<label>
+<span>Logotipo</span>
+<select th:field="*{logoId}" data-web-image>
+<option value="">Sin imagen</option>
+<option th:each="i:${imagenes}" th:value="${i.id}" th:text="${'Imagen #'+i.id}">
+</option>
+</select>
+<img class="web-image-preview" alt="Vista previa de la imagen seleccionada" hidden>
+<small class="field-error" th:errors="*{logoId}">
+</small>
+</label>
+<label>
+<span>Fotografía o banner de portada</span>
+<select th:field="*{portadaId}" data-web-image>
+<option value="">Sin imagen</option>
+<option th:each="i:${imagenes}" th:value="${i.id}" th:text="${'Imagen #'+i.id}">
+</option>
+</select>
+<img class="web-image-preview" alt="Vista previa de la imagen seleccionada" hidden>
+<small class="field-error" th:errors="*{portadaId}">
+</small>
+</label>
+<label class="wide">
+<span>Descripción de la portada</span>
+<input th:field="*{portadaAlt}" maxlength="200" placeholder="Describe qué aparece en la imagen">
+<small>Obligatoria si seleccionas una portada; ayuda a quienes usan lectores de pantalla.</small>
+<small class="field-error" th:errors="*{portadaAlt}">
+</small>
+</label>
+</div>
+<div class="web-callout">
+<strong>¿Necesitas otra imagen?</strong>
+<p>Guarda primero el borrador para conservar tu captura y después abre la carga de imágenes.</p>
+<a class="module-action" href="/admin/diseno-web/imagenes/nueva">Cargar imagen →</a>
+</div>
+</section>
+<footer class="web-savebar">
+<a class="module-action" href="/admin/diseno-web">Cancelar</a>
+<button class="module-action module-action--primary">Revisar y guardar borrador →</button>
+</footer>
+</form>
+</div>
+</section>
+</main>
+</body>
+</html>
