@@ -1,3 +1,139 @@
+## Componente WhatsApp arrastrable — 12/11/2026
+
+Componentes → Contenido → WhatsApp agrega un enlace tipado `whatsapp` (tag a, sin
+hijos/enlace libre), con texto80, whatsappNumero40, whatsappMensaje1000 y diseño
+etiqueta/icono. Normaliza +/espacios/paréntesis/guiones, valida8..15dígitos empezando
+1..9. Vacío se permite sólo en borrador o componente oculto; visible exige número
+al publicar. Destino cerrado https://wa.me/, mensaje URL codificado y texto HTML
+escapado, target_blank/noopener/noreferrer y nombre accesible incluso sólo icono.
+Sin API de envío:el visitante revisa/envía en WhatsApp. No reutiliza ni modifica
+la configuración del botón flotante existente. SVG local fijo,sin recurso externo.
+
+Colores/tamaño/posición/copiar/pegar/deshacer y responsive usan los controles actuales.
+Altura automática y mínimo56px para permitir etiquetas que ocupan varias líneas.
+Ajuste adicional:render del lienzo reutiliza imágenes por clave de componente/foto
+para no perder sus dimensiones/carga al editar; evita colapso temporal de galerías
+y saltos del scroll. Un cambio de imagen mantiene la misma validación de recursos.
+Propiedades de teléfono actualizan destino y validez sin reconstruir el panel.
+Sin tabla/migración/permisos nuevos (sigue174); campos en JSONB con defaults.
+
+QA:1120Java,194JavaScript;4integración temporal aprobadas. Navegador:drag real,
+configuración y URL con acentos/& codificados, etiqueta/círculo, panel406→406 y lienzo
+2354→2354 al cambiar diseño, Cancelar/Guardar y nueva carga persistida; móvil390.
+No probar envío con el número ficticio ni guardar/publicar el sitio operativo.
+Guía PRUEBA_COMPONENTE_WHATSAPP.md. Caché20261112-whatsapp2.
+
+Desplegado en18080,saludUP y JS/CSS servidos idénticos a fuente. Respaldo validado
+base/JAR .respaldos-locales/antes-componente-whatsapp-EMwlBS. Huellas de diseño,
+publicaciones y tablas financieras iguales antes/después. No se agregó el botón ni
+se publicó contenido en la base operativa. Entorno temporal retirado.
+
+## Propiedades sin saltos y auditoría de publicación15 — 12/11/2026
+
+Reporte:scroll subía al cambiar propiedades y mapa publicado aparentemente ausente.
+Se confirmó base real:borrador15/publicada15; mapa visible con dirección registrada,
+HTML de / y /sitio/INSTITUTO_RAICES idéntico. Navegador público real:Google Maps
+carga Parián1974; salto #ubicaciones y mapa responsive verificados en1280 y390px.
+No se cambió ni republicó el contenido operativo. No atribuir a pérdida de datos ni
+asegurar causa de caché no demostrada. Si el propietario tiene otra vista, verificar
+URL/revisión/carga del recurso y captura concreta.
+
+Causa de scroll:renderProperties reemplazaba todos los controles y perdía scroll,
+foco y apertura de grupos cuando un select/casilla requería reconstrucción. Ahora
+preserva esos valores para el mismo objeto/dispositivo; selección de otro objeto
+abre sus propiedades desde arriba. Conserva selección de texto cuando corresponde.
+Editar no revela de nuevo la selección en el árbol; overflow-anchor desactivado sólo
+en los tres paneles desplazables del diseñador. Clic explícito en árbol, insertar
+objetos y zoom mantienen su desplazamiento intencional. Caché20261112-propiedades.
+
+QA con copia local del diseño15, sin guardar datos operativos:cambio tarjeta/solo,
+casilla Fondo transparente y grupo Bordes y acomodo. Panel406→406, lienzo1365→1365,
+foco conservado y grupos abiertos conservados. Comparación renderJS/SSR de221nodos:
+a1280px geometría/colores/tipografía coinciden; a1720 sólo variación esperada del
+sol animado;390mapa carga y se apila sin desbordarse. Imágenes lazy se comparan tras
+cargar, no mientras tienen ancho0. Guía PRUEBA_MAPA_UBICACIONES.md ampliada.
+
+Verificación final:1117Java/191JavaScript aprobadas;15recursos públicos responden200
+incluso con cookie ficticia caducada;ninguna ancla de menú inexistente. Respaldo
+base/JAR .respaldos-locales/antes-scroll-propiedades-A1lFyo. Despliegue18080 con saludUP
+y recursos idénticos a fuente;huellas de diseño/publicaciones y tablas financieras
+conservadas. No hubo nueva publicación ni captura operativa. Servidor QA detenido.
+
+## Mapa reutilizable y acceso a Ubicaciones — 12/11/2026
+
+Nuevo componente JSON `mapa`: dirección, zoom10..19 y diseño tarjeta/solo; render
+compartido en editor, vista previa y publicación. URL fija Google Maps y Cómo llegar,
+valores escapados; no acepta HTML/iframe/URL libre. Requiere dirección al publicar.
+Sin migración nueva (última174). Recursos → Colocar mapa en Ubicaciones toma la única
+dirección válida de los planteles autorizados, conserva encabezado y agrega mapa
+amplio debajo. Si hay varias direcciones solicita elegir; no hardcodea escuelas.
+Operación idempotente, deshacible: oculta placeholders y decoración anteriores sin
+borrarlos y enlaza menú a #ubicaciones. Componentes → Contenido → Mapa permite otros.
+
+Vista sin guías ahora transmite el salto de anclas al scroll del editor; en público
+se usan anclas normales. Tarjeta responsiva verificada con Google Maps cargado y en
+390px. Pruebas:191JavaScript,1117Java; integración temporal3pruebas aprobadas.
+Guía PRUEBA_MAPA_UBICACIONES.md. Caché20261112-mapa. No guardar ni publicar
+automáticamente el diseño operativo; el propietario inserta/revisa/guarda/publica.
+
+Desplegado en18080 con saludUP y recursos mapa/editor idénticos a fuente. Respaldo
+base/JAR validado en .respaldos-locales/antes-mapa-ubicaciones-IVvl98. Huellas de diseño,
+publicaciones y tablas financieras conservadas. No se insertó el mapa en el borrador
+operativo ni se publicó; usar el acceso rápido y la confirmación normal del diseñador.
+
+## Revisión completa de publicación y sesión vencida — 12/11/2026
+
+El propietario reportó que Accesos desaparecía en /sitio/INSTITUTO_RAICES pero no en /.
+Se verificaron respuestas frescas:HTML idéntico. La base tenía borrador12 (Accesos
+retirado) y publicada10 (Accesos todavía visible): últimas capturas guardadas aún no
+publicadas. No publicar automáticamente el borrador operativo. La vinculación local
+APP_SITIO_CODIGO=INSTITUTO_RAICES permanece vigente mediante override local ignorado.
+
+Se reprodujo además fallo real:con JSESSIONID ficticio vencido, / daba200 pero página
+/sitio/CODIGO, fotos publicadas y SVG daban302 al login. SesionInvalidaFilter ahora
+reconoce las rutas públicas exactas y el patrón /sitio/{codigo}[/imagenes/{id numérico}].
+SesionActividadFilter invalida igualmente la sesión autenticada vencida y permite
+continuar sólo las consultas públicas; privados/redirecciones/reloj401/CSRF conservados.
+No se conceden derechos ni se habilitan POST públicos. Pruebas verifican exclusión de
+editor/imágenes privadas, sesión invalidada y acceso público sin crear otra sesión.
+
+Diseñador muestra aviso ámbar de cambios sin guardar o revisión guardada sin publicar,
+con números de borrador/pública; desaparece al coincidir. Guardar y Publicar siguen
+separados y requieren sus confirmaciones. Modelo JSON sin cambios. Body público
+incluye data-publicacion-version para diagnóstico. Caché20261112-publicacion.
+
+Verificación:1115Java y187JavaScript aprobadas. Auditoría HTTP real de la revisión10:
+9secciones,228componentes y13recursos presentes y200, incluso con cookie caducada;
+HTML de ambas URLs idéntico,no-store. Navegador:ambas revisiones10,228rectángulos de
+objetos coinciden (tolerancia1px), /sitio ya no redirige al login. Aviso visto en fixture.
+Guía manual ampliada en PRUEBA_DISENADOR_PAGINA.md; la publicación del borrador12
+queda como acción explícita del propietario. No afirmar que la revisión12 ya es pública.
+
+Desplegado en18080,saludUP,JS/CSS idénticos a fuente. Respaldo base/JAR validado
+en .respaldos-locales/antes-publicacion-completa-bFmFC4;huellas antes/después de
+borrador/publicaciones y tablas financieras idénticas. Sin guardado/publicación
+operativa;servidor de fixture detenido.
+
+## Inicio vinculado a la publicación local — 12/11/2026
+
+El usuario publicó revisión10 de INSTITUTO_RAICES pero / seguía mostrando inicio.html.
+Diagnóstico:APP_SITIO_CODIGO vacío; borrador10/publicada10 y /sitio/INSTITUTO_RAICES
+funcionaban. A petición del usuario se vinculó / al único sitio registrado mediante
+compose.override.yaml LOCAL, excluido explícitamente en .gitignore. Su ambiente usa
+${APP_SITIO_CODIGO:-INSTITUTO_RAICES}; una selección explícita tiene prioridad. No se
+leyó ni editó .env. No cambiar compose.yaml ni hardcodear una escuela en controladores.
+
+Se recreó sólo app, sin rebuild ni migración. HealthUP; HTML de / y /sitio/INSTITUTO_RAICES
+idéntico byte por byte; huellas de sitio_web y sitio_web_publicacion intactas. Sin
+nuevo guardado ni publicación. Respaldo de HTML previo y huellas bajo
+.respaldos-locales/antes-vincular-inicio-*.
+
+La selección es propia de esta computadora/cliente y NO viaja por Git. En otra máquina
+configurar explícitamente APP_SITIO_CODIGO con el código de la institución de esa base,
+o crear su propio override local. No elegir automáticamente la primera institución
+ni reutilizar INSTITUTO_RAICES para otro cliente. Para revertir esta vinculación,
+retirar el override local y recrear app; los datos y publicaciones permanecen.
+
 ## Botones de zoom de precisión — 11/11/2026
 
 Barra fija del lienzo:Alejar(−),selector de porcentaje y Acercar(+). Rango25..300%,

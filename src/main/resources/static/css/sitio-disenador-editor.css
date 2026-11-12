@@ -14,3 +14,7 @@
 .ds-canvas-controls{display:flex;flex-direction:column;align-items:flex-end;gap:10px}.ds-zoom-tools{display:inline-flex;align-items:center;gap:3px;padding:3px;border:1px solid var(--ds-line);border-radius:12px;background:var(--ds-panel);flex-shrink:0}.ds-zoom-button{display:grid;place-items:center;width:34px;height:32px;padding:0;border:0;border-radius:8px;background:var(--ds-soft);color:var(--ds-ink);font-size:21px;font-weight:600;line-height:1}.ds-zoom-button:hover:not(:disabled){background:var(--ds-accent);color:var(--ds-on-accent)}.ds-zoom-tools select{min-width:116px;width:128px;max-width:100%;padding:7px 4px;border:0;background:var(--ds-panel);color:var(--ds-ink);font-size:12px;text-align:center}.ds-zoom-tools option{background:var(--ds-panel);color:var(--ds-ink)}
 @media(max-width:650px){.ds-canvas-controls{align-items:flex-start;width:100%}.ds-zoom-tools{max-width:100%}.ds-zoom-button{width:38px;height:36px}}
 .ds-canvas-toolbar{left:0}
+.ds-publication-note{margin:7px 0;font-size:11px;line-height:1.5;max-width:390px;padding:7px 10px;border-left:3px solid #d9a932;border-radius:6px;background:color-mix(in srgb,#d9a932 12%,var(--ds-panel));color:var(--ds-ink)}
+
+/* Rebuilding property controls or the canvas must not move their scroll containers. */
+#ds-properties,#ds-stage,#ds-structure{overflow-anchor:none}

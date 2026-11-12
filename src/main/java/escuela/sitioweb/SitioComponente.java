@@ -9,7 +9,7 @@ import java.util.*;
 @Data
 public class SitioComponente {
     @NotBlank @Pattern(regexp="[a-zA-Z0-9-]{1,60}") private String id;
-    @NotNull @Pattern(regexp="texto|titulo|imagen|logo|menu|enlace|boton|contenedor|tarjeta|forma|icono|linea|galeria|ubicaciones|salto") private String tipo="texto";
+    @NotNull @Pattern(regexp="texto|titulo|imagen|logo|menu|enlace|boton|contenedor|tarjeta|forma|icono|mapa|whatsapp|linea|galeria|ubicaciones|salto") private String tipo="texto";
     @NotNull @Pattern(regexp="div|section|header|footer|nav|article|span|school-text|h1|h2|h3|p|em|strong|a|img|br|hr|ul|li|figure|figcaption|button") private String tag="div";
     @NotNull @Size(max=160) private String nombre="";
     @NotNull @Size(max=5000) private String texto="";
@@ -21,6 +21,12 @@ public class SitioComponente {
     @NotNull @Size(max=300) private String descripcion="";
     @NotNull @Pattern(regexp=SitioObjetosEscolares.PATRON) private String icono="cuaderno";
     private boolean decorativo=true;
+    @NotNull @Size(max=500) private String direccionMapa="";
+    @Min(10) @Max(19) private int zoomMapa=16;
+    @NotNull @Pattern(regexp="tarjeta|solo") private String disenoMapa="tarjeta";
+    @NotNull @Size(max=40) private String whatsappNumero="";
+    @NotNull @Size(max=1000) private String whatsappMensaje="";
+    @NotNull @Pattern(regexp="etiqueta|icono") private String whatsappDiseno="etiqueta";
     @Size(max=40) private String albumId;
     @NotNull @Pattern(regexp="cuadricula|mosaico|muro|tarjetas|carrusel|destacada|tira") private String presentacion="cuadricula";
     @NotNull @Pattern(regexp="ninguno|acercar|elevar|monocromo") private String efectoFoto="ninguno";

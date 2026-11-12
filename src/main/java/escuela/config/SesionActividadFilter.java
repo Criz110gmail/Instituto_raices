@@ -52,7 +52,10 @@ public class SesionActividadFilter extends OncePerRequestFilter {
             }
             if (caducada) {
                 SecurityContextHolder.clearContext();
-                if (reloj) {
+                if (SesionInvalidaFilter.consultaPublica(request)) {
+                    // La sesión caduca igualmente; el contenido público no requiere iniciar sesión.
+                    chain.doFilter(request, response);
+                } else if (reloj) {
                     response.setStatus(401);
                     response.setHeader("Cache-Control", "no-store");
                 } else expiracion.redirigir(request, response);

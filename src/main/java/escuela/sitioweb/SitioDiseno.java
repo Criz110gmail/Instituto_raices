@@ -90,6 +90,13 @@ public class SitioDiseno {
         if(Set.of("p","span","em","strong","a","h1","h2","h3","button","school-text","figcaption").contains(c.getTag())&&c.getHijos().stream().anyMatch(h->!Set.of("school-text","span","em","strong","br","img","a").contains(h.getTag())))throw new ReglaNegocioException("Los textos y enlaces sólo pueden contener textos, imágenes o acentos internos. Usa un contenedor para agrupar otros componentes.");
 
         if(c.getImagenId()!=null&&!c.getTag().equals("img"))throw new ReglaNegocioException("Las imágenes deben pertenecer a un componente de imagen o logotipo.");
+        if(c.getTipo().equals("whatsapp")){
+            if(!c.getTag().equals("a")||!c.getHijos().isEmpty()||!c.getEnlace().isEmpty())throw new ReglaNegocioException("Usa el número y mensaje del componente WhatsApp para configurar su destino.");
+            if(c.getTexto().length()>80)throw new ReglaNegocioException("El texto del botón WhatsApp admite hasta 80 caracteres.");
+            if((publicacion&&c.isVisible()||!c.getWhatsappNumero().isBlank())&&SitioWhatsapp.numero(c.getWhatsappNumero()).isEmpty())throw new ReglaNegocioException("Completa el número de WhatsApp con código de país; por ejemplo +52 y los 10 dígitos del número en México.");
+        }
+        if(c.getTipo().equals("mapa")&&(!c.getTag().equals("div")||!c.getHijos().isEmpty()))throw new ReglaNegocioException("Selecciona un componente de mapa válido.");
+        if(publicacion&&c.isVisible()&&c.getTipo().equals("mapa")&&c.getDireccionMapa().isBlank())throw new ReglaNegocioException("Completa la dirección del mapa antes de publicar.");
         if(c.getTipo().equals("icono")&&(!c.getTag().equals("div")||!c.getHijos().isEmpty()||!c.getTexto().isEmpty()))throw new ReglaNegocioException("Selecciona un objeto escolar válido.");
         if(publicacion&&c.isVisible()&&c.getTipo().equals("icono")&&!c.isDecorativo()&&c.getDescripcion().isBlank())throw new ReglaNegocioException("Describe el objeto escolar «"+c.getNombre()+"» o márcalo como decorativo.");
         if(Set.of("imagen","logo").contains(c.getTipo())&&!c.getTag().equals("img"))throw new ReglaNegocioException("Selecciona un componente de imagen válido.");

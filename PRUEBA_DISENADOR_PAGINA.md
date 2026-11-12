@@ -132,3 +132,32 @@ La ruta pública de una escuela es `/sitio/CODIGO`. El inicio `/` sólo usa esa 
 - No se publicó ni sustituyó el borrador de la base operativa durante estas verificaciones. Falta ejecutar y confirmar esta guía con el usuario.
 
 Comparación adicional: 249 objetos visibles medidos en navegador entre el lienzo y el render SSR a 1720, 1280 y 390 px, sin diferencias de posición o tamaño superiores a 0.5 px. Vista previa guardada también comparada a 1720 px; animaciones pausadas únicamente en los datos ficticios de QA.
+
+## Ver una publicación en la página principal
+
+En esta computadora el inicio `http://localhost:18080/` ya está vinculado a Instituto
+Raíces. Después de guardar y confirmar Publicar, recarga esa página. Debe coincidir
+con el enlace **Página publicada** del diseñador. Guardar borrador conserva la
+publicación anterior hasta que confirmes Publicar.
+
+Si trabajas en otra computadora y el inicio sigue mostrando la página original,
+revisa la selección del sitio principal: esta configuración es local y no se copia
+con Git. El código debe corresponder a la institución de la base instalada allí.
+
+## Cuando un cambio guardado todavía no se ve en la página
+
+**Guardar borrador conserva tu trabajo. Publicar lo muestra a los visitantes.**
+
+Ejemplo comprobado el 12/11/2026: el botón Accesos ya no estaba en el borrador 12,
+pero seguía en la revisión pública 10. Por eso todavía aparecía al abrir el inicio.
+
+1. Recarga Diseño web y comprueba tu cambio en el lienzo.
+2. Revisa el aviso ámbar: indica qué revisión está guardada y cuál está publicada.
+3. Si no hay cambios sin guardar, pulsa **Publicar** y confirma la revisión que revisaste.
+4. Abre **Página publicada** y `http://localhost:18080/`. Recarga ambas; deben mostrar lo mismo.
+5. Si sólo pulsas Guardar borrador o cancelas Publicar, la página pública debe conservarse.
+6. Tener una sesión administrativa vencida no debe impedir abrir la página pública,
+   sus fotografías ni los objetos escolares. El acceso a administración sigue requiriendo iniciar sesión.
+
+La revisión técnica no publicó el borrador del propietario. La comparación de la
+revisión pública 10 verificó sus 9 secciones, 228 componentes y 13 recursos completos.

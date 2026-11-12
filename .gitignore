@@ -7,3 +7,6 @@ target/
 *.log
 data/
 .respaldos-locales/
+
+# Selección del sitio principal en esta computadora.
+/compose.override.yaml

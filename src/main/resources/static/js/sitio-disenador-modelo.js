@@ -3,17 +3,19 @@
  const originalSource=typeof module!=='undefined'&&module.exports?require('./sitio-disenador-original.js'):root.NexoPaginaOriginal;
  const clone=o=>JSON.parse(JSON.stringify(o));
  const uid=()=>root.crypto?.randomUUID?.()||'c-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
- const TIPOS={texto:['Texto','T'],titulo:['Título','H'],imagen:['Imagen','▧'],logo:['Logotipo','◈'],menu:['Menú','☰'],boton:['Botón','↗'],enlace:['Enlace','↗'],contenedor:['Contenedor','▥'],tarjeta:['Tarjeta','▣'],galeria:['Galería','▦'],ubicaciones:['Ubicaciones','⌖'],icono:['Objeto escolar','✎'],forma:['Forma','◼'],linea:['Línea','─']};
+ const TIPOS={texto:['Texto','T'],titulo:['Título','H'],imagen:['Imagen','▧'],logo:['Logotipo','◈'],menu:['Menú','☰'],boton:['Botón','↗'],enlace:['Enlace','↗'],contenedor:['Contenedor','▥'],tarjeta:['Tarjeta','▣'],galeria:['Galería','▦'],ubicaciones:['Ubicaciones','⌖'],mapa:['Mapa','⌖'],whatsapp:['WhatsApp','◉'],icono:['Objeto escolar','✎'],forma:['Forma','◼'],linea:['Línea','─']};
  const contenedor=n=>n&&['contenedor','menu','tarjeta'].includes(n.tipo)&&['div','section','header','footer','nav','article','figure','li'].includes(n.tag);
  const contar=n=>1+(n.hijos||n.componentes||[]).reduce((sum,c)=>sum+contar(c),0);
  const profundidad=n=>Math.max(0,...(n.hijos||n.componentes||[]).map(c=>1+profundidad(c)));
  const textoDe=n=>n.texto||(n.hijos||[]).map(textoDe).join('');const nombre=n=>n.titulo||(n.tipo==='titulo'&&/^Título/.test(n.nombre||'')?'Título · '+textoDe(n).trim().slice(0,50):n.nombre)||n.texto?.trim().slice(0,50)||TIPOS[n.tipo]?.[0]||'Componente';
- function nodo(tipo,values={}){return Object.assign({id:uid(),tipo,tag:'div',nombre:TIPOS[tipo]?.[0]||'Componente',texto:'',clases:'',ancla:'',enlace:'',recurso:'ninguno',imagenId:null,descripcion:'',icono:'cuaderno',decorativo:true,albumId:null,presentacion:'cuadricula',efectoFoto:'ninguno',transicion:'deslizar',columnas:3,mostrarDescripciones:true,automatico:false,intervalo:5,posicion:'flujo',visible:true,estilos:{},hijos:[]},values);}
+ function nodo(tipo,values={}){return Object.assign({id:uid(),tipo,tag:'div',nombre:TIPOS[tipo]?.[0]||'Componente',texto:'',clases:'',ancla:'',enlace:'',recurso:'ninguno',imagenId:null,descripcion:'',icono:'cuaderno',decorativo:true,whatsappNumero:'',whatsappMensaje:'',whatsappDiseno:'etiqueta',direccionMapa:'',zoomMapa:16,disenoMapa:'tarjeta',albumId:null,presentacion:'cuadricula',efectoFoto:'ninguno',transicion:'deslizar',columnas:3,mostrarDescripciones:true,automatico:false,intervalo:5,posicion:'flujo',visible:true,estilos:{},hijos:[]},values);}
  function nuevo(tipo,{libre=true,x=32,y=32}={}){
   const n=nodo(tipo),s={};if(libre){n.posicion='libre';s.x=x;s.y=y;}n.estilos.escritorio=s;
   if(tipo==='texto'||tipo==='titulo'){n.tag=tipo==='titulo'?'h2':'p';n.texto=tipo==='titulo'?'Nuevo título':'Escribe aquí tu texto';s.ancho=tipo==='titulo'?360:280;s.fuente=tipo==='titulo'?36:18;s.color='#304731';}
   if(tipo==='imagen'||tipo==='logo'){n.tag='img';n.recurso=tipo==='logo'?'logo':'ninguno';n.descripcion=tipo==='logo'?'Logotipo de la escuela':'Imagen de la escuela';s.ancho=tipo==='logo'?96:280;s.alto=tipo==='logo'?96:180;s.encuadre='contain';}
   if(tipo==='boton'||tipo==='enlace'){n.tag='a';n.texto=tipo==='boton'?'Conoce más':'Nuevo enlace';n.enlace='#inicio';s.fuente=16;if(tipo==='boton'){s.fondo='#2b5031';s.color='#ffffff';s.radio=14;s.relleno=14;}}
+  if(tipo==='whatsapp'){n.tag='a';n.texto='Escríbenos por WhatsApp';s.ancho=260;s.alto=0;s.fondo='#187d43';s.color='#ffffff';s.radio=18;s.fuente=15;}
+  if(tipo==='mapa'){n.texto='Ven a conocernos';s.ancho=960;s.alto=0;}
   if(tipo==='icono'){n.nombre='Cuaderno';s.ancho=112;s.alto=112;s.color='#25aaa1';s.fondo='transparent';}
   if(tipo==='forma'){n.clases='nd-shape';s.ancho=140;s.alto=100;s.fondo='#4ed6bf';s.radio=16;}
   if(tipo==='linea'){n.tag='hr';s.ancho=240;s.borde=1;s.colorBorde='#4c7065';}
@@ -75,8 +77,23 @@
    result[direction==='x'?'dx':'dy']=delta;
   }return result;
  }
+ function prepararMapaUbicacion(d,places=[]){
+  const index=indice(d),existing=d.bloques.find(b=>b.id==='seccion-ubicaciones')||d.bloques.find(b=>(b.titulo||'').toLocaleLowerCase()==='ubicaciones');
+  if(existing?.visible===false)return {error:'La sección Ubicaciones está oculta. Actívala antes de colocar el mapa.'};
+  const section=existing||seccion('Ubicaciones'),existingMap=existing?[...index.values()].find(e=>e.section.id===existing.id&&e.node.tipo==='mapa'):null;
+  const options=places.filter(p=>p.direccion?.trim());if(!existingMap&&options.length!==1)return {error:'Selecciona Mapa en Componentes y elige la dirección del plantel en Propiedades.'};
+  const parent=existing?[...index.values()].find(e=>e.section.id===section.id&&contenedor(e.node)&&(e.node.clases||'').split(' ').includes('visit-inner'))?.node:null,list=parent?parent.hijos:section.componentes;
+  if(!existingMap&&(index.size-d.bloques.length>=800||(!existing&&d.bloques.length>=60)||list.length>=100||(parent&&index.get(parent.id).ancestros.length>=12)))return {error:'Se alcanzó el límite de secciones, componentes o niveles del diseño.'};
+  const n=existingMap?.node||nuevo('mapa',{libre:false});if(!existingMap){n.nombre='Mapa de ubicación';n.direccionMapa=options[0].direccion;n.estilos.escritorio.ancho=0;n.clases='nd-visit-map';}if(parent)parent.clases=[...new Set([...(parent.clases||'').split(' ').filter(Boolean),'nd-visit-with-map'])].join(' ');
+  if(!existing){section.altura=0;section.distribucion='vertical';section.espacio=32;d.bloques.push(section);}
+  const hasAnchor=[...index.values()].some(e=>e.node.ancla==='ubicaciones'),shell=existing?[...index.values()].find(e=>e.section.id===section.id&&(e.node.clases||'').split(' ').includes('visit-section'))?.node:null;
+  if(!hasAnchor){if(shell&&!shell.ancla)shell.ancla='ubicaciones';else n.ancla='ubicaciones';}
+  for(const entry of index.values()){const node=entry.node;if(entry.section.id===section.id&&(node.clases||'').split(' ').includes('visit-decoration'))node.visible=false;if(entry.section.id===section.id&&['Próximamente encontrarás las direcciones de nuestros planteles,','sus horarios y el contacto por WhatsApp.'].includes(node.texto))node.visible=false;if(['enlace','boton'].includes(node.tipo)&&/ubicaciones/i.test(textoDe(node)||node.nombre||''))node.enlace='#ubicaciones';}
+  if(!existingMap)list.push(n);return {id:n.id,sectionId:section.id,parentId:existingMap?.parent?.id||parent?.id||section.id,created:!existingMap};
+ }
+ function avisoPublicacion(borrador,publicada,cambios=false){const draft=Math.max(0,Number(borrador)||0),live=Math.max(0,Number(publicada)||0);if(cambios)return 'Hay cambios sin guardar. Guarda y después publica para mostrarlos en tu página.';if(!live)return 'Página aún sin publicar. Pulsa Publicar cuando termines de revisar.';if(draft>live)return 'Cambios guardados sin publicar · Revisión '+draft+'. La página muestra la '+live+'. Pulsa Publicar para actualizarla.';return '';}
  const ESCALAS_ZOOM=[.25,.5,.75,1,1.25,1.5,1.75,2,2.5,3];
  function pasoZoom(actual,direccion){const current=Number(actual)||1;return direccion>0?(ESCALAS_ZOOM.find(n=>n>current+.00001)??Math.max(current,3)):([...ESCALAS_ZOOM].reverse().find(n=>n<current-.00001)??Math.min(current,.25));}
  function vista(mode,windowWidth,available,zoom='auto'){const fallback=Number(windowWidth)>0?Number(windowWidth):1440;const width=Math.max(1,Math.round(mode==='ventana'?fallback:Number(mode)||fallback));const dispositivo=width<=700?'movil':width<=1000?'tableta':'escritorio';const scale=zoom==='auto'?Math.min(1,Math.max(1,Number(available)||1)/width):Number(zoom)||1;return {width,dispositivo,scale};}
- const api={ESCALAS_ZOOM,pasoZoom,ajustarMovimiento,copiar,pegar,giroPorArrastre,vista,contar,profundidad,TIPOS,clone,uid,nodo,nuevo,seccion,original,convertir,indice,estilo,mover,duplicar,quitar,contenedor,nombre};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.NexoDisenador=api;
+ const api={prepararMapaUbicacion,avisoPublicacion,ESCALAS_ZOOM,pasoZoom,ajustarMovimiento,copiar,pegar,giroPorArrastre,vista,contar,profundidad,TIPOS,clone,uid,nodo,nuevo,seccion,original,convertir,indice,estilo,mover,duplicar,quitar,contenedor,nombre};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.NexoDisenador=api;
 })(typeof window!=='undefined'?window:globalThis);

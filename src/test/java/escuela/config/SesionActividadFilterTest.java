@@ -80,4 +80,10 @@ class SesionActividadFilterTest {
         filter.doFilter(request, new MockHttpServletResponse(), (req,res) -> {});
         assertThat(request.getSession(false)).isNull();
     }
+    @Test void sesionAutenticadaCaducaPeroLaPaginaPublicaContinuaSinRedireccion() throws Exception {
+        for(String ruta:List.of("/","/sitio/INSTITUTO_RAICES","/sitio/INSTITUTO_RAICES/imagenes/5","/images/sitio-objetos-escolares.svg")) {
+            var request=request(ruta,ahora-1800000);var session=(MockHttpSession)request.getSession();var response=new MockHttpServletResponse();var chain=new org.springframework.mock.web.MockFilterChain();
+            filter.doFilter(request,response,chain);assertThat(session.isInvalid()).isTrue();assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();assertThat(chain.getRequest()).isSameAs(request);assertThat(response.getRedirectedUrl()).isNull();
+        }
+    }
 }
