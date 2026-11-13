@@ -2,16 +2,16 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
-    <title>Estado de cuenta por cuenta · Nexo Escolar</title><link rel="icon" href="/favicon.svg">
+    <title>Estado de cuenta por cuenta · Control escolar</title><link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/admin.css?v=20261106-autocompletado"><link rel="stylesheet" href="/css/forms.css"><link rel="stylesheet" href="/css/navigation.css">
     <script src="/js/theme.js"></script><script src="/js/navigation.js" defer></script><script src="/js/autocomplete.js" defer></script>
     <script src="/js/estado-cuenta-cuenta.js" defer></script>
 </head>
 <body><input class="nav-toggle" type="checkbox" id="nav-toggle"><label class="nav-backdrop" for="nav-toggle" aria-hidden="true"></label>
-<aside class="sidebar"><div class="brand"><span class="brand-mark">N</span><span><strong>Nexo</strong><small>Control escolar</small></span></div><nav aria-label="Módulos administrativos"><th:block th:each="item,iter:${modulos}"><p class="nav-label security-label" th:if="${iter.first or item.seccion()!=modulos[iter.index-1].seccion()}" th:text="${item.seccion()}"></p><a th:href="${item.rutaListado()}" th:classappend="${item==moduloActual}?' active':''"><span class="nav-dot"></span><span th:text="${item.titulo}"></span></a></th:block></nav><div class="sidebar-foot"><span class="pulse"></span><span>Servicios operativos</span></div></aside>
+<aside class="sidebar"><div class="brand institution-brand"><img class="institution-logo" src="/images/logo1.png" alt="Logotipo de la institución"></div><nav aria-label="Módulos administrativos"><th:block th:each="item,iter:${modulos}"><p class="nav-label security-label" th:if="${iter.first or item.seccion()!=modulos[iter.index-1].seccion()}" th:text="${item.seccion()}"></p><a th:href="${item.rutaListado()}" th:classappend="${item==moduloActual}?' active':''"><span class="nav-dot"></span><span th:text="${item.titulo}"></span></a></th:block></nav><div class="sidebar-foot"><span class="pulse"></span><span>Servicios operativos</span></div></aside>
 <main class="workspace ledger-workspace"><header class="topbar"><label class="menu-button" for="nav-toggle" aria-label="Abrir navegación"><span></span><span></span><span></span></label><div><p>Finanzas · Registros internos</p><h1>Estado de cuenta por cuenta</h1></div><div class="top-actions"><div th:replace="~{admin/fragments/session-actions :: controls}"></div></div></header>
     <section th:replace="~{admin/fragments/reportes-navegacion :: navigation('cuenta')}"></section>
-    <section class="ledger-hero"><div class="ledger-heading"><span>Estado interno · Sin archivos bancarios</span><h2>El historial de una cuenta, mes a mes o por año</h2><p>El reporte utiliza únicamente movimientos publicados en Nexo Escolar. Incluye traspasos y anulaciones para que el saldo cuadre; no es una conciliación ni un estado emitido por el banco.</p></div>
+    <section class="ledger-hero"><div class="ledger-heading"><span>Estado interno · Sin archivos bancarios</span><h2>El historial de una cuenta, mes a mes o por año</h2><p>El reporte utiliza únicamente movimientos publicados en Control escolar. Incluye traspasos y anulaciones para que el saldo cuadre; no es una conciliación ni un estado emitido por el banco.</p></div>
         <div class="balance-card" th:if="${resultadoCuenta.resumen != null}"><span>Saldo al cierre del periodo</span><strong><span th:text="${@formatoMoneda.pesos(resultadoCuenta.resumen.saldoCierre)}">$0.00</span></strong><p th:text="${resultadoCuenta.cuenta.etiqueta}">Cuenta</p></div>
         <div class="balance-card balance-empty" th:if="${resultadoCuenta.resumen == null}"><span>Estado de cuenta</span><strong>—</strong><p>Selecciona una cuenta y un periodo para consultar.</p></div>
     </section>

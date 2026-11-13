@@ -53,7 +53,7 @@ class AlumnoServiceImplTest {
         verify(repository).saveAndFlush(captor.capture());
         assertThat(captor.getValue().getMatricula()).isEqualTo("ALU-001");
         assertThat(captor.getValue().getCurp()).isEqualTo("ABCD1234EFGH567890");
-        assertThat(captor.getValue().getEmail()).isEqualTo("alumno@raices.mx");
+        assertThat(captor.getValue().getEmail()).isEqualTo("alumno@example.org");
     }
 
     @Test
@@ -115,7 +115,7 @@ class AlumnoServiceImplTest {
     private AlumnoRequest request(Long institucionId, Long version, String matricula, String curp) {
         return new AlumnoRequest(institucionId, matricula, " Ana Lucía ", " Pérez ",
                 " López ", curp, LocalDate.of(2018, 1, 1), "Femenino", "Guadalajara",
-                "Mexicana", "3312345678", " Alumno@Raices.MX ", "Juárez", "10",
+                "Mexicana", "3312345678", " Alumno@example.org ", "Juárez", "10",
                 null, "Centro", "Guadalajara", "Jalisco", "44100", "mx",
                 LocalDate.of(2024, 8, 20), null, true, version);
     }

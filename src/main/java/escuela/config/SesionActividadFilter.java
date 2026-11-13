@@ -33,7 +33,7 @@ public class SesionActividadFilter extends OncePerRequestFilter {
         String ruta = request.getRequestURI().substring(request.getContextPath().length());
         var auth = SecurityContextHolder.getContext().getAuthentication();
         HttpSession session = request.getSession(false);
-        boolean reloj = ruta.equals("/sesion/estado") || ruta.equals("/sesion/renovar");
+        boolean reloj = ruta.equals("/sesion/estado") || ruta.equals("/sesion/renovar") || ruta.equals("/sesion/identidad");
         if (session != null && auth != null && auth.isAuthenticated()
                 && !(auth instanceof AnonymousAuthenticationToken)) {
             long ahora = clock.millis();
@@ -48,7 +48,7 @@ public class SesionActividadFilter extends OncePerRequestFilter {
                     session.setAttribute(ACTIVIDAD, ultima);
                     response.setHeader("X-Session-Expires", Long.toString(ultima + session.getMaxInactiveInterval() * 1000L));
                     response.setHeader("X-Session-Now", Long.toString(ahora));
-                } else session.invalidate();
+                } else {var codigo=session.getAttribute(InstitucionAccesoFilter.CONTEXTO);if(codigo instanceof String c&&InstitucionAccesoFilter.codigoValido(c))request.setAttribute(InstitucionAccesoFilter.CONTEXTO,c);session.invalidate();}
             }
             if (caducada) {
                 SecurityContextHolder.clearContext();

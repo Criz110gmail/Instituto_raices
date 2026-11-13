@@ -8,7 +8,7 @@
  function original(s={}){return {formato:1,tema:'escolar',fondo:'#fffef9',tinta:'#304731',fuente:'amigable',radio:20,menuVisible:true,bloques:Object.keys(nombresEscolares).map(seccion=>bloque('escolar',{seccion,titulo:nombresEscolares[seccion],espacio:0}))};}
  function desdePublicada(s){if(s.diseno)return clone(s.diseno);const d=original(s);const by=key=>d.bloques.find(b=>b.seccion===key);const parts=root.NexoEscolar.secciones;
  const change=(section,find,value)=>{if(value==null)return;const pair=Object.entries(parts[section].textos).find(([,v])=>v.includes(find));if(pair)by(section).campos[pair[0]]=value;};
- change('encabezado','Instituto',s.nombre);change('encabezado','Raíces','');change('pie','Instituto Raíces',s.nombre);
+ change('encabezado','Tu',s.nombre);change('encabezado','institución','');change('pie','Tu institución',s.nombre);
  change('portada','Sembrando',s.eslogan);for(const word of ['principios,','transformando','cultura.']){const key=Object.entries(parts.portada.textos).find(([,v])=>v.trim()===word)?.[0];if(key)by('portada').campos[key]='';}change('portada','Aprender, descubrir',s.portada);change('portada','¡Bienvenidos','');
  change('nosotros','Este es nuestro eslogan',s.nosotros);change('oferta','Los niveles y programas',s.oferta);change('oferta','Actividades, propuestas',s.talleres);change('oferta','Consulta aquí las convocatorias',s.inscripciones);if(s.portadaId)by('portada').imagenes.imagen0=s.portadaId;return d;}
  function renderEscolar(inner,b,s,base,editing){const part=root.NexoEscolar?.secciones[b.seccion];if(!part)return;const template=document.createElement('template');template.innerHTML=part.html;inner.append(template.content.cloneNode(true));

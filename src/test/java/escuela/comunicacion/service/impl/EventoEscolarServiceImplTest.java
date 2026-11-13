@@ -47,7 +47,7 @@ class EventoEscolarServiceImplTest {
 
     @BeforeEach
     void preparar() {
-        institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Instituto Raíces");
+        institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Institución de ejemplo");
         institucion.setZonaHoraria("America/Mexico_City"); institucion.setActivo(true);
         ciclo = new CicloEscolar(); ciclo.setId(2L); ciclo.setInstitucion(institucion);
         ciclo.setFechaInicio(LocalDate.of(2026, 8, 1)); ciclo.setFechaFin(LocalDate.of(2027, 7, 31));

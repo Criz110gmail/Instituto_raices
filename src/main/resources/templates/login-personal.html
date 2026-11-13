@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#153a32"><title>Acceso del personal · Nexo Escolar</title>
+    <meta name="theme-color" content="#153a32"><title>Acceso del personal · Control escolar</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="/css/login.css"><link rel="stylesheet" href="/css/personal-login.css?v=20261106"><link rel="stylesheet" href="/css/session.css"><script src="/js/theme.js"></script><script src="/js/login-session.js?v=2" defer></script>
-</head>
-<body class="personal-login-page">
+<link rel="stylesheet" href="/css/portal-identidad.css?v=20261113-transparente"><script src="/js/portal-identidad.js?v=20261112-adaptativo" defer></script></head>
+<body data-pi-portal="personal" class="personal-login-page" th:attr="data-pi-preview=${portalPrevia == true},data-pi-personalizada=${portalIdentidad != null and portalIdentidad.usarPaleta}" th:style="${portalIdentidad != null ? portalIdentidad.variables : null}">
 <button class="theme-toggle" type="button" data-theme-toggle><span class="sun">☀</span><span class="moon">◐</span></button>
 <main class="login-shell personal-login-shell">
     <section class="login-story personal-login-story">
-        <div class="story-brand"><span>N</span><strong>Nexo Escolar <small>Personal</small></strong></div>
+        <div th:replace="~{fragments/portal-identidad :: marca('story-brand','Tu institución','N')}"></div>
         <div class="personal-orbit" aria-hidden="true"><div class="personal-orbit-card"><span>MI ESPACIO</span><strong>Mis recibos</strong><i></i><i></i><i></i><b>✓</b></div></div>
         <div><p class="eyebrow">Espacio del personal</p><h1>Tu nómina, clara y a tu alcance.</h1><p class="story-copy">Consulta tus recibos personales con el detalle de percepciones, deducciones e importe neto.</p></div>
         <div class="personal-features"><span>Consulta personal</span><span>Recibos en PDF</span><span>Acceso privado</span></div>
     </section>
     <section class="login-panel personal-login-panel">
-        <div class="mobile-brand"><span>N</span><strong>Nexo Escolar</strong></div>
+        <div th:replace="~{fragments/portal-identidad :: marca('mobile-brand','Tu institución','N')}"></div>
         <div class="personal-welcome">ESPACIO DEL PERSONAL</div>
         <div class="form-heading"><p>Bienvenido a tu espacio</p><h2>Inicia sesión</h2><span>Usa las credenciales asignadas por administración.</span></div>
         <div class="alert warning" role="alert" th:if="${param.sesionExpirada}"><strong>Tu sesión caducó</strong><span>Por seguridad, inicia sesión nuevamente para continuar. Los cambios que no alcanzaron a guardarse deben capturarse otra vez.</span></div>
@@ -25,9 +25,10 @@
         <div class="alert warning" role="status" th:if="${param.accesoActualizado}"><strong>Acceso actualizado</strong><span>La sesión cambió en otra pestaña. Inicia sesión nuevamente desde esta pantalla.</span></div>
         <!-- Sólo el acceso obtiene CSRF al enviar: cargar otra pestaña no crea una cookie de sesión. -->
         <form data-login-refresh="personal" th:attr="data-csrf-url=@{/acceso/csrf},data-check-url=@{/acceso/comprobar},action=@{/login}" method="post">
+<input th:if="${portalInstitucionAcceso != null}" type="hidden" name="institucionAcceso" th:value="${portalInstitucionAcceso}">
             <input type="hidden" name="_csrf" value=""><input type="hidden" name="origen" value="personal">
             <noscript><p role="alert">Activa JavaScript para iniciar sesión de forma segura.</p></noscript>
-            <label><span>Usuario</span><input name="username" autocomplete="username" required autofocus placeholder="tu.usuario"></label>
+            <label><span>Usuario</span><input name="username" autocomplete="username" required autofocus th:autofocus="${portalPrevia != true}" placeholder="tu.usuario"></label>
             <label><span>Contraseña</span><input type="password" name="password" autocomplete="current-password" required placeholder="••••••••••••"></label>
             <div class="form-meta"><span>Si el usuario se repite, usa CÓDIGO_INSTITUCIÓN\usuario</span></div>
             <button type="submit" disabled>Ver mis recibos <span>→</span></button>

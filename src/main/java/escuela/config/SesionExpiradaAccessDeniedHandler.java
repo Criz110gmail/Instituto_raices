@@ -60,7 +60,7 @@ public class SesionExpiradaAccessDeniedHandler implements AccessDeniedHandler {
         // No crear ni borrar cookies desde solicitudes privadas atrasadas: podrían
         // sobrescribir la sesión que otra pestaña acaba de iniciar. El acceso público
         // obtiene su propia sesión sólo cuando necesita un token CSRF.
-        response.sendRedirect(request.getContextPath() + acceso);
+        response.sendRedirect(request.getContextPath() + InstitucionAccesoFilter.continuar(request,acceso));
     }
 
     void accesoActualizado(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -68,7 +68,7 @@ public class SesionExpiradaAccessDeniedHandler implements AccessDeniedHandler {
         String origen = request.getParameter("origen");
         String acceso = "familias".equals(origen) ? "/familias"
                 : "maestros".equals(origen) ? "/maestros/acceso" : "personal".equals(origen) ? "/personal/acceso" : "/login";
-        response.sendRedirect(request.getContextPath() + acceso + "?accesoActualizado");
+        response.sendRedirect(request.getContextPath() + InstitucionAccesoFilter.continuar(request,acceso + "?accesoActualizado"));
     }
 
     void preparacionRechazada(HttpServletRequest request, HttpServletResponse response) {

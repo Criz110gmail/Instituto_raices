@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SesionController {
-    public record Estado(long ahora, long vence, int duracionSegundos, String csrfCabecera, String csrfToken) {}
+    public record Estado(long ahora, long vence, int duracionSegundos, String csrfCabecera, String csrfToken, String institucion) {}
     public record TokenAcceso(String parametro, String token) {}
     /** Este POST atraviesa CSRF: confirma la cookie antes de enviar credenciales. */
     @PostMapping("/acceso/comprobar")
@@ -46,7 +46,8 @@ public class SesionController {
             var csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
             return ResponseEntity.ok().header("Cache-Control", "no-store").body(new Estado(ahora,
                     ultima + session.getMaxInactiveInterval() * 1000L, session.getMaxInactiveInterval(),
-                    csrf == null ? null : csrf.getHeaderName(), csrf == null ? null : csrf.getToken()));
+                    csrf == null ? null : csrf.getHeaderName(), csrf == null ? null : csrf.getToken(),
+                    session.getAttribute(InstitucionAccesoFilter.CONTEXTO) instanceof String c && InstitucionAccesoFilter.codigoValido(c) ? c : null));
         }
     }
 }

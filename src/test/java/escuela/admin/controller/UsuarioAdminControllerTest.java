@@ -168,14 +168,14 @@ class UsuarioAdminControllerTest {
     private UsuarioForm formulario() {
         UsuarioForm form = new UsuarioForm();
         form.setInstitucionId(1L);
-        form.setUsername("admin.raices");
-        form.setEmail("admin@raices.mx");
+        form.setUsername("admin.demo");
+        form.setEmail("admin@example.org");
         return form;
     }
 
     private UsuarioResponse usuario() {
         Instant ahora = Instant.parse("2026-09-11T12:00:00Z");
-        return new UsuarioResponse(7L, 1L, "admin.raices", "admin@raices.mx",
+        return new UsuarioResponse(7L, 1L, "admin.demo", "admin@example.org",
                 EstadoUsuario.INVITADO, TipoCuentaUsuario.ADMINISTRATIVO, false, false,
                 new AuditoriaResponse(ahora, null, ahora, null, 1L));
     }

@@ -39,8 +39,8 @@ class EstadoCuentaCuentaExportacionTest {
         var resultado=new ResultadoEstadoCuentaCuenta(cuenta,resumen,org.springframework.data.domain.Page.empty());
         when(consulta.normalizar(any())).thenReturn(filtroVacio);
         when(consulta.consultar(any())).thenReturn(resultado);
-        when(instituciones.obtener(1L)).thenReturn(new InstitucionResponse(1L,"RAICES","Instituto Raíces",
-            "Instituto Raíces","Instituto Raíces",null,null,null,null,null,null,null,null,"México",
+        when(instituciones.obtener(1L)).thenReturn(new InstitucionResponse(1L,"DEMO","Institución de ejemplo",
+            "Institución de ejemplo","Institución de ejemplo",null,null,null,null,null,null,null,null,"México",
             null,"America/Mexico_City","MXN",true,null));
 
         var xlsx=new ByteArrayOutputStream();
@@ -87,8 +87,8 @@ class EstadoCuentaCuentaExportacionTest {
         var resultado = new ResultadoEstadoCuentaCuenta(cuenta, resumen, pagina);
         when(consulta.normalizar(any(FiltroEstadoCuentaCuenta.class))).thenReturn(filtro);
         when(consulta.consultar(any(FiltroEstadoCuentaCuenta.class))).thenReturn(resultado);
-        when(instituciones.obtener(1L)).thenReturn(new InstitucionResponse(1L,"RAICES","Instituto Raíces",
-                "Instituto Raíces","Instituto Raíces",null,null,null,null,null,null,null,null,"México",
+        when(instituciones.obtener(1L)).thenReturn(new InstitucionResponse(1L,"DEMO","Institución de ejemplo",
+                "Institución de ejemplo","Institución de ejemplo",null,null,null,null,null,null,null,null,"México",
                 null,"America/Mexico_City","MXN",true,null));
 
         ByteArrayOutputStream xlsx = new ByteArrayOutputStream();

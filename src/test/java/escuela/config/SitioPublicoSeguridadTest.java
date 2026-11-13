@@ -26,8 +26,8 @@ class SitioPublicoSeguridadTest {
             assertThat(inicio.getResponse().getStatus()).isEqualTo(200);
             assertThat(inicio.getRequest().getSession(false)).isNull();
             assertThat(inicio.getResponse().getContentAsString()).contains("TRANSFORMANDO CULTURA.",
-                    "href=\"/personal/acceso\"", "href=\"/login\"", "/images/logo.png", "/images/imagen.png");
-            for (var ruta : new String[]{"/images/logo.png", "/images/imagen.png", "/css/sitio-escolar.css", "/js/sitio-escolar.js"}) {
+                    "href=\"/personal/acceso\"", "href=\"/login\"", "/images/logo1.png", "/images/imagen.png");
+            for (var ruta : new String[]{"/images/logo1.png", "/images/imagen.png", "/css/sitio-escolar.css", "/js/sitio-escolar.js"}) {
                 var recurso = mvc.perform(get(ruta)).andReturn();
                 assertThat(recurso.getResponse().getStatus()).as(ruta).isEqualTo(200);
                 assertThat(recurso.getResponse().getContentAsByteArray()).isNotEmpty();

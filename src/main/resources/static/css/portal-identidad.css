@@ -1,0 +1,29 @@
+.pi-logo{width:76px;height:56px;object-fit:contain;flex-shrink:0;background:transparent;border:0;border-radius:0;padding:0;box-shadow:none}.story-brand,.mobile-brand,.welcome-brand,.mobile-family-brand{min-width:0}.story-brand strong,.mobile-brand strong,.welcome-brand strong,.mobile-family-brand strong{overflow-wrap:anywhere}
+body[data-pi-personalizada=true]{background:radial-gradient(circle at 12% 15%,color-mix(in srgb,var(--pi-principal) 10%,transparent),transparent 30%),var(--pi-fondo)}
+[data-pi-personalizada=true] .login-story,[data-pi-personalizada=true] .family-welcome{background:var(--pi-principal);color:var(--pi-story-text)}
+[data-pi-personalizada=true] .login-story h1,[data-pi-personalizada=true] .login-story strong,[data-pi-personalizada=true] .login-story .eyebrow,[data-pi-personalizada=true] .login-story .story-copy,[data-pi-personalizada=true] .family-welcome h1,[data-pi-personalizada=true] .family-welcome strong,[data-pi-personalizada=true] .family-welcome p,[data-pi-personalizada=true] .family-welcome small,[data-pi-personalizada=true] .welcome-copy>span,[data-pi-personalizada=true] .personal-features span,[data-pi-personalizada=true] .teacher-features span{color:var(--pi-story-text)}
+[data-pi-personalizada=true] .login-panel button[type=submit],[data-pi-personalizada=true] .family-access button[type=submit]{background:var(--pi-acento);color:var(--pi-on-accent);border-color:var(--pi-acento);box-shadow:none}
+[data-pi-personalizada=true] .login-panel .support a,[data-pi-personalizada=true] .family-access a,[data-pi-personalizada=true] .support-link,[data-pi-personalizada=true] .personal-welcome{color:var(--pi-link)}
+[data-theme=dark] [data-pi-personalizada=true] .login-panel .support a,[data-theme=dark] [data-pi-personalizada=true] .family-access a,[data-theme=dark] [data-pi-personalizada=true] .support-link,[data-theme=dark] [data-pi-personalizada=true] .personal-welcome{color:var(--pi-link-dark,#ffffff)}
+[data-pi-personalizada=true] .story-brand>span,[data-pi-personalizada=true] .mobile-brand>span,[data-pi-personalizada=true] .welcome-brand>span,[data-pi-personalizada=true] .mobile-family-brand>span{background:var(--pi-acento);color:var(--pi-on-accent)}
+[data-pi-personalizada=true] input:focus-visible,[data-pi-personalizada=true] button:focus-visible,[data-pi-personalizada=true] a:focus-visible{outline:3px solid var(--pi-link);outline-offset:3px}
+[data-pi-preview=true]{pointer-events:none}[data-pi-preview=true] .theme-toggle,[data-pi-preview=true] .family-theme{display:none}
+@media(max-width:600px){.pi-logo{width:64px;height:48px}}
+
+[data-pi-personalizada=true] .login-story .signal,[data-pi-personalizada=true] .teacher-login-features span{color:var(--pi-story-text)}
+[data-pi-personalizada=true] .login-panel .form-heading p,[data-pi-personalizada=true] .teacher-welcome-mark{color:var(--pi-link)}
+[data-theme=dark] [data-pi-personalizada=true] .login-panel .form-heading p,[data-theme=dark] [data-pi-personalizada=true] .teacher-welcome-mark{color:var(--pi-link-dark)}
+
+/* La ayuda administrativa no forma parte de las pantallas públicas de acceso. */
+.login-shell>.context-module-help,.family-login>.context-module-help{display:none!important}
+[data-pi-preview=true] .session-indicator,[data-pi-preview=true] .session-renewal-dialog,[data-pi-preview=true] .session-expired-overlay{display:none!important}
+/* La misma paleta accesible del interior también se usa en los accesos. */
+body[data-pi-personalizada=true]{background:var(--pi-ui-bg,var(--pi-fondo))!important}
+body[data-pi-personalizada=true] :is(.login-story,.family-welcome){background:var(--pi-ui-primary,var(--pi-principal))!important;color:var(--pi-ui-on-primary,var(--pi-story-text))!important}
+body[data-pi-personalizada=true] :is(.login-story,.family-welcome) :is(h1,strong,p,small,.eyebrow,.story-copy,.signal){color:var(--pi-ui-on-primary,var(--pi-story-text))!important}
+body[data-pi-personalizada=true] :is(.login-panel,.family-access){background:var(--pi-ui-surface)!important;color:var(--pi-ui-text)!important}
+body[data-pi-personalizada=true] :is(.login-panel,.family-access) :is(h1,h2,label){color:var(--pi-ui-text)!important}
+body[data-pi-personalizada=true] :is(.login-panel,.family-access) :is(p,small){color:var(--pi-ui-muted)!important}
+body[data-pi-personalizada=true] :is(.login-panel,.family-access) button[type=submit]{background:var(--pi-ui-action)!important;color:var(--pi-ui-on-action)!important;border-color:var(--pi-ui-action-border)!important}
+body[data-pi-personalizada=true] :is(.login-panel,.family-access) :is(input,select){background:var(--pi-ui-surface)!important;color:var(--pi-ui-text)!important;border-color:var(--pi-ui-border)!important}
+body[data-pi-personalizada=true] :is(.login-panel,.family-access) a{color:var(--pi-ui-link)!important}

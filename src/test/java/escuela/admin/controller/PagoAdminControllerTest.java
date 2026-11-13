@@ -179,7 +179,7 @@ class PagoAdminControllerTest {
     }
 
     private InstitucionResponse institucion() {
-        return new InstitucionResponse(1L, "RAICES", "Raíces", null, null, null,
+        return new InstitucionResponse(1L, "DEMO", "Ejemplo", null, null, null,
                 null, null, null, null, null, null, null, "MX", null,
                 "America/Mexico_City", "MXN", true, null);
     }

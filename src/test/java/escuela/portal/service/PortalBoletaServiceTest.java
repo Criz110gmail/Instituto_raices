@@ -59,12 +59,12 @@ class PortalBoletaServiceTest {
     }
 
     private PortalHijoResumen hijo() {
-        return new PortalHijoResumen(20L, "A-020", "Ana Raíces", "MADRE", true,
+        return new PortalHijoResumen(20L, "A-020", "Ana Ejemplo", "MADRE", true,
                 true, true, true, "Centro", "2026-2027", "Primero", "A");
     }
 
     private BoletaDetalle boleta() {
-        return new BoletaDetalle(9L, 1L, "Instituto Raíces", "INS-1", "A-020", "Ana Raíces",
+        return new BoletaDetalle(9L, 1L, "Institución de ejemplo", "INS-1", "A-020", "Ana Ejemplo",
                 "Centro", "2026-2027", "Primero", "A · MATUTINO", List.of(
                 new BoletaCalificacionFila("Periodo 1", "Matemáticas", "9", "0–10", ""),
                 new BoletaCalificacionFila("Periodo 1", "Arte", "Destacado", "Cualitativa", "")));

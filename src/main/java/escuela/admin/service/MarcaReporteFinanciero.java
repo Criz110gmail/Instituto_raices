@@ -12,7 +12,7 @@ import org.springframework.core.io.ClassPathResource;
 
 /** Identidad compartida del sistema; no sustituye los datos de la institución. */
 final class MarcaReporteFinanciero {
-    static final String RECURSO = "reports/assets/logo-institucion-ejemplo.png";
+    static final String RECURSO = "static/images/logo1.png";
     static final int FILAS = 4;
     private MarcaReporteFinanciero() {}
 
@@ -61,8 +61,8 @@ final class MarcaReporteFinanciero {
         celdaTitulo.setCellValue(titulo); celdaTitulo.setCellStyle(estiloTitulo);
         hoja.addMergedRegion(new CellRangeAddress(0, 2, inicioTitulo, columnas-1));
         double escala = Math.min(192.0/Logo.IMAGEN.getWidth(), 128.0/Logo.IMAGEN.getHeight());
-        int ancho = Units.pixelToEMU((int)Math.round(Logo.IMAGEN.getWidth()*escala));
-        int alto = Units.pixelToEMU((int)Math.round(Logo.IMAGEN.getHeight()*escala));
+        int ancho = (int)Math.round(Logo.IMAGEN.getWidth()*escala*Units.EMU_PER_PIXEL);
+        int alto = (int)Math.round(Logo.IMAGEN.getHeight()*escala*Units.EMU_PER_PIXEL);
         ClientAnchor ancla = libro.getCreationHelper().createClientAnchor();
         ancla.setCol1(0); ancla.setRow1(0); ancla.setCol2(0); ancla.setRow2(0);
         ancla.setDx1(Units.pixelToEMU(8)); ancla.setDy1(Units.pixelToEMU(4));

@@ -31,8 +31,8 @@ class NotificacionPortalServiceTest {
 
     @BeforeEach
     void preparar() {
-        when(instituciones.obtener(1L)).thenReturn(new InstitucionResponse(1L, "RAICES",
-                "Instituto Raíces", null, null, null, null, null, null, null,
+        when(instituciones.obtener(1L)).thenReturn(new InstitucionResponse(1L, "DEMO",
+                "Institución de ejemplo", null, null, null, null, null, null, null,
                 null, null, null, "MX", null, "America/Mexico_City", "MXN", true, null));
     }
 

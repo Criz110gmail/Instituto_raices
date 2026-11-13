@@ -62,7 +62,7 @@ class TutorServiceImplTest {
         verify(repository).saveAndFlush(captor.capture());
         Tutor tutor = captor.getValue();
         assertThat(tutor.getNombres()).isEqualTo("María");
-        assertThat(tutor.getEmail()).isEqualTo("maria@raices.mx");
+        assertThat(tutor.getEmail()).isEqualTo("maria@example.org");
         assertThat(tutor.getPais()).isEqualTo("MX");
         assertThat(tutor.getUsuario()).isNull();
     }
@@ -115,7 +115,7 @@ class TutorServiceImplTest {
 
     private TutorRequest request(Long institucionId, Long usuarioId, Long version) {
         return new TutorRequest(institucionId, usuarioId, " María ", " López ", null,
-                "3312345678", null, " Maria@Raices.MX ", LocalDate.of(1990, 5, 10),
+                "3312345678", null, " Maria@example.org ", LocalDate.of(1990, 5, 10),
                 "Juárez", "10", null, "Centro", "Guadalajara", "Jalisco", "44100",
                 "mx", "Docente", "Instituto", null, true, version);
     }

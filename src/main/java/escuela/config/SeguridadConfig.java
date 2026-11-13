@@ -29,7 +29,7 @@ public class SeguridadConfig {
                 .headers(headers -> headers.frameOptions(frame -> frame.disable())
                         .addHeaderWriter((request, response) -> response.setHeader("X-Frame-Options",
                                 "GET".equals(request.getMethod()) &&
-                                (request.getContextPath() + "/admin/diseno-web/visual/lienzo").equals(request.getRequestURI())
+                                ((request.getContextPath() + "/admin/diseno-web/visual/lienzo").equals(request.getRequestURI()) || request.getRequestURI().substring(request.getContextPath().length()).matches("/admin/portales/(admin|familias|maestros|personal)/vista-previa"))
                                         ? "SAMEORIGIN" : "DENY")))
                 .csrf(csrf -> csrf.csrfTokenRepository(new SesionCsrfTokenRepository()))
                 // El éxito ya determina el portal; no guardar peticiones antiguas en sesiones nuevas.
@@ -37,12 +37,18 @@ public class SeguridadConfig {
                 .addFilterBefore(new SesionInvalidaPostFilter(accesoDenegadoHandler), CsrfFilter.class)
                 .addFilterAfter(new SesionActividadFilter(accesoDenegadoHandler), CsrfFilter.class)
                 .addFilterAfter(new SesionInvalidaFilter(accesoDenegadoHandler), AnonymousAuthenticationFilter.class)
+                .addFilterBefore(new InstitucionAccesoFilter(), org.springframework.security.web.authentication.logout.LogoutFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.GET,"/accesos/*/admin","/accesos/*/familias","/accesos/*/maestros","/accesos/*/personal","/accesos/*/*/logo.png").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/admin/portales/**").hasAuthority("PORTAL_IDENTIDAD_ADMINISTRAR")
+                        .requestMatchers(HttpMethod.GET,"/admin/portales/*/editar").hasAuthority("PORTAL_IDENTIDAD_ADMINISTRAR")
+                        .requestMatchers("/admin/portales","/admin/portales/**").hasAnyAuthority("PORTAL_IDENTIDAD_LEER","PORTAL_IDENTIDAD_ADMINISTRAR")
                         .requestMatchers(HttpMethod.GET, "/sitio/*", "/sitio/*/imagenes/*").permitAll()
                         .requestMatchers("/admin/diseno-web", "/admin/diseno-web/**").hasAuthority("SITIO_WEB_EDITAR")
                         .requestMatchers(HttpMethod.GET, "/sesion/estado", "/acceso/csrf").permitAll()
                         .requestMatchers(HttpMethod.POST, "/acceso/comprobar").permitAll()
                         .requestMatchers(HttpMethod.POST, "/sesion/renovar").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/sesion/identidad").authenticated()
                         .requestMatchers("/admin/pendientes", "/admin/pendientes/**").authenticated()
                         .requestMatchers(HttpMethod.GET,"/admin/recibos-nomina", "/admin/recibos-nomina/**").hasAnyAuthority("CONDICION_SALARIAL_LEER","CONDICION_SALARIAL_ADMINISTRAR")
                         .requestMatchers(HttpMethod.POST,"/admin/empleados/*/nomina","/admin/empleados/*/nomina/**").hasAuthority("EMPLEADO_NOMINA_ADMINISTRAR")
@@ -52,7 +58,7 @@ public class SeguridadConfig {
                         .requestMatchers(HttpMethod.GET,"/admin/configuracion-nomina", "/admin/configuracion-nomina/**", "/admin/preparacion-nomina", "/admin/preparacion-nomina/**", "/admin/calendarios-nomina", "/admin/calendarios-nomina/**", "/admin/periodos-nomina", "/admin/periodos-nomina/**", "/admin/conceptos-empleado", "/admin/conceptos-empleado/**", "/admin/conceptos-nomina", "/admin/conceptos-nomina/**", "/admin/personal/filtros/**", "/admin/jornadas", "/admin/jornadas/**", "/admin/esquemas", "/admin/esquemas/**", "/admin/asignaciones", "/admin/asignaciones/**", "/admin/puestos", "/admin/puestos/**", "/admin/empleados/*/condiciones", "/admin/empleados/*/condiciones/**", "/admin/empleados/*/puesto", "/admin/empleados/*/puesto/**")
                         .hasAnyAuthority("CONDICION_SALARIAL_LEER","CONDICION_SALARIAL_ADMINISTRAR")
                         .requestMatchers("/", "/login", "/familias", "/maestros/acceso", "/activar-cuenta", "/restablecer-password", "/acceso-denegado", "/salud", "/actuator/health", "/css/**", "/js/**", "/favicon.svg", "/error").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/images/logo.png", "/images/imagen.png", "/images/sitio-objetos-escolares.svg").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/images/logo.png", "/images/logo1.png", "/images/imagen.png", "/images/sitio-objetos-escolares.svg").permitAll()
                         .requestMatchers("/personal/acceso").permitAll()
                         .requestMatchers("/personal", "/personal/**").hasAuthority("PORTAL_EMPLEADO_ACCEDER")
                         .requestMatchers("/maestros/**").hasAuthority("PORTAL_MAESTRO_ACCEDER")
@@ -290,6 +296,7 @@ public class SeguridadConfig {
                         .anyRequest().authenticated())
                 .formLogin(form -> form.loginPage("/login")
                         .successHandler((request, response, authentication) -> {
+                            if(InstitucionAccesoFilter.codigoValido(request.getParameter("institucionAcceso")))request.getSession().setAttribute(InstitucionAccesoFilter.CONTEXTO,request.getParameter("institucionAcceso"));
                             boolean entradaFamiliar = "familias".equals(request.getParameter("origen"));
                             boolean entradaMaestro = "maestros".equals(request.getParameter("origen"));
                             boolean entradaPersonal = "personal".equals(request.getParameter("origen"));
@@ -306,9 +313,9 @@ public class SeguridadConfig {
                                     : tienePortal && !tienePortalMaestro ? "/portal" : tienePersonal ? "/personal" : "/admin"));
                         })
                         .failureHandler((request, response, exception) -> response.sendRedirect(
-                                request.getContextPath() + ("familias".equals(request.getParameter("origen"))
+                                request.getContextPath() + InstitucionAccesoFilter.continuar(request,("familias".equals(request.getParameter("origen"))
                                         ? "/familias?error" : "maestros".equals(request.getParameter("origen"))
-                                        ? "/maestros/acceso?error" : "personal".equals(request.getParameter("origen")) ? "/personal/acceso?error" : "/login?error")))
+                                        ? "/maestros/acceso?error" : "personal".equals(request.getParameter("origen")) ? "/personal/acceso?error" : "/login?error"))))
                         .permitAll())
                 .httpBasic(Customizer.withDefaults())
                 .exceptionHandling(excepciones -> excepciones
@@ -326,7 +333,7 @@ public class SeguridadConfig {
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .logoutSuccessHandler((request, response, authentication) -> response.sendRedirect(
-                                request.getContextPath() + rutaDespuesDeCerrarSesion(request.getParameter("origen"))))
+                                request.getContextPath() + InstitucionAccesoFilter.continuar(request,rutaDespuesDeCerrarSesion(request.getParameter("origen")))))
                         .deleteCookies("JSESSIONID", "SESSION")
                         .permitAll())
                 .build();

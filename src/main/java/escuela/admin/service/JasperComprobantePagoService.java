@@ -150,7 +150,7 @@ public class JasperComprobantePagoService {
         }
 
         JRDesignBand titulo = new JRDesignBand(); titulo.setHeight(308);
-        JRDesignImage logo = new JRDesignImage(d); logo.setX(0); logo.setY(0); logo.setWidth(82); logo.setHeight(58);
+        JRDesignImage logo = new JRDesignImage(d); logo.setMode(ModeEnum.TRANSPARENT); logo.setX(0); logo.setY(0); logo.setWidth(82); logo.setHeight(58);
         logo.setScaleImage(ScaleImageEnum.RETAIN_SHAPE); logo.setExpression(new JRDesignExpression("$P{logo}"));
         titulo.addElement(logo);
         titulo.addElement(expresion("$P{institucion}", 92, 0, 320, 22, 14, true, AZUL, Color.WHITE, HorizontalTextAlignEnum.LEFT));
@@ -190,7 +190,7 @@ public class JasperComprobantePagoService {
         etiquetaValor(resumen, "Pagador", "$P{pagador}", 0, 127, 258);
         etiquetaValor(resumen, "Validado por", "$P{validadoPor}", 273, 127, 258);
         resumen.addElement(expresion("$P{movimiento}", 0, 174, 531, 18, 8, true, AZUL, Color.WHITE, HorizontalTextAlignEnum.LEFT));
-        resumen.addElement(constante("Este documento acredita el registro y validación del pago en Nexo Escolar. No sustituye un comprobante fiscal.",
+        resumen.addElement(constante("Este documento acredita el registro y validación del pago en el sistema escolar. No sustituye un comprobante fiscal.",
                 0, 201, 531, 31, 8, false, GRIS, FONDO, HorizontalTextAlignEnum.CENTER));
         resumen.addElement(expresion("$P{generado}", 0, 238, 531, 16, 7, false, GRIS, Color.WHITE, HorizontalTextAlignEnum.CENTER));
         d.setSummary(resumen);
@@ -253,7 +253,7 @@ public class JasperComprobantePagoService {
             }
         }
         try (InputStream entrada = new ClassPathResource(
-                "reports/assets/logo-institucion-ejemplo.png").getInputStream()) {
+                "static/images/logo1.png").getInputStream()) {
             return ImageIO.read(entrada);
         } catch (Exception excepcion) {
             throw new IllegalStateException("No fue posible cargar el logotipo del comprobante", excepcion);

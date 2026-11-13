@@ -26,7 +26,7 @@ for key,root in parts:
   d=dict(id=identifier,tipo=tipo,tag=tag,nombre={'h1':'Título principal','h2':'Título de sección','nav':'Menú','header':'Encabezado','footer':'Pie de página','img':'Logotipo' if tipo=='logo' else 'Imagen','a':'Enlace','article':'Tarjeta'}.get(tag,clases.split(' ')[0] or tag),clases=clases,ancla=attrs.get('id',''),hijos=[])
   if tag=='img':
    slot='imagen'+str(slots['imagen']);slots['imagen']+=1;d['slot']=slot
-   src=attrs.get('th:src',attrs.get('src',''));d['recurso']='logo' if 'logo.png' in src else 'foto';d['descripcion']=attrs.get('alt','') or ('Logotipo de la escuela' if tipo=='logo' else 'Comunidad escolar')
+   src=attrs.get('th:src',attrs.get('src',''));d['recurso']='logo' if any(nombre in src for nombre in ('logo.png','logo1.png')) else 'foto';d['descripcion']=attrs.get('alt','') or ('Logotipo de la escuela' if tipo=='logo' else 'Comunidad escolar')
   if tag=='a':
    slot='enlace'+str(slots['enlace']);slots['enlace']+=1;d['slot']=slot
    d['enlace']=re.sub(r'^@\{|\}$','',attrs.get('th:href',attrs.get('href','#inicio')))

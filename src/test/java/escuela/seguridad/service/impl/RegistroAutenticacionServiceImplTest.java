@@ -71,11 +71,11 @@ class RegistroAutenticacionServiceImplTest {
         usuario.setEstado(EstadoUsuario.BLOQUEADO);
         usuario.setIntentosFallidos(5);
         usuario.setBloqueoHasta(Instant.now().minusSeconds(1));
-        when(repository.findByInstitucionCodigoIgnoreCaseAndUsernameIgnoreCase("RAICES", "criz110"))
+        when(repository.findByInstitucionCodigoIgnoreCaseAndUsernameIgnoreCase("DEMO", "criz110"))
                 .thenReturn(Optional.of(usuario));
         when(repository.buscarPorIdConBloqueo(7L)).thenReturn(Optional.of(usuario));
 
-        service.registrarFallo("RAICES\\criz110");
+        service.registrarFallo("DEMO\\criz110");
 
         assertThat(usuario.getEstado()).isEqualTo(EstadoUsuario.ACTIVO);
         assertThat(usuario.getIntentosFallidos()).isEqualTo(1);

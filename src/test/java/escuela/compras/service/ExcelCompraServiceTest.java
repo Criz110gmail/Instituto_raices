@@ -21,7 +21,7 @@ class ExcelCompraServiceTest {
    LocalDate.of(2026,10,16),LocalDate.of(2026,10,16),"COM-00000001",0,25);
 
  private CompraFila fila(String total, Instant fecha) {
-  return new CompraFila(1L,"COM-00000001",fecha,"Papelería Prueba Raíces",null,
+  return new CompraFila(1L,"COM-00000001",fecha,"Papelería Prueba Ejemplo",null,
    "Plantel prueba de permisos","Cuenta de prueba de compras","TICKET-PRUEBA-001",
    new BigDecimal(total),EstadoCompra.CANCELADA,4L,2L);
  }

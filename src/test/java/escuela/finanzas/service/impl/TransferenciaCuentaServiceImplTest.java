@@ -42,7 +42,7 @@ class TransferenciaCuentaServiceImplTest {
 
     @BeforeEach
     void preparar() {
-        institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Raíces");
+        institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Ejemplo");
         institucion.setZonaHoraria("America/Mexico_City");
         Plantel plantel = new Plantel(); plantel.setId(2L); plantel.setInstitucion(institucion);
         origen = cuenta(8L, "Caja", "100.00", plantel);

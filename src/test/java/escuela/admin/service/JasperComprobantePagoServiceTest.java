@@ -50,7 +50,7 @@ class JasperComprobantePagoServiceTest {
         assertThat(salida.toByteArray()).startsWith((byte) '%', (byte) 'P', (byte) 'D', (byte) 'F');
         try (var documento = Loader.loadPDF(salida.toByteArray())) {
             String texto = new PDFTextStripper().getText(documento);
-            assertThat(texto).contains("COMPROBANTE DE PAGO", "Instituto Raíces",
+            assertThat(texto).contains("COMPROBANTE DE PAGO", "Institución de ejemplo",
                     "PAG-2026-0042", "María García López", "IRA-001",
                     "Colegiatura septiembre", "$2,500.00 MXN", "PAGO VALIDADO");
             assertThat(documento.getNumberOfPages()).isEqualTo(1);
@@ -74,8 +74,8 @@ class JasperComprobantePagoServiceTest {
         Institucion i = new Institucion();
         i.setId(1L);
         i.setCodigo("IRA");
-        i.setNombre("Instituto Raíces");
-        i.setRazonSocial("Instituto Raíces Educativas A.C.");
+        i.setNombre("Institución de ejemplo");
+        i.setRazonSocial("Institución de ejemplo Educativas A.C.");
         i.setRfc("IRE260101AB1");
         i.setDomicilioFiscal("Av. del Aprendizaje 125");
         i.setCiudad("Guadalajara");
@@ -88,7 +88,7 @@ class JasperComprobantePagoServiceTest {
     private PagoResponse pago(EstadoPago estado) {
         Instant fechaPago = Instant.parse("2026-09-18T16:30:00Z");
         Instant fechaValidacion = Instant.parse("2026-09-18T17:00:00Z");
-        return new PagoResponse(42L, 1L, "Instituto Raíces", 2L, "Plantel Centro",
+        return new PagoResponse(42L, 1L, "Institución de ejemplo", 2L, "Plantel Centro",
                 7L, "Carlos García", "Carlos García", "PAG-2026-0042", fechaPago,
                 new BigDecimal("2500.00"), "MXN", MetodoPago.TRANSFERENCIA, estado,
                 OrigenRegistroPago.PORTAL_FAMILIAR, "carlos.garcia", 8L, "Cuenta BBVA",

@@ -71,7 +71,7 @@ class MotivoFinancieroServiceImplTest {
     }
 
     private Institucion institucion() {
-        Institucion institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Raíces");
+        Institucion institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Ejemplo");
         institucion.setActivo(true); return institucion;
     }
 

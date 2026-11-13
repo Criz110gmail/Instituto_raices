@@ -191,7 +191,7 @@ public class JasperReporteFinancieroService {
         JRDesignImage logo = new JRDesignImage(d); logo.setX(0); logo.setY(0); logo.setWidth(100); logo.setHeight(68);
         logo.setScaleImage(ScaleImageEnum.RETAIN_SHAPE); logo.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
         logo.setVerticalImageAlign(VerticalImageAlignEnum.MIDDLE); logo.setExpression(new JRDesignExpression("$P{logoSistema}"));
-        logo.setBackcolor(Color.WHITE); logo.setMode(ModeEnum.OPAQUE); title.addElement(logo);
+        logo.setMode(ModeEnum.TRANSPARENT); title.addElement(logo);
         for (int i=0;i<4;i++) {
             int x=i*196;
             title.addElement(textoExpresion("$P{r"+(i+1)+"t}", x, 76, 190, 13, 8, false, GRIS, AZUL_CLARO, HorizontalTextAlignEnum.LEFT));

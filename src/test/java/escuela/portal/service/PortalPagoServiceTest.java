@@ -66,7 +66,7 @@ class PortalPagoServiceTest {
         lenient().when(tutores.findByUsuarioIdAndInstitucionIdAndActivoTrue(7L, 1L))
                 .thenReturn(Optional.of(tutor));
         lenient().when(instituciones.obtener(1L)).thenReturn(new InstitucionResponse(1L,
-                "RAICES", "Instituto Raíces", null, null, null, null, null, null,
+                "DEMO", "Institución de ejemplo", null, null, null, null, null, null,
                 null, null, null, null, "MX", null, "America/Mexico_City", "MXN", true, null));
     }
 

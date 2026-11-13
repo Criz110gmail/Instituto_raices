@@ -96,7 +96,7 @@ class JasperExpedienteAlumnoServiceTest {
     private Institucion institucion() {
         Institucion institucion = new Institucion();
         institucion.setId(1L);
-        institucion.setNombre("Instituto Raíces");
+        institucion.setNombre("Institución de ejemplo");
         institucion.setZonaHoraria("America/Mexico_City");
         return institucion;
     }

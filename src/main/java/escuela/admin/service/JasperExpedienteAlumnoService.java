@@ -239,6 +239,7 @@ public class JasperExpedienteAlumnoService {
     private JRDesignImage imagen(JasperDesign d, String expresion, int x, int y,
                                  int ancho, int alto) {
         JRDesignImage imagen = new JRDesignImage(d);
+        imagen.setMode(ModeEnum.TRANSPARENT);
         imagen.setX(x); imagen.setY(y); imagen.setWidth(ancho); imagen.setHeight(alto);
         imagen.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
         imagen.setOnErrorType(OnErrorTypeEnum.BLANK);
@@ -296,7 +297,7 @@ public class JasperExpedienteAlumnoService {
         Image logo = imagenArchivo(institucion.getLogoArchivoId(), institucion.getId());
         if (logo != null) return logo;
         try (InputStream entrada = new ClassPathResource(
-                "reports/assets/logo-institucion-ejemplo.png").getInputStream()) {
+                "static/images/logo1.png").getInputStream()) {
             return ImageIO.read(entrada);
         } catch (Exception excepcion) {
             throw new IllegalStateException("No fue posible cargar el logotipo institucional", excepcion);

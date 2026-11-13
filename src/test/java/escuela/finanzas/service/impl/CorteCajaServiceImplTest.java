@@ -36,7 +36,7 @@ class CorteCajaServiceImplTest {
 
     @BeforeEach
     void preparar() {
-        institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Raíces");
+        institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Ejemplo");
         plantel = new Plantel(); plantel.setId(2L); plantel.setNombre("Centro"); plantel.setInstitucion(institucion);
         cuenta = new CuentaFinanciera(); cuenta.setId(8L); cuenta.setInstitucion(institucion); cuenta.setPlantel(plantel);
         cuenta.setCodigo("CAJ-01"); cuenta.setNombre("Caja principal"); cuenta.setTipo(TipoCuentaFinanciera.CAJA);

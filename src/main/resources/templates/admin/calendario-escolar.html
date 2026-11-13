@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#0b1930">
-    <title>Calendario escolar · Nexo Escolar</title>
+    <title>Calendario escolar · Control escolar</title>
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/admin.css">
     <link rel="stylesheet" href="/css/forms.css">
@@ -17,7 +17,7 @@
 <input class="nav-toggle" type="checkbox" id="nav-toggle">
 <label class="nav-backdrop" for="nav-toggle"></label>
 <aside class="sidebar">
-    <div class="brand"><span class="brand-mark">N</span><span><strong>Nexo</strong><small>Control escolar</small></span></div>
+    <div class="brand institution-brand"><img class="institution-logo" src="/images/logo1.png" alt="Logotipo de la institución"></div>
     <nav>
         <th:block th:each="item,iter:${modulos}">
             <p class="nav-label" th:if="${iter.first or item.seccion()!=modulos[iter.index-1].seccion()}" th:text="${item.seccion()}"></p>

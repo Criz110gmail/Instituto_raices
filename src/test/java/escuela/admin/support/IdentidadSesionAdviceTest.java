@@ -12,9 +12,9 @@ class IdentidadSesionAdviceTest {
     @Test
     void exponeElNombreDelUsuarioAutenticado() {
         var autenticacion = UsernamePasswordAuthenticationToken.authenticated(
-                "admin.raices", "oculta", java.util.List.of());
+                "admin.demo", "oculta", java.util.List.of());
 
-        assertThat(advice.usuarioSesion(autenticacion)).isEqualTo("admin.raices");
+        assertThat(advice.usuarioSesion(autenticacion)).isEqualTo("admin.demo");
     }
 
     @Test

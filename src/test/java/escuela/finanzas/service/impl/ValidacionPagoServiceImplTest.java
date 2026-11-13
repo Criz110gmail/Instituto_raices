@@ -52,7 +52,7 @@ class ValidacionPagoServiceImplTest {
 
     @BeforeEach
     void preparar() {
-        institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Raíces");
+        institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Ejemplo");
         institucion.setZonaHoraria("America/Mexico_City");
         plantel = new Plantel(); plantel.setId(2L); plantel.setNombre("Centro"); plantel.setInstitucion(institucion);
         tutor = new Tutor(); tutor.setId(3L); tutor.setNombres("María"); tutor.setPrimerApellido("López"); tutor.setInstitucion(institucion);

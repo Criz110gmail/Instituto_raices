@@ -12,7 +12,7 @@ class GuiaComprasContenidoTest {
  @Test void evidenciaAceptadaSinOperacionesNiAceptacionesInventadas() throws Exception {
   var texto=sql();
   assertThat(texto).contains("'CONFIRMADA'","COM-00000001","Plantel prueba de permisos","BANCO-COMPRAS-TEST",
-   "Papelería Prueba Raíces","$406.00","$1,594.00","$2,000.00","Compensa #4","Movimiento debe indicar 4",
+   "Papelería Prueba ","$406.00","$1,594.00","$2,000.00","Compensa #4","Movimiento debe indicar 4",
    "no está vacío","No se conoce el ID de la reversa",
    "aceptación visual del nuevo archivo todavía pendiente","PROVEEDOR_LEER","COMPRA_CANCELAR");
   var tablas=Pattern.compile("(?im)^(?:UPDATE|INSERT INTO) (\\w+)").matcher(texto).results().map(m->m.group(1)).toList();

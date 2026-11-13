@@ -50,7 +50,7 @@ class UsuarioSistemaDetailsServiceTest {
 
         Institucion institucion = new Institucion();
         institucion.setId(1L);
-        institucion.setCodigo("INSTITUTO RAICES");
+        institucion.setCodigo("INSTITUTO DEMO");
 
         usuario = new Usuario();
         usuario.setId(2L);
@@ -115,13 +115,13 @@ class UsuarioSistemaDetailsServiceTest {
         when(usuarioRepository.findAllByUsernameIgnoreCase("criz110"))
                 .thenReturn(List.of(usuario, new Usuario()));
         when(usuarioRepository.findByInstitucionCodigoIgnoreCaseAndUsernameIgnoreCase(
-                "INSTITUTO RAICES", "criz110")).thenReturn(Optional.of(usuario));
+                "INSTITUTO DEMO", "criz110")).thenReturn(Optional.of(usuario));
         when(usuarioRolRepository.findAllByUsuarioIdAndActivoTrueOrderByRolNombreAsc(2L))
                 .thenReturn(List.of());
 
         assertThatThrownBy(() -> service.loadUserByUsername("criz110"))
                 .isInstanceOf(UsernameNotFoundException.class);
-        assertThat(service.loadUserByUsername("INSTITUTO RAICES\\criz110").getUsername())
+        assertThat(service.loadUserByUsername("INSTITUTO DEMO\\criz110").getUsername())
                 .isEqualTo("criz110");
     }
 

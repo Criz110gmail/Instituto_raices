@@ -20,7 +20,7 @@
     }
     const welcome = document.querySelector('[data-welcome]');
     if (!welcome || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    try { if (sessionStorage.getItem('raices-bienvenida-v2')) return; } catch (_) { /* Storage may be disabled. */ }
+    try { if (sessionStorage.getItem('sitio-bienvenida-v3')) return; } catch (_) { /* Storage may be disabled. */ }
     const skip = welcome.querySelector('[data-skip]');
     const bar = welcome.querySelector('[role="progressbar"]');
     const percent = welcome.querySelector('[data-percent]');
@@ -34,7 +34,7 @@
     };
     const finish = () => {
         if (finished) return; finished = true; clearTimeout(maximumTimer);
-        try { sessionStorage.setItem('raices-bienvenida-v2', '1'); } catch (_) { /* Optional persistence. */ }
+        try { sessionStorage.setItem('sitio-bienvenida-v3', '1'); } catch (_) { /* Optional persistence. */ }
         welcome.classList.add('leaving');
         document.body.classList.remove('welcoming');
         background.forEach(element => { element.inert = false; });

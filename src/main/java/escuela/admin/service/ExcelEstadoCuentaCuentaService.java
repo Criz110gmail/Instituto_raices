@@ -75,7 +75,7 @@ public class ExcelEstadoCuentaCuentaService {
             importe(resumen, 6, "Egresos", inicial.resumen().egresosOperativos().add(inicial.resumen().traspasosSalida()));
             importe(resumen, 7, "Saldo de cierre", inicial.resumen().saldoCierre());
             importe(resumen, 8, "Saldo inicial de cuenta registrado en el periodo", inicial.aperturaRegistradaEnPeriodo());
-            linea(resumen, 10, "Origen", "Movimientos registrados en Nexo Escolar; no es un estado bancario.");
+            linea(resumen, 10, "Origen", "Movimientos registrados en el sistema escolar; no es un estado bancario.");
             resumen.setColumnWidth(0, 48 * 256); resumen.setColumnWidth(1, 72 * 256);
             for (int numero = 4; numero <= 8; numero++) resumen.getRow(numero + MarcaReporteFinanciero.FILAS).getCell(1).setCellStyle(dinero);
             libro.setSheetOrder("Resumen", 0);

@@ -1,5 +1,184 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Marca genérica y guías — V177, 13/11/2026
+
+Solicitud: proyecto reutilizable sin nombre fijo de un cliente. Alt de logos genérico,
+sin nombre debajo del logo en accesos; combinación «Verde institucional». Plantillas
+iniciales de inicio/SSR/lienzo y ayudas usan ejemplos genéricos; generadores conservan
+9secciones/248componentes y posiciones de slots. Logo de respaldo de componentes
+apunta a logo1.png. No modificar el PNG (contiene la identidad de esta instalación).
+Nombres legales/configurados de instituciones y contenido web publicado NO se borran.
+README respaldos usa rutas genéricas; tests usan datos genéricos y sus expectativas
+actualizadas, sin tocar límites de permisos. Cambiar logo no renombra datos reales.
+
+V177 neutraliza sólo nombres editoriales de guia_proceso/guia_proceso_paso. Mantiene
+estados, permisos, importes y rutas. No reescribir migraciones anteriores ni sus
+checksums; conservar evidencia histórica de AGENT/CONTEXTO. Código activo de
+producción (excepto histórico/migración de normalización) y datos de prueba sin marca
+fija. Guía MARCA_GENERICA.md. QA1125Java/208JS y1integración completa aprobados;
+esta última verifica guías sin nombres anteriores, separación institucional y accesos.
+Respaldo previo: .respaldos-locales/antes-identidad-portales-btMmpZ.
+Desplegado con saludUP yV177 aplicada; consultas reales verificaron cero referencias
+editoriales anteriores en guías. Huellas de web/publicaciones/finanzas/permisos iguales.
+Login real: cero nodos portal-school-name y ningún nombre fijo en texto visible;
+el logo PNG queda intacto. Entornos temporales retirados.
+
+
+
+## Logos transparentes — 13/11/2026
+
+Corrección solicitada por el propietario: no agregar placa blanca, fondo, relleno,
+borde, redondeo ni sombra al logo. institution-brand.css y .pi-logo son transparentes
+para accesos, menús, perfil y vistas previas. JasperReporteFinancieroService usa
+ModeEnum.TRANSPARENT en la imagen; otros Jasper y PDFBox/Excel ya conservan el alfa
+sin fondo propio. Mantener el fondo normal del reporte/pantalla, no borrar superficies
+ni alterar colores del archivo logo1.png. Preferencia nueva sustituye la recomendación
+anterior de placa clara. Caché CSS20261113-transparente. Sin migración ni cambios de datos.
+Desplegado con saludUP.1125Java/208JS aprobadas; navegador real confirmó fondo
+rgba(0,0,0,0), padding0, borde0 y sin sombra en logo1. Jasper marca explícita
+TRANSPARENT también en fichas, expedientes, comprobantes y recibos.
+
+
+
+## Marca institucional logo1 y paleta predeterminada — 12/11/2026
+
+Sustitución autorizada global de marca en126plantillas: menús con imagen, accesos,
+perfil/activación/recuperación y títulos sin Nexo. Archivo único static/images/logo1.png,
+CSS institution-brand.css conserva relación de aspecto/placa clara, nunca altera fotos.
+Publicar sólo GET exacto /images/logo1.png y permitirlo en sesión inválida; no ampliar
+patrones. No cambiar nombres internos Nexo*, cookies o canales (compatibilidad).
+Reportes: MarcaReporteFinanciero y fallback de expedientes/ficha/comprobante usan
+static/images/logo1.png; recibos heredan marca compartida. Mantener logos cargados
+por institución si existen (base operativa no tiene logoArchivoId). Planeación agrega
+logo arriba por página y quita Nexo del pie. Excel usa precisión EMU sin redondeo
+previo a píxel para no deformar el logo ancho. Importes/datos sin cambios.
+ADMIN por defecto usa #214936/#f5f7f2/#72a629 incluso con diseño original. Java y JS
+comparten esos valores; runtime y acceso habitual aplican fallback, también muestras.
+Personalizaciones ya publicadas se respetan; combinación Raíces disponible en editor.
+No migración ni publicación automática; no tocar diseño web publicado ni versiones.
+QA1125Java/208JS y7integración/reportes, muestras PDF y navegador claro/oscuro aprobados.
+Guía PRUEBA_MARCA_INSTITUCIONAL.md. Desplegado en18080 con saludUP;
+logo1 público incluso con cookie caducada, bytes/CSS/JS coinciden con fuente.
+Acceso real comprobado con logo1 cargado. Sin cambios de permisos, versiones ni
+publicación automática de colores. Entornos temporales retirados.
+ Respaldo previo validado en
+.respaldos-locales/antes-identidad-portales-4zm3h7.
+
+
+## Identidad adaptable claro/oscuro — V176, 12/11/2026
+
+Corrige la mezcla de roles de color: --blue/--teal usados por botones antiguos con
+texto blanco ya no reciben el color de enlaces oscuros (podía ser blanco). Motor
+compartido portal-identidad.js calcula paleta por función: menú/selección, fondo,
+superficie/texto, enlace, acción/texto/borde, hover, foco y deshabilitado. Tono de
+acción ajustado con texto blanco contrastado; selección conserva acento con texto
+automático. Tema cambia por MutationObserver sólo de data-theme, sin llamadas de
+renovación ni caché de identidad. Estados/errores conservan su semántica. Usa el
+mismo motor en acceso público, interior y vista previa; claro/oscuro de cada usuario.
+
+V176 añade tres colores oscuros nullable a portal_identidad_revision; todos NULL es
+automático (default para versiones anteriores). Opcional oscuroPersonalizado en
+formulario activa los tres colores validados; persistencia, publicación, consulta de
+sesión e historial/restauración conservan la configuración. Sin permisos nuevos.
+Vista previa alterna Acceso / Dentro del sistema usando la MISMA ruta autenticada
+vista-previa con interior=true, por lo que no se amplía X-Frame-Options. Muestra
+componentes reales de CSS y modal sin datos/POST operativos; theme.js no carga reloj,
+nav ni ayudas de módulos reales dentro de esa muestra. Iframe sigue sin allow-forms.
+Deshacer/Rehacer incluye campos y casilla oscuros; campos inactivos no validan.
+Guía PRUEBA_PORTALES_IDENTIDAD.md ampliada con pasos en palabras simples.
+
+
+
+Verificado/desplegado: 207 pruebas JavaScript, 1124 Java y5 integración PostgreSQL
+aprobadas. Pruebas de contraste con extremos y ambos modos, avanzado persistido y
+recuperado, entrada inválida conservada sin guardar. Navegador: blanco/amarillo en
+modal oscuro legibles, cambio claro/oscuro, manual morado independiente, Deshacer,
+Cancelar y muestra móvil390 sin desbordamiento. Migración176 aplicada, saludUP,
+JS/CSS servidos idénticos a fuente. Huellas de versiones (sin las tres columnas NULL
+nuevas) y movimientos financieros iguales antes/después: no hubo publicación ni
+cambio de colores operativo. Respaldo base/JAR validado:
+`.respaldos-locales/antes-identidad-portales-Cuco1C`.
+
+## Portales e identidad — V175, 12/11/2026
+
+Ajuste de recuperación e identidad interior (misma V175): base operativa revisada
+con dos versiones admin que tenían colores idénticos; v1 publicada y v2 borrador.
+No modificar/publicar los colores del propietario durante QA. Recuperar ahora vuelve
+al editor, distingue versión editada/pública y muestra colores por fila. Opción explícita
+Diseño inicial usa revisión0, crea nueva copia original y exige Publicar.
+Tras nueva solicitud, los colores publicados TAMBIÉN se aplican dentro de cada portal:
+menú, fondo, acciones primarias y cabeceras; estados/errores conservan semántica.
+GET autenticado /sesion/identidad?portal=enum sólo devuelve colores publicados de la
+institución del principal (sin datos personales), no requiere permiso de edición y
+no cuenta como actividad para renovar sesión. theme.js carga portal-interior.js/CSS
+sólo en rutas interiores, excluye accesos y vistas previas. No caché de identidad en
+localStorage, no solicitud de institución desde cliente, sin nueva tabla/migración.
+QA:204JS/1124Java y5integración aislada; recuperación→publicación de guardada/inicial,
+login alias y separación institucional; navegador menú claro/oscuro y modal Cancelar.
+Desplegado en18080 con saludUP, recursos theme/interior idénticos a fuente y
+endpoint anónimo401. Huellas de las dos tablas de versiones idénticas antes/después;
+no se publicó/restauró el diseño operativo. Ocho pruebas de sesión adicionales
+aprobadas (consulta identidad no renueva actividad ni revive sesión vencida).
+
+
+Actualización Deshacer/Rehacer: portales-historial.js mantiene hasta 100 estados locales
+por edición (colores y modo original). Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z, Ctrl+Y y botones;
+combinaciones atómicas y captura agrupada por campo hasta change/blur. No interceptar
+otros campos, modales ni Historial; no guardar/publicar automáticamente. Recarga o
+POST reinicia historial local; versiones persistidas se recuperan como nuevo borrador
+y requieren Publicar. 200 pruebas JS aprobadas; navegador verificó Ctrl y Meta,
+rehacer y botones con datos ficticios, sin cambios operativos de colores.
+
+
+Nuevo Diseño → Portales e identidad (/admin/portales):cuatro tarjetas Administración,
+Familias,Maestros,Personal·Mis recibos;copiar/abrir enlace y Personalizar en formulario
+separado. Editor tres colores principal/fondo/acento,paleta81+selector libre/hex6,
+recientes locales,combinaciones y copiar colores del sitio publicado. Vista usa las
+mismas cuatro plantillas de login,con iframe propio autenticado,sandbox sin formularios,
+inert y sólo mensajería mismo origen/padre validada. Claro/oscuro y1280/390;escala
+adaptada a pantalla. No exponer formularios funcionales ni ampliar SAMEORIGIN fuera
+la vista exacta y el lienzo ya existente. Se excluyen ayuda administrativa/reloj de
+las vistas previas para conservar composición. Contraste automático negro/blanco.
+
+V175:portal_identidad por institución/portal con versión de borrador y puntero público;
+portal_identidad_revision conserva colores,original,nombre y PNG reducido del logo,
+actor/fechas de guardado/publicación. Guardar/publicar/restaurar bloquean institución,
+verifican versión esperada;restaurar crea nuevo borrador y no publica. Nombre/logo
+se congelan al guardar;logo institucional validado o visible publicado del sitio.
+Sin sitio publicado se omite consulta que lanzaría excepción transaccional:evita
+UnexpectedRollback por fallback. Nada cambia en finanzas ni en Diseño web publicado.
+
+Dos permisos nuevos:PORTAL_IDENTIDAD_LEER/ADMINISTRAR,alcance institucional estricto.
+La migración NO concede permisos. Asignar en Roles y volver a iniciar sesión para
+ver el módulo. Administrar incluye consulta;Consultar no abre editor ni POST.
+Enlaces /accesos/CODIGO/{admin|familias|maestros|personal};sólo GET públicos de esos
+accesos y logoPNG,nunca borradores ni rutas de recibos. Alias habituales resuelven
+institución configurada app.sitio.codigo;no elegir primera institución automáticamente.
+APP_PORTALES_URL_PUBLICA opcional para copiar dominio real,localhost se señala local.
+
+InstitucionAccesoFilter antes de Logout califica username con CÓDIGO\usuario sólo
+cuando el enlace institucional aporta contexto;no cambia permisos/contraseñas.
+Fallos y logout conservan código validado. Reloj añade contexto opcional de sesión
+para volver al acceso correcto al caducar;sin contexto mantiene destinos anteriores.
+No crear cookies públicas ni relajar CSRF. Patrón de rutas sigue restringido;revisión
+automática rechazó una ampliación tentativa y no se aplicó.
+
+Verificación:1124Java,196JavaScript y5integración PostgreSQL aisladas aprobadas;
+separación de dos instituciones y cuatro portales,concurrencia,permisos/CSRF,PNG,
+usuario repetido calificado,error/logout y rutas públicas con cookie caducada.
+Navegador:cuatro tarjetas,hex/paleta/contraste,original,historial,Cancelar/Confirmar,
+vistas claras/oscuras y390sin desbordamiento,colores independientes en los cuatro.
+Guía PRUEBA_PORTALES_IDENTIDAD.md. No hay publicación operativa ni grants automáticos.
+
+
+Desplegado en Docker/18080: salud UP, migración V175 aplicada y recursos JS/CSS
+servidos idénticos a fuente. Respaldo validado de base y JAR anterior:
+`.respaldos-locales/antes-identidad-portales-G5wNGB`.
+Huellas de sitio/publicaciones/finanzas/roles idénticas antes y después.
+Tablas de identidad vacías y cero asignaciones de los nuevos permisos: el propietario
+habilita su rol y realiza la prueba manual. Los cuatro enlaces institucionales
+responden 200/no-store sin crear sesión. No se publicaron colores operativos.
+
 ## Componente WhatsApp arrastrable — 12/11/2026
 
 Componentes → Contenido → WhatsApp agrega un enlace tipado `whatsapp` (tag a, sin

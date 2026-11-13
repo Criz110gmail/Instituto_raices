@@ -1,0 +1,28 @@
+/* Tokens separados por función: los enlaces nunca definen el fondo de un botón. */
+html[data-pi-interior=true]{--aqua:var(--pi-ui-accent);--blue:var(--pi-ui-action);--teal:var(--pi-ui-action);--paper:var(--pi-ui-bg);--bg:var(--pi-ui-bg);--cream:var(--pi-ui-bg);--ink:var(--pi-ui-text);--ink2:var(--pi-ui-primary);--white:var(--pi-ui-surface);--card:var(--pi-ui-surface);--surface:var(--pi-ui-surface);--soft:var(--pi-ui-soft);--line:var(--pi-ui-border);--muted:var(--pi-ui-muted)}
+html[data-pi-interior=true] body{background:var(--pi-ui-bg)!important;color:var(--pi-ui-page-text)}
+html[data-pi-interior=true] :is(.data-panel,.form-card,.employee-panel,.teacher-board,.teacher-card,.family-card,.pi-controls,.pi-preview-area,.pi-history,.report-navigation,dialog){background:var(--pi-ui-surface)!important;color:var(--pi-ui-text)!important;border-color:var(--pi-ui-border)!important}
+html[data-pi-interior=true] :is(.topbar h1,.pi-editor-head h1,.workspace>h1){color:var(--pi-ui-page-text)!important}
+html[data-pi-interior=true] :is(input:not([type=checkbox]):not([type=radio]):not([type=color]),select,textarea){background:var(--pi-ui-surface)!important;color:var(--pi-ui-text)!important;border-color:var(--pi-ui-border)}
+html[data-pi-interior=true] :is(input,textarea)::placeholder{color:var(--pi-ui-muted)!important;opacity:1}
+html[data-pi-interior=true] th{background:var(--pi-ui-soft)!important;color:var(--pi-ui-soft-text)!important}
+html[data-pi-interior=true] td{border-color:var(--pi-ui-border)}
+html[data-pi-interior=true] tbody tr:hover{background:var(--pi-ui-soft)!important}
+html[data-pi-interior=true] .sidebar{background:var(--pi-ui-primary)!important;color:var(--pi-ui-on-primary)!important;border-right-color:var(--pi-ui-on-primary)!important}
+html[data-pi-interior=true] .sidebar::before{background:var(--pi-ui-accent)!important}
+html[data-pi-interior=true] .sidebar :is(.brand strong,.brand small,.nav-label,.nav-area-title,.nav-section-toggle,.sidebar-foot),html[data-pi-interior=true] .sidebar nav a{color:var(--pi-ui-on-primary)!important}
+html[data-pi-interior=true] .sidebar :is(.nav-section,.nav-area-title,.brand,.sidebar-foot){border-color:color-mix(in srgb,var(--pi-ui-on-primary) 30%,transparent)!important}
+html[data-pi-interior=true] .sidebar nav a:hover{background:color-mix(in srgb,var(--pi-ui-on-primary) 12%,transparent)!important}
+html[data-pi-interior=true] .sidebar nav a.active{background:var(--pi-ui-accent)!important;color:var(--pi-ui-on-accent)!important;border-color:var(--pi-ui-on-accent)!important;box-shadow:none!important}
+html[data-pi-interior=true] .sidebar .nav-dot{background:currentColor!important;box-shadow:none!important}
+html[data-pi-interior=true] .sidebar .brand-mark,html[data-pi-interior=true] .brand-heart,html[data-pi-interior=true] .sidebar .nav-area-title>span{background:var(--pi-ui-accent)!important;color:var(--pi-ui-on-accent)!important;box-shadow:none!important}
+html[data-pi-interior=true] :is(.module-action--primary,.filters button[type=submit],.export-button,.teacher-plan-action,.form-buttons button[type=submit],.form-actions button[type=submit],.pi-demo-primary){background:var(--pi-ui-action)!important;border-color:var(--pi-ui-action-border)!important;color:var(--pi-ui-on-action)!important;box-shadow:none!important}
+html[data-pi-interior=true] :is(.module-action--primary,.filters button[type=submit],.export-button,.teacher-plan-action,.form-buttons button[type=submit],.form-actions button[type=submit],.pi-demo-primary):hover:not(:disabled){background:var(--pi-ui-hover)!important;color:var(--pi-ui-on-action)!important}
+html[data-pi-interior=true] :is(.module-action:not(.module-action--primary),.pi-demo-secondary){background:var(--pi-ui-surface)!important;border-color:var(--pi-ui-border)!important;color:var(--pi-ui-text)!important}
+html[data-pi-interior=true] :is(.module-action,.pi-demo-primary,.pi-demo-secondary,button[type=submit]):disabled{background:var(--pi-ui-disabled)!important;color:var(--pi-ui-disabled-text)!important;border-color:var(--pi-ui-border)!important;opacity:1;cursor:not-allowed}
+html[data-pi-interior=true] :is(a:not([class]),.edit-link,.new-button,.support-link){color:var(--pi-ui-link)}
+html[data-pi-interior=true] :is(input,select,textarea,button,a):focus-visible{outline:3px solid var(--pi-ui-focus)!important;outline-offset:3px}
+html[data-pi-interior=true] :is(.teacher-hero,.plan-detail-hero,.hello-card,.summary-note){background:var(--pi-ui-primary)!important;color:var(--pi-ui-on-primary)!important}
+html[data-pi-interior=true] :is(.teacher-hero,.plan-detail-hero,.hello-card,.summary-note) :is(h1,h2,p,small){color:var(--pi-ui-on-primary)!important}
+html[data-pi-interior=true] :is(.family-bar,.teacher-topbar){background:var(--pi-ui-surface)!important;border-bottom:3px solid var(--pi-ui-accent)!important;color:var(--pi-ui-text)}
+html[data-pi-interior=true] :is(.portal-menu a.active,.teacher-tabs a.active,.teacher-tabs button.active){background:var(--pi-ui-accent)!important;color:var(--pi-ui-on-accent)!important;border-color:var(--pi-ui-on-accent)!important}

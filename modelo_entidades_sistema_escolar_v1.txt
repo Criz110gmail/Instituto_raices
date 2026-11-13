@@ -1,3 +1,18 @@
+Actualización V176 — Identidad adaptable de portales (12/11/2026)
+portal_identidad_revision agrega oscuro_principal, oscuro_fondo y oscuro_acento.
+Los tres NULL significan adaptación automática; si se personalizan son tres HEX6.
+Cada copia conserva sus valores al publicar/restaurar; las versiones anteriores
+permanecen automáticas. Sin nuevas tablas, permisos ni afectaciones financieras.
+
+IDENTIDAD DE PORTALES (12/11/2026,V175):
+portal_identidad PK(institucion_id,portal),version de borrador y publicada_version
+nullable FK compuesta a portal_identidad_revision. Portal restringido admin/familias/
+maestros/personal. Revisión PK(institucion_id,portal,version) con principal,fondo,
+acento hex6,original,nombre,logoPNG saneado<=5MB,actor/fecha guardado y publicación.
+Historial preservado;restaurar copia como revisión nueva,publicar sólo cambia puntero
+y metadatos de primera publicación. Scope deriva sesión,nunca institución de un POST.
+Permisos PORTAL_IDENTIDAD_LEER/ADMINISTRAR sin grants. No vínculo a nómina/pagos.
+
 SISTEMA ADMINISTRATIVO ESCOLAR
 ACCESO OPCIONAL A RECIBOS DEL EMPLEADO (06/11/2026, V162):
 empleado.usuario_portal_id nullable, unico, FK usuario; vínculo no reasignable.

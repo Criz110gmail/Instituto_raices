@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#0b1930">
-    <title th:text="${resultado.modulo.titulo} + ' · Nexo Escolar'">Nexo Escolar</title>
+    <title th:text="${resultado.modulo.titulo} + ' · Control escolar'">Control escolar</title>
     <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
     <link rel="stylesheet" th:href="@{/css/admin.css(v=20261106-buscar)}">
     <link rel="stylesheet" th:href="@{/css/navigation.css}">
@@ -20,7 +20,7 @@
 <input class="nav-toggle" type="checkbox" id="nav-toggle">
 <label class="nav-backdrop" for="nav-toggle" aria-hidden="true"></label>
 <aside class="sidebar">
-    <div class="brand"><span class="brand-mark">N</span><span><strong>Nexo</strong><small>Control escolar</small></span></div>
+    <div class="brand institution-brand"><img class="institution-logo" src="/images/logo1.png" alt="Logotipo de la institución"></div>
     <nav aria-label="Módulos del núcleo">
         <th:block th:each="item, iter : ${modulos}">
             <p class="nav-label security-label"

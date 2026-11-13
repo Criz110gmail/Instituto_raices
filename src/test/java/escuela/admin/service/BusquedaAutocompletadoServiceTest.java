@@ -124,7 +124,7 @@ class BusquedaAutocompletadoServiceTest {
         Usuario usuario = new Usuario();
         usuario.setId(30L);
         usuario.setUsername("maria.tutora");
-        usuario.setEmail("maria@raices.mx");
+        usuario.setEmail("maria@example.org");
         usuario.setEstado(EstadoUsuario.ACTIVO);
         when(usuarioRepository.buscarParaAutocompletado(any(), any(), any(), any()))
                 .thenReturn(new SliceImpl<>(List.of(usuario)));
@@ -209,7 +209,7 @@ class BusquedaAutocompletadoServiceTest {
 
     @Test
     void sugiereMaestrosDePlaneacionRespetandoAlcance() {
-        Institucion institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Instituto Raíces");
+        Institucion institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Institución de ejemplo");
         Maestro maestro = new Maestro(); maestro.setId(70L); maestro.setInstitucion(institucion);
         maestro.setNumeroEmpleado("DOC-007"); maestro.setNombres("Laura"); maestro.setPrimerApellido("Pérez"); maestro.setActivo(true);
         when(alcance.<Maestro>especificacion(ModuloCatalogo.MAESTROS))

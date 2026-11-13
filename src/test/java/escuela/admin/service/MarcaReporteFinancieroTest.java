@@ -22,6 +22,13 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class MarcaReporteFinancieroTest {
+ @Test void marcaCompartidaUsaExactamenteElArchivoSolicitado()throws Exception{
+  assertThat(MarcaReporteFinanciero.RECURSO).isEqualTo("static/images/logo1.png");
+  var esperado=ImageIO.read(new org.springframework.core.io.ClassPathResource("static/images/logo1.png").getInputStream());
+  assertThat(MarcaReporteFinanciero.imagen().getWidth()).isEqualTo(esperado.getWidth());
+  assertThat(MarcaReporteFinanciero.imagen().getHeight()).isEqualTo(esperado.getHeight());
+ }
+
  @Test void cabeceraCentradaSinCuadriculaConservaDatosYPreferenciaDeLaHoja() throws Exception {
   var bytes=new ByteArrayOutputStream();
   try(var libro=new org.apache.poi.xssf.streaming.SXSSFWorkbook(200)) {
@@ -83,8 +90,8 @@ class MarcaReporteFinancieroTest {
    assertThat(dibujo.getShapes()).hasSize(1);
    var a=dibujo.getCTDrawing().getAbsoluteAnchorArray(0);
    var logo=MarcaReporteFinanciero.imagen();double escala=Math.min(192.0/logo.getWidth(),128.0/logo.getHeight());
-   assertThat(a.getExt().getCx()).isEqualTo(Units.pixelToEMU((int)Math.round(logo.getWidth()*escala)));
-   assertThat(a.getExt().getCy()).isEqualTo(Units.pixelToEMU((int)Math.round(logo.getHeight()*escala)));
+   assertThat(a.getExt().getCx()).isEqualTo((int)Math.round(logo.getWidth()*escala*Units.EMU_PER_PIXEL));
+   assertThat(a.getExt().getCy()).isEqualTo((int)Math.round(logo.getHeight()*escala*Units.EMU_PER_PIXEL));
    assertThat(a.getPic().getSpPr().getXfrm().getExt().getCx()).isEqualTo(a.getExt().getCx());
    assertThat(a.getPic().getSpPr().getXfrm().getExt().getCy()).isEqualTo(a.getExt().getCy());
   }

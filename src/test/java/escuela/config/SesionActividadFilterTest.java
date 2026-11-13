@@ -29,11 +29,13 @@ class SesionActividadFilterTest {
         return request;
     }
     @Test void relojNoRenuevaAunqueElContenedorActualiceSuUltimoAcceso() throws Exception {
-        var request = request("/sesion/estado", ahora - 1700000);
-        var response = new MockHttpServletResponse();
-        filter.doFilter(request, response, (req,res) -> {});
-        assertThat(request.getSession().getAttribute(SesionActividadFilter.ACTIVIDAD)).isEqualTo(ahora - 1700000);
-        assertThat(response.getHeader("X-Session-Expires")).isEqualTo(Long.toString(ahora + 100000));
+        for(String ruta : List.of("/sesion/estado", "/sesion/identidad")) {
+            var request = request(ruta, ahora - 1700000);
+            var response = new MockHttpServletResponse();
+            filter.doFilter(request, response, (req,res) -> {});
+            assertThat(request.getSession().getAttribute(SesionActividadFilter.ACTIVIDAD)).isEqualTo(ahora - 1700000);
+            assertThat(response.getHeader("X-Session-Expires")).isEqualTo(Long.toString(ahora + 100000));
+        }
     }
     @Test void peticionNormalRenuevaTiempo() throws Exception {
         var request = request("/portal/pagos", ahora - 1700000);
@@ -48,7 +50,7 @@ class SesionActividadFilterTest {
         assertThat(request.getSession().getAttribute(SesionActividadFilter.ACTIVIDAD)).isEqualTo(ahora - 100000);
     }
     @Test void consultaDeSesionCaducadaNoPuedeResucitarla() throws Exception {
-        for (String ruta : List.of("/sesion/estado", "/sesion/renovar")) {
+        for (String ruta : List.of("/sesion/estado", "/sesion/renovar", "/sesion/identidad")) {
             var request = request(ruta, ahora - 1800000);
             var session = (MockHttpSession) request.getSession();
             var response = new MockHttpServletResponse();
@@ -81,7 +83,7 @@ class SesionActividadFilterTest {
         assertThat(request.getSession(false)).isNull();
     }
     @Test void sesionAutenticadaCaducaPeroLaPaginaPublicaContinuaSinRedireccion() throws Exception {
-        for(String ruta:List.of("/","/sitio/INSTITUTO_RAICES","/sitio/INSTITUTO_RAICES/imagenes/5","/images/sitio-objetos-escolares.svg")) {
+        for(String ruta:List.of("/","/sitio/INSTITUCION_DEMO","/sitio/INSTITUCION_DEMO/imagenes/5","/images/sitio-objetos-escolares.svg")) {
             var request=request(ruta,ahora-1800000);var session=(MockHttpSession)request.getSession();var response=new MockHttpServletResponse();var chain=new org.springframework.mock.web.MockFilterChain();
             filter.doFilter(request,response,chain);assertThat(session.isInvalid()).isTrue();assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();assertThat(chain.getRequest()).isSameAs(request);assertThat(response.getRedirectedUrl()).isNull();
         }

@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="es" xmlns:th="http://www.thymeleaf.org"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1930">
-<title th:text="${edicion ? 'Editar grado' : 'Nuevo grado'} + ' · Nexo Escolar'">Grado</title>
+<title th:text="${edicion ? 'Editar grado' : 'Nuevo grado'} + ' · Control escolar'">Grado</title>
 <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/forms.css"><script src="/js/theme.js"></script></head><body class="form-page">
 <main class="form-shell narrow-form"><header class="form-top"><a href="/admin/catalogos/grados">← Volver al directorio</a><div th:replace="~{admin/fragments/session-actions :: controls}"></div></header>
   <section class="form-card"><div class="form-intro"><span th:text="${edicion ? 'Actualización' : 'Nuevo registro'}">Nuevo registro</span><h1 th:text="${edicion ? 'Editar grado' : 'Crear grado'}">Crear grado</h1><p>Define los grados que forman parte de cada nivel educativo.</p></div>

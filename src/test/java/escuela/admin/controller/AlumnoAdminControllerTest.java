@@ -101,7 +101,7 @@ class AlumnoAdminControllerTest {
         assertThat(vista).isEqualTo("admin/alumno-form");
         assertThat(model.get("edicion")).isEqualTo(true);
         assertThat(model.get("institucionSeleccionada"))
-                .isEqualTo("RAICES · Instituto Raíces");
+                .isEqualTo("DEMO · Institución de ejemplo");
     }
 
     @Test
@@ -255,7 +255,7 @@ class AlumnoAdminControllerTest {
     }
 
     private InstitucionResponse institucion() {
-        return new InstitucionResponse(1L, "RAICES", "Instituto Raíces", null, null,
+        return new InstitucionResponse(1L, "DEMO", "Institución de ejemplo", null, null,
                 null, null, null, null, null, null, null, null, "MX", null,
                 "America/Mexico_City", "MXN", true, null);
     }

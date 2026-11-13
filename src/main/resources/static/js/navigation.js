@@ -11,7 +11,8 @@
         'Administración · Personal y nómina',
         'Administración · Compras y proveedores',
         'Administración · Configuración escolar',
-        'Administración · Seguridad y soporte'
+        'Administración · Seguridad y soporte',
+        'Administración · Diseño'
     ];
     const ordenModulos = {
         'Operación escolar · Control escolar': ['Alumnos', 'Tutores', 'Familiares del alumno', 'Inscripciones', 'Grupos', 'Actualizaciones familiares'],

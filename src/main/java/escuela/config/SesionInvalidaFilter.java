@@ -15,7 +15,7 @@ public class SesionInvalidaFilter extends OncePerRequestFilter {
     private static final Set<String> ACCESO_PUBLICO = Set.of("/", "/login", "/familias",
             "/maestros/acceso", "/personal/acceso", "/activar-cuenta", "/restablecer-password", "/acceso/csrf",
             "/acceso-denegado", "/salud", "/actuator/health", "/favicon.svg", "/error",
-            "/images/logo.png", "/images/imagen.png", "/images/sitio-objetos-escolares.svg");
+            "/images/logo.png", "/images/logo1.png", "/images/imagen.png", "/images/sitio-objetos-escolares.svg");
     private final SesionExpiradaAccessDeniedHandler expiracion;
 
     public SesionInvalidaFilter(SesionExpiradaAccessDeniedHandler expiracion) {
@@ -26,7 +26,7 @@ public class SesionInvalidaFilter extends OncePerRequestFilter {
         String ruta = request.getRequestURI().substring(request.getContextPath().length());
         boolean consulta = "GET".equals(request.getMethod()) || "HEAD".equals(request.getMethod());
         return consulta && (ACCESO_PUBLICO.contains(ruta) || ruta.startsWith("/css/")
-                || ruta.startsWith("/js/") || ruta.matches("/sitio/[^/]+(?:/imagenes/[0-9]+)?"));
+                || ruta.startsWith("/js/") || ruta.matches("/accesos/[a-zA-Z0-9_-]{1,50}/(?:admin|familias|maestros|personal)(?:/logo\\.png)?") || ruta.matches("/sitio/[^/]+(?:/imagenes/[0-9]+)?"));
     }
 
     @Override

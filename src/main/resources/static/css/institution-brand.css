@@ -1,0 +1,12 @@
+/* Un único archivo de marca, sin recortes, filtros ni texto del producto superpuesto. */
+.institution-logo{display:block;box-sizing:border-box;width:220px;max-width:100%;height:auto;object-fit:contain;background:transparent;padding:0;border:0;border-radius:0;box-shadow:none}
+.institution-logo--login{width:320px;padding:0;border-radius:0}
+.sidebar .institution-brand{padding:0 0 22px;margin-bottom:18px}.sidebar .institution-logo{width:100%;height:auto;max-height:95px}
+.brand:has(>.institution-logo){flex-direction:column;align-items:flex-start;gap:8px}
+.story-brand,.mobile-brand,.welcome-brand,.mobile-family-brand{min-width:0}.story-brand .institution-logo,.welcome-brand .institution-logo{max-width:min(100%,340px)}
+.mobile-brand .institution-logo,.mobile-family-brand .institution-logo{width:240px}
+.teacher-brand .institution-logo{width:190px;flex-shrink:0}.activation-brand .institution-logo{width:260px}
+.session-profile-cover .institution-logo{width:270px;position:relative;z-index:1}.session-profile-cover{min-height:115px}
+@media(max-width:600px){.institution-logo--login{width:250px}.teacher-brand .institution-logo{width:155px}.teacher-brand{flex-wrap:wrap}.activation-brand{flex-wrap:wrap}.session-profile-cover .institution-logo{width:230px}}
+
+.story-brand:has(>.institution-logo),.mobile-brand:has(>.institution-logo),.welcome-brand:has(>.institution-logo),.mobile-family-brand:has(>.institution-logo){flex-direction:column;align-items:flex-start;gap:8px}.portal-school-name{display:block;font-size:12px;line-height:1.5}

@@ -1,5 +1,5 @@
 (() => {
- const form=document.querySelector('[data-login-refresh]');if(!form)return;
+ const form=document.querySelector('[data-login-refresh]');if(!form||document.body?.dataset.piPreview==='true')return;
  const button=form.querySelector('button[type=submit]');
  let busy=false;
  async function tokenActual(){

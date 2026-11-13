@@ -2,20 +2,20 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="#fff9f2"><title>Familias · Nexo Escolar</title>
+    <meta name="theme-color" content="#fff9f2"><title>Familias · Control escolar</title>
     <link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/css/familias-login.css"><script src="/js/theme.js"></script><script src="/js/login-session.js?v=2" defer></script>
-</head>
-<body>
+<link rel="stylesheet" href="/css/portal-identidad.css?v=20261113-transparente"><script src="/js/portal-identidad.js?v=20261112-adaptativo" defer></script></head>
+<body data-pi-portal="familias" th:attr="data-pi-preview=${portalPrevia == true},data-pi-personalizada=${portalIdentidad != null and portalIdentidad.usarPaleta}" th:style="${portalIdentidad != null ? portalIdentidad.variables : null}">
 <button class="family-theme" type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button>
 <main class="family-login">
     <section class="family-welcome">
-        <a href="/" class="welcome-brand"><span>♥</span><strong>Mi familia</strong></a>
+        <a href="/" class="welcome-brand"><img class="institution-logo institution-logo--login" src="/images/logo1.png" alt="Logotipo de la institución"></a>
         <div class="welcome-copy"><span>Un espacio hecho para ti</span><h1>Todo lo importante de tus hijos, sin complicaciones.</h1><p>Eventos, información escolar y pagos autorizados en un lugar sencillo y privado.</p></div>
         <div class="family-figures" aria-hidden="true"><i>☺</i><i>★</i><i>♥</i></div>
         <small>Tu información está protegida y sólo tú puedes verla.</small>
     </section>
     <section class="family-access">
-        <div class="mobile-family-brand"><span>♥</span><strong>Mi familia</strong></div>
+        <div th:replace="~{fragments/portal-identidad :: marca('mobile-family-brand','Mi familia','♥')}"></div>
         <div class="access-heading"><span>Qué gusto verte</span><h2>Entra a tu espacio familiar</h2><p>Usa el usuario y la contraseña que te proporcionó la escuela.</p></div>
         <div class="family-alert error" role="alert" th:if="${param.error}"><strong>No pudimos ingresar</strong><span>Revisa tu usuario y contraseña e inténtalo nuevamente.</span></div>
         <div class="family-alert error" role="alert" th:if="${param.sesionExpirada}"><strong>Tu sesión caducó</strong><span>Por seguridad, inicia sesión nuevamente para continuar.</span></div>
@@ -23,10 +23,11 @@
         <div class="family-alert success" role="status" th:if="${param.accesoActualizado}"><strong>Acceso actualizado</strong><span>La sesión cambió en otra pestaña. Inicia sesión nuevamente desde esta pantalla.</span></div>
         <!-- Sólo el acceso obtiene CSRF al enviar: cargar otra pestaña no crea una cookie de sesión. -->
         <form data-login-refresh="familias" th:attr="data-csrf-url=@{/acceso/csrf},data-check-url=@{/acceso/comprobar},action=@{/login}" method="post">
+<input th:if="${portalInstitucionAcceso != null}" type="hidden" name="institucionAcceso" th:value="${portalInstitucionAcceso}">
             <input type="hidden" name="_csrf" value="">
             <noscript><p role="alert">Activa JavaScript para iniciar sesión de forma segura.</p></noscript>
             <input type="hidden" name="origen" value="familias">
-            <label><span>Tu usuario</span><input name="username" autocomplete="username" required autofocus placeholder="Escribe tu usuario"></label>
+            <label><span>Tu usuario</span><input name="username" autocomplete="username" required autofocus th:autofocus="${portalPrevia != true}" placeholder="Escribe tu usuario"></label>
             <label><span>Tu contraseña</span><input type="password" name="password" autocomplete="current-password" required placeholder="••••••••••••"></label>
             <button type="submit" disabled>Entrar a mi familia <span>→</span></button>
         </form>

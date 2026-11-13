@@ -31,8 +31,8 @@ class PortalTutorServiceTest {
     void preparar() {
         principal = new UsuarioPrincipal(7L, 1L, Set.of(), false, false,
                 "familia", "x", List.of());
-        when(instituciones.obtener(1L)).thenReturn(new InstitucionResponse(1L, "RAICES",
-                "Instituto Raíces", null, null, null, null, null, null, null,
+        when(instituciones.obtener(1L)).thenReturn(new InstitucionResponse(1L, "DEMO",
+                "Institución de ejemplo", null, null, null, null, null, null, null,
                 null, null, null, "MX", null, "America/Mexico_City", "MXN", true, null));
         when(portal.nombreTutor(7L, 1L)).thenReturn("María Familia");
         when(portal.eventos(anyLong(), eq(1L), anyString(), any(), anyInt(), anyInt()))
@@ -155,7 +155,7 @@ class PortalTutorServiceTest {
     }
 
     private PortalHijoResumen hijo(boolean responsable, boolean verFinanzas) {
-        return new PortalHijoResumen(20L, "A-020", "Ana Raíces", "MADRE", true,
+        return new PortalHijoResumen(20L, "A-020", "Ana Ejemplo", "MADRE", true,
                 responsable, verFinanzas, true, "Centro", "2026-2027", "Primero", "A");
     }
 }

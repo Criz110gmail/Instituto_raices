@@ -14,6 +14,11 @@
         root.style.colorScheme = 'only ' + theme;
     };
     apply(readSaved() || preferred);
+    const brandStyles=document.createElement('link');
+    brandStyles.rel='stylesheet';brandStyles.href='/css/institution-brand.css?v=20261113-transparente';
+    document.head.appendChild(brandStyles);
+    // La muestra de componentes no carga navegación, reloj ni ayudas de un módulo real.
+    if(root.dataset.piDemo === 'true') return;
     // Componente global sólo en pantallas del sistema, nunca en los accesos públicos.
     const ruta = location.pathname;
     if ((/^\/(admin|portal|personal)(\/|$)/.test(ruta) || /^\/maestros(\/|$)/.test(ruta))
@@ -27,6 +32,16 @@
         sessionScript.defer = true;
         sessionScript.dataset.sessionClock = 'true';
         document.head.appendChild(sessionScript);
+    }
+    if (/^\/(admin|portal|personal|maestros)(\/|$)/.test(ruta) && !['/maestros/acceso','/personal/acceso'].includes(ruta)) {
+        const paletteScript=document.createElement('script');
+        paletteScript.src='/js/portal-identidad.js?v=20261112-adaptativo';
+        paletteScript.async=false;document.head.appendChild(paletteScript);
+        const identityScript=document.createElement('script');
+        identityScript.src='/js/portal-interior.js?v=20261112-adaptativo';
+        identityScript.async=false;
+        identityScript.defer=true;
+        document.head.appendChild(identityScript);
     }
     if (!document.querySelector('link[data-ui-polish]')) {
         const uiStyles = document.createElement('link');

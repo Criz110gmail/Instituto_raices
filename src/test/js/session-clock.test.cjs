@@ -18,14 +18,14 @@ class Element {
     close() { this.open = false; }
     submit() { this.submitted = true; }
 }
-function entorno(pathname, duracion = 1800000) {
+function entorno(pathname, duracion = 1800000, institucion) {
     let now = 0;
     const body = new Element(), header = new Element(), listeners = {}, intervals = [], intervalDelays = [], requests = [], redirects = [];
     const controls = new Element(), theme = new Element(), logout = new Element();
     controls.parts = { '[data-theme-toggle]': theme };
     controls.children = [new Element(), theme, logout];
     header.appendChild(controls);
-    let state = { ahora: 1000000, vence: 1000000 + duracion, csrfCabecera: 'X-CSRF-TOKEN', csrfToken: 'csrf-prueba' };
+    let state = { institucion, ahora: 1000000, vence: 1000000 + duracion, csrfCabecera: 'X-CSRF-TOKEN', csrfToken: 'csrf-prueba' };
     let status = 200, offline = false, pendingStatuses = [];
     const channel = { listeners: {}, postMessage() {}, addEventListener(name, fn) { this.listeners[name] = fn; } };
     const document = { readyState: 'complete', hidden: false, body,
@@ -118,6 +118,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
         assert.equal(caso.redirects.at(-1), login + '?sesionExpirada');
         assert.equal(caso.requests.at(-1).options.method,'GET');
     }
+    const institucional=entorno('/admin/pagos',1800000,'QA-PORTALES');await flush();institucional.caducar();institucional.intervals[1]();await flush();assert.equal(institucional.redirects.at(-1),'/login?sesionExpirada&institucion=QA-PORTALES');
     const renovada=entorno('/admin/pagos');await flush();
     renovada.respuestas([401,200]);renovada.intervals[1]();await flush();
     assert.equal(renovada.redirects.length,0); // Respuesta anterior al login en otra pestaña.

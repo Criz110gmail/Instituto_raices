@@ -132,14 +132,14 @@ class CuentaFinancieraServiceImplTest {
                                              String numero, String clabe, String moneda,
                                              LocalDate fecha) {
         return new CuentaFinancieraRequest(institucionId, plantelId, codigo, " Cuenta principal ",
-                tipo, banco, " Instituto Raíces ", numero, clabe, moneda,
+                tipo, banco, " Institución de ejemplo ", numero, clabe, moneda,
                 new BigDecimal("1500.00"), fecha, true, null);
     }
 
     private Institucion institucion(Long id) {
         Institucion institucion = new Institucion();
         institucion.setId(id);
-        institucion.setNombre("Instituto Raíces");
+        institucion.setNombre("Institución de ejemplo");
         institucion.setMonedaPredeterminada("MXN");
         institucion.setActivo(true);
         return institucion;

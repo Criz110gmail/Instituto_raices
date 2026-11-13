@@ -70,7 +70,7 @@ class TutorAdminControllerTest {
         assertThat(vista).isEqualTo("admin/tutor-form");
         assertThat(((TutorForm) model.get("form")).getInstitucionId()).isEqualTo(1L);
         assertThat(model).containsKeys("instituciones", "institucionSeleccionada");
-        assertThat(model.get("institucionSeleccionada")).isEqualTo("RAICES · Instituto Raíces");
+        assertThat(model.get("institucionSeleccionada")).isEqualTo("DEMO · Institución de ejemplo");
     }
 
     @Test
@@ -155,7 +155,7 @@ class TutorAdminControllerTest {
     }
 
     private InstitucionResponse institucion() {
-        return new InstitucionResponse(1L, "RAICES", "Instituto Raíces", null, null,
+        return new InstitucionResponse(1L, "DEMO", "Institución de ejemplo", null, null,
                 null, null, null, null, null, null, null, null, "MX", null,
                 "America/Mexico_City", "MXN", true, null);
     }

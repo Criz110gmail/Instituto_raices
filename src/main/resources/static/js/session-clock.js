@@ -1,5 +1,6 @@
 (() => {
     function iniciar() {
+        if(document.body?.dataset?.piPreview==='true')return;
         if (document.querySelector('[data-session-clock-modal]')) return;
         const familia = /^\/portal(\/|$)/.test(location.pathname);
         const maestro = /^\/maestros(\/|$)/.test(location.pathname);
@@ -7,6 +8,7 @@
         const acceso = familia ? '/familias' : maestro ? '/maestros/acceso' : personal ? '/personal/acceso' : '/login';
         const origen = familia ? 'familias' : maestro ? 'maestros' : personal ? 'personal' : 'admin';
         const fetchOriginal = window.fetch.bind(window);
+        let institucionAcceso;
         let vence = 0, csrfCabecera, csrfToken, consultando = false, renovando = false;
         let avisoPara = 0, ultimaSincronizacion = 0, ultimoServidor = 0, saliendo = false;
         let consultaEnCurso;
@@ -91,7 +93,7 @@
             if (saliendo) return;
             saliendo = true;
             canal?.postMessage({ cerrada: true });
-            window.location.assign(acceso + '?sesionExpirada');
+            window.location.assign(acceso + '?sesionExpirada'+(institucionAcceso?'&institucion='+encodeURIComponent(institucionAcceso):''));
         }
         async function consultar(renovar = false) {
             if (consultando || saliendo) return;
@@ -122,6 +124,7 @@
                 if (!response.ok) throw new Error('No se pudo confirmar la sesión. Intenta de nuevo.');
                 const estado = await response.json();
                 if (saliendo) return;
+                institucionAcceso=/^[a-zA-Z0-9_-]{1,50}$/.test(estado.institucion||'')?estado.institucion:undefined;
                 csrfCabecera = estado.csrfCabecera; csrfToken = estado.csrfToken;
                 sincronizar(estado.ahora, estado.vence);
                 mensaje.textContent = '';

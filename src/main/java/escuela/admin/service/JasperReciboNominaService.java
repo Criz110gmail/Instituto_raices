@@ -86,7 +86,7 @@ public class JasperReciboNominaService {
         var logo=new JRDesignParameter();logo.setName("logo");logo.setValueClass(Image.class);d.addParameter(logo);
         for(String n:List.of("seccion","detalle","importe")){var f=new JRDesignField();f.setName(n);f.setValueClass(String.class);d.addField(f);}
         var titulo=new JRDesignBand();titulo.setHeight(106);
-        var imagen=new JRDesignImage(d);imagen.setX(0);imagen.setY(0);imagen.setWidth(80);imagen.setHeight(68);imagen.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);imagen.setExpression(new JRDesignExpression("$P{logo}"));titulo.addElement(imagen);
+        var imagen=new JRDesignImage(d);imagen.setMode(ModeEnum.TRANSPARENT);imagen.setX(0);imagen.setY(0);imagen.setWidth(80);imagen.setHeight(68);imagen.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);imagen.setExpression(new JRDesignExpression("$P{logo}"));titulo.addElement(imagen);
         titulo.addElement(texto("$P{institucion}",94,0,429,30,15,true,AZUL,false));
         titulo.addElement(texto("\"RECIBO INTERNO DE NÓMINA\"",94,32,429,23,13,true,AZUL,false));
         titulo.addElement(texto("$P{folio}",94,58,429,18,10,false,GRIS,false));

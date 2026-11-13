@@ -1259,16 +1259,16 @@ aplicación y genera los dos respaldos del mismo corte. El contenedor temporal s
 `private_files`; no elimina el volumen:
 
 ```bash
-mkdir -p ../respaldos_instituto_raices
+mkdir -p ../respaldos_institucion
 docker compose stop app
 docker compose exec -T postgres sh -c \
   'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' \
-  > ../respaldos_instituto_raices/base_datos.sql
+  > ../respaldos_institucion/base_datos.sql
 docker compose run --rm --no-deps app \
   tar -C /data/nexo-escolar -czf - . \
-  > ../respaldos_instituto_raices/imagenes_privadas.tar.gz
+  > ../respaldos_institucion/imagenes_privadas.tar.gz
 docker compose start app
-tar -tzf ../respaldos_instituto_raices/imagenes_privadas.tar.gz | head
+tar -tzf ../respaldos_institucion/imagenes_privadas.tar.gz | head
 ```
 
 No ejecutes `docker compose down -v`: `-v` elimina los volúmenes persistentes. Para

@@ -2,21 +2,21 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#35205f">
-    <title>Portal docente · Nexo Escolar</title><link rel="icon" href="/favicon.svg">
+    <title>Portal docente · Control escolar</title><link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="/css/login.css"><link rel="stylesheet" href="/css/session.css"><link rel="stylesheet" href="/css/login-portals.css"><link rel="stylesheet" href="/css/maestros-login.css?v=20261106-azul">
     <script src="/js/theme.js"></script><script src="/js/login-session.js?v=2" defer></script>
-</head>
-<body class="teacher-login-page">
+<link rel="stylesheet" href="/css/portal-identidad.css?v=20261113-transparente"><script src="/js/portal-identidad.js?v=20261112-adaptativo" defer></script></head>
+<body data-pi-portal="maestros" class="teacher-login-page" th:attr="data-pi-preview=${portalPrevia == true},data-pi-personalizada=${portalIdentidad != null and portalIdentidad.usarPaleta}" th:style="${portalIdentidad != null ? portalIdentidad.variables : null}">
 <button class="theme-toggle" type="button" data-theme-toggle aria-label="Cambiar tema"><span class="sun">☀</span><span class="moon">◐</span></button>
 <main class="login-shell teacher-login-shell">
     <section class="login-story teacher-login-story">
-        <div class="story-brand"><span>ND</span><strong>Nexo Docente</strong></div>
+        <div th:replace="~{fragments/portal-identidad :: marca('story-brand','Portal docente','ND')}"></div>
         <div class="teacher-constellation" aria-hidden="true"><i></i><i></i><i></i><i></i><strong>PLAN</strong></div>
         <div><p class="eyebrow">Espacio de enseñanza</p><h1>Convierte cada semana en una experiencia que deja huella.</h1><p class="story-copy">Planea por grupo, organiza tus materias y acompaña cada entrega hasta su publicación.</p></div>
         <div class="teacher-login-features"><span>Planeaciones semanales</span><span>Seguimiento de revisión</span><span>Acceso privado</span></div>
     </section>
     <section class="login-panel teacher-login-panel">
-        <div class="mobile-brand"><span>ND</span><strong>Nexo Docente</strong></div>
+        <div th:replace="~{fragments/portal-identidad :: marca('mobile-brand','Tu institución','N')}"></div>
         <div class="teacher-welcome-mark" aria-hidden="true"><span>01</span><i></i><span>SEMANA</span></div>
         <div class="form-heading"><p>Hola, maestro</p><h2>Entra a tu espacio docente</h2><span>Usa la cuenta que te proporcionó la administración.</span></div>
         <div class="alert error" role="alert" th:if="${param.error}">El usuario o la contraseña no son correctos.</div>
@@ -25,13 +25,14 @@
         <div class="alert warning" role="status" th:if="${param.accesoActualizado}"><strong>Acceso actualizado</strong><span>La sesión cambió en otra pestaña. Inicia sesión nuevamente desde esta pantalla.</span></div>
         <!-- Sólo el acceso obtiene CSRF al enviar: cargar otra pestaña no crea una cookie de sesión. -->
         <form data-login-refresh="maestros" th:attr="data-csrf-url=@{/acceso/csrf},data-check-url=@{/acceso/comprobar},action=@{/login}" method="post">
+<input th:if="${portalInstitucionAcceso != null}" type="hidden" name="institucionAcceso" th:value="${portalInstitucionAcceso}">
             <input type="hidden" name="_csrf" value="">
             <noscript><p role="alert">Activa JavaScript para iniciar sesión de forma segura.</p></noscript>
             <input type="hidden" name="origen" value="maestros">
-            <label><span>Usuario docente</span><input name="username" autocomplete="username" required autofocus placeholder="tu.usuario"></label>
+            <label><span>Usuario docente</span><input name="username" autocomplete="username" required autofocus th:autofocus="${portalPrevia != true}" placeholder="tu.usuario"></label>
             <label><span>Contraseña</span><input type="password" name="password" autocomplete="current-password" required placeholder="••••••••••••"></label>
             <div class="form-meta"><span>Verás únicamente los grupos y materias que tienes asignados.</span></div>
-            <button type="submit" disabled>Entrar a Nexo Docente <span>→</span></button>
+            <button type="submit" disabled>Entrar a Portal docente <span>→</span></button>
         </form>
         <p class="support"><a href="/">← Volver a los accesos</a><br>¿No puedes entrar? Contacta a la administración de tu institución.</p>
     </section>

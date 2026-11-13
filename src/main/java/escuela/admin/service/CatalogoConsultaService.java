@@ -206,7 +206,7 @@ public class CatalogoConsultaService {
                     "Los avisos escolares usan su consulta especializada");
             case AUDITORIA -> throw new IllegalArgumentException(
                     "La auditoría usa su consulta especializada");
-            case EMPLEADOS, PUESTOS, JORNADAS_LABORALES, ESQUEMAS_REMUNERACION, ASIGNACIONES_LABORALES, CONCEPTOS_NOMINA, CONCEPTOS_EMPLEADO, CONFIGURACION_NOMINA, CALENDARIOS_NOMINA, PERIODOS_NOMINA, PREPARACION_NOMINA, PRESTAMOS, PORTAL_TUTOR, PORTAL_MAESTRO, SITIO_WEB, GUIAS -> throw new IllegalArgumentException(
+            case EMPLEADOS, PUESTOS, JORNADAS_LABORALES, ESQUEMAS_REMUNERACION, ASIGNACIONES_LABORALES, CONCEPTOS_NOMINA, CONCEPTOS_EMPLEADO, CONFIGURACION_NOMINA, CALENDARIOS_NOMINA, PERIODOS_NOMINA, PREPARACION_NOMINA, PRESTAMOS, PORTAL_TUTOR, PORTAL_MAESTRO, PORTALES, SITIO_WEB, GUIAS -> throw new IllegalArgumentException(
                     "El portal tutor usa su consulta especializada");
             case ROLES -> consultar(modulo, rolRepository, texto(f, "codigo", "nombre", "descripcion"), activo(f), pagina,
                     e -> fila(e.getId(), e.isActivo(), e.getCodigo(), e.getNombre(), e.getInstitucion().getNombre(), valor(e.getDescripcion())));

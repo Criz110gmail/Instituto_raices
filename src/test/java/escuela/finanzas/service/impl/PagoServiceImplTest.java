@@ -56,7 +56,7 @@ class PagoServiceImplTest {
 
     @BeforeEach
     void preparar() {
-        institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Raíces");
+        institucion = new Institucion(); institucion.setId(1L); institucion.setNombre("Ejemplo");
         institucion.setActivo(true); institucion.setMonedaPredeterminada("MXN");
         institucion.setZonaHoraria("America/Mexico_City");
         plantel = new Plantel(); plantel.setId(2L); plantel.setNombre("Centro");

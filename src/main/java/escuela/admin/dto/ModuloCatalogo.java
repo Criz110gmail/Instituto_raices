@@ -62,6 +62,7 @@ public enum ModuloCatalogo {
     AUDITORIA("auditoria", "Auditoría", List.of()),
     PORTAL_TUTOR("portal-tutor", "Soporte del portal familiar", List.of()),
     PORTAL_MAESTRO("portal-maestro", "Soporte del portal de maestros", List.of()),
+    PORTALES("portales", "Portales e identidad", List.of()),
     SITIO_WEB("diseno-web", "Diseño web", List.of()),
     GUIAS("guias", "Guía de procesos", List.of());
 
@@ -144,12 +145,13 @@ public enum ModuloCatalogo {
             case EMPLEADOS, PUESTOS, JORNADAS_LABORALES, ESQUEMAS_REMUNERACION, ASIGNACIONES_LABORALES, CONCEPTOS_NOMINA, CONCEPTOS_EMPLEADO, CONFIGURACION_NOMINA, CALENDARIOS_NOMINA, PERIODOS_NOMINA, PREPARACION_NOMINA, PRESTAMOS -> "Administración · Personal y nómina";
             case PROVEEDORES, COMPRAS -> "Administración · Compras y proveedores";
             case INSTITUCIONES, PLANTELES, NIVELES, OFERTA, GRADOS, CICLOS, PERIODOS -> "Administración · Configuración escolar";
-            case SITIO_WEB -> "Administración · Diseño web";
+            case SITIO_WEB, PORTALES -> "Administración · Diseño";
             case ROLES, USUARIOS, AUDITORIA, PORTAL_TUTOR, PORTAL_MAESTRO, GUIAS -> "Administración · Seguridad y soporte";
         };
     }
 
     public boolean visibleCon(Set<String> permisos) {
+        if(this==PORTALES)return permisos.contains("PORTAL_IDENTIDAD_LEER")||permisos.contains("PORTAL_IDENTIDAD_ADMINISTRAR");
         if(this==SITIO_WEB)return permisos.contains("SITIO_WEB_EDITAR");
         if(this==PRESTAMOS)return permisos.stream().anyMatch(p->Set.of("PRESTAMO_LEER","PRESTAMO_ADMINISTRAR").contains(p));
         String base = switch (this) {
@@ -200,6 +202,7 @@ public enum ModuloCatalogo {
             case AUDITORIA -> "AUDITORIA";
             case PORTAL_TUTOR -> "PORTAL_TUTOR_SOPORTE";
             case PORTAL_MAESTRO -> "PORTAL_MAESTRO_SOPORTE";
+            case PORTALES -> "PORTAL_IDENTIDAD";
             case SITIO_WEB -> "SITIO_WEB";
             case GUIAS -> "GUIA_PROCESOS_CONSULTAR";
         };
@@ -313,6 +316,7 @@ public enum ModuloCatalogo {
             case AUDITORIA -> "/admin/auditoria";
             case PORTAL_TUTOR -> "/admin/portal-soporte";
             case PORTAL_MAESTRO -> "/admin/portal-maestros-soporte";
+            case PORTALES -> "/admin/portales";
             case SITIO_WEB -> "/admin/diseno-web";
             case GUIAS -> "/admin/guias";
             default -> "";
@@ -321,7 +325,7 @@ public enum ModuloCatalogo {
 
     public String rutaListado() {
         return this == JORNADAS_LABORALES || this == ESQUEMAS_REMUNERACION || this == ASIGNACIONES_LABORALES || this == CONCEPTOS_NOMINA || this == CONFIGURACION_NOMINA || this == CONCEPTOS_EMPLEADO || this == CALENDARIOS_NOMINA || this == PERIODOS_NOMINA || this == PREPARACION_NOMINA || this == PRESTAMOS || this == PUESTOS || this == EMPLEADOS || this == BOLETAS || this == PLANEACIONES || this == HORARIOS_CLASE || this == CALENDARIO_ESCOLAR || this == ACTUALIZACIONES_EXPEDIENTE || this == PROVEEDORES || this == COMPRAS || this == CONVENIOS_PAGO || this == MOVIMIENTOS_FINANCIEROS || this == RETIROS_FONDO || this == REPORTES_FINANCIEROS || this == EVENTOS_ESCOLARES || this == AVISOS || this == AUDITORIA || this == PORTAL_TUTOR
-                || this == PORTAL_MAESTRO || this == GUIAS || this == SITIO_WEB ? rutaMantenimiento()
+                || this == PORTAL_MAESTRO || this == GUIAS || this == SITIO_WEB || this == PORTALES ? rutaMantenimiento()
                 : "/admin/catalogos/" + slug;
     }
 

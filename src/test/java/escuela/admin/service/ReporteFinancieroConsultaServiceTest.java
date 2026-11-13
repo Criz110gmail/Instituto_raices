@@ -113,7 +113,7 @@ class ReporteFinancieroConsultaServiceTest {
     }
 
     private InstitucionResponse institucion(String zona) {
-        return new InstitucionResponse(1L, "RAI", "Instituto Raíces", null, null,
+        return new InstitucionResponse(1L, "RAI", "Institución de ejemplo", null, null,
                 null, null, null, null, null, null, null, null, "MX", null,
                 zona, "MXN", true, null);
     }
