@@ -1,3 +1,25 @@
+## Presentación para clientes
+
+[Presentación del producto en PDF](output/pdf/presentacion_sistema_gestion_escolar.pdf):
+25 páginas con funciones, ejemplos ficticios y un recorrido de demostración de
+15 minutos. Catálogo de funciones con enlaces a sus páginas. No contiene datos
+personales de la base. Generador: `scripts/generar_presentacion_producto.py`
+(ReportLab y fuentes Arial/Georgia de macOS).
+
+## Nombre del proyecto Docker
+
+El proyecto Compose se llama **escuela**, independientemente del nombre de esta
+carpeta. Usa los comandos habituales `docker compose up -d --build` y
+`docker compose ps`. La URL configurada no cambia.
+
+En una instalación anterior, cambiar el nombre sin enlazar sus volúmenes puede
+mostrar una base vacía. Primero respalda la base y los archivos privados; detén la
+aplicación y PostgreSQL anterior antes de reutilizar sus volúmenes. En esta
+computadora, `compose.override.yaml` (local, ignorado por Git) los declara externos
+con sus nombres anteriores. No lo copies a otra computadora: allí deben
+identificarse sus propios volúmenes o restaurarse los respaldos. No ejecutes dos
+PostgreSQL con un mismo volumen ni uses `docker compose down -v`.
+
 Objetos escolares en el diseñador: 36 ilustraciones vectoriales con búsqueda, categorías, color y arrastre. Guía: [PRUEBA_OBJETOS_ESCOLARES.md](PRUEBA_OBJETOS_ESCOLARES.md).
 
 ## Siete diseños de galería y visor ampliado — 11/11/2026

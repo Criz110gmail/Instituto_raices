@@ -1,5 +1,33 @@
 # Continuidad del proyecto — Nexo Escolar
 
+## Docker escuela y presentación del producto — 13/11/2026
+
+`compose.yaml` declara `name: escuela`: contenedores escuela-app-1 y
+escuela-postgres-1, misma URL/puerto. Se reutilizó la imagen operativa, sin cambiar
+código Java ni esquema. Antes del cambio se detuvo app y se validaron pg_dump y
+archivo privado en `.respaldos-locales/cambio-proyecto-escuela-rkkY2g`.
+PostgreSQL anterior se detuvo antes de iniciar el nuevo. El override LOCAL ignorado
+conecta los volúmenes existentes `chatgpt_proyectos_postgres_data` y
+`chatgpt_proyectos_private_files` como externos: sus nombres físicos se conservan
+para no reemplazar datos. No copiar ese override a otra computadora; revisar su
+instalación antes de cambiar el proyecto. No arrancar dos PostgreSQL sobre el mismo
+volumen. Las huellas de ocho tablas operativas coinciden antes/después. Salud UP;
+contenedores anteriores detenidos y red vacía retirados, volúmenes intactos.
+No se leyó ni cambió `.env`. Instalar de cero crea volúmenes con prefijo escuela.
+
+Presentación comercial: `output/pdf/presentacion_sistema_gestion_escolar.pdf`,
+25 páginas horizontales, ejemplos ficticios y gráficos ilustrativos, sin datos de
+la base ni marca fija de una escuela. Recorrido de 15 minutos y catálogo de 69
+funciones con referencias internas. Fuente reproducible:
+`scripts/generar_presentacion_producto.py` (Python, ReportLab, fuentes Arial/Georgia
+de macOS). Alcance cotejado con módulos actuales, excluye submenús salariales
+anteriores. No promete timbrado/cálculo fiscal automático ni envío bancario.
+Se verificaron las páginas renderizadas; no equivale a certificar producción.
+Siguiente paso: revisar el PDF con el propietario y preparar una demostración con
+usuarios por rol y datos ficticios. La prueba de sesión en la otra computadora
+continúa pendiente; no marcarla como aprobada.
+
+
 ## Marca genérica y guías — V177, 13/11/2026
 
 Solicitud: proyecto reutilizable sin nombre fijo de un cliente. Alt de logos genérico,
