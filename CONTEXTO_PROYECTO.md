@@ -1,3 +1,38 @@
+## Pendientes sólo en notificación superior — 16/11/2026
+
+Usuario pidió retirar el bloque de agenda que ocupaba espacio en cada módulo.
+pendientes.js deja de insertar agenda-entry-notice/Tu agenda personal debajo de
+la cabecera. Conserva campana, enlace a agenda privada y contador superior ya
+existentes en admin/maestros;2avisos muestran2 y0oculta sólo badge. Semántica sin
+cambiar: vencidos+hoy+próximos7d, no todos los compromisos futuros. Sin cambio de
+servicio/permisos/privacidad ni del listado propio. CacheJS20261116-notificaciones;
+CSS de ambos fragments alineado con20261116-detalle para no recuperar estilos viejos.
+
+Tres regresionesJS verifican ambos portales/cantidad2/sin tarjetas/contador0/403/
+redirección, y tres de confirmación conservadas;1125Java correctas. Publicada sólo
+app, healthUP y JS servido idéntico a fuente. Sin migración ni datos modificados.
+Respaldo .respaldos-locales/pendientes-notificaciones-20261116 e imagen previa
+escuela-app:antes-pendientes-notificaciones-20261116. Pendiente aceptación visual.
+
+## Pendientes: ficha y estados rediseñados — 16/11/2026
+
+Solicitud de mejorar Ver pendiente y estado. detalle.html organiza fecha/estado/
+seguimiento en resumen, descripción y edición en tarjeta, cambio de estado en panel
+propio y cronología privada con fechas dd/MM/yyyy. Estados Pendiente/En proceso/
+Realizado/Cancelado con etiquetas y colores semánticos en detalle/listado/historial.
+Selector y acción principal tienen contraste explícito; corregido blanco sobre
+blanco del select en oscuro. Acomodo móvil en una columna y acciones del patrón
+module-action. Caché pendientes.css20261116-detalle en detalle/listado/formulario.
+
+No se cambió controlador/servicio/propiedad privada/versionado ni confirmación.
+Render real de admin y maestros con texto escapado y rutas propias; navegador en
+escritorio/390px y ambos temas sin overflow. Modal Actualizar estado muestra estado
+seleccionado y Cancelar conserva captura; no confirmar operación ni tocar pendientes
+reales por herramientas.1125Java sin fallos, imagen publicada sóloapp, saludUP,
+plantillaJAR y CSS servido comprobados. Sin migración. Respaldo base e imagen
+escuela-app:antes-pendientes-detalle-20261116 bajo .respaldos-locales/pendientes-detalle-20261116.
+Aceptación visual final pendiente del propietario. No sesión con credenciales reales.
+
 ## Logo blanco de portales y administrador — 16/11/2026
 
 Usuario pidió blanco y conservar original como logo_general.png. Copia exacta
