@@ -1,3 +1,99 @@
+## Logo blanco de portales y administrador — 16/11/2026
+
+Usuario pidió blanco y conservar original como logo_general.png. Copia exacta
+logo_general.png comprobada byte a byte contra logo1.png; logo1 tampoco fue alterado,
+por lo que reportes/PDF/Excel y página pública conservan su marca a color.
+Versión blanca final: static/images/logo_blanco.svg, autocontenida, con PNG original
+embebido y matriz SVG que convierte RGB a blanco conservando exactamente alfa,
+proporción968x275, letras y escudo. No redibuja ni agrega fondo/placa/sombra.
+Se intentó herramienta image_gen con indicación «monocromo blanco, fondo transparente,
+conservar escudo/letras/eslogan y proporción»; salida NO usada por alterar detalles.
+La variante final es código SVG determinista con fuente original intacta.
+
+institution-brand.js, cargado por theme.js, aplica variante blanca sólo al logo
+predeterminado del sistema cuando el fondo permite contraste4.5:1; sobre claro
+muestra logo_general.png. Reconoce fondos opacos, transparencia y gradientes,
+reacciona a tema/paleta/src y mantiene intactos logos personalizados publicados.
+Sin cambiar contenido web, preferencias publicadas, permisos ni reportes. CSS de
+marca conserva transparencia; autorización GET exacta de ambos recursos y excepción
+de sesión inválida, sin abrir /images/**. Petición actual de blanco sustituye la
+restricción previa de no usar filtros únicamente para esta variante autorizada.
+
+QA:1125Java, cinco pruebas de tema y suiteJS de selección por fondo/invariantes de
+archivos correctas. Navegador: SVG blanco transparente legible en verde/gradiente;
+login real oscuro blanco y claro (logo lateral blanco/móvil original), tema restaurado.
+Respaldo base/imagen antes de publicar: .respaldos-locales/logo-blanco-20261116 e
+imagen escuela-app:antes-logo-blanco-20261116. Sólo app recreada; healthUP, recursos
+públicos idénticos a fuente. No migración ni sesión autenticada por el agente.
+
+## Diseñador web: regreso visible al menú — 16/11/2026
+
+Solicitud: estando en el diseñador no resultaba claro cómo volver a otros módulos.
+Se reemplazó el enlace pequeño N por «← Menú principal», /admin, turquesa con texto,
+en la esquina superior izquierda de sitio-visual.html. CSS adaptativo: encabezado
+con dos filas a650px o menos; paneles/backdrop ajustados al alto112px. No se cambió
+JS de edición ni beforeunload: cambios sin guardar siguen protegidos por el aviso
+existente. No guardar/publicar contenido del usuario al pulsar el enlace.
+
+Verificado encabezado aislado a320/1440px, botón visible y sin desbordamiento.
+Docker compiló1125pruebas Java sin fallos. Publicado sóloapp enescuela, saludUP,
+plantilla enJAR comprobada y CSS servido idéntico a fuente; caché20261116-menu-principal.
+Sin migración ni cambios de datos. Respaldo .respaldos-locales/menu-diseno-20261116
+(base.dump e imagen anterior etiquetada escuela-app:antes-menu-diseno-20261116).
+No se probó una navegación con credenciales del propietario. Confirmación visual
+final pendiente del usuario; recargar módulo tras iniciar sesión de nuevo.
+
+## Inicio vinculado a publicación web local — 16/11/2026
+
+Usuario publica desde Diseño web pero no veía cambios en /. Diagnóstico: borrador2
+publicada2 y /sitio/INSTITUTO_RAICES respondía200; APP_SITIO_CODIGO vacío hacía
+que / mostrara la plantilla base. Se añadió APP_SITIO_CODIGO: INSTITUTO_RAICES al
+compose.override.yaml LOCAL ignorado, conservando volúmenes y puerto. Respaldado
+override anterior bajo .respaldos-locales/arranque-escuela-20261114-2JHB66.
+Recreada sólo app sin build: saludUP y HTML de / idéntico byte a byte al sitio
+publicado. No se guardó/publicó contenido por herramientas ni se modificó BD.
+Nuevas publicaciones se consultan en cada petición; recargar página para verlas.
+La vinculación debe configurarse por instalación; Git no transporta el override
+local. No hardcodear escuela en Java ni seleccionar primera institución de BD.
+
+## Acceso criz después del arranque escuela — 14/11/2026
+
+Usuario solicitó recuperación. Se emitió enlace30min de un uso; confirmó cambio y
+BD registra enlace usado, cuentaACTIVA e intentos0. El nombre simple criz colisiona
+con el bootstrap local: UsuarioSistemaDetailsService prioriza ese acceso. Para la
+cuenta BD usar INSTITUTO_RAICES\criz y la nueva contraseña, como ya se confirmó
+en noviembre6. No volver a restablecer ni modificar contraseña/grants/.env por ese
+síntoma. La recomendación previa de usar sólo criz fue insuficiente en esta máquina.
+Pendiente que el propietario confirme el ingreso con identificador calificado.
+No documentar tokens, enlaces de recuperación ni contraseñas.
+
+## Arranque en esta computadora: proyecto escuela con datos restaurados — 14/11/2026
+
+Después de git pull, escuela-app-1 no arrancaba porque la app antigua
+nexo-restaurado-20261106-app-1 ocupaba8080. Usuario eligió expresamente conservar
+los datos anteriores. Se respaldaron base y archivos privados en
+.respaldos-locales/arranque-escuela-20261114-2JHB66; archivo comprobado y dump
+restaurado correctamente en PostgreSQL17 temporal. Imagen escuela-app validada
+contra esa copia: Flyway177 y arranque correctos. Ocho tablas operativas (alumno,
+tutor, inscripción, cargo, pago, cuenta, movimiento y usuario) conservan conteos y
+huellas completas, también después del arranque definitivo.
+
+compose.override.yaml LOCAL ignorado conecta volúmenes EXTERNOS existentes
+nexo-restaurado-20261106_postgres_data y nexo-restaurado-20261106_private_files;
+puerto127.0.0.1:8080. No copiar este override a otra computadora. Proyectoescuela
+activo con esos mismos datos; antigua app/PG restaurados detenidos. No arrancar
+ese PostgreSQL antiguo simultáneamente: ambos contenedores referencian el mismo
+volumen. Los volúmenes nuevos escuela_* y otros proyectos no fueron eliminados ni
+fusionados. Compose requirió --force-recreate para aplicar el cambio físico del
+volumen: siempre verificar .Mounts después de cambiar un nombre externo.
+
+Arranque habitual en ESTE directorio: docker compose up -d --build. Compose carga
+automáticamente el override local. No usar el override histórico de restauración
+que fija imagenV166 ni -p nexo-restaurado-20261106. No usar down -v.
+Verificado: escuela-app-1 y escuela-postgres-1 activos, Flyway177success,
+/actuator/health UP y /login200. Sin credenciales ni .env leídos/modificados;
+no prueba de login con contraseña. Contenedores/red temporalesQA retirados.
+
 ## Portales e identidad — V175, 12/11/2026
 
 ## Docker escuela y presentación del producto — 13/11/2026

@@ -18,3 +18,8 @@
 
 /* Rebuilding property controls or the canvas must not move their scroll containers. */
 #ds-properties,#ds-stage,#ds-structure{overflow-anchor:none}
+
+/* Visible exit from the full-screen editor; beforeunload keeps protecting local edits. */
+.ds-back-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:0 0 auto;white-space:nowrap;text-decoration:none;min-height:40px;padding:10px 14px;border-radius:11px;font-size:12px;font-weight:750;background:var(--ds-accent);color:var(--ds-on-accent);border:1px solid var(--ds-focus)}
+.ds-back-link:hover{filter:brightness(.96)}.ds-back-link:focus-visible{outline:3px solid var(--ds-focus);outline-offset:3px}.ds-back-link>span:first-child{font-size:18px;line-height:1}
+@media(max-width:650px){.ds-body{grid-template-rows:112px 48px minmax(0,1fr) 34px}.ds-header{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;gap:7px 12px;padding:9px 12px}.ds-back-link{min-height:38px;padding:8px 11px;font-size:11px}.ds-device{margin:0;justify-self:end}.ds-header-actions{grid-column:1/-1;justify-content:flex-end;gap:7px}.ds-panel{top:160px}.ds-body[data-pane] .ds-backdrop{inset:160px 0 34px}}

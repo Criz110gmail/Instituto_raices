@@ -10,3 +10,8 @@
 @media(max-width:600px){.institution-logo--login{width:250px}.teacher-brand .institution-logo{width:155px}.teacher-brand{flex-wrap:wrap}.activation-brand{flex-wrap:wrap}.session-profile-cover .institution-logo{width:230px}}
 
 .story-brand:has(>.institution-logo),.mobile-brand:has(>.institution-logo),.welcome-brand:has(>.institution-logo),.mobile-family-brand:has(>.institution-logo){flex-direction:column;align-items:flex-start;gap:8px}.portal-school-name{display:block;font-size:12px;line-height:1.5}
+
+/* White on dark surfaces; the original mark remains readable on light backgrounds.
+   Only the bundled default is transformed, never a custom uploaded institution logo. */
+.institution-logo[data-logo-tone="white"],.pi-logo[data-logo-tone="white"]{filter:brightness(0) invert(1)}
+.institution-logo[data-logo-tone="original"],.pi-logo[data-logo-tone="original"]{filter:none}

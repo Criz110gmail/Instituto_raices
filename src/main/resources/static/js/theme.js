@@ -15,10 +15,13 @@
     };
     apply(readSaved() || preferred);
     const brandStyles=document.createElement('link');
-    brandStyles.rel='stylesheet';brandStyles.href='/css/institution-brand.css?v=20261113-transparente';
+    brandStyles.rel='stylesheet';brandStyles.href='/css/institution-brand.css?v=20261116-blanco';
     document.head.appendChild(brandStyles);
     // La muestra de componentes no carga navegación, reloj ni ayudas de un módulo real.
     if(root.dataset.piDemo === 'true') return;
+    const brandScript=document.createElement('script');
+    brandScript.src='/js/institution-brand.js?v=20261116-blanco';
+    brandScript.defer=true;document.head.appendChild(brandScript);
     // Componente global sólo en pantallas del sistema, nunca en los accesos públicos.
     const ruta = location.pathname;
     if ((/^\/(admin|portal|personal)(\/|$)/.test(ruta) || /^\/maestros(\/|$)/.test(ruta))

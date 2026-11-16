@@ -15,7 +15,7 @@ public class SesionInvalidaFilter extends OncePerRequestFilter {
     private static final Set<String> ACCESO_PUBLICO = Set.of("/", "/login", "/familias",
             "/maestros/acceso", "/personal/acceso", "/activar-cuenta", "/restablecer-password", "/acceso/csrf",
             "/acceso-denegado", "/salud", "/actuator/health", "/favicon.svg", "/error",
-            "/images/logo.png", "/images/logo1.png", "/images/imagen.png", "/images/sitio-objetos-escolares.svg");
+            "/images/logo.png", "/images/logo1.png", "/images/logo_general.png", "/images/logo_blanco.svg", "/images/imagen.png", "/images/sitio-objetos-escolares.svg");
     private final SesionExpiradaAccessDeniedHandler expiracion;
 
     public SesionInvalidaFilter(SesionExpiradaAccessDeniedHandler expiracion) {
